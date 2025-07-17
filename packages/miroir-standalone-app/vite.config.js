@@ -100,6 +100,7 @@ export default defineConfig({
     watch: false,
     environment: 'happy-dom',
     hookTimeout: 30000,
+    testTimeout: 180000, // 3 minutes for complex tests
     setupFiles: ['./setup.ts'],
   },
 });

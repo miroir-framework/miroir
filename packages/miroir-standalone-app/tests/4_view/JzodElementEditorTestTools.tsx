@@ -864,142 +864,189 @@ export function extractValuesFromRenderedElements(
   step?: string,
 ): Record<string, any> {
   const values: Record<string, any> = {};
-  console.log("########### extractValuesFromRenderedElements for label", label, "step", step);
-  // let displayedValues: HTMLElement[] = [];
-  // try {
-  //   displayedValues = screen.getAllByTestId("miroirDisplayedValue");
-  // } catch (e) {
-  //   // No displayed values found, leave displayedValues as empty array
-  // }
-  // const displayedValuesInfo = displayedValues.map((i) => {
-  //   return {
-  //     name:
-  //       (i as HTMLElement).id.replace(new RegExp(`^${label}\\.`), "") ||
-  //       (i as HTMLElement).getAttribute("aria-label")?.replace(new RegExp(`^${label}\\.`), ""),
-  //     value: (i as HTMLElement).textContent,
-  //     type: "string", // Assuming displayed values are strings
-  //   };
-  // });
-  // // Handle displayed values
-  // displayedValuesInfo.forEach((d) => {
-  //   let value: any = d.value;
-  //   // if (d.value === "" && d.defaultValue !== undefined) {
-  //   //   value = d.defaultValue;
-  //   // }
-  //   if (d.type === "number") {
-  //     if (!isNaN(Number(value)) && value !== "") {
-  //       value = Number(value);
-  //     } else {
-  //       expect(false, "number displayed value is not a number for " + d.name).toBeTruthy();
-  //     }
-  //   }
-  //   values[d.name??""] = value;
-  // });
+  
+  // Pre-compile regex patterns to avoid recreating them
+  const labelRegex = label ? new RegExp(`^${label}\\.`) : null;
+  const removeLabelPrefix = (str: string) => labelRegex ? str.replace(labelRegex, "") : str;
+  
+  // Use container if provided, otherwise fall back to document
+  // const searchRoot = container || document;
+  const searchRoot = document; // otherwise comboboxes options are not found
+  
+  // Single DOM query to get all relevant elements at once
+  const allInputs = Array.from(searchRoot.querySelectorAll("input[name], input[id]")).filter(
+    (el) =>
+      !(el.id && el.id.startsWith("displayAsStructuredElementSwitch")) &&
+      !(
+        (el as any).name &&
+        (el as any).name.startsWith("meta") &&
+        (el as any).name.endsWith("-NAME")
+      )
+  );
+  // checkboxes are inputs! redundant?
+  const allCheckboxes = Array.from(searchRoot.querySelectorAll('input[type="checkbox"]'))
+    .filter((el) => !(el.id && el.id.startsWith("displayAsStructuredElementSwitch")));
+  const allTestIdElements = searchRoot.querySelectorAll('[data-testid="miroirInput"]');
+  const allComboboxes = Array.from(searchRoot.querySelectorAll('[role="combobox"]'));
+    // .filter((el) => !(el.id && el.id.startsWith("displayAsStructuredElementSwitch")));
+  const allOptions = searchRoot.querySelectorAll('[role="option"]');
+  
+  console.log("extractValuesFromRenderedElements",
+    "label", label,
+    "step", step,
+    "allInputs.length", allInputs.length,
+    "allInputs", allInputs.map((el) => ({
+      id: el.id,
+      name: (el as any).name,
+      type: (el as HTMLInputElement).type,
+      value: (el as HTMLInputElement).value,
+      defaultValue: (el as HTMLInputElement).defaultValue,
+    })),
+  );
+  console.log("extractValuesFromRenderedElements",
+    "label", label,
+    "step", step,
+    "allInputs.length", allInputs.length,
+    "allTestIdElements.length", allTestIdElements.length,
+    "allCheckboxes.length", allCheckboxes.length,
+    "allComboboxes.length", allComboboxes.length,
+    "allOptions.length", allOptions.length,
+  );
+  console.log("extractValuesFromRenderedElements",
+    "label", label,
+    "step", step,
+    "allCheckboxes.length", allCheckboxes.length,
+    'allCheckboxes', allCheckboxes.map((el) => ({
+      id: el.id,
+      name: (el as any).name,
+      checked: (el as HTMLInputElement).checked,
+    })),
+  );
 
-  // #############################################################
-  let textBoxes: HTMLElement[] = [];
-  try {
-    textBoxes = screen
-      .getAllByTestId("miroirInput")
-      .map((i: HTMLElement) => i.querySelector("input") as HTMLInputElement);
+  console.log("extractValuesFromRenderedElements",
+    "label", label,
+    "step", step,
+    "allComboboxes.length", allComboboxes.length,
+    'allComboboxes', allComboboxes.map((el) => ({
+      id: el.id,
+      name: (el as any).name,
+      value: (el as HTMLInputElement).value,
+      defaultValue: (el as HTMLInputElement).defaultValue,
+    })),
+  );
 
-  } catch (e) {
-    // No textbox found, leave inputs as empty array
-  }
-  const textBoxesInfo = textBoxes.map((i) => {
-    const name = (i as HTMLInputElement).id.replace(new RegExp(`^${label}\\.`), "") || (i as HTMLInputElement).name.replace(new RegExp(`^${label}\\.`), "");
-    return {
-      name,
-      value: (i as HTMLInputElement).innerText,
-      defaultValue: (i as HTMLInputElement).defaultValue,
-      type: (i as HTMLInputElement).type,
-    };
-  });
-  console.log("textBoxes", textBoxesInfo);
-  textBoxesInfo.forEach((c) => {
-    let value: any = c.value;
-    if (c.value === "" && c.defaultValue !== undefined) {
-      value = c.defaultValue;
+  console.log("extractValuesFromRenderedElements",
+    "label", label,
+    "step", step,
+    "allOptions.length", allOptions.length,
+    'allOptions', Array.from(allOptions).map((el) => ({
+      id: el.id,
+      textContent: (el as HTMLOptionElement).textContent,
+      ariaLabel: el.getAttribute("aria-label"),
+    })),
+  );
+  // Process miroirInput elements first (these are the main form inputs)
+  allTestIdElements.forEach((element: Element) => {
+    const input = element.querySelector('input') as HTMLInputElement;
+    if (!input) return;
+    
+    const name = removeLabelPrefix(input.id || input.name);
+    if (!name) return;
+    
+    let value: any = input.value;
+    if (value === "" && input.defaultValue !== undefined) {
+      value = input.defaultValue;
     }
-    if (c.type === "number") {
+    if (input.type === "number") {
       if (!isNaN(Number(value)) && value !== "") {
         value = Number(value);
       } else {
-        expect(false, "number textBox content is not a number for " + c.name).toBeTruthy();
+        expect(false, "number textBox content is not a number for " + name).toBeTruthy();
       }
     }
-    values[c.name] = value;
+    values[name] = value;
   });
 
-  // #############################################################
-  let checkboxes: HTMLElement[] = [];
-  try {
-    checkboxes = screen.getAllByRole("checkbox")
-    .filter((c: any) => c.name.startsWith(label));
-  } catch (e) {
-    // No checkbox found, leave checkboxes as empty array
-  }
-  const checkboxesInfo = checkboxes.map((c) => {
-    return {
-      name: (c as HTMLInputElement).name.replace(new RegExp(`^${label}\\.`), ""),
-      value: (c as HTMLInputElement).value,
-      checked: (c as HTMLInputElement).checked,
-    };
-  });
-  console.log("checkboxes", checkboxesInfo);
-  checkboxesInfo.forEach((c) => {
-    values[c.name] = c.checked;
-  });
-
-  // #############################################################
-  let comboboxes: HTMLElement[] = [];
-  try {
-    comboboxes = screen.getAllByRole("combobox").filter((c: any) => c.id.startsWith(label));
-  } catch (e) {
-    // No combobox found, leave comboboxes as empty array
-  }
-  const comboBoxInfo = comboboxes.map((c) => {
-    const input = (c as HTMLElement).nextElementSibling as HTMLInputElement;
-    return {
-      name: (input as HTMLInputElement).name.replace(new RegExp(`^${label}\\.`), ""),
-      value: input?.value,
-      selectedIndex: (c as HTMLSelectElement).tabIndex,
-      options: Array.from((c as HTMLSelectElement).options || []).map((o) => o.value),
-    };
-  });
-  console.log("comboboxes", comboBoxInfo);
-  comboBoxInfo.forEach((c) => {
-    values[c.name] = c.value;
-  });
-
-  // #############################################################
-  let options: HTMLElement[] = [];
-  try {
-    options = screen
-      .getAllByRole<HTMLLIElement>("option")
-      .filter((o: any) => o.getAttribute("aria-label").startsWith(label));
-    options = screen.getAllByRole<HTMLElement>("option");
-  } catch (e) {
-    // No option found, leave options as empty array
-  }
-  const optionsInfo = options.map((o) => {
-    return {
-      value: (o as HTMLOptionElement).textContent,
-      // name: (o as HTMLOptionElement).textContent,
-      name: o.getAttribute("aria-label"),
-      selected: o.getAttribute("aria-selected"),
-    };
-  });
-  console.log("options", optionsInfo);
-  optionsInfo.forEach((o) => {
-    // values[o.name as any] = o.value;
-    if (values[label] === undefined) {
-      values[label] = [];
+  // Process all other input elements that might not have miroirInput testId
+  allInputs.forEach((input: Element) => {
+    const htmlInput = input as HTMLInputElement;
+    if (!htmlInput.name && !htmlInput.id) return;
+    
+    const name = removeLabelPrefix(htmlInput.id || htmlInput.name);
+    if (!name || values[name] !== undefined) return; // Skip if already processed
+    
+    // Skip if this input was already processed by miroirInput logic
+    const parentWithTestId = htmlInput.closest('[data-testid="miroirInput"]');
+    if (parentWithTestId) return;
+    
+    let value: any = htmlInput.value;
+    if (value === "" && htmlInput.defaultValue !== undefined) {
+      value = htmlInput.defaultValue;
     }
-    values[label].push(o.value);
+    if (htmlInput.type === "number") {
+      if (!isNaN(Number(value)) && value !== "") {
+        value = Number(value);
+      } else {
+        expect(false, "number input content is not a number for " + name).toBeTruthy();
+      }
+    }
+    if (htmlInput.type === "checkbox") {
+      value = htmlInput.checked;
+    }
+    values[name] = value;
   });
 
-  console.log("extractValuesFromRenderedElements values", values);
+  // Process checkboxes specifically (in case they weren't caught above)
+  allCheckboxes.forEach((element: Element) => {
+    const input = element as HTMLInputElement;
+    if (!input.name && !input.id) return;
+    if (label && !input.name.startsWith(label) && !input.id.startsWith(label)) return;
+    
+    const name = removeLabelPrefix(input.name || input.id);
+    if (name && values[name] === undefined) {
+      values[name] = input.checked;
+    }
+  });
+
+  // Process comboboxes
+  allComboboxes.forEach((element: Element) => {
+    const htmlElement = element as HTMLElement;
+    if (label && !htmlElement.id.startsWith(label)) return;
+    
+    const input = htmlElement.nextElementSibling as HTMLInputElement;
+    if (input && input.name) {
+      const name = removeLabelPrefix(input.name);
+      if (name && values[name] === undefined) {
+        values[name] = input.value;
+      }
+    }
+  });
+
+  // Process options
+  allOptions.forEach((element: Element) => {
+    const htmlElement = element as HTMLElement;
+    const ariaLabel: string | null = htmlElement.getAttribute("aria-label");
+    if (!label || !ariaLabel || !ariaLabel.startsWith(label)) return;
+    
+    const optionValue = (htmlElement as HTMLOptionElement).textContent;
+    const targetName = label + ".options";
+    if (optionValue) {
+      // console.log(
+      //   "extractValuesFromRenderedElements",
+      //   "label", label,
+      //   "step", step,
+      //   "optionValue", optionValue,
+      //   "ariaLabel", ariaLabel,
+      //   "values[label]", values[label],
+      // );
+      if (values[targetName] === undefined) {
+      // if (!values[label]) {
+        values[targetName] = [];
+      }
+      values[targetName].push(optionValue);
+    }
+  });
+
   return values;
 }
 

@@ -422,9 +422,11 @@ export function getJzodEnumEditorTests(
             await act(() => {
               fireEvent.mouseDown(combobox);
             });
+            screen.debug(undefined, Infinity); // Prints entire DOM with no size limit
             const valuesListDisplayed: Record<string, any> = extractValuesFromRenderedElements(expect, container, "testField", "after mouseDown");
             expect(valuesListDisplayed).toEqual({
-              "testField": ["value1", "value2", "value3"],
+              "testField": "value2",
+              "testField.options": ["value1", "value2", "value3"],
             });
           },
         },
@@ -1819,6 +1821,50 @@ export function getJzodEndpointEditorTests(
   LocalEditor: React.FC<LocalEndpointEditorProps>,
   renderAsJzodElementEditor: React.FC<JzodElementEditorProps_Test>
 ): JzodEndpointEditorTestSuites {
+  // Create a simpler endpoint schema for testing to avoid performance issues
+  const simpleEndpointSchema: JzodElement = {
+    type: "object",
+    definition: {
+      uuid: {
+        type: "uuid",
+        tag: {
+          value: {
+            id: 1,
+            defaultLabel: "Uuid",
+            editable: false
+          }
+        }
+      },
+      name: {
+        type: "string",
+        tag: {
+          value: {
+            id: 2,
+            defaultLabel: "Name",
+            editable: true
+          }
+        }
+      },
+      description: {
+        type: "string",
+        tag: {
+          value: {
+            id: 3,
+            defaultLabel: "Description",
+            editable: true
+          }
+        }
+      }
+    }
+  };
+
+  // Create a simple endpoint instance for testing
+  const simpleEndpointInstance = {
+    uuid: "ddd9c928-2ceb-4f67-971b-5898090412d6",
+    name: "TestEndpoint",
+    description: "Test endpoint for performance"
+  };
+
   return {
     JzodEndpointEditor: {
       suiteRenderComponent: {
@@ -1826,40 +1872,83 @@ export function getJzodEndpointEditorTests(
         renderAsJzodElementEditor,
       },
       tests: {
-        "Endpoint ApplicationEndpoint is displayed as json-like input fields with proper value": {
+        "Simple Endpoint is displayed as json-like input fields with proper value": {
           props: {
             label: "Test Label",
             name: "testField",
             listKey: "ROOT.testField",
             rootLessListKey: "testField",
             rootLessListKeyArray: ["testField"],
-            // rawJzodSchema: entityDefinitionBook.jzodSchema,
-            // rawJzodSchema: miroirFundamentalJzodSchema.definition.context.modelAction as JzodUnion,
+            rawJzodSchema: simpleEndpointSchema,
+            initialFormState: simpleEndpointInstance
+          },
+          tests: async (expect: ExpectStatic, container: Container) => {
+            // Remove the expensive DOM debugging
+            // console.log("=== FULL RENDERED DOM ===");
+            // screen.debug(undefined, Infinity); // This is very expensive!
+  
+            // Basic test to ensure the component renders without crashing
+            expect(container).toBeInTheDocument();
+            
+            // Check that basic form fields are present
+            const nameInput = container.querySelector('input[name*="name"]');
+            const descriptionInput = container.querySelector('input[name*="description"]');
+            
+            expect(nameInput).toBeInTheDocument();
+            expect(descriptionInput).toBeInTheDocument();
+            
+            // Check values are properly set
+            if (nameInput) {
+              expect((nameInput as HTMLInputElement).value).toBe("TestEndpoint");
+            }
+            if (descriptionInput) {
+              expect((descriptionInput as HTMLInputElement).value).toBe("Test endpoint for performance");
+            }
+          },
+        },
+        "Full Endpoint schema renders (performance test)": {
+          props: {
+            label: "Test Label",
+            name: "testField",
+            listKey: "ROOT.testField",
+            rootLessListKey: "testField",
+            rootLessListKeyArray: ["testField"],
             rawJzodSchema: entityDefinitionEndpoint.jzodSchema,
             initialFormState: applicationEndpointV1
           },
           tests: async (expect: ExpectStatic, container: Container) => {
-            // Pretty-print the entire rendered DOM
-            console.log("=== FULL RENDERED DOM ===");
-            screen.debug(undefined, Infinity); // Prints entire DOM with no size limit
-  
-            // expect(screen.getByText(/Test LabelAAAAAAAAAAAAAAAAAAAAAAAAAA/)).toBeInTheDocument();
+            // This test is marked as a performance test - it just needs to render successfully
+            // without timing out. We don't do expensive DOM debugging here.
+            
+            // Skip this test by default as it's too slow for regular testing
+            // if (!process.env.RUN_PERFORMANCE_TESTS) {
+            //   console.log("Skipping performance test - set RUN_PERFORMANCE_TESTS=1 to run");
+            //   return;
+            // }
+            // console.log("=== FULL RENDERED DOM ===");
+            // screen.debug(undefined, Infinity); // Prints entire DOM with no size limit
+
+
+            const startTime = performance.now();
             const values: Record<string, any> = extractValuesFromRenderedElements(expect, container, "testField", "initial form state");
-            // console.log("Extracted initial values:", values);
+            const endTime = performance.now();
+            console.log(`extracting values completed in ${endTime - startTime} ms`);
+            const formatToValuesStartTime = performance.now();
             const testResult = formValuesToJSON(values);
+            const formatToValuesEndTime = performance.now();
+            console.log(`formValuesToJSON completed in ${formatToValuesEndTime - formatToValuesStartTime} ms`);
             expect(testResult).toEqual(applicationEndpointV1);
 
-            // const inputs = Array.from(document.querySelectorAll('input'));
-            // console.log("=== INPUTS ===", inputs.map((input: HTMLElement) => ({
-            //   name: (input as HTMLInputElement).name,
-            //   value: (input as HTMLInputElement).value,
-            // })));
-            // const values: Record<string, any> = {};
-            // inputs.forEach((input: HTMLElement) => {
-            //   const index = (input as HTMLInputElement).name.replace(/^testField\./, "");
-            //   values[index] = (input as HTMLInputElement).value || Number((input as HTMLInputElement).value);
-            // });
-            expect(values).toEqual(book1);
+            // Basic test to ensure the component renders without crashing
+            expect(container).toBeInTheDocument();
+            
+            // Check that the form is rendered (look for any input)
+            const inputs = container.querySelectorAll('input');
+            expect(inputs.length).toBeGreaterThan(0);
+            
+            // Check that the component has the expected structure
+            const testElement = container.querySelector('[id*="testField"]');
+            expect(testElement).toBeInTheDocument();
           },
         },
       },
@@ -1964,15 +2053,15 @@ const jzodElementEditorTests: Record<
   //   // modes: ['jzodElementEditor', 'component'],
   //   modes: 'jzodElementEditor',
   // },
-  // // ################# ENDPOINTS
-  // JzodEndpointEditor: { 
-  //   editor: JzodElementEditor, 
-  //   getJzodEditorTests: getJzodEndpointEditorTests,
-  //   performanceTests: true,
-  //   // modes: '*',
-  //   // modes: ['jzodElementEditor', 'component'],
-  //   modes: 'jzodElementEditor',
-  // },
+  // ################# ENDPOINTS
+  JzodEndpointEditor: { 
+    editor: JzodElementEditor, 
+    getJzodEditorTests: getJzodEndpointEditorTests,
+    performanceTests: true,
+    // modes: '*',
+    // modes: ['jzodElementEditor', 'component'],
+    modes: 'jzodElementEditor',
+  },
 };
 
 // ##############################################################################################
