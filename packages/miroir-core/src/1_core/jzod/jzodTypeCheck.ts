@@ -257,39 +257,41 @@ export function unionArrayChoices (
   miroirMetaModel: MetaModel,
   relativeReferenceJzodContext: { [k: string]: JzodElement }
 ): (JzodArray | JzodTuple)[] {
-  return concreteUnrolledJzodSchemas
-    .filter((j) => j.type == "array" || j.type == "tuple")
-    .concat(
-      (
-        concreteUnrolledJzodSchemas.filter(
-          (j: JzodElement): boolean => j.type == "union"
-        ) as JzodUnion[]
-      ).flatMap(
-        // for sub-unions, return the sub-objects clauses, with their extend clauses resolved
-        (j: JzodUnion): (JzodArray | JzodTuple)[] =>
-          j.definition.filter((k: JzodElement) => k.type == "array" || k.type == "tuple") as (
-            | JzodArray
-            | JzodTuple
-          )[]
-      ),
-      (
-        concreteUnrolledJzodSchemas.filter((j: JzodElement) => j.type == "union") as JzodUnion[]
-      ).flatMap(
-        // if schemaReferences are found, we resolve them, squashing the extend clause for objects
-        (j: JzodUnion) =>
-          (j.definition.filter((k: JzodElement) => k.type == "schemaReference") as JzodReference[])
-            .map((k: JzodReference) =>
-              resolveJzodSchemaReferenceInContext(
-                miroirFundamentalJzodSchema,
-                k,
-                currentModel,
-                miroirMetaModel,
-                { ...relativeReferenceJzodContext, ...k.context }
-              )
+  return (
+    concreteUnrolledJzodSchemas.filter(
+      (j: JzodElement) => j.type == "array" || j.type == "tuple"
+    ) as (JzodArray | JzodTuple)[]
+  ).concat(
+    (
+      concreteUnrolledJzodSchemas.filter(
+        (j: JzodElement): boolean => j.type == "union"
+      ) as JzodUnion[]
+    ).flatMap(
+      // for sub-unions, return the sub-objects clauses, with their extend clauses resolved
+      (j: JzodUnion): (JzodArray | JzodTuple)[] =>
+        j.definition.filter((k: JzodElement) => k.type == "array" || k.type == "tuple") as (
+          | JzodArray
+          | JzodTuple
+        )[]
+    ),
+    (
+      concreteUnrolledJzodSchemas.filter((j: JzodElement) => j.type == "union") as JzodUnion[]
+    ).flatMap(
+      // if schemaReferences are found, we resolve them, squashing the extend clause for objects
+      (j: JzodUnion) =>
+        (j.definition.filter((k: JzodElement) => k.type == "schemaReference") as JzodReference[])
+          .map((k: JzodReference) =>
+            resolveJzodSchemaReferenceInContext(
+              miroirFundamentalJzodSchema,
+              k,
+              currentModel,
+              miroirMetaModel,
+              { ...relativeReferenceJzodContext, ...k.context }
             )
-            .filter((j) => j.type == "array" || j.type == "tuple") as (JzodArray | JzodTuple)[]
-      )
-    );
+          )
+          .filter((j) => j.type == "array" || j.type == "tuple") as (JzodArray | JzodTuple)[]
+    ) as (JzodArray | JzodTuple)[]
+  );
 }
 ;
 
@@ -330,7 +332,7 @@ export type SelectUnionBranchFromDiscriminatorReturnType =
 export function selectUnionBranchFromDiscriminator(
   objectUnionChoices: JzodObject[],
   discriminator: string | string[] | undefined,
-  valueObject: any,
+  valueObject: Record<string,any>,
   valueObjectPath: (string | number)[],
   typePath: (string | number)[], // for logging purposes only
   // from above:
@@ -433,6 +435,36 @@ export function selectUnionBranchFromDiscriminator(
       );
     });
   } else {
+    const hasDiscriminatorValues = discriminators.some(d => valueObject[d] !== undefined);
+
+    if (!hasDiscriminatorValues) {
+      const choiceWithNoDiscriminator: JzodObject[] = flattenedUnionChoices.filter(
+        (objectChoice) =>
+          Object.keys(objectChoice.definition).every(
+            (key) => objectChoice.definition[key]?.type != "literal" ||
+              objectChoice.definition[key]?.definition == valueObject[key]
+          )
+      );
+      if (choiceWithNoDiscriminator.length === 1) {
+        return {
+          status: "ok",
+          currentDiscriminatedObjectJzodSchema: filteredFlattenedUnionChoices[0],
+          flattenedUnionChoices: filteredFlattenedUnionChoices,
+          chosenDiscriminator: [],
+        };
+      } else {
+        return {
+          status: "error",
+          error: "selectUnionBranchFromDiscriminator: no discriminator values found in valueObject and multiple choices exist",
+          discriminator,
+          valuePath: valueObjectPath,
+          typePath,
+          value: valueObject,
+          objectUnionChoices,
+          flattenedUnionChoices: choiceWithNoDiscriminator,
+        };
+      }
+    }
     possibleDiscriminators = flattenedUnionChoices.map((objectChoice) => {
       const objectChoiceKeys = Object.keys(objectChoice.definition);
       return discriminators.map((discriminator) =>
@@ -1671,10 +1703,30 @@ export function jzodTypeCheck(
       };
     }
     case "date": {
-      if (!(valueObject instanceof Date)) {
+      try {
+        if (valueObject instanceof Date || new Date(valueObject).toString() !== "Invalid Date") {
+          return {
+            status: "ok",
+            valuePath: currentValuePath,
+            typePath: currentTypePath,
+            rawSchema: jzodSchema,
+            resolvedSchema: jzodSchema,
+          };
+        } else {
+          return {
+            status: "error",
+            error: `jzodTypeCheck failed to match value with ${jzodSchema.type} schema`,
+            rawJzodSchemaType: jzodSchema.type,
+            valuePath: currentValuePath,
+            typePath: currentTypePath,
+            value: valueObject,
+            rawSchema: jzodSchema,
+          };
+        }
+      } catch (e) {
         return {
           status: "error",
-          error: `jzodTypeCheck failed to match value with ${jzodSchema.type} schema`,
+          error: `jzodTypeCheck failed to match value with ${jzodSchema.type} schema: ` + e,
           rawJzodSchemaType: jzodSchema.type,
           valuePath: currentValuePath,
           typePath: currentTypePath,
@@ -1682,13 +1734,6 @@ export function jzodTypeCheck(
           rawSchema: jzodSchema,
         };
       }
-      return {
-        status: "ok",
-        valuePath: currentValuePath,
-        typePath: currentTypePath,
-        rawSchema: jzodSchema,
-        resolvedSchema: jzodSchema,
-      };
     }
     case "undefined":
     case "never":
