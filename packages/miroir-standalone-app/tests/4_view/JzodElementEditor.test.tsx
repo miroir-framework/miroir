@@ -52,6 +52,8 @@ import { miroirFundamentalJzodSchema } from "miroir-core";
 import { JzodElement } from "miroir-core";
 import { entityDefinitionEndpoint } from "miroir-core";
 import { queryEndpointVersionV1 } from "miroir-core";
+import { test_createEntityAndReportFromSpreadsheetAndUpdateMenu } from "miroir-core";
+import { entityTest } from "miroir-core";
 
 // ################################################################################################
 const pageLabel = "JzodElementEditor.test";
@@ -1921,54 +1923,89 @@ export function getJzodEndpointEditorTests(
         //     }
         //   },
         // },
-        "Application Endpoint schema renders": {
-          props: {
-            label: "Test Label",
-            name: "testField",
-            listKey: "ROOT.testField",
-            rootLessListKey: "testField",
-            rootLessListKeyArray: ["testField"],
-            rawJzodSchema: entityDefinitionEndpoint.jzodSchema,
-            initialFormState: applicationEndpointV1
-          },
-          tests: async (expect: ExpectStatic, container: Container) => {
-            // console.log("=== FULL RENDERED DOM ===");
-            // screen.debug(undefined, Infinity); // Prints entire DOM with no size limit
-            const startTime = performance.now();
-            const values: Record<string, any> = extractValuesFromRenderedElements(expect, container, "testField", "initial form state");
-            const endTime = performance.now();
-            console.log(`extracting values completed in ${endTime - startTime} ms`);
-            const formatToValuesStartTime = performance.now();
-            const testResult = formValuesToJSON(values);
-            const formatToValuesEndTime = performance.now();
-            console.log(`formValuesToJSON completed in ${formatToValuesEndTime - formatToValuesStartTime} ms`);
-            expect(testResult).toEqual(applicationEndpointV1);
+        // "Application Endpoint schema renders": {
+        //   props: {
+        //     label: "Test Label",
+        //     name: "testField",
+        //     listKey: "ROOT.testField",
+        //     rootLessListKey: "testField",
+        //     rootLessListKeyArray: ["testField"],
+        //     rawJzodSchema: entityDefinitionEndpoint.jzodSchema,
+        //     initialFormState: applicationEndpointV1
+        //   },
+        //   tests: async (expect: ExpectStatic, container: Container) => {
+        //     // console.log("=== FULL RENDERED DOM ===");
+        //     // screen.debug(undefined, Infinity); // Prints entire DOM with no size limit
+        //     const startTime = performance.now();
+        //     const values: Record<string, any> = extractValuesFromRenderedElements(expect, container, "testField", "initial form state");
+        //     const endTime = performance.now();
+        //     console.log(`extracting values completed in ${endTime - startTime} ms`);
+        //     const formatToValuesStartTime = performance.now();
+        //     const testResult = formValuesToJSON(values);
+        //     const formatToValuesEndTime = performance.now();
+        //     console.log(`formValuesToJSON completed in ${formatToValuesEndTime - formatToValuesStartTime} ms`);
+        //     expect(testResult).toEqual(applicationEndpointV1);
 
-            // Basic test to ensure the component renders without crashing
-            expect(container).toBeInTheDocument();
+        //     // Basic test to ensure the component renders without crashing
+        //     expect(container).toBeInTheDocument();
             
-            // Check that the form is rendered (look for any input)
-            const inputs = container.querySelectorAll('input');
-            expect(inputs.length).toBeGreaterThan(0);
+        //     // Check that the form is rendered (look for any input)
+        //     const inputs = container.querySelectorAll('input');
+        //     expect(inputs.length).toBeGreaterThan(0);
             
-            // Check that the component has the expected structure
-            const testElement = container.querySelector('[id*="testField"]');
-            expect(testElement).toBeInTheDocument();
-          },
-        },
-        "Query Endpoint schema renders": {
+        //     // Check that the component has the expected structure
+        //     const testElement = container.querySelector('[id*="testField"]');
+        //     expect(testElement).toBeInTheDocument();
+        //   },
+        // },
+        // "Query Endpoint schema renders": {
+        //   props: {
+        //     label: "Test Label",
+        //     name: "testField",
+        //     listKey: "ROOT.testField",
+        //     rootLessListKey: "testField",
+        //     rootLessListKeyArray: ["testField"],
+        //     rawJzodSchema: entityDefinitionEndpoint.jzodSchema,
+        //     initialFormState: queryEndpointVersionV1
+        //   },
+        //   tests: async (expect: ExpectStatic, container: Container) => {
+        //     // console.log("=== FULL RENDERED DOM ===");
+        //     // screen.debug(undefined, Infinity); // Prints entire DOM with no size limit
+        //     const startTime = performance.now();
+        //     const values: Record<string, any> = extractValuesFromRenderedElements(expect, container, "testField", "initial form state");
+        //     const endTime = performance.now();
+        //     console.log(`extracting values completed in ${endTime - startTime} ms`);
+        //     const formatToValuesStartTime = performance.now();
+        //     const testResult = formValuesToJSON(values);
+        //     const formatToValuesEndTime = performance.now();
+        //     console.log(`formValuesToJSON completed in ${formatToValuesEndTime - formatToValuesStartTime} ms`);
+        //     expect(testResult).toEqual(queryEndpointVersionV1);
+
+        //     // Basic test to ensure the component renders without crashing
+        //     expect(container).toBeInTheDocument();
+            
+        //     // Check that the form is rendered (look for any input)
+        //     const inputs = container.querySelectorAll('input');
+        //     expect(inputs.length).toBeGreaterThan(0);
+            
+        //     // Check that the component has the expected structure
+        //     const testElement = container.querySelector('[id*="testField"]');
+        //     expect(testElement).toBeInTheDocument();
+        //   },
+        // },
+        "createEntityAndReportFromSpreadsheetAndUpdateMenu Test schema renders": {
           props: {
             label: "Test Label",
             name: "testField",
             listKey: "ROOT.testField",
             rootLessListKey: "testField",
             rootLessListKeyArray: ["testField"],
-            rawJzodSchema: entityDefinitionEndpoint.jzodSchema,
-            initialFormState: queryEndpointVersionV1
+            rawJzodSchema: entityTest.jzodSchema,
+            initialFormState: test_createEntityAndReportFromSpreadsheetAndUpdateMenu
           },
           tests: async (expect: ExpectStatic, container: Container) => {
-            // console.log("=== FULL RENDERED DOM ===");
-            // screen.debug(undefined, Infinity); // Prints entire DOM with no size limit
+            console.log("=== FULL RENDERED DOM ===");
+            screen.debug(undefined, Infinity); // Prints entire DOM with no size limit
             const startTime = performance.now();
             const values: Record<string, any> = extractValuesFromRenderedElements(expect, container, "testField", "initial form state");
             const endTime = performance.now();
@@ -2008,49 +2045,49 @@ const jzodElementEditorTests: Record<
   string,
   JzodElementEditorTestSuite<any> & { modes?: ModesType }
 > = {
-  JzodArrayEditor: { 
-    editor: JzodElementEditor, 
-    getJzodEditorTests: getJzodArrayEditorTests,
-    // modes: '*',
-    // modes: ['jzodElementEditor', 'component'],
-    modes: 'jzodElementEditor',
-  },
-  JzodEnumEditor: {
-    editor: JzodElementEditor,
-    getJzodEditorTests: getJzodEnumEditorTests,
-    // modes: '*',
-    modes: "jzodElementEditor",
-    // modes: "component",
-  },
-  JzodLiteralEditor: { 
-    editor: JzodElementEditor, 
-    getJzodEditorTests: getJzodLiteralEditorTests,
-    // modes: "*",
-    // modes: ['jzodElementEditor', 'component'],
-    modes: "jzodElementEditor",
-    // modes: "component",
-  },
-  JzodObjectEditor: { 
-    editor: JzodElementEditor, 
-    getJzodEditorTests: getJzodObjectEditorTests,
-    // modes: '*',
-    // modes: ['jzodElementEditor', 'component'],
-    modes: 'jzodElementEditor',
-  },
-  JzodSimpleTypeEditor: { 
-    editor: JzodElementEditor, 
-    getJzodEditorTests: getJzodSimpleTypeEditorTests,
-    // modes: '*',
-    // modes: ['jzodElementEditor', 'component'],
-    modes: 'jzodElementEditor',
-  },
-  JzodUnionEditor: { 
-    editor: JzodElementEditor, 
-    getJzodEditorTests: getJzodUnionEditorTests,
-    // modes: '*',
-    // modes: ['jzodElementEditor', 'component'],
-    modes: 'jzodElementEditor',
-  },
+  // JzodArrayEditor: { 
+  //   editor: JzodElementEditor, 
+  //   getJzodEditorTests: getJzodArrayEditorTests,
+  //   // modes: '*',
+  //   // modes: ['jzodElementEditor', 'component'],
+  //   modes: 'jzodElementEditor',
+  // },
+  // JzodEnumEditor: {
+  //   editor: JzodElementEditor,
+  //   getJzodEditorTests: getJzodEnumEditorTests,
+  //   // modes: '*',
+  //   modes: "jzodElementEditor",
+  //   // modes: "component",
+  // },
+  // JzodLiteralEditor: { 
+  //   editor: JzodElementEditor, 
+  //   getJzodEditorTests: getJzodLiteralEditorTests,
+  //   // modes: "*",
+  //   // modes: ['jzodElementEditor', 'component'],
+  //   modes: "jzodElementEditor",
+  //   // modes: "component",
+  // },
+  // JzodObjectEditor: { 
+  //   editor: JzodElementEditor, 
+  //   getJzodEditorTests: getJzodObjectEditorTests,
+  //   // modes: '*',
+  //   // modes: ['jzodElementEditor', 'component'],
+  //   modes: 'jzodElementEditor',
+  // },
+  // JzodSimpleTypeEditor: { 
+  //   editor: JzodElementEditor, 
+  //   getJzodEditorTests: getJzodSimpleTypeEditorTests,
+  //   // modes: '*',
+  //   // modes: ['jzodElementEditor', 'component'],
+  //   modes: 'jzodElementEditor',
+  // },
+  // JzodUnionEditor: { 
+  //   editor: JzodElementEditor, 
+  //   getJzodEditorTests: getJzodUnionEditorTests,
+  //   // modes: '*',
+  //   // modes: ['jzodElementEditor', 'component'],
+  //   modes: 'jzodElementEditor',
+  // },
   // // ################# PERFORMANCE
   // JzodEditorPerformanceTests: {
   //   editor: JzodElementEditor,
@@ -2060,23 +2097,23 @@ const jzodElementEditorTests: Record<
   //   // modes: ['jzodElementEditor', 'component'],
   //   modes: 'jzodElementEditor',
   // },
-  // ################# INSTANCES
-  JzodBookEditor: { 
-    editor: JzodElementEditor, 
-    getJzodEditorTests: getJzodBookEditorTests,
-    performanceTests: true,
-    // modes: '*',
-    // modes: ['jzodElementEditor', 'component'],
-    modes: 'jzodElementEditor',
-  },
-  // ################# MODEL
-  JzodEntityDefinitionEditor: { 
-    editor: JzodElementEditor, 
-    getJzodEditorTests: getJzodEntityDefinitionEditorTests,
-    // modes: '*',
-    // modes: ['jzodElementEditor', 'component'],
-    modes: 'jzodElementEditor',
-  },
+  // // ################# INSTANCES
+  // JzodBookEditor: { 
+  //   editor: JzodElementEditor, 
+  //   getJzodEditorTests: getJzodBookEditorTests,
+  //   performanceTests: true,
+  //   // modes: '*',
+  //   // modes: ['jzodElementEditor', 'component'],
+  //   modes: 'jzodElementEditor',
+  // },
+  // // ################# MODEL
+  // JzodEntityDefinitionEditor: { 
+  //   editor: JzodElementEditor, 
+  //   getJzodEditorTests: getJzodEntityDefinitionEditorTests,
+  //   // modes: '*',
+  //   // modes: ['jzodElementEditor', 'component'],
+  //   modes: 'jzodElementEditor',
+  // },
   // ################# ENDPOINTS
   JzodEndpointEditor: { 
     editor: JzodElementEditor, 

@@ -104,7 +104,7 @@ export type JzodElementEditorReactCodeMirrorProps = {
   codeMirrorIsValidJson: boolean;
   setCodeMirrorIsValidJson: React.Dispatch<React.SetStateAction<boolean>>;
   rootLessListKey: string;
-  rootLessListKeyArray: string[];
+  rootLessListKeyArray: (string | number)[];
   isUnderTest?: boolean; // codemirror issue with vitest https://github.com/miroir-framework/miroir/issues/56
   hidden?: boolean; // used to control visibility of the editor 
   insideAny?: boolean; // used to control visibility of the editor

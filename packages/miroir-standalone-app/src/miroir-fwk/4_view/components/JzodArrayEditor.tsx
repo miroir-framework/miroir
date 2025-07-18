@@ -1,4 +1,5 @@
 ﻿import { FormikContextType, useFormikContext } from "formik";
+import { ErrorBoundary } from "react-error-boundary";
 import {
   adminConfigurationDeploymentMiroir,
   getDefaultValueForJzodSchema,
@@ -22,6 +23,7 @@ import {
 import { useCurrentModel } from "../ReduxHooks";
 import { ExpandOrFoldObjectAttributes, JzodElementEditor } from "./JzodElementEditor";
 import { JzodArrayEditorProps } from "./JzodElementEditorInterface";
+import { ErrorFallbackComponent } from "./ErrorFallbackComponent";
 import { SizedAddBox, SizedButton } from "./Style";
 import { J } from "vitest/dist/chunks/environment.LoooBwUu";
 import { JzodUnion } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
@@ -186,28 +188,51 @@ const ProgressiveArrayItem: React.FC<ProgressiveArrayItemProps> = ({
               formik={formik}
               currentValue={currentValue}
             />
-            <JzodElementEditor
-              name={"" + index}
-              listKey={listKey + "." + index}
-              indentLevel={usedIndentLevel + 1}
-              labelElement={<></>}
-              currentDeploymentUuid={currentDeploymentUuid}
-              currentApplicationSection={currentApplicationSection as any}
-              rootLessListKey={
-                rootLessListKey.length > 0 ? rootLessListKey + "." + index : "" + index
-              }
-              rootLessListKeyArray={[...rootLessListKeyArray, "" + index]}
-              rawJzodSchema={currentArrayElementRawDefinition.element}
-              resolvedElementJzodSchema={
-                resolvedElementJzodSchema?.type == "array"
-                  ? ((resolvedElementJzodSchema as JzodArray)?.definition as any)
-                  : ((resolvedElementJzodSchema as JzodTuple).definition[index] as JzodElement)
-              }
-              localRootLessListKeyMap={localRootLessListKeyMap}
-              foreignKeyObjects={foreignKeyObjects}
-              insideAny={insideAny}
-              parentType={parentUnfoldedRawSchema.type}
-            />
+            <ErrorBoundary
+              FallbackComponent={({ error, resetErrorBoundary }) => (
+                <ErrorFallbackComponent
+                  error={error}
+                  resetErrorBoundary={resetErrorBoundary}
+                  context={{
+                    origin: "JzodArrayEditor",
+                    objectType: "array",
+                    rootLessListKey: rootLessListKey.length > 0 ? rootLessListKey + "." + index : "" + index,
+                    attributeRootLessListKeyArray: [...rootLessListKeyArray, "" + index],
+                    attributeName: "" + index,
+                    attributeListKey: listKey + "." + index,
+                    currentValue: currentValue,
+                    formikValues: formik.values,
+                    rawJzodSchema: currentArrayElementRawDefinition.element,
+                    localResolvedElementJzodSchemaBasedOnValue: resolvedElementJzodSchema?.type == "array"
+                      ? ((resolvedElementJzodSchema as JzodArray)?.definition as any)
+                      : ((resolvedElementJzodSchema as JzodTuple).definition[index] as JzodElement),
+                  }}
+                />
+              )}
+            >
+              <JzodElementEditor
+                name={"" + index}
+                listKey={listKey + "." + index}
+                indentLevel={usedIndentLevel + 1}
+                labelElement={<></>}
+                currentDeploymentUuid={currentDeploymentUuid}
+                currentApplicationSection={currentApplicationSection as any}
+                rootLessListKey={
+                  rootLessListKey.length > 0 ? rootLessListKey + "." + index : "" + index
+                }
+                rootLessListKeyArray={[...rootLessListKeyArray, "" + index]}
+                rawJzodSchema={currentArrayElementRawDefinition.element}
+                resolvedElementJzodSchema={
+                  resolvedElementJzodSchema?.type == "array"
+                    ? ((resolvedElementJzodSchema as JzodArray)?.definition as any)
+                    : ((resolvedElementJzodSchema as JzodTuple).definition[index] as JzodElement)
+                }
+                localRootLessListKeyMap={localRootLessListKeyMap}
+                foreignKeyObjects={foreignKeyObjects}
+                insideAny={insideAny}
+                parentType={parentUnfoldedRawSchema.type}
+              />
+            </ErrorBoundary>
           </>
         )}
       </div>
