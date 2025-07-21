@@ -14,6 +14,8 @@ import { miroirFundamentalJzodSchema } from "../../../src/0_interfaces/1_core/pr
 
 
 import { defaultMiroirMetaModel } from '../../test_assets/defaultMiroirMetaModel';
+import { KeyMapEntry } from '../../../dist';
+import { object } from 'zod';
 
 
 const castMiroirFundamentalJzodSchema = miroirFundamentalJzodSchema as JzodSchema;
@@ -53,30 +55,30 @@ function testResolve(
     defaultMiroirMetaModel,
     {}
   );
-    if (expectedResult) {
-      expect(testResult, testId).toEqual(expectedResult);
-    }
-    if (expectedResolvedSchema || expectedSubSchemas) {
+  if (expectedResult) {
+    expect(testResult, testId).toEqual(expectedResult);
+  }
+    // if (expectedResolvedSchema || expectedSubSchemas || expectedKeyMap) {
       // expect(testResult.status).toEqual("ok");
       // console.log("test", testId, "has result", JSON.stringify(testResult.element, null, 2));
-      console.log("test", testId, "has result", JSON.stringify(testResult, null, 2));
-      expect(testResult.status, testId).toEqual("ok");
-      if (testResult.status !== "ok") { // defensive code, never happens
-        throw new Error(
-          `Test ${testId} failed with status ${testResult.status}: ${JSON.stringify(testResult.error)}`
-        );
-      }
-      expect(testResult.resolvedSchema, testId).toEqual(expectedResolvedSchema);
-      if (expectedSubSchemas) {
-        console.log("test", testId, "has subSchema", JSON.stringify(testResult.subSchemas, null, 2));
-        expect(testResult.subSchemas, testId).toEqual(expectedSubSchemas);
-      }
-      if (expectedKeyMap) {
-        console.log("test", testId, "has keyMap", JSON.stringify(testResult.keyMap, null, 2));
-        expect(testResult.keyMap, testId).toEqual(expectedKeyMap);
-      }
+  console.log("test", testId, "has result", JSON.stringify(testResult, null, 2));
+  expect(testResult.status, testId).toEqual("ok");
+  if (testResult.status !== "ok") { // defensive code, never happens
+    throw new Error(
+      `Test ${testId} failed with status ${testResult.status}: ${JSON.stringify(testResult.error)}`
+    );
+  }
+  expect(testResult.resolvedSchema, testId).toEqual(expectedResolvedSchema);
+  if (expectedSubSchemas !== undefined) {
+    console.log("test", testId, "has subSchema", JSON.stringify(testResult.subSchemas, null, 2));
+    expect(testResult.subSchemas, testId).toEqual(expectedSubSchemas);
+  }
+  if (expectedKeyMap !== undefined) {
+    console.log("test", testId, "has keyMap", JSON.stringify(testResult.keyMap, null, 2));
+    expect(testResult.keyMap, testId).toEqual(expectedKeyMap);
+  }
       // TODO: convert the obtained concrete type to a zod schema and validate the given value object with it
-    }
+    // }
   
   // if (testResult.status == "ok") {
   //   expect(testResult.status).toEqual("ok");
@@ -102,7 +104,7 @@ interface testFormat {
   testValueObject: any;
   expectedResult?: ResolvedJzodSchemaReturnType | undefined,
   expectedResolvedSchema?: JzodElement;
-  expectedKeyMap?: Record<string, { rawSchema: JzodElement; resolvedSchema: JzodElement }>;
+  expectedKeyMap?: Record<string, KeyMapEntry>;
   expectedSubSchema?:
     | ResolvedJzodSchemaReturnType
     | ResolvedJzodSchemaReturnType[]
@@ -115,841 +117,573 @@ interface testFormat {
 // ################################################################################################
 // ################################################################################################
 // ################################################################################################
-    const tests: { [k: string]: testFormat } = {
-      // plain literal!
-      test010: {
-        testSchema: {
-          type: "literal",
-          definition: "myLiteral",
-        },
-        expectedResolvedSchema: {
-          type: "literal",
-          definition: "myLiteral",
-        },
-        testValueObject: "myLiteral",
+  const tests: { [k: string]: testFormat } = {
+    // plain literal!
+    test010: {
+      testSchema: {
+        type: "literal",
+        definition: "myLiteral",
       },
-      // simpleType: string
-      test020: {
-        testSchema: {
-          type: "string",
-        },
-        expectedResolvedSchema: {
-          type: "string",
-        },
-        testValueObject: "myString",
+      expectedResolvedSchema: {
+        type: "literal",
+        definition: "myLiteral",
       },
-      // simpleType: boolean TRUE
-      test022: {
-        testSchema: {
-          type: "boolean",
-        },
-        expectedResolvedSchema: {
-          type: "boolean",
-        },
-        testValueObject: true,
+      testValueObject: "myLiteral",
+    },
+    // simpleType: string
+    test020: {
+      testSchema: {
+        type: "string",
       },
-      // simpleType: boolean TRUE
-      test024: {
-        testSchema: {
-          type: "boolean",
-        },
-        expectedResolvedSchema: {
-          type: "boolean",
-        },
-        testValueObject: false,
+      expectedResolvedSchema: {
+        type: "string",
       },
-      // schemaReference (plain, simpleType, non-recursive)
-      test030: {
-        testSchema: {
-          type: "schemaReference",
-          context: {
-            a: {
-              type: "string",
-            },
-          },
-          definition: {
-            relativePath: "a",
-          },
-        },
-        expectedResolvedSchema: {
-          type: "string",
-        },
-        testValueObject: "myString",
+      testValueObject: "myString",
+    },
+    // simpleType: boolean TRUE
+    test022: {
+      testSchema: {
+        type: "boolean",
       },
-      // schemaReference: object, recursive, 1-level valueObject
-      test040: {
-        testValueObject: { a: "myString", c: 42 },
-        testSchema: {
-          type: "schemaReference",
-          context: {
-            myObject: {
-              type: "object",
-              definition: {
-                a: {
-                  type: "union",
-                  // optional: true,
-                  definition: [
-                    {
-                      type: "string",
-                      optional: true,
-                    },
-                    {
-                      type: "schemaReference",
-                      definition: { relativePath: "myObject" },
-                    },
-                  ],
-                },
-                b: {
-                  type: "string",
-                  optional: true,
-                },
-                c: {
-                  type: "number",
-                  optional: true,
-                },
-              },
-            },
-          },
-          definition: { relativePath: "myObject" },
-        },
-        expectedResolvedSchema: {
-          type: "object",
-          definition: {
-            a: {
-              type: "string",
-              optional: true,
-            },
-            c: {
-              type: "number",
-              optional: true,
-            },
-          },
-        },
-        expectedKeyMap: {
-          "a": {
-            rawSchema: {
-              type: "union",
-              discriminator: "type",
-              definition: [
-                {
-                  type: "string",
-                  optional: true,
-                },
-                {
-                  type: "schemaReference",
-                  definition: {
-                    relativePath: "myObject",
-                  },
-                },
-              ],
-            },
-            resolvedSchema: {
-              type: "string",
-              optional: true,
-            }
-          },
-          "c": {
-            rawSchema: {
-              type: "number",
-              optional: true,
-            },
-            resolvedSchema: {
-              type: "number",
-              optional: true,
-            }
-          }
-        },
+      expectedResolvedSchema: {
+        type: "boolean",
       },
-      // schemaReference: object, recursive, 2-level valueObject
-      test050: {
-        testValueObject: { a: { a: "myString" } },
-        testSchema: {
-          type: "schemaReference",
-          context: {
-            myObject: {
-              type: "object",
-              definition: {
-                a: {
-                  type: "union",
-                  discriminator: "type",
-                  definition: [
-                    {
-                      type: "string",
-                    },
-                    {
-                      type: "schemaReference",
-                      definition: { relativePath: "myObject" },
-                    },
-                  ],
-                },
-              },
-            },
-          },
-          definition: { relativePath: "myObject" },
-        },
-        expectedResolvedSchema: {
-          type: "object",
-          definition: {
-            a: {
-              type: "object",
-              definition: {
-                a: {
-                  type: "string",
-                },
-              },
-            },
-          },
-        },
-        expectedKeyMap: {
-          "a.a": {
-            rawSchema: {
-              type: "union",
-              discriminator: "type",
-              definition: [
-                {
-                  type: "string",
-                },
-                {
-                  type: "schemaReference",
-                  definition: {
-                    relativePath: "myObject",
-                  },
-                },
-              ],
-            },
-            resolvedSchema: {
-              type: "string",
-            }
-          },
-          "a": {
-            rawSchema: {
-              type: "object",
-              definition: {
-                a: {
-                  type: "union",
-                  discriminator: "type",
-                  definition: [
-                    {
-                      type: "string",
-                    },
-                    {
-                      type: "schemaReference",
-                      definition: { relativePath: "myObject" },
-                    },
-                  ],
-                },
-              },
-            },
-            resolvedSchema: {
-              type: "object",
-              definition: {
-                a: {
-                  type: "object",
-                  definition: {
-                    a: {
-                      type: "string",
-                    },
-                  },
-                },
-              },
-            },
-          }
-        }
-        // expectedSubSchema: {
-        //   a: {
-        //     status: "ok",
-        //     valuePath: ["a"],
-        //     typePath: ["ref:myObject", "a", "union choice"],
-        //     rawSchema: {
-        //       type: "union",
-        //       discriminator: "type",
-        //       definition: [
-        //         {
-        //           type: "string",
-        //         },
-        //         {
-        //           type: "schemaReference",
-        //           definition: {
-        //             relativePath: "myObject",
-        //           },
-        //         },
-        //       ],
-        //     },
-        //     resolvedSchema: {
-        //       type: "object",
-        //       definition: {
-        //         a: {
-        //           type: "string",
-        //         },
-        //       },
-        //     },
-        //     subSchemas: {
-        //       a: {
-        //         status: "ok",
-        //         valuePath: ["a", "a"],
-        //         typePath: ["ref:myObject", "a", "union choice", "a"],
-        //         rawSchema: {
-        //           type: "union",
-        //           discriminator: "type",
-        //           definition: [
-        //             {
-        //               type: "string",
-        //             },
-        //             {
-        //               type: "schemaReference",
-        //               definition: {
-        //                 relativePath: "myObject",
-        //               },
-        //             },
-        //           ],
-        //         },
-        //         resolvedSchema: {
-        //           type: "string",
-        //         },
-        //       },
-        //     },
-        //   },
-        // } as Record<string, ResolvedJzodSchemaReturnType>,
+      testValueObject: true,
+    },
+    // simpleType: boolean TRUE
+    test024: {
+      testSchema: {
+        type: "boolean",
       },
-      // schemaReference: object, recursive, 3-level valueObject
-      test060: {
-        testValueObject: { a: { a: { a: "myString" } } },
-        testSchema: {
-          type: "schemaReference",
-          context: {
-            myObject: {
-              type: "object",
-              definition: {
-                a: {
-                  type: "union",
-                  definition: [
-                    {
-                      type: "string",
-                    },
-                    {
-                      type: "schemaReference",
-                      definition: { relativePath: "myObject" },
-                    },
-                  ],
-                },
-              },
-            },
-          },
-          definition: { relativePath: "myObject" },
-        },
-        expectedResolvedSchema: {
-          type: "object",
-          definition: {
-            a: {
-              type: "object",
-              definition: {
-                a: {
-                  type: "object",
-                  definition: {
-                    a: {
-                      type: "string",
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-        expectedKeyMap: {
-          "a.a.a": {
-            rawSchema: {
-              type: "union",
-              definition: [
-                {
-                  type: "string",
-                },
-                {
-                  type: "schemaReference",
-                  definition: { relativePath: "myObject" },
-                },
-              ],
-            },
-            resolvedSchema: {
-              type: "string",
-            }
-          },
-          "a.a": {
-            rawSchema: {
-              type: "object",
-              definition: {
-                a: {
-                  type: "union",
-                  definition: [
-                    {
-                      type: "string",
-                    },
-                    {
-                      type: "schemaReference",
-                      definition: { relativePath: "myObject" },
-                    },
-                  ],
-                },
-              },
-            },
-            resolvedSchema: {
-              type: "object",
-              definition: {
-                a: {
-                  type: "string",
-                },
-              },
-            }
-          },
-          "a": {
-            rawSchema: {
-              type: "object",
-              definition: {
-                a: {
-                  type: "union",
-                  definition: [
-                    {
-                      type: "string",
-                    },
-                    {
-                      type: "schemaReference",
-                      definition: { relativePath: "myObject" },
-                    },
-                  ],
-                },
-              },
-            },
-            resolvedSchema: {
-              type: "object",
-              definition: {
-                a: {
-                  type: "object",
-                  definition: {
-                    a: {
-                      type: "string",
-                    },
-                  },
-                },
-              },
-            }
-          }
-        },
+      expectedResolvedSchema: {
+        type: "boolean",
       },
-      // schemaReference: record of recursive object, with 2-level valueObject
-      test070: {
-        testSchema: {
-          type: "schemaReference",
-          context: {
-            myObject: {
-              type: "object",
-              definition: {
-                a: {
-                  type: "union",
-                  definition: [
-                    {
-                      type: "string",
-                    },
-                    {
-                      type: "schemaReference",
-                      definition: { relativePath: "myObject" },
-                    },
-                  ],
-                },
-              },
-            },
-            myRecord: {
-              type: "record",
-              definition: {
-                type: "schemaReference",
-                definition: { relativePath: "myObject" },
-              },
-            },
-          },
-          definition: { relativePath: "myRecord" },
-        },
-        expectedResolvedSchema: {
-          type: "object",
-          definition: {
-            r1: {
-              type: "object",
-              definition: {
-                a: {
-                  type: "object",
-                  definition: {
-                    a: {
-                      type: "string",
-                    },
-                  },
-                },
-              },
-            },
-            r2: {
-              type: "object",
-              definition: {
-                a: {
-                  type: "string",
-                },
-              },
-            },
-          },
-        },
-        testValueObject: { r1: { a: { a: "myString" } }, r2: { a: "myString" } },
-        expectedKeyMap: {
-          "r1.a.a": {
-            rawSchema: {
-              type: "union",
-              definition: [
-                {
-                  type: "string",
-                },
-                {
-                  type: "schemaReference",
-                  definition: { relativePath: "myObject" },
-                },
-              ],
-            },
-            resolvedSchema: {
-              type: "string",
-            }
-          },
-          "r1.a": {
-            rawSchema: {
-              type: "object",
-              definition: {
-                a: {
-                  type: "union",
-                  definition: [
-                    {
-                      type: "string",
-                    },
-                    {
-                      type: "schemaReference",
-                      definition: { relativePath: "myObject" },
-                    },
-                  ],
-                },
-              },
-            },
-            resolvedSchema: {
-              type: "object",
-              definition: {
-                a: {
-                  type: "string",
-                },
-              },
-            }
-          },
-          "r1": {
-            rawSchema: {
-              type: "object",
-              definition: {
-                a: {
-                  type: "union",
-                  definition: [
-                    {
-                      type: "string",
-                    },
-                    {
-                      type: "schemaReference",
-                      definition: { relativePath: "myObject" },
-                    },
-                  ],
-                },
-              },
-            },
-            resolvedSchema: {
-              type: "object",
-              definition: {
-                a: {
-                  type: "object",
-                  definition: {
-                    a: {
-                      type: "string",
-                    },
-                  },
-                },
-              },
-            }
-          },
-          "r2.a": {
-            rawSchema: {
-              type: "union",
-              definition: [
-                {
-                  type: "string",
-                },
-                {
-                  type: "schemaReference",
-                  definition: { relativePath: "myObject" },
-                },
-              ],
-            },
-            resolvedSchema: {
-              type: "string",
-            }
-          },
-          "r2": {
-            rawSchema: {
-              type: "object",
-              definition: {
-                a: {
-                  type: "union",
-                  definition: [
-                    {
-                      type: "string",
-                    },
-                    {
-                      type: "schemaReference",
-                      definition: { relativePath: "myObject" },
-                    },
-                  ],
-                },
-              },
-            },
-            resolvedSchema: {
-              type: "object",
-              definition: {
-                a: {
-                  type: "string",
-                },
-              },
-            }
-          }
-        },
-      },
-      // result must be identical to test70, but this time the schemaReference is places inside the record, not the other way around
-      test080: {
-        testSchema: {
-          type: "record",
-          definition: {
-            type: "schemaReference",
-            context: {
-              myObject: {
-                type: "object",
-                definition: {
-                  a: {
-                    type: "union",
-                    definition: [
-                      {
-                        type: "string",
-                      },
-                      {
-                        type: "schemaReference",
-                        definition: { relativePath: "myObject" },
-                      },
-                    ],
-                  },
-                },
-              },
-            },
-            definition: { relativePath: "myObject" },
-          },
-        },
-        expectedResolvedSchema: {
-          type: "object",
-          definition: {
-            r1: {
-              type: "object",
-              definition: {
-                a: {
-                  type: "object",
-                  definition: {
-                    a: {
-                      type: "string",
-                    },
-                  },
-                },
-              },
-            },
-            r2: {
-              type: "object",
-              definition: {
-                a: {
-                  type: "string",
-                },
-              },
-            },
-          },
-        },
-        testValueObject: { r1: { a: { a: "myString" } }, r2: { a: "myString" } },
-        expectedKeyMap: {
-          "r1.a.a": {
-            rawSchema: {
-              type: "union",
-              definition: [
-                {
-                  type: "string",
-                },
-                {
-                  type: "schemaReference",
-                  definition: { relativePath: "myObject" },
-                },
-              ],
-            },
-            resolvedSchema: {
-              type: "string",
-            }
-          },
-          "r1.a": {
-            rawSchema: {
-              type: "object",
-              definition: {
-                a: {
-                  type: "union",
-                  definition: [
-                    {
-                      type: "string",
-                    },
-                    {
-                      type: "schemaReference",
-                      definition: { relativePath: "myObject" },
-                    },
-                  ],
-                },
-              },
-            },
-            resolvedSchema: {
-              type: "object",
-              definition: {
-                a: {
-                  type: "string",
-                },
-              },
-            }
-          },
-          "r1": {
-            rawSchema: {
-              type: "object",
-              definition: {
-                a: {
-                  type: "union",
-                  definition: [
-                    {
-                      type: "string",
-                    },
-                    {
-                      type: "schemaReference",
-                      definition: { relativePath: "myObject" },
-                    },
-                  ],
-                },
-              },
-            },
-            resolvedSchema: {
-              type: "object",
-              definition: {
-                a: {
-                  type: "object",
-                  definition: {
-                    a: {
-                      type: "string",
-                    },
-                  },
-                },
-              },
-            }
-          },
-          "r2.a": {
-            rawSchema: {
-              type: "union",
-              definition: [
-                {
-                  type: "string",
-                },
-                {
-                  type: "schemaReference",
-                  definition: { relativePath: "myObject" },
-                },
-              ],
-            },
-            resolvedSchema: {
-              type: "string",
-            }
-          },
-          "r2": {
-            rawSchema: {
-              type: "object",
-              definition: {
-                a: {
-                  type: "union",
-                  definition: [
-                    {
-                      type: "string",
-                    },
-                    {
-                      type: "schemaReference",
-                      definition: { relativePath: "myObject" },
-                    },
-                  ],
-                },
-              },
-            },
-            resolvedSchema: {
-              type: "object",
-              definition: {
-                a: {
-                  type: "string",
-                },
-              },
-            }
-          }
-        },
-      },
-      // array of simpleType
-      test090: {
-        testValueObject: ["1", "2", "3"],
-        testSchema: {
-          type: "array",
-          definition: {
+      testValueObject: false,
+    },
+    // schemaReference (plain, simpleType, non-recursive)
+    test030: {
+      testSchema: {
+        type: "schemaReference",
+        context: {
+          a: {
             type: "string",
           },
         },
-        expectedResolvedSchema: {
-          type: "tuple",
-          definition: [
-            {
-              type: "string",
-            },
-            {
-              type: "string",
-            },
-            {
-              type: "string",
-            },
-          ],
-        },
-        expectedKeyMap: {
-          "0": {
-            rawSchema: {
-              type: "string",
-            },
-            resolvedSchema: {
-              type: "string",
-            }
-          },
-          "1": {
-            rawSchema: {
-              type: "string",
-            },
-            resolvedSchema: {
-              type: "string",
-            }
-          },
-          "2": {
-            rawSchema: {
-              type: "string",
-            },
-            resolvedSchema: {
-              type: "string",
-            }
-          }
+        definition: {
+          relativePath: "a",
         },
       },
-      // array of schemaReference / object
-      test100: {
-        testValueObject: [{ a: "myString" }],
-        testSchema: {
-          type: "array",
-          definition: {
+      expectedResolvedSchema: {
+        type: "string",
+      },
+      testValueObject: "myString",
+    },
+    // schemaReference: object, recursive, 1-level valueObject
+    test040: {
+      testValueObject: { a: "myString", c: 42 },
+      testSchema: {
+        type: "schemaReference",
+        context: {
+          myObject: {
+            type: "object",
+            definition: {
+              a: {
+                type: "union",
+                // optional: true,
+                definition: [
+                  {
+                    type: "string",
+                    optional: true,
+                  },
+                  {
+                    type: "schemaReference",
+                    definition: { relativePath: "myObject" },
+                  },
+                ],
+              },
+              b: {
+                type: "string",
+                optional: true,
+              },
+              c: {
+                type: "number",
+                optional: true,
+              },
+            },
+          },
+        },
+        definition: { relativePath: "myObject" },
+      },
+      expectedResolvedSchema: {
+        type: "object",
+        definition: {
+          a: {
+            type: "string",
+            optional: true,
+          },
+          c: {
+            type: "number",
+            optional: true,
+          },
+        },
+      },
+      expectedKeyMap: {
+        a: {
+          rawSchema: {
+            type: "union",
+            definition: [
+              {
+                type: "string",
+                optional: true,
+              },
+              {
+                type: "schemaReference",
+                definition: {
+                  relativePath: "myObject",
+                },
+              },
+            ],
+          },
+          resolvedSchema: {
+            type: "string",
+            optional: true,
+          },
+          chosenUnionBranchRawSchema: {
+            type: "string",
+            optional: true,
+          },
+        },
+        c: {
+          rawSchema: {
+            type: "number",
+            optional: true,
+          },
+          resolvedSchema: {
+            type: "number",
+          },
+        },
+        "": {
+          rawSchema: {
+            type: "schemaReference",
+            context: {
+              myObject: {
+                type: "object",
+                definition: {
+                  a: {
+                    type: "union",
+                    definition: [
+                      {
+                        type: "string",
+                        optional: true,
+                      },
+                      {
+                        type: "schemaReference",
+                        definition: {
+                          relativePath: "myObject",
+                        },
+                      },
+                    ],
+                  },
+                  b: {
+                    type: "string",
+                    optional: true,
+                  },
+                  c: {
+                    type: "number",
+                    optional: true,
+                  },
+                },
+              },
+            },
+            definition: {
+              relativePath: "myObject",
+            },
+          },
+          resolvedSchema: {
+            type: "object",
+            definition: {
+              a: {
+                type: "string",
+                optional: true,
+              },
+              c: {
+                type: "number",
+                optional: true,
+              },
+            },
+          },
+        },
+      },
+    },
+    // schemaReference: object, recursive, 2-level valueObject
+    test050: {
+      testValueObject: { a: { a: "myString" } },
+      testSchema: {
+        type: "schemaReference",
+        context: {
+          myObject: {
+            type: "object",
+            definition: {
+              a: {
+                type: "union",
+                discriminator: "type",
+                definition: [
+                  {
+                    type: "string",
+                  },
+                  {
+                    type: "schemaReference",
+                    definition: { relativePath: "myObject" },
+                  },
+                ],
+              },
+            },
+          },
+        },
+        definition: { relativePath: "myObject" },
+      },
+      expectedResolvedSchema: {
+        type: "object",
+        definition: {
+          a: {
+            type: "object",
+            definition: {
+              a: {
+                type: "string",
+              },
+            },
+          },
+        },
+      },
+      expectedKeyMap: {
+        "a.a": {
+          rawSchema: {
+            type: "union",
+            discriminator: "type",
+            definition: [
+              {
+                type: "string",
+              },
+              {
+                type: "schemaReference",
+                definition: {
+                  relativePath: "myObject",
+                },
+              },
+            ],
+          },
+          resolvedSchema: {
+            type: "string",
+          },
+          chosenUnionBranchRawSchema: {
+            type: "string",
+          },
+        },
+        a: {
+          rawSchema: {
+            type: "union",
+            discriminator: "type",
+            definition: [
+              {
+                type: "string",
+              },
+              {
+                type: "schemaReference",
+                definition: {
+                  relativePath: "myObject",
+                },
+              },
+            ],
+          },
+          chosenUnionBranchRawSchema: {
+            type: "object",
+            definition: {
+              a: {
+                type: "union",
+                discriminator: "type",
+                definition: [
+                  {
+                    type: "string",
+                  },
+                  {
+                    type: "schemaReference",
+                    definition: {
+                      relativePath: "myObject",
+                    },
+                  },
+                ],
+              },
+            },
+          },
+          resolvedSchema: {
+            type: "object",
+            definition: {
+              a: {
+                type: "string",
+              },
+            },
+          },
+        },
+        "": {
+          rawSchema: {
+            type: "schemaReference",
+            context: {
+              myObject: {
+                type: "object",
+                definition: {
+                  a: {
+                    type: "union",
+                    discriminator: "type",
+                    definition: [
+                      {
+                        type: "string",
+                      },
+                      {
+                        type: "schemaReference",
+                        definition: {
+                          relativePath: "myObject",
+                        },
+                      },
+                    ],
+                  },
+                },
+              },
+            },
+            definition: {
+              relativePath: "myObject",
+            },
+          },
+          resolvedSchema: {
+            type: "object",
+            definition: {
+              a: {
+                type: "object",
+                definition: {
+                  a: {
+                    type: "string",
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      // expectedSubSchema: {
+      //   a: {
+      //     status: "ok",
+      //     valuePath: ["a"],
+      //     typePath: ["ref:myObject", "a", "union choice"],
+      //     rawSchema: {
+      //       type: "union",
+      //       discriminator: "type",
+      //       definition: [
+      //         {
+      //           type: "string",
+      //         },
+      //         {
+      //           type: "schemaReference",
+      //           definition: {
+      //             relativePath: "myObject",
+      //           },
+      //         },
+      //       ],
+      //     },
+      //     resolvedSchema: {
+      //       type: "object",
+      //       definition: {
+      //         a: {
+      //           type: "string",
+      //         },
+      //       },
+      //     },
+      //     subSchemas: {
+      //       a: {
+      //         status: "ok",
+      //         valuePath: ["a", "a"],
+      //         typePath: ["ref:myObject", "a", "union choice", "a"],
+      //         rawSchema: {
+      //           type: "union",
+      //           discriminator: "type",
+      //           definition: [
+      //             {
+      //               type: "string",
+      //             },
+      //             {
+      //               type: "schemaReference",
+      //               definition: {
+      //                 relativePath: "myObject",
+      //               },
+      //             },
+      //           ],
+      //         },
+      //         resolvedSchema: {
+      //           type: "string",
+      //         },
+      //       },
+      //     },
+      //   },
+      // } as Record<string, ResolvedJzodSchemaReturnType>,
+    },
+    // schemaReference: object, recursive, 3-level valueObject
+    test060: {
+      testValueObject: { a: { a: { a: "myString" } } },
+      testSchema: {
+        type: "schemaReference",
+        context: {
+          myObject: {
+            type: "object",
+            definition: {
+              a: {
+                type: "union",
+                definition: [
+                  {
+                    type: "string",
+                  },
+                  {
+                    type: "schemaReference",
+                    definition: { relativePath: "myObject" },
+                  },
+                ],
+              },
+            },
+          },
+        },
+        definition: { relativePath: "myObject" },
+      },
+      expectedResolvedSchema: {
+        type: "object",
+        definition: {
+          a: {
+            type: "object",
+            definition: {
+              a: {
+                type: "object",
+                definition: {
+                  a: {
+                    type: "string",
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      expectedKeyMap: {
+        "a.a.a": {
+          rawSchema: {
+            type: "union",
+            definition: [
+              {
+                type: "string",
+              },
+              {
+                type: "schemaReference",
+                definition: {
+                  relativePath: "myObject",
+                },
+              },
+            ],
+          },
+          resolvedSchema: {
+            type: "string",
+          },
+          chosenUnionBranchRawSchema: {
+            type: "string",
+          },
+        },
+        "a.a": {
+          rawSchema: {
+            type: "union",
+            definition: [
+              {
+                type: "string",
+              },
+              {
+                type: "schemaReference",
+                definition: {
+                  relativePath: "myObject",
+                },
+              },
+            ],
+          },
+          chosenUnionBranchRawSchema: {
+            type: "object",
+            definition: {
+              a: {
+                type: "union",
+                definition: [
+                  {
+                    type: "string",
+                  },
+                  {
+                    type: "schemaReference",
+                    definition: {
+                      relativePath: "myObject",
+                    },
+                  },
+                ],
+              },
+            },
+          },
+          resolvedSchema: {
+            type: "object",
+            definition: {
+              a: {
+                type: "string",
+              },
+            },
+          },
+        },
+        a: {
+          rawSchema: {
+            type: "union",
+            definition: [
+              {
+                type: "string",
+              },
+              {
+                type: "schemaReference",
+                definition: {
+                  relativePath: "myObject",
+                },
+              },
+            ],
+          },
+          chosenUnionBranchRawSchema: {
+            type: "object",
+            definition: {
+              a: {
+                type: "union",
+                definition: [
+                  {
+                    type: "string",
+                  },
+                  {
+                    type: "schemaReference",
+                    definition: {
+                      relativePath: "myObject",
+                    },
+                  },
+                ],
+              },
+            },
+          },
+          resolvedSchema: {
+            type: "object",
+            definition: {
+              a: {
+                type: "object",
+                definition: {
+                  a: {
+                    type: "string",
+                  },
+                },
+              },
+            },
+          },
+        },
+        "": {
+          rawSchema: {
             type: "schemaReference",
             context: {
               myObject: {
@@ -963,602 +697,1765 @@ interface testFormat {
                       },
                       {
                         type: "schemaReference",
-                        definition: { relativePath: "myObject" },
+                        definition: {
+                          relativePath: "myObject",
+                        },
                       },
                     ],
                   },
                 },
               },
             },
-            definition: { relativePath: "myObject" },
+            definition: {
+              relativePath: "myObject",
+            },
           },
-        },
-        expectedResolvedSchema: {
-          type: "tuple",
-          definition: [
-            {
-              type: "object",
-              definition: {
-                a: {
-                  type: "string",
-                },
-              },
-            },
-          ],
-        },
-        expectedKeyMap: {
-          "0.a": {
-            rawSchema: {
-              type: "union",
-              definition: [
-                {
-                  type: "string",
-                },
-                {
-                  type: "schemaReference",
-                  definition: { relativePath: "myObject" },
-                },
-              ],
-            },
-            resolvedSchema: {
-              type: "string",
-            }
-          },
-          "0": {
-            rawSchema: {
-              type: "object",
-              definition: {
-                a: {
-                  type: "union",
-                  definition: [
-                    {
-                      type: "string",
-                    },
-                    {
-                      type: "schemaReference",
-                      definition: { relativePath: "myObject" },
-                    },
-                  ],
-                },
-              },
-            },
-            resolvedSchema: {
-              type: "object",
-              definition: {
-                a: {
-                  type: "string",
-                },
-              },
-            }
-          }
-        },
-      },
-      // array of schemaReference / object
-      test110: {
-        testSchema: {
-          type: "schemaReference",
-          context: {
-            myObjectRoot: {
-              type: "object",
-              definition: {
-                a: {
-                  type: "string",
-                },
-              },
-            },
-            myObject: {
-              type: "object",
-              extend: {
-                type: "schemaReference",
+          resolvedSchema: {
+            type: "object",
+            definition: {
+              a: {
+                type: "object",
                 definition: {
-                  relativePath: "myObjectRoot",
-                },
-              },
-              definition: {
-                b: {
-                  type: "string",
-                  optional: true,
-                },
-              },
-            },
-          },
-          definition: { relativePath: "myObject" },
-        },
-        expectedResolvedSchema: {
-          type: "object",
-          definition: {
-            a: {
-              type: "string",
-            },
-            b: {
-              type: "string",
-              optional: true,
-            },
-          },
-        },
-        testValueObject: { a: "myString", b: "anotherString" },
-        expectedKeyMap: {
-          "a": {
-            rawSchema: {
-              type: "string",
-            },
-            resolvedSchema: {
-              type: "string",
-            }
-          },
-          "b": {
-            rawSchema: {
-              type: "string",
-              optional: true,
-            },
-            resolvedSchema: {
-              type: "string",
-              optional: true,
-            }
-          }
-        },
-      },
-      // simple union Type
-      test120: {
-        testValueObject: 1, // this is the object
-        testSchema: {
-          type: "union",
-          definition: [
-            {
-              type: "string",
-            },
-            {
-              type: "number",
-            },
-          ],
-        },
-        expectedResolvedSchema: {
-          type: "number",
-        },
-        expectedKeyMap: {},
-      },
-      // union between simpleType and object, object value
-      test130: {
-        testValueObject: { a: "myString" }, // this is the object
-        testSchema: {
-          type: "union",
-          definition: [
-            {
-              type: "string",
-            },
-            {
-              type: "object",
-              definition: {
-                a: {
-                  type: "string",
-                },
-              },
-            },
-          ],
-        },
-        expectedResolvedSchema: {
-          type: "object",
-          definition: {
-            a: {
-              type: "string",
-            },
-          },
-        },
-        expectedKeyMap: {
-          "a": {
-            rawSchema: {
-              type: "string",
-            },
-            resolvedSchema: {
-              type: "string",
-            }
-          }
-        },
-      },
-      // union between simpleType and object, simpleType value
-      test140: {
-        testSchema: {
-          type: "union",
-          definition: [
-            {
-              type: "string",
-            },
-            {
-              type: "bigint",
-            },
-            {
-              type: "object",
-              definition: {
-                a: {
-                  type: "string",
-                },
-              },
-            },
-          ],
-        },
-        testValueObject: 42n, // this is the bigint
-        expectedResolvedSchema: {
-          type: "bigint",
-        },
-        expectedKeyMap: {},
-      },
-      // union between simpleType and object, object value
-      test150: {
-        testSchema: {
-          type: "union",
-          definition: [
-            {
-              type: "string",
-            },
-            {
-              type: "bigint",
-            },
-            {
-              type: "object",
-              definition: {
-                a: {
-                  type: "string",
-                },
-              },
-            },
-          ],
-        },
-        testValueObject: { a: "test" }, // this is the bigint
-        expectedResolvedSchema: {
-          type: "object",
-          definition: {
-            a: {
-              type: "string",
-            },
-          },
-        },
-        expectedKeyMap: {
-          "a": {
-            rawSchema: {
-              type: "string",
-            },
-            resolvedSchema: {
-              type: "string",
-            }
-          }
-        },
-      },
-      // union between simpleType and shemaReference pointing to a simple object, object value
-      test160: {
-        testSchema: {
-          type: "union",
-          definition: [
-            {
-              type: "string",
-            },
-            {
-              type: "bigint",
-            },
-            {
-              type: "schemaReference",
-              context: {
-                // myObjectRoot: {
-                //   type: "object",
-                //   definition: {
-                //     a: {
-                //       type: "string",
-                //     },
-                //   },
-                // },
-                myObject: {
-                  type: "object",
-                  // extend: {
-                  //   type: "schemaReference",
-                  //   definition: { relativePath: "myObjectRoot" },
-                  // },
-                  definition: {
-                    b: {
-                      type: "string",
-                      optional: true,
+                  a: {
+                    type: "object",
+                    definition: {
+                      a: {
+                        type: "string",
+                      },
                     },
                   },
                 },
               },
+            },
+          },
+        },
+      },
+    },
+    // schemaReference: record of recursive object, with 2-level valueObject
+    test070: {
+      testSchema: {
+        type: "schemaReference",
+        context: {
+          myObject: {
+            type: "object",
+            definition: {
+              a: {
+                type: "union",
+                definition: [
+                  {
+                    type: "string",
+                  },
+                  {
+                    type: "schemaReference",
+                    definition: { relativePath: "myObject" },
+                  },
+                ],
+              },
+            },
+          },
+          myRecord: {
+            type: "record",
+            definition: {
+              type: "schemaReference",
               definition: { relativePath: "myObject" },
             },
-          ],
+          },
         },
-        testValueObject: { b: "test" }, // this is the object
-        expectedResolvedSchema: {
-          type: "object",
-          definition: {
-            // a: {
-            //   type: "string",
-            // },
-            b: {
-              type: "string",
-              optional: true,
+        definition: { relativePath: "myRecord" },
+      },
+      expectedResolvedSchema: {
+        type: "object",
+        definition: {
+          r1: {
+            type: "object",
+            definition: {
+              a: {
+                type: "object",
+                definition: {
+                  a: {
+                    type: "string",
+                  },
+                },
+              },
+            },
+          },
+          r2: {
+            type: "object",
+            definition: {
+              a: {
+                type: "string",
+              },
             },
           },
         },
-        expectedKeyMap: {
-          "b": {
-            rawSchema: {
-              type: "string",
-              optional: true,
-            },
-            resolvedSchema: {
-              type: "string",
-              optional: true,
-            }
-          }
-        },
       },
-      // // // // TODO: union between simpleTypes and array with simpleType value
-      // // // // TODO: union between simpleTypes and array with array value
-      // // // // TODO: union between simpleTypes and array and object with array value
-      // // // // TODO: union between simpleTypes and array and object with simpleType value
-      // // // // TODO: union between simpleTypes and array and object with object value
-      // // // // TODO: failing for union between simpleTypes, with object value
-      // // // // TODO: union between simpleType and shemaReference pointing to an extended object, object value
-      // // // test170: {
-      // // //   miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
-      // // //   testSchema: {
-      // // //     type: "union",
-      // // //     definition: [
-      // // //       {
-      // // //         type: "string",
-      // // //       },
-      // // //       {
-      // // //         type: "bigint",
-      // // //       },
-      // // //       {
-      // // //         type: "schemaReference",
-      // // //         context: {
-      // // //           myObjectRoot: {
-      // // //             type: "object",
-      // // //             definition: {
-      // // //               a: {
-      // // //                 type: "string",
-      // // //               },
-      // // //             },
-      // // //           },
-      // // //           myObject: {
-      // // //             type: "object",
-      // // //             extend: {
-      // // //               type: "schemaReference",
-      // // //               definition: { relativePath: "myObjectRoot" },
-      // // //             },
-      // // //             definition: {
-      // // //               b: {
-      // // //                 type: "string",
-      // // //                 optional: true,
-      // // //               },
-      // // //             },
-      // // //           },
-      // // //         },
-      // // //         definition: { relativePath: "myObject" },
-      // // //       },
-      // // //     ],
-      // // //   },
-      // // //   testValueObject: { b: "test"}, // this is the object
-      // // //   expectedResolvedSchema: {
-      // // //     type: "object",
-      // // //     definition: {
-      // // //       a: {
-      // // //         type: "string",
-      // // //       },
-      // // //       b: {
-      // // //         type: "string",
-      // // //         optional: true,
-      // // //       },
-      // // //     },
-      // // //   },
-      // // // },
-      // #############################################################################################
-      // #############################################################################################
-      // #############################################################################################
-      // #############################################################################################
-      // #############################################################################################
-      // #############################################################################################
-      // #############################################################################################
-      // #############################################################################################
-      // array of strings
-      test180: {
-        testValueObject: ["1", "2", "3"],
-        testSchema: {
-          type: "array",
-          definition: {
+      testValueObject: { r1: { a: { a: "myString" } }, r2: { a: "myString" } },
+      expectedKeyMap: {
+        "r1.a.a": {
+          rawSchema: {
+            type: "union",
+            definition: [
+              {
+                type: "string",
+              },
+              {
+                type: "schemaReference",
+                definition: {
+                  relativePath: "myObject",
+                },
+              },
+            ],
+          },
+          resolvedSchema: {
+            type: "string",
+          },
+          chosenUnionBranchRawSchema: {
             type: "string",
           },
         },
-        expectedResolvedSchema: {
-          type: "tuple",
-          definition: [
-            {
-              type: "string",
+        "r1.a": {
+          rawSchema: {
+            type: "union",
+            definition: [
+              {
+                type: "string",
+              },
+              {
+                type: "schemaReference",
+                definition: {
+                  relativePath: "myObject",
+                },
+              },
+            ],
+          },
+          chosenUnionBranchRawSchema: {
+            type: "object",
+            definition: {
+              a: {
+                type: "union",
+                definition: [
+                  {
+                    type: "string",
+                  },
+                  {
+                    type: "schemaReference",
+                    definition: {
+                      relativePath: "myObject",
+                    },
+                  },
+                ],
+              },
             },
-            {
-              type: "string",
+          },
+          resolvedSchema: {
+            type: "object",
+            definition: {
+              a: {
+                type: "string",
+              },
             },
-            {
-              type: "string",
-            },
-          ],
+          },
         },
-        expectedKeyMap: {
-          "0": {
-            rawSchema: {
-              type: "string",
+        r1: {
+          rawSchema: {
+            type: "schemaReference",
+            definition: {
+              relativePath: "myObject",
             },
-            resolvedSchema: {
-              type: "string",
-            }
           },
-          "1": {
-            rawSchema: {
-              type: "string",
+          resolvedSchema: {
+            type: "object",
+            definition: {
+              a: {
+                type: "object",
+                definition: {
+                  a: {
+                    type: "string",
+                  },
+                },
+              },
             },
-            resolvedSchema: {
-              type: "string",
-            }
           },
-          "2": {
-            rawSchema: {
-              type: "string",
+        },
+        "r2.a": {
+          rawSchema: {
+            type: "union",
+            definition: [
+              {
+                type: "string",
+              },
+              {
+                type: "schemaReference",
+                definition: {
+                  relativePath: "myObject",
+                },
+              },
+            ],
+          },
+          resolvedSchema: {
+            type: "string",
+          },
+          chosenUnionBranchRawSchema: {
+            type: "string",
+          },
+        },
+        r2: {
+          rawSchema: {
+            type: "schemaReference",
+            definition: {
+              relativePath: "myObject",
             },
-            resolvedSchema: {
-              type: "string",
-            }
-          }
+          },
+          resolvedSchema: {
+            type: "object",
+            definition: {
+              a: {
+                type: "string",
+              },
+            },
+          },
+        },
+        "": {
+          rawSchema: {
+            type: "schemaReference",
+            context: {
+              myObject: {
+                type: "object",
+                definition: {
+                  a: {
+                    type: "union",
+                    definition: [
+                      {
+                        type: "string",
+                      },
+                      {
+                        type: "schemaReference",
+                        definition: {
+                          relativePath: "myObject",
+                        },
+                      },
+                    ],
+                  },
+                },
+              },
+              myRecord: {
+                type: "record",
+                definition: {
+                  type: "schemaReference",
+                  definition: {
+                    relativePath: "myObject",
+                  },
+                },
+              },
+            },
+            definition: {
+              relativePath: "myRecord",
+            },
+          },
+          resolvedSchema: {
+            type: "object",
+            definition: {
+              r1: {
+                type: "object",
+                definition: {
+                  a: {
+                    type: "object",
+                    definition: {
+                      a: {
+                        type: "string",
+                      },
+                    },
+                  },
+                },
+              },
+              r2: {
+                type: "object",
+                definition: {
+                  a: {
+                    type: "string",
+                  },
+                },
+              },
+            },
+          },
         },
       },
-      // array of arrays of strings
-      test190: {
-        testValueObject: [["1", "2"], ["3"]],
-        testSchema: {
-          type: "array",
-          definition: {
+    },
+    // result must be identical to test70, but this time the schemaReference is places inside the record, not the other way around
+    test080: {
+      testSchema: {
+        type: "record",
+        definition: {
+          type: "schemaReference",
+          context: {
+            myObject: {
+              type: "object",
+              definition: {
+                a: {
+                  type: "union",
+                  definition: [
+                    {
+                      type: "string",
+                    },
+                    {
+                      type: "schemaReference",
+                      definition: { relativePath: "myObject" },
+                    },
+                  ],
+                },
+              },
+            },
+          },
+          definition: { relativePath: "myObject" },
+        },
+      },
+      expectedResolvedSchema: {
+        type: "object",
+        definition: {
+          r1: {
+            type: "object",
+            definition: {
+              a: {
+                type: "object",
+                definition: {
+                  a: {
+                    type: "string",
+                  },
+                },
+              },
+            },
+          },
+          r2: {
+            type: "object",
+            definition: {
+              a: {
+                type: "string",
+              },
+            },
+          },
+        },
+      },
+      testValueObject: { r1: { a: { a: "myString" } }, r2: { a: "myString" } },
+      expectedKeyMap: {
+        "r1.a.a": {
+          rawSchema: {
+            type: "union",
+            definition: [
+              {
+                type: "string",
+              },
+              {
+                type: "schemaReference",
+                definition: {
+                  relativePath: "myObject",
+                },
+              },
+            ],
+          },
+          resolvedSchema: {
+            type: "string",
+          },
+          chosenUnionBranchRawSchema: {
+            type: "string",
+          },
+        },
+        "r1.a": {
+          rawSchema: {
+            type: "union",
+            definition: [
+              {
+                type: "string",
+              },
+              {
+                type: "schemaReference",
+                definition: {
+                  relativePath: "myObject",
+                },
+              },
+            ],
+          },
+          chosenUnionBranchRawSchema: {
+            type: "object",
+            definition: {
+              a: {
+                type: "union",
+                definition: [
+                  {
+                    type: "string",
+                  },
+                  {
+                    type: "schemaReference",
+                    definition: {
+                      relativePath: "myObject",
+                    },
+                  },
+                ],
+              },
+            },
+          },
+          resolvedSchema: {
+            type: "object",
+            definition: {
+              a: {
+                type: "string",
+              },
+            },
+          },
+        },
+        r1: {
+          rawSchema: {
+            type: "schemaReference",
+            context: {
+              myObject: {
+                type: "object",
+                definition: {
+                  a: {
+                    type: "union",
+                    definition: [
+                      {
+                        type: "string",
+                      },
+                      {
+                        type: "schemaReference",
+                        definition: {
+                          relativePath: "myObject",
+                        },
+                      },
+                    ],
+                  },
+                },
+              },
+            },
+            definition: {
+              relativePath: "myObject",
+            },
+          },
+          resolvedSchema: {
+            type: "object",
+            definition: {
+              a: {
+                type: "object",
+                definition: {
+                  a: {
+                    type: "string",
+                  },
+                },
+              },
+            },
+          },
+        },
+        "r2.a": {
+          rawSchema: {
+            type: "union",
+            definition: [
+              {
+                type: "string",
+              },
+              {
+                type: "schemaReference",
+                definition: {
+                  relativePath: "myObject",
+                },
+              },
+            ],
+          },
+          resolvedSchema: {
+            type: "string",
+          },
+          chosenUnionBranchRawSchema: {
+            type: "string",
+          },
+        },
+        r2: {
+          rawSchema: {
+            type: "schemaReference",
+            context: {
+              myObject: {
+                type: "object",
+                definition: {
+                  a: {
+                    type: "union",
+                    definition: [
+                      {
+                        type: "string",
+                      },
+                      {
+                        type: "schemaReference",
+                        definition: {
+                          relativePath: "myObject",
+                        },
+                      },
+                    ],
+                  },
+                },
+              },
+            },
+            definition: {
+              relativePath: "myObject",
+            },
+          },
+          resolvedSchema: {
+            type: "object",
+            definition: {
+              a: {
+                type: "string",
+              },
+            },
+          },
+        },
+        "": {
+          rawSchema: {
+            type: "record",
+            definition: {
+              type: "schemaReference",
+              context: {
+                myObject: {
+                  type: "object",
+                  definition: {
+                    a: {
+                      type: "union",
+                      definition: [
+                        {
+                          type: "string",
+                        },
+                        {
+                          type: "schemaReference",
+                          definition: {
+                            relativePath: "myObject",
+                          },
+                        },
+                      ],
+                    },
+                  },
+                },
+              },
+              definition: {
+                relativePath: "myObject",
+              },
+            },
+          },
+          resolvedSchema: {
+            type: "object",
+            definition: {
+              r1: {
+                type: "object",
+                definition: {
+                  a: {
+                    type: "object",
+                    definition: {
+                      a: {
+                        type: "string",
+                      },
+                    },
+                  },
+                },
+              },
+              r2: {
+                type: "object",
+                definition: {
+                  a: {
+                    type: "string",
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    // array of simpleType
+    test090: {
+      testValueObject: ["1", "2", "3"],
+      testSchema: {
+        type: "array",
+        definition: {
+          type: "string",
+        },
+      },
+      expectedResolvedSchema: {
+        type: "tuple",
+        definition: [
+          {
+            type: "string",
+          },
+          {
+            type: "string",
+          },
+          {
+            type: "string",
+          },
+        ],
+      },
+      expectedKeyMap: {
+        "0": {
+          rawSchema: {
+            type: "string",
+          },
+          resolvedSchema: {
+            type: "string",
+          },
+        },
+        "1": {
+          rawSchema: {
+            type: "string",
+          },
+          resolvedSchema: {
+            type: "string",
+          },
+        },
+        "2": {
+          rawSchema: {
+            type: "string",
+          },
+          resolvedSchema: {
+            type: "string",
+          },
+        },
+        "": {
+          rawSchema: {
             type: "array",
             definition: {
               type: "string",
             },
           },
-        },
-        expectedResolvedSchema: {
-          type: "tuple",
-          definition: [
-            {
-              type: "tuple",
-              definition: [
-                {
-                  type: "string",
-                },
-                {
-                  type: "string",
-                },
-              ],
-            },
-            {
-              type: "tuple",
-              definition: [
-                {
-                  type: "string",
-                },
-              ],
-            },
-          ],
-        },
-        expectedKeyMap: {
-          "0.0": {
-            rawSchema: {
-              type: "string",
-            },
-            resolvedSchema: {
-              type: "string",
-            }
+          resolvedSchema: {
+            type: "tuple",
+            definition: [
+              {
+                type: "string",
+              },
+              {
+                type: "string",
+              },
+              {
+                type: "string",
+              },
+            ],
           },
-          "0.1": {
-            rawSchema: {
-              type: "string",
-            },
-            resolvedSchema: {
-              type: "string",
-            }
-          },
-          "0": {
-            rawSchema: {
-              type: "array",
+        },
+      },
+    },
+    // array of schemaReference / object
+    test100: {
+      testValueObject: [{ a: "myString" }],
+      testSchema: {
+        type: "array",
+        definition: {
+          type: "schemaReference",
+          context: {
+            myObject: {
+              type: "object",
               definition: {
+                a: {
+                  type: "union",
+                  definition: [
+                    {
+                      type: "string",
+                    },
+                    {
+                      type: "schemaReference",
+                      definition: { relativePath: "myObject" },
+                    },
+                  ],
+                },
+              },
+            },
+          },
+          definition: { relativePath: "myObject" },
+        },
+      },
+      expectedResolvedSchema: {
+        type: "tuple",
+        definition: [
+          {
+            type: "object",
+            definition: {
+              a: {
                 type: "string",
               },
             },
-            resolvedSchema: {
-              type: "tuple",
-              definition: [
-                {
-                  type: "string",
-                },
-                {
-                  type: "string",
-                },
-              ],
-            }
           },
-          "1.0": {
-            rawSchema: {
-              type: "string",
-            },
-            resolvedSchema: {
-              type: "string",
-            }
-          },
-          "1": {
-            rawSchema: {
-              type: "array",
-              definition: {
-                type: "string",
-              },
-            },
-            resolvedSchema: {
-              type: "tuple",
-              definition: [
-                {
-                  type: "string",
-                },
-              ],
-            }
-          }
-        },
-      },
-      // tuple of [string, number]
-      test200: {
-        testSchema: {
-          type: "tuple",
-          definition: [
-            {
-              type: "string",
-            },
-            {
-              type: "number",
-            },
-          ],
-        },
-        expectedResolvedSchema: {
-          type: "tuple",
-          definition: [
-            {
-              type: "string",
-            },
-            {
-              type: "number",
-            },
-          ],
-        },
-        testValueObject: ["myString", 42],
-        expectedKeyMap: {
-          "0": {
-            rawSchema: {
-              type: "string",
-            },
-            resolvedSchema: {
-              type: "string",
-            }
-          },
-          "1": {
-            rawSchema: {
-              type: "number",
-            },
-            resolvedSchema: {
-              type: "number",
-            }
-          }
-        },
-      },
-      // array of tuples of [string, number, bigint]
-      test210: {
-        testValueObject: [
-          ["myString", 42, 100n],
-          ["anotherString", 43, 101n],
         ],
-        testSchema: {
+      },
+      expectedKeyMap: {
+        "0": {
+          rawSchema: {
+            type: "schemaReference",
+            context: {
+              myObject: {
+                type: "object",
+                definition: {
+                  a: {
+                    type: "union",
+                    definition: [
+                      {
+                        type: "string",
+                      },
+                      {
+                        type: "schemaReference",
+                        definition: {
+                          relativePath: "myObject",
+                        },
+                      },
+                    ],
+                  },
+                },
+              },
+            },
+            definition: {
+              relativePath: "myObject",
+            },
+          },
+          resolvedSchema: {
+            type: "object",
+            definition: {
+              a: {
+                type: "string",
+              },
+            },
+          },
+        },
+        "0.a": {
+          rawSchema: {
+            type: "union",
+            definition: [
+              {
+                type: "string",
+              },
+              {
+                type: "schemaReference",
+                definition: {
+                  relativePath: "myObject",
+                },
+              },
+            ],
+          },
+          resolvedSchema: {
+            type: "string",
+          },
+          chosenUnionBranchRawSchema: {
+            type: "string",
+          },
+        },
+        "": {
+          rawSchema: {
+            type: "array",
+            definition: {
+              type: "schemaReference",
+              context: {
+                myObject: {
+                  type: "object",
+                  definition: {
+                    a: {
+                      type: "union",
+                      definition: [
+                        {
+                          type: "string",
+                        },
+                        {
+                          type: "schemaReference",
+                          definition: {
+                            relativePath: "myObject",
+                          },
+                        },
+                      ],
+                    },
+                  },
+                },
+              },
+              definition: {
+                relativePath: "myObject",
+              },
+            },
+          },
+          resolvedSchema: {
+            type: "tuple",
+            definition: [
+              {
+                type: "object",
+                definition: {
+                  a: {
+                    type: "string",
+                  },
+                },
+              },
+            ],
+          },
+        },
+      },
+    },
+    // array of schemaReference / object
+    test110: {
+      testSchema: {
+        type: "schemaReference",
+        context: {
+          myObjectRoot: {
+            type: "object",
+            definition: {
+              a: {
+                type: "string",
+              },
+            },
+          },
+          myObject: {
+            type: "object",
+            extend: {
+              type: "schemaReference",
+              definition: {
+                relativePath: "myObjectRoot",
+              },
+            },
+            definition: {
+              b: {
+                type: "string",
+                optional: true,
+              },
+            },
+          },
+        },
+        definition: { relativePath: "myObject" },
+      },
+      expectedResolvedSchema: {
+        type: "object",
+        definition: {
+          a: {
+            type: "string",
+          },
+          b: {
+            type: "string",
+            optional: true,
+          },
+        },
+      },
+      testValueObject: { a: "myString", b: "anotherString" },
+      expectedKeyMap: {
+        a: {
+          rawSchema: {
+            type: "string",
+          },
+          resolvedSchema: {
+            type: "string",
+          },
+        },
+        b: {
+          rawSchema: {
+            type: "string",
+            optional: true,
+          },
+          resolvedSchema: {
+            type: "string",
+          },
+        },
+        "": {
+          rawSchema: {
+            type: "schemaReference",
+            context: {
+              myObjectRoot: {
+                type: "object",
+                definition: {
+                  a: {
+                    type: "string",
+                  },
+                },
+              },
+              myObject: {
+                type: "object",
+                extend: {
+                  type: "schemaReference",
+                  definition: {
+                    relativePath: "myObjectRoot",
+                  },
+                },
+                definition: {
+                  b: {
+                    type: "string",
+                    optional: true,
+                  },
+                },
+              },
+            },
+            definition: {
+              relativePath: "myObject",
+            },
+          },
+          resolvedSchema: {
+            type: "object",
+            definition: {
+              a: {
+                type: "string",
+              },
+              b: {
+                type: "string",
+                optional: true,
+              },
+            },
+          },
+        },
+      },
+    },
+    // simple union Type
+    test120: {
+      testValueObject: 1, // this is the object
+      testSchema: {
+        type: "union",
+        definition: [
+          {
+            type: "string",
+          },
+          {
+            type: "number",
+          },
+        ],
+      },
+      expectedResolvedSchema: {
+        type: "number",
+      },
+      expectedKeyMap: {
+        "": {
+          rawSchema: {
+            type: "union",
+            definition: [{ type: "string" }, { type: "number" }],
+          },
+          resolvedSchema: { type: "number" },
+          chosenUnionBranchRawSchema: { type: "number" },
+        },
+      },
+    },
+    // union between simpleType and object, object value
+    test130: {
+      testValueObject: { a: "myString" }, // this is the object
+      testSchema: {
+        type: "union",
+        definition: [
+          {
+            type: "string",
+          },
+          {
+            type: "object",
+            definition: {
+              a: {
+                type: "string",
+              },
+            },
+          },
+        ],
+      },
+      expectedResolvedSchema: {
+        type: "object",
+        definition: {
+          a: {
+            type: "string",
+          },
+        },
+      },
+      expectedKeyMap: {
+        a: {
+          rawSchema: {
+            type: "string",
+          },
+          resolvedSchema: {
+            type: "string",
+          },
+        },
+        "": {
+          rawSchema: {
+            type: "union",
+            definition: [
+              {
+                type: "string",
+              },
+              {
+                type: "object",
+                definition: {
+                  a: {
+                    type: "string",
+                  },
+                },
+              },
+            ],
+          },
+          chosenUnionBranchRawSchema: {
+            type: "object",
+            definition: {
+              a: {
+                type: "string",
+              },
+            },
+          },
+          resolvedSchema: {
+            type: "object",
+            definition: {
+              a: {
+                type: "string",
+              },
+            },
+          },
+        },
+      },
+    },
+    // union between simpleType and object, simpleType value
+    test140: {
+      testSchema: {
+        type: "union",
+        definition: [
+          {
+            type: "string",
+          },
+          {
+            type: "bigint",
+          },
+          {
+            type: "object",
+            definition: {
+              a: {
+                type: "string",
+              },
+            },
+          },
+        ],
+      },
+      testValueObject: 42n, // this is the bigint
+      expectedResolvedSchema: {
+        type: "bigint",
+      },
+      expectedKeyMap: {
+        "": {
+          rawSchema: {
+            type: "union",
+            definition: [
+              {
+                type: "string",
+              },
+              {
+                type: "bigint",
+              },
+              {
+                type: "object",
+                definition: {
+                  a: {
+                    type: "string",
+                  },
+                },
+              },
+            ],
+          },
+          resolvedSchema: {
+            type: "bigint",
+          },
+          chosenUnionBranchRawSchema: {
+            type: "bigint",
+          },
+        },
+      },
+    },
+    // union between simpleType and object, object value
+    test150: {
+      testSchema: {
+        type: "union",
+        definition: [
+          {
+            type: "string",
+          },
+          {
+            type: "bigint",
+          },
+          {
+            type: "object",
+            definition: {
+              a: {
+                type: "string",
+              },
+            },
+          },
+        ],
+      },
+      testValueObject: { a: "test" }, // this is the bigint
+      expectedResolvedSchema: {
+        type: "object",
+        definition: {
+          a: {
+            type: "string",
+          },
+        },
+      },
+      expectedKeyMap: {
+        a: {
+          rawSchema: {
+            type: "string",
+          },
+          resolvedSchema: {
+            type: "string",
+          },
+        },
+        "": {
+          rawSchema: {
+            type: "union",
+            definition: [
+              {
+                type: "string",
+              },
+              {
+                type: "bigint",
+              },
+              {
+                type: "object",
+                definition: {
+                  a: {
+                    type: "string",
+                  },
+                },
+              },
+            ],
+          },
+          chosenUnionBranchRawSchema: {
+            type: "object",
+            definition: {
+              a: {
+                type: "string",
+              },
+            },
+          },
+          resolvedSchema: {
+            type: "object",
+            definition: {
+              a: {
+                type: "string",
+              },
+            },
+          },
+        },
+      },
+    },
+    // union between simpleType and shemaReference pointing to a simple object, object value
+    test160: {
+      testSchema: {
+        type: "union",
+        definition: [
+          {
+            type: "string",
+          },
+          {
+            type: "bigint",
+          },
+          {
+            type: "schemaReference",
+            context: {
+              myObject: {
+                type: "object",
+                definition: {
+                  b: {
+                    type: "string",
+                    optional: true,
+                  },
+                },
+              },
+            },
+            definition: { relativePath: "myObject" },
+          },
+        ],
+      },
+      testValueObject: { b: "test" }, // this is the object
+      expectedResolvedSchema: {
+        type: "object",
+        definition: {
+          b: {
+            type: "string",
+            optional: true,
+          },
+        },
+      },
+      expectedKeyMap: {
+        b: {
+          rawSchema: {
+            type: "string",
+            optional: true,
+          },
+          resolvedSchema: {
+            type: "string",
+          },
+        },
+        "": {
+          rawSchema: {
+            type: "union",
+            definition: [
+              {
+                type: "string",
+              },
+              {
+                type: "bigint",
+              },
+              {
+                type: "schemaReference",
+                context: {
+                  myObject: {
+                    type: "object",
+                    definition: {
+                      b: {
+                        type: "string",
+                        optional: true,
+                      },
+                    },
+                  },
+                },
+                definition: {
+                  relativePath: "myObject",
+                },
+              },
+            ],
+          },
+          chosenUnionBranchRawSchema: {
+            type: "object",
+            definition: {
+              b: {
+                type: "string",
+                optional: true,
+              },
+            },
+          },
+          resolvedSchema: {
+            type: "object",
+            definition: {
+              b: {
+                type: "string",
+                optional: true,
+              },
+            },
+          },
+        },
+      },
+    },
+    // 2-level simple unions of simple objects, 2-levelobject value
+    test170: {
+      testSchema: {
+        type: "union",
+        discriminator: "objectType",
+        definition: [
+          {
+            type: "object",
+            definition: {
+              objectType: {
+                type: "literal",
+                definition: "objectA",
+              },
+              a: {
+                type: "union",
+                definition: [
+                  {
+                    type: "string",
+                  },
+                  {
+                    type: "number",
+                  },
+                ],
+              },
+            },
+          },
+          {
+            type: "object",
+            definition: {
+              objectType: {
+                type: "literal",
+                definition: "objectB",
+              },
+              b: {
+                type: "union",
+                definition: [
+                  {
+                    type: "boolean",
+                  },
+                  { type: "bigint" },
+                ],
+              },
+            },
+          },
+        ],
+      },
+      testValueObject: { objectType: "objectA", a: "test" },
+      expectedResolvedSchema: {
+        type: "object",
+        definition: {
+          objectType: {
+            type: "literal",
+            definition: "objectA",
+          },
+          a: {
+            type: "string",
+          },
+        },
+      },
+      expectedKeyMap: {
+        objectType: {
+          rawSchema: {
+            type: "literal",
+            definition: "objectA",
+          },
+          resolvedSchema: {
+            type: "literal",
+            definition: "objectA",
+          },
+        },
+        a: {
+          rawSchema: {
+            type: "union",
+            definition: [
+              {
+                type: "string",
+              },
+              {
+                type: "number",
+              },
+            ],
+          },
+          resolvedSchema: {
+            type: "string",
+          },
+          chosenUnionBranchRawSchema: {
+            type: "string",
+          },
+        },
+        "": {
+          rawSchema: {
+            type: "union",
+            discriminator: "objectType",
+            definition: [
+              {
+                type: "object",
+                definition: {
+                  objectType: {
+                    type: "literal",
+                    definition: "objectA",
+                  },
+                  a: {
+                    type: "union",
+                    definition: [
+                      {
+                        type: "string",
+                      },
+                      {
+                        type: "number",
+                      },
+                    ],
+                  },
+                },
+              },
+              {
+                type: "object",
+                definition: {
+                  objectType: {
+                    type: "literal",
+                    definition: "objectB",
+                  },
+                  b: {
+                    type: "union",
+                    definition: [
+                      {
+                        type: "boolean",
+                      },
+                      {
+                        type: "bigint",
+                      },
+                    ],
+                  },
+                },
+              },
+            ],
+          },
+          chosenUnionBranchRawSchema: {
+            type: "object",
+            definition: {
+              objectType: {
+                type: "literal",
+                definition: "objectA",
+              },
+              a: {
+                type: "union",
+                definition: [
+                  {
+                    type: "string",
+                  },
+                  {
+                    type: "number",
+                  },
+                ],
+              },
+            },
+          },
+          resolvedSchema: {
+            type: "object",
+            definition: {
+              objectType: {
+                type: "literal",
+                definition: "objectA",
+              },
+              a: {
+                type: "string",
+              },
+            },
+          },
+        },
+      },
+    },
+    // TODO: union between simpleTypes and array with simpleType value
+    // TODO: union between simpleTypes and array with array value
+    // TODO: union between simpleTypes and array and object with array value
+    // TODO: union between simpleTypes and array and object with simpleType value
+    // TODO: union between simpleTypes and array and object with object value
+    // TODO: failing for union between simpleTypes, with object value
+    // TODO: union between simpleType and shemaReference pointing to an extended object, object value
+    // #############################################################################################
+    // #############################################################################################
+    // #############################################################################################
+    // #############################################################################################
+    // #############################################################################################
+    // #############################################################################################
+    // #############################################################################################
+    // #############################################################################################
+    // array of strings
+    test180: {
+      testValueObject: ["1", "2", "3"],
+      testSchema: {
+        type: "array",
+        definition: {
+          type: "string",
+        },
+      },
+      expectedResolvedSchema: {
+        type: "tuple",
+        definition: [
+          {
+            type: "string",
+          },
+          {
+            type: "string",
+          },
+          {
+            type: "string",
+          },
+        ],
+      },
+      expectedKeyMap: {
+        "0": {
+          rawSchema: {
+            type: "string",
+          },
+          resolvedSchema: {
+            type: "string",
+          },
+        },
+        "1": {
+          rawSchema: {
+            type: "string",
+          },
+          resolvedSchema: {
+            type: "string",
+          },
+        },
+        "2": {
+          rawSchema: {
+            type: "string",
+          },
+          resolvedSchema: {
+            type: "string",
+          },
+        },
+        "": {
+          rawSchema: {
+            type: "array",
+            definition: {
+              type: "string",
+            },
+          },
+          resolvedSchema: {
+            type: "tuple",
+            definition: [
+              {
+                type: "string",
+              },
+              {
+                type: "string",
+              },
+              {
+                type: "string",
+              },
+            ],
+          },
+        },
+      },
+    },
+    // array of arrays of strings
+    test190: {
+      testValueObject: [["1", "2"], ["3"]],
+      testSchema: {
+        type: "array",
+        definition: {
           type: "array",
           definition: {
+            type: "string",
+          },
+        },
+      },
+      expectedResolvedSchema: {
+        type: "tuple",
+        definition: [
+          {
+            type: "tuple",
+            definition: [
+              {
+                type: "string",
+              },
+              {
+                type: "string",
+              },
+            ],
+          },
+          {
+            type: "tuple",
+            definition: [
+              {
+                type: "string",
+              },
+            ],
+          },
+        ],
+      },
+      expectedKeyMap: {
+        "0": {
+          rawSchema: {
+            type: "array",
+            definition: {
+              type: "string",
+            },
+          },
+          resolvedSchema: {
+            type: "tuple",
+            definition: [
+              {
+                type: "string",
+              },
+              {
+                type: "string",
+              },
+            ],
+          },
+        },
+        "1": {
+          rawSchema: {
+            type: "array",
+            definition: {
+              type: "string",
+            },
+          },
+          resolvedSchema: {
+            type: "tuple",
+            definition: [
+              {
+                type: "string",
+              },
+            ],
+          },
+        },
+        "0.0": {
+          rawSchema: {
+            type: "string",
+          },
+          resolvedSchema: {
+            type: "string",
+          },
+        },
+        "0.1": {
+          rawSchema: {
+            type: "string",
+          },
+          resolvedSchema: {
+            type: "string",
+          },
+        },
+        "1.0": {
+          rawSchema: {
+            type: "string",
+          },
+          resolvedSchema: {
+            type: "string",
+          },
+        },
+        "": {
+          rawSchema: {
+            type: "array",
+            definition: {
+              type: "array",
+              definition: {
+                type: "string",
+              },
+            },
+          },
+          resolvedSchema: {
+            type: "tuple",
+            definition: [
+              {
+                type: "tuple",
+                definition: [
+                  {
+                    type: "string",
+                  },
+                  {
+                    type: "string",
+                  },
+                ],
+              },
+              {
+                type: "tuple",
+                definition: [
+                  {
+                    type: "string",
+                  },
+                ],
+              },
+            ],
+          },
+        },
+      },
+    },
+    // tuple of [string, number]
+    test200: {
+      testSchema: {
+        type: "tuple",
+        definition: [
+          {
+            type: "string",
+          },
+          {
+            type: "number",
+          },
+        ],
+      },
+      expectedResolvedSchema: {
+        type: "tuple",
+        definition: [
+          {
+            type: "string",
+          },
+          {
+            type: "number",
+          },
+        ],
+      },
+      testValueObject: ["myString", 42],
+      expectedKeyMap: {
+        "0": {
+          rawSchema: {
+            type: "string",
+          },
+          resolvedSchema: {
+            type: "string",
+          },
+        },
+        "1": {
+          rawSchema: {
+            type: "number",
+          },
+          resolvedSchema: {
+            type: "number",
+          },
+        },
+        "": {
+          rawSchema: {
+            type: "tuple",
+            definition: [
+              {
+                type: "string",
+              },
+              {
+                type: "number",
+              },
+            ],
+          },
+          resolvedSchema: {
+            type: "tuple",
+            definition: [
+              {
+                type: "string",
+              },
+              {
+                type: "number",
+              },
+            ],
+          },
+        },
+      },
+    },
+    // array of tuples of [string, number, bigint]
+    test210: {
+      testValueObject: [
+        ["myString", 42, 100n],
+        ["anotherString", 43, 101n],
+      ],
+      testSchema: {
+        type: "array",
+        definition: {
+          type: "tuple",
+          definition: [
+            {
+              type: "string",
+            },
+            {
+              type: "number",
+            },
+            {
+              type: "bigint",
+            },
+          ],
+        },
+      },
+      expectedResolvedSchema: {
+        type: "tuple",
+        definition: [
+          {
+            type: "tuple",
+            definition: [
+              {
+                type: "string",
+              },
+              {
+                type: "number",
+              },
+              {
+                type: "bigint",
+              },
+            ],
+          },
+          {
+            type: "tuple",
+            definition: [
+              {
+                type: "string",
+              },
+              {
+                type: "number",
+              },
+              {
+                type: "bigint",
+              },
+            ],
+          },
+        ],
+      },
+      expectedKeyMap: {
+        "0": {
+          rawSchema: {
+            type: "tuple",
+            definition: [
+              {
+                type: "string",
+              },
+              {
+                type: "number",
+              },
+              {
+                type: "bigint",
+              },
+            ],
+          },
+          resolvedSchema: {
             type: "tuple",
             definition: [
               {
@@ -1573,10 +2470,88 @@ interface testFormat {
             ],
           },
         },
-        expectedResolvedSchema: {
-          type: "tuple",
-          definition: [
-            {
+        "1": {
+          rawSchema: {
+            type: "tuple",
+            definition: [
+              {
+                type: "string",
+              },
+              {
+                type: "number",
+              },
+              {
+                type: "bigint",
+              },
+            ],
+          },
+          resolvedSchema: {
+            type: "tuple",
+            definition: [
+              {
+                type: "string",
+              },
+              {
+                type: "number",
+              },
+              {
+                type: "bigint",
+              },
+            ],
+          },
+        },
+        "0.0": {
+          rawSchema: {
+            type: "string",
+          },
+          resolvedSchema: {
+            type: "string",
+          },
+        },
+        "0.1": {
+          rawSchema: {
+            type: "number",
+          },
+          resolvedSchema: {
+            type: "number",
+          },
+        },
+        "0.2": {
+          rawSchema: {
+            type: "bigint",
+          },
+          resolvedSchema: {
+            type: "bigint",
+          },
+        },
+        "1.0": {
+          rawSchema: {
+            type: "string",
+          },
+          resolvedSchema: {
+            type: "string",
+          },
+        },
+        "1.1": {
+          rawSchema: {
+            type: "number",
+          },
+          resolvedSchema: {
+            type: "number",
+          },
+        },
+        "1.2": {
+          rawSchema: {
+            type: "bigint",
+          },
+          resolvedSchema: {
+            type: "bigint",
+          },
+        },
+        "": {
+          rawSchema: {
+            type: "array",
+            definition: {
               type: "tuple",
               definition: [
                 {
@@ -1590,142 +2565,114 @@ interface testFormat {
                 },
               ],
             },
+          },
+          resolvedSchema: {
+            type: "tuple",
+            definition: [
+              {
+                type: "tuple",
+                definition: [
+                  {
+                    type: "string",
+                  },
+                  {
+                    type: "number",
+                  },
+                  {
+                    type: "bigint",
+                  },
+                ],
+              },
+              {
+                type: "tuple",
+                definition: [
+                  {
+                    type: "string",
+                  },
+                  {
+                    type: "number",
+                  },
+                  {
+                    type: "bigint",
+                  },
+                ],
+              },
+            ],
+          },
+        },
+      },
+    },
+    // array of discriminated unions
+    test220: {
+      testValueObject: [
+        { objectType: "a", value: "myString" },
+        { objectType: "b", value: 42 },
+      ],
+      testSchema: {
+        type: "array",
+        definition: {
+          type: "union",
+          discriminator: "objectType",
+          definition: [
             {
-              type: "tuple",
-              definition: [
-                {
+              type: "object",
+              definition: {
+                objectType: {
+                  type: "literal",
+                  definition: "a",
+                },
+                value: {
                   type: "string",
                 },
-                {
+              },
+            },
+            {
+              type: "object",
+              definition: {
+                objectType: {
+                  type: "literal",
+                  definition: "b",
+                },
+                value: {
                   type: "number",
                 },
-                {
-                  type: "bigint",
-                },
-              ],
+              },
             },
           ],
         },
-        expectedKeyMap: {
-          "0.0": {
-            rawSchema: {
-              type: "string",
-            },
-            resolvedSchema: {
-              type: "string",
-            }
-          },
-          "0.1": {
-            rawSchema: {
-              type: "number",
-            },
-            resolvedSchema: {
-              type: "number",
-            }
-          },
-          "0.2": {
-            rawSchema: {
-              type: "bigint",
-            },
-            resolvedSchema: {
-              type: "bigint",
-            }
-          },
-          "0": {
-            rawSchema: {
-              type: "tuple",
-              definition: [
-                {
-                  type: "string",
-                },
-                {
-                  type: "number",
-                },
-                {
-                  type: "bigint",
-                },
-              ],
-            },
-            resolvedSchema: {
-              type: "tuple",
-              definition: [
-                {
-                  type: "string",
-                },
-                {
-                  type: "number",
-                },
-                {
-                  type: "bigint",
-                },
-              ],
-            }
-          },
-          "1.0": {
-            rawSchema: {
-              type: "string",
-            },
-            resolvedSchema: {
-              type: "string",
-            }
-          },
-          "1.1": {
-            rawSchema: {
-              type: "number",
-            },
-            resolvedSchema: {
-              type: "number",
-            }
-          },
-          "1.2": {
-            rawSchema: {
-              type: "bigint",
-            },
-            resolvedSchema: {
-              type: "bigint",
-            }
-          },
-          "1": {
-            rawSchema: {
-              type: "tuple",
-              definition: [
-                {
-                  type: "string",
-                },
-                {
-                  type: "number",
-                },
-                {
-                  type: "bigint",
-                },
-              ],
-            },
-            resolvedSchema: {
-              type: "tuple",
-              definition: [
-                {
-                  type: "string",
-                },
-                {
-                  type: "number",
-                },
-                {
-                  type: "bigint",
-                },
-              ],
-            }
-          }
-        },
       },
-      // array of discriminated unions
-      test220: {
-        testValueObject: [
-          { objectType: "a", value: "myString" },
-          { objectType: "b", value: 42 },
+      expectedResolvedSchema: {
+        type: "tuple",
+        definition: [
+          {
+            type: "object",
+            definition: {
+              objectType: {
+                type: "literal",
+                definition: "a",
+              },
+              value: {
+                type: "string",
+              },
+            },
+          },
+          {
+            type: "object",
+            definition: {
+              objectType: {
+                type: "literal",
+                definition: "b",
+              },
+              value: {
+                type: "number",
+              },
+            },
+          },
         ],
-        testSchema: {
-          type: "array",
-          definition: {
+      },
+      expectedKeyMap: {
+        "0": {
+          rawSchema: {
             type: "union",
             discriminator: "objectType",
             definition: [
@@ -1755,8706 +2702,13290 @@ interface testFormat {
               },
             ],
           },
+          chosenUnionBranchRawSchema: {
+            type: "object",
+            definition: {
+              objectType: {
+                type: "literal",
+                definition: "a",
+              },
+              value: {
+                type: "string",
+              },
+            },
+          },
+          resolvedSchema: {
+            type: "object",
+            definition: {
+              objectType: {
+                type: "literal",
+                definition: "a",
+              },
+              value: {
+                type: "string",
+              },
+            },
+          },
         },
-        expectedResolvedSchema: {
-          type: "tuple",
-          definition: [
-            {
-              type: "object",
-              definition: {
-                objectType: {
-                  type: "literal",
-                  definition: "a",
-                },
-                value: {
-                  type: "string",
-                },
-              },
-            },
-            {
-              type: "object",
-              definition: {
-                objectType: {
-                  type: "literal",
-                  definition: "b",
-                },
-                value: {
-                  type: "number",
+        "1": {
+          rawSchema: {
+            type: "union",
+            discriminator: "objectType",
+            definition: [
+              {
+                type: "object",
+                definition: {
+                  objectType: {
+                    type: "literal",
+                    definition: "a",
+                  },
+                  value: {
+                    type: "string",
+                  },
                 },
               },
+              {
+                type: "object",
+                definition: {
+                  objectType: {
+                    type: "literal",
+                    definition: "b",
+                  },
+                  value: {
+                    type: "number",
+                  },
+                },
+              },
+            ],
+          },
+          chosenUnionBranchRawSchema: {
+            type: "object",
+            definition: {
+              objectType: {
+                type: "literal",
+                definition: "b",
+              },
+              value: {
+                type: "number",
+              },
             },
-          ],
+          },
+          resolvedSchema: {
+            type: "object",
+            definition: {
+              objectType: {
+                type: "literal",
+                definition: "b",
+              },
+              value: {
+                type: "number",
+              },
+            },
+          },
         },
-        expectedKeyMap: {
-          "0.objectType": {
-            rawSchema: {
-              type: "literal",
-              definition: "a",
-            },
-            resolvedSchema: {
-              type: "literal",
-              definition: "a",
-            }
+        "0.objectType": {
+          rawSchema: {
+            type: "literal",
+            definition: "a",
           },
-          "0.value": {
-            rawSchema: {
-              type: "string",
-            },
-            resolvedSchema: {
-              type: "string",
-            }
+          resolvedSchema: {
+            type: "literal",
+            definition: "a",
           },
-          "0": {
-            rawSchema: {
-              type: "object",
-              definition: {
-                objectType: {
-                  type: "literal",
-                  definition: "a",
+        },
+        "0.value": {
+          rawSchema: {
+            type: "string",
+          },
+          resolvedSchema: {
+            type: "string",
+          },
+        },
+        "1.objectType": {
+          rawSchema: {
+            type: "literal",
+            definition: "b",
+          },
+          resolvedSchema: {
+            type: "literal",
+            definition: "b",
+          },
+        },
+        "1.value": {
+          rawSchema: {
+            type: "number",
+          },
+          resolvedSchema: {
+            type: "number",
+          },
+        },
+        "": {
+          rawSchema: {
+            type: "array",
+            definition: {
+              type: "union",
+              discriminator: "objectType",
+              definition: [
+                {
+                  type: "object",
+                  definition: {
+                    objectType: {
+                      type: "literal",
+                      definition: "a",
+                    },
+                    value: {
+                      type: "string",
+                    },
+                  },
                 },
-                value: {
-                  type: "string",
+                {
+                  type: "object",
+                  definition: {
+                    objectType: {
+                      type: "literal",
+                      definition: "b",
+                    },
+                    value: {
+                      type: "number",
+                    },
+                  },
+                },
+              ],
+            },
+          },
+          resolvedSchema: {
+            type: "tuple",
+            definition: [
+              {
+                type: "object",
+                definition: {
+                  objectType: {
+                    type: "literal",
+                    definition: "a",
+                  },
+                  value: {
+                    type: "string",
+                  },
                 },
               },
-            },
-            resolvedSchema: {
-              type: "object",
-              definition: {
-                objectType: {
-                  type: "literal",
-                  definition: "a",
-                },
-                value: {
-                  type: "string",
-                },
-              },
-            }
-          },
-          "1.objectType": {
-            rawSchema: {
-              type: "literal",
-              definition: "b",
-            },
-            resolvedSchema: {
-              type: "literal",
-              definition: "b",
-            }
-          },
-          "1.value": {
-            rawSchema: {
-              type: "number",
-            },
-            resolvedSchema: {
-              type: "number",
-            }
-          },
-          "1": {
-            rawSchema: {
-              type: "object",
-              definition: {
-                objectType: {
-                  type: "literal",
-                  definition: "b",
-                },
-                value: {
-                  type: "number",
+              {
+                type: "object",
+                definition: {
+                  objectType: {
+                    type: "literal",
+                    definition: "b",
+                  },
+                  value: {
+                    type: "number",
+                  },
                 },
               },
-            },
-            resolvedSchema: {
-              type: "object",
-              definition: {
-                objectType: {
-                  type: "literal",
-                  definition: "b",
-                },
-                value: {
-                  type: "number",
-                },
-              },
-            }
-          }
+            ],
+          },
         },
       },
-      // union type for array of references
-      test230: {
-        testValueObject: [
+    },
+    // union type for array of references
+    test230: {
+      testValueObject: [
+        {
+          type: "schemaReference",
+          definition: {
+            eager: true,
+            absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            relativePath: "transformer_orderBy",
+          },
+        },
+      ],
+      testSchema: {
+        type: "union",
+        optional: true,
+        definition: [
           {
-            "type": "schemaReference",
-            "definition": {
-              "eager": true,
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "transformer_orderBy"
-            }
-          }
+            type: "union",
+            optional: true,
+            discriminator: "type",
+            definition: [
+              {
+                type: "schemaReference",
+                definition: {
+                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  relativePath: "jzodReference",
+                },
+                context: {},
+              },
+              {
+                type: "schemaReference",
+                definition: {
+                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  relativePath: "jzodObject",
+                },
+                context: {},
+              },
+            ],
+          },
+          {
+            type: "array",
+            definition: {
+              type: "union",
+              optional: true,
+              discriminator: "type",
+              definition: [
+                {
+                  type: "schemaReference",
+                  definition: {
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    relativePath: "jzodReference",
+                  },
+                  context: {},
+                },
+                {
+                  type: "schemaReference",
+                  definition: {
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    relativePath: "jzodObject",
+                  },
+                  context: {},
+                },
+              ],
+            },
+          },
         ],
-        testSchema: {
-          "type": "union",
-          "optional": true,
-          "definition": [
-            {
-              "type": "union",
-              "optional": true,
-              "discriminator": "type",
-              "definition": [
-                {
-                  "type": "schemaReference",
-                  "definition": {
-                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    "relativePath": "jzodReference"
-                  },
-                  "context": {}
-                },
-                {
-                  "type": "schemaReference",
-                  "definition": {
-                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    "relativePath": "jzodObject"
-                  },
-                  "context": {}
-                }
-              ]
-            },
-            {
-              "type": "array",
-              "definition": {
-                "type": "union",
-                "optional": true,
-                "discriminator": "type",
-                "definition": [
-                  {
-                    "type": "schemaReference",
-                    "definition": {
-                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "jzodReference"
-                    },
-                    "context": {}
-                  },
-                  {
-                    "type": "schemaReference",
-                    "definition": {
-                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "jzodObject"
-                    },
-                    "context": {}
-                  }
-                ]
-              }
-            }
-          ]
-        },
-        expectedResolvedSchema: {
-          "type": "array",
-          "optional": true,
-          "definition": {
-            "type": "object",
-            "definition": {
-              "type": {
-                "type": "literal",
-                "definition": "schemaReference"
-              },
-              "definition": {
-                "type": "object",
-                "definition": {
-                  "eager": {
-                    "type": "boolean",
-                    "optional": true
-                  },
-                  "relativePath": {
-                    "type": "string",
-                    "optional": true
-                  },
-                  "absolutePath": {
-                    "type": "string",
-                    "optional": true
-                  }
-                }
-              }
-            }
-          }
-        },
-        expectedKeyMap: {
-          "0.type": {
-            rawSchema: {
-              "type": "literal",
-              "definition": "schemaReference"
-            },
-            resolvedSchema: {
-              "type": "literal",
-              "definition": "schemaReference"
-            }
-          },
-          "0.definition.eager": {
-            rawSchema: {
-              "type": "boolean",
-              "optional": true
-            },
-            resolvedSchema: {
-              "type": "boolean",
-              "optional": true
-            }
-          },
-          "0.definition.absolutePath": {
-            rawSchema: {
-              "type": "string",
-              "optional": true
-            },
-            resolvedSchema: {
-              "type": "string",
-              "optional": true
-            }
-          },
-          "0.definition.relativePath": {
-            rawSchema: {
-              "type": "string",
-              "optional": true
-            },
-            resolvedSchema: {
-              "type": "string",
-              "optional": true
-            }
-          },
-          "0.definition": {
-            rawSchema: {
-              "type": "object",
-              "definition": {
-                "eager": {
-                  "type": "boolean",
-                  "optional": true
-                },
-                "relativePath": {
-                  "type": "string",
-                  "optional": true
-                },
-                "absolutePath": {
-                  "type": "string",
-                  "optional": true
-                }
-              }
-            },
-            resolvedSchema: {
-              "type": "object",
-              "definition": {
-                "eager": {
-                  "type": "boolean",
-                  "optional": true
-                },
-                "relativePath": {
-                  "type": "string",
-                  "optional": true
-                },
-                "absolutePath": {
-                  "type": "string",
-                  "optional": true
-                }
-              }
-            }
-          },
-          "0": {
-            rawSchema: {
-              "type": "object",
-              "definition": {
-                "type": {
-                  "type": "literal",
-                  "definition": "schemaReference"
-                },
-                "definition": {
-                  "type": "object",
-                  "definition": {
-                    "eager": {
-                      "type": "boolean",
-                      "optional": true
-                    },
-                    "relativePath": {
-                      "type": "string",
-                      "optional": true
-                    },
-                    "absolutePath": {
-                      "type": "string",
-                      "optional": true
-                    }
-                  }
-                }
-              }
-            },
-            resolvedSchema: {
-              "type": "object",
-              "definition": {
-                "type": {
-                  "type": "literal",
-                  "definition": "schemaReference"
-                },
-                "definition": {
-                  "type": "object",
-                  "definition": {
-                    "eager": {
-                      "type": "boolean",
-                      "optional": true
-                    },
-                    "relativePath": {
-                      "type": "string",
-                      "optional": true
-                    },
-                    "absolutePath": {
-                      "type": "string",
-                      "optional": true
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
       },
-      // // ##########################################################################################
-      // // ################################# JZOD SCHEMAS ###########################################
-      // // ##########################################################################################
-      // JzodSchema: literal
-      test300: {
-        testSchema: {
-          type: "schemaReference",
-          definition: {
-            absolutePath: miroirFundamentalJzodSchemaUuid,
-            relativePath: "jzodElement",
-          },
-        },
-        expectedResolvedSchema: {
+      expectedResolvedSchema: {
+        type: "array",
+        optional: true,
+        definition: {
           type: "object",
           definition: {
             type: {
               type: "literal",
-              definition: "literal",
-            },
-            definition: {
-              type: "string",
-            },
-          },
-        },
-        testValueObject: { type: "literal", definition: "myLiteral" },
-        expectedKeyMap: {
-          "type": {
-            rawSchema: {
-              type: "literal",
-              definition: "literal",
-            },
-            resolvedSchema: {
-              type: "literal",
-              definition: "literal",
-            }
-          },
-          "definition": {
-            rawSchema: {
-              type: "string",
-            },
-            resolvedSchema: {
-              type: "string",
-            }
-          }
-        },
-      },
-      // JzodSchema: string
-      test310: {
-        testSchema: {
-          type: "schemaReference",
-          definition: {
-            absolutePath: miroirFundamentalJzodSchemaUuid,
-            relativePath: "jzodElement",
-          },
-        },
-        expectedResolvedSchema: {
-          type: "object",
-          definition: {
-            type: {
-              type: "literal",
-              definition: "string",
-            },
-          },
-        },
-        testValueObject: { type: "string" },
-        expectedKeyMap: {
-          "type": {
-            rawSchema: {
-              type: "literal",
-              definition: "string",
-            },
-            resolvedSchema: {
-              type: "literal",
-              definition: "string",
-            }
-          }
-        },
-      },
-      // JzodSchema: object, simpleType attributes
-      test320: {
-        testSchema: {
-          type: "schemaReference",
-          definition: {
-            absolutePath: miroirFundamentalJzodSchemaUuid,
-            relativePath: "jzodElement",
-          },
-        },
-        expectedResolvedSchema: {
-          type: "object",
-          definition: {
-            type: {
-              type: "literal",
-              definition: "object",
+              definition: "schemaReference",
             },
             definition: {
               type: "object",
               definition: {
-                a: {
-                  type: "object",
-                  definition: {
-                    type: {
-                      type: "literal",
-                      definition: "string",
-                    },
-                  },
+                eager: {
+                  type: "boolean",
+                  optional: true,
+                },
+                relativePath: {
+                  type: "string",
+                  optional: true,
+                },
+                absolutePath: {
+                  type: "string",
+                  optional: true,
                 },
               },
             },
           },
         },
-        testValueObject: { type: "object", definition: { a: { type: "string" } } },
-        expectedKeyMap: {
-          "type": {
-            rawSchema: {
-              type: "literal",
-              definition: "object",
-            },
-            resolvedSchema: {
-              type: "literal",
-              definition: "object",
-            }
+      },
+      expectedKeyMap: {
+        "": {
+          rawSchema: {
+            type: "union",
+            optional: true,
+            definition: [
+              {
+                type: "union",
+                optional: true,
+                discriminator: "type",
+                definition: [
+                  {
+                    type: "schemaReference",
+                    definition: {
+                      absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      relativePath: "jzodReference",
+                    },
+                    context: {},
+                  },
+                  {
+                    type: "schemaReference",
+                    definition: {
+                      absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      relativePath: "jzodObject",
+                    },
+                    context: {},
+                  },
+                ],
+              },
+              {
+                type: "array",
+                definition: {
+                  type: "union",
+                  optional: true,
+                  discriminator: "type",
+                  definition: [
+                    {
+                      type: "schemaReference",
+                      definition: {
+                        absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        relativePath: "jzodReference",
+                      },
+                      context: {},
+                    },
+                    {
+                      type: "schemaReference",
+                      definition: {
+                        absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        relativePath: "jzodObject",
+                      },
+                      context: {},
+                    },
+                  ],
+                },
+              },
+            ],
           },
-          "definition.a.type": {
-            rawSchema: {
-              type: "literal",
-              definition: "string",
+          chosenUnionBranchRawSchema: {
+            type: "array",
+            definition: {
+              type: "union",
+              optional: true,
+              discriminator: "type",
+              definition: [
+                {
+                  type: "schemaReference",
+                  definition: {
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    relativePath: "jzodReference",
+                  },
+                  context: {},
+                },
+                {
+                  type: "schemaReference",
+                  definition: {
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    relativePath: "jzodObject",
+                  },
+                  context: {},
+                },
+              ],
             },
-            resolvedSchema: {
-              type: "literal",
-              definition: "string",
-            }
           },
-          "definition.a": {
-            rawSchema: {
+          resolvedSchema: {
+            type: "array",
+            optional: true,
+            definition: {
               type: "object",
               definition: {
                 type: {
                   type: "literal",
-                  definition: "string",
+                  definition: "schemaReference",
+                },
+                definition: {
+                  type: "object",
+                  definition: {
+                    eager: {
+                      type: "boolean",
+                      optional: true,
+                    },
+                    absolutePath: {
+                      type: "string",
+                      optional: true,
+                    },
+                    relativePath: {
+                      type: "string",
+                      optional: true,
+                    },
+                  },
                 },
               },
             },
-            resolvedSchema: {
-              type: "object",
-              definition: {
-                type: {
-                  type: "literal",
-                  definition: "string",
-                },
-              },
-            }
           },
-          "definition": {
-            rawSchema: {
-              type: "object",
-              definition: {
-                a: {
-                  type: "object",
-                  definition: {
-                    type: {
-                      type: "literal",
-                      definition: "string",
-                    },
-                  },
-                },
-              },
-            },
-            resolvedSchema: {
-              type: "object",
-              definition: {
-                a: {
-                  type: "object",
-                  definition: {
-                    type: {
-                      type: "literal",
-                      definition: "string",
-                    },
-                  },
-                },
-              },
-            }
-          }
         },
       },
-      // JzodSchema: schema reference with simple attribute
-      test330: {
-        testSchema: {
-          type: "schemaReference",
+    },
+    // // ##########################################################################################
+    // // ################################# JZOD SCHEMAS ###########################################
+    // // ##########################################################################################
+    // JzodSchema: literal
+    test300: {
+      testSchema: {
+        type: "schemaReference",
+        definition: {
+          absolutePath: miroirFundamentalJzodSchemaUuid,
+          relativePath: "jzodElement",
+        },
+      },
+      expectedResolvedSchema: {
+        type: "object",
+        definition: {
+          type: {
+            type: "literal",
+            definition: "literal",
+          },
           definition: {
-            absolutePath: miroirFundamentalJzodSchemaUuid,
-            relativePath: "jzodElement",
+            type: "string",
           },
         },
-        testValueObject: {
-          type: "schemaReference",
-          definition: {
-            absolutePath: miroirFundamentalJzodSchemaUuid,
-            relativePath: "jzodElement",
+      },
+      testValueObject: { type: "literal", definition: "myLiteral" },
+      expectedKeyMap: {
+        type: {
+          rawSchema: {
+            type: "literal",
+            definition: "literal",
+          },
+          resolvedSchema: {
+            type: "literal",
+            definition: "literal",
           },
         },
-        expectedResolvedSchema: {
-          type: "object",
-          definition: {
-            type: {
-              type: "literal",
-              definition: "schemaReference",
-            },
+        definition: {
+          rawSchema: {
+            type: "string",
+          },
+          resolvedSchema: {
+            type: "string",
+          },
+        },
+        "": {
+          rawSchema: {
+            type: "schemaReference",
             definition: {
-              type: "object",
+              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              relativePath: "jzodElement",
+            },
+          },
+          resolvedSchema: {
+            type: "object",
+            definition: {
+              type: {
+                type: "literal",
+                definition: "literal",
+              },
               definition: {
-                absolutePath: {
-                  type: "string",
-                  optional: true,
-                },
-                relativePath: {
-                  type: "string",
-                  optional: true,
-                },
+                type: "string",
               },
             },
           },
-        },
-        expectedKeyMap: {
-          "type": {
-            rawSchema: {
-              type: "literal",
-              definition: "schemaReference",
-            },
-            resolvedSchema: {
-              type: "literal",
-              definition: "schemaReference",
-            }
-          },
-          "definition.absolutePath": {
-            rawSchema: {
-              type: "string",
-              optional: true,
-            },
-            resolvedSchema: {
-              type: "string",
-              optional: true,
-            }
-          },
-          "definition.relativePath": {
-            rawSchema: {
-              type: "string",
-              optional: true,
-            },
-            resolvedSchema: {
-              type: "string",
-              optional: true,
-            }
-          },
-          "definition": {
-            rawSchema: {
-              type: "object",
-              definition: {
-                absolutePath: {
-                  type: "string",
-                  optional: true,
-                },
-                relativePath: {
-                  type: "string",
-                  optional: true,
-                },
-              },
-            },
-            resolvedSchema: {
-              type: "object",
-              definition: {
-                absolutePath: {
-                  type: "string",
-                  optional: true,
-                },
-                relativePath: {
-                  type: "string",
-                  optional: true,
-                },
-              },
-            }
-          }
         },
       },
-      // JzodSchema: schema reference for object with extend clause
-      test340: {
-        testSchema: {
-          type: "schemaReference",
-          definition: {
-            absolutePath: miroirFundamentalJzodSchemaUuid,
-            relativePath: "jzodElement",
+    },
+    // JzodSchema: string
+    test310: {
+      testSchema: {
+        type: "schemaReference",
+        definition: {
+          absolutePath: miroirFundamentalJzodSchemaUuid,
+          relativePath: "jzodElement",
+        },
+      },
+      expectedResolvedSchema: {
+        type: "object",
+        definition: {
+          type: {
+            type: "literal",
+            definition: "string",
           },
         },
-        testValueObject: {
-          type: "schemaReference",
+      },
+      testValueObject: { type: "string" },
+      expectedKeyMap: {
+        type: {
+          rawSchema: {
+            type: "literal",
+            definition: "string",
+          },
+          resolvedSchema: {
+            type: "literal",
+            definition: "string",
+          },
+        },
+        "": {
+          rawSchema: {
+            type: "schemaReference",
+            definition: {
+              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              relativePath: "jzodElement",
+            },
+          },
+          resolvedSchema: {
+            type: "object",
+            definition: {
+              type: {
+                type: "literal",
+                definition: "string",
+              },
+            },
+          },
+        },
+      },
+    },
+    // JzodSchema: object, simpleType attributes
+    test320: {
+      testSchema: {
+        type: "schemaReference",
+        definition: {
+          absolutePath: miroirFundamentalJzodSchemaUuid,
+          relativePath: "jzodElement",
+        },
+      },
+      expectedResolvedSchema: {
+        type: "object",
+        definition: {
+          type: {
+            type: "literal",
+            definition: "object",
+          },
+          definition: {
+            type: "object",
+            definition: {
+              a: {
+                type: "object",
+                definition: {
+                  type: {
+                    type: "literal",
+                    definition: "string",
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      testValueObject: { type: "object", definition: { a: { type: "string" } } },
+      expectedKeyMap: {
+        type: {
+          rawSchema: {
+            type: "literal",
+            definition: "object",
+          },
+          resolvedSchema: {
+            type: "literal",
+            definition: "object",
+          },
+        },
+        "definition.a.type": {
+          rawSchema: {
+            type: "literal",
+            definition: "string",
+          },
+          resolvedSchema: {
+            type: "literal",
+            definition: "string",
+          },
+        },
+        "definition.a": {
+          rawSchema: {
+            type: "schemaReference",
+            definition: {
+              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              relativePath: "jzodElement",
+            },
+            context: {},
+          },
+          resolvedSchema: {
+            type: "object",
+            definition: {
+              type: {
+                type: "literal",
+                definition: "string",
+              },
+            },
+          },
+        },
+        definition: {
+          rawSchema: {
+            type: "record",
+            definition: {
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "jzodElement",
+              },
+              context: {},
+            },
+          },
+          resolvedSchema: {
+            type: "object",
+            definition: {
+              a: {
+                type: "object",
+                definition: {
+                  type: {
+                    type: "literal",
+                    definition: "string",
+                  },
+                },
+              },
+            },
+          },
+        },
+        "": {
+          rawSchema: {
+            type: "schemaReference",
+            definition: {
+              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              relativePath: "jzodElement",
+            },
+          },
+          resolvedSchema: {
+            type: "object",
+            definition: {
+              type: {
+                type: "literal",
+                definition: "object",
+              },
+              definition: {
+                type: "object",
+                definition: {
+                  a: {
+                    type: "object",
+                    definition: {
+                      type: {
+                        type: "literal",
+                        definition: "string",
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    // JzodSchema: schema reference with simple attribute
+    test330: {
+      testSchema: {
+        type: "schemaReference",
+        definition: {
+          absolutePath: miroirFundamentalJzodSchemaUuid,
+          relativePath: "jzodElement",
+        },
+      },
+      testValueObject: {
+        type: "schemaReference",
+        definition: {
+          absolutePath: miroirFundamentalJzodSchemaUuid,
+          relativePath: "jzodElement",
+        },
+      },
+      expectedResolvedSchema: {
+        type: "object",
+        definition: {
+          type: {
+            type: "literal",
+            definition: "schemaReference",
+          },
+          definition: {
+            type: "object",
+            definition: {
+              absolutePath: {
+                type: "string",
+                optional: true,
+              },
+              relativePath: {
+                type: "string",
+                optional: true,
+              },
+            },
+          },
+        },
+      },
+      expectedKeyMap: {
+        type: {
+          rawSchema: {
+            type: "literal",
+            definition: "schemaReference",
+          },
+          resolvedSchema: {
+            type: "literal",
+            definition: "schemaReference",
+          },
+        },
+        "definition.absolutePath": {
+          rawSchema: {
+            type: "string",
+            optional: true,
+          },
+          resolvedSchema: {
+            type: "string",
+          },
+        },
+        "definition.relativePath": {
+          rawSchema: {
+            type: "string",
+            optional: true,
+          },
+          resolvedSchema: {
+            type: "string",
+          },
+        },
+        definition: {
+          rawSchema: {
+            type: "object",
+            definition: {
+              eager: {
+                type: "boolean",
+                optional: true,
+              },
+              partial: {
+                type: "boolean",
+                optional: true,
+              },
+              relativePath: {
+                type: "string",
+                optional: true,
+              },
+              absolutePath: {
+                type: "string",
+                optional: true,
+              },
+            },
+          },
+          resolvedSchema: {
+            type: "object",
+            definition: {
+              absolutePath: {
+                type: "string",
+                optional: true,
+              },
+              relativePath: {
+                type: "string",
+                optional: true,
+              },
+            },
+          },
+        },
+        "": {
+          rawSchema: {
+            type: "schemaReference",
+            definition: {
+              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              relativePath: "jzodElement",
+            },
+          },
+          resolvedSchema: {
+            type: "object",
+            definition: {
+              type: {
+                type: "literal",
+                definition: "schemaReference",
+              },
+              definition: {
+                type: "object",
+                definition: {
+                  absolutePath: {
+                    type: "string",
+                    optional: true,
+                  },
+                  relativePath: {
+                    type: "string",
+                    optional: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    // JzodSchema: schema reference for object with extend clause
+    test340: {
+      testSchema: {
+        type: "schemaReference",
+        definition: {
+          absolutePath: miroirFundamentalJzodSchemaUuid,
+          relativePath: "jzodElement",
+        },
+      },
+      testValueObject: {
+        type: "schemaReference",
+        context: {
+          a: {
+            type: "string",
+          },
+        },
+        definition: {
+          relativePath: "a",
+        },
+      },
+      expectedResolvedSchema: {
+        type: "object",
+        definition: {
+          type: {
+            type: "literal",
+            definition: "schemaReference",
+          },
           context: {
-            a: {
-              type: "string",
-            },
-          },
-          definition: {
-            relativePath: "a",
-          },
-        },
-        expectedResolvedSchema: {
-          type: "object",
-          definition: {
-            type: {
-              type: "literal",
-              definition: "schemaReference",
-            },
-            context: {
-              type: "object",
-              optional: true,
-              definition: {
-                a: {
-                  type: "object",
-                  definition: {
-                    type: {
-                      type: "literal",
-                      definition: "string",
-                    },
-                  },
-                },
-              },
-            },
+            type: "object",
+            optional: true,
             definition: {
-              type: "object",
+              a: {
+                type: "object",
+                definition: {
+                  type: {
+                    type: "literal",
+                    definition: "string",
+                  },
+                },
+              },
+            },
+          },
+          definition: {
+            type: "object",
+            definition: {
+              relativePath: {
+                type: "string",
+                optional: true,
+              },
+            },
+          },
+        },
+      },
+      expectedKeyMap: {
+        type: {
+          rawSchema: {
+            type: "literal",
+            definition: "schemaReference",
+          },
+          resolvedSchema: {
+            type: "literal",
+            definition: "schemaReference",
+          },
+        },
+        "context.a.type": {
+          rawSchema: {
+            type: "literal",
+            definition: "string",
+          },
+          resolvedSchema: {
+            type: "literal",
+            definition: "string",
+          },
+        },
+        "context.a": {
+          rawSchema: {
+            type: "schemaReference",
+            definition: {
+              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              relativePath: "jzodElement",
+            },
+            context: {},
+          },
+          resolvedSchema: {
+            type: "object",
+            definition: {
+              type: {
+                type: "literal",
+                definition: "string",
+              },
+            },
+          },
+        },
+        context: {
+          rawSchema: {
+            type: "record",
+            optional: true,
+            definition: {
+              type: "schemaReference",
               definition: {
-                relativePath: {
-                  type: "string",
-                  optional: true,
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "jzodElement",
+              },
+              context: {},
+            },
+          },
+          resolvedSchema: {
+            type: "object",
+            optional: true,
+            definition: {
+              a: {
+                type: "object",
+                definition: {
+                  type: {
+                    type: "literal",
+                    definition: "string",
+                  },
                 },
               },
             },
           },
         },
-        expectedKeyMap: {
-          "type": {
-            rawSchema: {
-              type: "literal",
-              definition: "schemaReference",
-            },
-            resolvedSchema: {
-              type: "literal",
-              definition: "schemaReference",
-            }
+        "definition.relativePath": {
+          rawSchema: {
+            type: "string",
+            optional: true,
           },
-          "context.a.type": {
-            rawSchema: {
-              type: "literal",
-              definition: "string",
-            },
-            resolvedSchema: {
-              type: "literal",
-              definition: "string",
-            }
+          resolvedSchema: {
+            type: "string",
           },
-          "context.a": {
-            rawSchema: {
-              type: "object",
-              definition: {
-                type: {
-                  type: "literal",
-                  definition: "string",
-                },
+        },
+        definition: {
+          rawSchema: {
+            type: "object",
+            definition: {
+              eager: {
+                type: "boolean",
+                optional: true,
+              },
+              partial: {
+                type: "boolean",
+                optional: true,
+              },
+              relativePath: {
+                type: "string",
+                optional: true,
+              },
+              absolutePath: {
+                type: "string",
+                optional: true,
               },
             },
-            resolvedSchema: {
-              type: "object",
-              definition: {
-                type: {
-                  type: "literal",
-                  definition: "string",
-                },
-              },
-            }
           },
-          "context": {
-            rawSchema: {
-              type: "object",
-              optional: true,
-              definition: {
-                a: {
-                  type: "object",
-                  definition: {
-                    type: {
-                      type: "literal",
-                      definition: "string",
+          resolvedSchema: {
+            type: "object",
+            definition: {
+              relativePath: {
+                type: "string",
+                optional: true,
+              },
+            },
+          },
+        },
+        "": {
+          rawSchema: {
+            type: "schemaReference",
+            definition: {
+              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              relativePath: "jzodElement",
+            },
+          },
+          resolvedSchema: {
+            type: "object",
+            definition: {
+              type: {
+                type: "literal",
+                definition: "schemaReference",
+              },
+              context: {
+                type: "object",
+                optional: true,
+                definition: {
+                  a: {
+                    type: "object",
+                    definition: {
+                      type: {
+                        type: "literal",
+                        definition: "string",
+                      },
                     },
                   },
                 },
               },
-            },
-            resolvedSchema: {
-              type: "object",
-              optional: true,
               definition: {
-                a: {
-                  type: "object",
-                  definition: {
-                    type: {
-                      type: "literal",
-                      definition: "string",
+                type: "object",
+                definition: {
+                  relativePath: {
+                    type: "string",
+                    optional: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    // real case, simple
+    test350: {
+      testSchema: {
+        type: "object",
+        definition: {
+          a: { type: "string", optional: true },
+          b: { type: "number" },
+          c: { type: "boolean", optional: true },
+        },
+      },
+      testValueObject: {
+        b: 42,
+      },
+      expectedResolvedSchema: {
+        type: "object",
+        definition: {
+          // a: { type: "string", optional: true },
+          b: { type: "number" },
+          // c: { type: "boolean", optional: true },
+        },
+      },
+      expectedKeyMap: {
+        b: {
+          rawSchema: {
+            type: "number",
+          },
+          resolvedSchema: {
+            type: "number",
+          },
+        },
+        "": {
+          rawSchema: {
+            type: "object",
+            definition: {
+              a: {
+                type: "string",
+                optional: true,
+              },
+              b: {
+                type: "number",
+              },
+              c: {
+                type: "boolean",
+                optional: true,
+              },
+            },
+          },
+          resolvedSchema: {
+            type: "object",
+            definition: {
+              b: {
+                type: "number",
+              },
+            },
+          },
+        },
+      },
+    },
+    // real case, JzodReference
+    test360: {
+      testSchema: {
+        type: "schemaReference",
+        definition: {
+          absolutePath: castMiroirFundamentalJzodSchema.uuid,
+          relativePath: "jzodReference",
+        },
+      },
+      testValueObject: {
+        type: "schemaReference",
+        definition: {
+          eager: true,
+          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          relativePath: "transformer_orderBy",
+        },
+      },
+      expectedResolvedSchema: {
+        type: "object",
+        definition: {
+          type: {
+            type: "literal",
+            definition: "schemaReference",
+          },
+          definition: {
+            type: "object",
+            definition: {
+              eager: {
+                type: "boolean",
+                optional: true,
+              },
+              absolutePath: {
+                type: "string",
+                optional: true,
+              },
+              relativePath: {
+                type: "string",
+                optional: true,
+              },
+            },
+          },
+        },
+      },
+      expectedKeyMap: {
+        type: {
+          rawSchema: {
+            type: "literal",
+            definition: "schemaReference",
+          },
+          resolvedSchema: {
+            type: "literal",
+            definition: "schemaReference",
+          },
+        },
+        "definition.eager": {
+          rawSchema: {
+            type: "boolean",
+            optional: true,
+          },
+          resolvedSchema: {
+            type: "boolean",
+          },
+        },
+        "definition.absolutePath": {
+          rawSchema: {
+            type: "string",
+            optional: true,
+          },
+          resolvedSchema: {
+            type: "string",
+          },
+        },
+        "definition.relativePath": {
+          rawSchema: {
+            type: "string",
+            optional: true,
+          },
+          resolvedSchema: {
+            type: "string",
+          },
+        },
+        definition: {
+          rawSchema: {
+            type: "object",
+            definition: {
+              eager: {
+                type: "boolean",
+                optional: true,
+              },
+              partial: {
+                type: "boolean",
+                optional: true,
+              },
+              relativePath: {
+                type: "string",
+                optional: true,
+              },
+              absolutePath: {
+                type: "string",
+                optional: true,
+              },
+            },
+          },
+          resolvedSchema: {
+            type: "object",
+            definition: {
+              eager: {
+                type: "boolean",
+                optional: true,
+              },
+              absolutePath: {
+                type: "string",
+                optional: true,
+              },
+              relativePath: {
+                type: "string",
+                optional: true,
+              },
+            },
+          },
+        },
+        "": {
+          rawSchema: {
+            type: "schemaReference",
+            definition: {
+              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              relativePath: "jzodReference",
+            },
+          },
+          resolvedSchema: {
+            type: "object",
+            definition: {
+              type: {
+                type: "literal",
+                definition: "schemaReference",
+              },
+              definition: {
+                type: "object",
+                definition: {
+                  eager: {
+                    type: "boolean",
+                    optional: true,
+                  },
+                  absolutePath: {
+                    type: "string",
+                    optional: true,
+                  },
+                  relativePath: {
+                    type: "string",
+                    optional: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    // ##########################################################################################
+    // ####################################### ANY #############################################
+    // ##########################################################################################
+    test400: {
+      testSchema: {
+        type: "any",
+      },
+      testValueObject: "test",
+      expectedResolvedSchema: {
+        type: "string",
+      },
+      expectedKeyMap: {
+        "": {
+          rawSchema: {
+            type: "any",
+          },
+          resolvedSchema: {
+            type: "string",
+          },
+        },
+      },
+    },
+    test410: {
+      testSchema: {
+        type: "any",
+      },
+      testValueObject: [42, "test", { a: { b: 42n, c: true }, d: [1, 2, 3] }],
+      expectedResolvedSchema: {
+        type: "tuple",
+        definition: [
+          { type: "number" },
+          { type: "string" },
+          {
+            type: "object",
+            definition: {
+              a: {
+                type: "object",
+                definition: {
+                  b: { type: "bigint" },
+                  c: { type: "boolean" },
+                },
+              },
+              d: {
+                type: "tuple",
+                definition: [{ type: "number" }, { type: "number" }, { type: "number" }],
+              },
+            },
+          },
+        ],
+      },
+      expectedKeyMap: {
+        "": {
+          rawSchema: {
+            type: "any",
+          },
+          resolvedSchema: {
+            type: "tuple",
+            definition: [
+              {
+                type: "number",
+              },
+              {
+                type: "string",
+              },
+              {
+                type: "object",
+                definition: {
+                  a: {
+                    type: "object",
+                    definition: {
+                      b: {
+                        type: "bigint",
+                      },
+                      c: {
+                        type: "boolean",
+                      },
+                    },
+                  },
+                  d: {
+                    type: "tuple",
+                    definition: [
+                      {
+                        type: "number",
+                      },
+                      {
+                        type: "number",
+                      },
+                      {
+                        type: "number",
+                      },
+                    ],
+                  },
+                },
+              },
+            ],
+          },
+        },
+      },
+    },
+    // ##########################################################################################
+    // ################################# TRANSFORMERS ###########################################
+    // ##########################################################################################
+    // Transformers
+    // constant
+    test600: {
+      testSchema: {
+        type: "schemaReference",
+        definition: {
+          absolutePath: castMiroirFundamentalJzodSchema.uuid,
+          relativePath: "transformerForBuildPlusRuntime",
+        },
+      },
+      testValueObject: {
+        transformerType: "constant",
+        interpolation: "build",
+        value: "test",
+      },
+      expectedResolvedSchema: {
+        type: "object",
+        definition: {
+          transformerType: {
+            type: "literal",
+            definition: "constant",
+          },
+          interpolation: {
+            type: "literal",
+            definition: "build",
+          },
+          value: {
+            type: "string",
+          },
+        },
+      },
+      expectedKeyMap: {
+        transformerType: {
+          rawSchema: {
+            type: "literal",
+            definition: "constant",
+          },
+          resolvedSchema: {
+            type: "literal",
+            definition: "constant",
+          },
+        },
+        interpolation: {
+          rawSchema: {
+            type: "literal",
+            definition: "build",
+          },
+          resolvedSchema: {
+            type: "literal",
+            definition: "build",
+          },
+        },
+        value: {
+          rawSchema: {
+            type: "any",
+          },
+          resolvedSchema: {
+            type: "string",
+          },
+        },
+        "": {
+          rawSchema: {
+            type: "schemaReference",
+            definition: {
+              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              relativePath: "transformerForBuildPlusRuntime",
+            },
+          },
+          resolvedSchema: {
+            type: "object",
+            definition: {
+              transformerType: {
+                type: "literal",
+                definition: "constant",
+              },
+              interpolation: {
+                type: "literal",
+                definition: "build",
+              },
+              value: {
+                type: "string",
+              },
+            },
+          },
+        },
+      },
+    },
+    // listPickElement
+    test610: {
+      testSchema: {
+        type: "schemaReference",
+        definition: {
+          absolutePath: castMiroirFundamentalJzodSchema.uuid,
+          relativePath: "transformerForBuildPlusRuntime",
+        },
+      },
+      testValueObject: {
+        transformerType: "listPickElement",
+        interpolation: "runtime",
+        applyTo: {
+          referenceType: "referencedTransformer",
+          reference: {
+            transformerType: "contextReference",
+            interpolation: "runtime",
+            referenceName: "menuList",
+          },
+        },
+        index: 0,
+      },
+      expectedResolvedSchema: {
+        type: "object",
+        definition: {
+          transformerType: {
+            type: "literal",
+            definition: "listPickElement",
+          },
+          interpolation: {
+            type: "literal",
+            definition: "runtime",
+          },
+          applyTo: {
+            type: "object",
+            definition: {
+              referenceType: {
+                type: "literal",
+                definition: "referencedTransformer",
+              },
+              reference: {
+                type: "object",
+                definition: {
+                  transformerType: {
+                    type: "literal",
+                    definition: "contextReference",
+                  },
+                  interpolation: {
+                    type: "literal",
+                    optional: true,
+                    definition: "runtime",
+                  },
+                  referenceName: {
+                    optional: true,
+                    type: "string",
+                  },
+                },
+              },
+            },
+          },
+          index: {
+            type: "number",
+          },
+        },
+      },
+      expectedKeyMap: {
+        transformerType: {
+          rawSchema: {
+            type: "literal",
+            definition: "listPickElement",
+          },
+          resolvedSchema: {
+            type: "literal",
+            definition: "listPickElement",
+          },
+        },
+        interpolation: {
+          rawSchema: {
+            type: "literal",
+            definition: "runtime",
+          },
+          resolvedSchema: {
+            type: "literal",
+            definition: "runtime",
+          },
+        },
+        "applyTo.referenceType": {
+          rawSchema: {
+            type: "literal",
+            definition: "referencedTransformer",
+          },
+          resolvedSchema: {
+            type: "literal",
+            definition: "referencedTransformer",
+          },
+        },
+        "applyTo.reference.transformerType": {
+          rawSchema: {
+            type: "literal",
+            definition: "contextReference",
+          },
+          resolvedSchema: {
+            type: "literal",
+            definition: "contextReference",
+          },
+        },
+        "applyTo.reference.interpolation": {
+          rawSchema: {
+            type: "literal",
+            optional: true,
+            definition: "runtime",
+          },
+          resolvedSchema: {
+            type: "literal",
+            optional: true,
+            definition: "runtime",
+          },
+        },
+        "applyTo.reference.referenceName": {
+          rawSchema: {
+            optional: true,
+            type: "string",
+          },
+          resolvedSchema: {
+            type: "string",
+          },
+        },
+        "applyTo.reference": {
+          rawSchema: {
+            type: "union",
+            discriminator: ["transformerType", "interpolation"],
+            definition: [
+              {
+                type: "string",
+              },
+              {
+                type: "schemaReference",
+                definition: {
+                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  relativePath: "transformerForBuildPlusRuntime",
+                },
+                context: {},
+              },
+            ],
+          },
+          chosenUnionBranchRawSchema: {
+            type: "object",
+            definition: {
+              interpolation: {
+                type: "literal",
+                optional: true,
+                definition: "runtime",
+              },
+              transformerType: {
+                type: "literal",
+                definition: "contextReference",
+              },
+              referenceName: {
+                optional: true,
+                type: "string",
+              },
+              referencePath: {
+                optional: true,
+                type: "array",
+                definition: {
+                  type: "string",
+                },
+              },
+            },
+          },
+          resolvedSchema: {
+            type: "object",
+            definition: {
+              transformerType: {
+                type: "literal",
+                definition: "contextReference",
+              },
+              interpolation: {
+                type: "literal",
+                optional: true,
+                definition: "runtime",
+              },
+              referenceName: {
+                optional: true,
+                type: "string",
+              },
+            },
+          },
+        },
+        applyTo: {
+          rawSchema: {
+            type: "union",
+            discriminator: "referenceType",
+            definition: [
+              {
+                type: "array",
+                definition: {
+                  type: "any",
+                },
+              },
+              {
+                type: "schemaReference",
+                definition: {
+                  relativePath: "transformer_inner_referenced_transformerForBuildPlusRuntime",
+                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                },
+                context: {},
+              },
+            ],
+          },
+          chosenUnionBranchRawSchema: {
+            type: "object",
+            definition: {
+              referenceType: {
+                type: "literal",
+                definition: "referencedTransformer",
+              },
+              reference: {
+                type: "union",
+                discriminator: ["transformerType", "interpolation"],
+                definition: [
+                  {
+                    type: "string",
+                  },
+                  {
+                    type: "schemaReference",
+                    definition: {
+                      absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      relativePath: "transformerForBuildPlusRuntime",
+                    },
+                    context: {},
+                  },
+                ],
+              },
+            },
+          },
+          resolvedSchema: {
+            type: "object",
+            definition: {
+              referenceType: {
+                type: "literal",
+                definition: "referencedTransformer",
+              },
+              reference: {
+                type: "object",
+                definition: {
+                  transformerType: {
+                    type: "literal",
+                    definition: "contextReference",
+                  },
+                  interpolation: {
+                    type: "literal",
+                    optional: true,
+                    definition: "runtime",
+                  },
+                  referenceName: {
+                    optional: true,
+                    type: "string",
+                  },
+                },
+              },
+            },
+          },
+        },
+        index: {
+          rawSchema: {
+            type: "number",
+          },
+          resolvedSchema: {
+            type: "number",
+          },
+        },
+        "": {
+          rawSchema: {
+            type: "schemaReference",
+            definition: {
+              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              relativePath: "transformerForBuildPlusRuntime",
+            },
+          },
+          resolvedSchema: {
+            type: "object",
+            definition: {
+              transformerType: {
+                type: "literal",
+                definition: "listPickElement",
+              },
+              interpolation: {
+                type: "literal",
+                definition: "runtime",
+              },
+              applyTo: {
+                type: "object",
+                definition: {
+                  referenceType: {
+                    type: "literal",
+                    definition: "referencedTransformer",
+                  },
+                  reference: {
+                    type: "object",
+                    definition: {
+                      transformerType: {
+                        type: "literal",
+                        definition: "contextReference",
+                      },
+                      interpolation: {
+                        type: "literal",
+                        optional: true,
+                        definition: "runtime",
+                      },
+                      referenceName: {
+                        optional: true,
+                        type: "string",
+                      },
                     },
                   },
                 },
               },
-            }
-          },
-          "definition.relativePath": {
-            rawSchema: {
-              type: "string",
-              optional: true,
+              index: {
+                type: "number",
+              },
             },
-            resolvedSchema: {
-              type: "string",
-              optional: true,
-            }
           },
-          "definition": {
-            rawSchema: {
-              type: "object",
-              definition: {
-                relativePath: {
+        },
+      },
+    },
+    // runtime freeObjectTemplate with inner build transformer
+    test620: {
+      testSchema: {
+        type: "schemaReference",
+        definition: {
+          absolutePath: castMiroirFundamentalJzodSchema.uuid,
+          relativePath: "transformerForBuildPlusRuntime",
+        },
+      },
+      testValueObject: {
+        transformerType: "freeObjectTemplate",
+        interpolation: "runtime",
+        definition: {
+          reportUuid: {
+            transformerType: "parameterReference",
+            interpolation: "build",
+            referenceName: "createEntity_newEntityListReportUuid",
+          },
+          label: {
+            transformerType: "mustacheStringTemplate",
+            interpolation: "build",
+            definition: "List of {{newEntityName}}s",
+          },
+          section: "data",
+          selfApplication: {
+            transformerType: "parameterReference",
+            interpolation: "build",
+            referencePath: ["adminConfigurationDeploymentParis", "uuid"],
+          },
+          icon: "local_drink",
+        },
+      },
+      expectedResolvedSchema: {
+        type: "object",
+        definition: {
+          transformerType: {
+            type: "literal",
+            definition: "freeObjectTemplate",
+          },
+          interpolation: {
+            type: "literal",
+            definition: "runtime",
+          },
+          definition: {
+            type: "object",
+            definition: {
+              reportUuid: {
+                type: "object",
+                definition: {
+                  transformerType: {
+                    type: "literal",
+                    definition: "parameterReference",
+                  },
+                  interpolation: {
+                    type: "literal",
+                    optional: true,
+                    definition: "build",
+                  },
+                  referenceName: {
+                    optional: true,
+                    type: "string",
+                  },
+                },
+              },
+              label: {
+                type: "object",
+                definition: {
+                  transformerType: {
+                    type: "literal",
+                    definition: "mustacheStringTemplate",
+                  },
+                  interpolation: {
+                    type: "literal",
+                    definition: "build",
+                  },
+                  definition: {
+                    type: "string",
+                  },
+                },
+              },
+              section: {
+                type: "string",
+              },
+              selfApplication: {
+                type: "object",
+                definition: {
+                  transformerType: {
+                    type: "literal",
+                    definition: "parameterReference",
+                  },
+                  interpolation: {
+                    type: "literal",
+                    optional: true,
+                    definition: "build",
+                  },
+                  referencePath: {
+                    optional: true,
+                    type: "tuple",
+                    definition: [
+                      {
+                        type: "string",
+                      },
+                      {
+                        type: "string",
+                      },
+                    ],
+                  },
+                },
+              },
+              icon: {
+                type: "string",
+              },
+            },
+          },
+        },
+      },
+      expectedKeyMap: {
+        transformerType: {
+          rawSchema: {
+            type: "literal",
+            definition: "freeObjectTemplate",
+          },
+          resolvedSchema: {
+            type: "literal",
+            definition: "freeObjectTemplate",
+          },
+        },
+        interpolation: {
+          rawSchema: {
+            type: "literal",
+            definition: "runtime",
+          },
+          resolvedSchema: {
+            type: "literal",
+            definition: "runtime",
+          },
+        },
+        "definition.reportUuid.transformerType": {
+          rawSchema: {
+            type: "literal",
+            definition: "parameterReference",
+          },
+          resolvedSchema: {
+            type: "literal",
+            definition: "parameterReference",
+          },
+        },
+        "definition.reportUuid.interpolation": {
+          rawSchema: {
+            type: "literal",
+            optional: true,
+            definition: "build",
+          },
+          resolvedSchema: {
+            type: "literal",
+            optional: true,
+            definition: "build",
+          },
+        },
+        "definition.reportUuid.referenceName": {
+          rawSchema: {
+            optional: true,
+            type: "string",
+          },
+          resolvedSchema: {
+            type: "string",
+          },
+        },
+        "definition.reportUuid": {
+          rawSchema: {
+            type: "union",
+            discriminator: ["transformerType", "interpolation"],
+            definition: [
+              {
+                type: "schemaReference",
+                definition: {
+                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  relativePath: "transformerForBuildPlusRuntime",
+                },
+              },
+              {
+                type: "record",
+                definition: {
+                  type: "schemaReference",
+                  definition: {
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    relativePath: "transformerForBuildPlusRuntime",
+                  },
+                },
+              },
+              {
+                type: "string",
+              },
+              {
+                type: "number",
+              },
+              {
+                type: "boolean",
+              },
+              {
+                type: "bigint",
+              },
+            ],
+          },
+          chosenUnionBranchRawSchema: {
+            type: "object",
+            definition: {
+              interpolation: {
+                type: "literal",
+                optional: true,
+                definition: "build",
+              },
+              transformerType: {
+                type: "literal",
+                definition: "parameterReference",
+              },
+              referenceName: {
+                optional: true,
+                type: "string",
+              },
+              referencePath: {
+                optional: true,
+                type: "array",
+                definition: {
                   type: "string",
-                  optional: true,
                 },
               },
             },
-            resolvedSchema: {
-              type: "object",
+          },
+          resolvedSchema: {
+            type: "object",
+            definition: {
+              transformerType: {
+                type: "literal",
+                definition: "parameterReference",
+              },
+              interpolation: {
+                type: "literal",
+                optional: true,
+                definition: "build",
+              },
+              referenceName: {
+                optional: true,
+                type: "string",
+              },
+            },
+          },
+        },
+        "definition.label.transformerType": {
+          rawSchema: {
+            type: "literal",
+            definition: "mustacheStringTemplate",
+          },
+          resolvedSchema: {
+            type: "literal",
+            definition: "mustacheStringTemplate",
+          },
+        },
+        "definition.label.interpolation": {
+          rawSchema: {
+            type: "literal",
+            definition: "build",
+          },
+          resolvedSchema: {
+            type: "literal",
+            definition: "build",
+          },
+        },
+        "definition.label.definition": {
+          rawSchema: {
+            type: "string",
+          },
+          resolvedSchema: {
+            type: "string",
+          },
+        },
+        "definition.label": {
+          rawSchema: {
+            type: "union",
+            discriminator: ["transformerType", "interpolation"],
+            definition: [
+              {
+                type: "schemaReference",
+                definition: {
+                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  relativePath: "transformerForBuildPlusRuntime",
+                },
+              },
+              {
+                type: "record",
+                definition: {
+                  type: "schemaReference",
+                  definition: {
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    relativePath: "transformerForBuildPlusRuntime",
+                  },
+                },
+              },
+              {
+                type: "string",
+              },
+              {
+                type: "number",
+              },
+              {
+                type: "boolean",
+              },
+              {
+                type: "bigint",
+              },
+            ],
+          },
+          chosenUnionBranchRawSchema: {
+            type: "object",
+            definition: {
+              interpolation: {
+                type: "literal",
+                definition: "build",
+              },
+              transformerType: {
+                type: "literal",
+                definition: "mustacheStringTemplate",
+              },
               definition: {
-                relativePath: {
+                type: "string",
+              },
+            },
+          },
+          resolvedSchema: {
+            type: "object",
+            definition: {
+              transformerType: {
+                type: "literal",
+                definition: "mustacheStringTemplate",
+              },
+              interpolation: {
+                type: "literal",
+                definition: "build",
+              },
+              definition: {
+                type: "string",
+              },
+            },
+          },
+        },
+        "definition.section": {
+          rawSchema: {
+            type: "union",
+            discriminator: ["transformerType", "interpolation"],
+            definition: [
+              {
+                type: "schemaReference",
+                definition: {
+                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  relativePath: "transformerForBuildPlusRuntime",
+                },
+              },
+              {
+                type: "record",
+                definition: {
+                  type: "schemaReference",
+                  definition: {
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    relativePath: "transformerForBuildPlusRuntime",
+                  },
+                },
+              },
+              {
+                type: "string",
+              },
+              {
+                type: "number",
+              },
+              {
+                type: "boolean",
+              },
+              {
+                type: "bigint",
+              },
+            ],
+          },
+          resolvedSchema: {
+            type: "string",
+          },
+          chosenUnionBranchRawSchema: {
+            type: "string",
+          },
+        },
+        "definition.selfApplication.transformerType": {
+          rawSchema: {
+            type: "literal",
+            definition: "parameterReference",
+          },
+          resolvedSchema: {
+            type: "literal",
+            definition: "parameterReference",
+          },
+        },
+        "definition.selfApplication.interpolation": {
+          rawSchema: {
+            type: "literal",
+            optional: true,
+            definition: "build",
+          },
+          resolvedSchema: {
+            type: "literal",
+            optional: true,
+            definition: "build",
+          },
+        },
+        "definition.selfApplication.referencePath.0": {
+          rawSchema: {
+            type: "string",
+          },
+          resolvedSchema: {
+            type: "string",
+          },
+        },
+        "definition.selfApplication.referencePath.1": {
+          rawSchema: {
+            type: "string",
+          },
+          resolvedSchema: {
+            type: "string",
+          },
+        },
+        "definition.selfApplication.referencePath": {
+          rawSchema: {
+            optional: true,
+            type: "array",
+            definition: {
+              type: "string",
+            },
+          },
+          resolvedSchema: {
+            optional: true,
+            type: "tuple",
+            definition: [
+              {
+                type: "string",
+              },
+              {
+                type: "string",
+              },
+            ],
+          },
+        },
+        "definition.selfApplication": {
+          rawSchema: {
+            type: "union",
+            discriminator: ["transformerType", "interpolation"],
+            definition: [
+              {
+                type: "schemaReference",
+                definition: {
+                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  relativePath: "transformerForBuildPlusRuntime",
+                },
+              },
+              {
+                type: "record",
+                definition: {
+                  type: "schemaReference",
+                  definition: {
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    relativePath: "transformerForBuildPlusRuntime",
+                  },
+                },
+              },
+              {
+                type: "string",
+              },
+              {
+                type: "number",
+              },
+              {
+                type: "boolean",
+              },
+              {
+                type: "bigint",
+              },
+            ],
+          },
+          chosenUnionBranchRawSchema: {
+            type: "object",
+            definition: {
+              interpolation: {
+                type: "literal",
+                optional: true,
+                definition: "build",
+              },
+              transformerType: {
+                type: "literal",
+                definition: "parameterReference",
+              },
+              referenceName: {
+                optional: true,
+                type: "string",
+              },
+              referencePath: {
+                optional: true,
+                type: "array",
+                definition: {
                   type: "string",
-                  optional: true,
                 },
               },
-            }
-          }
-        },
-      },
-      // real case, simple
-      test350: {
-        testSchema: {
-          type: "object",
-          definition: {
-            a: { type: "string", optional: true },
-            b: { type: "number" },
-            c: { type: "boolean", optional: true },
-          },
-        },
-        testValueObject: {
-          b: 42,
-        },
-        expectedResolvedSchema: {
-          type: "object",
-          definition: {
-            // a: { type: "string", optional: true },
-            b: { type: "number" },
-            // c: { type: "boolean", optional: true },
-          },
-        },
-        expectedKeyMap: {
-          "b": {
-            rawSchema: {
-              type: "number",
             },
-            resolvedSchema: {
-              type: "number",
-            }
-          }
-        },
-      },
-      // real case, JzodReference
-      test360: {
-        testSchema: {
-          type: "schemaReference",
-          definition: {
-            absolutePath: castMiroirFundamentalJzodSchema.uuid,
-            relativePath: "jzodReference",
+          },
+          resolvedSchema: {
+            type: "object",
+            definition: {
+              transformerType: {
+                type: "literal",
+                definition: "parameterReference",
+              },
+              interpolation: {
+                type: "literal",
+                optional: true,
+                definition: "build",
+              },
+              referencePath: {
+                optional: true,
+                type: "tuple",
+                definition: [
+                  {
+                    type: "string",
+                  },
+                  {
+                    type: "string",
+                  },
+                ],
+              },
+            },
           },
         },
-        testValueObject: {
-          "type": "schemaReference",
-          "definition": {
-            "eager": true,
-            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            "relativePath": "transformer_orderBy"
-          }
-        },
-        expectedResolvedSchema: {
-          "type": "object",
-          "definition": {
-            "type": {
-              "type": "literal",
-              "definition": "schemaReference"
-            },
-            "definition": {
-              "type": "object",
-              "definition": {
-                "eager": {
-                  "type": "boolean",
-                  "optional": true
+        "definition.icon": {
+          rawSchema: {
+            type: "union",
+            discriminator: ["transformerType", "interpolation"],
+            definition: [
+              {
+                type: "schemaReference",
+                definition: {
+                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  relativePath: "transformerForBuildPlusRuntime",
                 },
-                "absolutePath": {
-                  "type": "string",
-                  "optional": true
-                },
-                "relativePath": {
-                  "type": "string",
-                  "optional": true
-                }
-              }
-            }
-          }
-        },
-        expectedKeyMap: {
-          "type": {
-            rawSchema: {
-              "type": "literal",
-              "definition": "schemaReference"
-            },
-            resolvedSchema: {
-              "type": "literal",
-              "definition": "schemaReference"
-            }
-          },
-          "definition.eager": {
-            rawSchema: {
-              "type": "boolean",
-              "optional": true
-            },
-            resolvedSchema: {
-              "type": "boolean",
-              "optional": true
-            }
-          },
-          "definition.absolutePath": {
-            rawSchema: {
-              "type": "string",
-              "optional": true
-            },
-            resolvedSchema: {
-              "type": "string",
-              "optional": true
-            }
-          },
-          "definition.relativePath": {
-            rawSchema: {
-              "type": "string",
-              "optional": true
-            },
-            resolvedSchema: {
-              "type": "string",
-              "optional": true
-            }
-          },
-          "definition": {
-            rawSchema: {
-              "type": "object",
-              "definition": {
-                "eager": {
-                  "type": "boolean",
-                  "optional": true
-                },
-                "absolutePath": {
-                  "type": "string",
-                  "optional": true
-                },
-                "relativePath": {
-                  "type": "string",
-                  "optional": true
-                }
-              }
-            },
-            resolvedSchema: {
-              "type": "object",
-              "definition": {
-                "eager": {
-                  "type": "boolean",
-                  "optional": true
-                },
-                "absolutePath": {
-                  "type": "string",
-                  "optional": true
-                },
-                "relativePath": {
-                  "type": "string",
-                  "optional": true
-                }
-              }
-            }
-          }
-        }
-      },
-      // ##########################################################################################
-      // ####################################### ANY #############################################
-      // ##########################################################################################
-      test400: {
-        testSchema: {
-          type: "any",
-        },
-        testValueObject: "test",
-        expectedResolvedSchema: {
-          type: "string",
-        },
-        expectedKeyMap: {},
-      },
-      test410: {
-        testSchema: {
-          type: "any",
-        },
-        testValueObject: [42, "test", { a: { b: 42n, c: true }, d: [1, 2, 3] }],
-        expectedResolvedSchema: {
-          type: "tuple",
-          definition: [
-            { type: "number" },
-            { type: "string" },
-            {
-              type: "object",
-              definition: {
-                a: {
-                  type: "object",
+              },
+              {
+                type: "record",
+                definition: {
+                  type: "schemaReference",
                   definition: {
-                    b: { type: "bigint" },
-                    c: { type: "boolean" },
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    relativePath: "transformerForBuildPlusRuntime",
                   },
                 },
-                d: {
-                  type: "tuple",
-                  definition: [{ type: "number" }, { type: "number" }, { type: "number" }],
-                },
               },
-            },
-          ],
+              {
+                type: "string",
+              },
+              {
+                type: "number",
+              },
+              {
+                type: "boolean",
+              },
+              {
+                type: "bigint",
+              },
+            ],
+          },
+          resolvedSchema: {
+            type: "string",
+          },
+          chosenUnionBranchRawSchema: {
+            type: "string",
+          },
         },
-        expectedKeyMap: {
-          "0": {
-            rawSchema: {
-              type: "number",
-            },
-            resolvedSchema: {
-              type: "number",
-            }
-          },
-          "1": {
-            rawSchema: {
-              type: "string",
-            },
-            resolvedSchema: {
-              type: "string",
-            }
-          },
-          "2.a.b": {
-            rawSchema: {
-              type: "bigint",
-            },
-            resolvedSchema: {
-              type: "bigint",
-            }
-          },
-          "2.a.c": {
-            rawSchema: {
-              type: "boolean",
-            },
-            resolvedSchema: {
-              type: "boolean",
-            }
-          },
-          "2.a": {
-            rawSchema: {
-              type: "object",
-              definition: {
-                b: { type: "bigint" },
-                c: { type: "boolean" },
-              },
-            },
-            resolvedSchema: {
-              type: "object",
-              definition: {
-                b: { type: "bigint" },
-                c: { type: "boolean" },
-              },
-            }
-          },
-          "2.d.0": {
-            rawSchema: {
-              type: "number",
-            },
-            resolvedSchema: {
-              type: "number",
-            }
-          },
-          "2.d.1": {
-            rawSchema: {
-              type: "number",
-            },
-            resolvedSchema: {
-              type: "number",
-            }
-          },
-          "2.d.2": {
-            rawSchema: {
-              type: "number",
-            },
-            resolvedSchema: {
-              type: "number",
-            }
-          },
-          "2.d": {
-            rawSchema: {
-              type: "tuple",
-              definition: [{ type: "number" }, { type: "number" }, { type: "number" }],
-            },
-            resolvedSchema: {
-              type: "tuple",
-              definition: [{ type: "number" }, { type: "number" }, { type: "number" }],
-            }
-          },
-          "2": {
-            rawSchema: {
-              type: "object",
-              definition: {
-                a: {
-                  type: "object",
+        definition: {
+          rawSchema: {
+            type: "record",
+            definition: {
+              type: "union",
+              discriminator: ["transformerType", "interpolation"],
+              definition: [
+                {
+                  type: "schemaReference",
                   definition: {
-                    b: { type: "bigint" },
-                    c: { type: "boolean" },
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    relativePath: "transformerForBuildPlusRuntime",
                   },
                 },
-                d: {
-                  type: "tuple",
-                  definition: [{ type: "number" }, { type: "number" }, { type: "number" }],
+                {
+                  type: "record",
+                  definition: {
+                    type: "schemaReference",
+                    definition: {
+                      absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      relativePath: "transformerForBuildPlusRuntime",
+                    },
+                  },
+                },
+                {
+                  type: "string",
+                },
+                {
+                  type: "number",
+                },
+                {
+                  type: "boolean",
+                },
+                {
+                  type: "bigint",
+                },
+              ],
+            },
+          },
+          resolvedSchema: {
+            type: "object",
+            definition: {
+              reportUuid: {
+                type: "object",
+                definition: {
+                  transformerType: {
+                    type: "literal",
+                    definition: "parameterReference",
+                  },
+                  interpolation: {
+                    type: "literal",
+                    optional: true,
+                    definition: "build",
+                  },
+                  referenceName: {
+                    optional: true,
+                    type: "string",
+                  },
+                },
+              },
+              label: {
+                type: "object",
+                definition: {
+                  transformerType: {
+                    type: "literal",
+                    definition: "mustacheStringTemplate",
+                  },
+                  interpolation: {
+                    type: "literal",
+                    definition: "build",
+                  },
+                  definition: {
+                    type: "string",
+                  },
+                },
+              },
+              section: {
+                type: "string",
+              },
+              selfApplication: {
+                type: "object",
+                definition: {
+                  transformerType: {
+                    type: "literal",
+                    definition: "parameterReference",
+                  },
+                  interpolation: {
+                    type: "literal",
+                    optional: true,
+                    definition: "build",
+                  },
+                  referencePath: {
+                    optional: true,
+                    type: "tuple",
+                    definition: [
+                      {
+                        type: "string",
+                      },
+                      {
+                        type: "string",
+                      },
+                    ],
+                  },
+                },
+              },
+              icon: {
+                type: "string",
+              },
+            },
+          },
+        },
+        "": {
+          rawSchema: {
+            type: "schemaReference",
+            definition: {
+              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              relativePath: "transformerForBuildPlusRuntime",
+            },
+          },
+          resolvedSchema: {
+            type: "object",
+            definition: {
+              transformerType: {
+                type: "literal",
+                definition: "freeObjectTemplate",
+              },
+              interpolation: {
+                type: "literal",
+                definition: "runtime",
+              },
+              definition: {
+                type: "object",
+                definition: {
+                  reportUuid: {
+                    type: "object",
+                    definition: {
+                      transformerType: {
+                        type: "literal",
+                        definition: "parameterReference",
+                      },
+                      interpolation: {
+                        type: "literal",
+                        optional: true,
+                        definition: "build",
+                      },
+                      referenceName: {
+                        optional: true,
+                        type: "string",
+                      },
+                    },
+                  },
+                  label: {
+                    type: "object",
+                    definition: {
+                      transformerType: {
+                        type: "literal",
+                        definition: "mustacheStringTemplate",
+                      },
+                      interpolation: {
+                        type: "literal",
+                        definition: "build",
+                      },
+                      definition: {
+                        type: "string",
+                      },
+                    },
+                  },
+                  section: {
+                    type: "string",
+                  },
+                  selfApplication: {
+                    type: "object",
+                    definition: {
+                      transformerType: {
+                        type: "literal",
+                        definition: "parameterReference",
+                      },
+                      interpolation: {
+                        type: "literal",
+                        optional: true,
+                        definition: "build",
+                      },
+                      referencePath: {
+                        optional: true,
+                        type: "tuple",
+                        definition: [
+                          {
+                            type: "string",
+                          },
+                          {
+                            type: "string",
+                          },
+                        ],
+                      },
+                    },
+                  },
+                  icon: {
+                    type: "string",
+                  },
                 },
               },
             },
-            resolvedSchema: {
-              type: "object",
-              definition: {
-                a: {
-                  type: "object",
-                  definition: {
-                    b: { type: "bigint" },
-                    c: { type: "boolean" },
-                  },
-                },
-                d: {
-                  type: "tuple",
-                  definition: [{ type: "number" }, { type: "number" }, { type: "number" }],
-                },
-              },
-            }
-          }
+          },
         },
       },
-      // ##########################################################################################
-      // ################################# TRANSFORMERS ###########################################
-      // ##########################################################################################
-      // Transformers
-      // constant
-      test600: {
-        testSchema: {
-          type: "schemaReference",
-          definition: {
-            absolutePath: castMiroirFundamentalJzodSchema.uuid,
-            relativePath: "transformerForBuildPlusRuntime",
+    },
+    // mapperListToList Transformer
+    test630: {
+      testSchema: {
+        type: "object",
+        definition: {
+          uuid: {
+            type: "uuid",
+            tag: {
+              value: {
+                id: 1,
+                defaultLabel: "Uuid",
+                editable: false,
+              },
+            },
+          },
+          parentName: {
+            type: "string",
+            optional: true,
+            tag: {
+              value: {
+                id: 2,
+                defaultLabel: "Entity Name",
+                editable: false,
+              },
+            },
+          },
+          parentUuid: {
+            type: "uuid",
+            tag: {
+              value: {
+                id: 3,
+                defaultLabel: "Entity Uuid",
+                editable: false,
+              },
+            },
+          },
+          parentDefinitionVersionUuid: {
+            type: "uuid",
+            optional: true,
+            tag: {
+              value: {
+                id: 4,
+                defaultLabel: "Entity Definition Version Uuid",
+                editable: false,
+              },
+            },
+          },
+          name: {
+            type: "string",
+            tag: {
+              value: {
+                id: 5,
+                defaultLabel: "Name",
+                editable: true,
+              },
+            },
+          },
+          defaultLabel: {
+            type: "string",
+            tag: {
+              value: {
+                id: 6,
+                defaultLabel: "Default Label",
+                editable: true,
+              },
+            },
+          },
+          description: {
+            type: "string",
+            optional: true,
+            tag: {
+              value: {
+                id: 7,
+                defaultLabel: "Description",
+                editable: true,
+              },
+            },
+          },
+          transformerInterface: {
+            type: "object",
+            definition: {
+              transformerParameterSchema: {
+                type: "object",
+                definition: {
+                  transformerType: {
+                    type: "schemaReference",
+                    definition: {
+                      absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      relativePath: "jzodLiteral",
+                    },
+                  },
+                  transformerDefinition: {
+                    type: "schemaReference",
+                    definition: {
+                      absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      relativePath: "jzodObject",
+                    },
+                  },
+                },
+              },
+              transformerResultSchema: {
+                type: "schemaReference",
+                optional: true,
+                definition: {
+                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  relativePath: "jzodElement",
+                },
+              },
+            },
+          },
+          transformerImplementation: {
+            type: "union",
+            discriminator: "transformerImplementationType",
+            definition: [
+              {
+                type: "object",
+                definition: {
+                  transformerImplementationType: {
+                    type: "literal",
+                    definition: "libraryImplementation",
+                  },
+                  inMemoryImplementationFunctionName: {
+                    type: "string",
+                  },
+                  sqlImplementationFunctionName: {
+                    type: "string",
+                    optional: true,
+                  },
+                },
+              },
+              {
+                type: "object",
+                definition: {
+                  transformerImplementationType: {
+                    type: "literal",
+                    definition: "transformer",
+                  },
+                  definition: {
+                    type: "schemaReference",
+                    definition: {
+                      absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      relativePath: "transformerForBuildOrRuntime",
+                    },
+                  },
+                },
+              },
+            ],
           },
         },
-        testValueObject: {
-          transformerType: "constant",
-          interpolation: "build",
-          value: "test",
-        },
-        expectedResolvedSchema: {
-          type: "object",
-          definition: {
+      },
+      testValueObject: {
+        uuid: "3ec73049-5e54-40aa-bc86-4c4906d00baa",
+        name: "mapperListToList",
+        defaultLabel: "mapperListToList",
+        description:
+          "Transform a list into another list, running the given transformer on each item of the list",
+        parentUuid: "a557419d-a288-4fb8-8a1e-971c86c113b8",
+        parentDefinitionVersionUuid: "54a16d69-c1f0-4dd7-aba4-a2cda883586c",
+        parentName: "TransformerDefinition",
+        transformerInterface: {
+          transformerParameterSchema: {
             transformerType: {
               type: "literal",
-              definition: "constant",
+              definition: "mapperListToList",
             },
-            interpolation: {
-              type: "literal",
-              definition: "build",
+            transformerDefinition: {
+              type: "object",
+              extend: [
+                {
+                  type: "schemaReference",
+                  definition: {
+                    eager: true,
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    relativePath: "transformer_orderBy",
+                  },
+                },
+              ],
+              definition: {
+                applyTo: {
+                  type: "array",
+                  definition: {
+                    type: "any",
+                  },
+                },
+                referenceToOuterObject: {
+                  type: "string",
+                },
+                elementTransformer: {
+                  type: "schemaReference",
+                  definition: {
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    relativePath:
+                      "transformer_inner_elementTransformer_transformerForBuildPlusRuntime",
+                  },
+                },
+              },
             },
-            value: {
-              type: "string",
+          },
+          transformerResultSchema: {
+            type: "array",
+            definition: {
+              type: "any",
             },
           },
         },
-        expectedKeyMap: {
-          "transformerType": {
-            rawSchema: {
-              type: "literal",
-              definition: "constant",
-            },
-            resolvedSchema: {
-              type: "literal",
-              definition: "constant",
-            }
-          },
-          "interpolation": {
-            rawSchema: {
-              type: "literal",
-              definition: "build",
-            },
-            resolvedSchema: {
-              type: "literal",
-              definition: "build",
-            }
-          },
-          "value": {
-            rawSchema: {
-              type: "string",
-            },
-            resolvedSchema: {
-              type: "string",
-            }
-          }
+        transformerImplementation: {
+          transformerImplementationType: "libraryImplementation",
+          inMemoryImplementationFunctionName: "transformerForBuild_list_listMapperToList_apply",
+          sqlImplementationFunctionName: "sqlStringForMapperListToListTransformer",
         },
       },
-      // listPickElement
-      test610: {
-        testSchema: {
-          type: "schemaReference",
-          definition: {
-            absolutePath: castMiroirFundamentalJzodSchema.uuid,
-            relativePath: "transformerForBuildPlusRuntime",
+      expectedResolvedSchema: {
+        type: "object",
+        definition: {
+          uuid: {
+            type: "uuid",
+            tag: {
+              value: {
+                id: 1,
+                defaultLabel: "Uuid",
+                editable: false,
+              },
+            },
+          },
+          name: {
+            type: "string",
+            tag: {
+              value: {
+                id: 5,
+                defaultLabel: "Name",
+                editable: true,
+              },
+            },
+          },
+          defaultLabel: {
+            type: "string",
+            tag: {
+              value: {
+                id: 6,
+                defaultLabel: "Default Label",
+                editable: true,
+              },
+            },
+          },
+          description: {
+            type: "string",
+            optional: true,
+            tag: {
+              value: {
+                id: 7,
+                defaultLabel: "Description",
+                editable: true,
+              },
+            },
+          },
+          parentUuid: {
+            type: "uuid",
+            tag: {
+              value: {
+                id: 3,
+                defaultLabel: "Entity Uuid",
+                editable: false,
+              },
+            },
+          },
+          parentDefinitionVersionUuid: {
+            type: "uuid",
+            optional: true,
+            tag: {
+              value: {
+                id: 4,
+                defaultLabel: "Entity Definition Version Uuid",
+                editable: false,
+              },
+            },
+          },
+          parentName: {
+            type: "string",
+            optional: true,
+            tag: {
+              value: {
+                id: 2,
+                defaultLabel: "Entity Name",
+                editable: false,
+              },
+            },
+          },
+          transformerInterface: {
+            type: "object",
+            definition: {
+              transformerParameterSchema: {
+                type: "object",
+                definition: {
+                  transformerType: {
+                    type: "object",
+                    definition: {
+                      type: {
+                        type: "literal",
+                        definition: "literal",
+                      },
+                      definition: {
+                        type: "string",
+                      },
+                    },
+                  },
+                  transformerDefinition: {
+                    type: "object",
+                    definition: {
+                      type: {
+                        type: "literal",
+                        definition: "object",
+                      },
+                      extend: {
+                        type: "array",
+                        optional: true,
+                        definition: {
+                          type: "object",
+                          definition: {
+                            type: {
+                              type: "literal",
+                              definition: "schemaReference",
+                            },
+                            definition: {
+                              type: "object",
+                              definition: {
+                                eager: {
+                                  type: "boolean",
+                                  optional: true,
+                                },
+                                absolutePath: {
+                                  type: "string",
+                                  optional: true,
+                                },
+                                relativePath: {
+                                  type: "string",
+                                  optional: true,
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                      definition: {
+                        type: "object",
+                        definition: {
+                          applyTo: {
+                            type: "object",
+                            definition: {
+                              type: {
+                                type: "literal",
+                                definition: "array",
+                              },
+                              definition: {
+                                type: "object",
+                                definition: {
+                                  type: {
+                                    type: "enum",
+                                    definition: [
+                                      "any",
+                                      "bigint",
+                                      "boolean",
+                                      "never",
+                                      "null",
+                                      "uuid",
+                                      "undefined",
+                                      "unknown",
+                                      "void",
+                                    ],
+                                  },
+                                },
+                              },
+                            },
+                          },
+                          referenceToOuterObject: {
+                            type: "object",
+                            definition: {
+                              type: {
+                                type: "literal",
+                                definition: "string",
+                              },
+                            },
+                          },
+                          elementTransformer: {
+                            type: "object",
+                            definition: {
+                              type: {
+                                type: "literal",
+                                definition: "schemaReference",
+                              },
+                              definition: {
+                                type: "object",
+                                definition: {
+                                  absolutePath: {
+                                    type: "string",
+                                    optional: true,
+                                  },
+                                  relativePath: {
+                                    type: "string",
+                                    optional: true,
+                                  },
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+              transformerResultSchema: {
+                type: "object",
+                definition: {
+                  type: {
+                    type: "literal",
+                    definition: "array",
+                  },
+                  definition: {
+                    type: "object",
+                    definition: {
+                      type: {
+                        type: "enum",
+                        definition: [
+                          "any",
+                          "bigint",
+                          "boolean",
+                          "never",
+                          "null",
+                          "uuid",
+                          "undefined",
+                          "unknown",
+                          "void",
+                        ],
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          transformerImplementation: {
+            type: "object",
+            definition: {
+              transformerImplementationType: {
+                type: "literal",
+                definition: "libraryImplementation",
+              },
+              inMemoryImplementationFunctionName: {
+                type: "string",
+              },
+              sqlImplementationFunctionName: {
+                type: "string",
+                optional: true,
+              },
+            },
           },
         },
-        testValueObject: {
-          transformerType: "listPickElement",
-          interpolation: "runtime",
-          applyTo: {
-            referenceType: "referencedTransformer",
-            reference: {
+      },
+      expectedKeyMap: {
+        name: {
+          rawSchema: {
+            type: "string",
+            tag: {
+              value: {
+                id: 5,
+                defaultLabel: "Name",
+                editable: true,
+              },
+            },
+          },
+          resolvedSchema: {
+            type: "string",
+          },
+        },
+        defaultLabel: {
+          rawSchema: {
+            type: "string",
+            tag: {
+              value: {
+                id: 6,
+                defaultLabel: "Default Label",
+                editable: true,
+              },
+            },
+          },
+          resolvedSchema: {
+            type: "string",
+          },
+        },
+        description: {
+          rawSchema: {
+            type: "string",
+            optional: true,
+            tag: {
+              value: {
+                id: 7,
+                defaultLabel: "Description",
+                editable: true,
+              },
+            },
+          },
+          resolvedSchema: {
+            type: "string",
+          },
+        },
+        parentName: {
+          rawSchema: {
+            type: "string",
+            optional: true,
+            tag: {
+              value: {
+                id: 2,
+                defaultLabel: "Entity Name",
+                editable: false,
+              },
+            },
+          },
+          resolvedSchema: {
+            type: "string",
+          },
+        },
+        "transformerInterface.transformerParameterSchema.transformerType.type": {
+          rawSchema: {
+            type: "literal",
+            definition: "literal",
+          },
+          resolvedSchema: {
+            type: "literal",
+            definition: "literal",
+          },
+        },
+        "transformerInterface.transformerParameterSchema.transformerType.definition": {
+          rawSchema: {
+            type: "string",
+          },
+          resolvedSchema: {
+            type: "string",
+          },
+        },
+        "transformerInterface.transformerParameterSchema.transformerType": {
+          rawSchema: {
+            type: "schemaReference",
+            definition: {
+              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              relativePath: "jzodLiteral",
+            },
+          },
+          resolvedSchema: {
+            type: "object",
+            definition: {
+              type: {
+                type: "literal",
+                definition: "literal",
+              },
+              definition: {
+                type: "string",
+              },
+            },
+          },
+        },
+        "transformerInterface.transformerParameterSchema.transformerDefinition.type": {
+          rawSchema: {
+            type: "literal",
+            definition: "object",
+          },
+          resolvedSchema: {
+            type: "literal",
+            definition: "object",
+          },
+        },
+        "transformerInterface.transformerParameterSchema.transformerDefinition.extend": {
+          rawSchema: {
+            type: "union",
+            optional: true,
+            definition: [
+              {
+                type: "union",
+                optional: true,
+                discriminator: "type",
+                definition: [
+                  {
+                    type: "schemaReference",
+                    definition: {
+                      absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      relativePath: "jzodReference",
+                    },
+                    context: {},
+                  },
+                  {
+                    type: "schemaReference",
+                    definition: {
+                      absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      relativePath: "jzodObject",
+                    },
+                    context: {},
+                  },
+                ],
+              },
+              {
+                type: "array",
+                definition: {
+                  type: "union",
+                  optional: true,
+                  discriminator: "type",
+                  definition: [
+                    {
+                      type: "schemaReference",
+                      definition: {
+                        absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        relativePath: "jzodReference",
+                      },
+                      context: {},
+                    },
+                    {
+                      type: "schemaReference",
+                      definition: {
+                        absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        relativePath: "jzodObject",
+                      },
+                      context: {},
+                    },
+                  ],
+                },
+              },
+            ],
+          },
+          chosenUnionBranchRawSchema: {
+            type: "array",
+            definition: {
+              type: "union",
+              optional: true,
+              discriminator: "type",
+              definition: [
+                {
+                  type: "schemaReference",
+                  definition: {
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    relativePath: "jzodReference",
+                  },
+                  context: {},
+                },
+                {
+                  type: "schemaReference",
+                  definition: {
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    relativePath: "jzodObject",
+                  },
+                  context: {},
+                },
+              ],
+            },
+          },
+          resolvedSchema: {
+            type: "array",
+            optional: true,
+            definition: {
+              type: "object",
+              definition: {
+                type: {
+                  type: "literal",
+                  definition: "schemaReference",
+                },
+                definition: {
+                  type: "object",
+                  definition: {
+                    eager: {
+                      type: "boolean",
+                      optional: true,
+                    },
+                    absolutePath: {
+                      type: "string",
+                      optional: true,
+                    },
+                    relativePath: {
+                      type: "string",
+                      optional: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        "transformerInterface.transformerParameterSchema.transformerDefinition.definition.applyTo.type":
+          {
+            rawSchema: {
+              type: "literal",
+              definition: "array",
+            },
+            resolvedSchema: {
+              type: "literal",
+              definition: "array",
+            },
+          },
+        "transformerInterface.transformerParameterSchema.transformerDefinition.definition.applyTo.definition.type":
+          {
+            rawSchema: {
+              type: "enum",
+              definition: [
+                "any",
+                "bigint",
+                "boolean",
+                "never",
+                "null",
+                "uuid",
+                "undefined",
+                "unknown",
+                "void",
+              ],
+            },
+            resolvedSchema: {
+              type: "enum",
+              definition: [
+                "any",
+                "bigint",
+                "boolean",
+                "never",
+                "null",
+                "uuid",
+                "undefined",
+                "unknown",
+                "void",
+              ],
+            },
+          },
+        "transformerInterface.transformerParameterSchema.transformerDefinition.definition.applyTo.definition":
+          {
+            rawSchema: {
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "jzodElement",
+              },
+              context: {},
+            },
+            resolvedSchema: {
+              type: "object",
+              definition: {
+                type: {
+                  type: "enum",
+                  definition: [
+                    "any",
+                    "bigint",
+                    "boolean",
+                    "never",
+                    "null",
+                    "uuid",
+                    "undefined",
+                    "unknown",
+                    "void",
+                  ],
+                },
+              },
+            },
+          },
+        "transformerInterface.transformerParameterSchema.transformerDefinition.definition.applyTo":
+          {
+            rawSchema: {
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "jzodElement",
+              },
+              context: {},
+            },
+            resolvedSchema: {
+              type: "object",
+              definition: {
+                type: {
+                  type: "literal",
+                  definition: "array",
+                },
+                definition: {
+                  type: "object",
+                  definition: {
+                    type: {
+                      type: "enum",
+                      definition: [
+                        "any",
+                        "bigint",
+                        "boolean",
+                        "never",
+                        "null",
+                        "uuid",
+                        "undefined",
+                        "unknown",
+                        "void",
+                      ],
+                    },
+                  },
+                },
+              },
+            },
+          },
+        "transformerInterface.transformerParameterSchema.transformerDefinition.definition.referenceToOuterObject.type":
+          {
+            rawSchema: {
+              type: "literal",
+              definition: "string",
+            },
+            resolvedSchema: {
+              type: "literal",
+              definition: "string",
+            },
+          },
+        "transformerInterface.transformerParameterSchema.transformerDefinition.definition.referenceToOuterObject":
+          {
+            rawSchema: {
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "jzodElement",
+              },
+              context: {},
+            },
+            resolvedSchema: {
+              type: "object",
+              definition: {
+                type: {
+                  type: "literal",
+                  definition: "string",
+                },
+              },
+            },
+          },
+        "transformerInterface.transformerParameterSchema.transformerDefinition.definition.elementTransformer.type":
+          {
+            rawSchema: {
+              type: "literal",
+              definition: "schemaReference",
+            },
+            resolvedSchema: {
+              type: "literal",
+              definition: "schemaReference",
+            },
+          },
+        "transformerInterface.transformerParameterSchema.transformerDefinition.definition.elementTransformer.definition.absolutePath":
+          {
+            rawSchema: {
+              type: "string",
+              optional: true,
+            },
+            resolvedSchema: {
+              type: "string",
+            },
+          },
+        "transformerInterface.transformerParameterSchema.transformerDefinition.definition.elementTransformer.definition.relativePath":
+          {
+            rawSchema: {
+              type: "string",
+              optional: true,
+            },
+            resolvedSchema: {
+              type: "string",
+            },
+          },
+        "transformerInterface.transformerParameterSchema.transformerDefinition.definition.elementTransformer.definition":
+          {
+            rawSchema: {
+              type: "object",
+              definition: {
+                eager: {
+                  type: "boolean",
+                  optional: true,
+                },
+                partial: {
+                  type: "boolean",
+                  optional: true,
+                },
+                relativePath: {
+                  type: "string",
+                  optional: true,
+                },
+                absolutePath: {
+                  type: "string",
+                  optional: true,
+                },
+              },
+            },
+            resolvedSchema: {
+              type: "object",
+              definition: {
+                absolutePath: {
+                  type: "string",
+                  optional: true,
+                },
+                relativePath: {
+                  type: "string",
+                  optional: true,
+                },
+              },
+            },
+          },
+        "transformerInterface.transformerParameterSchema.transformerDefinition.definition.elementTransformer":
+          {
+            rawSchema: {
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "jzodElement",
+              },
+              context: {},
+            },
+            resolvedSchema: {
+              type: "object",
+              definition: {
+                type: {
+                  type: "literal",
+                  definition: "schemaReference",
+                },
+                definition: {
+                  type: "object",
+                  definition: {
+                    absolutePath: {
+                      type: "string",
+                      optional: true,
+                    },
+                    relativePath: {
+                      type: "string",
+                      optional: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        "transformerInterface.transformerParameterSchema.transformerDefinition.definition": {
+          rawSchema: {
+            type: "record",
+            definition: {
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "jzodElement",
+              },
+              context: {},
+            },
+          },
+          resolvedSchema: {
+            type: "object",
+            definition: {
+              applyTo: {
+                type: "object",
+                definition: {
+                  type: {
+                    type: "literal",
+                    definition: "array",
+                  },
+                  definition: {
+                    type: "object",
+                    definition: {
+                      type: {
+                        type: "enum",
+                        definition: [
+                          "any",
+                          "bigint",
+                          "boolean",
+                          "never",
+                          "null",
+                          "uuid",
+                          "undefined",
+                          "unknown",
+                          "void",
+                        ],
+                      },
+                    },
+                  },
+                },
+              },
+              referenceToOuterObject: {
+                type: "object",
+                definition: {
+                  type: {
+                    type: "literal",
+                    definition: "string",
+                  },
+                },
+              },
+              elementTransformer: {
+                type: "object",
+                definition: {
+                  type: {
+                    type: "literal",
+                    definition: "schemaReference",
+                  },
+                  definition: {
+                    type: "object",
+                    definition: {
+                      absolutePath: {
+                        type: "string",
+                        optional: true,
+                      },
+                      relativePath: {
+                        type: "string",
+                        optional: true,
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        "transformerInterface.transformerParameterSchema.transformerDefinition": {
+          rawSchema: {
+            type: "schemaReference",
+            definition: {
+              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              relativePath: "jzodObject",
+            },
+          },
+          resolvedSchema: {
+            type: "object",
+            definition: {
+              type: {
+                type: "literal",
+                definition: "object",
+              },
+              extend: {
+                type: "array",
+                optional: true,
+                definition: {
+                  type: "object",
+                  definition: {
+                    type: {
+                      type: "literal",
+                      definition: "schemaReference",
+                    },
+                    definition: {
+                      type: "object",
+                      definition: {
+                        eager: {
+                          type: "boolean",
+                          optional: true,
+                        },
+                        absolutePath: {
+                          type: "string",
+                          optional: true,
+                        },
+                        relativePath: {
+                          type: "string",
+                          optional: true,
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+              definition: {
+                type: "object",
+                definition: {
+                  applyTo: {
+                    type: "object",
+                    definition: {
+                      type: {
+                        type: "literal",
+                        definition: "array",
+                      },
+                      definition: {
+                        type: "object",
+                        definition: {
+                          type: {
+                            type: "enum",
+                            definition: [
+                              "any",
+                              "bigint",
+                              "boolean",
+                              "never",
+                              "null",
+                              "uuid",
+                              "undefined",
+                              "unknown",
+                              "void",
+                            ],
+                          },
+                        },
+                      },
+                    },
+                  },
+                  referenceToOuterObject: {
+                    type: "object",
+                    definition: {
+                      type: {
+                        type: "literal",
+                        definition: "string",
+                      },
+                    },
+                  },
+                  elementTransformer: {
+                    type: "object",
+                    definition: {
+                      type: {
+                        type: "literal",
+                        definition: "schemaReference",
+                      },
+                      definition: {
+                        type: "object",
+                        definition: {
+                          absolutePath: {
+                            type: "string",
+                            optional: true,
+                          },
+                          relativePath: {
+                            type: "string",
+                            optional: true,
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        "transformerInterface.transformerParameterSchema": {
+          rawSchema: {
+            type: "object",
+            definition: {
+              transformerType: {
+                type: "schemaReference",
+                definition: {
+                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  relativePath: "jzodLiteral",
+                },
+              },
+              transformerDefinition: {
+                type: "schemaReference",
+                definition: {
+                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  relativePath: "jzodObject",
+                },
+              },
+            },
+          },
+          resolvedSchema: {
+            type: "object",
+            definition: {
+              transformerType: {
+                type: "object",
+                definition: {
+                  type: {
+                    type: "literal",
+                    definition: "literal",
+                  },
+                  definition: {
+                    type: "string",
+                  },
+                },
+              },
+              transformerDefinition: {
+                type: "object",
+                definition: {
+                  type: {
+                    type: "literal",
+                    definition: "object",
+                  },
+                  extend: {
+                    type: "array",
+                    optional: true,
+                    definition: {
+                      type: "object",
+                      definition: {
+                        type: {
+                          type: "literal",
+                          definition: "schemaReference",
+                        },
+                        definition: {
+                          type: "object",
+                          definition: {
+                            eager: {
+                              type: "boolean",
+                              optional: true,
+                            },
+                            absolutePath: {
+                              type: "string",
+                              optional: true,
+                            },
+                            relativePath: {
+                              type: "string",
+                              optional: true,
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                  definition: {
+                    type: "object",
+                    definition: {
+                      applyTo: {
+                        type: "object",
+                        definition: {
+                          type: {
+                            type: "literal",
+                            definition: "array",
+                          },
+                          definition: {
+                            type: "object",
+                            definition: {
+                              type: {
+                                type: "enum",
+                                definition: [
+                                  "any",
+                                  "bigint",
+                                  "boolean",
+                                  "never",
+                                  "null",
+                                  "uuid",
+                                  "undefined",
+                                  "unknown",
+                                  "void",
+                                ],
+                              },
+                            },
+                          },
+                        },
+                      },
+                      referenceToOuterObject: {
+                        type: "object",
+                        definition: {
+                          type: {
+                            type: "literal",
+                            definition: "string",
+                          },
+                        },
+                      },
+                      elementTransformer: {
+                        type: "object",
+                        definition: {
+                          type: {
+                            type: "literal",
+                            definition: "schemaReference",
+                          },
+                          definition: {
+                            type: "object",
+                            definition: {
+                              absolutePath: {
+                                type: "string",
+                                optional: true,
+                              },
+                              relativePath: {
+                                type: "string",
+                                optional: true,
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        "transformerInterface.transformerResultSchema.type": {
+          rawSchema: {
+            type: "literal",
+            definition: "array",
+          },
+          resolvedSchema: {
+            type: "literal",
+            definition: "array",
+          },
+        },
+        "transformerInterface.transformerResultSchema.definition.type": {
+          rawSchema: {
+            type: "enum",
+            definition: [
+              "any",
+              "bigint",
+              "boolean",
+              "never",
+              "null",
+              "uuid",
+              "undefined",
+              "unknown",
+              "void",
+            ],
+          },
+          resolvedSchema: {
+            type: "enum",
+            definition: [
+              "any",
+              "bigint",
+              "boolean",
+              "never",
+              "null",
+              "uuid",
+              "undefined",
+              "unknown",
+              "void",
+            ],
+          },
+        },
+        "transformerInterface.transformerResultSchema.definition": {
+          rawSchema: {
+            type: "schemaReference",
+            definition: {
+              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              relativePath: "jzodElement",
+            },
+            context: {},
+          },
+          resolvedSchema: {
+            type: "object",
+            definition: {
+              type: {
+                type: "enum",
+                definition: [
+                  "any",
+                  "bigint",
+                  "boolean",
+                  "never",
+                  "null",
+                  "uuid",
+                  "undefined",
+                  "unknown",
+                  "void",
+                ],
+              },
+            },
+          },
+        },
+        "transformerInterface.transformerResultSchema": {
+          rawSchema: {
+            type: "schemaReference",
+            optional: true,
+            definition: {
+              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              relativePath: "jzodElement",
+            },
+          },
+          resolvedSchema: {
+            type: "object",
+            definition: {
+              type: {
+                type: "literal",
+                definition: "array",
+              },
+              definition: {
+                type: "object",
+                definition: {
+                  type: {
+                    type: "enum",
+                    definition: [
+                      "any",
+                      "bigint",
+                      "boolean",
+                      "never",
+                      "null",
+                      "uuid",
+                      "undefined",
+                      "unknown",
+                      "void",
+                    ],
+                  },
+                },
+              },
+            },
+          },
+        },
+        transformerInterface: {
+          rawSchema: {
+            type: "object",
+            definition: {
+              transformerParameterSchema: {
+                type: "object",
+                definition: {
+                  transformerType: {
+                    type: "schemaReference",
+                    definition: {
+                      absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      relativePath: "jzodLiteral",
+                    },
+                  },
+                  transformerDefinition: {
+                    type: "schemaReference",
+                    definition: {
+                      absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      relativePath: "jzodObject",
+                    },
+                  },
+                },
+              },
+              transformerResultSchema: {
+                type: "schemaReference",
+                optional: true,
+                definition: {
+                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  relativePath: "jzodElement",
+                },
+              },
+            },
+          },
+          resolvedSchema: {
+            type: "object",
+            definition: {
+              transformerParameterSchema: {
+                type: "object",
+                definition: {
+                  transformerType: {
+                    type: "object",
+                    definition: {
+                      type: {
+                        type: "literal",
+                        definition: "literal",
+                      },
+                      definition: {
+                        type: "string",
+                      },
+                    },
+                  },
+                  transformerDefinition: {
+                    type: "object",
+                    definition: {
+                      type: {
+                        type: "literal",
+                        definition: "object",
+                      },
+                      extend: {
+                        type: "array",
+                        optional: true,
+                        definition: {
+                          type: "object",
+                          definition: {
+                            type: {
+                              type: "literal",
+                              definition: "schemaReference",
+                            },
+                            definition: {
+                              type: "object",
+                              definition: {
+                                eager: {
+                                  type: "boolean",
+                                  optional: true,
+                                },
+                                absolutePath: {
+                                  type: "string",
+                                  optional: true,
+                                },
+                                relativePath: {
+                                  type: "string",
+                                  optional: true,
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                      definition: {
+                        type: "object",
+                        definition: {
+                          applyTo: {
+                            type: "object",
+                            definition: {
+                              type: {
+                                type: "literal",
+                                definition: "array",
+                              },
+                              definition: {
+                                type: "object",
+                                definition: {
+                                  type: {
+                                    type: "enum",
+                                    definition: [
+                                      "any",
+                                      "bigint",
+                                      "boolean",
+                                      "never",
+                                      "null",
+                                      "uuid",
+                                      "undefined",
+                                      "unknown",
+                                      "void",
+                                    ],
+                                  },
+                                },
+                              },
+                            },
+                          },
+                          referenceToOuterObject: {
+                            type: "object",
+                            definition: {
+                              type: {
+                                type: "literal",
+                                definition: "string",
+                              },
+                            },
+                          },
+                          elementTransformer: {
+                            type: "object",
+                            definition: {
+                              type: {
+                                type: "literal",
+                                definition: "schemaReference",
+                              },
+                              definition: {
+                                type: "object",
+                                definition: {
+                                  absolutePath: {
+                                    type: "string",
+                                    optional: true,
+                                  },
+                                  relativePath: {
+                                    type: "string",
+                                    optional: true,
+                                  },
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+              transformerResultSchema: {
+                type: "object",
+                definition: {
+                  type: {
+                    type: "literal",
+                    definition: "array",
+                  },
+                  definition: {
+                    type: "object",
+                    definition: {
+                      type: {
+                        type: "enum",
+                        definition: [
+                          "any",
+                          "bigint",
+                          "boolean",
+                          "never",
+                          "null",
+                          "uuid",
+                          "undefined",
+                          "unknown",
+                          "void",
+                        ],
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        "transformerImplementation.transformerImplementationType": {
+          rawSchema: {
+            type: "literal",
+            definition: "libraryImplementation",
+          },
+          resolvedSchema: {
+            type: "literal",
+            definition: "libraryImplementation",
+          },
+        },
+        "transformerImplementation.inMemoryImplementationFunctionName": {
+          rawSchema: {
+            type: "string",
+          },
+          resolvedSchema: {
+            type: "string",
+          },
+        },
+        "transformerImplementation.sqlImplementationFunctionName": {
+          rawSchema: {
+            type: "string",
+            optional: true,
+          },
+          resolvedSchema: {
+            type: "string",
+          },
+        },
+        transformerImplementation: {
+          rawSchema: {
+            type: "union",
+            discriminator: "transformerImplementationType",
+            definition: [
+              {
+                type: "object",
+                definition: {
+                  transformerImplementationType: {
+                    type: "literal",
+                    definition: "libraryImplementation",
+                  },
+                  inMemoryImplementationFunctionName: {
+                    type: "string",
+                  },
+                  sqlImplementationFunctionName: {
+                    type: "string",
+                    optional: true,
+                  },
+                },
+              },
+              {
+                type: "object",
+                definition: {
+                  transformerImplementationType: {
+                    type: "literal",
+                    definition: "transformer",
+                  },
+                  definition: {
+                    type: "schemaReference",
+                    definition: {
+                      absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      relativePath: "transformerForBuildOrRuntime",
+                    },
+                  },
+                },
+              },
+            ],
+          },
+          chosenUnionBranchRawSchema: {
+            type: "object",
+            definition: {
+              transformerImplementationType: {
+                type: "literal",
+                definition: "libraryImplementation",
+              },
+              inMemoryImplementationFunctionName: {
+                type: "string",
+              },
+              sqlImplementationFunctionName: {
+                type: "string",
+                optional: true,
+              },
+            },
+          },
+          resolvedSchema: {
+            type: "object",
+            definition: {
+              transformerImplementationType: {
+                type: "literal",
+                definition: "libraryImplementation",
+              },
+              inMemoryImplementationFunctionName: {
+                type: "string",
+              },
+              sqlImplementationFunctionName: {
+                type: "string",
+                optional: true,
+              },
+            },
+          },
+        },
+        "": {
+          rawSchema: {
+            type: "object",
+            definition: {
+              uuid: {
+                type: "uuid",
+                tag: {
+                  value: {
+                    id: 1,
+                    defaultLabel: "Uuid",
+                    editable: false,
+                  },
+                },
+              },
+              parentName: {
+                type: "string",
+                optional: true,
+                tag: {
+                  value: {
+                    id: 2,
+                    defaultLabel: "Entity Name",
+                    editable: false,
+                  },
+                },
+              },
+              parentUuid: {
+                type: "uuid",
+                tag: {
+                  value: {
+                    id: 3,
+                    defaultLabel: "Entity Uuid",
+                    editable: false,
+                  },
+                },
+              },
+              parentDefinitionVersionUuid: {
+                type: "uuid",
+                optional: true,
+                tag: {
+                  value: {
+                    id: 4,
+                    defaultLabel: "Entity Definition Version Uuid",
+                    editable: false,
+                  },
+                },
+              },
+              name: {
+                type: "string",
+                tag: {
+                  value: {
+                    id: 5,
+                    defaultLabel: "Name",
+                    editable: true,
+                  },
+                },
+              },
+              defaultLabel: {
+                type: "string",
+                tag: {
+                  value: {
+                    id: 6,
+                    defaultLabel: "Default Label",
+                    editable: true,
+                  },
+                },
+              },
+              description: {
+                type: "string",
+                optional: true,
+                tag: {
+                  value: {
+                    id: 7,
+                    defaultLabel: "Description",
+                    editable: true,
+                  },
+                },
+              },
+              transformerInterface: {
+                type: "object",
+                definition: {
+                  transformerParameterSchema: {
+                    type: "object",
+                    definition: {
+                      transformerType: {
+                        type: "schemaReference",
+                        definition: {
+                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          relativePath: "jzodLiteral",
+                        },
+                      },
+                      transformerDefinition: {
+                        type: "schemaReference",
+                        definition: {
+                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          relativePath: "jzodObject",
+                        },
+                      },
+                    },
+                  },
+                  transformerResultSchema: {
+                    type: "schemaReference",
+                    optional: true,
+                    definition: {
+                      absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      relativePath: "jzodElement",
+                    },
+                  },
+                },
+              },
+              transformerImplementation: {
+                type: "union",
+                discriminator: "transformerImplementationType",
+                definition: [
+                  {
+                    type: "object",
+                    definition: {
+                      transformerImplementationType: {
+                        type: "literal",
+                        definition: "libraryImplementation",
+                      },
+                      inMemoryImplementationFunctionName: {
+                        type: "string",
+                      },
+                      sqlImplementationFunctionName: {
+                        type: "string",
+                        optional: true,
+                      },
+                    },
+                  },
+                  {
+                    type: "object",
+                    definition: {
+                      transformerImplementationType: {
+                        type: "literal",
+                        definition: "transformer",
+                      },
+                      definition: {
+                        type: "schemaReference",
+                        definition: {
+                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          relativePath: "transformerForBuildOrRuntime",
+                        },
+                      },
+                    },
+                  },
+                ],
+              },
+            },
+          },
+          resolvedSchema: {
+            type: "object",
+            definition: {
+              uuid: {
+                type: "uuid",
+                tag: {
+                  value: {
+                    id: 1,
+                    defaultLabel: "Uuid",
+                    editable: false,
+                  },
+                },
+              },
+              name: {
+                type: "string",
+                tag: {
+                  value: {
+                    id: 5,
+                    defaultLabel: "Name",
+                    editable: true,
+                  },
+                },
+              },
+              defaultLabel: {
+                type: "string",
+                tag: {
+                  value: {
+                    id: 6,
+                    defaultLabel: "Default Label",
+                    editable: true,
+                  },
+                },
+              },
+              description: {
+                type: "string",
+                optional: true,
+                tag: {
+                  value: {
+                    id: 7,
+                    defaultLabel: "Description",
+                    editable: true,
+                  },
+                },
+              },
+              parentUuid: {
+                type: "uuid",
+                tag: {
+                  value: {
+                    id: 3,
+                    defaultLabel: "Entity Uuid",
+                    editable: false,
+                  },
+                },
+              },
+              parentDefinitionVersionUuid: {
+                type: "uuid",
+                optional: true,
+                tag: {
+                  value: {
+                    id: 4,
+                    defaultLabel: "Entity Definition Version Uuid",
+                    editable: false,
+                  },
+                },
+              },
+              parentName: {
+                type: "string",
+                optional: true,
+                tag: {
+                  value: {
+                    id: 2,
+                    defaultLabel: "Entity Name",
+                    editable: false,
+                  },
+                },
+              },
+              transformerInterface: {
+                type: "object",
+                definition: {
+                  transformerParameterSchema: {
+                    type: "object",
+                    definition: {
+                      transformerType: {
+                        type: "object",
+                        definition: {
+                          type: {
+                            type: "literal",
+                            definition: "literal",
+                          },
+                          definition: {
+                            type: "string",
+                          },
+                        },
+                      },
+                      transformerDefinition: {
+                        type: "object",
+                        definition: {
+                          type: {
+                            type: "literal",
+                            definition: "object",
+                          },
+                          extend: {
+                            type: "array",
+                            optional: true,
+                            definition: {
+                              type: "object",
+                              definition: {
+                                type: {
+                                  type: "literal",
+                                  definition: "schemaReference",
+                                },
+                                definition: {
+                                  type: "object",
+                                  definition: {
+                                    eager: {
+                                      type: "boolean",
+                                      optional: true,
+                                    },
+                                    absolutePath: {
+                                      type: "string",
+                                      optional: true,
+                                    },
+                                    relativePath: {
+                                      type: "string",
+                                      optional: true,
+                                    },
+                                  },
+                                },
+                              },
+                            },
+                          },
+                          definition: {
+                            type: "object",
+                            definition: {
+                              applyTo: {
+                                type: "object",
+                                definition: {
+                                  type: {
+                                    type: "literal",
+                                    definition: "array",
+                                  },
+                                  definition: {
+                                    type: "object",
+                                    definition: {
+                                      type: {
+                                        type: "enum",
+                                        definition: [
+                                          "any",
+                                          "bigint",
+                                          "boolean",
+                                          "never",
+                                          "null",
+                                          "uuid",
+                                          "undefined",
+                                          "unknown",
+                                          "void",
+                                        ],
+                                      },
+                                    },
+                                  },
+                                },
+                              },
+                              referenceToOuterObject: {
+                                type: "object",
+                                definition: {
+                                  type: {
+                                    type: "literal",
+                                    definition: "string",
+                                  },
+                                },
+                              },
+                              elementTransformer: {
+                                type: "object",
+                                definition: {
+                                  type: {
+                                    type: "literal",
+                                    definition: "schemaReference",
+                                  },
+                                  definition: {
+                                    type: "object",
+                                    definition: {
+                                      absolutePath: {
+                                        type: "string",
+                                        optional: true,
+                                      },
+                                      relativePath: {
+                                        type: "string",
+                                        optional: true,
+                                      },
+                                    },
+                                  },
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                  transformerResultSchema: {
+                    type: "object",
+                    definition: {
+                      type: {
+                        type: "literal",
+                        definition: "array",
+                      },
+                      definition: {
+                        type: "object",
+                        definition: {
+                          type: {
+                            type: "enum",
+                            definition: [
+                              "any",
+                              "bigint",
+                              "boolean",
+                              "never",
+                              "null",
+                              "uuid",
+                              "undefined",
+                              "unknown",
+                              "void",
+                            ],
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+              transformerImplementation: {
+                type: "object",
+                definition: {
+                  transformerImplementationType: {
+                    type: "literal",
+                    definition: "libraryImplementation",
+                  },
+                  inMemoryImplementationFunctionName: {
+                    type: "string",
+                  },
+                  sqlImplementationFunctionName: {
+                    type: "string",
+                    optional: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    // ##########################################################################################
+    // ########################### QUERIES ######################################
+    // ##########################################################################################
+    test700: {
+      testSchema: {
+        type: "schemaReference",
+        definition: {
+          absolutePath: castMiroirFundamentalJzodSchema.uuid,
+          relativePath: "boxedQueryWithExtractorCombinerTransformer",
+        },
+      },
+      testValueObject: {
+        queryType: "boxedQueryWithExtractorCombinerTransformer",
+        deploymentUuid: "dde4c883-ae6d-47c3-b6df-26bc6e3c1842",
+        // deploymentUuid: {
+        //   transformerType: "parameterReference",
+        //   interpolation: "build",
+        //   referenceName: "testDeploymentUuid",
+        // },
+        pageParams: {},
+        queryParams: {},
+        contextResults: {},
+        extractors: {
+          menuList: {
+            extractorOrCombinerType: "extractorByEntityReturningObjectList",
+            applicationSection: "model",
+            parentName: "Menu",
+            // parentName: {
+            //   transformerType: "parameterReference",
+            //   interpolation: "build",
+            //   referencePath: ["entityMenu", "name"],
+            // },
+            parentUuid: "dde4c883-ae6d-47c3-b6df-26bc6e3c1842",
+            // parentUuid: "0000000-0000-0000-0000-000000000000",
+            // parentUuid: {
+            //   transformerType: "parameterReference",
+            //   interpolation: "build",
+            //   referencePath: ["entityMenu", "uuid"],
+            // },
+          },
+        },
+        runtimeTransformers: {
+          menu: {
+            transformerType: "listPickElement",
+            interpolation: "runtime",
+            applyTo: {
+              referenceType: "referencedTransformer",
+              reference: {
+                transformerType: "contextReference",
+                interpolation: "runtime",
+                referenceName: "menuList",
+              },
+            },
+            index: 0,
+          },
+          menuItem: {
+            transformerType: "freeObjectTemplate",
+            interpolation: "runtime",
+            definition: {
+              reportUuid: {
+                transformerType: "parameterReference",
+                interpolation: "build",
+                referenceName: "createEntity_newEntityListReportUuid",
+              },
+              label: {
+                transformerType: "mustacheStringTemplate",
+                interpolation: "build",
+                definition: "List of {{newEntityName}}s",
+              },
+              section: "data",
+              selfApplication: {
+                transformerType: "parameterReference",
+                interpolation: "build",
+                referencePath: ["adminConfigurationDeploymentParis", "uuid"],
+              },
+              icon: "local_drink",
+            },
+          },
+          updatedMenu: {
+            transformerType: "transformer_menu_addItem",
+            interpolation: "runtime",
+            menuItemReference: {
               transformerType: "contextReference",
               interpolation: "runtime",
-              referenceName: "menuList",
+              referenceName: "menuItem",
             },
+            menuReference: {
+              transformerType: "contextReference",
+              interpolation: "runtime",
+              referenceName: "menu",
+            },
+            menuSectionItemInsertionIndex: -1,
           },
-          index: 0,
-        },
-        expectedResolvedSchema: {
-          type: "object",
-          definition: {
-            transformerType: {
-              type: "literal",
-              definition: "listPickElement",
-            },
-            interpolation: {
-              type: "literal",
-              definition: "runtime",
-            },
-            applyTo: {
-              type: "object",
-              definition: {
-                referenceType: {
-                  type: "literal",
-                  definition: "referencedTransformer",
-                },
-                reference: {
-                  type: "object",
-                  definition: {
-                    transformerType: {
-                      type: "literal",
-                      definition: "contextReference",
-                    },
-                    interpolation: {
-                      type: "literal",
-                      optional: true,
-                      definition: "runtime",
-                    },
-                    referenceName: {
-                      optional: true,
-                      type: "string",
-                    },
-                  },
-                },
-              },
-            },
-            index: {
-              type: "number",
-            },
-          },
-        },
-        expectedKeyMap: {
-          "transformerType": {
-            rawSchema: {
-              type: "literal",
-              definition: "listPickElement",
-            },
-            resolvedSchema: {
-              type: "literal",
-              definition: "listPickElement",
-            }
-          },
-          "interpolation": {
-            rawSchema: {
-              type: "literal",
-              definition: "runtime",
-            },
-            resolvedSchema: {
-              type: "literal",
-              definition: "runtime",
-            }
-          },
-          "applyTo.referenceType": {
-            rawSchema: {
-              type: "literal",
-              definition: "referencedTransformer",
-            },
-            resolvedSchema: {
-              type: "literal",
-              definition: "referencedTransformer",
-            }
-          },
-          "applyTo.reference.transformerType": {
-            rawSchema: {
-              type: "literal",
-              definition: "contextReference",
-            },
-            resolvedSchema: {
-              type: "literal",
-              definition: "contextReference",
-            }
-          },
-          "applyTo.reference.interpolation": {
-            rawSchema: {
-              type: "literal",
-              optional: true,
-              definition: "runtime",
-            },
-            resolvedSchema: {
-              type: "literal",
-              optional: true,
-              definition: "runtime",
-            }
-          },
-          "applyTo.reference.referenceName": {
-            rawSchema: {
-              optional: true,
-              type: "string",
-            },
-            resolvedSchema: {
-              optional: true,
-              type: "string",
-            }
-          },
-          "applyTo.reference": {
-            rawSchema: {
-              type: "object",
-              definition: {
-                transformerType: {
-                  type: "literal",
-                  definition: "contextReference",
-                },
-                interpolation: {
-                  type: "literal",
-                  optional: true,
-                  definition: "runtime",
-                },
-                referenceName: {
-                  optional: true,
-                  type: "string",
-                },
-              },
-            },
-            resolvedSchema: {
-              type: "object",
-              definition: {
-                transformerType: {
-                  type: "literal",
-                  definition: "contextReference",
-                },
-                interpolation: {
-                  type: "literal",
-                  optional: true,
-                  definition: "runtime",
-                },
-                referenceName: {
-                  optional: true,
-                  type: "string",
-                },
-              },
-            }
-          },
-          "applyTo": {
-            rawSchema: {
-              type: "object",
-              definition: {
-                referenceType: {
-                  type: "literal",
-                  definition: "referencedTransformer",
-                },
-                reference: {
-                  type: "object",
-                  definition: {
-                    transformerType: {
-                      type: "literal",
-                      definition: "contextReference",
-                    },
-                    interpolation: {
-                      type: "literal",
-                      optional: true,
-                      definition: "runtime",
-                    },
-                    referenceName: {
-                      optional: true,
-                      type: "string",
-                    },
-                  },
-                },
-              },
-            },
-            resolvedSchema: {
-              type: "object",
-              definition: {
-                referenceType: {
-                  type: "literal",
-                  definition: "referencedTransformer",
-                },
-                reference: {
-                  type: "object",
-                  definition: {
-                    transformerType: {
-                      type: "literal",
-                      definition: "contextReference",
-                    },
-                    interpolation: {
-                      type: "literal",
-                      optional: true,
-                      definition: "runtime",
-                    },
-                    referenceName: {
-                      optional: true,
-                      type: "string",
-                    },
-                  },
-                },
-              },
-            }
-          },
-          "index": {
-            rawSchema: {
-              type: "number",
-            },
-            resolvedSchema: {
-              type: "number",
-            }
-          }
         },
       },
-      // runtime freeObjectTemplate with inner build transformer
-      test620: {
-        testSchema: {
-          type: "schemaReference",
-          definition: {
-            absolutePath: castMiroirFundamentalJzodSchema.uuid,
-            relativePath: "transformerForBuildPlusRuntime",
+      expectedResolvedSchema: {
+        type: "object",
+        definition: {
+          queryType: {
+            type: "literal",
+            definition: "boxedQueryWithExtractorCombinerTransformer",
           },
-        },
-        testValueObject: {
-          transformerType: "freeObjectTemplate",
-          interpolation: "runtime",
-          definition: {
-            reportUuid: {
-              transformerType: "parameterReference",
-              interpolation: "build",
-              referenceName: "createEntity_newEntityListReportUuid",
-            },
-            label: {
-              transformerType: "mustacheStringTemplate",
-              interpolation: "build",
-              definition: "List of {{newEntityName}}s",
-            },
-            section: "data",
-            selfApplication: {
-              transformerType: "parameterReference",
-              interpolation: "build",
-              referencePath: ["adminConfigurationDeploymentParis", "uuid"],
-            },
-            icon: "local_drink",
-          },
-        },
-        expectedResolvedSchema: {
-          type: "object",
-          definition: {
-            transformerType: {
-              type: "literal",
-              definition: "freeObjectTemplate",
-            },
-            interpolation: {
-              type: "literal",
-              definition: "runtime",
-            },
-            definition: {
-              type: "object",
-              definition: {
-                reportUuid: {
-                  type: "object",
-                  definition: {
-                    transformerType: {
-                      type: "literal",
-                      definition: "parameterReference",
-                    },
-                    interpolation: {
-                      type: "literal",
-                      optional: true,
-                      definition: "build",
-                    },
-                    referenceName: {
-                      optional: true,
-                      type: "string",
-                    },
-                  },
-                },
-                label: {
-                  type: "object",
-                  definition: {
-                    transformerType: {
-                      type: "literal",
-                      definition: "mustacheStringTemplate",
-                    },
-                    interpolation: {
-                      type: "literal",
-                      definition: "build",
-                    },
-                    definition: {
-                      type: "string",
-                    },
-                  },
-                },
-                section: {
-                  type: "string",
-                },
-                selfApplication: {
-                  type: "object",
-                  definition: {
-                    transformerType: {
-                      type: "literal",
-                      definition: "parameterReference",
-                    },
-                    interpolation: {
-                      type: "literal",
-                      optional: true,
-                      definition: "build",
-                    },
-                    referencePath: {
-                      optional: true,
-                      type: "tuple",
-                      definition: [
-                        {
-                          type: "string",
-                        },
-                        {
-                          type: "string",
-                        },
-                      ],
-                    },
-                  },
-                },
-                icon: {
-                  type: "string",
-                },
+          deploymentUuid: {
+            type: "uuid",
+            tag: {
+              value: {
+                id: 1,
+                canBeTemplate: true,
+                defaultLabel: "Uuid",
+                editable: false,
               },
             },
           },
-        },
-        expectedKeyMap: {
-          "transformerType": {
-            rawSchema: {
-              type: "literal",
-              definition: "freeObjectTemplate",
-            },
-            resolvedSchema: {
-              type: "literal",
-              definition: "freeObjectTemplate",
-            }
+          pageParams: {
+            type: "object",
+            definition: {},
           },
-          "interpolation": {
-            rawSchema: {
-              type: "literal",
-              definition: "runtime",
-            },
-            resolvedSchema: {
-              type: "literal",
-              definition: "runtime",
-            }
+          queryParams: {
+            type: "object",
+            definition: {},
           },
-          "definition.reportUuid.transformerType": {
-            rawSchema: {
-              type: "literal",
-              definition: "parameterReference",
-            },
-            resolvedSchema: {
-              type: "literal",
-              definition: "parameterReference",
-            }
+          contextResults: {
+            type: "object",
+            definition: {},
           },
-          "definition.reportUuid.interpolation": {
-            rawSchema: {
-              type: "literal",
-              optional: true,
-              definition: "build",
-            },
-            resolvedSchema: {
-              type: "literal",
-              optional: true,
-              definition: "build",
-            }
-          },
-          "definition.reportUuid.referenceName": {
-            rawSchema: {
-              optional: true,
-              type: "string",
-            },
-            resolvedSchema: {
-              optional: true,
-              type: "string",
-            }
-          },
-          "definition.reportUuid": {
-            rawSchema: {
-              type: "object",
-              definition: {
-                transformerType: {
-                  type: "literal",
-                  definition: "parameterReference",
-                },
-                interpolation: {
-                  type: "literal",
-                  optional: true,
-                  definition: "build",
-                },
-                referenceName: {
-                  optional: true,
-                  type: "string",
-                },
-              },
-            },
-            resolvedSchema: {
-              type: "object",
-              definition: {
-                transformerType: {
-                  type: "literal",
-                  definition: "parameterReference",
-                },
-                interpolation: {
-                  type: "literal",
-                  optional: true,
-                  definition: "build",
-                },
-                referenceName: {
-                  optional: true,
-                  type: "string",
-                },
-              },
-            }
-          },
-          "definition.label.transformerType": {
-            rawSchema: {
-              type: "literal",
-              definition: "mustacheStringTemplate",
-            },
-            resolvedSchema: {
-              type: "literal",
-              definition: "mustacheStringTemplate",
-            }
-          },
-          "definition.label.interpolation": {
-            rawSchema: {
-              type: "literal",
-              definition: "build",
-            },
-            resolvedSchema: {
-              type: "literal",
-              definition: "build",
-            }
-          },
-          "definition.label.definition": {
-            rawSchema: {
-              type: "string",
-            },
-            resolvedSchema: {
-              type: "string",
-            }
-          },
-          "definition.label": {
-            rawSchema: {
-              type: "object",
-              definition: {
-                transformerType: {
-                  type: "literal",
-                  definition: "mustacheStringTemplate",
-                },
-                interpolation: {
-                  type: "literal",
-                  definition: "build",
-                },
-                definition: {
-                  type: "string",
-                },
-              },
-            },
-            resolvedSchema: {
-              type: "object",
-              definition: {
-                transformerType: {
-                  type: "literal",
-                  definition: "mustacheStringTemplate",
-                },
-                interpolation: {
-                  type: "literal",
-                  definition: "build",
-                },
-                definition: {
-                  type: "string",
-                },
-              },
-            }
-          },
-          "definition.section": {
-            rawSchema: {
-              type: "string",
-            },
-            resolvedSchema: {
-              type: "string",
-            }
-          },
-          "definition.selfApplication.transformerType": {
-            rawSchema: {
-              type: "literal",
-              definition: "parameterReference",
-            },
-            resolvedSchema: {
-              type: "literal",
-              definition: "parameterReference",
-            }
-          },
-          "definition.selfApplication.interpolation": {
-            rawSchema: {
-              type: "literal",
-              optional: true,
-              definition: "build",
-            },
-            resolvedSchema: {
-              type: "literal",
-              optional: true,
-              definition: "build",
-            }
-          },
-          "definition.selfApplication.referencePath.0": {
-            rawSchema: {
-              type: "string",
-            },
-            resolvedSchema: {
-              type: "string",
-            }
-          },
-          "definition.selfApplication.referencePath.1": {
-            rawSchema: {
-              type: "string",
-            },
-            resolvedSchema: {
-              type: "string",
-            }
-          },
-          "definition.selfApplication.referencePath": {
-            rawSchema: {
-              optional: true,
-              type: "tuple",
-              definition: [
-                {
-                  type: "string",
-                },
-                {
-                  type: "string",
-                },
-              ],
-            },
-            resolvedSchema: {
-              optional: true,
-              type: "tuple",
-              definition: [
-                {
-                  type: "string",
-                },
-                {
-                  type: "string",
-                },
-              ],
-            }
-          },
-          "definition.selfApplication": {
-            rawSchema: {
-              type: "object",
-              definition: {
-                transformerType: {
-                  type: "literal",
-                  definition: "parameterReference",
-                },
-                interpolation: {
-                  type: "literal",
-                  optional: true,
-                  definition: "build",
-                },
-                referencePath: {
-                  optional: true,
-                  type: "tuple",
-                  definition: [
-                    {
-                      type: "string",
-                    },
-                    {
-                      type: "string",
-                    },
-                  ],
-                },
-              },
-            },
-            resolvedSchema: {
-              type: "object",
-              definition: {
-                transformerType: {
-                  type: "literal",
-                  definition: "parameterReference",
-                },
-                interpolation: {
-                  type: "literal",
-                  optional: true,
-                  definition: "build",
-                },
-                referencePath: {
-                  optional: true,
-                  type: "tuple",
-                  definition: [
-                    {
-                      type: "string",
-                    },
-                    {
-                      type: "string",
-                    },
-                  ],
-                },
-              },
-            }
-          },
-          "definition.icon": {
-            rawSchema: {
-              type: "string",
-            },
-            resolvedSchema: {
-              type: "string",
-            }
-          },
-          "definition": {
-            rawSchema: {
-              type: "object",
-              definition: {
-                reportUuid: {
-                  type: "object",
-                  definition: {
-                    transformerType: {
-                      type: "literal",
-                      definition: "parameterReference",
-                    },
-                    interpolation: {
-                      type: "literal",
-                      optional: true,
-                      definition: "build",
-                    },
-                    referenceName: {
-                      optional: true,
-                      type: "string",
-                    },
-                  },
-                },
-                label: {
-                  type: "object",
-                  definition: {
-                    transformerType: {
-                      type: "literal",
-                      definition: "mustacheStringTemplate",
-                    },
-                    interpolation: {
-                      type: "literal",
-                      definition: "build",
-                    },
-                    definition: {
-                      type: "string",
-                    },
-                  },
-                },
-                section: {
-                  type: "string",
-                },
-                selfApplication: {
-                  type: "object",
-                  definition: {
-                    transformerType: {
-                      type: "literal",
-                      definition: "parameterReference",
-                    },
-                    interpolation: {
-                      type: "literal",
-                      optional: true,
-                      definition: "build",
-                    },
-                    referencePath: {
-                      optional: true,
-                      type: "tuple",
-                      definition: [
-                        {
-                          type: "string",
-                        },
-                        {
-                          type: "string",
-                        },
-                      ],
-                    },
-                  },
-                },
-                icon: {
-                  type: "string",
-                },
-              },
-            },
-            resolvedSchema: {
-              type: "object",
-              definition: {
-                reportUuid: {
-                  type: "object",
-                  definition: {
-                    transformerType: {
-                      type: "literal",
-                      definition: "parameterReference",
-                    },
-                    interpolation: {
-                      type: "literal",
-                      optional: true,
-                      definition: "build",
-                    },
-                    referenceName: {
-                      optional: true,
-                      type: "string",
-                    },
-                  },
-                },
-                label: {
-                  type: "object",
-                  definition: {
-                    transformerType: {
-                      type: "literal",
-                      definition: "mustacheStringTemplate",
-                    },
-                    interpolation: {
-                      type: "literal",
-                      definition: "build",
-                    },
-                    definition: {
-                      type: "string",
-                    },
-                  },
-                },
-                section: {
-                  type: "string",
-                },
-                selfApplication: {
-                  type: "object",
-                  definition: {
-                    transformerType: {
-                      type: "literal",
-                      definition: "parameterReference",
-                    },
-                    interpolation: {
-                      type: "literal",
-                      optional: true,
-                      definition: "build",
-                    },
-                    referencePath: {
-                      optional: true,
-                      type: "tuple",
-                      definition: [
-                        {
-                          type: "string",
-                        },
-                        {
-                          type: "string",
-                        },
-                      ],
-                    },
-                  },
-                },
-                icon: {
-                  type: "string",
-                },
-              },
-            }
-          }
-        },
-      },
-      // mapperListToList Transformer
-      test630: {
-        testSchema: {
-          "type": "object",
-          "definition": {
-            "uuid": {
-              "type": "uuid",
-              "tag": {
-                "value": {
-                  "id": 1,
-                  "defaultLabel": "Uuid",
-                  "editable": false
-                }
-              }
-            },
-            "parentName": {
-              "type": "string",
-              "optional": true,
-              "tag": {
-                "value": {
-                  "id": 2,
-                  "defaultLabel": "Entity Name",
-                  "editable": false
-                }
-              }
-            },
-            "parentUuid": {
-              "type": "uuid",
-              "tag": {
-                "value": {
-                  "id": 3,
-                  "defaultLabel": "Entity Uuid",
-                  "editable": false
-                }
-              }
-            },
-            "parentDefinitionVersionUuid": {
-              "type": "uuid",
-              "optional": true,
-              "tag": {
-                "value": {
-                  "id": 4,
-                  "defaultLabel": "Entity Definition Version Uuid",
-                  "editable": false
-                }
-              }
-            },
-            "name": {
-              "type": "string",
-              "tag": {
-                "value": {
-                  "id": 5,
-                  "defaultLabel": "Name",
-                  "editable": true
-                }
-              }
-            },
-            "defaultLabel": {
-              "type": "string",
-              "tag": {
-                "value": {
-                  "id": 6,
-                  "defaultLabel": "Default Label",
-                  "editable": true
-                }
-              }
-            },
-            "description": {
-              "type": "string",
-              "optional": true,
-              "tag": {
-                "value": {
-                  "id": 7,
-                  "defaultLabel": "Description",
-                  "editable": true
-                }
-              }
-            },
-            "transformerInterface": {
-              "type": "object",
-              "definition": {
-                "transformerParameterSchema": {
-                  "type": "object",
-                  "definition": {
-                    "transformerType": {
-                      "type": "schemaReference",
-                      "definition": {
-                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "relativePath": "jzodLiteral"
-                      }
-                    },
-                    "transformerDefinition": {
-                      "type": "schemaReference",
-                      "definition": {
-                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "relativePath": "jzodObject"
-                      }
-                    }
-                  }
-                },
-                "transformerResultSchema": {
-                  "type": "schemaReference",
-                  "optional": true,
-                  "definition": {
-                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    "relativePath": "jzodElement"
-                  }
-                }
-              }
-            },
-            "transformerImplementation": {
-              "type": "union",
-              "discriminator": "transformerImplementationType",
-              "definition": [
-                {
-                  "type": "object",
-                  "definition": {
-                    "transformerImplementationType": {
-                      "type": "literal",
-                      "definition": "libraryImplementation"
-                    },
-                    "inMemoryImplementationFunctionName": {
-                      "type": "string"
-                    },
-                    "sqlImplementationFunctionName": {
-                      "type": "string",
-                      "optional": true
-                    }
-                  }
-                },
-                {
-                  "type": "object",
-                  "definition": {
-                    "transformerImplementationType": {
-                      "type": "literal",
-                      "definition": "transformer"
-                    },
-                    "definition": {
-                      "type": "schemaReference",
-                      "definition": {
-                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "relativePath": "transformerForBuildOrRuntime"
-                      }
-                    }
-                  }
-                }
-              ]
-            }
-          }
-        },
-        testValueObject: {
-          "uuid": "3ec73049-5e54-40aa-bc86-4c4906d00baa",
-          "name": "mapperListToList",
-          "defaultLabel": "mapperListToList",
-          "description": "Transform a list into another list, running the given transformer on each item of the list",
-          "parentUuid": "a557419d-a288-4fb8-8a1e-971c86c113b8",
-          "parentDefinitionVersionUuid": "54a16d69-c1f0-4dd7-aba4-a2cda883586c",
-          "parentName": "TransformerDefinition",
-          "transformerInterface": {
-            "transformerParameterSchema": {
-              "transformerType": {
-                "type": "literal",
-                "definition": "mapperListToList"
-              },
-              "transformerDefinition": {
-                "type": "object",
-                "extend": [
-                  {
-                    "type": "schemaReference",
-                    "definition": {
-                      "eager": true,
-                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "transformer_orderBy"
-                    }
-                  }
-                ],
-                "definition": {
-                  "applyTo": {
-                    "type": "array",
-                    "definition": {
-                      "type": "any"
-                    }
-                  },
-                  "referenceToOuterObject": {
-                    "type": "string"
-                  },
-                  "elementTransformer": {
-                    "type": "schemaReference",
-                    "definition": {
-                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "transformer_inner_elementTransformer_transformerForBuildPlusRuntime"
-                    }
-                  }
-                }
-              }
-            },
-            "transformerResultSchema": {
-              "type": "array",
-              "definition": {
-                "type": "any"
-              }
-            }
-          },
-          "transformerImplementation": {
-            "transformerImplementationType": "libraryImplementation",
-            "inMemoryImplementationFunctionName": "transformerForBuild_list_listMapperToList_apply",
-            "sqlImplementationFunctionName": "sqlStringForMapperListToListTransformer"
-          }
-        },
-        expectedResolvedSchema: {
-          "type": "object",
-          "definition": {
-            "uuid": {
-              "type": "uuid",
-              "tag": {
-                "value": {
-                  "id": 1,
-                  "defaultLabel": "Uuid",
-                  "editable": false
-                }
-              }
-            },
-            "name": {
-              "type": "string",
-              "tag": {
-                "value": {
-                  "id": 5,
-                  "defaultLabel": "Name",
-                  "editable": true
-                }
-              }
-            },
-            "defaultLabel": {
-              "type": "string",
-              "tag": {
-                "value": {
-                  "id": 6,
-                  "defaultLabel": "Default Label",
-                  "editable": true
-                }
-              }
-            },
-            "description": {
-              "type": "string",
-              "optional": true,
-              "tag": {
-                "value": {
-                  "id": 7,
-                  "defaultLabel": "Description",
-                  "editable": true
-                }
-              }
-            },
-            "parentUuid": {
-              "type": "uuid",
-              "tag": {
-                "value": {
-                  "id": 3,
-                  "defaultLabel": "Entity Uuid",
-                  "editable": false
-                }
-              }
-            },
-            "parentDefinitionVersionUuid": {
-              "type": "uuid",
-              "optional": true,
-              "tag": {
-                "value": {
-                  "id": 4,
-                  "defaultLabel": "Entity Definition Version Uuid",
-                  "editable": false
-                }
-              }
-            },
-            "parentName": {
-              "type": "string",
-              "optional": true,
-              "tag": {
-                "value": {
-                  "id": 2,
-                  "defaultLabel": "Entity Name",
-                  "editable": false
-                }
-              }
-            },
-            "transformerInterface": {
-              "type": "object",
-              "definition": {
-                "transformerParameterSchema": {
-                  "type": "object",
-                  "definition": {
-                    "transformerType": {
-                      "type": "object",
-                      "definition": {
-                        "type": {
-                          "type": "literal",
-                          "definition": "literal"
-                        },
-                        "definition": {
-                          "type": "string"
-                        }
-                      }
-                    },
-                    "transformerDefinition": {
-                      "type": "object",
-                      "definition": {
-                        "type": {
-                          "type": "literal",
-                          "definition": "object"
-                        },
-                        "extend": {
-                          "type": "array",
-                          "optional": true,
-                          "definition": {
-                            "type": "object",
-                            "definition": {
-                              "type": {
-                                "type": "literal",
-                                "definition": "schemaReference"
-                              },
-                              "definition": {
-                                "type": "object",
-                                "definition": {
-                                  "eager": {
-                                    "type": "boolean",
-                                    "optional": true
-                                  },
-                                  "absolutePath": {
-                                    "type": "string",
-                                    "optional": true
-                                  },
-                                  "relativePath": {
-                                    "type": "string",
-                                    "optional": true
-                                  }
-                                }
-                              }
-                            }
-                          }
-                        },
-                        "definition": {
-                          "type": "object",
-                          "definition": {
-                            "applyTo": {
-                              "type": "object",
-                              "definition": {
-                                "type": {
-                                  "type": "literal",
-                                  "definition": "array"
-                                },
-                                "definition": {
-                                  "type": "object",
-                                  "definition": {
-                                    "type": {
-                                      "type": "enum",
-                                      "definition": [
-                                        "any",
-                                        "bigint",
-                                        "boolean",
-                                        "never",
-                                        "null",
-                                        "uuid",
-                                        "undefined",
-                                        "unknown",
-                                        "void"
-                                      ]
-                                    }
-                                  }
-                                }
-                              }
-                            },
-                            "referenceToOuterObject": {
-                              "type": "object",
-                              "definition": {
-                                "type": {
-                                  "type": "literal",
-                                  "definition": "string"
-                                }
-                              }
-                            },
-                            "elementTransformer": {
-                              "type": "object",
-                              "definition": {
-                                "type": {
-                                  "type": "literal",
-                                  "definition": "schemaReference"
-                                },
-                                "definition": {
-                                  "type": "object",
-                                  "definition": {
-                                    "absolutePath": {
-                                      "type": "string",
-                                      "optional": true
-                                    },
-                                    "relativePath": {
-                                      "type": "string",
-                                      "optional": true
-                                    }
-                                  }
-                                }
-                              }
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
-                },
-                "transformerResultSchema": {
-                  "type": "object",
-                  "definition": {
-                    "type": {
-                      "type": "literal",
-                      "definition": "array"
-                    },
-                    "definition": {
-                      "type": "object",
-                      "definition": {
-                        "type": {
-                          "type": "enum",
-                          "definition": [
-                            "any",
-                            "bigint",
-                            "boolean",
-                            "never",
-                            "null",
-                            "uuid",
-                            "undefined",
-                            "unknown",
-                            "void"
-                          ]
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            },
-            "transformerImplementation": {
-              "type": "object",
-              "definition": {
-                "transformerImplementationType": {
-                  "type": "literal",
-                  "definition": "libraryImplementation"
-                },
-                "inMemoryImplementationFunctionName": {
-                  "type": "string"
-                },
-                "sqlImplementationFunctionName": {
-                  "type": "string",
-                  "optional": true
-                }
-              }
-            }
-          }
-        },
-        expectedKeyMap: {
-          "uuid": {
-            rawSchema: {
-              "type": "uuid",
-              "tag": {
-                "value": {
-                  "id": 1,
-                  "defaultLabel": "Uuid",
-                  "editable": false
-                }
-              }
-            },
-            resolvedSchema: {
-              "type": "uuid",
-              "tag": {
-                "value": {
-                  "id": 1,
-                  "defaultLabel": "Uuid",
-                  "editable": false
-                }
-              }
-            }
-          },
-          "name": {
-            rawSchema: {
-              "type": "string",
-              "tag": {
-                "value": {
-                  "id": 5,
-                  "defaultLabel": "Name",
-                  "editable": true
-                }
-              }
-            },
-            resolvedSchema: {
-              "type": "string",
-              "tag": {
-                "value": {
-                  "id": 5,
-                  "defaultLabel": "Name",
-                  "editable": true
-                }
-              }
-            }
-          },
-          "defaultLabel": {
-            rawSchema: {
-              "type": "string",
-              "tag": {
-                "value": {
-                  "id": 6,
-                  "defaultLabel": "Default Label",
-                  "editable": true
-                }
-              }
-            },
-            resolvedSchema: {
-              "type": "string",
-              "tag": {
-                "value": {
-                  "id": 6,
-                  "defaultLabel": "Default Label",
-                  "editable": true
-                }
-              }
-            }
-          },
-          "description": {
-            rawSchema: {
-              "type": "string",
-              "optional": true,
-              "tag": {
-                "value": {
-                  "id": 7,
-                  "defaultLabel": "Description",
-                  "editable": true
-                }
-              }
-            },
-            resolvedSchema: {
-              "type": "string",
-              "optional": true,
-              "tag": {
-                "value": {
-                  "id": 7,
-                  "defaultLabel": "Description",
-                  "editable": true
-                }
-              }
-            }
-          },
-          "parentUuid": {
-            rawSchema: {
-              "type": "uuid",
-              "tag": {
-                "value": {
-                  "id": 3,
-                  "defaultLabel": "Entity Uuid",
-                  "editable": false
-                }
-              }
-            },
-            resolvedSchema: {
-              "type": "uuid",
-              "tag": {
-                "value": {
-                  "id": 3,
-                  "defaultLabel": "Entity Uuid",
-                  "editable": false
-                }
-              }
-            }
-          },
-          "parentDefinitionVersionUuid": {
-            rawSchema: {
-              "type": "uuid",
-              "optional": true,
-              "tag": {
-                "value": {
-                  "id": 4,
-                  "defaultLabel": "Entity Definition Version Uuid",
-                  "editable": false
-                }
-              }
-            },
-            resolvedSchema: {
-              "type": "uuid",
-              "optional": true,
-              "tag": {
-                "value": {
-                  "id": 4,
-                  "defaultLabel": "Entity Definition Version Uuid",
-                  "editable": false
-                }
-              }
-            }
-          },
-          "parentName": {
-            rawSchema: {
-              "type": "string",
-              "optional": true,
-              "tag": {
-                "value": {
-                  "id": 2,
-                  "defaultLabel": "Entity Name",
-                  "editable": false
-                }
-              }
-            },
-            resolvedSchema: {
-              "type": "string",
-              "optional": true,
-              "tag": {
-                "value": {
-                  "id": 2,
-                  "defaultLabel": "Entity Name",
-                  "editable": false
-                }
-              }
-            }
-          },
-          "transformerInterface": {
-            rawSchema: {
-              "type": "object",
-              "definition": {
-                "transformerParameterSchema": {
-                  "type": "object",
-                  "definition": {
-                    "transformerType": {
-                      "type": "schemaReference",
-                      "definition": {
-                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "relativePath": "jzodLiteral"
-                      }
-                    },
-                    "transformerDefinition": {
-                      "type": "schemaReference",
-                      "definition": {
-                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "relativePath": "jzodObject"
-                      }
-                    }
-                  }
-                },
-                "transformerResultSchema": {
-                  "type": "schemaReference",
-                  "optional": true,
-                  "definition": {
-                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    "relativePath": "jzodElement"
-                  }
-                }
-              }
-            },
-            resolvedSchema: {
-              "type": "object",
-              "definition": {
-                "transformerParameterSchema": {
-                  "type": "object",
-                  "definition": {
-                    "transformerType": {
-                      "type": "object",
-                      "definition": {
-                        "type": {
-                          "type": "literal",
-                          "definition": "literal"
-                        },
-                        "definition": {
-                          "type": "string"
-                        }
-                      }
-                    },
-                    "transformerDefinition": {
-                      "type": "object",
-                      "definition": {
-                        "type": {
-                          "type": "literal",
-                          "definition": "object"
-                        },
-                        "extend": {
-                          "type": "array",
-                          "optional": true,
-                          "definition": {
-                            "type": "object",
-                            "definition": {
-                              "type": {
-                                "type": "literal",
-                                "definition": "schemaReference"
-                              },
-                              "definition": {
-                                "type": "object",
-                                "definition": {
-                                  "eager": {
-                                    "type": "boolean",
-                                    "optional": true
-                                  },
-                                  "absolutePath": {
-                                    "type": "string",
-                                    "optional": true
-                                  },
-                                  "relativePath": {
-                                    "type": "string",
-                                    "optional": true
-                                  }
-                                }
-                              }
-                            }
-                          }
-                        },
-                        "definition": {
-                          "type": "object",
-                          "definition": {
-                            "applyTo": {
-                              "type": "object",
-                              "definition": {
-                                "type": {
-                                  "type": "literal",
-                                  "definition": "array"
-                                },
-                                "definition": {
-                                  "type": "object",
-                                  "definition": {
-                                    "type": {
-                                      "type": "enum",
-                                      "definition": [
-                                        "any",
-                                        "bigint",
-                                        "boolean",
-                                        "never",
-                                        "null",
-                                        "uuid",
-                                        "undefined",
-                                        "unknown",
-                                        "void"
-                                      ]
-                                    }
-                                  }
-                                }
-                              }
-                            },
-                            "referenceToOuterObject": {
-                              "type": "object",
-                              "definition": {
-                                "type": {
-                                  "type": "literal",
-                                  "definition": "string"
-                                }
-                              }
-                            },
-                            "elementTransformer": {
-                              "type": "object",
-                              "definition": {
-                                "type": {
-                                  "type": "literal",
-                                  "definition": "schemaReference"
-                                },
-                                "definition": {
-                                  "type": "object",
-                                  "definition": {
-                                    "absolutePath": {
-                                      "type": "string",
-                                      "optional": true
-                                    },
-                                    "relativePath": {
-                                      "type": "string",
-                                      "optional": true
-                                    }
-                                  }
-                                }
-                              }
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
-                },
-                "transformerResultSchema": {
-                  "type": "object",
-                  "definition": {
-                    "type": {
-                      "type": "literal",
-                      "definition": "array"
-                    },
-                    "definition": {
-                      "type": "object",
-                      "definition": {
-                        "type": {
-                          "type": "enum",
-                          "definition": [
-                            "any",
-                            "bigint",
-                            "boolean",
-                            "never",
-                            "null",
-                            "uuid",
-                            "undefined",
-                            "unknown",
-                            "void"
-                          ]
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "transformerImplementation.transformerImplementationType": {
-            rawSchema: {
-              "type": "literal",
-              "definition": "libraryImplementation"
-            },
-            resolvedSchema: {
-              "type": "literal",
-              "definition": "libraryImplementation"
-            }
-          },
-          "transformerImplementation.inMemoryImplementationFunctionName": {
-            rawSchema: {
-              "type": "string"
-            },
-            resolvedSchema: {
-              "type": "string"
-            }
-          },
-          "transformerImplementation.sqlImplementationFunctionName": {
-            rawSchema: {
-              "type": "string",
-              "optional": true
-            },
-            resolvedSchema: {
-              "type": "string",
-              "optional": true
-            }
-          },
-          "transformerImplementation": {
-            rawSchema: {
-              "type": "object",
-              "definition": {
-                "transformerImplementationType": {
-                  "type": "literal",
-                  "definition": "libraryImplementation"
-                },
-                "inMemoryImplementationFunctionName": {
-                  "type": "string"
-                },
-                "sqlImplementationFunctionName": {
-                  "type": "string",
-                  "optional": true
-                }
-              }
-            },
-            resolvedSchema: {
-              "type": "object",
-              "definition": {
-                "transformerImplementationType": {
-                  "type": "literal",
-                  "definition": "libraryImplementation"
-                },
-                "inMemoryImplementationFunctionName": {
-                  "type": "string"
-                },
-                "sqlImplementationFunctionName": {
-                  "type": "string",
-                  "optional": true
-                }
-              }
-            }
-          }
-        }
-      },
-      // ##########################################################################################
-      // ########################### QUERIES ######################################
-      // ##########################################################################################
-      test700: {
-        testSchema: {
-          type: "schemaReference",
-          definition: {
-            absolutePath: castMiroirFundamentalJzodSchema.uuid,
-            relativePath: "boxedQueryWithExtractorCombinerTransformer",
-          },
-        },
-        testValueObject: {
-          queryType: "boxedQueryWithExtractorCombinerTransformer",
-          deploymentUuid: "dde4c883-ae6d-47c3-b6df-26bc6e3c1842",
-          // deploymentUuid: {
-          //   transformerType: "parameterReference",
-          //   interpolation: "build",
-          //   referenceName: "testDeploymentUuid",
-          // },
-          pageParams: {},
-          queryParams: {},
-          contextResults: {},
           extractors: {
-            menuList: {
-              extractorOrCombinerType: "extractorByEntityReturningObjectList",
-              applicationSection: "model",
-              parentName: "Menu",
-              // parentName: {
-              //   transformerType: "parameterReference",
-              //   interpolation: "build",
-              //   referencePath: ["entityMenu", "name"],
-              // },
-              parentUuid: "dde4c883-ae6d-47c3-b6df-26bc6e3c1842",
-              // parentUuid: "0000000-0000-0000-0000-000000000000",
-              // parentUuid: {
-              //   transformerType: "parameterReference",
-              //   interpolation: "build",
-              //   referencePath: ["entityMenu", "uuid"],
-              // },
+            type: "object",
+            definition: {
+              menuList: {
+                type: "object",
+                definition: {
+                  extractorOrCombinerType: {
+                    type: "literal",
+                    definition: "extractorByEntityReturningObjectList",
+                  },
+                  applicationSection: {
+                    type: "literal",
+                    definition: "model",
+                  },
+                  parentName: {
+                    type: "string",
+                    optional: true,
+                    tag: {
+                      value: {
+                        id: 3,
+                        canBeTemplate: true,
+                        defaultLabel: "Parent Name",
+                        editable: false,
+                      },
+                    },
+                  },
+                  parentUuid: {
+                    type: "uuid",
+                    tag: {
+                      value: {
+                        id: 4,
+                        canBeTemplate: true,
+                        targetEntity: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                        defaultLabel: "Parent Uuid",
+                        editable: false,
+                      },
+                    },
+                  },
+                },
+              },
             },
           },
           runtimeTransformers: {
-            menu: {
-              transformerType: "listPickElement",
-              interpolation: "runtime",
-              applyTo: {
-                referenceType: "referencedTransformer",
-                reference: {
-                  transformerType: "contextReference",
-                  interpolation: "runtime",
-                  referenceName: "menuList",
-                },
-              },
-              index: 0,
-            },
-            menuItem: {
-              transformerType: "freeObjectTemplate",
-              interpolation: "runtime",
-              definition: {
-                reportUuid: {
-                  transformerType: "parameterReference",
-                  interpolation: "build",
-                  referenceName: "createEntity_newEntityListReportUuid",
-                },
-                label: {
-                  transformerType: "mustacheStringTemplate",
-                  interpolation: "build",
-                  definition: "List of {{newEntityName}}s",
-                },
-                section: "data",
-                selfApplication: {
-                  transformerType: "parameterReference",
-                  interpolation: "build",
-                  referencePath: ["adminConfigurationDeploymentParis", "uuid"],
-                },
-                icon: "local_drink",
-              },
-            },
-            updatedMenu: {
-              transformerType: "transformer_menu_addItem",
-              interpolation: "runtime",
-              menuItemReference: {
-                transformerType: "contextReference",
-                interpolation: "runtime",
-                referenceName: "menuItem",
-              },
-              menuReference: {
-                transformerType: "contextReference",
-                interpolation: "runtime",
-                referenceName: "menu",
-              },
-              menuSectionItemInsertionIndex: -1,
-            },
-          },
-        },
-        expectedResolvedSchema: {
-          type: "object",
-          definition: {
-            queryType: {
-              type: "literal",
-              definition: "boxedQueryWithExtractorCombinerTransformer",
-            },
-            deploymentUuid: {
-              type: "uuid",
-              tag: {
-                value: {
-                  id: 1,
-                  canBeTemplate: true,
-                  defaultLabel: "Uuid",
-                  editable: false,
-                },
-              },
-            },
-            pageParams: {
-              type: "object",
-              definition: {},
-            },
-            queryParams: {
-              type: "object",
-              definition: {},
-            },
-            contextResults: {
-              type: "object",
-              definition: {},
-            },
-            extractors: {
-              type: "object",
-              definition: {
-                menuList: {
-                  type: "object",
-                  definition: {
-                    extractorOrCombinerType: {
-                      type: "literal",
-                      definition: "extractorByEntityReturningObjectList",
-                    },
-                    applicationSection: {
-                      type: "literal",
-                      definition: "model",
-                    },
-                    parentName: {
-                      type: "string",
-                      optional: true,
-                      tag: {
-                        value: {
-                          id: 3,
-                          canBeTemplate: true,
-                          defaultLabel: "Parent Name",
-                          editable: false,
-                        },
-                      },
-                    },
-                    parentUuid: {
-                      type: "uuid",
-                      tag: {
-                        value: {
-                          id: 4,
-                          canBeTemplate: true,
-                          targetEntity: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                          defaultLabel: "Parent Uuid",
-                          editable: false,
-                        },
-                      },
-                    },
+            type: "object",
+            optional: true,
+            definition: {
+              menu: {
+                type: "object",
+                definition: {
+                  transformerType: {
+                    type: "literal",
+                    definition: "listPickElement",
                   },
-                },
-              },
-            },
-            runtimeTransformers: {
-              type: "object",
-              optional: true,
-              definition: {
-                menu: {
-                  type: "object",
-                  definition: {
-                    transformerType: {
-                      type: "literal",
-                      definition: "listPickElement",
-                    },
-                    interpolation: {
-                      type: "literal",
-                      definition: "runtime",
-                    },
-                    applyTo: {
-                      type: "object",
-                      definition: {
-                        referenceType: {
-                          type: "literal",
-                          definition: "referencedTransformer",
-                        },
-                        reference: {
-                          type: "object",
-                          definition: {
-                            transformerType: {
-                              type: "literal",
-                              definition: "contextReference",
-                            },
-                            interpolation: {
-                              type: "literal",
-                              optional: true,
-                              definition: "runtime",
-                            },
-                            referenceName: {
-                              optional: true,
-                              type: "string",
-                            },
-                          },
-                        },
-                      },
-                    },
-                    index: {
-                      type: "number",
-                    },
+                  interpolation: {
+                    type: "literal",
+                    definition: "runtime",
                   },
-                },
-                menuItem: {
-                  type: "object",
-                  definition: {
-                    transformerType: {
-                      type: "literal",
-                      definition: "freeObjectTemplate",
-                    },
-                    interpolation: {
-                      type: "literal",
-                      definition: "runtime",
-                    },
+                  applyTo: {
+                    type: "object",
                     definition: {
-                      type: "object",
-                      definition: {
-                        reportUuid: {
-                          type: "object",
-                          definition: {
-                            transformerType: {
-                              type: "literal",
-                              definition: "parameterReference",
-                            },
-                            interpolation: {
-                              type: "literal",
-                              optional: true,
-                              definition: "build",
-                            },
-                            referenceName: {
-                              optional: true,
-                              type: "string",
-                            },
+                      referenceType: {
+                        type: "literal",
+                        definition: "referencedTransformer",
+                      },
+                      reference: {
+                        type: "object",
+                        definition: {
+                          transformerType: {
+                            type: "literal",
+                            definition: "contextReference",
                           },
-                        },
-                        label: {
-                          type: "object",
-                          definition: {
-                            transformerType: {
-                              type: "literal",
-                              definition: "mustacheStringTemplate",
-                            },
-                            interpolation: {
-                              type: "literal",
-                              definition: "build",
-                            },
-                            definition: {
-                              type: "string",
-                            },
+                          interpolation: {
+                            type: "literal",
+                            optional: true,
+                            definition: "runtime",
                           },
-                        },
-                        section: {
-                          type: "string",
-                        },
-                        selfApplication: {
-                          type: "object",
-                          definition: {
-                            transformerType: {
-                              type: "literal",
-                              definition: "parameterReference",
-                            },
-                            interpolation: {
-                              type: "literal",
-                              optional: true,
-                              definition: "build",
-                            },
-                            referencePath: {
-                              optional: true,
-                              type: "tuple",
-                              definition: [
-                                {
-                                  type: "string",
-                                },
-                                {
-                                  type: "string",
-                                },
-                              ],
-                            },
-                          },
-                        },
-                        icon: {
-                          type: "string",
-                        },
-                      },
-                    },
-                  },
-                },
-                updatedMenu: {
-                  type: "object",
-                  definition: {
-                    transformerType: {
-                      type: "literal",
-                      definition: "transformer_menu_addItem",
-                    },
-                    interpolation: {
-                      type: "literal",
-                      definition: "runtime",
-                    },
-                    menuItemReference: {
-                      type: "object",
-                      definition: {
-                        transformerType: {
-                          type: "literal",
-                          definition: "contextReference",
-                        },
-                        interpolation: {
-                          type: "literal",
-                          optional: true,
-                          definition: "runtime",
-                        },
-                        referenceName: {
-                          optional: true,
-                          type: "string",
-                        },
-                      },
-                    },
-                    menuReference: {
-                      type: "object",
-                      definition: {
-                        transformerType: {
-                          type: "literal",
-                          definition: "contextReference",
-                        },
-                        interpolation: {
-                          type: "literal",
-                          optional: true,
-                          definition: "runtime",
-                        },
-                        referenceName: {
-                          optional: true,
-                          type: "string",
-                        },
-                      },
-                    },
-                    menuSectionItemInsertionIndex: {
-                      type: "number",
-                      optional: true,
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-        expectedKeyMap: {
-          "queryType": {
-            rawSchema: {
-              type: "literal",
-              definition: "boxedQueryWithExtractorCombinerTransformer",
-            },
-            resolvedSchema: {
-              type: "literal",
-              definition: "boxedQueryWithExtractorCombinerTransformer",
-            }
-          },
-          "deploymentUuid": {
-            rawSchema: {
-              type: "uuid",
-              tag: {
-                value: {
-                  id: 1,
-                  canBeTemplate: true,
-                  defaultLabel: "Uuid",
-                  editable: false,
-                },
-              },
-            },
-            resolvedSchema: {
-              type: "uuid",
-              tag: {
-                value: {
-                  id: 1,
-                  canBeTemplate: true,
-                  defaultLabel: "Uuid",
-                  editable: false,
-                },
-              },
-            }
-          },
-          "pageParams": {
-            rawSchema: {
-              type: "object",
-              definition: {},
-            },
-            resolvedSchema: {
-              type: "object",
-              definition: {},
-            }
-          },
-          "queryParams": {
-            rawSchema: {
-              type: "object",
-              definition: {},
-            },
-            resolvedSchema: {
-              type: "object",
-              definition: {},
-            }
-          },
-          "contextResults": {
-            rawSchema: {
-              type: "object",
-              definition: {},
-            },
-            resolvedSchema: {
-              type: "object",
-              definition: {},
-            }
-          },
-          "extractors.menuList.extractorOrCombinerType": {
-            rawSchema: {
-              type: "literal",
-              definition: "extractorByEntityReturningObjectList",
-            },
-            resolvedSchema: {
-              type: "literal",
-              definition: "extractorByEntityReturningObjectList",
-            }
-          },
-          "extractors.menuList.applicationSection": {
-            rawSchema: {
-              type: "literal",
-              definition: "model",
-            },
-            resolvedSchema: {
-              type: "literal",
-              definition: "model",
-            }
-          },
-          "extractors.menuList.parentName": {
-            rawSchema: {
-              type: "string",
-              optional: true,
-              tag: {
-                value: {
-                  id: 3,
-                  canBeTemplate: true,
-                  defaultLabel: "Parent Name",
-                  editable: false,
-                },
-              },
-            },
-            resolvedSchema: {
-              type: "string",
-              optional: true,
-              tag: {
-                value: {
-                  id: 3,
-                  canBeTemplate: true,
-                  defaultLabel: "Parent Name",
-                  editable: false,
-                },
-              },
-            }
-          },
-          "extractors.menuList.parentUuid": {
-            rawSchema: {
-              type: "uuid",
-              tag: {
-                value: {
-                  id: 4,
-                  canBeTemplate: true,
-                  targetEntity: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                  defaultLabel: "Parent Uuid",
-                  editable: false,
-                },
-              },
-            },
-            resolvedSchema: {
-              type: "uuid",
-              tag: {
-                value: {
-                  id: 4,
-                  canBeTemplate: true,
-                  targetEntity: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                  defaultLabel: "Parent Uuid",
-                  editable: false,
-                },
-              },
-            }
-          },
-          "extractors.menuList": {
-            rawSchema: {
-              type: "object",
-              definition: {
-                extractorOrCombinerType: {
-                  type: "literal",
-                  definition: "extractorByEntityReturningObjectList",
-                },
-                applicationSection: {
-                  type: "literal",
-                  definition: "model",
-                },
-                parentName: {
-                  type: "string",
-                  optional: true,
-                  tag: {
-                    value: {
-                      id: 3,
-                      canBeTemplate: true,
-                      defaultLabel: "Parent Name",
-                      editable: false,
-                    },
-                  },
-                },
-                parentUuid: {
-                  type: "uuid",
-                  tag: {
-                    value: {
-                      id: 4,
-                      canBeTemplate: true,
-                      targetEntity: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                      defaultLabel: "Parent Uuid",
-                      editable: false,
-                    },
-                  },
-                },
-              },
-            },
-            resolvedSchema: {
-              type: "object",
-              definition: {
-                extractorOrCombinerType: {
-                  type: "literal",
-                  definition: "extractorByEntityReturningObjectList",
-                },
-                applicationSection: {
-                  type: "literal",
-                  definition: "model",
-                },
-                parentName: {
-                  type: "string",
-                  optional: true,
-                  tag: {
-                    value: {
-                      id: 3,
-                      canBeTemplate: true,
-                      defaultLabel: "Parent Name",
-                      editable: false,
-                    },
-                  },
-                },
-                parentUuid: {
-                  type: "uuid",
-                  tag: {
-                    value: {
-                      id: 4,
-                      canBeTemplate: true,
-                      targetEntity: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                      defaultLabel: "Parent Uuid",
-                      editable: false,
-                    },
-                  },
-                },
-              },
-            }
-          },
-          "extractors": {
-            rawSchema: {
-              type: "object",
-              definition: {
-                menuList: {
-                  type: "object",
-                  definition: {
-                    extractorOrCombinerType: {
-                      type: "literal",
-                      definition: "extractorByEntityReturningObjectList",
-                    },
-                    applicationSection: {
-                      type: "literal",
-                      definition: "model",
-                    },
-                    parentName: {
-                      type: "string",
-                      optional: true,
-                      tag: {
-                        value: {
-                          id: 3,
-                          canBeTemplate: true,
-                          defaultLabel: "Parent Name",
-                          editable: false,
-                        },
-                      },
-                    },
-                    parentUuid: {
-                      type: "uuid",
-                      tag: {
-                        value: {
-                          id: 4,
-                          canBeTemplate: true,
-                          targetEntity: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                          defaultLabel: "Parent Uuid",
-                          editable: false,
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-            resolvedSchema: {
-              type: "object",
-              definition: {
-                menuList: {
-                  type: "object",
-                  definition: {
-                    extractorOrCombinerType: {
-                      type: "literal",
-                      definition: "extractorByEntityReturningObjectList",
-                    },
-                    applicationSection: {
-                      type: "literal",
-                      definition: "model",
-                    },
-                    parentName: {
-                      type: "string",
-                      optional: true,
-                      tag: {
-                        value: {
-                          id: 3,
-                          canBeTemplate: true,
-                          defaultLabel: "Parent Name",
-                          editable: false,
-                        },
-                      },
-                    },
-                    parentUuid: {
-                      type: "uuid",
-                      tag: {
-                        value: {
-                          id: 4,
-                          canBeTemplate: true,
-                          targetEntity: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                          defaultLabel: "Parent Uuid",
-                          editable: false,
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            }
-          },
-          "runtimeTransformers": {
-            rawSchema: {
-              type: "object",
-              optional: true,
-              definition: {
-                menu: {
-                  type: "object",
-                  definition: {
-                    transformerType: {
-                      type: "literal",
-                      definition: "listPickElement",
-                    },
-                    interpolation: {
-                      type: "literal",
-                      definition: "runtime",
-                    },
-                    applyTo: {
-                      type: "object",
-                      definition: {
-                        referenceType: {
-                          type: "literal",
-                          definition: "referencedTransformer",
-                        },
-                        reference: {
-                          type: "object",
-                          definition: {
-                            transformerType: {
-                              type: "literal",
-                              definition: "contextReference",
-                            },
-                            interpolation: {
-                              type: "literal",
-                              optional: true,
-                              definition: "runtime",
-                            },
-                            referenceName: {
-                              optional: true,
-                              type: "string",
-                            },
+                          referenceName: {
+                            optional: true,
+                            type: "string",
                           },
                         },
                       },
                     },
-                    index: {
-                      type: "number",
-                    },
+                  },
+                  index: {
+                    type: "number",
                   },
                 },
-                menuItem: {
-                  type: "object",
+              },
+              menuItem: {
+                type: "object",
+                definition: {
+                  transformerType: {
+                    type: "literal",
+                    definition: "freeObjectTemplate",
+                  },
+                  interpolation: {
+                    type: "literal",
+                    definition: "runtime",
+                  },
                   definition: {
-                    transformerType: {
-                      type: "literal",
-                      definition: "freeObjectTemplate",
-                    },
-                    interpolation: {
-                      type: "literal",
-                      definition: "runtime",
-                    },
+                    type: "object",
                     definition: {
-                      type: "object",
-                      definition: {
-                        reportUuid: {
-                          type: "object",
-                          definition: {
-                            transformerType: {
-                              type: "literal",
-                              definition: "parameterReference",
-                            },
-                            interpolation: {
-                              type: "literal",
-                              optional: true,
-                              definition: "build",
-                            },
-                            referenceName: {
-                              optional: true,
-                              type: "string",
-                            },
+                      reportUuid: {
+                        type: "object",
+                        definition: {
+                          transformerType: {
+                            type: "literal",
+                            definition: "parameterReference",
+                          },
+                          interpolation: {
+                            type: "literal",
+                            optional: true,
+                            definition: "build",
+                          },
+                          referenceName: {
+                            optional: true,
+                            type: "string",
                           },
                         },
-                        label: {
-                          type: "object",
+                      },
+                      label: {
+                        type: "object",
+                        definition: {
+                          transformerType: {
+                            type: "literal",
+                            definition: "mustacheStringTemplate",
+                          },
+                          interpolation: {
+                            type: "literal",
+                            definition: "build",
+                          },
                           definition: {
-                            transformerType: {
-                              type: "literal",
-                              definition: "mustacheStringTemplate",
-                            },
-                            interpolation: {
-                              type: "literal",
-                              definition: "build",
-                            },
-                            definition: {
-                              type: "string",
-                            },
+                            type: "string",
                           },
                         },
-                        section: {
-                          type: "string",
-                        },
-                        selfApplication: {
-                          type: "object",
-                          definition: {
-                            transformerType: {
-                              type: "literal",
-                              definition: "parameterReference",
-                            },
-                            interpolation: {
-                              type: "literal",
-                              optional: true,
-                              definition: "build",
-                            },
-                            referencePath: {
-                              optional: true,
-                              type: "tuple",
-                              definition: [
-                                {
-                                  type: "string",
-                                },
-                                {
-                                  type: "string",
-                                },
-                              ],
-                            },
+                      },
+                      section: {
+                        type: "string",
+                      },
+                      selfApplication: {
+                        type: "object",
+                        definition: {
+                          transformerType: {
+                            type: "literal",
+                            definition: "parameterReference",
+                          },
+                          interpolation: {
+                            type: "literal",
+                            optional: true,
+                            definition: "build",
+                          },
+                          referencePath: {
+                            optional: true,
+                            type: "tuple",
+                            definition: [
+                              {
+                                type: "string",
+                              },
+                              {
+                                type: "string",
+                              },
+                            ],
                           },
                         },
-                        icon: {
-                          type: "string",
-                        },
+                      },
+                      icon: {
+                        type: "string",
                       },
                     },
                   },
                 },
-                updatedMenu: {
-                  type: "object",
-                  definition: {
-                    transformerType: {
-                      type: "literal",
-                      definition: "transformer_menu_addItem",
-                    },
-                    interpolation: {
-                      type: "literal",
-                      definition: "runtime",
-                    },
-                    menuItemReference: {
-                      type: "object",
-                      definition: {
-                        transformerType: {
-                          type: "literal",
-                          definition: "contextReference",
-                        },
-                        interpolation: {
-                          type: "literal",
-                          optional: true,
-                          definition: "runtime",
-                        },
-                        referenceName: {
-                          optional: true,
-                          type: "string",
-                        },
+              },
+              updatedMenu: {
+                type: "object",
+                definition: {
+                  transformerType: {
+                    type: "literal",
+                    definition: "transformer_menu_addItem",
+                  },
+                  interpolation: {
+                    type: "literal",
+                    definition: "runtime",
+                  },
+                  menuItemReference: {
+                    type: "object",
+                    definition: {
+                      transformerType: {
+                        type: "literal",
+                        definition: "contextReference",
+                      },
+                      interpolation: {
+                        type: "literal",
+                        optional: true,
+                        definition: "runtime",
+                      },
+                      referenceName: {
+                        optional: true,
+                        type: "string",
                       },
                     },
-                    menuReference: {
-                      type: "object",
-                      definition: {
-                        transformerType: {
-                          type: "literal",
-                          definition: "contextReference",
-                        },
-                        interpolation: {
-                          type: "literal",
-                          optional: true,
-                          definition: "runtime",
-                        },
-                        referenceName: {
-                          optional: true,
-                          type: "string",
-                        },
+                  },
+                  menuReference: {
+                    type: "object",
+                    definition: {
+                      transformerType: {
+                        type: "literal",
+                        definition: "contextReference",
+                      },
+                      interpolation: {
+                        type: "literal",
+                        optional: true,
+                        definition: "runtime",
+                      },
+                      referenceName: {
+                        optional: true,
+                        type: "string",
                       },
                     },
-                    menuSectionItemInsertionIndex: {
-                      type: "number",
-                      optional: true,
-                    },
+                  },
+                  menuSectionItemInsertionIndex: {
+                    type: "number",
+                    optional: true,
                   },
                 },
               },
             },
-            resolvedSchema: {
-              type: "object",
-              optional: true,
-              definition: {
-                menu: {
-                  type: "object",
-                  definition: {
-                    transformerType: {
-                      type: "literal",
-                      definition: "listPickElement",
-                    },
-                    interpolation: {
-                      type: "literal",
-                      definition: "runtime",
-                    },
-                    applyTo: {
-                      type: "object",
-                      definition: {
-                        referenceType: {
-                          type: "literal",
-                          definition: "referencedTransformer",
-                        },
-                        reference: {
-                          type: "object",
-                          definition: {
-                            transformerType: {
-                              type: "literal",
-                              definition: "contextReference",
-                            },
-                            interpolation: {
-                              type: "literal",
-                              optional: true,
-                              definition: "runtime",
-                            },
-                            referenceName: {
-                              optional: true,
-                              type: "string",
-                            },
-                          },
-                        },
-                      },
-                    },
-                    index: {
-                      type: "number",
-                    },
-                  },
-                },
-                menuItem: {
-                  type: "object",
-                  definition: {
-                    transformerType: {
-                      type: "literal",
-                      definition: "freeObjectTemplate",
-                    },
-                    interpolation: {
-                      type: "literal",
-                      definition: "runtime",
-                    },
-                    definition: {
-                      type: "object",
-                      definition: {
-                        reportUuid: {
-                          type: "object",
-                          definition: {
-                            transformerType: {
-                              type: "literal",
-                              definition: "parameterReference",
-                            },
-                            interpolation: {
-                              type: "literal",
-                              optional: true,
-                              definition: "build",
-                            },
-                            referenceName: {
-                              optional: true,
-                              type: "string",
-                            },
-                          },
-                        },
-                        label: {
-                          type: "object",
-                          definition: {
-                            transformerType: {
-                              type: "literal",
-                              definition: "mustacheStringTemplate",
-                            },
-                            interpolation: {
-                              type: "literal",
-                              definition: "build",
-                            },
-                            definition: {
-                              type: "string",
-                            },
-                          },
-                        },
-                        section: {
-                          type: "string",
-                        },
-                        selfApplication: {
-                          type: "object",
-                          definition: {
-                            transformerType: {
-                              type: "literal",
-                              definition: "parameterReference",
-                            },
-                            interpolation: {
-                              type: "literal",
-                              optional: true,
-                              definition: "build",
-                            },
-                            referencePath: {
-                              optional: true,
-                              type: "tuple",
-                              definition: [
-                                {
-                                  type: "string",
-                                },
-                                {
-                                  type: "string",
-                                },
-                              ],
-                            },
-                          },
-                        },
-                        icon: {
-                          type: "string",
-                        },
-                      },
-                    },
-                  },
-                },
-                updatedMenu: {
-                  type: "object",
-                  definition: {
-                    transformerType: {
-                      type: "literal",
-                      definition: "transformer_menu_addItem",
-                    },
-                    interpolation: {
-                      type: "literal",
-                      definition: "runtime",
-                    },
-                    menuItemReference: {
-                      type: "object",
-                      definition: {
-                        transformerType: {
-                          type: "literal",
-                          definition: "contextReference",
-                        },
-                        interpolation: {
-                          type: "literal",
-                          optional: true,
-                          definition: "runtime",
-                        },
-                        referenceName: {
-                          optional: true,
-                          type: "string",
-                        },
-                      },
-                    },
-                    menuReference: {
-                      type: "object",
-                      definition: {
-                        transformerType: {
-                          type: "literal",
-                          definition: "contextReference",
-                        },
-                        interpolation: {
-                          type: "literal",
-                          optional: true,
-                          definition: "runtime",
-                        },
-                        referenceName: {
-                          optional: true,
-                          type: "string",
-                        },
-                      },
-                    },
-                    menuSectionItemInsertionIndex: {
-                      type: "number",
-                      optional: true,
-                    },
-                  },
-                },
-              },
-            }
-          }
+          },
         },
       },
-      // ##########################################################################################
-      // ################################## ACTIONS ###############################################
-      // ##########################################################################################
-      test800: {
-        testSchema: {
-          type: "schemaReference",
-          definition: {
-            absolutePath: castMiroirFundamentalJzodSchema.uuid,
-            relativePath: "buildPlusRuntimeCompositeAction",
+      expectedKeyMap: {
+        queryType: {
+          rawSchema: {
+            type: "literal",
+            definition: "boxedQueryWithExtractorCombinerTransformer",
+          },
+          resolvedSchema: {
+            type: "literal",
+            definition: "boxedQueryWithExtractorCombinerTransformer",
           },
         },
-        testValueObject: {
-          actionType: "compositeAction",
-          actionLabel: "test",
-          actionName: "sequence",
-          templates: {},
-          definition: [
-            {
-              actionType: "createEntity",
-              actionLabel: "createEntity",
-              deploymentUuid: {
-                transformerType: "parameterReference",
-                interpolation: "build",
-                referenceName: "testDeploymentUuid",
+        pageParams: {
+          rawSchema: {
+            type: "record",
+            definition: {
+              type: "any",
+            },
+          },
+          resolvedSchema: {
+            type: "object",
+            definition: {},
+          },
+        },
+        queryParams: {
+          rawSchema: {
+            type: "record",
+            definition: {
+              type: "any",
+            },
+          },
+          resolvedSchema: {
+            type: "object",
+            definition: {},
+          },
+        },
+        contextResults: {
+          rawSchema: {
+            type: "record",
+            definition: {
+              type: "any",
+            },
+          },
+          resolvedSchema: {
+            type: "object",
+            definition: {},
+          },
+        },
+        "extractors.menuList.extractorOrCombinerType": {
+          rawSchema: {
+            type: "literal",
+            definition: "extractorByEntityReturningObjectList",
+          },
+          resolvedSchema: {
+            type: "literal",
+            definition: "extractorByEntityReturningObjectList",
+          },
+        },
+        "extractors.menuList.applicationSection": {
+          rawSchema: {
+            type: "schemaReference",
+            optional: true,
+            tag: {
+              value: {
+                id: 2,
+                defaultLabel: "SelfApplication Section",
+                editable: false,
               },
-              endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-              payload: {
-                entities: [
-                  {
-                    entity: {
-                      transformerType: "parameterReference",
-                      interpolation: "build",
-                      referenceName: "createEntity_newEntity",
+            },
+            definition: {
+              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              relativePath: "applicationSection",
+            },
+            context: {},
+          },
+          resolvedSchema: {
+            type: "literal",
+            definition: "model",
+          },
+        },
+        "extractors.menuList.parentName": {
+          rawSchema: {
+            type: "string",
+            optional: true,
+            tag: {
+              value: {
+                id: 3,
+                canBeTemplate: true,
+                defaultLabel: "Parent Name",
+                editable: false,
+              },
+            },
+          },
+          resolvedSchema: {
+            type: "string",
+          },
+        },
+        "extractors.menuList": {
+          rawSchema: {
+            type: "schemaReference",
+            definition: {
+              relativePath: "extractorOrCombiner",
+              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            },
+            context: {},
+          },
+          resolvedSchema: {
+            type: "object",
+            definition: {
+              extractorOrCombinerType: {
+                type: "literal",
+                definition: "extractorByEntityReturningObjectList",
+              },
+              applicationSection: {
+                type: "literal",
+                definition: "model",
+              },
+              parentName: {
+                type: "string",
+                optional: true,
+                tag: {
+                  value: {
+                    id: 3,
+                    canBeTemplate: true,
+                    defaultLabel: "Parent Name",
+                    editable: false,
+                  },
+                },
+              },
+              parentUuid: {
+                type: "uuid",
+                tag: {
+                  value: {
+                    id: 4,
+                    canBeTemplate: true,
+                    targetEntity: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                    defaultLabel: "Parent Uuid",
+                    editable: false,
+                  },
+                },
+              },
+            },
+          },
+        },
+        extractors: {
+          rawSchema: {
+            type: "schemaReference",
+            optional: true,
+            definition: {
+              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              relativePath: "extractorOrCombinerRecord",
+            },
+          },
+          resolvedSchema: {
+            type: "object",
+            definition: {
+              menuList: {
+                type: "object",
+                definition: {
+                  extractorOrCombinerType: {
+                    type: "literal",
+                    definition: "extractorByEntityReturningObjectList",
+                  },
+                  applicationSection: {
+                    type: "literal",
+                    definition: "model",
+                  },
+                  parentName: {
+                    type: "string",
+                    optional: true,
+                    tag: {
+                      value: {
+                        id: 3,
+                        canBeTemplate: true,
+                        defaultLabel: "Parent Name",
+                        editable: false,
+                      },
                     },
-                    entityDefinition: {
-                      transformerType: "parameterReference",
-                      interpolation: "build",
-                      referenceName: "createEntity_newEntityDefinition",
+                  },
+                  parentUuid: {
+                    type: "uuid",
+                    tag: {
+                      value: {
+                        id: 4,
+                        canBeTemplate: true,
+                        targetEntity: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                        defaultLabel: "Parent Uuid",
+                        editable: false,
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        "runtimeTransformers.menu.transformerType": {
+          rawSchema: {
+            type: "literal",
+            definition: "listPickElement",
+          },
+          resolvedSchema: {
+            type: "literal",
+            definition: "listPickElement",
+          },
+        },
+        "runtimeTransformers.menu.interpolation": {
+          rawSchema: {
+            type: "literal",
+            definition: "runtime",
+          },
+          resolvedSchema: {
+            type: "literal",
+            definition: "runtime",
+          },
+        },
+        "runtimeTransformers.menu.applyTo.referenceType": {
+          rawSchema: {
+            type: "literal",
+            definition: "referencedTransformer",
+          },
+          resolvedSchema: {
+            type: "literal",
+            definition: "referencedTransformer",
+          },
+        },
+        "runtimeTransformers.menu.applyTo.reference.transformerType": {
+          rawSchema: {
+            type: "literal",
+            definition: "contextReference",
+          },
+          resolvedSchema: {
+            type: "literal",
+            definition: "contextReference",
+          },
+        },
+        "runtimeTransformers.menu.applyTo.reference.interpolation": {
+          rawSchema: {
+            type: "literal",
+            optional: true,
+            definition: "runtime",
+          },
+          resolvedSchema: {
+            type: "literal",
+            optional: true,
+            definition: "runtime",
+          },
+        },
+        "runtimeTransformers.menu.applyTo.reference.referenceName": {
+          rawSchema: {
+            optional: true,
+            type: "string",
+          },
+          resolvedSchema: {
+            type: "string",
+          },
+        },
+        "runtimeTransformers.menu.applyTo.reference": {
+          rawSchema: {
+            type: "union",
+            discriminator: ["transformerType", "interpolation"],
+            definition: [
+              {
+                type: "string",
+              },
+              {
+                type: "schemaReference",
+                definition: {
+                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  relativePath: "transformerForBuildPlusRuntime",
+                },
+                context: {},
+              },
+            ],
+          },
+          chosenUnionBranchRawSchema: {
+            type: "object",
+            definition: {
+              interpolation: {
+                type: "literal",
+                optional: true,
+                definition: "runtime",
+              },
+              transformerType: {
+                type: "literal",
+                definition: "contextReference",
+              },
+              referenceName: {
+                optional: true,
+                type: "string",
+              },
+              referencePath: {
+                optional: true,
+                type: "array",
+                definition: {
+                  type: "string",
+                },
+              },
+            },
+          },
+          resolvedSchema: {
+            type: "object",
+            definition: {
+              transformerType: {
+                type: "literal",
+                definition: "contextReference",
+              },
+              interpolation: {
+                type: "literal",
+                optional: true,
+                definition: "runtime",
+              },
+              referenceName: {
+                optional: true,
+                type: "string",
+              },
+            },
+          },
+        },
+        "runtimeTransformers.menu.applyTo": {
+          rawSchema: {
+            type: "union",
+            discriminator: "referenceType",
+            definition: [
+              {
+                type: "array",
+                definition: {
+                  type: "any",
+                },
+              },
+              {
+                type: "schemaReference",
+                definition: {
+                  relativePath: "transformer_inner_referenced_transformerForBuildPlusRuntime",
+                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                },
+                context: {},
+              },
+            ],
+          },
+          chosenUnionBranchRawSchema: {
+            type: "object",
+            definition: {
+              referenceType: {
+                type: "literal",
+                definition: "referencedTransformer",
+              },
+              reference: {
+                type: "union",
+                discriminator: ["transformerType", "interpolation"],
+                definition: [
+                  {
+                    type: "string",
+                  },
+                  {
+                    type: "schemaReference",
+                    definition: {
+                      absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      relativePath: "transformerForBuildPlusRuntime",
+                    },
+                    context: {},
+                  },
+                ],
+              },
+            },
+          },
+          resolvedSchema: {
+            type: "object",
+            definition: {
+              referenceType: {
+                type: "literal",
+                definition: "referencedTransformer",
+              },
+              reference: {
+                type: "object",
+                definition: {
+                  transformerType: {
+                    type: "literal",
+                    definition: "contextReference",
+                  },
+                  interpolation: {
+                    type: "literal",
+                    optional: true,
+                    definition: "runtime",
+                  },
+                  referenceName: {
+                    optional: true,
+                    type: "string",
+                  },
+                },
+              },
+            },
+          },
+        },
+        "runtimeTransformers.menu.index": {
+          rawSchema: {
+            type: "number",
+          },
+          resolvedSchema: {
+            type: "number",
+          },
+        },
+        "runtimeTransformers.menu": {
+          rawSchema: {
+            type: "schemaReference",
+            definition: {
+              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              relativePath: "transformerForBuildPlusRuntime",
+            },
+          },
+          resolvedSchema: {
+            type: "object",
+            definition: {
+              transformerType: {
+                type: "literal",
+                definition: "listPickElement",
+              },
+              interpolation: {
+                type: "literal",
+                definition: "runtime",
+              },
+              applyTo: {
+                type: "object",
+                definition: {
+                  referenceType: {
+                    type: "literal",
+                    definition: "referencedTransformer",
+                  },
+                  reference: {
+                    type: "object",
+                    definition: {
+                      transformerType: {
+                        type: "literal",
+                        definition: "contextReference",
+                      },
+                      interpolation: {
+                        type: "literal",
+                        optional: true,
+                        definition: "runtime",
+                      },
+                      referenceName: {
+                        optional: true,
+                        type: "string",
+                      },
+                    },
+                  },
+                },
+              },
+              index: {
+                type: "number",
+              },
+            },
+          },
+        },
+        "runtimeTransformers.menuItem.transformerType": {
+          rawSchema: {
+            type: "literal",
+            definition: "freeObjectTemplate",
+          },
+          resolvedSchema: {
+            type: "literal",
+            definition: "freeObjectTemplate",
+          },
+        },
+        "runtimeTransformers.menuItem.interpolation": {
+          rawSchema: {
+            type: "literal",
+            definition: "runtime",
+          },
+          resolvedSchema: {
+            type: "literal",
+            definition: "runtime",
+          },
+        },
+        "runtimeTransformers.menuItem.definition.reportUuid.transformerType": {
+          rawSchema: {
+            type: "literal",
+            definition: "parameterReference",
+          },
+          resolvedSchema: {
+            type: "literal",
+            definition: "parameterReference",
+          },
+        },
+        "runtimeTransformers.menuItem.definition.reportUuid.interpolation": {
+          rawSchema: {
+            type: "literal",
+            optional: true,
+            definition: "build",
+          },
+          resolvedSchema: {
+            type: "literal",
+            optional: true,
+            definition: "build",
+          },
+        },
+        "runtimeTransformers.menuItem.definition.reportUuid.referenceName": {
+          rawSchema: {
+            optional: true,
+            type: "string",
+          },
+          resolvedSchema: {
+            type: "string",
+          },
+        },
+        "runtimeTransformers.menuItem.definition.reportUuid": {
+          rawSchema: {
+            type: "union",
+            discriminator: ["transformerType", "interpolation"],
+            definition: [
+              {
+                type: "schemaReference",
+                definition: {
+                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  relativePath: "transformerForBuildPlusRuntime",
+                },
+              },
+              {
+                type: "record",
+                definition: {
+                  type: "schemaReference",
+                  definition: {
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    relativePath: "transformerForBuildPlusRuntime",
+                  },
+                },
+              },
+              {
+                type: "string",
+              },
+              {
+                type: "number",
+              },
+              {
+                type: "boolean",
+              },
+              {
+                type: "bigint",
+              },
+            ],
+          },
+          chosenUnionBranchRawSchema: {
+            type: "object",
+            definition: {
+              interpolation: {
+                type: "literal",
+                optional: true,
+                definition: "build",
+              },
+              transformerType: {
+                type: "literal",
+                definition: "parameterReference",
+              },
+              referenceName: {
+                optional: true,
+                type: "string",
+              },
+              referencePath: {
+                optional: true,
+                type: "array",
+                definition: {
+                  type: "string",
+                },
+              },
+            },
+          },
+          resolvedSchema: {
+            type: "object",
+            definition: {
+              transformerType: {
+                type: "literal",
+                definition: "parameterReference",
+              },
+              interpolation: {
+                type: "literal",
+                optional: true,
+                definition: "build",
+              },
+              referenceName: {
+                optional: true,
+                type: "string",
+              },
+            },
+          },
+        },
+        "runtimeTransformers.menuItem.definition.label.transformerType": {
+          rawSchema: {
+            type: "literal",
+            definition: "mustacheStringTemplate",
+          },
+          resolvedSchema: {
+            type: "literal",
+            definition: "mustacheStringTemplate",
+          },
+        },
+        "runtimeTransformers.menuItem.definition.label.interpolation": {
+          rawSchema: {
+            type: "literal",
+            definition: "build",
+          },
+          resolvedSchema: {
+            type: "literal",
+            definition: "build",
+          },
+        },
+        "runtimeTransformers.menuItem.definition.label.definition": {
+          rawSchema: {
+            type: "string",
+          },
+          resolvedSchema: {
+            type: "string",
+          },
+        },
+        "runtimeTransformers.menuItem.definition.label": {
+          rawSchema: {
+            type: "union",
+            discriminator: ["transformerType", "interpolation"],
+            definition: [
+              {
+                type: "schemaReference",
+                definition: {
+                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  relativePath: "transformerForBuildPlusRuntime",
+                },
+              },
+              {
+                type: "record",
+                definition: {
+                  type: "schemaReference",
+                  definition: {
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    relativePath: "transformerForBuildPlusRuntime",
+                  },
+                },
+              },
+              {
+                type: "string",
+              },
+              {
+                type: "number",
+              },
+              {
+                type: "boolean",
+              },
+              {
+                type: "bigint",
+              },
+            ],
+          },
+          chosenUnionBranchRawSchema: {
+            type: "object",
+            definition: {
+              interpolation: {
+                type: "literal",
+                definition: "build",
+              },
+              transformerType: {
+                type: "literal",
+                definition: "mustacheStringTemplate",
+              },
+              definition: {
+                type: "string",
+              },
+            },
+          },
+          resolvedSchema: {
+            type: "object",
+            definition: {
+              transformerType: {
+                type: "literal",
+                definition: "mustacheStringTemplate",
+              },
+              interpolation: {
+                type: "literal",
+                definition: "build",
+              },
+              definition: {
+                type: "string",
+              },
+            },
+          },
+        },
+        "runtimeTransformers.menuItem.definition.section": {
+          rawSchema: {
+            type: "union",
+            discriminator: ["transformerType", "interpolation"],
+            definition: [
+              {
+                type: "schemaReference",
+                definition: {
+                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  relativePath: "transformerForBuildPlusRuntime",
+                },
+              },
+              {
+                type: "record",
+                definition: {
+                  type: "schemaReference",
+                  definition: {
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    relativePath: "transformerForBuildPlusRuntime",
+                  },
+                },
+              },
+              {
+                type: "string",
+              },
+              {
+                type: "number",
+              },
+              {
+                type: "boolean",
+              },
+              {
+                type: "bigint",
+              },
+            ],
+          },
+          resolvedSchema: {
+            type: "string",
+          },
+          chosenUnionBranchRawSchema: {
+            type: "string",
+          },
+        },
+        "runtimeTransformers.menuItem.definition.selfApplication.transformerType": {
+          rawSchema: {
+            type: "literal",
+            definition: "parameterReference",
+          },
+          resolvedSchema: {
+            type: "literal",
+            definition: "parameterReference",
+          },
+        },
+        "runtimeTransformers.menuItem.definition.selfApplication.interpolation": {
+          rawSchema: {
+            type: "literal",
+            optional: true,
+            definition: "build",
+          },
+          resolvedSchema: {
+            type: "literal",
+            optional: true,
+            definition: "build",
+          },
+        },
+        "runtimeTransformers.menuItem.definition.selfApplication.referencePath.0": {
+          rawSchema: {
+            type: "string",
+          },
+          resolvedSchema: {
+            type: "string",
+          },
+        },
+        "runtimeTransformers.menuItem.definition.selfApplication.referencePath.1": {
+          rawSchema: {
+            type: "string",
+          },
+          resolvedSchema: {
+            type: "string",
+          },
+        },
+        "runtimeTransformers.menuItem.definition.selfApplication.referencePath": {
+          rawSchema: {
+            optional: true,
+            type: "array",
+            definition: {
+              type: "string",
+            },
+          },
+          resolvedSchema: {
+            optional: true,
+            type: "tuple",
+            definition: [
+              {
+                type: "string",
+              },
+              {
+                type: "string",
+              },
+            ],
+          },
+        },
+        "runtimeTransformers.menuItem.definition.selfApplication": {
+          rawSchema: {
+            type: "union",
+            discriminator: ["transformerType", "interpolation"],
+            definition: [
+              {
+                type: "schemaReference",
+                definition: {
+                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  relativePath: "transformerForBuildPlusRuntime",
+                },
+              },
+              {
+                type: "record",
+                definition: {
+                  type: "schemaReference",
+                  definition: {
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    relativePath: "transformerForBuildPlusRuntime",
+                  },
+                },
+              },
+              {
+                type: "string",
+              },
+              {
+                type: "number",
+              },
+              {
+                type: "boolean",
+              },
+              {
+                type: "bigint",
+              },
+            ],
+          },
+          chosenUnionBranchRawSchema: {
+            type: "object",
+            definition: {
+              interpolation: {
+                type: "literal",
+                optional: true,
+                definition: "build",
+              },
+              transformerType: {
+                type: "literal",
+                definition: "parameterReference",
+              },
+              referenceName: {
+                optional: true,
+                type: "string",
+              },
+              referencePath: {
+                optional: true,
+                type: "array",
+                definition: {
+                  type: "string",
+                },
+              },
+            },
+          },
+          resolvedSchema: {
+            type: "object",
+            definition: {
+              transformerType: {
+                type: "literal",
+                definition: "parameterReference",
+              },
+              interpolation: {
+                type: "literal",
+                optional: true,
+                definition: "build",
+              },
+              referencePath: {
+                optional: true,
+                type: "tuple",
+                definition: [
+                  {
+                    type: "string",
+                  },
+                  {
+                    type: "string",
+                  },
+                ],
+              },
+            },
+          },
+        },
+        "runtimeTransformers.menuItem.definition.icon": {
+          rawSchema: {
+            type: "union",
+            discriminator: ["transformerType", "interpolation"],
+            definition: [
+              {
+                type: "schemaReference",
+                definition: {
+                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  relativePath: "transformerForBuildPlusRuntime",
+                },
+              },
+              {
+                type: "record",
+                definition: {
+                  type: "schemaReference",
+                  definition: {
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    relativePath: "transformerForBuildPlusRuntime",
+                  },
+                },
+              },
+              {
+                type: "string",
+              },
+              {
+                type: "number",
+              },
+              {
+                type: "boolean",
+              },
+              {
+                type: "bigint",
+              },
+            ],
+          },
+          resolvedSchema: {
+            type: "string",
+          },
+          chosenUnionBranchRawSchema: {
+            type: "string",
+          },
+        },
+        "runtimeTransformers.menuItem.definition": {
+          rawSchema: {
+            type: "record",
+            definition: {
+              type: "union",
+              discriminator: ["transformerType", "interpolation"],
+              definition: [
+                {
+                  type: "schemaReference",
+                  definition: {
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    relativePath: "transformerForBuildPlusRuntime",
+                  },
+                },
+                {
+                  type: "record",
+                  definition: {
+                    type: "schemaReference",
+                    definition: {
+                      absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      relativePath: "transformerForBuildPlusRuntime",
+                    },
+                  },
+                },
+                {
+                  type: "string",
+                },
+                {
+                  type: "number",
+                },
+                {
+                  type: "boolean",
+                },
+                {
+                  type: "bigint",
+                },
+              ],
+            },
+          },
+          resolvedSchema: {
+            type: "object",
+            definition: {
+              reportUuid: {
+                type: "object",
+                definition: {
+                  transformerType: {
+                    type: "literal",
+                    definition: "parameterReference",
+                  },
+                  interpolation: {
+                    type: "literal",
+                    optional: true,
+                    definition: "build",
+                  },
+                  referenceName: {
+                    optional: true,
+                    type: "string",
+                  },
+                },
+              },
+              label: {
+                type: "object",
+                definition: {
+                  transformerType: {
+                    type: "literal",
+                    definition: "mustacheStringTemplate",
+                  },
+                  interpolation: {
+                    type: "literal",
+                    definition: "build",
+                  },
+                  definition: {
+                    type: "string",
+                  },
+                },
+              },
+              section: {
+                type: "string",
+              },
+              selfApplication: {
+                type: "object",
+                definition: {
+                  transformerType: {
+                    type: "literal",
+                    definition: "parameterReference",
+                  },
+                  interpolation: {
+                    type: "literal",
+                    optional: true,
+                    definition: "build",
+                  },
+                  referencePath: {
+                    optional: true,
+                    type: "tuple",
+                    definition: [
+                      {
+                        type: "string",
+                      },
+                      {
+                        type: "string",
+                      },
+                    ],
+                  },
+                },
+              },
+              icon: {
+                type: "string",
+              },
+            },
+          },
+        },
+        "runtimeTransformers.menuItem": {
+          rawSchema: {
+            type: "schemaReference",
+            definition: {
+              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              relativePath: "transformerForBuildPlusRuntime",
+            },
+          },
+          resolvedSchema: {
+            type: "object",
+            definition: {
+              transformerType: {
+                type: "literal",
+                definition: "freeObjectTemplate",
+              },
+              interpolation: {
+                type: "literal",
+                definition: "runtime",
+              },
+              definition: {
+                type: "object",
+                definition: {
+                  reportUuid: {
+                    type: "object",
+                    definition: {
+                      transformerType: {
+                        type: "literal",
+                        definition: "parameterReference",
+                      },
+                      interpolation: {
+                        type: "literal",
+                        optional: true,
+                        definition: "build",
+                      },
+                      referenceName: {
+                        optional: true,
+                        type: "string",
+                      },
+                    },
+                  },
+                  label: {
+                    type: "object",
+                    definition: {
+                      transformerType: {
+                        type: "literal",
+                        definition: "mustacheStringTemplate",
+                      },
+                      interpolation: {
+                        type: "literal",
+                        definition: "build",
+                      },
+                      definition: {
+                        type: "string",
+                      },
+                    },
+                  },
+                  section: {
+                    type: "string",
+                  },
+                  selfApplication: {
+                    type: "object",
+                    definition: {
+                      transformerType: {
+                        type: "literal",
+                        definition: "parameterReference",
+                      },
+                      interpolation: {
+                        type: "literal",
+                        optional: true,
+                        definition: "build",
+                      },
+                      referencePath: {
+                        optional: true,
+                        type: "tuple",
+                        definition: [
+                          {
+                            type: "string",
+                          },
+                          {
+                            type: "string",
+                          },
+                        ],
+                      },
+                    },
+                  },
+                  icon: {
+                    type: "string",
+                  },
+                },
+              },
+            },
+          },
+        },
+        "runtimeTransformers.updatedMenu.transformerType": {
+          rawSchema: {
+            type: "literal",
+            definition: "transformer_menu_addItem",
+          },
+          resolvedSchema: {
+            type: "literal",
+            definition: "transformer_menu_addItem",
+          },
+        },
+        "runtimeTransformers.updatedMenu.interpolation": {
+          rawSchema: {
+            type: "literal",
+            definition: "runtime",
+          },
+          resolvedSchema: {
+            type: "literal",
+            definition: "runtime",
+          },
+        },
+        "runtimeTransformers.updatedMenu.menuItemReference.transformerType": {
+          rawSchema: {
+            type: "literal",
+            definition: "contextReference",
+          },
+          resolvedSchema: {
+            type: "literal",
+            definition: "contextReference",
+          },
+        },
+        "runtimeTransformers.updatedMenu.menuItemReference.interpolation": {
+          rawSchema: {
+            type: "literal",
+            optional: true,
+            definition: "runtime",
+          },
+          resolvedSchema: {
+            type: "literal",
+            optional: true,
+            definition: "runtime",
+          },
+        },
+        "runtimeTransformers.updatedMenu.menuItemReference.referenceName": {
+          rawSchema: {
+            optional: true,
+            type: "string",
+          },
+          resolvedSchema: {
+            type: "string",
+          },
+        },
+        "runtimeTransformers.updatedMenu.menuItemReference": {
+          rawSchema: {
+            type: "union",
+            discriminator: "transformerType",
+            definition: [
+              {
+                type: "string",
+              },
+              {
+                type: "schemaReference",
+                definition: {
+                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  relativePath: "transformerForBuildPlusRuntime_InnerReference",
+                },
+              },
+            ],
+          },
+          chosenUnionBranchRawSchema: {
+            type: "object",
+            definition: {
+              interpolation: {
+                type: "literal",
+                optional: true,
+                definition: "runtime",
+              },
+              transformerType: {
+                type: "literal",
+                definition: "contextReference",
+              },
+              referenceName: {
+                optional: true,
+                type: "string",
+              },
+              referencePath: {
+                optional: true,
+                type: "array",
+                definition: {
+                  type: "string",
+                },
+              },
+            },
+          },
+          resolvedSchema: {
+            type: "object",
+            definition: {
+              transformerType: {
+                type: "literal",
+                definition: "contextReference",
+              },
+              interpolation: {
+                type: "literal",
+                optional: true,
+                definition: "runtime",
+              },
+              referenceName: {
+                optional: true,
+                type: "string",
+              },
+            },
+          },
+        },
+        "runtimeTransformers.updatedMenu.menuReference.transformerType": {
+          rawSchema: {
+            type: "literal",
+            definition: "contextReference",
+          },
+          resolvedSchema: {
+            type: "literal",
+            definition: "contextReference",
+          },
+        },
+        "runtimeTransformers.updatedMenu.menuReference.interpolation": {
+          rawSchema: {
+            type: "literal",
+            optional: true,
+            definition: "runtime",
+          },
+          resolvedSchema: {
+            type: "literal",
+            optional: true,
+            definition: "runtime",
+          },
+        },
+        "runtimeTransformers.updatedMenu.menuReference.referenceName": {
+          rawSchema: {
+            optional: true,
+            type: "string",
+          },
+          resolvedSchema: {
+            type: "string",
+          },
+        },
+        "runtimeTransformers.updatedMenu.menuReference": {
+          rawSchema: {
+            type: "union",
+            discriminator: "transformerType",
+            definition: [
+              {
+                type: "string",
+              },
+              {
+                type: "schemaReference",
+                definition: {
+                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  relativePath: "transformerForBuildPlusRuntime_InnerReference",
+                },
+              },
+            ],
+          },
+          chosenUnionBranchRawSchema: {
+            type: "object",
+            definition: {
+              interpolation: {
+                type: "literal",
+                optional: true,
+                definition: "runtime",
+              },
+              transformerType: {
+                type: "literal",
+                definition: "contextReference",
+              },
+              referenceName: {
+                optional: true,
+                type: "string",
+              },
+              referencePath: {
+                optional: true,
+                type: "array",
+                definition: {
+                  type: "string",
+                },
+              },
+            },
+          },
+          resolvedSchema: {
+            type: "object",
+            definition: {
+              transformerType: {
+                type: "literal",
+                definition: "contextReference",
+              },
+              interpolation: {
+                type: "literal",
+                optional: true,
+                definition: "runtime",
+              },
+              referenceName: {
+                optional: true,
+                type: "string",
+              },
+            },
+          },
+        },
+        "runtimeTransformers.updatedMenu.menuSectionItemInsertionIndex": {
+          rawSchema: {
+            type: "number",
+            optional: true,
+          },
+          resolvedSchema: {
+            type: "number",
+          },
+        },
+        "runtimeTransformers.updatedMenu": {
+          rawSchema: {
+            type: "schemaReference",
+            definition: {
+              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              relativePath: "transformerForBuildPlusRuntime",
+            },
+          },
+          resolvedSchema: {
+            type: "object",
+            definition: {
+              transformerType: {
+                type: "literal",
+                definition: "transformer_menu_addItem",
+              },
+              interpolation: {
+                type: "literal",
+                definition: "runtime",
+              },
+              menuItemReference: {
+                type: "object",
+                definition: {
+                  transformerType: {
+                    type: "literal",
+                    definition: "contextReference",
+                  },
+                  interpolation: {
+                    type: "literal",
+                    optional: true,
+                    definition: "runtime",
+                  },
+                  referenceName: {
+                    optional: true,
+                    type: "string",
+                  },
+                },
+              },
+              menuReference: {
+                type: "object",
+                definition: {
+                  transformerType: {
+                    type: "literal",
+                    definition: "contextReference",
+                  },
+                  interpolation: {
+                    type: "literal",
+                    optional: true,
+                    definition: "runtime",
+                  },
+                  referenceName: {
+                    optional: true,
+                    type: "string",
+                  },
+                },
+              },
+              menuSectionItemInsertionIndex: {
+                type: "number",
+                optional: true,
+              },
+            },
+          },
+        },
+        runtimeTransformers: {
+          rawSchema: {
+            type: "record",
+            optional: true,
+            definition: {
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "transformerForBuildPlusRuntime",
+              },
+            },
+          },
+          resolvedSchema: {
+            type: "object",
+            optional: true,
+            definition: {
+              menu: {
+                type: "object",
+                definition: {
+                  transformerType: {
+                    type: "literal",
+                    definition: "listPickElement",
+                  },
+                  interpolation: {
+                    type: "literal",
+                    definition: "runtime",
+                  },
+                  applyTo: {
+                    type: "object",
+                    definition: {
+                      referenceType: {
+                        type: "literal",
+                        definition: "referencedTransformer",
+                      },
+                      reference: {
+                        type: "object",
+                        definition: {
+                          transformerType: {
+                            type: "literal",
+                            definition: "contextReference",
+                          },
+                          interpolation: {
+                            type: "literal",
+                            optional: true,
+                            definition: "runtime",
+                          },
+                          referenceName: {
+                            optional: true,
+                            type: "string",
+                          },
+                        },
+                      },
+                    },
+                  },
+                  index: {
+                    type: "number",
+                  },
+                },
+              },
+              menuItem: {
+                type: "object",
+                definition: {
+                  transformerType: {
+                    type: "literal",
+                    definition: "freeObjectTemplate",
+                  },
+                  interpolation: {
+                    type: "literal",
+                    definition: "runtime",
+                  },
+                  definition: {
+                    type: "object",
+                    definition: {
+                      reportUuid: {
+                        type: "object",
+                        definition: {
+                          transformerType: {
+                            type: "literal",
+                            definition: "parameterReference",
+                          },
+                          interpolation: {
+                            type: "literal",
+                            optional: true,
+                            definition: "build",
+                          },
+                          referenceName: {
+                            optional: true,
+                            type: "string",
+                          },
+                        },
+                      },
+                      label: {
+                        type: "object",
+                        definition: {
+                          transformerType: {
+                            type: "literal",
+                            definition: "mustacheStringTemplate",
+                          },
+                          interpolation: {
+                            type: "literal",
+                            definition: "build",
+                          },
+                          definition: {
+                            type: "string",
+                          },
+                        },
+                      },
+                      section: {
+                        type: "string",
+                      },
+                      selfApplication: {
+                        type: "object",
+                        definition: {
+                          transformerType: {
+                            type: "literal",
+                            definition: "parameterReference",
+                          },
+                          interpolation: {
+                            type: "literal",
+                            optional: true,
+                            definition: "build",
+                          },
+                          referencePath: {
+                            optional: true,
+                            type: "tuple",
+                            definition: [
+                              {
+                                type: "string",
+                              },
+                              {
+                                type: "string",
+                              },
+                            ],
+                          },
+                        },
+                      },
+                      icon: {
+                        type: "string",
+                      },
+                    },
+                  },
+                },
+              },
+              updatedMenu: {
+                type: "object",
+                definition: {
+                  transformerType: {
+                    type: "literal",
+                    definition: "transformer_menu_addItem",
+                  },
+                  interpolation: {
+                    type: "literal",
+                    definition: "runtime",
+                  },
+                  menuItemReference: {
+                    type: "object",
+                    definition: {
+                      transformerType: {
+                        type: "literal",
+                        definition: "contextReference",
+                      },
+                      interpolation: {
+                        type: "literal",
+                        optional: true,
+                        definition: "runtime",
+                      },
+                      referenceName: {
+                        optional: true,
+                        type: "string",
+                      },
+                    },
+                  },
+                  menuReference: {
+                    type: "object",
+                    definition: {
+                      transformerType: {
+                        type: "literal",
+                        definition: "contextReference",
+                      },
+                      interpolation: {
+                        type: "literal",
+                        optional: true,
+                        definition: "runtime",
+                      },
+                      referenceName: {
+                        optional: true,
+                        type: "string",
+                      },
+                    },
+                  },
+                  menuSectionItemInsertionIndex: {
+                    type: "number",
+                    optional: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+        "": {
+          rawSchema: {
+            type: "schemaReference",
+            definition: {
+              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              relativePath: "boxedQueryWithExtractorCombinerTransformer",
+            },
+          },
+          resolvedSchema: {
+            type: "object",
+            definition: {
+              queryType: {
+                type: "literal",
+                definition: "boxedQueryWithExtractorCombinerTransformer",
+              },
+              deploymentUuid: {
+                type: "uuid",
+                tag: {
+                  value: {
+                    id: 1,
+                    canBeTemplate: true,
+                    defaultLabel: "Uuid",
+                    editable: false,
+                  },
+                },
+              },
+              pageParams: {
+                type: "object",
+                definition: {},
+              },
+              queryParams: {
+                type: "object",
+                definition: {},
+              },
+              contextResults: {
+                type: "object",
+                definition: {},
+              },
+              extractors: {
+                type: "object",
+                definition: {
+                  menuList: {
+                    type: "object",
+                    definition: {
+                      extractorOrCombinerType: {
+                        type: "literal",
+                        definition: "extractorByEntityReturningObjectList",
+                      },
+                      applicationSection: {
+                        type: "literal",
+                        definition: "model",
+                      },
+                      parentName: {
+                        type: "string",
+                        optional: true,
+                        tag: {
+                          value: {
+                            id: 3,
+                            canBeTemplate: true,
+                            defaultLabel: "Parent Name",
+                            editable: false,
+                          },
+                        },
+                      },
+                      parentUuid: {
+                        type: "uuid",
+                        tag: {
+                          value: {
+                            id: 4,
+                            canBeTemplate: true,
+                            targetEntity: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                            defaultLabel: "Parent Uuid",
+                            editable: false,
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+              runtimeTransformers: {
+                type: "object",
+                optional: true,
+                definition: {
+                  menu: {
+                    type: "object",
+                    definition: {
+                      transformerType: {
+                        type: "literal",
+                        definition: "listPickElement",
+                      },
+                      interpolation: {
+                        type: "literal",
+                        definition: "runtime",
+                      },
+                      applyTo: {
+                        type: "object",
+                        definition: {
+                          referenceType: {
+                            type: "literal",
+                            definition: "referencedTransformer",
+                          },
+                          reference: {
+                            type: "object",
+                            definition: {
+                              transformerType: {
+                                type: "literal",
+                                definition: "contextReference",
+                              },
+                              interpolation: {
+                                type: "literal",
+                                optional: true,
+                                definition: "runtime",
+                              },
+                              referenceName: {
+                                optional: true,
+                                type: "string",
+                              },
+                            },
+                          },
+                        },
+                      },
+                      index: {
+                        type: "number",
+                      },
+                    },
+                  },
+                  menuItem: {
+                    type: "object",
+                    definition: {
+                      transformerType: {
+                        type: "literal",
+                        definition: "freeObjectTemplate",
+                      },
+                      interpolation: {
+                        type: "literal",
+                        definition: "runtime",
+                      },
+                      definition: {
+                        type: "object",
+                        definition: {
+                          reportUuid: {
+                            type: "object",
+                            definition: {
+                              transformerType: {
+                                type: "literal",
+                                definition: "parameterReference",
+                              },
+                              interpolation: {
+                                type: "literal",
+                                optional: true,
+                                definition: "build",
+                              },
+                              referenceName: {
+                                optional: true,
+                                type: "string",
+                              },
+                            },
+                          },
+                          label: {
+                            type: "object",
+                            definition: {
+                              transformerType: {
+                                type: "literal",
+                                definition: "mustacheStringTemplate",
+                              },
+                              interpolation: {
+                                type: "literal",
+                                definition: "build",
+                              },
+                              definition: {
+                                type: "string",
+                              },
+                            },
+                          },
+                          section: {
+                            type: "string",
+                          },
+                          selfApplication: {
+                            type: "object",
+                            definition: {
+                              transformerType: {
+                                type: "literal",
+                                definition: "parameterReference",
+                              },
+                              interpolation: {
+                                type: "literal",
+                                optional: true,
+                                definition: "build",
+                              },
+                              referencePath: {
+                                optional: true,
+                                type: "tuple",
+                                definition: [
+                                  {
+                                    type: "string",
+                                  },
+                                  {
+                                    type: "string",
+                                  },
+                                ],
+                              },
+                            },
+                          },
+                          icon: {
+                            type: "string",
+                          },
+                        },
+                      },
+                    },
+                  },
+                  updatedMenu: {
+                    type: "object",
+                    definition: {
+                      transformerType: {
+                        type: "literal",
+                        definition: "transformer_menu_addItem",
+                      },
+                      interpolation: {
+                        type: "literal",
+                        definition: "runtime",
+                      },
+                      menuItemReference: {
+                        type: "object",
+                        definition: {
+                          transformerType: {
+                            type: "literal",
+                            definition: "contextReference",
+                          },
+                          interpolation: {
+                            type: "literal",
+                            optional: true,
+                            definition: "runtime",
+                          },
+                          referenceName: {
+                            optional: true,
+                            type: "string",
+                          },
+                        },
+                      },
+                      menuReference: {
+                        type: "object",
+                        definition: {
+                          transformerType: {
+                            type: "literal",
+                            definition: "contextReference",
+                          },
+                          interpolation: {
+                            type: "literal",
+                            optional: true,
+                            definition: "runtime",
+                          },
+                          referenceName: {
+                            optional: true,
+                            type: "string",
+                          },
+                        },
+                      },
+                      menuSectionItemInsertionIndex: {
+                        type: "number",
+                        optional: true,
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    // ##########################################################################################
+    // ################################## ACTIONS ###############################################
+    // ##########################################################################################
+    test800: {
+      testSchema: {
+        type: "schemaReference",
+        definition: {
+          absolutePath: castMiroirFundamentalJzodSchema.uuid,
+          relativePath: "buildPlusRuntimeCompositeAction",
+        },
+      },
+      testValueObject: {
+        actionType: "compositeAction",
+        actionLabel: "test",
+        actionName: "sequence",
+        templates: {},
+        definition: [
+          {
+            actionType: "createEntity",
+            actionLabel: "createEntity",
+            deploymentUuid: {
+              transformerType: "parameterReference",
+              interpolation: "build",
+              referenceName: "testDeploymentUuid",
+            },
+            endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+            payload: {
+              entities: [
+                {
+                  entity: {
+                    transformerType: "parameterReference",
+                    interpolation: "build",
+                    referenceName: "createEntity_newEntity",
+                  },
+                  entityDefinition: {
+                    transformerType: "parameterReference",
+                    interpolation: "build",
+                    referenceName: "createEntity_newEntityDefinition",
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+      expectedResolvedSchema: {
+        type: "object",
+        definition: {
+          actionType: {
+            type: "literal",
+            definition: "compositeAction",
+          },
+          actionLabel: {
+            type: "string",
+            optional: true,
+          },
+          actionName: {
+            type: "literal",
+            definition: "sequence",
+          },
+          templates: {
+            type: "object",
+            optional: true,
+            definition: {},
+          },
+          definition: {
+            type: "tuple",
+            definition: [
+              {
+                type: "object",
+                definition: {
+                  actionType: {
+                    type: "literal",
+                    definition: "createEntity",
+                  },
+                  actionLabel: {
+                    type: "string",
+                    optional: true,
+                  },
+                  deploymentUuid: {
+                    type: "object",
+                    definition: {
+                      transformerType: {
+                        type: "literal",
+                        definition: "parameterReference",
+                      },
+                      interpolation: {
+                        type: "literal",
+                        optional: true,
+                        definition: "build",
+                      },
+                      referenceName: {
+                        optional: true,
+                        type: "string",
+                      },
+                    },
+                  },
+                  endpoint: {
+                    type: "literal",
+                    definition: "7947ae40-eb34-4149-887b-15a9021e714e",
+                  },
+                  payload: {
+                    type: "object",
+                    definition: {
+                      entities: {
+                        type: "tuple",
+                        definition: [
+                          {
+                            type: "object",
+                            definition: {
+                              entity: {
+                                type: "object",
+                                definition: {
+                                  transformerType: {
+                                    type: "literal",
+                                    definition: "parameterReference",
+                                  },
+                                  interpolation: {
+                                    type: "literal",
+                                    optional: true,
+                                    definition: "build",
+                                  },
+                                  referenceName: {
+                                    optional: true,
+                                    type: "string",
+                                  },
+                                },
+                              },
+                              entityDefinition: {
+                                type: "object",
+                                definition: {
+                                  transformerType: {
+                                    type: "literal",
+                                    definition: "parameterReference",
+                                  },
+                                  interpolation: {
+                                    type: "literal",
+                                    optional: true,
+                                    definition: "build",
+                                  },
+                                  referenceName: {
+                                    optional: true,
+                                    type: "string",
+                                  },
+                                },
+                              },
+                            },
+                          },
+                        ],
+                      },
+                    },
+                  },
+                },
+              },
+            ],
+          },
+        },
+      },
+      expectedKeyMap: {
+        actionType: {
+          rawSchema: {
+            type: "literal",
+            definition: "compositeAction",
+          },
+          resolvedSchema: {
+            type: "literal",
+            definition: "compositeAction",
+          },
+        },
+        actionLabel: {
+          rawSchema: {
+            type: "string",
+            optional: true,
+          },
+          resolvedSchema: {
+            type: "string",
+          },
+        },
+        actionName: {
+          rawSchema: {
+            type: "literal",
+            definition: "sequence",
+          },
+          resolvedSchema: {
+            type: "literal",
+            definition: "sequence",
+          },
+        },
+        templates: {
+          rawSchema: {
+            type: "record",
+            optional: true,
+            definition: {
+              type: "any",
+            },
+          },
+          resolvedSchema: {
+            type: "object",
+            optional: true,
+            definition: {},
+          },
+        },
+        "definition.0.actionType": {
+          rawSchema: {
+            type: "literal",
+            definition: "createEntity",
+          },
+          resolvedSchema: {
+            type: "literal",
+            definition: "createEntity",
+          },
+        },
+        "definition.0.actionLabel": {
+          rawSchema: {
+            type: "string",
+            optional: true,
+          },
+          resolvedSchema: {
+            type: "string",
+          },
+        },
+        "definition.0.deploymentUuid.transformerType": {
+          rawSchema: {
+            type: "literal",
+            definition: "parameterReference",
+          },
+          resolvedSchema: {
+            type: "literal",
+            definition: "parameterReference",
+          },
+        },
+        "definition.0.deploymentUuid.interpolation": {
+          rawSchema: {
+            type: "literal",
+            optional: true,
+            definition: "build",
+          },
+          resolvedSchema: {
+            type: "literal",
+            optional: true,
+            definition: "build",
+          },
+        },
+        "definition.0.deploymentUuid.referenceName": {
+          rawSchema: {
+            optional: true,
+            type: "string",
+          },
+          resolvedSchema: {
+            type: "string",
+          },
+        },
+        "definition.0.deploymentUuid": {
+          rawSchema: {
+            type: "union",
+            tag: {
+              value: {
+                id: 1,
+                canBeTemplate: true,
+                defaultLabel: "Deployment",
+                editable: false,
+              },
+            },
+            discriminator: ["transformerType", "interpolation"],
+            definition: [
+              {
+                type: "uuid",
+                tag: {
+                  value: {
+                    id: 1,
+                    canBeTemplate: true,
+                    defaultLabel: "Deployment",
+                    editable: false,
+                  },
+                },
+              },
+              {
+                type: "schemaReference",
+                definition: {
+                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  relativePath: "transformerForBuildPlusRuntimeCarryOnObject",
+                },
+              },
+            ],
+          },
+          chosenUnionBranchRawSchema: {
+            type: "object",
+            definition: {
+              interpolation: {
+                type: "literal",
+                optional: true,
+                definition: "build",
+              },
+              transformerType: {
+                type: "literal",
+                definition: "parameterReference",
+              },
+              referenceName: {
+                optional: true,
+                type: "string",
+              },
+              referencePath: {
+                optional: true,
+                type: "array",
+                definition: {
+                  type: "string",
+                },
+              },
+            },
+          },
+          resolvedSchema: {
+            type: "object",
+            definition: {
+              transformerType: {
+                type: "literal",
+                definition: "parameterReference",
+              },
+              interpolation: {
+                type: "literal",
+                optional: true,
+                definition: "build",
+              },
+              referenceName: {
+                optional: true,
+                type: "string",
+              },
+            },
+          },
+        },
+        "definition.0.endpoint": {
+          rawSchema: {
+            type: "literal",
+            definition: "7947ae40-eb34-4149-887b-15a9021e714e",
+          },
+          resolvedSchema: {
+            type: "literal",
+            definition: "7947ae40-eb34-4149-887b-15a9021e714e",
+          },
+        },
+        "definition.0.payload.entities.0.entity.transformerType": {
+          rawSchema: {
+            type: "literal",
+            definition: "parameterReference",
+          },
+          resolvedSchema: {
+            type: "literal",
+            definition: "parameterReference",
+          },
+        },
+        "definition.0.payload.entities.0.entity.interpolation": {
+          rawSchema: {
+            type: "literal",
+            optional: true,
+            definition: "build",
+          },
+          resolvedSchema: {
+            type: "literal",
+            optional: true,
+            definition: "build",
+          },
+        },
+        "definition.0.payload.entities.0.entity.referenceName": {
+          rawSchema: {
+            optional: true,
+            type: "string",
+          },
+          resolvedSchema: {
+            type: "string",
+          },
+        },
+        "definition.0.payload.entities.0.entity": {
+          rawSchema: {
+            type: "union",
+            tag: {
+              value: {
+                canBeTemplate: true,
+              },
+            },
+            discriminator: ["transformerType", "interpolation"],
+            definition: [
+              {
+                type: "schemaReference",
+                tag: {
+                  value: {
+                    canBeTemplate: true,
+                  },
+                },
+                definition: {
+                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  relativePath:
+                    "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entity",
+                },
+                context: {},
+              },
+              {
+                type: "schemaReference",
+                definition: {
+                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  relativePath: "transformerForBuildPlusRuntimeCarryOnObject",
+                },
+              },
+            ],
+          },
+          chosenUnionBranchRawSchema: {
+            type: "object",
+            definition: {
+              interpolation: {
+                type: "literal",
+                optional: true,
+                definition: "build",
+              },
+              transformerType: {
+                type: "literal",
+                definition: "parameterReference",
+              },
+              referenceName: {
+                optional: true,
+                type: "string",
+              },
+              referencePath: {
+                optional: true,
+                type: "array",
+                definition: {
+                  type: "string",
+                },
+              },
+            },
+          },
+          resolvedSchema: {
+            type: "object",
+            definition: {
+              transformerType: {
+                type: "literal",
+                definition: "parameterReference",
+              },
+              interpolation: {
+                type: "literal",
+                optional: true,
+                definition: "build",
+              },
+              referenceName: {
+                optional: true,
+                type: "string",
+              },
+            },
+          },
+        },
+        "definition.0.payload.entities.0.entityDefinition.transformerType": {
+          rawSchema: {
+            type: "literal",
+            definition: "parameterReference",
+          },
+          resolvedSchema: {
+            type: "literal",
+            definition: "parameterReference",
+          },
+        },
+        "definition.0.payload.entities.0.entityDefinition.interpolation": {
+          rawSchema: {
+            type: "literal",
+            optional: true,
+            definition: "build",
+          },
+          resolvedSchema: {
+            type: "literal",
+            optional: true,
+            definition: "build",
+          },
+        },
+        "definition.0.payload.entities.0.entityDefinition.referenceName": {
+          rawSchema: {
+            optional: true,
+            type: "string",
+          },
+          resolvedSchema: {
+            type: "string",
+          },
+        },
+        "definition.0.payload.entities.0.entityDefinition": {
+          rawSchema: {
+            type: "union",
+            tag: {
+              value: {
+                canBeTemplate: true,
+              },
+            },
+            discriminator: ["transformerType", "interpolation"],
+            definition: [
+              {
+                type: "schemaReference",
+                tag: {
+                  value: {
+                    canBeTemplate: true,
+                  },
+                },
+                definition: {
+                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  relativePath:
+                    "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityDefinition",
+                },
+                context: {},
+              },
+              {
+                type: "schemaReference",
+                definition: {
+                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  relativePath: "transformerForBuildPlusRuntimeCarryOnObject",
+                },
+              },
+            ],
+          },
+          chosenUnionBranchRawSchema: {
+            type: "object",
+            definition: {
+              interpolation: {
+                type: "literal",
+                optional: true,
+                definition: "build",
+              },
+              transformerType: {
+                type: "literal",
+                definition: "parameterReference",
+              },
+              referenceName: {
+                optional: true,
+                type: "string",
+              },
+              referencePath: {
+                optional: true,
+                type: "array",
+                definition: {
+                  type: "string",
+                },
+              },
+            },
+          },
+          resolvedSchema: {
+            type: "object",
+            definition: {
+              transformerType: {
+                type: "literal",
+                definition: "parameterReference",
+              },
+              interpolation: {
+                type: "literal",
+                optional: true,
+                definition: "build",
+              },
+              referenceName: {
+                optional: true,
+                type: "string",
+              },
+            },
+          },
+        },
+        "definition.0.payload.entities.0": {
+          rawSchema: {
+            type: "object",
+            definition: {
+              entity: {
+                type: "union",
+                tag: {
+                  value: {
+                    canBeTemplate: true,
+                  },
+                },
+                discriminator: ["transformerType", "interpolation"],
+                definition: [
+                  {
+                    type: "schemaReference",
+                    tag: {
+                      value: {
+                        canBeTemplate: true,
+                      },
+                    },
+                    definition: {
+                      absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      relativePath:
+                        "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entity",
+                    },
+                    context: {},
+                  },
+                  {
+                    type: "schemaReference",
+                    definition: {
+                      absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      relativePath: "transformerForBuildPlusRuntimeCarryOnObject",
                     },
                   },
                 ],
-              }
+              },
+              entityDefinition: {
+                type: "union",
+                tag: {
+                  value: {
+                    canBeTemplate: true,
+                  },
+                },
+                discriminator: ["transformerType", "interpolation"],
+                definition: [
+                  {
+                    type: "schemaReference",
+                    tag: {
+                      value: {
+                        canBeTemplate: true,
+                      },
+                    },
+                    definition: {
+                      absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      relativePath:
+                        "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityDefinition",
+                    },
+                    context: {},
+                  },
+                  {
+                    type: "schemaReference",
+                    definition: {
+                      absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      relativePath: "transformerForBuildPlusRuntimeCarryOnObject",
+                    },
+                  },
+                ],
+              },
             },
-          ],
+          },
+          resolvedSchema: {
+            type: "object",
+            definition: {
+              entity: {
+                type: "object",
+                definition: {
+                  transformerType: {
+                    type: "literal",
+                    definition: "parameterReference",
+                  },
+                  interpolation: {
+                    type: "literal",
+                    optional: true,
+                    definition: "build",
+                  },
+                  referenceName: {
+                    optional: true,
+                    type: "string",
+                  },
+                },
+              },
+              entityDefinition: {
+                type: "object",
+                definition: {
+                  transformerType: {
+                    type: "literal",
+                    definition: "parameterReference",
+                  },
+                  interpolation: {
+                    type: "literal",
+                    optional: true,
+                    definition: "build",
+                  },
+                  referenceName: {
+                    optional: true,
+                    type: "string",
+                  },
+                },
+              },
+            },
+          },
         },
-        expectedResolvedSchema: {
-          "type": "object",
-          "definition": {
-            "actionType": {
-              "type": "literal",
-              "definition": "compositeAction"
-            },
-            "actionLabel": {
-              "type": "string",
-              "optional": true
-            },
-            "actionName": {
-              "type": "literal",
-              "definition": "sequence"
-            },
-            "templates": {
-              "type": "object",
-              "optional": true,
-              "definition": {}
-            },
-            "definition": {
-              "type": "tuple",
-              "definition": [
-                {
-                  "type": "object",
-                  "definition": {
-                    "actionType": {
-                      "type": "literal",
-                      "definition": "createEntity"
-                    },
-                    "actionLabel": {
-                      "type": "string",
-                      "optional": true
-                    },
-                    "deploymentUuid": {
-                      "type": "object",
-                      "definition": {
-                        "transformerType": {
-                          "type": "literal",
-                          "definition": "parameterReference"
-                        },
-                        "interpolation": {
-                          "type": "literal",
-                          "optional": true,
-                          "definition": "build"
-                        },
-                        "referenceName": {
-                          "optional": true,
-                          "type": "string"
-                        }
-                      }
-                    },
-                    "endpoint": {
-                      "type": "literal",
-                      "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
-                    },
-                    "payload": {
-                      type: "object",
-                      definition: {
-                        "entities": {
-                          "type": "tuple",
-                          "definition": [
-                            {
-                              "type": "object",
-                              "definition": {
-                                "entity": {
-                                  "type": "object",
-                                  "definition": {
-                                    "transformerType": {
-                                      "type": "literal",
-                                      "definition": "parameterReference"
-                                    },
-                                    "interpolation": {
-                                      "type": "literal",
-                                      "optional": true,
-                                      "definition": "build"
-                                    },
-                                    "referenceName": {
-                                      "optional": true,
-                                      "type": "string"
-                                    }
-                                  }
-                                },
-                                "entityDefinition": {
-                                  "type": "object",
-                                  "definition": {
-                                    "transformerType": {
-                                      "type": "literal",
-                                      "definition": "parameterReference"
-                                    },
-                                    "interpolation": {
-                                      "type": "literal",
-                                      "optional": true,
-                                      "definition": "build"
-                                    },
-                                    "referenceName": {
-                                      "optional": true,
-                                      "type": "string"
-                                    }
-                                  }
-                                }
-                              }
-                            }
-                          ]
-                        }
-                      }
-                    }
-                  }
-                }
-              ]
-            }
-          }
-        },
-        expectedKeyMap: {
-          "actionType": {
-            rawSchema: {
-              "type": "literal",
-              "definition": "compositeAction"
-            },
-            resolvedSchema: {
-              "type": "literal",
-              "definition": "compositeAction"
-            }
-          },
-          "actionLabel": {
-            rawSchema: {
-              "type": "string",
-              "optional": true
-            },
-            resolvedSchema: {
-              "type": "string",
-              "optional": true
-            }
-          },
-          "actionName": {
-            rawSchema: {
-              "type": "literal",
-              "definition": "sequence"
-            },
-            resolvedSchema: {
-              "type": "literal",
-              "definition": "sequence"
-            }
-          },
-          "templates": {
-            rawSchema: {
-              "type": "object",
-              "optional": true,
-              "definition": {}
-            },
-            resolvedSchema: {
-              "type": "object",
-              "optional": true,
-              "definition": {}
-            }
-          },
-          "definition.0.actionType": {
-            rawSchema: {
-              "type": "literal",
-              "definition": "createEntity"
-            },
-            resolvedSchema: {
-              "type": "literal",
-              "definition": "createEntity"
-            }
-          },
-          "definition.0.actionLabel": {
-            rawSchema: {
-              "type": "string",
-              "optional": true
-            },
-            resolvedSchema: {
-              "type": "string",
-              "optional": true
-            }
-          },
-          "definition.0.deploymentUuid.transformerType": {
-            rawSchema: {
-              "type": "literal",
-              "definition": "parameterReference"
-            },
-            resolvedSchema: {
-              "type": "literal",
-              "definition": "parameterReference"
-            }
-          },
-          "definition.0.deploymentUuid.interpolation": {
-            rawSchema: {
-              "type": "literal",
-              "optional": true,
-              "definition": "build"
-            },
-            resolvedSchema: {
-              "type": "literal",
-              "optional": true,
-              "definition": "build"
-            }
-          },
-          "definition.0.deploymentUuid.referenceName": {
-            rawSchema: {
-              "optional": true,
-              "type": "string"
-            },
-            resolvedSchema: {
-              "optional": true,
-              "type": "string"
-            }
-          },
-          "definition.0.deploymentUuid": {
-            rawSchema: {
-              "type": "object",
-              "definition": {
-                "transformerType": {
-                  "type": "literal",
-                  "definition": "parameterReference"
-                },
-                "interpolation": {
-                  "type": "literal",
-                  "optional": true,
-                  "definition": "build"
-                },
-                "referenceName": {
-                  "optional": true,
-                  "type": "string"
-                }
-              }
-            },
-            resolvedSchema: {
-              "type": "object",
-              "definition": {
-                "transformerType": {
-                  "type": "literal",
-                  "definition": "parameterReference"
-                },
-                "interpolation": {
-                  "type": "literal",
-                  "optional": true,
-                  "definition": "build"
-                },
-                "referenceName": {
-                  "optional": true,
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "definition.0.endpoint": {
-            rawSchema: {
-              "type": "literal",
-              "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
-            },
-            resolvedSchema: {
-              "type": "literal",
-              "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
-            }
-          },
-          "definition.0.payload.entities.0.entity.transformerType": {
-            rawSchema: {
-              "type": "literal",
-              "definition": "parameterReference"
-            },
-            resolvedSchema: {
-              "type": "literal",
-              "definition": "parameterReference"
-            }
-          },
-          "definition.0.payload.entities.0.entity.interpolation": {
-            rawSchema: {
-              "type": "literal",
-              "optional": true,
-              "definition": "build"
-            },
-            resolvedSchema: {
-              "type": "literal",
-              "optional": true,
-              "definition": "build"
-            }
-          },
-          "definition.0.payload.entities.0.entity.referenceName": {
-            rawSchema: {
-              "optional": true,
-              "type": "string"
-            },
-            resolvedSchema: {
-              "optional": true,
-              "type": "string"
-            }
-          },
-          "definition.0.payload.entities.0.entity": {
-            rawSchema: {
-              "type": "object",
-              "definition": {
-                "transformerType": {
-                  "type": "literal",
-                  "definition": "parameterReference"
-                },
-                "interpolation": {
-                  "type": "literal",
-                  "optional": true,
-                  "definition": "build"
-                },
-                "referenceName": {
-                  "optional": true,
-                  "type": "string"
-                }
-              }
-            },
-            resolvedSchema: {
-              "type": "object",
-              "definition": {
-                "transformerType": {
-                  "type": "literal",
-                  "definition": "parameterReference"
-                },
-                "interpolation": {
-                  "type": "literal",
-                  "optional": true,
-                  "definition": "build"
-                },
-                "referenceName": {
-                  "optional": true,
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "definition.0.payload.entities.0.entityDefinition.transformerType": {
-            rawSchema: {
-              "type": "literal",
-              "definition": "parameterReference"
-            },
-            resolvedSchema: {
-              "type": "literal",
-              "definition": "parameterReference"
-            }
-          },
-          "definition.0.payload.entities.0.entityDefinition.interpolation": {
-            rawSchema: {
-              "type": "literal",
-              "optional": true,
-              "definition": "build"
-            },
-            resolvedSchema: {
-              "type": "literal",
-              "optional": true,
-              "definition": "build"
-            }
-          },
-          "definition.0.payload.entities.0.entityDefinition.referenceName": {
-            rawSchema: {
-              "optional": true,
-              "type": "string"
-            },
-            resolvedSchema: {
-              "optional": true,
-              "type": "string"
-            }
-          },
-          "definition.0.payload.entities.0.entityDefinition": {
-            rawSchema: {
-              "type": "object",
-              "definition": {
-                "transformerType": {
-                  "type": "literal",
-                  "definition": "parameterReference"
-                },
-                "interpolation": {
-                  "type": "literal",
-                  "optional": true,
-                  "definition": "build"
-                },
-                "referenceName": {
-                  "optional": true,
-                  "type": "string"
-                }
-              }
-            },
-            resolvedSchema: {
-              "type": "object",
-              "definition": {
-                "transformerType": {
-                  "type": "literal",
-                  "definition": "parameterReference"
-                },
-                "interpolation": {
-                  "type": "literal",
-                  "optional": true,
-                  "definition": "build"
-                },
-                "referenceName": {
-                  "optional": true,
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "definition.0.payload.entities.0": {
-            rawSchema: {
-              "type": "object",
-              "definition": {
-                "entity": {
-                  "type": "object",
-                  "definition": {
-                    "transformerType": {
-                      "type": "literal",
-                      "definition": "parameterReference"
-                    },
-                    "interpolation": {
-                      "type": "literal",
-                      "optional": true,
-                      "definition": "build"
-                    },
-                    "referenceName": {
-                      "optional": true,
-                      "type": "string"
-                    }
-                  }
-                },
-                "entityDefinition": {
-                  "type": "object",
-                  "definition": {
-                    "transformerType": {
-                      "type": "literal",
-                      "definition": "parameterReference"
-                    },
-                    "interpolation": {
-                      "type": "literal",
-                      "optional": true,
-                      "definition": "build"
-                    },
-                    "referenceName": {
-                      "optional": true,
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            },
-            resolvedSchema: {
-              "type": "object",
-              "definition": {
-                "entity": {
-                  "type": "object",
-                  "definition": {
-                    "transformerType": {
-                      "type": "literal",
-                      "definition": "parameterReference"
-                    },
-                    "interpolation": {
-                      "type": "literal",
-                      "optional": true,
-                      "definition": "build"
-                    },
-                    "referenceName": {
-                      "optional": true,
-                      "type": "string"
-                    }
-                  }
-                },
-                "entityDefinition": {
-                  "type": "object",
-                  "definition": {
-                    "transformerType": {
-                      "type": "literal",
-                      "definition": "parameterReference"
-                    },
-                    "interpolation": {
-                      "type": "literal",
-                      "optional": true,
-                      "definition": "build"
-                    },
-                    "referenceName": {
-                      "optional": true,
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "definition.0.payload.entities": {
-            rawSchema: {
-              "type": "tuple",
-              "definition": [
-                {
-                  "type": "object",
-                  "definition": {
-                    "entity": {
-                      "type": "object",
-                      "definition": {
-                        "transformerType": {
-                          "type": "literal",
-                          "definition": "parameterReference"
-                        },
-                        "interpolation": {
-                          "type": "literal",
-                          "optional": true,
-                          "definition": "build"
-                        },
-                        "referenceName": {
-                          "optional": true,
-                          "type": "string"
-                        }
-                      }
-                    },
-                    "entityDefinition": {
-                      "type": "object",
-                      "definition": {
-                        "transformerType": {
-                          "type": "literal",
-                          "definition": "parameterReference"
-                        },
-                        "interpolation": {
-                          "type": "literal",
-                          "optional": true,
-                          "definition": "build"
-                        },
-                        "referenceName": {
-                          "optional": true,
-                          "type": "string"
-                        }
-                      }
-                    }
-                  }
-                }
-              ]
-            },
-            resolvedSchema: {
-              "type": "tuple",
-              "definition": [
-                {
-                  "type": "object",
-                  "definition": {
-                    "entity": {
-                      "type": "object",
-                      "definition": {
-                        "transformerType": {
-                          "type": "literal",
-                          "definition": "parameterReference"
-                        },
-                        "interpolation": {
-                          "type": "literal",
-                          "optional": true,
-                          "definition": "build"
-                        },
-                        "referenceName": {
-                          "optional": true,
-                          "type": "string"
-                        }
-                      }
-                    },
-                    "entityDefinition": {
-                      "type": "object",
-                      "definition": {
-                        "transformerType": {
-                          "type": "literal",
-                          "definition": "parameterReference"
-                        },
-                        "interpolation": {
-                          "type": "literal",
-                          "optional": true,
-                          "definition": "build"
-                        },
-                        "referenceName": {
-                          "optional": true,
-                          "type": "string"
-                        }
-                      }
-                    }
-                  }
-                }
-              ]
-            }
-          },
-          "definition.0.payload": {
-            rawSchema: {
+        "definition.0.payload.entities": {
+          rawSchema: {
+            type: "array",
+            definition: {
               type: "object",
               definition: {
-                "entities": {
-                  "type": "tuple",
-                  "definition": [
+                entity: {
+                  type: "union",
+                  tag: {
+                    value: {
+                      canBeTemplate: true,
+                    },
+                  },
+                  discriminator: ["transformerType", "interpolation"],
+                  definition: [
                     {
-                      "type": "object",
-                      "definition": {
-                        "entity": {
-                          "type": "object",
-                          "definition": {
-                            "transformerType": {
-                              "type": "literal",
-                              "definition": "parameterReference"
-                            },
-                            "interpolation": {
-                              "type": "literal",
-                              "optional": true,
-                              "definition": "build"
-                            },
-                            "referenceName": {
-                              "optional": true,
-                              "type": "string"
-                            }
-                          }
+                      type: "schemaReference",
+                      tag: {
+                        value: {
+                          canBeTemplate: true,
                         },
-                        "entityDefinition": {
-                          "type": "object",
-                          "definition": {
-                            "transformerType": {
-                              "type": "literal",
-                              "definition": "parameterReference"
-                            },
-                            "interpolation": {
-                              "type": "literal",
-                              "optional": true,
-                              "definition": "build"
-                            },
-                            "referenceName": {
-                              "optional": true,
-                              "type": "string"
-                            }
-                          }
-                        }
-                      }
-                    }
-                  ]
-                }
-              }
+                      },
+                      definition: {
+                        absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        relativePath:
+                          "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entity",
+                      },
+                      context: {},
+                    },
+                    {
+                      type: "schemaReference",
+                      definition: {
+                        absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        relativePath: "transformerForBuildPlusRuntimeCarryOnObject",
+                      },
+                    },
+                  ],
+                },
+                entityDefinition: {
+                  type: "union",
+                  tag: {
+                    value: {
+                      canBeTemplate: true,
+                    },
+                  },
+                  discriminator: ["transformerType", "interpolation"],
+                  definition: [
+                    {
+                      type: "schemaReference",
+                      tag: {
+                        value: {
+                          canBeTemplate: true,
+                        },
+                      },
+                      definition: {
+                        absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        relativePath:
+                          "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityDefinition",
+                      },
+                      context: {},
+                    },
+                    {
+                      type: "schemaReference",
+                      definition: {
+                        absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        relativePath: "transformerForBuildPlusRuntimeCarryOnObject",
+                      },
+                    },
+                  ],
+                },
+              },
             },
-            resolvedSchema: {
-              type: "object",
+          },
+          resolvedSchema: {
+            type: "tuple",
+            definition: [
+              {
+                type: "object",
+                definition: {
+                  entity: {
+                    type: "object",
+                    definition: {
+                      transformerType: {
+                        type: "literal",
+                        definition: "parameterReference",
+                      },
+                      interpolation: {
+                        type: "literal",
+                        optional: true,
+                        definition: "build",
+                      },
+                      referenceName: {
+                        optional: true,
+                        type: "string",
+                      },
+                    },
+                  },
+                  entityDefinition: {
+                    type: "object",
+                    definition: {
+                      transformerType: {
+                        type: "literal",
+                        definition: "parameterReference",
+                      },
+                      interpolation: {
+                        type: "literal",
+                        optional: true,
+                        definition: "build",
+                      },
+                      referenceName: {
+                        optional: true,
+                        type: "string",
+                      },
+                    },
+                  },
+                },
+              },
+            ],
+          },
+        },
+        "definition.0.payload": {
+          rawSchema: {
+            type: "object",
+            definition: {
+              transactional: {
+                type: "boolean",
+                optional: true,
+              },
+              entities: {
+                type: "array",
+                definition: {
+                  type: "object",
+                  definition: {
+                    entity: {
+                      type: "union",
+                      tag: {
+                        value: {
+                          canBeTemplate: true,
+                        },
+                      },
+                      discriminator: ["transformerType", "interpolation"],
+                      definition: [
+                        {
+                          type: "schemaReference",
+                          tag: {
+                            value: {
+                              canBeTemplate: true,
+                            },
+                          },
+                          definition: {
+                            absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            relativePath:
+                              "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entity",
+                          },
+                          context: {},
+                        },
+                        {
+                          type: "schemaReference",
+                          definition: {
+                            absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            relativePath: "transformerForBuildPlusRuntimeCarryOnObject",
+                          },
+                        },
+                      ],
+                    },
+                    entityDefinition: {
+                      type: "union",
+                      tag: {
+                        value: {
+                          canBeTemplate: true,
+                        },
+                      },
+                      discriminator: ["transformerType", "interpolation"],
+                      definition: [
+                        {
+                          type: "schemaReference",
+                          tag: {
+                            value: {
+                              canBeTemplate: true,
+                            },
+                          },
+                          definition: {
+                            absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            relativePath:
+                              "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityDefinition",
+                          },
+                          context: {},
+                        },
+                        {
+                          type: "schemaReference",
+                          definition: {
+                            absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            relativePath: "transformerForBuildPlusRuntimeCarryOnObject",
+                          },
+                        },
+                      ],
+                    },
+                  },
+                },
+              },
+            },
+          },
+          resolvedSchema: {
+            type: "object",
+            definition: {
+              entities: {
+                type: "tuple",
+                definition: [
+                  {
+                    type: "object",
+                    definition: {
+                      entity: {
+                        type: "object",
+                        definition: {
+                          transformerType: {
+                            type: "literal",
+                            definition: "parameterReference",
+                          },
+                          interpolation: {
+                            type: "literal",
+                            optional: true,
+                            definition: "build",
+                          },
+                          referenceName: {
+                            optional: true,
+                            type: "string",
+                          },
+                        },
+                      },
+                      entityDefinition: {
+                        type: "object",
+                        definition: {
+                          transformerType: {
+                            type: "literal",
+                            definition: "parameterReference",
+                          },
+                          interpolation: {
+                            type: "literal",
+                            optional: true,
+                            definition: "build",
+                          },
+                          referenceName: {
+                            optional: true,
+                            type: "string",
+                          },
+                        },
+                      },
+                    },
+                  },
+                ],
+              },
+            },
+          },
+        },
+        "definition.0": {
+          rawSchema: {
+            type: "union",
+            discriminator: "actionType",
+            definition: [
+              {
+                type: "schemaReference",
+                definition: {
+                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  relativePath:
+                    "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction",
+                },
+              },
+              {
+                type: "schemaReference",
+                definition: {
+                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  relativePath:
+                    "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction",
+                },
+              },
+              {
+                type: "object",
+                definition: {
+                  actionType: {
+                    type: "literal",
+                    definition: "compositeRunBoxedQueryAction",
+                  },
+                  actionLabel: {
+                    type: "string",
+                    optional: true,
+                  },
+                  nameGivenToResult: {
+                    type: "string",
+                  },
+                  queryTemplate: {
+                    type: "schemaReference",
+                    definition: {
+                      absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      relativePath:
+                        "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedQueryAction",
+                    },
+                  },
+                },
+              },
+              {
+                type: "object",
+                definition: {
+                  actionType: {
+                    type: "literal",
+                    definition: "compositeRunBoxedExtractorAction",
+                  },
+                  actionLabel: {
+                    type: "string",
+                    optional: true,
+                  },
+                  nameGivenToResult: {
+                    type: "string",
+                  },
+                  queryTemplate: {
+                    type: "schemaReference",
+                    definition: {
+                      absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      relativePath:
+                        "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorAction",
+                    },
+                  },
+                },
+              },
+              {
+                type: "object",
+                definition: {
+                  actionType: {
+                    type: "literal",
+                    definition: "compositeRunBoxedExtractorOrQueryAction",
+                  },
+                  actionLabel: {
+                    type: "string",
+                    optional: true,
+                  },
+                  nameGivenToResult: {
+                    type: "string",
+                  },
+                  query: {
+                    type: "schemaReference",
+                    definition: {
+                      absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      relativePath:
+                        "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorOrQueryAction",
+                    },
+                  },
+                },
+              },
+              {
+                type: "object",
+                definition: {
+                  actionType: {
+                    type: "literal",
+                    definition: "compositeRunTestAssertion",
+                  },
+                  actionLabel: {
+                    type: "string",
+                    optional: true,
+                  },
+                  nameGivenToResult: {
+                    type: "string",
+                  },
+                  testAssertion: {
+                    type: "schemaReference",
+                    definition: {
+                      absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      relativePath:
+                        "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testAssertion",
+                    },
+                  },
+                },
+              },
+            ],
+          },
+          chosenUnionBranchRawSchema: {
+            type: "object",
+            definition: {
+              actionType: {
+                type: "literal",
+                definition: "createEntity",
+              },
+              actionLabel: {
+                type: "string",
+                optional: true,
+              },
+              endpoint: {
+                type: "literal",
+                definition: "7947ae40-eb34-4149-887b-15a9021e714e",
+              },
+              deploymentUuid: {
+                type: "union",
+                tag: {
+                  value: {
+                    id: 1,
+                    canBeTemplate: true,
+                    defaultLabel: "Deployment",
+                    editable: false,
+                  },
+                },
+                discriminator: ["transformerType", "interpolation"],
+                definition: [
+                  {
+                    type: "uuid",
+                    tag: {
+                      value: {
+                        id: 1,
+                        canBeTemplate: true,
+                        defaultLabel: "Deployment",
+                        editable: false,
+                      },
+                    },
+                  },
+                  {
+                    type: "schemaReference",
+                    definition: {
+                      absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      relativePath: "transformerForBuildPlusRuntimeCarryOnObject",
+                    },
+                  },
+                ],
+              },
+              payload: {
+                type: "object",
+                definition: {
+                  transactional: {
+                    type: "boolean",
+                    optional: true,
+                  },
+                  entities: {
+                    type: "array",
+                    definition: {
+                      type: "object",
+                      definition: {
+                        entity: {
+                          type: "union",
+                          tag: {
+                            value: {
+                              canBeTemplate: true,
+                            },
+                          },
+                          discriminator: ["transformerType", "interpolation"],
+                          definition: [
+                            {
+                              type: "schemaReference",
+                              tag: {
+                                value: {
+                                  canBeTemplate: true,
+                                },
+                              },
+                              definition: {
+                                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                relativePath:
+                                  "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entity",
+                              },
+                              context: {},
+                            },
+                            {
+                              type: "schemaReference",
+                              definition: {
+                                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                relativePath: "transformerForBuildPlusRuntimeCarryOnObject",
+                              },
+                            },
+                          ],
+                        },
+                        entityDefinition: {
+                          type: "union",
+                          tag: {
+                            value: {
+                              canBeTemplate: true,
+                            },
+                          },
+                          discriminator: ["transformerType", "interpolation"],
+                          definition: [
+                            {
+                              type: "schemaReference",
+                              tag: {
+                                value: {
+                                  canBeTemplate: true,
+                                },
+                              },
+                              definition: {
+                                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                relativePath:
+                                  "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityDefinition",
+                              },
+                              context: {},
+                            },
+                            {
+                              type: "schemaReference",
+                              definition: {
+                                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                relativePath: "transformerForBuildPlusRuntimeCarryOnObject",
+                              },
+                            },
+                          ],
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          resolvedSchema: {
+            type: "object",
+            definition: {
+              actionType: {
+                type: "literal",
+                definition: "createEntity",
+              },
+              actionLabel: {
+                type: "string",
+                optional: true,
+              },
+              deploymentUuid: {
+                type: "object",
+                definition: {
+                  transformerType: {
+                    type: "literal",
+                    definition: "parameterReference",
+                  },
+                  interpolation: {
+                    type: "literal",
+                    optional: true,
+                    definition: "build",
+                  },
+                  referenceName: {
+                    optional: true,
+                    type: "string",
+                  },
+                },
+              },
+              endpoint: {
+                type: "literal",
+                definition: "7947ae40-eb34-4149-887b-15a9021e714e",
+              },
+              payload: {
+                type: "object",
+                definition: {
+                  entities: {
+                    type: "tuple",
+                    definition: [
+                      {
+                        type: "object",
+                        definition: {
+                          entity: {
+                            type: "object",
+                            definition: {
+                              transformerType: {
+                                type: "literal",
+                                definition: "parameterReference",
+                              },
+                              interpolation: {
+                                type: "literal",
+                                optional: true,
+                                definition: "build",
+                              },
+                              referenceName: {
+                                optional: true,
+                                type: "string",
+                              },
+                            },
+                          },
+                          entityDefinition: {
+                            type: "object",
+                            definition: {
+                              transformerType: {
+                                type: "literal",
+                                definition: "parameterReference",
+                              },
+                              interpolation: {
+                                type: "literal",
+                                optional: true,
+                                definition: "build",
+                              },
+                              referenceName: {
+                                optional: true,
+                                type: "string",
+                              },
+                            },
+                          },
+                        },
+                      },
+                    ],
+                  },
+                },
+              },
+            },
+          },
+        },
+        definition: {
+          rawSchema: {
+            type: "array",
+            definition: {
+              type: "union",
+              discriminator: "actionType",
+              definition: [
+                {
+                  type: "schemaReference",
+                  definition: {
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    relativePath:
+                      "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction",
+                  },
+                },
+                {
+                  type: "schemaReference",
+                  definition: {
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    relativePath:
+                      "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction",
+                  },
+                },
+                {
+                  type: "object",
+                  definition: {
+                    actionType: {
+                      type: "literal",
+                      definition: "compositeRunBoxedQueryAction",
+                    },
+                    actionLabel: {
+                      type: "string",
+                      optional: true,
+                    },
+                    nameGivenToResult: {
+                      type: "string",
+                    },
+                    queryTemplate: {
+                      type: "schemaReference",
+                      definition: {
+                        absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        relativePath:
+                          "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedQueryAction",
+                      },
+                    },
+                  },
+                },
+                {
+                  type: "object",
+                  definition: {
+                    actionType: {
+                      type: "literal",
+                      definition: "compositeRunBoxedExtractorAction",
+                    },
+                    actionLabel: {
+                      type: "string",
+                      optional: true,
+                    },
+                    nameGivenToResult: {
+                      type: "string",
+                    },
+                    queryTemplate: {
+                      type: "schemaReference",
+                      definition: {
+                        absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        relativePath:
+                          "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorAction",
+                      },
+                    },
+                  },
+                },
+                {
+                  type: "object",
+                  definition: {
+                    actionType: {
+                      type: "literal",
+                      definition: "compositeRunBoxedExtractorOrQueryAction",
+                    },
+                    actionLabel: {
+                      type: "string",
+                      optional: true,
+                    },
+                    nameGivenToResult: {
+                      type: "string",
+                    },
+                    query: {
+                      type: "schemaReference",
+                      definition: {
+                        absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        relativePath:
+                          "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorOrQueryAction",
+                      },
+                    },
+                  },
+                },
+                {
+                  type: "object",
+                  definition: {
+                    actionType: {
+                      type: "literal",
+                      definition: "compositeRunTestAssertion",
+                    },
+                    actionLabel: {
+                      type: "string",
+                      optional: true,
+                    },
+                    nameGivenToResult: {
+                      type: "string",
+                    },
+                    testAssertion: {
+                      type: "schemaReference",
+                      definition: {
+                        absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        relativePath:
+                          "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testAssertion",
+                      },
+                    },
+                  },
+                },
+              ],
+            },
+          },
+          resolvedSchema: {
+            type: "tuple",
+            definition: [
+              {
+                type: "object",
+                definition: {
+                  actionType: {
+                    type: "literal",
+                    definition: "createEntity",
+                  },
+                  actionLabel: {
+                    type: "string",
+                    optional: true,
+                  },
+                  deploymentUuid: {
+                    type: "object",
+                    definition: {
+                      transformerType: {
+                        type: "literal",
+                        definition: "parameterReference",
+                      },
+                      interpolation: {
+                        type: "literal",
+                        optional: true,
+                        definition: "build",
+                      },
+                      referenceName: {
+                        optional: true,
+                        type: "string",
+                      },
+                    },
+                  },
+                  endpoint: {
+                    type: "literal",
+                    definition: "7947ae40-eb34-4149-887b-15a9021e714e",
+                  },
+                  payload: {
+                    type: "object",
+                    definition: {
+                      entities: {
+                        type: "tuple",
+                        definition: [
+                          {
+                            type: "object",
+                            definition: {
+                              entity: {
+                                type: "object",
+                                definition: {
+                                  transformerType: {
+                                    type: "literal",
+                                    definition: "parameterReference",
+                                  },
+                                  interpolation: {
+                                    type: "literal",
+                                    optional: true,
+                                    definition: "build",
+                                  },
+                                  referenceName: {
+                                    optional: true,
+                                    type: "string",
+                                  },
+                                },
+                              },
+                              entityDefinition: {
+                                type: "object",
+                                definition: {
+                                  transformerType: {
+                                    type: "literal",
+                                    definition: "parameterReference",
+                                  },
+                                  interpolation: {
+                                    type: "literal",
+                                    optional: true,
+                                    definition: "build",
+                                  },
+                                  referenceName: {
+                                    optional: true,
+                                    type: "string",
+                                  },
+                                },
+                              },
+                            },
+                          },
+                        ],
+                      },
+                    },
+                  },
+                },
+              },
+            ],
+          },
+        },
+        "": {
+          rawSchema: {
+            type: "schemaReference",
+            definition: {
+              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              relativePath: "buildPlusRuntimeCompositeAction",
+            },
+          },
+          resolvedSchema: {
+            type: "object",
+            definition: {
+              actionType: {
+                type: "literal",
+                definition: "compositeAction",
+              },
+              actionLabel: {
+                type: "string",
+                optional: true,
+              },
+              actionName: {
+                type: "literal",
+                definition: "sequence",
+              },
+              templates: {
+                type: "object",
+                optional: true,
+                definition: {},
+              },
               definition: {
-                "entities": {
-                  "type": "tuple",
-                  "definition": [
-                    {
-                      "type": "object",
-                      "definition": {
-                        "entity": {
-                          "type": "object",
-                          "definition": {
-                            "transformerType": {
-                              "type": "literal",
-                              "definition": "parameterReference"
-                            },
-                            "interpolation": {
-                              "type": "literal",
-                              "optional": true,
-                              "definition": "build"
-                            },
-                            "referenceName": {
-                              "optional": true,
-                              "type": "string"
-                            }
-                          }
+                type: "tuple",
+                definition: [
+                  {
+                    type: "object",
+                    definition: {
+                      actionType: {
+                        type: "literal",
+                        definition: "createEntity",
+                      },
+                      actionLabel: {
+                        type: "string",
+                        optional: true,
+                      },
+                      deploymentUuid: {
+                        type: "object",
+                        definition: {
+                          transformerType: {
+                            type: "literal",
+                            definition: "parameterReference",
+                          },
+                          interpolation: {
+                            type: "literal",
+                            optional: true,
+                            definition: "build",
+                          },
+                          referenceName: {
+                            optional: true,
+                            type: "string",
+                          },
                         },
-                        "entityDefinition": {
-                          "type": "object",
-                          "definition": {
-                            "transformerType": {
-                              "type": "literal",
-                              "definition": "parameterReference"
-                            },
-                            "interpolation": {
-                              "type": "literal",
-                              "optional": true,
-                              "definition": "build"
-                            },
-                            "referenceName": {
-                              "optional": true,
-                              "type": "string"
-                            }
-                          }
-                        }
-                      }
-                    }
-                  ]
-                }
-              }
-            }
-          },
-          "definition.0": {
-            rawSchema: {
-              "type": "object",
-              "definition": {
-                "actionType": {
-                  "type": "literal",
-                  "definition": "createEntity"
-                },
-                "actionLabel": {
-                  "type": "string",
-                  "optional": true
-                },
-                "deploymentUuid": {
-                  "type": "object",
-                  "definition": {
-                    "transformerType": {
-                      "type": "literal",
-                      "definition": "parameterReference"
+                      },
+                      endpoint: {
+                        type: "literal",
+                        definition: "7947ae40-eb34-4149-887b-15a9021e714e",
+                      },
+                      payload: {
+                        type: "object",
+                        definition: {
+                          entities: {
+                            type: "tuple",
+                            definition: [
+                              {
+                                type: "object",
+                                definition: {
+                                  entity: {
+                                    type: "object",
+                                    definition: {
+                                      transformerType: {
+                                        type: "literal",
+                                        definition: "parameterReference",
+                                      },
+                                      interpolation: {
+                                        type: "literal",
+                                        optional: true,
+                                        definition: "build",
+                                      },
+                                      referenceName: {
+                                        optional: true,
+                                        type: "string",
+                                      },
+                                    },
+                                  },
+                                  entityDefinition: {
+                                    type: "object",
+                                    definition: {
+                                      transformerType: {
+                                        type: "literal",
+                                        definition: "parameterReference",
+                                      },
+                                      interpolation: {
+                                        type: "literal",
+                                        optional: true,
+                                        definition: "build",
+                                      },
+                                      referenceName: {
+                                        optional: true,
+                                        type: "string",
+                                      },
+                                    },
+                                  },
+                                },
+                              },
+                            ],
+                          },
+                        },
+                      },
                     },
-                    "interpolation": {
-                      "type": "literal",
-                      "optional": true,
-                      "definition": "build"
-                    },
-                    "referenceName": {
-                      "optional": true,
-                      "type": "string"
-                    }
-                  }
-                },
-                "endpoint": {
-                  "type": "literal",
-                  "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
-                },
-                "payload": {
-                  type: "object",
-                  definition: {
-                    "entities": {
-                      "type": "tuple",
-                      "definition": [
-                        {
-                          "type": "object",
-                          "definition": {
-                            "entity": {
-                              "type": "object",
-                              "definition": {
-                                "transformerType": {
-                                  "type": "literal",
-                                  "definition": "parameterReference"
-                                },
-                                "interpolation": {
-                                  "type": "literal",
-                                  "optional": true,
-                                  "definition": "build"
-                                },
-                                "referenceName": {
-                                  "optional": true,
-                                  "type": "string"
-                                }
-                              }
-                            },
-                            "entityDefinition": {
-                              "type": "object",
-                              "definition": {
-                                "transformerType": {
-                                  "type": "literal",
-                                  "definition": "parameterReference"
-                                },
-                                "interpolation": {
-                                  "type": "literal",
-                                  "optional": true,
-                                  "definition": "build"
-                                },
-                                "referenceName": {
-                                  "optional": true,
-                                  "type": "string"
-                                }
-                              }
-                            }
-                          }
-                        }
-                      ]
-                    }
-                  }
-                }
-              }
+                  },
+                ],
+              },
             },
-            resolvedSchema: {
-              "type": "object",
-              "definition": {
-                "actionType": {
-                  "type": "literal",
-                  "definition": "createEntity"
-                },
-                "actionLabel": {
-                  "type": "string",
-                  "optional": true
-                },
-                "deploymentUuid": {
-                  "type": "object",
-                  "definition": {
-                    "transformerType": {
-                      "type": "literal",
-                      "definition": "parameterReference"
-                    },
-                    "interpolation": {
-                      "type": "literal",
-                      "optional": true,
-                      "definition": "build"
-                    },
-                    "referenceName": {
-                      "optional": true,
-                      "type": "string"
-                    }
-                  }
-                },
-                "endpoint": {
-                  "type": "literal",
-                  "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
-                },
-                "payload": {
-                  type: "object",
-                  definition: {
-                    "entities": {
-                      "type": "tuple",
-                      "definition": [
-                        {
-                          "type": "object",
-                          "definition": {
-                            "entity": {
-                              "type": "object",
-                              "definition": {
-                                "transformerType": {
-                                  "type": "literal",
-                                  "definition": "parameterReference"
-                                },
-                                "interpolation": {
-                                  "type": "literal",
-                                  "optional": true,
-                                  "definition": "build"
-                                },
-                                "referenceName": {
-                                  "optional": true,
-                                  "type": "string"
-                                }
-                              }
-                            },
-                            "entityDefinition": {
-                              "type": "object",
-                              "definition": {
-                                "transformerType": {
-                                  "type": "literal",
-                                  "definition": "parameterReference"
-                                },
-                                "interpolation": {
-                                  "type": "literal",
-                                  "optional": true,
-                                  "definition": "build"
-                                },
-                                "referenceName": {
-                                  "optional": true,
-                                  "type": "string"
-                                }
-                              }
-                            }
-                          }
-                        }
-                      ]
-                    }
-                  }
-                }
-              }
-            }
           },
-          "definition": {
-            rawSchema: {
-              "type": "tuple",
-              "definition": [
-                {
-                  "type": "object",
-                  "definition": {
-                    "actionType": {
-                      "type": "literal",
-                      "definition": "createEntity"
-                    },
-                    "actionLabel": {
-                      "type": "string",
-                      "optional": true
-                    },
-                    "deploymentUuid": {
-                      "type": "object",
-                      "definition": {
-                        "transformerType": {
-                          "type": "literal",
-                          "definition": "parameterReference"
-                        },
-                        "interpolation": {
-                          "type": "literal",
-                          "optional": true,
-                          "definition": "build"
-                        },
-                        "referenceName": {
-                          "optional": true,
-                          "type": "string"
-                        }
-                      }
-                    },
-                    "endpoint": {
-                      "type": "literal",
-                      "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
-                    },
-                    "payload": {
-                      type: "object",
-                      definition: {
-                        "entities": {
-                          "type": "tuple",
-                          "definition": [
-                            {
-                              "type": "object",
-                              "definition": {
-                                "entity": {
-                                  "type": "object",
-                                  "definition": {
-                                    "transformerType": {
-                                      "type": "literal",
-                                      "definition": "parameterReference"
-                                    },
-                                    "interpolation": {
-                                      "type": "literal",
-                                      "optional": true,
-                                      "definition": "build"
-                                    },
-                                    "referenceName": {
-                                      "optional": true,
-                                      "type": "string"
-                                    }
-                                  }
-                                },
-                                "entityDefinition": {
-                                  "type": "object",
-                                  "definition": {
-                                    "transformerType": {
-                                      "type": "literal",
-                                      "definition": "parameterReference"
-                                    },
-                                    "interpolation": {
-                                      "type": "literal",
-                                      "optional": true,
-                                      "definition": "build"
-                                    },
-                                    "referenceName": {
-                                      "optional": true,
-                                      "type": "string"
-                                    }
-                                  }
-                                }
-                              }
-                            }
-                          ]
-                        }
-                      }
-                    }
-                  }
-                }
-              ]
-            },
-            resolvedSchema: {
-              "type": "tuple",
-              "definition": [
-                {
-                  "type": "object",
-                  "definition": {
-                    "actionType": {
-                      "type": "literal",
-                      "definition": "createEntity"
-                    },
-                    "actionLabel": {
-                      "type": "string",
-                      "optional": true
-                    },
-                    "deploymentUuid": {
-                      "type": "object",
-                      "definition": {
-                        "transformerType": {
-                          "type": "literal",
-                          "definition": "parameterReference"
-                        },
-                        "interpolation": {
-                          "type": "literal",
-                          "optional": true,
-                          "definition": "build"
-                        },
-                        "referenceName": {
-                          "optional": true,
-                          "type": "string"
-                        }
-                      }
-                    },
-                    "endpoint": {
-                      "type": "literal",
-                      "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
-                    },
-                    "payload": {
-                      type: "object",
-                      definition: {
-                        "entities": {
-                          "type": "tuple",
-                          "definition": [
-                            {
-                              "type": "object",
-                              "definition": {
-                                "entity": {
-                                  "type": "object",
-                                  "definition": {
-                                    "transformerType": {
-                                      "type": "literal",
-                                      "definition": "parameterReference"
-                                    },
-                                    "interpolation": {
-                                      "type": "literal",
-                                      "optional": true,
-                                      "definition": "build"
-                                    },
-                                    "referenceName": {
-                                      "optional": true,
-                                      "type": "string"
-                                    }
-                                  }
-                                },
-                                "entityDefinition": {
-                                  "type": "object",
-                                  "definition": {
-                                    "transformerType": {
-                                      "type": "literal",
-                                      "definition": "parameterReference"
-                                    },
-                                    "interpolation": {
-                                      "type": "literal",
-                                      "optional": true,
-                                      "definition": "build"
-                                    },
-                                    "referenceName": {
-                                      "optional": true,
-                                      "type": "string"
-                                    }
-                                  }
-                                }
-                              }
-                            }
-                          ]
-                        }
-                      }
-                    }
-                  }
-                }
-              ]
-            }
-          }
         },
       },
-      // ##########################################################################################
-      test820: {
-        testSchema: {
-          type: "schemaReference",
+    },
+    // ##########################################################################################
+    test820: {
+      testSchema: {
+        type: "schemaReference",
+        definition: {
+          absolutePath: castMiroirFundamentalJzodSchema.uuid,
+          // relativePath: "compositeAction",
+          relativePath: "buildPlusRuntimeCompositeAction",
+        },
+      },
+      testValueObject:
+        test_createEntityAndReportFromSpreadsheetAndUpdateMenu.definition.testCompositeActions[
+          "create new Entity and reports from spreadsheet"
+        ].compositeAction,
+      expectedResolvedSchema: {
+        type: "object",
+        definition: {
+          actionType: {
+            type: "literal",
+            definition: "compositeAction",
+          },
+          actionLabel: {
+            type: "string",
+            optional: true,
+          },
+          actionName: {
+            type: "literal",
+            definition: "sequence",
+          },
+          templates: {
+            type: "object",
+            optional: true,
+            definition: {},
+          },
           definition: {
-            absolutePath: castMiroirFundamentalJzodSchema.uuid,
-            // relativePath: "compositeAction",
-            relativePath: "buildPlusRuntimeCompositeAction",
+            type: "tuple",
+            definition: [
+              {
+                type: "object",
+                definition: {
+                  actionType: {
+                    type: "literal",
+                    definition: "commit",
+                  },
+                  actionLabel: {
+                    type: "string",
+                    optional: true,
+                  },
+                  endpoint: {
+                    type: "literal",
+                    definition: "7947ae40-eb34-4149-887b-15a9021e714e",
+                  },
+                  deploymentUuid: {
+                    type: "object",
+                    definition: {
+                      transformerType: {
+                        type: "literal",
+                        definition: "parameterReference",
+                      },
+                      interpolation: {
+                        type: "literal",
+                        optional: true,
+                        definition: "build",
+                      },
+                      referenceName: {
+                        optional: true,
+                        type: "string",
+                      },
+                    },
+                  },
+                },
+              },
+            ],
           },
         },
-        testValueObject:
-          test_createEntityAndReportFromSpreadsheetAndUpdateMenu.definition.testCompositeActions[
-            "create new Entity and reports from spreadsheet"
-          ].compositeAction,
-        expectedResolvedSchema: {
-          "type": "object",
-          "definition": {
-            "actionType": {
-              "type": "literal",
-              "definition": "compositeAction"
-            },
-            "actionLabel": {
-              "type": "string",
-              "optional": true
-            },
-            "actionName": {
-              "type": "literal",
-              "definition": "sequence"
-            },
-            "templates": {
-              "type": "object",
-              "optional": true,
-              "definition": {}
-            },
-            "definition": {
-              "type": "tuple",
-              "definition": [
-                {
-                  "type": "object",
-                  "definition": {
-                    "actionType": {
-                      "type": "literal",
-                      "definition": "commit"
-                    },
-                    "actionLabel": {
-                      "type": "string",
-                      "optional": true
-                    },
-                    "endpoint": {
-                      "type": "literal",
-                      "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
-                    },
-                    "deploymentUuid": {
-                      "type": "object",
-                      "definition": {
-                        "transformerType": {
-                          "type": "literal",
-                          "definition": "parameterReference"
-                        },
-                        "interpolation": {
-                          "type": "literal",
-                          "optional": true,
-                          "definition": "build"
-                        },
-                        "referenceName": {
-                          "optional": true,
-                          "type": "string"
-                        }
-                      }
-                    }
-                  }
-                }
-              ]
-            }
-          }
-        },
-        expectedKeyMap: {
-          "actionType": {
-            "rawSchema": {
-              "type": "literal",
-              "definition": "compositeAction"
-            },
-            "resolvedSchema": {
-              "type": "literal",
-              "definition": "compositeAction"
-            }
-          },
-          "actionLabel": {
-            "rawSchema": {
-              "type": "string",
-              "optional": true
-            },
-            "resolvedSchema": {
-              "type": "string",
-              "optional": true
-            }
-          },
-          "actionName": {
-            "rawSchema": {
-              "type": "literal",
-              "definition": "sequence"
-            },
-            "resolvedSchema": {
-              "type": "literal",
-              "definition": "sequence"
-            }
-          },
-          "templates": {
-            "rawSchema": {
-              "type": "record",
-              "optional": true,
-              "definition": {
-                "type": "any"
-              }
-            },
-            "resolvedSchema": {
-              "type": "object",
-              "optional": true,
-              "definition": {}
-            }
-          },
-          "definition": {
-            "rawSchema": {
-              "type": "array",
-              "definition": {
-                "type": "union",
-                "discriminator": "actionType",
-                "definition": [
-                  {
-                    "type": "schemaReference",
-                    "definition": {
-                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction"
-                    }
-                  },
-                  {
-                    "type": "schemaReference",
-                    "definition": {
-                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction"
-                    }
-                  },
-                  {
-                    "type": "object",
-                    "definition": {
-                      "actionType": {
-                        "type": "literal",
-                        "definition": "compositeRunBoxedQueryAction"
-                      },
-                      "actionLabel": {
-                        "type": "string",
-                        "optional": true
-                      },
-                      "nameGivenToResult": {
-                        "type": "string"
-                      },
-                      "queryTemplate": {
-                        "type": "schemaReference",
-                        "definition": {
-                          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                          "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedQueryAction"
-                        }
-                      }
-                    }
-                  },
-                  {
-                    "type": "object",
-                    "definition": {
-                      "actionType": {
-                        "type": "literal",
-                        "definition": "compositeRunBoxedExtractorAction"
-                      },
-                      "actionLabel": {
-                        "type": "string",
-                        "optional": true
-                      },
-                      "nameGivenToResult": {
-                        "type": "string"
-                      },
-                      "queryTemplate": {
-                        "type": "schemaReference",
-                        "definition": {
-                          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                          "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorAction"
-                        }
-                      }
-                    }
-                  },
-                  {
-                    "type": "object",
-                    "definition": {
-                      "actionType": {
-                        "type": "literal",
-                        "definition": "compositeRunBoxedExtractorOrQueryAction"
-                      },
-                      "actionLabel": {
-                        "type": "string",
-                        "optional": true
-                      },
-                      "nameGivenToResult": {
-                        "type": "string"
-                      },
-                      "query": {
-                        "type": "schemaReference",
-                        "definition": {
-                          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                          "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorOrQueryAction"
-                        }
-                      }
-                    }
-                  },
-                  {
-                    "type": "object",
-                    "definition": {
-                      "actionType": {
-                        "type": "literal",
-                        "definition": "compositeRunTestAssertion"
-                      },
-                      "actionLabel": {
-                        "type": "string",
-                        "optional": true
-                      },
-                      "nameGivenToResult": {
-                        "type": "string"
-                      },
-                      "testAssertion": {
-                        "type": "schemaReference",
-                        "definition": {
-                          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                          "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testAssertion"
-                        }
-                      }
-                    }
-                  }
-                ]
-              }
-            },
-            "resolvedSchema": {
-              "type": "tuple",
-              "definition": [
-                {
-                  "type": "object",
-                  "definition": {
-                    "actionType": {
-                      "type": "literal",
-                      "definition": "commit"
-                    },
-                    "actionLabel": {
-                      "type": "string",
-                      "optional": true
-                    },
-                    "endpoint": {
-                      "type": "literal",
-                      "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
-                    },
-                    "deploymentUuid": {
-                      "type": "object",
-                      "definition": {
-                        "transformerType": {
-                          "type": "literal",
-                          "definition": "parameterReference"
-                        },
-                        "interpolation": {
-                          "type": "literal",
-                          "optional": true,
-                          "definition": "build"
-                        },
-                        "referenceName": {
-                          "optional": true,
-                          "type": "string"
-                        }
-                      }
-                    }
-                  }
-                }
-              ]
-            }
-          },
-          "": {
-            "rawSchema": {
-              "type": "schemaReference",
-              "definition": {
-                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                "relativePath": "buildPlusRuntimeCompositeAction"
-              }
-            },
-            "resolvedSchema": {
-              "type": "object",
-              "definition": {
-                "actionType": {
-                  "type": "literal",
-                  "definition": "compositeAction"
-                },
-                "actionLabel": {
-                  "type": "string",
-                  "optional": true
-                },
-                "actionName": {
-                  "type": "literal",
-                  "definition": "sequence"
-                },
-                "templates": {
-                  "type": "object",
-                  "optional": true,
-                  "definition": {}
-                },
-                "definition": {
-                  "type": "tuple",
-                  "definition": [
-                    {
-                      "type": "object",
-                      "definition": {
-                        "actionType": {
-                          "type": "literal",
-                          "definition": "commit"
-                        },
-                        "actionLabel": {
-                          "type": "string",
-                          "optional": true
-                        },
-                        "endpoint": {
-                          "type": "literal",
-                          "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
-                        },
-                        "deploymentUuid": {
-                          "type": "object",
-                          "definition": {
-                            "transformerType": {
-                              "type": "literal",
-                              "definition": "parameterReference"
-                            },
-                            "interpolation": {
-                              "type": "literal",
-                              "optional": true,
-                              "definition": "build"
-                            },
-                            "referenceName": {
-                              "optional": true,
-                              "type": "string"
-                            }
-                          }
-                        }
-                      }
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
       },
-      // ##########################################################################################
-      test830: {
-        testSchema: entityDefinitionTest.jzodSchema as JzodElement,
-        testValueObject: test_createEntityAndReportFromSpreadsheetAndUpdateMenu,
-        expectedResolvedSchema:{
-          "type": "object",
-          "definition": {
-            "uuid": {
-              "type": "string",
-              "validations": [
-                {
-                  "type": "uuid"
-                }
-              ],
-              "tag": {
-                "value": {
-                  "id": 1,
-                  "defaultLabel": "Uuid",
-                  "editable": false
-                }
-              }
-            },
-            "parentName": {
-              "type": "string",
-              "optional": true,
-              "tag": {
-                "value": {
-                  "id": 1,
-                  "defaultLabel": "Uuid",
-                  "editable": false
-                }
-              }
-            },
-            "parentUuid": {
-              "type": "string",
-              "validations": [
-                {
-                  "type": "uuid"
-                }
-              ],
-              "tag": {
-                "value": {
-                  "id": 1,
-                  "defaultLabel": "parentUuid",
-                  "editable": false
-                }
-              }
-            },
-            "name": {
-              "type": "string",
-              "optional": true,
-              "tag": {
-                "value": {
-                  "id": 1,
-                  "defaultLabel": "Name",
-                  "editable": true
-                }
-              }
-            },
-            "selfApplication": {
-              "type": "uuid",
-              "tag": {
-                "value": {
-                  "id": 9,
-                  "defaultLabel": "SelfApplication",
-                  "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
-                  "editable": false
-                }
-              }
-            },
-            "branch": {
-              "type": "uuid",
-              "tag": {
-                "value": {
-                  "id": 10,
-                  "defaultLabel": "Branch",
-                  "description": "The Branch of the SelfApplication",
-                  "editable": false
-                }
-              }
-            },
-            "description": {
-              "type": "string",
-              "optional": true,
-              "tag": {
-                "value": {
-                  "id": 1,
-                  "defaultLabel": "Name",
-                  "editable": true
-                }
-              }
-            },
-            "definition": {
-              "type": "object",
-              "definition": {
-                "testCompositeActions": {
-                  "type": "object",
-                  "optional": true,
-                  "definition": {
-                    "create new Entity and reports from spreadsheet": {
-                      "type": "object",
-                      "definition": {
-                        "testType": {
-                          "type": "literal",
-                          "definition": "testBuildPlusRuntimeCompositeAction"
-                        },
-                        "testLabel": {
-                          "type": "string"
-                        },
-                        "compositeAction": {
-                          "type": "object",
-                          "definition": {
-                            "actionType": {
-                              "type": "literal",
-                              "definition": "compositeAction"
-                            },
-                            "actionLabel": {
-                              "type": "string",
-                              "optional": true
-                            },
-                            "actionName": {
-                              "type": "literal",
-                              "definition": "sequence"
-                            },
-                            "templates": {
-                              "type": "object",
-                              "optional": true,
-                              "definition": {}
-                            },
-                            "definition": {
-                              "type": "tuple",
-                              "definition": [
-                                {
-                                  "type": "object",
-                                  "definition": {
-                                    "actionType": {
-                                      "type": "literal",
-                                      "definition": "commit"
-                                    },
-                                    "actionLabel": {
-                                      "type": "string",
-                                      "optional": true
-                                    },
-                                    "endpoint": {
-                                      "type": "literal",
-                                      "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
-                                    },
-                                    "deploymentUuid": {
-                                      "type": "object",
-                                      "definition": {
-                                        "transformerType": {
-                                          "type": "literal",
-                                          "definition": "parameterReference"
-                                        },
-                                        "interpolation": {
-                                          "type": "literal",
-                                          "optional": true,
-                                          "definition": "build"
-                                        },
-                                        "referenceName": {
-                                          "optional": true,
-                                          "type": "string"
-                                        }
-                                      }
-                                    }
-                                  }
-                                }
-                              ]
-                            }
-                          }
-                        },
-                        "testCompositeActionAssertions": {
-                          "type": "tuple",
-                          "definition": []
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
+      expectedKeyMap: {
+        actionType: {
+          rawSchema: {
+            type: "literal",
+            definition: "compositeAction",
+          },
+          resolvedSchema: {
+            type: "literal",
+            definition: "compositeAction",
+          },
         },
-        expectedKeyMap: {
-          "uuid": {
-            "rawSchema": {
-              "type": "string",
-              "validations": [
+        actionLabel: {
+          rawSchema: {
+            type: "string",
+            optional: true,
+          },
+          resolvedSchema: {
+            type: "string",
+          },
+        },
+        actionName: {
+          rawSchema: {
+            type: "literal",
+            definition: "sequence",
+          },
+          resolvedSchema: {
+            type: "literal",
+            definition: "sequence",
+          },
+        },
+        templates: {
+          rawSchema: {
+            type: "record",
+            optional: true,
+            definition: {
+              type: "any",
+            },
+          },
+          resolvedSchema: {
+            type: "object",
+            optional: true,
+            definition: {},
+          },
+        },
+        "definition.0.actionType": {
+          rawSchema: {
+            type: "literal",
+            definition: "commit",
+          },
+          resolvedSchema: {
+            type: "literal",
+            definition: "commit",
+          },
+        },
+        "definition.0.actionLabel": {
+          rawSchema: {
+            type: "string",
+            optional: true,
+          },
+          resolvedSchema: {
+            type: "string",
+          },
+        },
+        "definition.0.endpoint": {
+          rawSchema: {
+            type: "literal",
+            definition: "7947ae40-eb34-4149-887b-15a9021e714e",
+          },
+          resolvedSchema: {
+            type: "literal",
+            definition: "7947ae40-eb34-4149-887b-15a9021e714e",
+          },
+        },
+        "definition.0.deploymentUuid.transformerType": {
+          rawSchema: {
+            type: "literal",
+            definition: "parameterReference",
+          },
+          resolvedSchema: {
+            type: "literal",
+            definition: "parameterReference",
+          },
+        },
+        "definition.0.deploymentUuid.interpolation": {
+          rawSchema: {
+            type: "literal",
+            optional: true,
+            definition: "build",
+          },
+          resolvedSchema: {
+            type: "literal",
+            optional: true,
+            definition: "build",
+          },
+        },
+        "definition.0.deploymentUuid.referenceName": {
+          rawSchema: {
+            optional: true,
+            type: "string",
+          },
+          resolvedSchema: {
+            type: "string",
+          },
+        },
+        "definition.0.deploymentUuid": {
+          rawSchema: {
+            type: "union",
+            tag: {
+              value: {
+                id: 1,
+                canBeTemplate: true,
+                defaultLabel: "Deployment",
+                editable: false,
+              },
+            },
+            discriminator: ["transformerType", "interpolation"],
+            definition: [
+              {
+                type: "uuid",
+                tag: {
+                  value: {
+                    id: 1,
+                    canBeTemplate: true,
+                    defaultLabel: "Deployment",
+                    editable: false,
+                  },
+                },
+              },
+              {
+                type: "schemaReference",
+                definition: {
+                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  relativePath: "transformerForBuildPlusRuntimeCarryOnObject",
+                },
+              },
+            ],
+          },
+          chosenUnionBranchRawSchema: {
+            type: "object",
+            definition: {
+              interpolation: {
+                type: "literal",
+                optional: true,
+                definition: "build",
+              },
+              transformerType: {
+                type: "literal",
+                definition: "parameterReference",
+              },
+              referenceName: {
+                optional: true,
+                type: "string",
+              },
+              referencePath: {
+                optional: true,
+                type: "array",
+                definition: {
+                  type: "string",
+                },
+              },
+            },
+          },
+          resolvedSchema: {
+            type: "object",
+            definition: {
+              transformerType: {
+                type: "literal",
+                definition: "parameterReference",
+              },
+              interpolation: {
+                type: "literal",
+                optional: true,
+                definition: "build",
+              },
+              referenceName: {
+                optional: true,
+                type: "string",
+              },
+            },
+          },
+        },
+        "definition.0": {
+          rawSchema: {
+            type: "union",
+            discriminator: "actionType",
+            definition: [
+              {
+                type: "schemaReference",
+                definition: {
+                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  relativePath:
+                    "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction",
+                },
+              },
+              {
+                type: "schemaReference",
+                definition: {
+                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  relativePath:
+                    "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction",
+                },
+              },
+              {
+                type: "object",
+                definition: {
+                  actionType: {
+                    type: "literal",
+                    definition: "compositeRunBoxedQueryAction",
+                  },
+                  actionLabel: {
+                    type: "string",
+                    optional: true,
+                  },
+                  nameGivenToResult: {
+                    type: "string",
+                  },
+                  queryTemplate: {
+                    type: "schemaReference",
+                    definition: {
+                      absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      relativePath:
+                        "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedQueryAction",
+                    },
+                  },
+                },
+              },
+              {
+                type: "object",
+                definition: {
+                  actionType: {
+                    type: "literal",
+                    definition: "compositeRunBoxedExtractorAction",
+                  },
+                  actionLabel: {
+                    type: "string",
+                    optional: true,
+                  },
+                  nameGivenToResult: {
+                    type: "string",
+                  },
+                  queryTemplate: {
+                    type: "schemaReference",
+                    definition: {
+                      absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      relativePath:
+                        "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorAction",
+                    },
+                  },
+                },
+              },
+              {
+                type: "object",
+                definition: {
+                  actionType: {
+                    type: "literal",
+                    definition: "compositeRunBoxedExtractorOrQueryAction",
+                  },
+                  actionLabel: {
+                    type: "string",
+                    optional: true,
+                  },
+                  nameGivenToResult: {
+                    type: "string",
+                  },
+                  query: {
+                    type: "schemaReference",
+                    definition: {
+                      absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      relativePath:
+                        "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorOrQueryAction",
+                    },
+                  },
+                },
+              },
+              {
+                type: "object",
+                definition: {
+                  actionType: {
+                    type: "literal",
+                    definition: "compositeRunTestAssertion",
+                  },
+                  actionLabel: {
+                    type: "string",
+                    optional: true,
+                  },
+                  nameGivenToResult: {
+                    type: "string",
+                  },
+                  testAssertion: {
+                    type: "schemaReference",
+                    definition: {
+                      absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      relativePath:
+                        "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testAssertion",
+                    },
+                  },
+                },
+              },
+            ],
+          },
+          chosenUnionBranchRawSchema: {
+            type: "object",
+            definition: {
+              actionType: {
+                type: "literal",
+                definition: "commit",
+              },
+              actionLabel: {
+                type: "string",
+                optional: true,
+              },
+              endpoint: {
+                type: "literal",
+                definition: "7947ae40-eb34-4149-887b-15a9021e714e",
+              },
+              deploymentUuid: {
+                type: "union",
+                tag: {
+                  value: {
+                    id: 1,
+                    canBeTemplate: true,
+                    defaultLabel: "Deployment",
+                    editable: false,
+                  },
+                },
+                discriminator: ["transformerType", "interpolation"],
+                definition: [
+                  {
+                    type: "uuid",
+                    tag: {
+                      value: {
+                        id: 1,
+                        canBeTemplate: true,
+                        defaultLabel: "Deployment",
+                        editable: false,
+                      },
+                    },
+                  },
+                  {
+                    type: "schemaReference",
+                    definition: {
+                      absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      relativePath: "transformerForBuildPlusRuntimeCarryOnObject",
+                    },
+                  },
+                ],
+              },
+            },
+          },
+          resolvedSchema: {
+            type: "object",
+            definition: {
+              actionType: {
+                type: "literal",
+                definition: "commit",
+              },
+              actionLabel: {
+                type: "string",
+                optional: true,
+              },
+              endpoint: {
+                type: "literal",
+                definition: "7947ae40-eb34-4149-887b-15a9021e714e",
+              },
+              deploymentUuid: {
+                type: "object",
+                definition: {
+                  transformerType: {
+                    type: "literal",
+                    definition: "parameterReference",
+                  },
+                  interpolation: {
+                    type: "literal",
+                    optional: true,
+                    definition: "build",
+                  },
+                  referenceName: {
+                    optional: true,
+                    type: "string",
+                  },
+                },
+              },
+            },
+          },
+        },
+        definition: {
+          rawSchema: {
+            type: "array",
+            definition: {
+              type: "union",
+              discriminator: "actionType",
+              definition: [
                 {
-                  "type": "uuid"
-                }
-              ],
-              "tag": {
-                "value": {
-                  "id": 1,
-                  "defaultLabel": "Uuid",
-                  "editable": false
-                }
-              }
-            },
-            "resolvedSchema": {
-              "type": "string",
-              "validations": [
+                  type: "schemaReference",
+                  definition: {
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    relativePath:
+                      "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction",
+                  },
+                },
                 {
-                  "type": "uuid"
-                }
-              ],
-              "tag": {
-                "value": {
-                  "id": 1,
-                  "defaultLabel": "Uuid",
-                  "editable": false
-                }
-              }
-            }
-          },
-          "parentName": {
-            "rawSchema": {
-              "type": "string",
-              "optional": true,
-              "tag": {
-                "value": {
-                  "id": 1,
-                  "defaultLabel": "Uuid",
-                  "editable": false
-                }
-              }
-            },
-            "resolvedSchema": {
-              "type": "string",
-              "optional": true,
-              "tag": {
-                "value": {
-                  "id": 1,
-                  "defaultLabel": "Uuid",
-                  "editable": false
-                }
-              }
-            }
-          },
-          "parentUuid": {
-            "rawSchema": {
-              "type": "string",
-              "validations": [
+                  type: "schemaReference",
+                  definition: {
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    relativePath:
+                      "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction",
+                  },
+                },
                 {
-                  "type": "uuid"
-                }
-              ],
-              "tag": {
-                "value": {
-                  "id": 1,
-                  "defaultLabel": "parentUuid",
-                  "editable": false
-                }
-              }
-            },
-            "resolvedSchema": {
-              "type": "string",
-              "validations": [
+                  type: "object",
+                  definition: {
+                    actionType: {
+                      type: "literal",
+                      definition: "compositeRunBoxedQueryAction",
+                    },
+                    actionLabel: {
+                      type: "string",
+                      optional: true,
+                    },
+                    nameGivenToResult: {
+                      type: "string",
+                    },
+                    queryTemplate: {
+                      type: "schemaReference",
+                      definition: {
+                        absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        relativePath:
+                          "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedQueryAction",
+                      },
+                    },
+                  },
+                },
                 {
-                  "type": "uuid"
-                }
+                  type: "object",
+                  definition: {
+                    actionType: {
+                      type: "literal",
+                      definition: "compositeRunBoxedExtractorAction",
+                    },
+                    actionLabel: {
+                      type: "string",
+                      optional: true,
+                    },
+                    nameGivenToResult: {
+                      type: "string",
+                    },
+                    queryTemplate: {
+                      type: "schemaReference",
+                      definition: {
+                        absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        relativePath:
+                          "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorAction",
+                      },
+                    },
+                  },
+                },
+                {
+                  type: "object",
+                  definition: {
+                    actionType: {
+                      type: "literal",
+                      definition: "compositeRunBoxedExtractorOrQueryAction",
+                    },
+                    actionLabel: {
+                      type: "string",
+                      optional: true,
+                    },
+                    nameGivenToResult: {
+                      type: "string",
+                    },
+                    query: {
+                      type: "schemaReference",
+                      definition: {
+                        absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        relativePath:
+                          "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorOrQueryAction",
+                      },
+                    },
+                  },
+                },
+                {
+                  type: "object",
+                  definition: {
+                    actionType: {
+                      type: "literal",
+                      definition: "compositeRunTestAssertion",
+                    },
+                    actionLabel: {
+                      type: "string",
+                      optional: true,
+                    },
+                    nameGivenToResult: {
+                      type: "string",
+                    },
+                    testAssertion: {
+                      type: "schemaReference",
+                      definition: {
+                        absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        relativePath:
+                          "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testAssertion",
+                      },
+                    },
+                  },
+                },
               ],
-              "tag": {
-                "value": {
-                  "id": 1,
-                  "defaultLabel": "parentUuid",
-                  "editable": false
-                }
-              }
-            }
-          },
-          "name": {
-            "rawSchema": {
-              "type": "string",
-              "optional": true,
-              "tag": {
-                "value": {
-                  "id": 1,
-                  "defaultLabel": "Name",
-                  "editable": true
-                }
-              }
             },
-            "resolvedSchema": {
-              "type": "string",
-              "optional": true,
-              "tag": {
-                "value": {
-                  "id": 1,
-                  "defaultLabel": "Name",
-                  "editable": true
-                }
-              }
-            }
           },
-          "selfApplication": {
-            "rawSchema": {
-              "type": "uuid",
-              "tag": {
-                "value": {
-                  "id": 9,
-                  "defaultLabel": "SelfApplication",
-                  "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
-                  "editable": false
-                }
-              }
-            },
-            "resolvedSchema": {
-              "type": "uuid",
-              "tag": {
-                "value": {
-                  "id": 9,
-                  "defaultLabel": "SelfApplication",
-                  "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
-                  "editable": false
-                }
-              }
-            }
+          resolvedSchema: {
+            type: "tuple",
+            definition: [
+              {
+                type: "object",
+                definition: {
+                  actionType: {
+                    type: "literal",
+                    definition: "commit",
+                  },
+                  actionLabel: {
+                    type: "string",
+                    optional: true,
+                  },
+                  endpoint: {
+                    type: "literal",
+                    definition: "7947ae40-eb34-4149-887b-15a9021e714e",
+                  },
+                  deploymentUuid: {
+                    type: "object",
+                    definition: {
+                      transformerType: {
+                        type: "literal",
+                        definition: "parameterReference",
+                      },
+                      interpolation: {
+                        type: "literal",
+                        optional: true,
+                        definition: "build",
+                      },
+                      referenceName: {
+                        optional: true,
+                        type: "string",
+                      },
+                    },
+                  },
+                },
+              },
+            ],
           },
-          "branch": {
-            "rawSchema": {
-              "type": "uuid",
-              "tag": {
-                "value": {
-                  "id": 10,
-                  "defaultLabel": "Branch",
-                  "description": "The Branch of the SelfApplication",
-                  "editable": false
-                }
-              }
+        },
+        "": {
+          rawSchema: {
+            type: "schemaReference",
+            definition: {
+              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              relativePath: "buildPlusRuntimeCompositeAction",
             },
-            "resolvedSchema": {
-              "type": "uuid",
-              "tag": {
-                "value": {
-                  "id": 10,
-                  "defaultLabel": "Branch",
-                  "description": "The Branch of the SelfApplication",
-                  "editable": false
-                }
-              }
-            }
           },
-          "description": {
-            "rawSchema": {
-              "type": "string",
-              "optional": true,
-              "tag": {
-                "value": {
-                  "id": 1,
-                  "defaultLabel": "Name",
-                  "editable": true
-                }
-              }
+          resolvedSchema: {
+            type: "object",
+            definition: {
+              actionType: {
+                type: "literal",
+                definition: "compositeAction",
+              },
+              actionLabel: {
+                type: "string",
+                optional: true,
+              },
+              actionName: {
+                type: "literal",
+                definition: "sequence",
+              },
+              templates: {
+                type: "object",
+                optional: true,
+                definition: {},
+              },
+              definition: {
+                type: "tuple",
+                definition: [
+                  {
+                    type: "object",
+                    definition: {
+                      actionType: {
+                        type: "literal",
+                        definition: "commit",
+                      },
+                      actionLabel: {
+                        type: "string",
+                        optional: true,
+                      },
+                      endpoint: {
+                        type: "literal",
+                        definition: "7947ae40-eb34-4149-887b-15a9021e714e",
+                      },
+                      deploymentUuid: {
+                        type: "object",
+                        definition: {
+                          transformerType: {
+                            type: "literal",
+                            definition: "parameterReference",
+                          },
+                          interpolation: {
+                            type: "literal",
+                            optional: true,
+                            definition: "build",
+                          },
+                          referenceName: {
+                            optional: true,
+                            type: "string",
+                          },
+                        },
+                      },
+                    },
+                  },
+                ],
+              },
             },
-            "resolvedSchema": {
-              "type": "string",
-              "optional": true,
-              "tag": {
-                "value": {
-                  "id": 1,
-                  "defaultLabel": "Name",
-                  "editable": true
-                }
-              }
-            }
           },
-          "definition": {
-            "rawSchema": {
-              "type": "object",
-              "definition": {
-                "testCompositeActions": {
-                  "type": "record",
-                  "optional": true,
-                  "definition": {
-                    "type": "schemaReference",
-                    "definition": {
-                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "testBuildPlusRuntimeCompositeAction"
-                    }
-                  }
-                },
-                "fullTestDefinition": {
-                  "type": "union",
-                  "optional": true,
-                  "discriminator": "testType",
-                  "definition": [
-                    {
-                      "type": "object",
-                      "definition": {
-                        "testType": {
-                          "type": "literal",
-                          "definition": "testCompositeAction"
-                        },
-                        "testLabel": {
-                          "type": "string"
-                        },
-                        "beforeTestSetupAction": {
-                          "type": "schemaReference",
-                          "optional": true,
-                          "definition": {
-                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "compositeAction"
-                          }
-                        },
-                        "afterTestCleanupAction": {
-                          "type": "schemaReference",
-                          "optional": true,
-                          "definition": {
-                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "compositeAction"
-                          }
-                        },
-                        "compositeAction": {
-                          "type": "schemaReference",
-                          "definition": {
-                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "compositeAction"
-                          }
-                        },
-                        "testCompositeActionAssertions": {
-                          "type": "array",
-                          "definition": {
-                            "type": "schemaReference",
-                            "definition": {
-                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                              "relativePath": "compositeRunTestAssertion"
-                            }
-                          }
-                        }
-                      }
-                    },
-                    {
-                      "type": "object",
-                      "definition": {
-                        "testType": {
-                          "type": "literal",
-                          "definition": "testCompositeActionSuite"
-                        },
-                        "testLabel": {
-                          "type": "string"
-                        },
-                        "beforeAll": {
-                          "type": "schemaReference",
-                          "optional": true,
-                          "definition": {
-                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "compositeAction"
-                          }
-                        },
-                        "beforeEach": {
-                          "type": "schemaReference",
-                          "optional": true,
-                          "definition": {
-                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "compositeAction"
-                          }
-                        },
-                        "afterEach": {
-                          "type": "schemaReference",
-                          "optional": true,
-                          "definition": {
-                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "compositeAction"
-                          }
-                        },
-                        "afterAll": {
-                          "type": "schemaReference",
-                          "optional": true,
-                          "definition": {
-                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "compositeAction"
-                          }
-                        },
-                        "testCompositeActions": {
-                          "type": "record",
-                          "definition": {
-                            "type": "schemaReference",
-                            "definition": {
-                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                              "relativePath": "testCompositeAction"
-                            }
-                          }
-                        }
-                      }
-                    },
-                    {
-                      "type": "object",
-                      "definition": {
-                        "testType": {
-                          "type": "literal",
-                          "definition": "testBuildCompositeAction"
-                        },
-                        "testLabel": {
-                          "type": "string"
-                        },
-                        "beforeTestSetupAction": {
-                          "type": "schemaReference",
-                          "optional": true,
-                          "definition": {
-                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "compositeAction"
-                          }
-                        },
-                        "afterTestCleanupAction": {
-                          "type": "schemaReference",
-                          "optional": true,
-                          "definition": {
-                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "compositeAction"
-                          }
-                        },
-                        "compositeAction": {
-                          "type": "schemaReference",
-                          "definition": {
-                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "buildCompositeAction"
-                          }
-                        },
-                        "testCompositeActionAssertions": {
-                          "type": "array",
-                          "definition": {
-                            "type": "schemaReference",
-                            "definition": {
-                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                              "relativePath": "compositeRunTestAssertion"
-                            }
-                          }
-                        }
-                      }
-                    },
-                    {
-                      "type": "object",
-                      "definition": {
-                        "testType": {
-                          "type": "literal",
-                          "definition": "testBuildCompositeActionSuite"
-                        },
-                        "testLabel": {
-                          "type": "string"
-                        },
-                        "beforeAll": {
-                          "type": "schemaReference",
-                          "optional": true,
-                          "definition": {
-                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "compositeAction"
-                          }
-                        },
-                        "beforeEach": {
-                          "type": "schemaReference",
-                          "optional": true,
-                          "definition": {
-                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "compositeAction"
-                          }
-                        },
-                        "afterEach": {
-                          "type": "schemaReference",
-                          "optional": true,
-                          "definition": {
-                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "compositeAction"
-                          }
-                        },
-                        "afterAll": {
-                          "type": "schemaReference",
-                          "optional": true,
-                          "definition": {
-                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "compositeAction"
-                          }
-                        },
-                        "testCompositeActions": {
-                          "type": "record",
-                          "definition": {
-                            "type": "schemaReference",
-                            "definition": {
-                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                              "relativePath": "testBuildCompositeAction"
-                            }
-                          }
-                        }
-                      }
-                    },
-                    {
-                      "type": "object",
-                      "definition": {
-                        "testType": {
-                          "type": "literal",
-                          "definition": "testRuntimeCompositeAction"
-                        },
-                        "testLabel": {
-                          "type": "string"
-                        },
-                        "beforeTestSetupAction": {
-                          "type": "schemaReference",
-                          "optional": true,
-                          "definition": {
-                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "compositeAction"
-                          }
-                        },
-                        "afterTestCleanupAction": {
-                          "type": "schemaReference",
-                          "optional": true,
-                          "definition": {
-                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "compositeAction"
-                          }
-                        },
-                        "compositeAction": {
-                          "type": "schemaReference",
-                          "definition": {
-                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "runtimeCompositeAction"
-                          }
-                        },
-                        "testCompositeActionAssertions": {
-                          "type": "array",
-                          "definition": {
-                            "type": "schemaReference",
-                            "definition": {
-                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                              "relativePath": "compositeRunTestAssertion"
-                            }
-                          }
-                        }
-                      }
-                    },
-                    {
-                      "type": "object",
-                      "definition": {
-                        "testType": {
-                          "type": "literal",
-                          "definition": "testRuntimeCompositeActionSuite"
-                        },
-                        "testLabel": {
-                          "type": "string"
-                        },
-                        "beforeAll": {
-                          "type": "schemaReference",
-                          "optional": true,
-                          "definition": {
-                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "compositeAction"
-                          }
-                        },
-                        "beforeEach": {
-                          "type": "schemaReference",
-                          "optional": true,
-                          "definition": {
-                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "compositeAction"
-                          }
-                        },
-                        "afterEach": {
-                          "type": "schemaReference",
-                          "optional": true,
-                          "definition": {
-                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "compositeAction"
-                          }
-                        },
-                        "afterAll": {
-                          "type": "schemaReference",
-                          "optional": true,
-                          "definition": {
-                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "compositeAction"
-                          }
-                        },
-                        "testCompositeActions": {
-                          "type": "record",
-                          "definition": {
-                            "type": "schemaReference",
-                            "definition": {
-                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                              "relativePath": "testRuntimeCompositeAction"
-                            }
-                          }
-                        }
-                      }
-                    },
-                    {
-                      "type": "object",
-                      "definition": {
-                        "testType": {
-                          "type": "literal",
-                          "definition": "testBuildPlusRuntimeCompositeAction"
-                        },
-                        "testLabel": {
-                          "type": "string"
-                        },
-                        "testParams": {
-                          "type": "record",
-                          "optional": true,
-                          "definition": {
-                            "type": "any"
-                          }
-                        },
-                        "beforeTestSetupAction": {
-                          "type": "schemaReference",
-                          "optional": true,
-                          "definition": {
-                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "compositeAction"
-                          }
-                        },
-                        "afterTestCleanupAction": {
-                          "type": "schemaReference",
-                          "optional": true,
-                          "definition": {
-                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "compositeAction"
-                          }
-                        },
-                        "compositeAction": {
-                          "type": "schemaReference",
-                          "definition": {
-                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "buildPlusRuntimeCompositeAction"
-                          }
-                        },
-                        "testCompositeActionAssertions": {
-                          "type": "array",
-                          "definition": {
-                            "type": "schemaReference",
-                            "definition": {
-                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                              "relativePath": "compositeRunTestAssertion"
-                            }
-                          }
-                        }
-                      }
-                    },
-                    {
-                      "type": "object",
-                      "definition": {
-                        "testType": {
-                          "type": "literal",
-                          "definition": "testBuildPlusRuntimeCompositeActionSuite"
-                        },
-                        "testLabel": {
-                          "type": "string"
-                        },
-                        "testParams": {
-                          "type": "record",
-                          "optional": true,
-                          "definition": {
-                            "type": "any"
-                          }
-                        },
-                        "beforeAll": {
-                          "type": "schemaReference",
-                          "optional": true,
-                          "definition": {
-                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "compositeAction"
-                          }
-                        },
-                        "beforeEach": {
-                          "type": "schemaReference",
-                          "optional": true,
-                          "definition": {
-                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "compositeAction"
-                          }
-                        },
-                        "afterEach": {
-                          "type": "schemaReference",
-                          "optional": true,
-                          "definition": {
-                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "compositeAction"
-                          }
-                        },
-                        "afterAll": {
-                          "type": "schemaReference",
-                          "optional": true,
-                          "definition": {
-                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "compositeAction"
-                          }
-                        },
-                        "testCompositeActions": {
-                          "type": "record",
-                          "definition": {
-                            "type": "schemaReference",
-                            "definition": {
-                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                              "relativePath": "testBuildPlusRuntimeCompositeAction"
-                            }
-                          }
-                        }
-                      }
-                    },
-                    {
-                      "type": "object",
-                      "definition": {
-                        "testType": {
-                          "type": "literal",
-                          "definition": "testCompositeActionTemplate"
-                        },
-                        "testLabel": {
-                          "type": "string"
-                        },
-                        "beforeTestSetupAction": {
-                          "type": "schemaReference",
-                          "optional": true,
-                          "definition": {
-                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "compositeActionTemplate"
-                          }
-                        },
-                        "afterTestCleanupAction": {
-                          "type": "schemaReference",
-                          "optional": true,
-                          "definition": {
-                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "compositeActionTemplate"
-                          }
-                        },
-                        "compositeActionTemplate": {
-                          "type": "schemaReference",
-                          "definition": {
-                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "compositeActionTemplate"
-                          }
-                        },
-                        "testCompositeActionAssertions": {
-                          "type": "array",
-                          "definition": {
-                            "type": "schemaReference",
-                            "definition": {
-                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                              "relativePath": "compositeRunTestAssertion"
-                            }
-                          }
-                        }
-                      }
-                    },
-                    {
-                      "type": "object",
-                      "definition": {
-                        "testType": {
-                          "type": "literal",
-                          "definition": "testCompositeActionTemplateSuite"
-                        },
-                        "testLabel": {
-                          "type": "string"
-                        },
-                        "beforeAll": {
-                          "type": "schemaReference",
-                          "optional": true,
-                          "definition": {
-                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "compositeActionTemplate"
-                          }
-                        },
-                        "beforeEach": {
-                          "type": "schemaReference",
-                          "optional": true,
-                          "definition": {
-                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "compositeActionTemplate"
-                          }
-                        },
-                        "afterEach": {
-                          "type": "schemaReference",
-                          "optional": true,
-                          "definition": {
-                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "compositeActionTemplate"
-                          }
-                        },
-                        "afterAll": {
-                          "type": "schemaReference",
-                          "optional": true,
-                          "definition": {
-                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "compositeActionTemplate"
-                          }
-                        },
-                        "testCompositeActions": {
-                          "type": "record",
-                          "definition": {
-                            "type": "schemaReference",
-                            "definition": {
-                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                              "relativePath": "testCompositeActionTemplate"
-                            }
-                          }
-                        }
-                      }
-                    },
-                    {
-                      "type": "object",
-                      "definition": {
-                        "testType": {
-                          "type": "literal",
-                          "definition": "testAssertion"
-                        },
-                        "testLabel": {
-                          "type": "string"
-                        },
-                        "definition": {
-                          "type": "object",
-                          "definition": {
-                            "resultAccessPath": {
-                              "type": "array",
-                              "optional": true,
-                              "definition": {
-                                "type": "string"
-                              }
-                            },
-                            "resultTransformer": {
-                              "type": "schemaReference",
-                              "optional": true,
-                              "definition": {
-                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                "relativePath": "extendedTransformerForRuntime"
-                              }
-                            },
-                            "ignoreAttributes": {
-                              "type": "array",
-                              "optional": true,
-                              "definition": {
-                                "type": "string"
-                              }
-                            },
-                            "expectedValue": {
-                              "type": "any"
-                            }
-                          }
-                        }
-                      }
-                    }
-                  ]
-                }
-              }
-            },
-            "resolvedSchema": {
-              "type": "object",
-              "definition": {
-                "testCompositeActions": {
-                  "type": "object",
-                  "optional": true,
-                  "definition": {
-                    "create new Entity and reports from spreadsheet": {
-                      "type": "object",
-                      "definition": {
-                        "testType": {
-                          "type": "literal",
-                          "definition": "testBuildPlusRuntimeCompositeAction"
-                        },
-                        "testLabel": {
-                          "type": "string"
-                        },
-                        "compositeAction": {
-                          "type": "object",
-                          "definition": {
-                            "actionType": {
-                              "type": "literal",
-                              "definition": "compositeAction"
-                            },
-                            "actionLabel": {
-                              "type": "string",
-                              "optional": true
-                            },
-                            "actionName": {
-                              "type": "literal",
-                              "definition": "sequence"
-                            },
-                            "templates": {
-                              "type": "object",
-                              "optional": true,
-                              "definition": {}
-                            },
-                            "definition": {
-                              "type": "tuple",
-                              "definition": [
-                                {
-                                  "type": "object",
-                                  "definition": {
-                                    "actionType": {
-                                      "type": "literal",
-                                      "definition": "commit"
-                                    },
-                                    "actionLabel": {
-                                      "type": "string",
-                                      "optional": true
-                                    },
-                                    "endpoint": {
-                                      "type": "literal",
-                                      "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
-                                    },
-                                    "deploymentUuid": {
-                                      "type": "object",
-                                      "definition": {
-                                        "transformerType": {
-                                          "type": "literal",
-                                          "definition": "parameterReference"
-                                        },
-                                        "interpolation": {
-                                          "type": "literal",
-                                          "optional": true,
-                                          "definition": "build"
-                                        },
-                                        "referenceName": {
-                                          "optional": true,
-                                          "type": "string"
-                                        }
-                                      }
-                                    }
-                                  }
-                                }
-                              ]
-                            }
-                          }
-                        },
-                        "testCompositeActionAssertions": {
-                          "type": "tuple",
-                          "definition": []
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "": {
-            "rawSchema": {
-              "type": "object",
-              "definition": {
-                "uuid": {
-                  "type": "string",
-                  "validations": [
-                    {
-                      "type": "uuid"
-                    }
-                  ],
-                  "tag": {
-                    "value": {
-                      "id": 1,
-                      "defaultLabel": "Uuid",
-                      "editable": false
-                    }
-                  }
-                },
-                "parentName": {
-                  "type": "string",
-                  "optional": true,
-                  "tag": {
-                    "value": {
-                      "id": 1,
-                      "defaultLabel": "Uuid",
-                      "editable": false
-                    }
-                  }
-                },
-                "parentUuid": {
-                  "type": "string",
-                  "validations": [
-                    {
-                      "type": "uuid"
-                    }
-                  ],
-                  "tag": {
-                    "value": {
-                      "id": 1,
-                      "defaultLabel": "parentUuid",
-                      "editable": false
-                    }
-                  }
-                },
-                "selfApplication": {
-                  "type": "uuid",
-                  "tag": {
-                    "value": {
-                      "id": 9,
-                      "defaultLabel": "SelfApplication",
-                      "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
-                      "editable": false
-                    }
-                  }
-                },
-                "branch": {
-                  "type": "uuid",
-                  "tag": {
-                    "value": {
-                      "id": 10,
-                      "defaultLabel": "Branch",
-                      "description": "The Branch of the SelfApplication",
-                      "editable": false
-                    }
-                  }
-                },
-                "name": {
-                  "type": "string",
-                  "optional": true,
-                  "tag": {
-                    "value": {
-                      "id": 1,
-                      "defaultLabel": "Name",
-                      "editable": true
-                    }
-                  }
-                },
-                "description": {
-                  "type": "string",
-                  "optional": true,
-                  "tag": {
-                    "value": {
-                      "id": 1,
-                      "defaultLabel": "Name",
-                      "editable": true
-                    }
-                  }
-                },
-                "definition": {
-                  "type": "object",
-                  "definition": {
-                    "testCompositeActions": {
-                      "type": "record",
-                      "optional": true,
-                      "definition": {
-                        "type": "schemaReference",
-                        "definition": {
-                          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                          "relativePath": "testBuildPlusRuntimeCompositeAction"
-                        }
-                      }
-                    },
-                    "fullTestDefinition": {
-                      "type": "union",
-                      "optional": true,
-                      "discriminator": "testType",
-                      "definition": [
-                        {
-                          "type": "object",
-                          "definition": {
-                            "testType": {
-                              "type": "literal",
-                              "definition": "testCompositeAction"
-                            },
-                            "testLabel": {
-                              "type": "string"
-                            },
-                            "beforeTestSetupAction": {
-                              "type": "schemaReference",
-                              "optional": true,
-                              "definition": {
-                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                "relativePath": "compositeAction"
-                              }
-                            },
-                            "afterTestCleanupAction": {
-                              "type": "schemaReference",
-                              "optional": true,
-                              "definition": {
-                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                "relativePath": "compositeAction"
-                              }
-                            },
-                            "compositeAction": {
-                              "type": "schemaReference",
-                              "definition": {
-                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                "relativePath": "compositeAction"
-                              }
-                            },
-                            "testCompositeActionAssertions": {
-                              "type": "array",
-                              "definition": {
-                                "type": "schemaReference",
-                                "definition": {
-                                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                  "relativePath": "compositeRunTestAssertion"
-                                }
-                              }
-                            }
-                          }
-                        },
-                        {
-                          "type": "object",
-                          "definition": {
-                            "testType": {
-                              "type": "literal",
-                              "definition": "testCompositeActionSuite"
-                            },
-                            "testLabel": {
-                              "type": "string"
-                            },
-                            "beforeAll": {
-                              "type": "schemaReference",
-                              "optional": true,
-                              "definition": {
-                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                "relativePath": "compositeAction"
-                              }
-                            },
-                            "beforeEach": {
-                              "type": "schemaReference",
-                              "optional": true,
-                              "definition": {
-                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                "relativePath": "compositeAction"
-                              }
-                            },
-                            "afterEach": {
-                              "type": "schemaReference",
-                              "optional": true,
-                              "definition": {
-                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                "relativePath": "compositeAction"
-                              }
-                            },
-                            "afterAll": {
-                              "type": "schemaReference",
-                              "optional": true,
-                              "definition": {
-                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                "relativePath": "compositeAction"
-                              }
-                            },
-                            "testCompositeActions": {
-                              "type": "record",
-                              "definition": {
-                                "type": "schemaReference",
-                                "definition": {
-                                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                  "relativePath": "testCompositeAction"
-                                }
-                              }
-                            }
-                          }
-                        },
-                        {
-                          "type": "object",
-                          "definition": {
-                            "testType": {
-                              "type": "literal",
-                              "definition": "testBuildCompositeAction"
-                            },
-                            "testLabel": {
-                              "type": "string"
-                            },
-                            "beforeTestSetupAction": {
-                              "type": "schemaReference",
-                              "optional": true,
-                              "definition": {
-                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                "relativePath": "compositeAction"
-                              }
-                            },
-                            "afterTestCleanupAction": {
-                              "type": "schemaReference",
-                              "optional": true,
-                              "definition": {
-                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                "relativePath": "compositeAction"
-                              }
-                            },
-                            "compositeAction": {
-                              "type": "schemaReference",
-                              "definition": {
-                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                "relativePath": "buildCompositeAction"
-                              }
-                            },
-                            "testCompositeActionAssertions": {
-                              "type": "array",
-                              "definition": {
-                                "type": "schemaReference",
-                                "definition": {
-                                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                  "relativePath": "compositeRunTestAssertion"
-                                }
-                              }
-                            }
-                          }
-                        },
-                        {
-                          "type": "object",
-                          "definition": {
-                            "testType": {
-                              "type": "literal",
-                              "definition": "testBuildCompositeActionSuite"
-                            },
-                            "testLabel": {
-                              "type": "string"
-                            },
-                            "beforeAll": {
-                              "type": "schemaReference",
-                              "optional": true,
-                              "definition": {
-                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                "relativePath": "compositeAction"
-                              }
-                            },
-                            "beforeEach": {
-                              "type": "schemaReference",
-                              "optional": true,
-                              "definition": {
-                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                "relativePath": "compositeAction"
-                              }
-                            },
-                            "afterEach": {
-                              "type": "schemaReference",
-                              "optional": true,
-                              "definition": {
-                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                "relativePath": "compositeAction"
-                              }
-                            },
-                            "afterAll": {
-                              "type": "schemaReference",
-                              "optional": true,
-                              "definition": {
-                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                "relativePath": "compositeAction"
-                              }
-                            },
-                            "testCompositeActions": {
-                              "type": "record",
-                              "definition": {
-                                "type": "schemaReference",
-                                "definition": {
-                                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                  "relativePath": "testBuildCompositeAction"
-                                }
-                              }
-                            }
-                          }
-                        },
-                        {
-                          "type": "object",
-                          "definition": {
-                            "testType": {
-                              "type": "literal",
-                              "definition": "testRuntimeCompositeAction"
-                            },
-                            "testLabel": {
-                              "type": "string"
-                            },
-                            "beforeTestSetupAction": {
-                              "type": "schemaReference",
-                              "optional": true,
-                              "definition": {
-                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                "relativePath": "compositeAction"
-                              }
-                            },
-                            "afterTestCleanupAction": {
-                              "type": "schemaReference",
-                              "optional": true,
-                              "definition": {
-                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                "relativePath": "compositeAction"
-                              }
-                            },
-                            "compositeAction": {
-                              "type": "schemaReference",
-                              "definition": {
-                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                "relativePath": "runtimeCompositeAction"
-                              }
-                            },
-                            "testCompositeActionAssertions": {
-                              "type": "array",
-                              "definition": {
-                                "type": "schemaReference",
-                                "definition": {
-                                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                  "relativePath": "compositeRunTestAssertion"
-                                }
-                              }
-                            }
-                          }
-                        },
-                        {
-                          "type": "object",
-                          "definition": {
-                            "testType": {
-                              "type": "literal",
-                              "definition": "testRuntimeCompositeActionSuite"
-                            },
-                            "testLabel": {
-                              "type": "string"
-                            },
-                            "beforeAll": {
-                              "type": "schemaReference",
-                              "optional": true,
-                              "definition": {
-                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                "relativePath": "compositeAction"
-                              }
-                            },
-                            "beforeEach": {
-                              "type": "schemaReference",
-                              "optional": true,
-                              "definition": {
-                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                "relativePath": "compositeAction"
-                              }
-                            },
-                            "afterEach": {
-                              "type": "schemaReference",
-                              "optional": true,
-                              "definition": {
-                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                "relativePath": "compositeAction"
-                              }
-                            },
-                            "afterAll": {
-                              "type": "schemaReference",
-                              "optional": true,
-                              "definition": {
-                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                "relativePath": "compositeAction"
-                              }
-                            },
-                            "testCompositeActions": {
-                              "type": "record",
-                              "definition": {
-                                "type": "schemaReference",
-                                "definition": {
-                                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                  "relativePath": "testRuntimeCompositeAction"
-                                }
-                              }
-                            }
-                          }
-                        },
-                        {
-                          "type": "object",
-                          "definition": {
-                            "testType": {
-                              "type": "literal",
-                              "definition": "testBuildPlusRuntimeCompositeAction"
-                            },
-                            "testLabel": {
-                              "type": "string"
-                            },
-                            "testParams": {
-                              "type": "record",
-                              "optional": true,
-                              "definition": {
-                                "type": "any"
-                              }
-                            },
-                            "beforeTestSetupAction": {
-                              "type": "schemaReference",
-                              "optional": true,
-                              "definition": {
-                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                "relativePath": "compositeAction"
-                              }
-                            },
-                            "afterTestCleanupAction": {
-                              "type": "schemaReference",
-                              "optional": true,
-                              "definition": {
-                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                "relativePath": "compositeAction"
-                              }
-                            },
-                            "compositeAction": {
-                              "type": "schemaReference",
-                              "definition": {
-                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                "relativePath": "buildPlusRuntimeCompositeAction"
-                              }
-                            },
-                            "testCompositeActionAssertions": {
-                              "type": "array",
-                              "definition": {
-                                "type": "schemaReference",
-                                "definition": {
-                                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                  "relativePath": "compositeRunTestAssertion"
-                                }
-                              }
-                            }
-                          }
-                        },
-                        {
-                          "type": "object",
-                          "definition": {
-                            "testType": {
-                              "type": "literal",
-                              "definition": "testBuildPlusRuntimeCompositeActionSuite"
-                            },
-                            "testLabel": {
-                              "type": "string"
-                            },
-                            "testParams": {
-                              "type": "record",
-                              "optional": true,
-                              "definition": {
-                                "type": "any"
-                              }
-                            },
-                            "beforeAll": {
-                              "type": "schemaReference",
-                              "optional": true,
-                              "definition": {
-                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                "relativePath": "compositeAction"
-                              }
-                            },
-                            "beforeEach": {
-                              "type": "schemaReference",
-                              "optional": true,
-                              "definition": {
-                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                "relativePath": "compositeAction"
-                              }
-                            },
-                            "afterEach": {
-                              "type": "schemaReference",
-                              "optional": true,
-                              "definition": {
-                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                "relativePath": "compositeAction"
-                              }
-                            },
-                            "afterAll": {
-                              "type": "schemaReference",
-                              "optional": true,
-                              "definition": {
-                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                "relativePath": "compositeAction"
-                              }
-                            },
-                            "testCompositeActions": {
-                              "type": "record",
-                              "definition": {
-                                "type": "schemaReference",
-                                "definition": {
-                                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                  "relativePath": "testBuildPlusRuntimeCompositeAction"
-                                }
-                              }
-                            }
-                          }
-                        },
-                        {
-                          "type": "object",
-                          "definition": {
-                            "testType": {
-                              "type": "literal",
-                              "definition": "testCompositeActionTemplate"
-                            },
-                            "testLabel": {
-                              "type": "string"
-                            },
-                            "beforeTestSetupAction": {
-                              "type": "schemaReference",
-                              "optional": true,
-                              "definition": {
-                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                "relativePath": "compositeActionTemplate"
-                              }
-                            },
-                            "afterTestCleanupAction": {
-                              "type": "schemaReference",
-                              "optional": true,
-                              "definition": {
-                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                "relativePath": "compositeActionTemplate"
-                              }
-                            },
-                            "compositeActionTemplate": {
-                              "type": "schemaReference",
-                              "definition": {
-                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                "relativePath": "compositeActionTemplate"
-                              }
-                            },
-                            "testCompositeActionAssertions": {
-                              "type": "array",
-                              "definition": {
-                                "type": "schemaReference",
-                                "definition": {
-                                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                  "relativePath": "compositeRunTestAssertion"
-                                }
-                              }
-                            }
-                          }
-                        },
-                        {
-                          "type": "object",
-                          "definition": {
-                            "testType": {
-                              "type": "literal",
-                              "definition": "testCompositeActionTemplateSuite"
-                            },
-                            "testLabel": {
-                              "type": "string"
-                            },
-                            "beforeAll": {
-                              "type": "schemaReference",
-                              "optional": true,
-                              "definition": {
-                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                "relativePath": "compositeActionTemplate"
-                              }
-                            },
-                            "beforeEach": {
-                              "type": "schemaReference",
-                              "optional": true,
-                              "definition": {
-                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                "relativePath": "compositeActionTemplate"
-                              }
-                            },
-                            "afterEach": {
-                              "type": "schemaReference",
-                              "optional": true,
-                              "definition": {
-                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                "relativePath": "compositeActionTemplate"
-                              }
-                            },
-                            "afterAll": {
-                              "type": "schemaReference",
-                              "optional": true,
-                              "definition": {
-                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                "relativePath": "compositeActionTemplate"
-                              }
-                            },
-                            "testCompositeActions": {
-                              "type": "record",
-                              "definition": {
-                                "type": "schemaReference",
-                                "definition": {
-                                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                  "relativePath": "testCompositeActionTemplate"
-                                }
-                              }
-                            }
-                          }
-                        },
-                        {
-                          "type": "object",
-                          "definition": {
-                            "testType": {
-                              "type": "literal",
-                              "definition": "testAssertion"
-                            },
-                            "testLabel": {
-                              "type": "string"
-                            },
-                            "definition": {
-                              "type": "object",
-                              "definition": {
-                                "resultAccessPath": {
-                                  "type": "array",
-                                  "optional": true,
-                                  "definition": {
-                                    "type": "string"
-                                  }
-                                },
-                                "resultTransformer": {
-                                  "type": "schemaReference",
-                                  "optional": true,
-                                  "definition": {
-                                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                    "relativePath": "extendedTransformerForRuntime"
-                                  }
-                                },
-                                "ignoreAttributes": {
-                                  "type": "array",
-                                  "optional": true,
-                                  "definition": {
-                                    "type": "string"
-                                  }
-                                },
-                                "expectedValue": {
-                                  "type": "any"
-                                }
-                              }
-                            }
-                          }
-                        }
-                      ]
-                    }
-                  }
-                }
-              }
-            },
-            "resolvedSchema": {
-              "type": "object",
-              "definition": {
-                "uuid": {
-                  "type": "string",
-                  "validations": [
-                    {
-                      "type": "uuid"
-                    }
-                  ],
-                  "tag": {
-                    "value": {
-                      "id": 1,
-                      "defaultLabel": "Uuid",
-                      "editable": false
-                    }
-                  }
-                },
-                "parentName": {
-                  "type": "string",
-                  "optional": true,
-                  "tag": {
-                    "value": {
-                      "id": 1,
-                      "defaultLabel": "Uuid",
-                      "editable": false
-                    }
-                  }
-                },
-                "parentUuid": {
-                  "type": "string",
-                  "validations": [
-                    {
-                      "type": "uuid"
-                    }
-                  ],
-                  "tag": {
-                    "value": {
-                      "id": 1,
-                      "defaultLabel": "parentUuid",
-                      "editable": false
-                    }
-                  }
-                },
-                "name": {
-                  "type": "string",
-                  "optional": true,
-                  "tag": {
-                    "value": {
-                      "id": 1,
-                      "defaultLabel": "Name",
-                      "editable": true
-                    }
-                  }
-                },
-                "selfApplication": {
-                  "type": "uuid",
-                  "tag": {
-                    "value": {
-                      "id": 9,
-                      "defaultLabel": "SelfApplication",
-                      "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
-                      "editable": false
-                    }
-                  }
-                },
-                "branch": {
-                  "type": "uuid",
-                  "tag": {
-                    "value": {
-                      "id": 10,
-                      "defaultLabel": "Branch",
-                      "description": "The Branch of the SelfApplication",
-                      "editable": false
-                    }
-                  }
-                },
-                "description": {
-                  "type": "string",
-                  "optional": true,
-                  "tag": {
-                    "value": {
-                      "id": 1,
-                      "defaultLabel": "Name",
-                      "editable": true
-                    }
-                  }
-                },
-                "definition": {
-                  "type": "object",
-                  "definition": {
-                    "testCompositeActions": {
-                      "type": "object",
-                      "optional": true,
-                      "definition": {
-                        "create new Entity and reports from spreadsheet": {
-                          "type": "object",
-                          "definition": {
-                            "testType": {
-                              "type": "literal",
-                              "definition": "testBuildPlusRuntimeCompositeAction"
-                            },
-                            "testLabel": {
-                              "type": "string"
-                            },
-                            "compositeAction": {
-                              "type": "object",
-                              "definition": {
-                                "actionType": {
-                                  "type": "literal",
-                                  "definition": "compositeAction"
-                                },
-                                "actionLabel": {
-                                  "type": "string",
-                                  "optional": true
-                                },
-                                "actionName": {
-                                  "type": "literal",
-                                  "definition": "sequence"
-                                },
-                                "templates": {
-                                  "type": "object",
-                                  "optional": true,
-                                  "definition": {}
-                                },
-                                "definition": {
-                                  "type": "tuple",
-                                  "definition": [
-                                    {
-                                      "type": "object",
-                                      "definition": {
-                                        "actionType": {
-                                          "type": "literal",
-                                          "definition": "commit"
-                                        },
-                                        "actionLabel": {
-                                          "type": "string",
-                                          "optional": true
-                                        },
-                                        "endpoint": {
-                                          "type": "literal",
-                                          "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
-                                        },
-                                        "deploymentUuid": {
-                                          "type": "object",
-                                          "definition": {
-                                            "transformerType": {
-                                              "type": "literal",
-                                              "definition": "parameterReference"
-                                            },
-                                            "interpolation": {
-                                              "type": "literal",
-                                              "optional": true,
-                                              "definition": "build"
-                                            },
-                                            "referenceName": {
-                                              "optional": true,
-                                              "type": "string"
-                                            }
-                                          }
-                                        }
-                                      }
-                                    }
-                                  ]
-                                }
-                              }
-                            },
-                            "testCompositeActionAssertions": {
-                              "type": "tuple",
-                              "definition": []
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
+        },
       },
-      // // ##########################################################################################
-      // // ########################### BOOK ENTITY ######################################
-      // // ##########################################################################################
-      // // Book entity
-      // test900: {
-      //   testSchema: {
-      //     type: "object",
-      //     definition: {
-      //       uuid: {
-      //         type: "string",
-      //         validations: [
-      //           {
-      //             type: "uuid",
-      //           },
-      //         ],
-      //         tag: {
-      //           value: {
-      //             id: 1,
-      //             defaultLabel: "Uuid",
-      //             editable: false,
-      //           },
-      //         },
-      //       },
-      //       parentName: {
-      //         type: "string",
-      //         optional: true,
-      //         tag: {
-      //           value: {
-      //             id: 2,
-      //             defaultLabel: "Entity Name",
-      //             editable: false,
-      //           },
-      //         },
-      //       },
-      //       parentUuid: {
-      //         type: "string",
-      //         validations: [
-      //           {
-      //             type: "uuid",
-      //           },
-      //         ],
-      //         tag: {
-      //           value: {
-      //             id: 3,
-      //             defaultLabel: "Entity Uuid",
-      //             editable: false,
-      //           },
-      //         },
-      //       },
-      //       name: {
-      //         type: "string",
-      //         tag: {
-      //           value: {
-      //             id: 4,
-      //             defaultLabel: "Name",
-      //             editable: true,
-      //           },
-      //         },
-      //       },
-      //       author: {
-      //         type: "string",
-      //         validations: [
-      //           {
-      //             type: "uuid",
-      //           },
-      //         ],
-      //         optional: true,
-      //         tag: {
-      //           value: {
-      //             id: 5,
-      //             defaultLabel: "Author",
-      //             targetEntity: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
-      //             editable: true,
-      //           },
-      //         },
-      //       },
-      //       publisher: {
-      //         type: "string",
-      //         validations: [
-      //           {
-      //             type: "uuid",
-      //           },
-      //         ],
-      //         optional: true,
-      //         tag: {
-      //           value: {
-      //             id: 5,
-      //             defaultLabel: "Publisher",
-      //             targetEntity: "a027c379-8468-43a5-ba4d-bf618be25cab",
-      //             editable: true,
-      //           },
-      //         },
-      //       },
-      //     },
-      //   },
-      //   expectedResolvedSchema: {
-      //     type: "object",
-      //     definition: {
-      //       uuid: {
-      //         type: "string",
-      //         validations: [
-      //           {
-      //             type: "uuid",
-      //           },
-      //         ],
-      //         tag: {
-      //           value: {
-      //             id: 1,
-      //             defaultLabel: "Uuid",
-      //             editable: false,
-      //           },
-      //         },
-      //       },
-      //       parentName: {
-      //         type: "string",
-      //         optional: true,
-      //         tag: {
-      //           value: {
-      //             id: 2,
-      //             defaultLabel: "Entity Name",
-      //             editable: false,
-      //           },
-      //         },
-      //       },
-      //       parentUuid: {
-      //         type: "string",
-      //         validations: [
-      //           {
-      //             type: "uuid",
-      //           },
-      //         ],
-      //         tag: {
-      //           value: {
-      //             id: 3,
-      //             defaultLabel: "Entity Uuid",
-      //             editable: false,
-      //           },
-      //         },
-      //       },
-      //       name: {
-      //         type: "string",
-      //         tag: {
-      //           value: {
-      //             id: 4,
-      //             defaultLabel: "Name",
-      //             editable: true,
-      //           },
-      //         },
-      //       },
-      //       author: {
-      //         type: "string",
-      //         validations: [
-      //           {
-      //             type: "uuid",
-      //           },
-      //         ],
-      //         optional: true,
-      //         tag: {
-      //           value: {
-      //             id: 5,
-      //             defaultLabel: "Author",
-      //             targetEntity: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
-      //             editable: true,
-      //           },
-      //         },
-      //       },
-      //       publisher: {
-      //         type: "string",
-      //         validations: [
-      //           {
-      //             type: "uuid",
-      //           },
-      //         ],
-      //         optional: true,
-      //         tag: {
-      //           value: {
-      //             id: 5,
-      //             defaultLabel: "Publisher",
-      //             targetEntity: "a027c379-8468-43a5-ba4d-bf618be25cab",
-      //             editable: true,
-      //           },
-      //         },
-      //       },
-      //     },
-      //   },
-      //   testValueObject: {
-      //     uuid: "4cb917b3-3c53-4f9b-b000-b0e4c07a81f7",
-      //     parentName: "Book",
-      //     parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-      //     name: "Renata n'importe quoi",
-      //     author: "e4376314-d197-457c-aa5e-d2da5f8d5977",
-      //     publisher: "516a7366-39e7-4998-82cb-80199a7fa667",
-      //   },
-      // },
-      // // Book entity definition
-      // test910: {
-      //   testSchema: {
-      //     type: "schemaReference",
-      //     definition: {
-      //       absolutePath: miroirFundamentalJzodSchemaUuid,
-      //       relativePath: "entityDefinition",
-      //     },
-      //   },
-      //   testValueObject: {
-      //     uuid: "797dd185-0155-43fd-b23f-f6d0af8cae06",
-      //     parentName: "EntityDefinition",
-      //     parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
-      //     parentDefinitionVersionUuid: "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
-      //     entityUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-      //     conceptLevel: "Model",
-      //     name: "Book",
-      //     icon: "Book",
-      //     defaultInstanceDetailsReportUuid: "c3503412-3d8a-43ef-a168-aa36e975e606",
-      //     viewAttributes: ["name", "author", "publisher", "uuid"],
-      //     jzodSchema: {
-      //       type: "object",
-      //       definition: {
-      //         uuid: {
-      //           type: "uuid",
-      //           tag: {
-      //             value: {
-      //               id: 1,
-      //               defaultLabel: "Uuid",
-      //               editable: false,
-      //             },
-      //           },
-      //         },
-      //         parentName: {
-      //           type: "string",
-      //           optional: true,
-      //           tag: {
-      //             value: {
-      //               id: 2,
-      //               defaultLabel: "Entity Name",
-      //               editable: false,
-      //             },
-      //           },
-      //         },
-      //         parentUuid: {
-      //           type: "uuid",
-      //           tag: {
-      //             value: {
-      //               id: 3,
-      //               defaultLabel: "Entity Uuid",
-      //               editable: false,
-      //             },
-      //           },
-      //         },
-      //         conceptLevel: {
-      //           type: "enum",
-      //           definition: ["MetaModel", "Model", "Data"],
-      //           optional: true,
-      //           tag: {
-      //             value: {
-      //               id: 5,
-      //               defaultLabel: "Concept Level",
-      //               editable: false,
-      //             },
-      //           },
-      //         },
-      //         name: {
-      //           type: "string",
-      //           tag: {
-      //             value: {
-      //               id: 4,
-      //               defaultLabel: "Name",
-      //               editable: true,
-      //             },
-      //           },
-      //         },
-      //         author: {
-      //           type: "uuid",
-      //           optional: true,
-      //           tag: {
-      //             value: {
-      //               id: 5,
-      //               defaultLabel: "Author",
-      //               targetEntity: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
-      //               editable: true,
-      //             },
-      //           },
-      //         },
-      //         publisher: {
-      //           type: "uuid",
-      //           optional: true,
-      //           tag: {
-      //             value: {
-      //               id: 5,
-      //               defaultLabel: "Publisher",
-      //               targetEntity: "a027c379-8468-43a5-ba4d-bf618be25cab",
-      //               editable: true,
-      //             },
-      //           },
-      //         },
-      //       },
-      //     },
-      //   },
-      //   expectedResolvedSchema: {
-      //     type: "object",
-      //     definition: {
-      //       uuid: {
-      //         type: "uuid",
-      //         tag: {
-      //           value: {
-      //             id: 1,
-      //             defaultLabel: "Uuid",
-      //             editable: false,
-      //           },
-      //         },
-      //       },
-      //       parentName: {
-      //         type: "string",
-      //         tag: {
-      //           value: {
-      //             id: 2,
-      //             defaultLabel: "Entity Name",
-      //             editable: false,
-      //           },
-      //         },
-      //       },
-      //       parentUuid: {
-      //         type: "uuid",
-      //         tag: {
-      //           value: {
-      //             id: 3,
-      //             defaultLabel: "Entity Uuid",
-      //             editable: false,
-      //           },
-      //         },
-      //       },
-      //       parentDefinitionVersionUuid: {
-      //         type: "uuid",
-      //         optional: true,
-      //         tag: {
-      //           value: {
-      //             id: 4,
-      //             defaultLabel: "Entity Definition Version Uuid",
-      //             editable: false,
-      //           },
-      //         },
-      //       },
-      //       entityUuid: {
-      //         type: "uuid",
-      //         tag: {
-      //           value: {
-      //             id: 6,
-      //             defaultLabel: "Entity Uuid of the Entity which this definition is the definition",
-      //             editable: false,
-      //           },
-      //         },
-      //       },
-      //       conceptLevel: {
-      //         type: "enum",
-      //         definition: ["MetaModel", "Model", "Data"],
-      //         optional: true,
-      //         tag: {
-      //           value: {
-      //             id: 7,
-      //             defaultLabel: "Concept Level",
-      //             editable: false,
-      //           },
-      //         },
-      //       },
-      //       name: {
-      //         type: "string",
-      //         tag: {
-      //           value: {
-      //             id: 5,
-      //             defaultLabel: "Name",
-      //             editable: false,
-      //           },
-      //         },
-      //       },
-      //       icon: {
-      //         type: "string",
-      //         optional: true,
-      //         tag: {
-      //           value: {
-      //             id: 11,
-      //             defaultLabel: "Icon used to represent instances of this Entity",
-      //             editable: true,
-      //           },
-      //         },
-      //       },
-      //       defaultInstanceDetailsReportUuid: {
-      //         type: "uuid",
-      //         optional: true,
-      //         tag: {
-      //           value: {
-      //             id: 9,
-      //             defaultLabel: "Default Report used to display instances of this Entity",
-      //             editable: false,
-      //           },
-      //         },
-      //       },
-      //       viewAttributes: {
-      //         type: "tuple",
-      //         optional: true,
-      //         definition: [
-      //           {
-      //             type: "string",
-      //           },
-      //           {
-      //             type: "string",
-      //           },
-      //           {
-      //             type: "string",
-      //           },
-      //           {
-      //             type: "string",
-      //           },
-      //         ],
-      //         tag: {
-      //           value: {
-      //             id: 10,
-      //             editable: true,
-      //           },
-      //         },
-      //       },
-      //       jzodSchema: {
-      //         type: "object",
-      //         definition: {
-      //           type: {
-      //             type: "literal",
-      //             definition: "object",
-      //           },
-      //           definition: {
-      //             type: "object",
-      //             definition: {
-      //               uuid: {
-      //                 type: "object",
-      //                 definition: {
-      //                   type: {
-      //                     type: "enum",
-      //                     definition: [
-      //                       "any",
-      //                       "bigint",
-      //                       "boolean",
-      //                       "never",
-      //                       "null",
-      //                       "uuid",
-      //                       "undefined",
-      //                       "unknown",
-      //                       "void",
-      //                     ],
-      //                   },
-      //                   tag: {
-      //                     type: "object",
-      //                     optional: true,
-      //                     definition: {
-      //                       value: {
-      //                         type: "object",
-      //                         optional: true,
-      //                         definition: {
-      //                           id: {
-      //                             type: "number",
-      //                             optional: true,
-      //                           },
-      //                           defaultLabel: {
-      //                             type: "string",
-      //                             optional: true,
-      //                           },
-      //                           editable: {
-      //                             type: "boolean",
-      //                             optional: true,
-      //                           },
-      //                         },
-      //                       },
-      //                     },
-      //                   },
-      //                 },
-      //               },
-      //               parentName: {
-      //                 type: "object",
-      //                 definition: {
-      //                   type: {
-      //                     type: "literal",
-      //                     definition: "string",
-      //                   },
-      //                   optional: {
-      //                     type: "boolean",
-      //                     optional: true,
-      //                   },
-      //                   tag: {
-      //                     type: "object",
-      //                     optional: true,
-      //                     definition: {
-      //                       value: {
-      //                         type: "object",
-      //                         optional: true,
-      //                         definition: {
-      //                           id: {
-      //                             type: "number",
-      //                             optional: true,
-      //                           },
-      //                           defaultLabel: {
-      //                             type: "string",
-      //                             optional: true,
-      //                           },
-      //                           editable: {
-      //                             type: "boolean",
-      //                             optional: true,
-      //                           },
-      //                         },
-      //                       },
-      //                     },
-      //                   },
-      //                 },
-      //               },
-      //               parentUuid: {
-      //                 type: "object",
-      //                 definition: {
-      //                   type: {
-      //                     type: "enum",
-      //                     definition: [
-      //                       "any",
-      //                       "bigint",
-      //                       "boolean",
-      //                       "never",
-      //                       "null",
-      //                       "uuid",
-      //                       "undefined",
-      //                       "unknown",
-      //                       "void",
-      //                     ],
-      //                   },
-      //                   tag: {
-      //                     type: "object",
-      //                     optional: true,
-      //                     definition: {
-      //                       value: {
-      //                         type: "object",
-      //                         optional: true,
-      //                         definition: {
-      //                           id: {
-      //                             type: "number",
-      //                             optional: true,
-      //                           },
-      //                           defaultLabel: {
-      //                             type: "string",
-      //                             optional: true,
-      //                           },
-      //                           editable: {
-      //                             type: "boolean",
-      //                             optional: true,
-      //                           },
-      //                         },
-      //                       },
-      //                     },
-      //                   },
-      //                 },
-      //               },
-      //               conceptLevel: {
-      //                 type: "object",
-      //                 definition: {
-      //                   type: {
-      //                     type: "literal",
-      //                     definition: "enum",
-      //                   },
-      //                   definition: {
-      //                     type: "tuple",
-      //                     definition: [
-      //                       {
-      //                         type: "string",
-      //                       },
-      //                       {
-      //                         type: "string",
-      //                       },
-      //                       {
-      //                         type: "string",
-      //                       },
-      //                     ],
-      //                   },
-      //                   optional: {
-      //                     type: "boolean",
-      //                     optional: true,
-      //                   },
-      //                   tag: {
-      //                     type: "object",
-      //                     optional: true,
-      //                     definition: {
-      //                       value: {
-      //                         type: "object",
-      //                         optional: true,
-      //                         definition: {
-      //                           id: {
-      //                             type: "number",
-      //                             optional: true,
-      //                           },
-      //                           defaultLabel: {
-      //                             type: "string",
-      //                             optional: true,
-      //                           },
-      //                           editable: {
-      //                             type: "boolean",
-      //                             optional: true,
-      //                           },
-      //                         },
-      //                       },
-      //                     },
-      //                   },
-      //                 },
-      //               },
-      //               name: {
-      //                 type: "object",
-      //                 definition: {
-      //                   type: {
-      //                     type: "literal",
-      //                     definition: "string",
-      //                   },
-      //                   tag: {
-      //                     type: "object",
-      //                     optional: true,
-      //                     definition: {
-      //                       value: {
-      //                         type: "object",
-      //                         optional: true,
-      //                         definition: {
-      //                           id: {
-      //                             type: "number",
-      //                             optional: true,
-      //                           },
-      //                           defaultLabel: {
-      //                             type: "string",
-      //                             optional: true,
-      //                           },
-      //                           editable: {
-      //                             type: "boolean",
-      //                             optional: true,
-      //                           },
-      //                         },
-      //                       },
-      //                     },
-      //                   },
-      //                 },
-      //               },
-      //               author: {
-      //                 type: "object",
-      //                 definition: {
-      //                   type: {
-      //                     type: "enum",
-      //                     definition: [
-      //                       "any",
-      //                       "bigint",
-      //                       "boolean",
-      //                       "never",
-      //                       "null",
-      //                       "uuid",
-      //                       "undefined",
-      //                       "unknown",
-      //                       "void",
-      //                     ],
-      //                   },
-      //                   optional: {
-      //                     type: "boolean",
-      //                     optional: true,
-      //                   },
-      //                   tag: {
-      //                     type: "object",
-      //                     optional: true,
-      //                     definition: {
-      //                       value: {
-      //                         type: "object",
-      //                         optional: true,
-      //                         definition: {
-      //                           id: {
-      //                             type: "number",
-      //                             optional: true,
-      //                           },
-      //                           defaultLabel: {
-      //                             type: "string",
-      //                             optional: true,
-      //                           },
-      //                           targetEntity: {
-      //                             type: "string",
-      //                             optional: true,
-      //                           },
-      //                           editable: {
-      //                             type: "boolean",
-      //                             optional: true,
-      //                           },
-      //                         },
-      //                       },
-      //                     },
-      //                   },
-      //                 },
-      //               },
-      //               publisher: {
-      //                 type: "object",
-      //                 definition: {
-      //                   type: {
-      //                     type: "enum",
-      //                     definition: [
-      //                       "any",
-      //                       "bigint",
-      //                       "boolean",
-      //                       "never",
-      //                       "null",
-      //                       "uuid",
-      //                       "undefined",
-      //                       "unknown",
-      //                       "void",
-      //                     ],
-      //                   },
-      //                   optional: {
-      //                     type: "boolean",
-      //                     optional: true,
-      //                   },
-      //                   tag: {
-      //                     type: "object",
-      //                     optional: true,
-      //                     definition: {
-      //                       value: {
-      //                         type: "object",
-      //                         optional: true,
-      //                         definition: {
-      //                           id: {
-      //                             type: "number",
-      //                             optional: true,
-      //                           },
-      //                           defaultLabel: {
-      //                             type: "string",
-      //                             optional: true,
-      //                           },
-      //                           targetEntity: {
-      //                             type: "string",
-      //                             optional: true,
-      //                           },
-      //                           editable: {
-      //                             type: "boolean",
-      //                             optional: true,
-      //                           },
-      //                         },
-      //                       },
-      //                     },
-      //                   },
-      //                 },
-      //               },
-      //             },
-      //           },
-      //         },
-      //       },
-      //     },
-      //   },
-      // },
-      // // complexMenu
-      // test950: {
-      //   testSchema: {
-      //     type: "schemaReference",
-      //     context: {
-      //       menuItem: {
-      //         type: "object",
-      //         definition: {
-      //           label: {
-      //             type: "string",
-      //           },
-      //           section: {
-      //             type: "schemaReference",
-      //             definition: {
-      //               absolutePath: miroirFundamentalJzodSchemaUuid,
-      //               relativePath: "applicationSection",
-      //             },
-      //           },
-      //           selfApplication: {
-      //             type: "string",
-      //             validations: [
-      //               {
-      //                 type: "uuid",
-      //               },
-      //             ],
-      //             tag: {
-      //               value: {
-      //                 id: 1,
-      //                 defaultLabel: "Uuid",
-      //                 editable: false,
-      //               },
-      //             },
-      //           },
-      //           reportUuid: {
-      //             type: "string",
-      //             validations: [
-      //               {
-      //                 type: "uuid",
-      //               },
-      //             ],
-      //             tag: {
-      //               value: {
-      //                 id: 1,
-      //                 defaultLabel: "Uuid",
-      //                 editable: false,
-      //               },
-      //             },
-      //           },
-      //           instanceUuid: {
-      //             type: "string",
-      //             optional: true,
-      //             validations: [
-      //               {
-      //                 type: "uuid",
-      //               },
-      //             ],
-      //             tag: {
-      //               value: {
-      //                 id: 1,
-      //                 defaultLabel: "Uuid",
-      //                 editable: false,
-      //               },
-      //             },
-      //           },
-      //           icon: {
-      //             type: "string",
-      //             validations: [
-      //               {
-      //                 type: "uuid",
-      //               },
-      //             ],
-      //           },
-      //         },
-      //       },
-      //       menuItemArray: {
-      //         type: "array",
-      //         definition: {
-      //           type: "schemaReference",
-      //           definition: {
-      //             relativePath: "menuItem",
-      //           },
-      //         },
-      //       },
-      //       sectionOfMenu: {
-      //         type: "object",
-      //         definition: {
-      //           title: {
-      //             type: "string",
-      //           },
-      //           label: {
-      //             type: "string",
-      //           },
-      //           items: {
-      //             type: "schemaReference",
-      //             definition: {
-      //               relativePath: "menuItemArray",
-      //             },
-      //           },
-      //         },
-      //       },
-      //       simpleMenu: {
-      //         type: "object",
-      //         definition: {
-      //           menuType: {
-      //             type: "literal",
-      //             definition: "simpleMenu",
-      //           },
-      //           definition: {
-      //             type: "schemaReference",
-      //             definition: {
-      //               relativePath: "menuItemArray",
-      //             },
-      //           },
-      //         },
-      //       },
-      //       complexMenu: {
-      //         type: "object",
-      //         definition: {
-      //           menuType: {
-      //             type: "literal",
-      //             definition: "complexMenu",
-      //           },
-      //           definition: {
-      //             type: "array",
-      //             definition: {
-      //               type: "schemaReference",
-      //               definition: {
-      //                 relativePath: "sectionOfMenu",
-      //               },
-      //             },
-      //           },
-      //         },
-      //       },
-      //       menuDefinition: {
-      //         type: "union",
-      //         discriminator: "menuType",
-      //         definition: [
-      //           {
-      //             type: "schemaReference",
-      //             definition: {
-      //               relativePath: "simpleMenu",
-      //             },
-      //           },
-      //           {
-      //             type: "schemaReference",
-      //             definition: {
-      //               relativePath: "complexMenu",
-      //             },
-      //           },
-      //         ],
-      //       },
-      //     },
-      //     definition: {
-      //       relativePath: "menuDefinition",
-      //     },
-      //   },
-      //   testValueObject: {
-      //     menuType: "complexMenu",
-      //     definition: [
-      //       {
-      //         title: "Miroir",
-      //         label: "miroir",
-      //         items: [
-      //           {
-      //             label: "Miroir Entities",
-      //             section: "model",
-      //             selfApplication: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
-      //             reportUuid: "c9ea3359-690c-4620-9603-b5b402e4a2b9",
-      //             icon: "category",
-      //           },
-      //           {
-      //             label: "Miroir Entity Definitions",
-      //             section: "model",
-      //             selfApplication: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
-      //             reportUuid: "f9aff35d-8636-4519-8361-c7648e0ddc68",
-      //             icon: "category",
-      //           },
-      //           {
-      //             label: "Miroir Reports",
-      //             section: "data",
-      //             selfApplication: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
-      //             reportUuid: "1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855",
-      //             icon: "list",
-      //           },
-      //           {
-      //             label: "Miroir Menus",
-      //             section: "data",
-      //             selfApplication: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
-      //             reportUuid: "ecfd8787-09cc-417d-8d2c-173633c9f998",
-      //             icon: "list",
-      //           },
-      //         ],
-      //       },
-      //       {
-      //         title: "Library",
-      //         label: "library",
-      //         items: [
-      //           {
-      //             label: "Library Entities",
-      //             section: "model",
-      //             selfApplication: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
-      //             reportUuid: "c9ea3359-690c-4620-9603-b5b402e4a2b9",
-      //             icon: "category",
-      //           },
-      //           {
-      //             label: "Library Entity Definitions",
-      //             section: "model",
-      //             selfApplication: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
-      //             reportUuid: "f9aff35d-8636-4519-8361-c7648e0ddc68",
-      //             icon: "category",
-      //           },
-      //           {
-      //             label: "Library Tests",
-      //             section: "data",
-      //             selfApplication: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
-      //             reportUuid: "931dd036-dfce-4e47-868e-36dba3654816",
-      //             icon: "category",
-      //           },
-      //           {
-      //             label: "Library Books",
-      //             section: "data",
-      //             selfApplication: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
-      //             reportUuid: "74b010b6-afee-44e7-8590-5f0849e4a5c9",
-      //             icon: "auto_stories",
-      //           },
-      //           {
-      //             label: "Library Authors",
-      //             section: "data",
-      //             selfApplication: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
-      //             reportUuid: "66a09068-52c3-48bc-b8dd-76575bbc8e72",
-      //             icon: "star",
-      //           },
-      //           {
-      //             label: "Library Publishers",
-      //             section: "data",
-      //             selfApplication: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
-      //             reportUuid: "a77aa662-006d-46cd-9176-01f02a1a12dc",
-      //             icon: "account_balance",
-      //           },
-      //         ],
-      //       },
-      //     ],
-      //   },
-      //   expectedResolvedSchema: {
-      //     type: "object",
-      //     definition: {
-      //       menuType: {
-      //         type: "literal",
-      //         definition: "complexMenu",
-      //       },
-      //       definition: {
-      //         type: "tuple",
-      //         definition: [
-      //           {
-      //             type: "object",
-      //             definition: {
-      //               title: {
-      //                 type: "string",
-      //               },
-      //               label: {
-      //                 type: "string",
-      //               },
-      //               items: {
-      //                 type: "tuple",
-      //                 definition: [
-      //                   {
-      //                     type: "object",
-      //                     definition: {
-      //                       label: {
-      //                         type: "string",
-      //                       },
-      //                       section: {
-      //                         type: "literal",
-      //                         definition: "model",
-      //                       },
-      //                       selfApplication: {
-      //                         type: "string",
-      //                         validations: [
-      //                           {
-      //                             type: "uuid",
-      //                           },
-      //                         ],
-      //                         tag: {
-      //                           value: {
-      //                             id: 1,
-      //                             defaultLabel: "Uuid",
-      //                             editable: false,
-      //                           },
-      //                         },
-      //                       },
-      //                       reportUuid: {
-      //                         type: "string",
-      //                         validations: [
-      //                           {
-      //                             type: "uuid",
-      //                           },
-      //                         ],
-      //                         tag: {
-      //                           value: {
-      //                             id: 1,
-      //                             defaultLabel: "Uuid",
-      //                             editable: false,
-      //                           },
-      //                         },
-      //                       },
-      //                       icon: {
-      //                         type: "string",
-      //                         validations: [
-      //                           {
-      //                             type: "uuid",
-      //                           },
-      //                         ],
-      //                       },
-      //                     },
-      //                   },
-      //                   {
-      //                     type: "object",
-      //                     definition: {
-      //                       label: {
-      //                         type: "string",
-      //                       },
-      //                       section: {
-      //                         type: "literal",
-      //                         definition: "model",
-      //                       },
-      //                       selfApplication: {
-      //                         type: "string",
-      //                         validations: [
-      //                           {
-      //                             type: "uuid",
-      //                           },
-      //                         ],
-      //                         tag: {
-      //                           value: {
-      //                             id: 1,
-      //                             defaultLabel: "Uuid",
-      //                             editable: false,
-      //                           },
-      //                         },
-      //                       },
-      //                       reportUuid: {
-      //                         type: "string",
-      //                         validations: [
-      //                           {
-      //                             type: "uuid",
-      //                           },
-      //                         ],
-      //                         tag: {
-      //                           value: {
-      //                             id: 1,
-      //                             defaultLabel: "Uuid",
-      //                             editable: false,
-      //                           },
-      //                         },
-      //                       },
-      //                       icon: {
-      //                         type: "string",
-      //                         validations: [
-      //                           {
-      //                             type: "uuid",
-      //                           },
-      //                         ],
-      //                       },
-      //                     },
-      //                   },
-      //                   {
-      //                     type: "object",
-      //                     definition: {
-      //                       label: {
-      //                         type: "string",
-      //                       },
-      //                       section: {
-      //                         type: "literal",
-      //                         definition: "data",
-      //                       },
-      //                       selfApplication: {
-      //                         type: "string",
-      //                         validations: [
-      //                           {
-      //                             type: "uuid",
-      //                           },
-      //                         ],
-      //                         tag: {
-      //                           value: {
-      //                             id: 1,
-      //                             defaultLabel: "Uuid",
-      //                             editable: false,
-      //                           },
-      //                         },
-      //                       },
-      //                       reportUuid: {
-      //                         type: "string",
-      //                         validations: [
-      //                           {
-      //                             type: "uuid",
-      //                           },
-      //                         ],
-      //                         tag: {
-      //                           value: {
-      //                             id: 1,
-      //                             defaultLabel: "Uuid",
-      //                             editable: false,
-      //                           },
-      //                         },
-      //                       },
-      //                       icon: {
-      //                         type: "string",
-      //                         validations: [
-      //                           {
-      //                             type: "uuid",
-      //                           },
-      //                         ],
-      //                       },
-      //                     },
-      //                   },
-      //                   {
-      //                     type: "object",
-      //                     definition: {
-      //                       label: {
-      //                         type: "string",
-      //                       },
-      //                       section: {
-      //                         type: "literal",
-      //                         definition: "data",
-      //                       },
-      //                       selfApplication: {
-      //                         type: "string",
-      //                         validations: [
-      //                           {
-      //                             type: "uuid",
-      //                           },
-      //                         ],
-      //                         tag: {
-      //                           value: {
-      //                             id: 1,
-      //                             defaultLabel: "Uuid",
-      //                             editable: false,
-      //                           },
-      //                         },
-      //                       },
-      //                       reportUuid: {
-      //                         type: "string",
-      //                         validations: [
-      //                           {
-      //                             type: "uuid",
-      //                           },
-      //                         ],
-      //                         tag: {
-      //                           value: {
-      //                             id: 1,
-      //                             defaultLabel: "Uuid",
-      //                             editable: false,
-      //                           },
-      //                         },
-      //                       },
-      //                       icon: {
-      //                         type: "string",
-      //                         validations: [
-      //                           {
-      //                             type: "uuid",
-      //                           },
-      //                         ],
-      //                       },
-      //                     },
-      //                   },
-      //                 ],
-      //               },
-      //             },
-      //           },
-      //           {
-      //             type: "object",
-      //             definition: {
-      //               title: {
-      //                 type: "string",
-      //               },
-      //               label: {
-      //                 type: "string",
-      //               },
-      //               items: {
-      //                 type: "tuple",
-      //                 definition: [
-      //                   {
-      //                     type: "object",
-      //                     definition: {
-      //                       label: {
-      //                         type: "string",
-      //                       },
-      //                       section: {
-      //                         type: "literal",
-      //                         definition: "model",
-      //                       },
-      //                       selfApplication: {
-      //                         type: "string",
-      //                         validations: [
-      //                           {
-      //                             type: "uuid",
-      //                           },
-      //                         ],
-      //                         tag: {
-      //                           value: {
-      //                             id: 1,
-      //                             defaultLabel: "Uuid",
-      //                             editable: false,
-      //                           },
-      //                         },
-      //                       },
-      //                       reportUuid: {
-      //                         type: "string",
-      //                         validations: [
-      //                           {
-      //                             type: "uuid",
-      //                           },
-      //                         ],
-      //                         tag: {
-      //                           value: {
-      //                             id: 1,
-      //                             defaultLabel: "Uuid",
-      //                             editable: false,
-      //                           },
-      //                         },
-      //                       },
-      //                       icon: {
-      //                         type: "string",
-      //                         validations: [
-      //                           {
-      //                             type: "uuid",
-      //                           },
-      //                         ],
-      //                       },
-      //                     },
-      //                   },
-      //                   {
-      //                     type: "object",
-      //                     definition: {
-      //                       label: {
-      //                         type: "string",
-      //                       },
-      //                       section: {
-      //                         type: "literal",
-      //                         definition: "model",
-      //                       },
-      //                       selfApplication: {
-      //                         type: "string",
-      //                         validations: [
-      //                           {
-      //                             type: "uuid",
-      //                           },
-      //                         ],
-      //                         tag: {
-      //                           value: {
-      //                             id: 1,
-      //                             defaultLabel: "Uuid",
-      //                             editable: false,
-      //                           },
-      //                         },
-      //                       },
-      //                       reportUuid: {
-      //                         type: "string",
-      //                         validations: [
-      //                           {
-      //                             type: "uuid",
-      //                           },
-      //                         ],
-      //                         tag: {
-      //                           value: {
-      //                             id: 1,
-      //                             defaultLabel: "Uuid",
-      //                             editable: false,
-      //                           },
-      //                         },
-      //                       },
-      //                       icon: {
-      //                         type: "string",
-      //                         validations: [
-      //                           {
-      //                             type: "uuid",
-      //                           },
-      //                         ],
-      //                       },
-      //                     },
-      //                   },
-      //                   {
-      //                     type: "object",
-      //                     definition: {
-      //                       label: {
-      //                         type: "string",
-      //                       },
-      //                       section: {
-      //                         type: "literal",
-      //                         definition: "data",
-      //                       },
-      //                       selfApplication: {
-      //                         type: "string",
-      //                         validations: [
-      //                           {
-      //                             type: "uuid",
-      //                           },
-      //                         ],
-      //                         tag: {
-      //                           value: {
-      //                             id: 1,
-      //                             defaultLabel: "Uuid",
-      //                             editable: false,
-      //                           },
-      //                         },
-      //                       },
-      //                       reportUuid: {
-      //                         type: "string",
-      //                         validations: [
-      //                           {
-      //                             type: "uuid",
-      //                           },
-      //                         ],
-      //                         tag: {
-      //                           value: {
-      //                             id: 1,
-      //                             defaultLabel: "Uuid",
-      //                             editable: false,
-      //                           },
-      //                         },
-      //                       },
-      //                       icon: {
-      //                         type: "string",
-      //                         validations: [
-      //                           {
-      //                             type: "uuid",
-      //                           },
-      //                         ],
-      //                       },
-      //                     },
-      //                   },
-      //                   {
-      //                     type: "object",
-      //                     definition: {
-      //                       label: {
-      //                         type: "string",
-      //                       },
-      //                       section: {
-      //                         type: "literal",
-      //                         definition: "data",
-      //                       },
-      //                       selfApplication: {
-      //                         type: "string",
-      //                         validations: [
-      //                           {
-      //                             type: "uuid",
-      //                           },
-      //                         ],
-      //                         tag: {
-      //                           value: {
-      //                             id: 1,
-      //                             defaultLabel: "Uuid",
-      //                             editable: false,
-      //                           },
-      //                         },
-      //                       },
-      //                       reportUuid: {
-      //                         type: "string",
-      //                         validations: [
-      //                           {
-      //                             type: "uuid",
-      //                           },
-      //                         ],
-      //                         tag: {
-      //                           value: {
-      //                             id: 1,
-      //                             defaultLabel: "Uuid",
-      //                             editable: false,
-      //                           },
-      //                         },
-      //                       },
-      //                       icon: {
-      //                         type: "string",
-      //                         validations: [
-      //                           {
-      //                             type: "uuid",
-      //                           },
-      //                         ],
-      //                       },
-      //                     },
-      //                   },
-      //                   {
-      //                     type: "object",
-      //                     definition: {
-      //                       label: {
-      //                         type: "string",
-      //                       },
-      //                       section: {
-      //                         type: "literal",
-      //                         definition: "data",
-      //                       },
-      //                       selfApplication: {
-      //                         type: "string",
-      //                         validations: [
-      //                           {
-      //                             type: "uuid",
-      //                           },
-      //                         ],
-      //                         tag: {
-      //                           value: {
-      //                             id: 1,
-      //                             defaultLabel: "Uuid",
-      //                             editable: false,
-      //                           },
-      //                         },
-      //                       },
-      //                       reportUuid: {
-      //                         type: "string",
-      //                         validations: [
-      //                           {
-      //                             type: "uuid",
-      //                           },
-      //                         ],
-      //                         tag: {
-      //                           value: {
-      //                             id: 1,
-      //                             defaultLabel: "Uuid",
-      //                             editable: false,
-      //                           },
-      //                         },
-      //                       },
-      //                       icon: {
-      //                         type: "string",
-      //                         validations: [
-      //                           {
-      //                             type: "uuid",
-      //                           },
-      //                         ],
-      //                       },
-      //                     },
-      //                   },
-      //                   {
-      //                     type: "object",
-      //                     definition: {
-      //                       label: {
-      //                         type: "string",
-      //                       },
-      //                       section: {
-      //                         type: "literal",
-      //                         definition: "data",
-      //                       },
-      //                       selfApplication: {
-      //                         type: "string",
-      //                         validations: [
-      //                           {
-      //                             type: "uuid",
-      //                           },
-      //                         ],
-      //                         tag: {
-      //                           value: {
-      //                             id: 1,
-      //                             defaultLabel: "Uuid",
-      //                             editable: false,
-      //                           },
-      //                         },
-      //                       },
-      //                       reportUuid: {
-      //                         type: "string",
-      //                         validations: [
-      //                           {
-      //                             type: "uuid",
-      //                           },
-      //                         ],
-      //                         tag: {
-      //                           value: {
-      //                             id: 1,
-      //                             defaultLabel: "Uuid",
-      //                             editable: false,
-      //                           },
-      //                         },
-      //                       },
-      //                       icon: {
-      //                         type: "string",
-      //                         validations: [
-      //                           {
-      //                             type: "uuid",
-      //                           },
-      //                         ],
-      //                       },
-      //                     },
-      //                   },
-      //                 ],
-      //               },
-      //             },
-      //           },
-      //         ],
-      //       },
-      //     },
-      //   },
-      // },
-    };
+    },
+    // ##########################################################################################
+    test830: {
+      testSchema: entityDefinitionTest.jzodSchema as JzodElement,
+      testValueObject: test_createEntityAndReportFromSpreadsheetAndUpdateMenu,
+      expectedResolvedSchema: {
+        type: "object",
+        definition: {
+          uuid: {
+            type: "string",
+            validations: [
+              {
+                type: "uuid",
+              },
+            ],
+            tag: {
+              value: {
+                id: 1,
+                defaultLabel: "Uuid",
+                editable: false,
+              },
+            },
+          },
+          parentName: {
+            type: "string",
+            optional: true,
+            tag: {
+              value: {
+                id: 1,
+                defaultLabel: "Uuid",
+                editable: false,
+              },
+            },
+          },
+          parentUuid: {
+            type: "string",
+            validations: [
+              {
+                type: "uuid",
+              },
+            ],
+            tag: {
+              value: {
+                id: 1,
+                defaultLabel: "parentUuid",
+                editable: false,
+              },
+            },
+          },
+          name: {
+            type: "string",
+            optional: true,
+            tag: {
+              value: {
+                id: 1,
+                defaultLabel: "Name",
+                editable: true,
+              },
+            },
+          },
+          selfApplication: {
+            type: "uuid",
+            tag: {
+              value: {
+                id: 9,
+                defaultLabel: "SelfApplication",
+                targetEntity: "a659d350-dd97-4da9-91de-524fa01745dc",
+                editable: false,
+              },
+            },
+          },
+          branch: {
+            type: "uuid",
+            tag: {
+              value: {
+                id: 10,
+                defaultLabel: "Branch",
+                description: "The Branch of the SelfApplication",
+                editable: false,
+              },
+            },
+          },
+          description: {
+            type: "string",
+            optional: true,
+            tag: {
+              value: {
+                id: 1,
+                defaultLabel: "Name",
+                editable: true,
+              },
+            },
+          },
+          definition: {
+            type: "object",
+            definition: {
+              testCompositeActions: {
+                type: "object",
+                optional: true,
+                definition: {
+                  "create new Entity and reports from spreadsheet": {
+                    type: "object",
+                    definition: {
+                      testType: {
+                        type: "literal",
+                        definition: "testBuildPlusRuntimeCompositeAction",
+                      },
+                      testLabel: {
+                        type: "string",
+                      },
+                      compositeAction: {
+                        type: "object",
+                        definition: {
+                          actionType: {
+                            type: "literal",
+                            definition: "compositeAction",
+                          },
+                          actionLabel: {
+                            type: "string",
+                            optional: true,
+                          },
+                          actionName: {
+                            type: "literal",
+                            definition: "sequence",
+                          },
+                          templates: {
+                            type: "object",
+                            optional: true,
+                            definition: {},
+                          },
+                          definition: {
+                            type: "tuple",
+                            definition: [
+                              {
+                                type: "object",
+                                definition: {
+                                  actionType: {
+                                    type: "literal",
+                                    definition: "commit",
+                                  },
+                                  actionLabel: {
+                                    type: "string",
+                                    optional: true,
+                                  },
+                                  endpoint: {
+                                    type: "literal",
+                                    definition: "7947ae40-eb34-4149-887b-15a9021e714e",
+                                  },
+                                  deploymentUuid: {
+                                    type: "object",
+                                    definition: {
+                                      transformerType: {
+                                        type: "literal",
+                                        definition: "parameterReference",
+                                      },
+                                      interpolation: {
+                                        type: "literal",
+                                        optional: true,
+                                        definition: "build",
+                                      },
+                                      referenceName: {
+                                        optional: true,
+                                        type: "string",
+                                      },
+                                    },
+                                  },
+                                },
+                              },
+                            ],
+                          },
+                        },
+                      },
+                      testCompositeActionAssertions: {
+                        type: "tuple",
+                        definition: [],
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      expectedKeyMap: {
+        uuid: {
+          rawSchema: {
+            type: "string",
+            validations: [
+              {
+                type: "uuid",
+              },
+            ],
+            tag: {
+              value: {
+                id: 1,
+                defaultLabel: "Uuid",
+                editable: false,
+              },
+            },
+          },
+          resolvedSchema: {
+            type: "string",
+          },
+        },
+        parentName: {
+          rawSchema: {
+            type: "string",
+            optional: true,
+            tag: {
+              value: {
+                id: 1,
+                defaultLabel: "Uuid",
+                editable: false,
+              },
+            },
+          },
+          resolvedSchema: {
+            type: "string",
+          },
+        },
+        parentUuid: {
+          rawSchema: {
+            type: "string",
+            validations: [
+              {
+                type: "uuid",
+              },
+            ],
+            tag: {
+              value: {
+                id: 1,
+                defaultLabel: "parentUuid",
+                editable: false,
+              },
+            },
+          },
+          resolvedSchema: {
+            type: "string",
+          },
+        },
+        name: {
+          rawSchema: {
+            type: "string",
+            optional: true,
+            tag: {
+              value: {
+                id: 1,
+                defaultLabel: "Name",
+                editable: true,
+              },
+            },
+          },
+          resolvedSchema: {
+            type: "string",
+          },
+        },
+        description: {
+          rawSchema: {
+            type: "string",
+            optional: true,
+            tag: {
+              value: {
+                id: 1,
+                defaultLabel: "Name",
+                editable: true,
+              },
+            },
+          },
+          resolvedSchema: {
+            type: "string",
+          },
+        },
+        "definition.testCompositeActions.create new Entity and reports from spreadsheet.testType": {
+          rawSchema: {
+            type: "literal",
+            definition: "testBuildPlusRuntimeCompositeAction",
+          },
+          resolvedSchema: {
+            type: "literal",
+            definition: "testBuildPlusRuntimeCompositeAction",
+          },
+        },
+        "definition.testCompositeActions.create new Entity and reports from spreadsheet.testLabel":
+          {
+            rawSchema: {
+              type: "string",
+            },
+            resolvedSchema: {
+              type: "string",
+            },
+          },
+        "definition.testCompositeActions.create new Entity and reports from spreadsheet.compositeAction.actionType":
+          {
+            rawSchema: {
+              type: "literal",
+              definition: "compositeAction",
+            },
+            resolvedSchema: {
+              type: "literal",
+              definition: "compositeAction",
+            },
+          },
+        "definition.testCompositeActions.create new Entity and reports from spreadsheet.compositeAction.actionLabel":
+          {
+            rawSchema: {
+              type: "string",
+              optional: true,
+            },
+            resolvedSchema: {
+              type: "string",
+            },
+          },
+        "definition.testCompositeActions.create new Entity and reports from spreadsheet.compositeAction.actionName":
+          {
+            rawSchema: {
+              type: "literal",
+              definition: "sequence",
+            },
+            resolvedSchema: {
+              type: "literal",
+              definition: "sequence",
+            },
+          },
+        "definition.testCompositeActions.create new Entity and reports from spreadsheet.compositeAction.templates":
+          {
+            rawSchema: {
+              type: "record",
+              optional: true,
+              definition: {
+                type: "any",
+              },
+            },
+            resolvedSchema: {
+              type: "object",
+              optional: true,
+              definition: {},
+            },
+          },
+        "definition.testCompositeActions.create new Entity and reports from spreadsheet.compositeAction.definition.0.actionType":
+          {
+            rawSchema: {
+              type: "literal",
+              definition: "commit",
+            },
+            resolvedSchema: {
+              type: "literal",
+              definition: "commit",
+            },
+          },
+        "definition.testCompositeActions.create new Entity and reports from spreadsheet.compositeAction.definition.0.actionLabel":
+          {
+            rawSchema: {
+              type: "string",
+              optional: true,
+            },
+            resolvedSchema: {
+              type: "string",
+            },
+          },
+        "definition.testCompositeActions.create new Entity and reports from spreadsheet.compositeAction.definition.0.endpoint":
+          {
+            rawSchema: {
+              type: "literal",
+              definition: "7947ae40-eb34-4149-887b-15a9021e714e",
+            },
+            resolvedSchema: {
+              type: "literal",
+              definition: "7947ae40-eb34-4149-887b-15a9021e714e",
+            },
+          },
+        "definition.testCompositeActions.create new Entity and reports from spreadsheet.compositeAction.definition.0.deploymentUuid.transformerType":
+          {
+            rawSchema: {
+              type: "literal",
+              definition: "parameterReference",
+            },
+            resolvedSchema: {
+              type: "literal",
+              definition: "parameterReference",
+            },
+          },
+        "definition.testCompositeActions.create new Entity and reports from spreadsheet.compositeAction.definition.0.deploymentUuid.interpolation":
+          {
+            rawSchema: {
+              type: "literal",
+              optional: true,
+              definition: "build",
+            },
+            resolvedSchema: {
+              type: "literal",
+              optional: true,
+              definition: "build",
+            },
+          },
+        "definition.testCompositeActions.create new Entity and reports from spreadsheet.compositeAction.definition.0.deploymentUuid.referenceName":
+          {
+            rawSchema: {
+              optional: true,
+              type: "string",
+            },
+            resolvedSchema: {
+              type: "string",
+            },
+          },
+        "definition.testCompositeActions.create new Entity and reports from spreadsheet.compositeAction.definition.0.deploymentUuid":
+          {
+            rawSchema: {
+              type: "union",
+              tag: {
+                value: {
+                  id: 1,
+                  canBeTemplate: true,
+                  defaultLabel: "Deployment",
+                  editable: false,
+                },
+              },
+              discriminator: ["transformerType", "interpolation"],
+              definition: [
+                {
+                  type: "uuid",
+                  tag: {
+                    value: {
+                      id: 1,
+                      canBeTemplate: true,
+                      defaultLabel: "Deployment",
+                      editable: false,
+                    },
+                  },
+                },
+                {
+                  type: "schemaReference",
+                  definition: {
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    relativePath: "transformerForBuildPlusRuntimeCarryOnObject",
+                  },
+                },
+              ],
+            },
+            chosenUnionBranchRawSchema: {
+              type: "object",
+              definition: {
+                interpolation: {
+                  type: "literal",
+                  optional: true,
+                  definition: "build",
+                },
+                transformerType: {
+                  type: "literal",
+                  definition: "parameterReference",
+                },
+                referenceName: {
+                  optional: true,
+                  type: "string",
+                },
+                referencePath: {
+                  optional: true,
+                  type: "array",
+                  definition: {
+                    type: "string",
+                  },
+                },
+              },
+            },
+            resolvedSchema: {
+              type: "object",
+              definition: {
+                transformerType: {
+                  type: "literal",
+                  definition: "parameterReference",
+                },
+                interpolation: {
+                  type: "literal",
+                  optional: true,
+                  definition: "build",
+                },
+                referenceName: {
+                  optional: true,
+                  type: "string",
+                },
+              },
+            },
+          },
+        "definition.testCompositeActions.create new Entity and reports from spreadsheet.compositeAction.definition.0":
+          {
+            rawSchema: {
+              type: "union",
+              discriminator: "actionType",
+              definition: [
+                {
+                  type: "schemaReference",
+                  definition: {
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    relativePath:
+                      "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction",
+                  },
+                },
+                {
+                  type: "schemaReference",
+                  definition: {
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    relativePath:
+                      "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction",
+                  },
+                },
+                {
+                  type: "object",
+                  definition: {
+                    actionType: {
+                      type: "literal",
+                      definition: "compositeRunBoxedQueryAction",
+                    },
+                    actionLabel: {
+                      type: "string",
+                      optional: true,
+                    },
+                    nameGivenToResult: {
+                      type: "string",
+                    },
+                    queryTemplate: {
+                      type: "schemaReference",
+                      definition: {
+                        absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        relativePath:
+                          "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedQueryAction",
+                      },
+                    },
+                  },
+                },
+                {
+                  type: "object",
+                  definition: {
+                    actionType: {
+                      type: "literal",
+                      definition: "compositeRunBoxedExtractorAction",
+                    },
+                    actionLabel: {
+                      type: "string",
+                      optional: true,
+                    },
+                    nameGivenToResult: {
+                      type: "string",
+                    },
+                    queryTemplate: {
+                      type: "schemaReference",
+                      definition: {
+                        absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        relativePath:
+                          "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorAction",
+                      },
+                    },
+                  },
+                },
+                {
+                  type: "object",
+                  definition: {
+                    actionType: {
+                      type: "literal",
+                      definition: "compositeRunBoxedExtractorOrQueryAction",
+                    },
+                    actionLabel: {
+                      type: "string",
+                      optional: true,
+                    },
+                    nameGivenToResult: {
+                      type: "string",
+                    },
+                    query: {
+                      type: "schemaReference",
+                      definition: {
+                        absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        relativePath:
+                          "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorOrQueryAction",
+                      },
+                    },
+                  },
+                },
+                {
+                  type: "object",
+                  definition: {
+                    actionType: {
+                      type: "literal",
+                      definition: "compositeRunTestAssertion",
+                    },
+                    actionLabel: {
+                      type: "string",
+                      optional: true,
+                    },
+                    nameGivenToResult: {
+                      type: "string",
+                    },
+                    testAssertion: {
+                      type: "schemaReference",
+                      definition: {
+                        absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        relativePath:
+                          "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testAssertion",
+                      },
+                    },
+                  },
+                },
+              ],
+            },
+            chosenUnionBranchRawSchema: {
+              type: "object",
+              definition: {
+                actionType: {
+                  type: "literal",
+                  definition: "commit",
+                },
+                actionLabel: {
+                  type: "string",
+                  optional: true,
+                },
+                endpoint: {
+                  type: "literal",
+                  definition: "7947ae40-eb34-4149-887b-15a9021e714e",
+                },
+                deploymentUuid: {
+                  type: "union",
+                  tag: {
+                    value: {
+                      id: 1,
+                      canBeTemplate: true,
+                      defaultLabel: "Deployment",
+                      editable: false,
+                    },
+                  },
+                  discriminator: ["transformerType", "interpolation"],
+                  definition: [
+                    {
+                      type: "uuid",
+                      tag: {
+                        value: {
+                          id: 1,
+                          canBeTemplate: true,
+                          defaultLabel: "Deployment",
+                          editable: false,
+                        },
+                      },
+                    },
+                    {
+                      type: "schemaReference",
+                      definition: {
+                        absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        relativePath: "transformerForBuildPlusRuntimeCarryOnObject",
+                      },
+                    },
+                  ],
+                },
+              },
+            },
+            resolvedSchema: {
+              type: "object",
+              definition: {
+                actionType: {
+                  type: "literal",
+                  definition: "commit",
+                },
+                actionLabel: {
+                  type: "string",
+                  optional: true,
+                },
+                endpoint: {
+                  type: "literal",
+                  definition: "7947ae40-eb34-4149-887b-15a9021e714e",
+                },
+                deploymentUuid: {
+                  type: "object",
+                  definition: {
+                    transformerType: {
+                      type: "literal",
+                      definition: "parameterReference",
+                    },
+                    interpolation: {
+                      type: "literal",
+                      optional: true,
+                      definition: "build",
+                    },
+                    referenceName: {
+                      optional: true,
+                      type: "string",
+                    },
+                  },
+                },
+              },
+            },
+          },
+        "definition.testCompositeActions.create new Entity and reports from spreadsheet.compositeAction.definition":
+          {
+            rawSchema: {
+              type: "array",
+              definition: {
+                type: "union",
+                discriminator: "actionType",
+                definition: [
+                  {
+                    type: "schemaReference",
+                    definition: {
+                      absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      relativePath:
+                        "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction",
+                    },
+                  },
+                  {
+                    type: "schemaReference",
+                    definition: {
+                      absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      relativePath:
+                        "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction",
+                    },
+                  },
+                  {
+                    type: "object",
+                    definition: {
+                      actionType: {
+                        type: "literal",
+                        definition: "compositeRunBoxedQueryAction",
+                      },
+                      actionLabel: {
+                        type: "string",
+                        optional: true,
+                      },
+                      nameGivenToResult: {
+                        type: "string",
+                      },
+                      queryTemplate: {
+                        type: "schemaReference",
+                        definition: {
+                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          relativePath:
+                            "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedQueryAction",
+                        },
+                      },
+                    },
+                  },
+                  {
+                    type: "object",
+                    definition: {
+                      actionType: {
+                        type: "literal",
+                        definition: "compositeRunBoxedExtractorAction",
+                      },
+                      actionLabel: {
+                        type: "string",
+                        optional: true,
+                      },
+                      nameGivenToResult: {
+                        type: "string",
+                      },
+                      queryTemplate: {
+                        type: "schemaReference",
+                        definition: {
+                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          relativePath:
+                            "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorAction",
+                        },
+                      },
+                    },
+                  },
+                  {
+                    type: "object",
+                    definition: {
+                      actionType: {
+                        type: "literal",
+                        definition: "compositeRunBoxedExtractorOrQueryAction",
+                      },
+                      actionLabel: {
+                        type: "string",
+                        optional: true,
+                      },
+                      nameGivenToResult: {
+                        type: "string",
+                      },
+                      query: {
+                        type: "schemaReference",
+                        definition: {
+                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          relativePath:
+                            "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedExtractorOrQueryAction",
+                        },
+                      },
+                    },
+                  },
+                  {
+                    type: "object",
+                    definition: {
+                      actionType: {
+                        type: "literal",
+                        definition: "compositeRunTestAssertion",
+                      },
+                      actionLabel: {
+                        type: "string",
+                        optional: true,
+                      },
+                      nameGivenToResult: {
+                        type: "string",
+                      },
+                      testAssertion: {
+                        type: "schemaReference",
+                        definition: {
+                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          relativePath:
+                            "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testAssertion",
+                        },
+                      },
+                    },
+                  },
+                ],
+              },
+            },
+            resolvedSchema: {
+              type: "tuple",
+              definition: [
+                {
+                  type: "object",
+                  definition: {
+                    actionType: {
+                      type: "literal",
+                      definition: "commit",
+                    },
+                    actionLabel: {
+                      type: "string",
+                      optional: true,
+                    },
+                    endpoint: {
+                      type: "literal",
+                      definition: "7947ae40-eb34-4149-887b-15a9021e714e",
+                    },
+                    deploymentUuid: {
+                      type: "object",
+                      definition: {
+                        transformerType: {
+                          type: "literal",
+                          definition: "parameterReference",
+                        },
+                        interpolation: {
+                          type: "literal",
+                          optional: true,
+                          definition: "build",
+                        },
+                        referenceName: {
+                          optional: true,
+                          type: "string",
+                        },
+                      },
+                    },
+                  },
+                },
+              ],
+            },
+          },
+        "definition.testCompositeActions.create new Entity and reports from spreadsheet.compositeAction":
+          {
+            rawSchema: {
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "buildPlusRuntimeCompositeAction",
+              },
+            },
+            resolvedSchema: {
+              type: "object",
+              definition: {
+                actionType: {
+                  type: "literal",
+                  definition: "compositeAction",
+                },
+                actionLabel: {
+                  type: "string",
+                  optional: true,
+                },
+                actionName: {
+                  type: "literal",
+                  definition: "sequence",
+                },
+                templates: {
+                  type: "object",
+                  optional: true,
+                  definition: {},
+                },
+                definition: {
+                  type: "tuple",
+                  definition: [
+                    {
+                      type: "object",
+                      definition: {
+                        actionType: {
+                          type: "literal",
+                          definition: "commit",
+                        },
+                        actionLabel: {
+                          type: "string",
+                          optional: true,
+                        },
+                        endpoint: {
+                          type: "literal",
+                          definition: "7947ae40-eb34-4149-887b-15a9021e714e",
+                        },
+                        deploymentUuid: {
+                          type: "object",
+                          definition: {
+                            transformerType: {
+                              type: "literal",
+                              definition: "parameterReference",
+                            },
+                            interpolation: {
+                              type: "literal",
+                              optional: true,
+                              definition: "build",
+                            },
+                            referenceName: {
+                              optional: true,
+                              type: "string",
+                            },
+                          },
+                        },
+                      },
+                    },
+                  ],
+                },
+              },
+            },
+          },
+        "definition.testCompositeActions.create new Entity and reports from spreadsheet.testCompositeActionAssertions":
+          {
+            rawSchema: {
+              type: "array",
+              definition: {
+                type: "schemaReference",
+                definition: {
+                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  relativePath: "compositeRunTestAssertion",
+                },
+              },
+            },
+            resolvedSchema: {
+              type: "tuple",
+              definition: [],
+            },
+          },
+        "definition.testCompositeActions.create new Entity and reports from spreadsheet": {
+          rawSchema: {
+            type: "schemaReference",
+            definition: {
+              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              relativePath: "testBuildPlusRuntimeCompositeAction",
+            },
+          },
+          resolvedSchema: {
+            type: "object",
+            definition: {
+              testType: {
+                type: "literal",
+                definition: "testBuildPlusRuntimeCompositeAction",
+              },
+              testLabel: {
+                type: "string",
+              },
+              compositeAction: {
+                type: "object",
+                definition: {
+                  actionType: {
+                    type: "literal",
+                    definition: "compositeAction",
+                  },
+                  actionLabel: {
+                    type: "string",
+                    optional: true,
+                  },
+                  actionName: {
+                    type: "literal",
+                    definition: "sequence",
+                  },
+                  templates: {
+                    type: "object",
+                    optional: true,
+                    definition: {},
+                  },
+                  definition: {
+                    type: "tuple",
+                    definition: [
+                      {
+                        type: "object",
+                        definition: {
+                          actionType: {
+                            type: "literal",
+                            definition: "commit",
+                          },
+                          actionLabel: {
+                            type: "string",
+                            optional: true,
+                          },
+                          endpoint: {
+                            type: "literal",
+                            definition: "7947ae40-eb34-4149-887b-15a9021e714e",
+                          },
+                          deploymentUuid: {
+                            type: "object",
+                            definition: {
+                              transformerType: {
+                                type: "literal",
+                                definition: "parameterReference",
+                              },
+                              interpolation: {
+                                type: "literal",
+                                optional: true,
+                                definition: "build",
+                              },
+                              referenceName: {
+                                optional: true,
+                                type: "string",
+                              },
+                            },
+                          },
+                        },
+                      },
+                    ],
+                  },
+                },
+              },
+              testCompositeActionAssertions: {
+                type: "tuple",
+                definition: [],
+              },
+            },
+          },
+        },
+        "definition.testCompositeActions": {
+          rawSchema: {
+            type: "record",
+            optional: true,
+            definition: {
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "testBuildPlusRuntimeCompositeAction",
+              },
+            },
+          },
+          resolvedSchema: {
+            type: "object",
+            optional: true,
+            definition: {
+              "create new Entity and reports from spreadsheet": {
+                type: "object",
+                definition: {
+                  testType: {
+                    type: "literal",
+                    definition: "testBuildPlusRuntimeCompositeAction",
+                  },
+                  testLabel: {
+                    type: "string",
+                  },
+                  compositeAction: {
+                    type: "object",
+                    definition: {
+                      actionType: {
+                        type: "literal",
+                        definition: "compositeAction",
+                      },
+                      actionLabel: {
+                        type: "string",
+                        optional: true,
+                      },
+                      actionName: {
+                        type: "literal",
+                        definition: "sequence",
+                      },
+                      templates: {
+                        type: "object",
+                        optional: true,
+                        definition: {},
+                      },
+                      definition: {
+                        type: "tuple",
+                        definition: [
+                          {
+                            type: "object",
+                            definition: {
+                              actionType: {
+                                type: "literal",
+                                definition: "commit",
+                              },
+                              actionLabel: {
+                                type: "string",
+                                optional: true,
+                              },
+                              endpoint: {
+                                type: "literal",
+                                definition: "7947ae40-eb34-4149-887b-15a9021e714e",
+                              },
+                              deploymentUuid: {
+                                type: "object",
+                                definition: {
+                                  transformerType: {
+                                    type: "literal",
+                                    definition: "parameterReference",
+                                  },
+                                  interpolation: {
+                                    type: "literal",
+                                    optional: true,
+                                    definition: "build",
+                                  },
+                                  referenceName: {
+                                    optional: true,
+                                    type: "string",
+                                  },
+                                },
+                              },
+                            },
+                          },
+                        ],
+                      },
+                    },
+                  },
+                  testCompositeActionAssertions: {
+                    type: "tuple",
+                    definition: [],
+                  },
+                },
+              },
+            },
+          },
+        },
+        definition: {
+          rawSchema: {
+            type: "object",
+            definition: {
+              testCompositeActions: {
+                type: "record",
+                optional: true,
+                definition: {
+                  type: "schemaReference",
+                  definition: {
+                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    relativePath: "testBuildPlusRuntimeCompositeAction",
+                  },
+                },
+              },
+              fullTestDefinition: {
+                type: "union",
+                optional: true,
+                discriminator: "testType",
+                definition: [
+                  {
+                    type: "object",
+                    definition: {
+                      testType: {
+                        type: "literal",
+                        definition: "testCompositeAction",
+                      },
+                      testLabel: {
+                        type: "string",
+                      },
+                      beforeTestSetupAction: {
+                        type: "schemaReference",
+                        optional: true,
+                        definition: {
+                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          relativePath: "compositeAction",
+                        },
+                      },
+                      afterTestCleanupAction: {
+                        type: "schemaReference",
+                        optional: true,
+                        definition: {
+                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          relativePath: "compositeAction",
+                        },
+                      },
+                      compositeAction: {
+                        type: "schemaReference",
+                        definition: {
+                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          relativePath: "compositeAction",
+                        },
+                      },
+                      testCompositeActionAssertions: {
+                        type: "array",
+                        definition: {
+                          type: "schemaReference",
+                          definition: {
+                            absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            relativePath: "compositeRunTestAssertion",
+                          },
+                        },
+                      },
+                    },
+                  },
+                  {
+                    type: "object",
+                    definition: {
+                      testType: {
+                        type: "literal",
+                        definition: "testCompositeActionSuite",
+                      },
+                      testLabel: {
+                        type: "string",
+                      },
+                      beforeAll: {
+                        type: "schemaReference",
+                        optional: true,
+                        definition: {
+                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          relativePath: "compositeAction",
+                        },
+                      },
+                      beforeEach: {
+                        type: "schemaReference",
+                        optional: true,
+                        definition: {
+                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          relativePath: "compositeAction",
+                        },
+                      },
+                      afterEach: {
+                        type: "schemaReference",
+                        optional: true,
+                        definition: {
+                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          relativePath: "compositeAction",
+                        },
+                      },
+                      afterAll: {
+                        type: "schemaReference",
+                        optional: true,
+                        definition: {
+                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          relativePath: "compositeAction",
+                        },
+                      },
+                      testCompositeActions: {
+                        type: "record",
+                        definition: {
+                          type: "schemaReference",
+                          definition: {
+                            absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            relativePath: "testCompositeAction",
+                          },
+                        },
+                      },
+                    },
+                  },
+                  {
+                    type: "object",
+                    definition: {
+                      testType: {
+                        type: "literal",
+                        definition: "testBuildCompositeAction",
+                      },
+                      testLabel: {
+                        type: "string",
+                      },
+                      beforeTestSetupAction: {
+                        type: "schemaReference",
+                        optional: true,
+                        definition: {
+                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          relativePath: "compositeAction",
+                        },
+                      },
+                      afterTestCleanupAction: {
+                        type: "schemaReference",
+                        optional: true,
+                        definition: {
+                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          relativePath: "compositeAction",
+                        },
+                      },
+                      compositeAction: {
+                        type: "schemaReference",
+                        definition: {
+                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          relativePath: "buildCompositeAction",
+                        },
+                      },
+                      testCompositeActionAssertions: {
+                        type: "array",
+                        definition: {
+                          type: "schemaReference",
+                          definition: {
+                            absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            relativePath: "compositeRunTestAssertion",
+                          },
+                        },
+                      },
+                    },
+                  },
+                  {
+                    type: "object",
+                    definition: {
+                      testType: {
+                        type: "literal",
+                        definition: "testBuildCompositeActionSuite",
+                      },
+                      testLabel: {
+                        type: "string",
+                      },
+                      beforeAll: {
+                        type: "schemaReference",
+                        optional: true,
+                        definition: {
+                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          relativePath: "compositeAction",
+                        },
+                      },
+                      beforeEach: {
+                        type: "schemaReference",
+                        optional: true,
+                        definition: {
+                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          relativePath: "compositeAction",
+                        },
+                      },
+                      afterEach: {
+                        type: "schemaReference",
+                        optional: true,
+                        definition: {
+                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          relativePath: "compositeAction",
+                        },
+                      },
+                      afterAll: {
+                        type: "schemaReference",
+                        optional: true,
+                        definition: {
+                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          relativePath: "compositeAction",
+                        },
+                      },
+                      testCompositeActions: {
+                        type: "record",
+                        definition: {
+                          type: "schemaReference",
+                          definition: {
+                            absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            relativePath: "testBuildCompositeAction",
+                          },
+                        },
+                      },
+                    },
+                  },
+                  {
+                    type: "object",
+                    definition: {
+                      testType: {
+                        type: "literal",
+                        definition: "testRuntimeCompositeAction",
+                      },
+                      testLabel: {
+                        type: "string",
+                      },
+                      beforeTestSetupAction: {
+                        type: "schemaReference",
+                        optional: true,
+                        definition: {
+                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          relativePath: "compositeAction",
+                        },
+                      },
+                      afterTestCleanupAction: {
+                        type: "schemaReference",
+                        optional: true,
+                        definition: {
+                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          relativePath: "compositeAction",
+                        },
+                      },
+                      compositeAction: {
+                        type: "schemaReference",
+                        definition: {
+                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          relativePath: "runtimeCompositeAction",
+                        },
+                      },
+                      testCompositeActionAssertions: {
+                        type: "array",
+                        definition: {
+                          type: "schemaReference",
+                          definition: {
+                            absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            relativePath: "compositeRunTestAssertion",
+                          },
+                        },
+                      },
+                    },
+                  },
+                  {
+                    type: "object",
+                    definition: {
+                      testType: {
+                        type: "literal",
+                        definition: "testRuntimeCompositeActionSuite",
+                      },
+                      testLabel: {
+                        type: "string",
+                      },
+                      beforeAll: {
+                        type: "schemaReference",
+                        optional: true,
+                        definition: {
+                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          relativePath: "compositeAction",
+                        },
+                      },
+                      beforeEach: {
+                        type: "schemaReference",
+                        optional: true,
+                        definition: {
+                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          relativePath: "compositeAction",
+                        },
+                      },
+                      afterEach: {
+                        type: "schemaReference",
+                        optional: true,
+                        definition: {
+                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          relativePath: "compositeAction",
+                        },
+                      },
+                      afterAll: {
+                        type: "schemaReference",
+                        optional: true,
+                        definition: {
+                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          relativePath: "compositeAction",
+                        },
+                      },
+                      testCompositeActions: {
+                        type: "record",
+                        definition: {
+                          type: "schemaReference",
+                          definition: {
+                            absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            relativePath: "testRuntimeCompositeAction",
+                          },
+                        },
+                      },
+                    },
+                  },
+                  {
+                    type: "object",
+                    definition: {
+                      testType: {
+                        type: "literal",
+                        definition: "testBuildPlusRuntimeCompositeAction",
+                      },
+                      testLabel: {
+                        type: "string",
+                      },
+                      testParams: {
+                        type: "record",
+                        optional: true,
+                        definition: {
+                          type: "any",
+                        },
+                      },
+                      beforeTestSetupAction: {
+                        type: "schemaReference",
+                        optional: true,
+                        definition: {
+                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          relativePath: "compositeAction",
+                        },
+                      },
+                      afterTestCleanupAction: {
+                        type: "schemaReference",
+                        optional: true,
+                        definition: {
+                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          relativePath: "compositeAction",
+                        },
+                      },
+                      compositeAction: {
+                        type: "schemaReference",
+                        definition: {
+                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          relativePath: "buildPlusRuntimeCompositeAction",
+                        },
+                      },
+                      testCompositeActionAssertions: {
+                        type: "array",
+                        definition: {
+                          type: "schemaReference",
+                          definition: {
+                            absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            relativePath: "compositeRunTestAssertion",
+                          },
+                        },
+                      },
+                    },
+                  },
+                  {
+                    type: "object",
+                    definition: {
+                      testType: {
+                        type: "literal",
+                        definition: "testBuildPlusRuntimeCompositeActionSuite",
+                      },
+                      testLabel: {
+                        type: "string",
+                      },
+                      testParams: {
+                        type: "record",
+                        optional: true,
+                        definition: {
+                          type: "any",
+                        },
+                      },
+                      beforeAll: {
+                        type: "schemaReference",
+                        optional: true,
+                        definition: {
+                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          relativePath: "compositeAction",
+                        },
+                      },
+                      beforeEach: {
+                        type: "schemaReference",
+                        optional: true,
+                        definition: {
+                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          relativePath: "compositeAction",
+                        },
+                      },
+                      afterEach: {
+                        type: "schemaReference",
+                        optional: true,
+                        definition: {
+                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          relativePath: "compositeAction",
+                        },
+                      },
+                      afterAll: {
+                        type: "schemaReference",
+                        optional: true,
+                        definition: {
+                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          relativePath: "compositeAction",
+                        },
+                      },
+                      testCompositeActions: {
+                        type: "record",
+                        definition: {
+                          type: "schemaReference",
+                          definition: {
+                            absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            relativePath: "testBuildPlusRuntimeCompositeAction",
+                          },
+                        },
+                      },
+                    },
+                  },
+                  {
+                    type: "object",
+                    definition: {
+                      testType: {
+                        type: "literal",
+                        definition: "testCompositeActionTemplate",
+                      },
+                      testLabel: {
+                        type: "string",
+                      },
+                      beforeTestSetupAction: {
+                        type: "schemaReference",
+                        optional: true,
+                        definition: {
+                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          relativePath: "compositeActionTemplate",
+                        },
+                      },
+                      afterTestCleanupAction: {
+                        type: "schemaReference",
+                        optional: true,
+                        definition: {
+                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          relativePath: "compositeActionTemplate",
+                        },
+                      },
+                      compositeActionTemplate: {
+                        type: "schemaReference",
+                        definition: {
+                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          relativePath: "compositeActionTemplate",
+                        },
+                      },
+                      testCompositeActionAssertions: {
+                        type: "array",
+                        definition: {
+                          type: "schemaReference",
+                          definition: {
+                            absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            relativePath: "compositeRunTestAssertion",
+                          },
+                        },
+                      },
+                    },
+                  },
+                  {
+                    type: "object",
+                    definition: {
+                      testType: {
+                        type: "literal",
+                        definition: "testCompositeActionTemplateSuite",
+                      },
+                      testLabel: {
+                        type: "string",
+                      },
+                      beforeAll: {
+                        type: "schemaReference",
+                        optional: true,
+                        definition: {
+                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          relativePath: "compositeActionTemplate",
+                        },
+                      },
+                      beforeEach: {
+                        type: "schemaReference",
+                        optional: true,
+                        definition: {
+                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          relativePath: "compositeActionTemplate",
+                        },
+                      },
+                      afterEach: {
+                        type: "schemaReference",
+                        optional: true,
+                        definition: {
+                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          relativePath: "compositeActionTemplate",
+                        },
+                      },
+                      afterAll: {
+                        type: "schemaReference",
+                        optional: true,
+                        definition: {
+                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          relativePath: "compositeActionTemplate",
+                        },
+                      },
+                      testCompositeActions: {
+                        type: "record",
+                        definition: {
+                          type: "schemaReference",
+                          definition: {
+                            absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            relativePath: "testCompositeActionTemplate",
+                          },
+                        },
+                      },
+                    },
+                  },
+                  {
+                    type: "object",
+                    definition: {
+                      testType: {
+                        type: "literal",
+                        definition: "testAssertion",
+                      },
+                      testLabel: {
+                        type: "string",
+                      },
+                      definition: {
+                        type: "object",
+                        definition: {
+                          resultAccessPath: {
+                            type: "array",
+                            optional: true,
+                            definition: {
+                              type: "string",
+                            },
+                          },
+                          resultTransformer: {
+                            type: "schemaReference",
+                            optional: true,
+                            definition: {
+                              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              relativePath: "extendedTransformerForRuntime",
+                            },
+                          },
+                          ignoreAttributes: {
+                            type: "array",
+                            optional: true,
+                            definition: {
+                              type: "string",
+                            },
+                          },
+                          expectedValue: {
+                            type: "any",
+                          },
+                        },
+                      },
+                    },
+                  },
+                ],
+              },
+            },
+          },
+          resolvedSchema: {
+            type: "object",
+            definition: {
+              testCompositeActions: {
+                type: "object",
+                optional: true,
+                definition: {
+                  "create new Entity and reports from spreadsheet": {
+                    type: "object",
+                    definition: {
+                      testType: {
+                        type: "literal",
+                        definition: "testBuildPlusRuntimeCompositeAction",
+                      },
+                      testLabel: {
+                        type: "string",
+                      },
+                      compositeAction: {
+                        type: "object",
+                        definition: {
+                          actionType: {
+                            type: "literal",
+                            definition: "compositeAction",
+                          },
+                          actionLabel: {
+                            type: "string",
+                            optional: true,
+                          },
+                          actionName: {
+                            type: "literal",
+                            definition: "sequence",
+                          },
+                          templates: {
+                            type: "object",
+                            optional: true,
+                            definition: {},
+                          },
+                          definition: {
+                            type: "tuple",
+                            definition: [
+                              {
+                                type: "object",
+                                definition: {
+                                  actionType: {
+                                    type: "literal",
+                                    definition: "commit",
+                                  },
+                                  actionLabel: {
+                                    type: "string",
+                                    optional: true,
+                                  },
+                                  endpoint: {
+                                    type: "literal",
+                                    definition: "7947ae40-eb34-4149-887b-15a9021e714e",
+                                  },
+                                  deploymentUuid: {
+                                    type: "object",
+                                    definition: {
+                                      transformerType: {
+                                        type: "literal",
+                                        definition: "parameterReference",
+                                      },
+                                      interpolation: {
+                                        type: "literal",
+                                        optional: true,
+                                        definition: "build",
+                                      },
+                                      referenceName: {
+                                        optional: true,
+                                        type: "string",
+                                      },
+                                    },
+                                  },
+                                },
+                              },
+                            ],
+                          },
+                        },
+                      },
+                      testCompositeActionAssertions: {
+                        type: "tuple",
+                        definition: [],
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        "": {
+          rawSchema: {
+            type: "object",
+            definition: {
+              uuid: {
+                type: "string",
+                validations: [
+                  {
+                    type: "uuid",
+                  },
+                ],
+                tag: {
+                  value: {
+                    id: 1,
+                    defaultLabel: "Uuid",
+                    editable: false,
+                  },
+                },
+              },
+              parentName: {
+                type: "string",
+                optional: true,
+                tag: {
+                  value: {
+                    id: 1,
+                    defaultLabel: "Uuid",
+                    editable: false,
+                  },
+                },
+              },
+              parentUuid: {
+                type: "string",
+                validations: [
+                  {
+                    type: "uuid",
+                  },
+                ],
+                tag: {
+                  value: {
+                    id: 1,
+                    defaultLabel: "parentUuid",
+                    editable: false,
+                  },
+                },
+              },
+              selfApplication: {
+                type: "uuid",
+                tag: {
+                  value: {
+                    id: 9,
+                    defaultLabel: "SelfApplication",
+                    targetEntity: "a659d350-dd97-4da9-91de-524fa01745dc",
+                    editable: false,
+                  },
+                },
+              },
+              branch: {
+                type: "uuid",
+                tag: {
+                  value: {
+                    id: 10,
+                    defaultLabel: "Branch",
+                    description: "The Branch of the SelfApplication",
+                    editable: false,
+                  },
+                },
+              },
+              name: {
+                type: "string",
+                optional: true,
+                tag: {
+                  value: {
+                    id: 1,
+                    defaultLabel: "Name",
+                    editable: true,
+                  },
+                },
+              },
+              description: {
+                type: "string",
+                optional: true,
+                tag: {
+                  value: {
+                    id: 1,
+                    defaultLabel: "Name",
+                    editable: true,
+                  },
+                },
+              },
+              definition: {
+                type: "object",
+                definition: {
+                  testCompositeActions: {
+                    type: "record",
+                    optional: true,
+                    definition: {
+                      type: "schemaReference",
+                      definition: {
+                        absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        relativePath: "testBuildPlusRuntimeCompositeAction",
+                      },
+                    },
+                  },
+                  fullTestDefinition: {
+                    type: "union",
+                    optional: true,
+                    discriminator: "testType",
+                    definition: [
+                      {
+                        type: "object",
+                        definition: {
+                          testType: {
+                            type: "literal",
+                            definition: "testCompositeAction",
+                          },
+                          testLabel: {
+                            type: "string",
+                          },
+                          beforeTestSetupAction: {
+                            type: "schemaReference",
+                            optional: true,
+                            definition: {
+                              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              relativePath: "compositeAction",
+                            },
+                          },
+                          afterTestCleanupAction: {
+                            type: "schemaReference",
+                            optional: true,
+                            definition: {
+                              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              relativePath: "compositeAction",
+                            },
+                          },
+                          compositeAction: {
+                            type: "schemaReference",
+                            definition: {
+                              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              relativePath: "compositeAction",
+                            },
+                          },
+                          testCompositeActionAssertions: {
+                            type: "array",
+                            definition: {
+                              type: "schemaReference",
+                              definition: {
+                                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                relativePath: "compositeRunTestAssertion",
+                              },
+                            },
+                          },
+                        },
+                      },
+                      {
+                        type: "object",
+                        definition: {
+                          testType: {
+                            type: "literal",
+                            definition: "testCompositeActionSuite",
+                          },
+                          testLabel: {
+                            type: "string",
+                          },
+                          beforeAll: {
+                            type: "schemaReference",
+                            optional: true,
+                            definition: {
+                              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              relativePath: "compositeAction",
+                            },
+                          },
+                          beforeEach: {
+                            type: "schemaReference",
+                            optional: true,
+                            definition: {
+                              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              relativePath: "compositeAction",
+                            },
+                          },
+                          afterEach: {
+                            type: "schemaReference",
+                            optional: true,
+                            definition: {
+                              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              relativePath: "compositeAction",
+                            },
+                          },
+                          afterAll: {
+                            type: "schemaReference",
+                            optional: true,
+                            definition: {
+                              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              relativePath: "compositeAction",
+                            },
+                          },
+                          testCompositeActions: {
+                            type: "record",
+                            definition: {
+                              type: "schemaReference",
+                              definition: {
+                                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                relativePath: "testCompositeAction",
+                              },
+                            },
+                          },
+                        },
+                      },
+                      {
+                        type: "object",
+                        definition: {
+                          testType: {
+                            type: "literal",
+                            definition: "testBuildCompositeAction",
+                          },
+                          testLabel: {
+                            type: "string",
+                          },
+                          beforeTestSetupAction: {
+                            type: "schemaReference",
+                            optional: true,
+                            definition: {
+                              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              relativePath: "compositeAction",
+                            },
+                          },
+                          afterTestCleanupAction: {
+                            type: "schemaReference",
+                            optional: true,
+                            definition: {
+                              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              relativePath: "compositeAction",
+                            },
+                          },
+                          compositeAction: {
+                            type: "schemaReference",
+                            definition: {
+                              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              relativePath: "buildCompositeAction",
+                            },
+                          },
+                          testCompositeActionAssertions: {
+                            type: "array",
+                            definition: {
+                              type: "schemaReference",
+                              definition: {
+                                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                relativePath: "compositeRunTestAssertion",
+                              },
+                            },
+                          },
+                        },
+                      },
+                      {
+                        type: "object",
+                        definition: {
+                          testType: {
+                            type: "literal",
+                            definition: "testBuildCompositeActionSuite",
+                          },
+                          testLabel: {
+                            type: "string",
+                          },
+                          beforeAll: {
+                            type: "schemaReference",
+                            optional: true,
+                            definition: {
+                              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              relativePath: "compositeAction",
+                            },
+                          },
+                          beforeEach: {
+                            type: "schemaReference",
+                            optional: true,
+                            definition: {
+                              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              relativePath: "compositeAction",
+                            },
+                          },
+                          afterEach: {
+                            type: "schemaReference",
+                            optional: true,
+                            definition: {
+                              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              relativePath: "compositeAction",
+                            },
+                          },
+                          afterAll: {
+                            type: "schemaReference",
+                            optional: true,
+                            definition: {
+                              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              relativePath: "compositeAction",
+                            },
+                          },
+                          testCompositeActions: {
+                            type: "record",
+                            definition: {
+                              type: "schemaReference",
+                              definition: {
+                                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                relativePath: "testBuildCompositeAction",
+                              },
+                            },
+                          },
+                        },
+                      },
+                      {
+                        type: "object",
+                        definition: {
+                          testType: {
+                            type: "literal",
+                            definition: "testRuntimeCompositeAction",
+                          },
+                          testLabel: {
+                            type: "string",
+                          },
+                          beforeTestSetupAction: {
+                            type: "schemaReference",
+                            optional: true,
+                            definition: {
+                              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              relativePath: "compositeAction",
+                            },
+                          },
+                          afterTestCleanupAction: {
+                            type: "schemaReference",
+                            optional: true,
+                            definition: {
+                              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              relativePath: "compositeAction",
+                            },
+                          },
+                          compositeAction: {
+                            type: "schemaReference",
+                            definition: {
+                              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              relativePath: "runtimeCompositeAction",
+                            },
+                          },
+                          testCompositeActionAssertions: {
+                            type: "array",
+                            definition: {
+                              type: "schemaReference",
+                              definition: {
+                                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                relativePath: "compositeRunTestAssertion",
+                              },
+                            },
+                          },
+                        },
+                      },
+                      {
+                        type: "object",
+                        definition: {
+                          testType: {
+                            type: "literal",
+                            definition: "testRuntimeCompositeActionSuite",
+                          },
+                          testLabel: {
+                            type: "string",
+                          },
+                          beforeAll: {
+                            type: "schemaReference",
+                            optional: true,
+                            definition: {
+                              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              relativePath: "compositeAction",
+                            },
+                          },
+                          beforeEach: {
+                            type: "schemaReference",
+                            optional: true,
+                            definition: {
+                              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              relativePath: "compositeAction",
+                            },
+                          },
+                          afterEach: {
+                            type: "schemaReference",
+                            optional: true,
+                            definition: {
+                              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              relativePath: "compositeAction",
+                            },
+                          },
+                          afterAll: {
+                            type: "schemaReference",
+                            optional: true,
+                            definition: {
+                              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              relativePath: "compositeAction",
+                            },
+                          },
+                          testCompositeActions: {
+                            type: "record",
+                            definition: {
+                              type: "schemaReference",
+                              definition: {
+                                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                relativePath: "testRuntimeCompositeAction",
+                              },
+                            },
+                          },
+                        },
+                      },
+                      {
+                        type: "object",
+                        definition: {
+                          testType: {
+                            type: "literal",
+                            definition: "testBuildPlusRuntimeCompositeAction",
+                          },
+                          testLabel: {
+                            type: "string",
+                          },
+                          testParams: {
+                            type: "record",
+                            optional: true,
+                            definition: {
+                              type: "any",
+                            },
+                          },
+                          beforeTestSetupAction: {
+                            type: "schemaReference",
+                            optional: true,
+                            definition: {
+                              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              relativePath: "compositeAction",
+                            },
+                          },
+                          afterTestCleanupAction: {
+                            type: "schemaReference",
+                            optional: true,
+                            definition: {
+                              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              relativePath: "compositeAction",
+                            },
+                          },
+                          compositeAction: {
+                            type: "schemaReference",
+                            definition: {
+                              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              relativePath: "buildPlusRuntimeCompositeAction",
+                            },
+                          },
+                          testCompositeActionAssertions: {
+                            type: "array",
+                            definition: {
+                              type: "schemaReference",
+                              definition: {
+                                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                relativePath: "compositeRunTestAssertion",
+                              },
+                            },
+                          },
+                        },
+                      },
+                      {
+                        type: "object",
+                        definition: {
+                          testType: {
+                            type: "literal",
+                            definition: "testBuildPlusRuntimeCompositeActionSuite",
+                          },
+                          testLabel: {
+                            type: "string",
+                          },
+                          testParams: {
+                            type: "record",
+                            optional: true,
+                            definition: {
+                              type: "any",
+                            },
+                          },
+                          beforeAll: {
+                            type: "schemaReference",
+                            optional: true,
+                            definition: {
+                              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              relativePath: "compositeAction",
+                            },
+                          },
+                          beforeEach: {
+                            type: "schemaReference",
+                            optional: true,
+                            definition: {
+                              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              relativePath: "compositeAction",
+                            },
+                          },
+                          afterEach: {
+                            type: "schemaReference",
+                            optional: true,
+                            definition: {
+                              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              relativePath: "compositeAction",
+                            },
+                          },
+                          afterAll: {
+                            type: "schemaReference",
+                            optional: true,
+                            definition: {
+                              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              relativePath: "compositeAction",
+                            },
+                          },
+                          testCompositeActions: {
+                            type: "record",
+                            definition: {
+                              type: "schemaReference",
+                              definition: {
+                                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                relativePath: "testBuildPlusRuntimeCompositeAction",
+                              },
+                            },
+                          },
+                        },
+                      },
+                      {
+                        type: "object",
+                        definition: {
+                          testType: {
+                            type: "literal",
+                            definition: "testCompositeActionTemplate",
+                          },
+                          testLabel: {
+                            type: "string",
+                          },
+                          beforeTestSetupAction: {
+                            type: "schemaReference",
+                            optional: true,
+                            definition: {
+                              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              relativePath: "compositeActionTemplate",
+                            },
+                          },
+                          afterTestCleanupAction: {
+                            type: "schemaReference",
+                            optional: true,
+                            definition: {
+                              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              relativePath: "compositeActionTemplate",
+                            },
+                          },
+                          compositeActionTemplate: {
+                            type: "schemaReference",
+                            definition: {
+                              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              relativePath: "compositeActionTemplate",
+                            },
+                          },
+                          testCompositeActionAssertions: {
+                            type: "array",
+                            definition: {
+                              type: "schemaReference",
+                              definition: {
+                                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                relativePath: "compositeRunTestAssertion",
+                              },
+                            },
+                          },
+                        },
+                      },
+                      {
+                        type: "object",
+                        definition: {
+                          testType: {
+                            type: "literal",
+                            definition: "testCompositeActionTemplateSuite",
+                          },
+                          testLabel: {
+                            type: "string",
+                          },
+                          beforeAll: {
+                            type: "schemaReference",
+                            optional: true,
+                            definition: {
+                              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              relativePath: "compositeActionTemplate",
+                            },
+                          },
+                          beforeEach: {
+                            type: "schemaReference",
+                            optional: true,
+                            definition: {
+                              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              relativePath: "compositeActionTemplate",
+                            },
+                          },
+                          afterEach: {
+                            type: "schemaReference",
+                            optional: true,
+                            definition: {
+                              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              relativePath: "compositeActionTemplate",
+                            },
+                          },
+                          afterAll: {
+                            type: "schemaReference",
+                            optional: true,
+                            definition: {
+                              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              relativePath: "compositeActionTemplate",
+                            },
+                          },
+                          testCompositeActions: {
+                            type: "record",
+                            definition: {
+                              type: "schemaReference",
+                              definition: {
+                                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                relativePath: "testCompositeActionTemplate",
+                              },
+                            },
+                          },
+                        },
+                      },
+                      {
+                        type: "object",
+                        definition: {
+                          testType: {
+                            type: "literal",
+                            definition: "testAssertion",
+                          },
+                          testLabel: {
+                            type: "string",
+                          },
+                          definition: {
+                            type: "object",
+                            definition: {
+                              resultAccessPath: {
+                                type: "array",
+                                optional: true,
+                                definition: {
+                                  type: "string",
+                                },
+                              },
+                              resultTransformer: {
+                                type: "schemaReference",
+                                optional: true,
+                                definition: {
+                                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                  relativePath: "extendedTransformerForRuntime",
+                                },
+                              },
+                              ignoreAttributes: {
+                                type: "array",
+                                optional: true,
+                                definition: {
+                                  type: "string",
+                                },
+                              },
+                              expectedValue: {
+                                type: "any",
+                              },
+                            },
+                          },
+                        },
+                      },
+                    ],
+                  },
+                },
+              },
+            },
+          },
+          resolvedSchema: {
+            type: "object",
+            definition: {
+              uuid: {
+                type: "string",
+                validations: [
+                  {
+                    type: "uuid",
+                  },
+                ],
+                tag: {
+                  value: {
+                    id: 1,
+                    defaultLabel: "Uuid",
+                    editable: false,
+                  },
+                },
+              },
+              parentName: {
+                type: "string",
+                optional: true,
+                tag: {
+                  value: {
+                    id: 1,
+                    defaultLabel: "Uuid",
+                    editable: false,
+                  },
+                },
+              },
+              parentUuid: {
+                type: "string",
+                validations: [
+                  {
+                    type: "uuid",
+                  },
+                ],
+                tag: {
+                  value: {
+                    id: 1,
+                    defaultLabel: "parentUuid",
+                    editable: false,
+                  },
+                },
+              },
+              name: {
+                type: "string",
+                optional: true,
+                tag: {
+                  value: {
+                    id: 1,
+                    defaultLabel: "Name",
+                    editable: true,
+                  },
+                },
+              },
+              selfApplication: {
+                type: "uuid",
+                tag: {
+                  value: {
+                    id: 9,
+                    defaultLabel: "SelfApplication",
+                    targetEntity: "a659d350-dd97-4da9-91de-524fa01745dc",
+                    editable: false,
+                  },
+                },
+              },
+              branch: {
+                type: "uuid",
+                tag: {
+                  value: {
+                    id: 10,
+                    defaultLabel: "Branch",
+                    description: "The Branch of the SelfApplication",
+                    editable: false,
+                  },
+                },
+              },
+              description: {
+                type: "string",
+                optional: true,
+                tag: {
+                  value: {
+                    id: 1,
+                    defaultLabel: "Name",
+                    editable: true,
+                  },
+                },
+              },
+              definition: {
+                type: "object",
+                definition: {
+                  testCompositeActions: {
+                    type: "object",
+                    optional: true,
+                    definition: {
+                      "create new Entity and reports from spreadsheet": {
+                        type: "object",
+                        definition: {
+                          testType: {
+                            type: "literal",
+                            definition: "testBuildPlusRuntimeCompositeAction",
+                          },
+                          testLabel: {
+                            type: "string",
+                          },
+                          compositeAction: {
+                            type: "object",
+                            definition: {
+                              actionType: {
+                                type: "literal",
+                                definition: "compositeAction",
+                              },
+                              actionLabel: {
+                                type: "string",
+                                optional: true,
+                              },
+                              actionName: {
+                                type: "literal",
+                                definition: "sequence",
+                              },
+                              templates: {
+                                type: "object",
+                                optional: true,
+                                definition: {},
+                              },
+                              definition: {
+                                type: "tuple",
+                                definition: [
+                                  {
+                                    type: "object",
+                                    definition: {
+                                      actionType: {
+                                        type: "literal",
+                                        definition: "commit",
+                                      },
+                                      actionLabel: {
+                                        type: "string",
+                                        optional: true,
+                                      },
+                                      endpoint: {
+                                        type: "literal",
+                                        definition: "7947ae40-eb34-4149-887b-15a9021e714e",
+                                      },
+                                      deploymentUuid: {
+                                        type: "object",
+                                        definition: {
+                                          transformerType: {
+                                            type: "literal",
+                                            definition: "parameterReference",
+                                          },
+                                          interpolation: {
+                                            type: "literal",
+                                            optional: true,
+                                            definition: "build",
+                                          },
+                                          referenceName: {
+                                            optional: true,
+                                            type: "string",
+                                          },
+                                        },
+                                      },
+                                    },
+                                  },
+                                ],
+                              },
+                            },
+                          },
+                          testCompositeActionAssertions: {
+                            type: "tuple",
+                            definition: [],
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    // // ##########################################################################################
+    // // ##########################################################################################
+    // // ##########################################################################################
+    // // ##########################################################################################
+    // // ##########################################################################################
+    // // ##########################################################################################
+    // // ##########################################################################################
+    // // ##########################################################################################
+    // // ##########################################################################################
+    // // ##########################################################################################
+    // // ##########################################################################################
+    // // ##########################################################################################
+    // // ##########################################################################################
+    // // ##########################################################################################
+    // // ##########################################################################################
+    // // ##########################################################################################
+    // // ##########################################################################################
+    // // ##########################################################################################
+    // // ##########################################################################################
+    // // ##########################################################################################
+    // // ##########################################################################################
+    // // ##########################################################################################
+    // // ##########################################################################################
+    // // ##########################################################################################
+    // // ##########################################################################################
+    // // ##########################################################################################
+    // // ##########################################################################################
+    // // ##########################################################################################
+    // // ##########################################################################################
+    // // ##########################################################################################
+    // // ##########################################################################################
+    // // ##########################################################################################
+    // // ##########################################################################################
+    // // ##########################################################################################
+    // // ##########################################################################################
+    // // ##########################################################################################
+    // // ##########################################################################################
+    // // ##########################################################################################
+    // // ##########################################################################################
+    // // ##########################################################################################
+    // // ##########################################################################################
+    // // ##########################################################################################
+    // // ##########################################################################################
+    // // ##########################################################################################
+    // // ##########################################################################################
+    // // ##########################################################################################
+    // // ##########################################################################################
+    // // ##########################################################################################
+    // // ##########################################################################################
+    // // ##########################################################################################
+    // // ########################### BOOK ENTITY ######################################
+    // // ##########################################################################################
+    // // Book entity
+    // test900: {
+    //   testSchema: {
+    //     type: "object",
+    //     definition: {
+    //       uuid: {
+    //         type: "string",
+    //         validations: [
+    //           {
+    //             type: "uuid",
+    //           },
+    //         ],
+    //         tag: {
+    //           value: {
+    //             id: 1,
+    //             defaultLabel: "Uuid",
+    //             editable: false,
+    //           },
+    //         },
+    //       },
+    //       parentName: {
+    //         type: "string",
+    //         optional: true,
+    //         tag: {
+    //           value: {
+    //             id: 2,
+    //             defaultLabel: "Entity Name",
+    //             editable: false,
+    //           },
+    //         },
+    //       },
+    //       parentUuid: {
+    //         type: "string",
+    //         validations: [
+    //           {
+    //             type: "uuid",
+    //           },
+    //         ],
+    //         tag: {
+    //           value: {
+    //             id: 3,
+    //             defaultLabel: "Entity Uuid",
+    //             editable: false,
+    //           },
+    //         },
+    //       },
+    //       name: {
+    //         type: "string",
+    //         tag: {
+    //           value: {
+    //             id: 4,
+    //             defaultLabel: "Name",
+    //             editable: true,
+    //           },
+    //         },
+    //       },
+    //       author: {
+    //         type: "string",
+    //         validations: [
+    //           {
+    //             type: "uuid",
+    //           },
+    //         ],
+    //         optional: true,
+    //         tag: {
+    //           value: {
+    //             id: 5,
+    //             defaultLabel: "Author",
+    //             targetEntity: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+    //             editable: true,
+    //           },
+    //         },
+    //       },
+    //       publisher: {
+    //         type: "string",
+    //         validations: [
+    //           {
+    //             type: "uuid",
+    //           },
+    //         ],
+    //         optional: true,
+    //         tag: {
+    //           value: {
+    //             id: 5,
+    //             defaultLabel: "Publisher",
+    //             targetEntity: "a027c379-8468-43a5-ba4d-bf618be25cab",
+    //             editable: true,
+    //           },
+    //         },
+    //       },
+    //     },
+    //   },
+    //   expectedResolvedSchema: {
+    //     type: "object",
+    //     definition: {
+    //       uuid: {
+    //         type: "string",
+    //         validations: [
+    //           {
+    //             type: "uuid",
+    //           },
+    //         ],
+    //         tag: {
+    //           value: {
+    //             id: 1,
+    //             defaultLabel: "Uuid",
+    //             editable: false,
+    //           },
+    //         },
+    //       },
+    //       parentName: {
+    //         type: "string",
+    //         optional: true,
+    //         tag: {
+    //           value: {
+    //             id: 2,
+    //             defaultLabel: "Entity Name",
+    //             editable: false,
+    //           },
+    //         },
+    //       },
+    //       parentUuid: {
+    //         type: "string",
+    //         validations: [
+    //           {
+    //             type: "uuid",
+    //           },
+    //         ],
+    //         tag: {
+    //           value: {
+    //             id: 3,
+    //             defaultLabel: "Entity Uuid",
+    //             editable: false,
+    //           },
+    //         },
+    //       },
+    //       name: {
+    //         type: "string",
+    //         tag: {
+    //           value: {
+    //             id: 4,
+    //             defaultLabel: "Name",
+    //             editable: true,
+    //           },
+    //         },
+    //       },
+    //       author: {
+    //         type: "string",
+    //         validations: [
+    //           {
+    //             type: "uuid",
+    //           },
+    //         ],
+    //         optional: true,
+    //         tag: {
+    //           value: {
+    //             id: 5,
+    //             defaultLabel: "Author",
+    //             targetEntity: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+    //             editable: true,
+    //           },
+    //         },
+    //       },
+    //       publisher: {
+    //         type: "string",
+    //         validations: [
+    //           {
+    //             type: "uuid",
+    //           },
+    //         ],
+    //         optional: true,
+    //         tag: {
+    //           value: {
+    //             id: 5,
+    //             defaultLabel: "Publisher",
+    //             targetEntity: "a027c379-8468-43a5-ba4d-bf618be25cab",
+    //             editable: true,
+    //           },
+    //         },
+    //       },
+    //     },
+    //   },
+    //   testValueObject: {
+    //     uuid: "4cb917b3-3c53-4f9b-b000-b0e4c07a81f7",
+    //     parentName: "Book",
+    //     parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+    //     name: "Renata n'importe quoi",
+    //     author: "e4376314-d197-457c-aa5e-d2da5f8d5977",
+    //     publisher: "516a7366-39e7-4998-82cb-80199a7fa667",
+    //   },
+    // },
+    // // Book entity definition
+    // test910: {
+    //   testSchema: {
+    //     type: "schemaReference",
+    //     definition: {
+    //       absolutePath: miroirFundamentalJzodSchemaUuid,
+    //       relativePath: "entityDefinition",
+    //     },
+    //   },
+    //   testValueObject: {
+    //     uuid: "797dd185-0155-43fd-b23f-f6d0af8cae06",
+    //     parentName: "EntityDefinition",
+    //     parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+    //     parentDefinitionVersionUuid: "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+    //     entityUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+    //     conceptLevel: "Model",
+    //     name: "Book",
+    //     icon: "Book",
+    //     defaultInstanceDetailsReportUuid: "c3503412-3d8a-43ef-a168-aa36e975e606",
+    //     viewAttributes: ["name", "author", "publisher", "uuid"],
+    //     jzodSchema: {
+    //       type: "object",
+    //       definition: {
+    //         uuid: {
+    //           type: "uuid",
+    //           tag: {
+    //             value: {
+    //               id: 1,
+    //               defaultLabel: "Uuid",
+    //               editable: false,
+    //             },
+    //           },
+    //         },
+    //         parentName: {
+    //           type: "string",
+    //           optional: true,
+    //           tag: {
+    //             value: {
+    //               id: 2,
+    //               defaultLabel: "Entity Name",
+    //               editable: false,
+    //             },
+    //           },
+    //         },
+    //         parentUuid: {
+    //           type: "uuid",
+    //           tag: {
+    //             value: {
+    //               id: 3,
+    //               defaultLabel: "Entity Uuid",
+    //               editable: false,
+    //             },
+    //           },
+    //         },
+    //         conceptLevel: {
+    //           type: "enum",
+    //           definition: ["MetaModel", "Model", "Data"],
+    //           optional: true,
+    //           tag: {
+    //             value: {
+    //               id: 5,
+    //               defaultLabel: "Concept Level",
+    //               editable: false,
+    //             },
+    //           },
+    //         },
+    //         name: {
+    //           type: "string",
+    //           tag: {
+    //             value: {
+    //               id: 4,
+    //               defaultLabel: "Name",
+    //               editable: true,
+    //             },
+    //           },
+    //         },
+    //         author: {
+    //           type: "uuid",
+    //           optional: true,
+    //           tag: {
+    //             value: {
+    //               id: 5,
+    //               defaultLabel: "Author",
+    //               targetEntity: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+    //               editable: true,
+    //             },
+    //           },
+    //         },
+    //         publisher: {
+    //           type: "uuid",
+    //           optional: true,
+    //           tag: {
+    //             value: {
+    //               id: 5,
+    //               defaultLabel: "Publisher",
+    //               targetEntity: "a027c379-8468-43a5-ba4d-bf618be25cab",
+    //               editable: true,
+    //             },
+    //           },
+    //         },
+    //       },
+    //     },
+    //   },
+    //   expectedResolvedSchema: {
+    //     type: "object",
+    //     definition: {
+    //       uuid: {
+    //         type: "uuid",
+    //         tag: {
+    //           value: {
+    //             id: 1,
+    //             defaultLabel: "Uuid",
+    //             editable: false,
+    //           },
+    //         },
+    //       },
+    //       parentName: {
+    //         type: "string",
+    //         tag: {
+    //           value: {
+    //             id: 2,
+    //             defaultLabel: "Entity Name",
+    //             editable: false,
+    //           },
+    //         },
+    //       },
+    //       parentUuid: {
+    //         type: "uuid",
+    //         tag: {
+    //           value: {
+    //             id: 3,
+    //             defaultLabel: "Entity Uuid",
+    //             editable: false,
+    //           },
+    //         },
+    //       },
+    //       parentDefinitionVersionUuid: {
+    //         type: "uuid",
+    //         optional: true,
+    //         tag: {
+    //           value: {
+    //             id: 4,
+    //             defaultLabel: "Entity Definition Version Uuid",
+    //             editable: false,
+    //           },
+    //         },
+    //       },
+    //       entityUuid: {
+    //         type: "uuid",
+    //         tag: {
+    //           value: {
+    //             id: 6,
+    //             defaultLabel: "Entity Uuid of the Entity which this definition is the definition",
+    //             editable: false,
+    //           },
+    //         },
+    //       },
+    //       conceptLevel: {
+    //         type: "enum",
+    //         definition: ["MetaModel", "Model", "Data"],
+    //         optional: true,
+    //         tag: {
+    //           value: {
+    //             id: 7,
+    //             defaultLabel: "Concept Level",
+    //             editable: false,
+    //           },
+    //         },
+    //       },
+    //       name: {
+    //         type: "string",
+    //         tag: {
+    //           value: {
+    //             id: 5,
+    //             defaultLabel: "Name",
+    //             editable: false,
+    //           },
+    //         },
+    //       },
+    //       icon: {
+    //         type: "string",
+    //         optional: true,
+    //         tag: {
+    //           value: {
+    //             id: 11,
+    //             defaultLabel: "Icon used to represent instances of this Entity",
+    //             editable: true,
+    //           },
+    //         },
+    //       },
+    //       defaultInstanceDetailsReportUuid: {
+    //         type: "uuid",
+    //         optional: true,
+    //         tag: {
+    //           value: {
+    //             id: 9,
+    //             defaultLabel: "Default Report used to display instances of this Entity",
+    //             editable: false,
+    //           },
+    //         },
+    //       },
+    //       viewAttributes: {
+    //         type: "tuple",
+    //         optional: true,
+    //         definition: [
+    //           {
+    //             type: "string",
+    //           },
+    //           {
+    //             type: "string",
+    //           },
+    //           {
+    //             type: "string",
+    //           },
+    //           {
+    //             type: "string",
+    //           },
+    //         ],
+    //         tag: {
+    //           value: {
+    //             id: 10,
+    //             editable: true,
+    //           },
+    //         },
+    //       },
+    //       jzodSchema: {
+    //         type: "object",
+    //         definition: {
+    //           type: {
+    //             type: "literal",
+    //             definition: "object",
+    //           },
+    //           definition: {
+    //             type: "object",
+    //             definition: {
+    //               uuid: {
+    //                 type: "object",
+    //                 definition: {
+    //                   type: {
+    //                     type: "enum",
+    //                     definition: [
+    //                       "any",
+    //                       "bigint",
+    //                       "boolean",
+    //                       "never",
+    //                       "null",
+    //                       "uuid",
+    //                       "undefined",
+    //                       "unknown",
+    //                       "void",
+    //                     ],
+    //                   },
+    //                   tag: {
+    //                     type: "object",
+    //                     optional: true,
+    //                     definition: {
+    //                       value: {
+    //                         type: "object",
+    //                         optional: true,
+    //                         definition: {
+    //                           id: {
+    //                             type: "number",
+    //                             optional: true,
+    //                           },
+    //                           defaultLabel: {
+    //                             type: "string",
+    //                             optional: true,
+    //                           },
+    //                           editable: {
+    //                             type: "boolean",
+    //                             optional: true,
+    //                           },
+    //                         },
+    //                       },
+    //                     },
+    //                   },
+    //                 },
+    //               },
+    //               parentName: {
+    //                 type: "object",
+    //                 definition: {
+    //                   type: {
+    //                     type: "literal",
+    //                     definition: "string",
+    //                   },
+    //                   optional: {
+    //                     type: "boolean",
+    //                     optional: true,
+    //                   },
+    //                   tag: {
+    //                     type: "object",
+    //                     optional: true,
+    //                     definition: {
+    //                       value: {
+    //                         type: "object",
+    //                         optional: true,
+    //                         definition: {
+    //                           id: {
+    //                             type: "number",
+    //                             optional: true,
+    //                           },
+    //                           defaultLabel: {
+    //                             type: "string",
+    //                             optional: true,
+    //                           },
+    //                           editable: {
+    //                             type: "boolean",
+    //                             optional: true,
+    //                           },
+    //                         },
+    //                       },
+    //                     },
+    //                   },
+    //                 },
+    //               },
+    //               parentUuid: {
+    //                 type: "object",
+    //                 definition: {
+    //                   type: {
+    //                     type: "enum",
+    //                     definition: [
+    //                       "any",
+    //                       "bigint",
+    //                       "boolean",
+    //                       "never",
+    //                       "null",
+    //                       "uuid",
+    //                       "undefined",
+    //                       "unknown",
+    //                       "void",
+    //                     ],
+    //                   },
+    //                   tag: {
+    //                     type: "object",
+    //                     optional: true,
+    //                     definition: {
+    //                       value: {
+    //                         type: "object",
+    //                         optional: true,
+    //                         definition: {
+    //                           id: {
+    //                             type: "number",
+    //                             optional: true,
+    //                           },
+    //                           defaultLabel: {
+    //                             type: "string",
+    //                             optional: true,
+    //                           },
+    //                           editable: {
+    //                             type: "boolean",
+    //                             optional: true,
+    //                           },
+    //                         },
+    //                       },
+    //                     },
+    //                   },
+    //                 },
+    //               },
+    //               conceptLevel: {
+    //                 type: "object",
+    //                 definition: {
+    //                   type: {
+    //                     type: "literal",
+    //                     definition: "enum",
+    //                   },
+    //                   definition: {
+    //                     type: "tuple",
+    //                     definition: [
+    //                       {
+    //                         type: "string",
+    //                       },
+    //                       {
+    //                         type: "string",
+    //                       },
+    //                       {
+    //                         type: "string",
+    //                       },
+    //                     ],
+    //                   },
+    //                   optional: {
+    //                     type: "boolean",
+    //                     optional: true,
+    //                   },
+    //                   tag: {
+    //                     type: "object",
+    //                     optional: true,
+    //                     definition: {
+    //                       value: {
+    //                         type: "object",
+    //                         optional: true,
+    //                         definition: {
+    //                           id: {
+    //                             type: "number",
+    //                             optional: true,
+    //                           },
+    //                           defaultLabel: {
+    //                             type: "string",
+    //                             optional: true,
+    //                           },
+    //                           editable: {
+    //                             type: "boolean",
+    //                             optional: true,
+    //                           },
+    //                         },
+    //                       },
+    //                     },
+    //                   },
+    //                 },
+    //               },
+    //               name: {
+    //                 type: "object",
+    //                 definition: {
+    //                   type: {
+    //                     type: "literal",
+    //                     definition: "string",
+    //                   },
+    //                   tag: {
+    //                     type: "object",
+    //                     optional: true,
+    //                     definition: {
+    //                       value: {
+    //                         type: "object",
+    //                         optional: true,
+    //                         definition: {
+    //                           id: {
+    //                             type: "number",
+    //                             optional: true,
+    //                           },
+    //                           defaultLabel: {
+    //                             type: "string",
+    //                             optional: true,
+    //                           },
+    //                           editable: {
+    //                             type: "boolean",
+    //                             optional: true,
+    //                           },
+    //                         },
+    //                       },
+    //                     },
+    //                   },
+    //                 },
+    //               },
+    //               author: {
+    //                 type: "object",
+    //                 definition: {
+    //                   type: {
+    //                     type: "enum",
+    //                     definition: [
+    //                       "any",
+    //                       "bigint",
+    //                       "boolean",
+    //                       "never",
+    //                       "null",
+    //                       "uuid",
+    //                       "undefined",
+    //                       "unknown",
+    //                       "void",
+    //                     ],
+    //                   },
+    //                   optional: {
+    //                     type: "boolean",
+    //                     optional: true,
+    //                   },
+    //                   tag: {
+    //                     type: "object",
+    //                     optional: true,
+    //                     definition: {
+    //                       value: {
+    //                         type: "object",
+    //                         optional: true,
+    //                         definition: {
+    //                           id: {
+    //                             type: "number",
+    //                             optional: true,
+    //                           },
+    //                           defaultLabel: {
+    //                             type: "string",
+    //                             optional: true,
+    //                           },
+    //                           targetEntity: {
+    //                             type: "string",
+    //                             optional: true,
+    //                           },
+    //                           editable: {
+    //                             type: "boolean",
+    //                             optional: true,
+    //                           },
+    //                         },
+    //                       },
+    //                     },
+    //                   },
+    //                 },
+    //               },
+    //               publisher: {
+    //                 type: "object",
+    //                 definition: {
+    //                   type: {
+    //                     type: "enum",
+    //                     definition: [
+    //                       "any",
+    //                       "bigint",
+    //                       "boolean",
+    //                       "never",
+    //                       "null",
+    //                       "uuid",
+    //                       "undefined",
+    //                       "unknown",
+    //                       "void",
+    //                     ],
+    //                   },
+    //                   optional: {
+    //                     type: "boolean",
+    //                     optional: true,
+    //                   },
+    //                   tag: {
+    //                     type: "object",
+    //                     optional: true,
+    //                     definition: {
+    //                       value: {
+    //                         type: "object",
+    //                         optional: true,
+    //                         definition: {
+    //                           id: {
+    //                             type: "number",
+    //                             optional: true,
+    //                           },
+    //                           defaultLabel: {
+    //                             type: "string",
+    //                             optional: true,
+    //                           },
+    //                           targetEntity: {
+    //                             type: "string",
+    //                             optional: true,
+    //                           },
+    //                           editable: {
+    //                             type: "boolean",
+    //                             optional: true,
+    //                           },
+    //                         },
+    //                       },
+    //                     },
+    //                   },
+    //                 },
+    //               },
+    //             },
+    //           },
+    //         },
+    //       },
+    //     },
+    //   },
+    // },
+    // // complexMenu
+    // test950: {
+    //   testSchema: {
+    //     type: "schemaReference",
+    //     context: {
+    //       menuItem: {
+    //         type: "object",
+    //         definition: {
+    //           label: {
+    //             type: "string",
+    //           },
+    //           section: {
+    //             type: "schemaReference",
+    //             definition: {
+    //               absolutePath: miroirFundamentalJzodSchemaUuid,
+    //               relativePath: "applicationSection",
+    //             },
+    //           },
+    //           selfApplication: {
+    //             type: "string",
+    //             validations: [
+    //               {
+    //                 type: "uuid",
+    //               },
+    //             ],
+    //             tag: {
+    //               value: {
+    //                 id: 1,
+    //                 defaultLabel: "Uuid",
+    //                 editable: false,
+    //               },
+    //             },
+    //           },
+    //           reportUuid: {
+    //             type: "string",
+    //             validations: [
+    //               {
+    //                 type: "uuid",
+    //               },
+    //             ],
+    //             tag: {
+    //               value: {
+    //                 id: 1,
+    //                 defaultLabel: "Uuid",
+    //                 editable: false,
+    //               },
+    //             },
+    //           },
+    //           instanceUuid: {
+    //             type: "string",
+    //             optional: true,
+    //             validations: [
+    //               {
+    //                 type: "uuid",
+    //               },
+    //             ],
+    //             tag: {
+    //               value: {
+    //                 id: 1,
+    //                 defaultLabel: "Uuid",
+    //                 editable: false,
+    //               },
+    //             },
+    //           },
+    //           icon: {
+    //             type: "string",
+    //             validations: [
+    //               {
+    //                 type: "uuid",
+    //               },
+    //             ],
+    //           },
+    //         },
+    //       },
+    //       menuItemArray: {
+    //         type: "array",
+    //         definition: {
+    //           type: "schemaReference",
+    //           definition: {
+    //             relativePath: "menuItem",
+    //           },
+    //         },
+    //       },
+    //       sectionOfMenu: {
+    //         type: "object",
+    //         definition: {
+    //           title: {
+    //             type: "string",
+    //           },
+    //           label: {
+    //             type: "string",
+    //           },
+    //           items: {
+    //             type: "schemaReference",
+    //             definition: {
+    //               relativePath: "menuItemArray",
+    //             },
+    //           },
+    //         },
+    //       },
+    //       simpleMenu: {
+    //         type: "object",
+    //         definition: {
+    //           menuType: {
+    //             type: "literal",
+    //             definition: "simpleMenu",
+    //           },
+    //           definition: {
+    //             type: "schemaReference",
+    //             definition: {
+    //               relativePath: "menuItemArray",
+    //             },
+    //           },
+    //         },
+    //       },
+    //       complexMenu: {
+    //         type: "object",
+    //         definition: {
+    //           menuType: {
+    //             type: "literal",
+    //             definition: "complexMenu",
+    //           },
+    //           definition: {
+    //             type: "array",
+    //             definition: {
+    //               type: "schemaReference",
+    //               definition: {
+    //                 relativePath: "sectionOfMenu",
+    //               },
+    //             },
+    //           },
+    //         },
+    //       },
+    //       menuDefinition: {
+    //         type: "union",
+    //         discriminator: "menuType",
+    //         definition: [
+    //           {
+    //             type: "schemaReference",
+    //             definition: {
+    //               relativePath: "simpleMenu",
+    //             },
+    //           },
+    //           {
+    //             type: "schemaReference",
+    //             definition: {
+    //               relativePath: "complexMenu",
+    //             },
+    //           },
+    //         ],
+    //       },
+    //     },
+    //     definition: {
+    //       relativePath: "menuDefinition",
+    //     },
+    //   },
+    //   testValueObject: {
+    //     menuType: "complexMenu",
+    //     definition: [
+    //       {
+    //         title: "Miroir",
+    //         label: "miroir",
+    //         items: [
+    //           {
+    //             label: "Miroir Entities",
+    //             section: "model",
+    //             selfApplication: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
+    //             reportUuid: "c9ea3359-690c-4620-9603-b5b402e4a2b9",
+    //             icon: "category",
+    //           },
+    //           {
+    //             label: "Miroir Entity Definitions",
+    //             section: "model",
+    //             selfApplication: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
+    //             reportUuid: "f9aff35d-8636-4519-8361-c7648e0ddc68",
+    //             icon: "category",
+    //           },
+    //           {
+    //             label: "Miroir Reports",
+    //             section: "data",
+    //             selfApplication: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
+    //             reportUuid: "1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855",
+    //             icon: "list",
+    //           },
+    //           {
+    //             label: "Miroir Menus",
+    //             section: "data",
+    //             selfApplication: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
+    //             reportUuid: "ecfd8787-09cc-417d-8d2c-173633c9f998",
+    //             icon: "list",
+    //           },
+    //         ],
+    //       },
+    //       {
+    //         title: "Library",
+    //         label: "library",
+    //         items: [
+    //           {
+    //             label: "Library Entities",
+    //             section: "model",
+    //             selfApplication: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+    //             reportUuid: "c9ea3359-690c-4620-9603-b5b402e4a2b9",
+    //             icon: "category",
+    //           },
+    //           {
+    //             label: "Library Entity Definitions",
+    //             section: "model",
+    //             selfApplication: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+    //             reportUuid: "f9aff35d-8636-4519-8361-c7648e0ddc68",
+    //             icon: "category",
+    //           },
+    //           {
+    //             label: "Library Tests",
+    //             section: "data",
+    //             selfApplication: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+    //             reportUuid: "931dd036-dfce-4e47-868e-36dba3654816",
+    //             icon: "category",
+    //           },
+    //           {
+    //             label: "Library Books",
+    //             section: "data",
+    //             selfApplication: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+    //             reportUuid: "74b010b6-afee-44e7-8590-5f0849e4a5c9",
+    //             icon: "auto_stories",
+    //           },
+    //           {
+    //             label: "Library Authors",
+    //             section: "data",
+    //             selfApplication: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+    //             reportUuid: "66a09068-52c3-48bc-b8dd-76575bbc8e72",
+    //             icon: "star",
+    //           },
+    //           {
+    //             label: "Library Publishers",
+    //             section: "data",
+    //             selfApplication: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+    //             reportUuid: "a77aa662-006d-46cd-9176-01f02a1a12dc",
+    //             icon: "account_balance",
+    //           },
+    //         ],
+    //       },
+    //     ],
+    //   },
+    //   expectedResolvedSchema: {
+    //     type: "object",
+    //     definition: {
+    //       menuType: {
+    //         type: "literal",
+    //         definition: "complexMenu",
+    //       },
+    //       definition: {
+    //         type: "tuple",
+    //         definition: [
+    //           {
+    //             type: "object",
+    //             definition: {
+    //               title: {
+    //                 type: "string",
+    //               },
+    //               label: {
+    //                 type: "string",
+    //               },
+    //               items: {
+    //                 type: "tuple",
+    //                 definition: [
+    //                   {
+    //                     type: "object",
+    //                     definition: {
+    //                       label: {
+    //                         type: "string",
+    //                       },
+    //                       section: {
+    //                         type: "literal",
+    //                         definition: "model",
+    //                       },
+    //                       selfApplication: {
+    //                         type: "string",
+    //                         validations: [
+    //                           {
+    //                             type: "uuid",
+    //                           },
+    //                         ],
+    //                         tag: {
+    //                           value: {
+    //                             id: 1,
+    //                             defaultLabel: "Uuid",
+    //                             editable: false,
+    //                           },
+    //                         },
+    //                       },
+    //                       reportUuid: {
+    //                         type: "string",
+    //                         validations: [
+    //                           {
+    //                             type: "uuid",
+    //                           },
+    //                         ],
+    //                         tag: {
+    //                           value: {
+    //                             id: 1,
+    //                             defaultLabel: "Uuid",
+    //                             editable: false,
+    //                           },
+    //                         },
+    //                       },
+    //                       icon: {
+    //                         type: "string",
+    //                         validations: [
+    //                           {
+    //                             type: "uuid",
+    //                           },
+    //                         ],
+    //                       },
+    //                     },
+    //                   },
+    //                   {
+    //                     type: "object",
+    //                     definition: {
+    //                       label: {
+    //                         type: "string",
+    //                       },
+    //                       section: {
+    //                         type: "literal",
+    //                         definition: "model",
+    //                       },
+    //                       selfApplication: {
+    //                         type: "string",
+    //                         validations: [
+    //                           {
+    //                             type: "uuid",
+    //                           },
+    //                         ],
+    //                         tag: {
+    //                           value: {
+    //                             id: 1,
+    //                             defaultLabel: "Uuid",
+    //                             editable: false,
+    //                           },
+    //                         },
+    //                       },
+    //                       reportUuid: {
+    //                         type: "string",
+    //                         validations: [
+    //                           {
+    //                             type: "uuid",
+    //                           },
+    //                         ],
+    //                         tag: {
+    //                           value: {
+    //                             id: 1,
+    //                             defaultLabel: "Uuid",
+    //                             editable: false,
+    //                           },
+    //                         },
+    //                       },
+    //                       icon: {
+    //                         type: "string",
+    //                         validations: [
+    //                           {
+    //                             type: "uuid",
+    //                           },
+    //                         ],
+    //                       },
+    //                     },
+    //                   },
+    //                   {
+    //                     type: "object",
+    //                     definition: {
+    //                       label: {
+    //                         type: "string",
+    //                       },
+    //                       section: {
+    //                         type: "literal",
+    //                         definition: "data",
+    //                       },
+    //                       selfApplication: {
+    //                         type: "string",
+    //                         validations: [
+    //                           {
+    //                             type: "uuid",
+    //                           },
+    //                         ],
+    //                         tag: {
+    //                           value: {
+    //                             id: 1,
+    //                             defaultLabel: "Uuid",
+    //                             editable: false,
+    //                           },
+    //                         },
+    //                       },
+    //                       reportUuid: {
+    //                         type: "string",
+    //                         validations: [
+    //                           {
+    //                             type: "uuid",
+    //                           },
+    //                         ],
+    //                         tag: {
+    //                           value: {
+    //                             id: 1,
+    //                             defaultLabel: "Uuid",
+    //                             editable: false,
+    //                           },
+    //                         },
+    //                       },
+    //                       icon: {
+    //                         type: "string",
+    //                         validations: [
+    //                           {
+    //                             type: "uuid",
+    //                           },
+    //                         ],
+    //                       },
+    //                     },
+    //                   },
+    //                   {
+    //                     type: "object",
+    //                     definition: {
+    //                       label: {
+    //                         type: "string",
+    //                       },
+    //                       section: {
+    //                         type: "literal",
+    //                         definition: "data",
+    //                       },
+    //                       selfApplication: {
+    //                         type: "string",
+    //                         validations: [
+    //                           {
+    //                             type: "uuid",
+    //                           },
+    //                         ],
+    //                         tag: {
+    //                           value: {
+    //                             id: 1,
+    //                             defaultLabel: "Uuid",
+    //                             editable: false,
+    //                           },
+    //                         },
+    //                       },
+    //                       reportUuid: {
+    //                         type: "string",
+    //                         validations: [
+    //                           {
+    //                             type: "uuid",
+    //                           },
+    //                         ],
+    //                         tag: {
+    //                           value: {
+    //                             id: 1,
+    //                             defaultLabel: "Uuid",
+    //                             editable: false,
+    //                           },
+    //                         },
+    //                       },
+    //                       icon: {
+    //                         type: "string",
+    //                         validations: [
+    //                           {
+    //                             type: "uuid",
+    //                           },
+    //                         ],
+    //                       },
+    //                     },
+    //                   },
+    //                 ],
+    //               },
+    //             },
+    //           },
+    //           {
+    //             type: "object",
+    //             definition: {
+    //               title: {
+    //                 type: "string",
+    //               },
+    //               label: {
+    //                 type: "string",
+    //               },
+    //               items: {
+    //                 type: "tuple",
+    //                 definition: [
+    //                   {
+    //                     type: "object",
+    //                     definition: {
+    //                       label: {
+    //                         type: "string",
+    //                       },
+    //                       section: {
+    //                         type: "literal",
+    //                         definition: "model",
+    //                       },
+    //                       selfApplication: {
+    //                         type: "string",
+    //                         validations: [
+    //                           {
+    //                             type: "uuid",
+    //                           },
+    //                         ],
+    //                         tag: {
+    //                           value: {
+    //                             id: 1,
+    //                             defaultLabel: "Uuid",
+    //                             editable: false,
+    //                           },
+    //                         },
+    //                       },
+    //                       reportUuid: {
+    //                         type: "string",
+    //                         validations: [
+    //                           {
+    //                             type: "uuid",
+    //                           },
+    //                         ],
+    //                         tag: {
+    //                           value: {
+    //                             id: 1,
+    //                             defaultLabel: "Uuid",
+    //                             editable: false,
+    //                           },
+    //                         },
+    //                       },
+    //                       icon: {
+    //                         type: "string",
+    //                         validations: [
+    //                           {
+    //                             type: "uuid",
+    //                           },
+    //                         ],
+    //                       },
+    //                     },
+    //                   },
+    //                   {
+    //                     type: "object",
+    //                     definition: {
+    //                       label: {
+    //                         type: "string",
+    //                       },
+    //                       section: {
+    //                         type: "literal",
+    //                         definition: "model",
+    //                       },
+    //                       selfApplication: {
+    //                         type: "string",
+    //                         validations: [
+    //                           {
+    //                             type: "uuid",
+    //                           },
+    //                         ],
+    //                         tag: {
+    //                           value: {
+    //                             id: 1,
+    //                             defaultLabel: "Uuid",
+    //                             editable: false,
+    //                           },
+    //                         },
+    //                       },
+    //                       reportUuid: {
+    //                         type: "string",
+    //                         validations: [
+    //                           {
+    //                             type: "uuid",
+    //                           },
+    //                         ],
+    //                         tag: {
+    //                           value: {
+    //                             id: 1,
+    //                             defaultLabel: "Uuid",
+    //                             editable: false,
+    //                           },
+    //                         },
+    //                       },
+    //                       icon: {
+    //                         type: "string",
+    //                         validations: [
+    //                           {
+    //                             type: "uuid",
+    //                           },
+    //                         ],
+    //                       },
+    //                     },
+    //                   },
+    //                   {
+    //                     type: "object",
+    //                     definition: {
+    //                       label: {
+    //                         type: "string",
+    //                       },
+    //                       section: {
+    //                         type: "literal",
+    //                         definition: "data",
+    //                       },
+    //                       selfApplication: {
+    //                         type: "string",
+    //                         validations: [
+    //                           {
+    //                             type: "uuid",
+    //                           },
+    //                         ],
+    //                         tag: {
+    //                           value: {
+    //                             id: 1,
+    //                             defaultLabel: "Uuid",
+    //                             editable: false,
+    //                           },
+    //                         },
+    //                       },
+    //                       reportUuid: {
+    //                         type: "string",
+    //                         validations: [
+    //                           {
+    //                             type: "uuid",
+    //                           },
+    //                         ],
+    //                         tag: {
+    //                           value: {
+    //                             id: 1,
+    //                             defaultLabel: "Uuid",
+    //                             editable: false,
+    //                           },
+    //                         },
+    //                       },
+    //                       icon: {
+    //                         type: "string",
+    //                         validations: [
+    //                           {
+    //                             type: "uuid",
+    //                           },
+    //                         ],
+    //                       },
+    //                     },
+    //                   },
+    //                   {
+    //                     type: "object",
+    //                     definition: {
+    //                       label: {
+    //                         type: "string",
+    //                       },
+    //                       section: {
+    //                         type: "literal",
+    //                         definition: "data",
+    //                       },
+    //                       selfApplication: {
+    //                         type: "string",
+    //                         validations: [
+    //                           {
+    //                             type: "uuid",
+    //                           },
+    //                         ],
+    //                         tag: {
+    //                           value: {
+    //                             id: 1,
+    //                             defaultLabel: "Uuid",
+    //                             editable: false,
+    //                           },
+    //                         },
+    //                       },
+    //                       reportUuid: {
+    //                         type: "string",
+    //                         validations: [
+    //                           {
+    //                             type: "uuid",
+    //                           },
+    //                         ],
+    //                         tag: {
+    //                           value: {
+    //                             id: 1,
+    //                             defaultLabel: "Uuid",
+    //                             editable: false,
+    //                           },
+    //                         },
+    //                       },
+    //                       icon: {
+    //                         type: "string",
+    //                         validations: [
+    //                           {
+    //                             type: "uuid",
+    //                           },
+    //                         ],
+    //                       },
+    //                     },
+    //                   },
+    //                   {
+    //                     type: "object",
+    //                     definition: {
+    //                       label: {
+    //                         type: "string",
+    //                       },
+    //                       section: {
+    //                         type: "literal",
+    //                         definition: "data",
+    //                       },
+    //                       selfApplication: {
+    //                         type: "string",
+    //                         validations: [
+    //                           {
+    //                             type: "uuid",
+    //                           },
+    //                         ],
+    //                         tag: {
+    //                           value: {
+    //                             id: 1,
+    //                             defaultLabel: "Uuid",
+    //                             editable: false,
+    //                           },
+    //                         },
+    //                       },
+    //                       reportUuid: {
+    //                         type: "string",
+    //                         validations: [
+    //                           {
+    //                             type: "uuid",
+    //                           },
+    //                         ],
+    //                         tag: {
+    //                           value: {
+    //                             id: 1,
+    //                             defaultLabel: "Uuid",
+    //                             editable: false,
+    //                           },
+    //                         },
+    //                       },
+    //                       icon: {
+    //                         type: "string",
+    //                         validations: [
+    //                           {
+    //                             type: "uuid",
+    //                           },
+    //                         ],
+    //                       },
+    //                     },
+    //                   },
+    //                   {
+    //                     type: "object",
+    //                     definition: {
+    //                       label: {
+    //                         type: "string",
+    //                       },
+    //                       section: {
+    //                         type: "literal",
+    //                         definition: "data",
+    //                       },
+    //                       selfApplication: {
+    //                         type: "string",
+    //                         validations: [
+    //                           {
+    //                             type: "uuid",
+    //                           },
+    //                         ],
+    //                         tag: {
+    //                           value: {
+    //                             id: 1,
+    //                             defaultLabel: "Uuid",
+    //                             editable: false,
+    //                           },
+    //                         },
+    //                       },
+    //                       reportUuid: {
+    //                         type: "string",
+    //                         validations: [
+    //                           {
+    //                             type: "uuid",
+    //                           },
+    //                         ],
+    //                         tag: {
+    //                           value: {
+    //                             id: 1,
+    //                             defaultLabel: "Uuid",
+    //                             editable: false,
+    //                           },
+    //                         },
+    //                       },
+    //                       icon: {
+    //                         type: "string",
+    //                         validations: [
+    //                           {
+    //                             type: "uuid",
+    //                           },
+    //                         ],
+    //                       },
+    //                     },
+    //                   },
+    //                 ],
+    //               },
+    //             },
+    //           },
+    //         ],
+    //       },
+    //     },
+    //   },
+    // },
+  };
 // ################################################################################################
 // ################################################################################################
 // ################################################################################################
@@ -10469,7 +16000,8 @@ describe("jzod.typeCheck", () => {
       testParams.testValueObject,
       testParams.expectedResult,
       testParams.expectedResolvedSchema,
-      testParams.expectedSubSchema
+      testParams.expectedSubSchema,
+      testParams.expectedKeyMap,
     );
   });
   // ###########################################################################################
@@ -10485,5 +16017,5 @@ describe("jzod.typeCheck", () => {
   //       test[1].expectedSubSchema,
   //     );
   //   }
-  // });
 });
+// });

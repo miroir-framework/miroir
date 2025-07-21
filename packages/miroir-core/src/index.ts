@@ -628,6 +628,7 @@ export {
   getDefaultValueForJzodSchemaWithResolution,
 } from "./1_core/jzod/getDefaultValueForJzodSchema.js";
 export {
+  KeyMapEntry,
   ResolvedJzodSchemaReturnType,
   ResolvedJzodSchemaReturnTypeError,
   ResolvedJzodSchemaReturnTypeOK,
