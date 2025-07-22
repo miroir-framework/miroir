@@ -169,7 +169,8 @@ export function unfoldJzodSchemaOnce(
   // const currentRecursionLevel = recursionLevel;
   
   // log.info(
-  //   `unfoldJzodSchemaOnce [Level ${currentRecursionLevel}] called for type`,
+  //   // `unfoldJzodSchemaOnce [Level ${currentRecursionLevel}] called for type`,
+  //   `unfoldJzodSchemaOnce called for type`,
   //   jzodSchema?.type,
   //   "path",
   //   "'" + path.join(".") + "'",

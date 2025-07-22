@@ -54,6 +54,7 @@ import { entityDefinitionEndpoint } from "miroir-core";
 import { queryEndpointVersionV1 } from "miroir-core";
 import { test_createEntityAndReportFromSpreadsheetAndUpdateMenu } from "miroir-core";
 import { entityTest } from "miroir-core";
+import { entityDefinitionTest } from "miroir-core";
 
 // ################################################################################################
 const pageLabel = "JzodElementEditor.test";
@@ -720,6 +721,7 @@ export function getJzodObjectEditorTests(
               await waitAfterUserInteraction();
               
               // expect(screen.getByLabelText("AAAAAAAAAAAAAAAAAAAA")).toBeInTheDocument();
+              screen.debug(undefined, Infinity); // Prints entire DOM with no size limit
               const screenValues: Record<string, any> = extractValuesFromRenderedElements(
                 expect,
                 container,
@@ -882,6 +884,7 @@ export function getJzodObjectEditorTests(
               await act(() => {
                 fireEvent.click(addButton);
               });
+              await waitAfterUserInteraction();
               const values = extractValuesFromRenderedElements(
                 expect,
                 container,
@@ -1546,6 +1549,9 @@ export function getJzodUnionEditorTests(
             await act(() => {
               fireEvent.change(input, { target: { value: "type2" } });
             });
+            await waitAfterUserInteraction();
+
+            screen.debug(undefined, Infinity); // Prints entire DOM with no size limit
             const valuesAfterChange: Record<string, any> = extractValuesFromRenderedElements(
               expect,
               container,
@@ -1838,50 +1844,6 @@ export function getJzodEndpointEditorTests(
   LocalEditor: React.FC<LocalEndpointEditorProps>,
   renderAsJzodElementEditor: React.FC<JzodElementEditorProps_Test>
 ): JzodEndpointEditorTestSuites {
-  // // Create a simpler endpoint schema for testing to avoid performance issues
-  // const simpleEndpointSchema: JzodElement = {
-  //   type: "object",
-  //   definition: {
-  //     uuid: {
-  //       type: "uuid",
-  //       tag: {
-  //         value: {
-  //           id: 1,
-  //           defaultLabel: "Uuid",
-  //           editable: false
-  //         }
-  //       }
-  //     },
-  //     name: {
-  //       type: "string",
-  //       tag: {
-  //         value: {
-  //           id: 2,
-  //           defaultLabel: "Name",
-  //           editable: true
-  //         }
-  //       }
-  //     },
-  //     description: {
-  //       type: "string",
-  //       tag: {
-  //         value: {
-  //           id: 3,
-  //           defaultLabel: "Description",
-  //           editable: true
-  //         }
-  //       }
-  //     }
-  //   }
-  // };
-
-  // // Create a simple endpoint instance for testing
-  // const simpleEndpointInstance = {
-  //   uuid: "ddd9c928-2ceb-4f67-971b-5898090412d6",
-  //   name: "TestEndpoint",
-  //   description: "Test endpoint for performance"
-  // };
-
   return {
     JzodEndpointEditor: {
       suiteRenderComponent: {
@@ -1889,40 +1851,6 @@ export function getJzodEndpointEditorTests(
         renderAsJzodElementEditor,
       },
       tests: {
-        // "Simple Endpoint is displayed as json-like input fields with proper value": {
-        //   props: {
-        //     label: "Test Label",
-        //     name: "testField",
-        //     listKey: "ROOT.testField",
-        //     rootLessListKey: "testField",
-        //     rootLessListKeyArray: ["testField"],
-        //     rawJzodSchema: simpleEndpointSchema,
-        //     initialFormState: simpleEndpointInstance
-        //   },
-        //   tests: async (expect: ExpectStatic, container: Container) => {
-        //     // Remove the expensive DOM debugging
-        //     // console.log("=== FULL RENDERED DOM ===");
-        //     // screen.debug(undefined, Infinity); // This is very expensive!
-  
-        //     // Basic test to ensure the component renders without crashing
-        //     expect(container).toBeInTheDocument();
-            
-        //     // Check that basic form fields are present
-        //     const nameInput = container.querySelector('input[name*="name"]');
-        //     const descriptionInput = container.querySelector('input[name*="description"]');
-            
-        //     expect(nameInput).toBeInTheDocument();
-        //     expect(descriptionInput).toBeInTheDocument();
-            
-        //     // Check values are properly set
-        //     if (nameInput) {
-        //       expect((nameInput as HTMLInputElement).value).toBe("TestEndpoint");
-        //     }
-        //     if (descriptionInput) {
-        //       expect((descriptionInput as HTMLInputElement).value).toBe("Test endpoint for performance");
-        //     }
-        //   },
-        // },
         // "Application Endpoint schema renders": {
         //   props: {
         //     label: "Test Label",
@@ -2000,7 +1928,7 @@ export function getJzodEndpointEditorTests(
             listKey: "ROOT.testField",
             rootLessListKey: "testField",
             rootLessListKeyArray: ["testField"],
-            rawJzodSchema: entityTest.jzodSchema,
+            rawJzodSchema: entityDefinitionTest.jzodSchema,
             initialFormState: test_createEntityAndReportFromSpreadsheetAndUpdateMenu
           },
           tests: async (expect: ExpectStatic, container: Container) => {

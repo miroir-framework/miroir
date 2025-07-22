@@ -35,6 +35,10 @@ function local_test(schema: JzodElement, instance: any): string[] {
   const unfoldedRawSchema: UnfoldJzodSchemaOnceReturnType = unfoldJzodSchemaOnce(
     miroirFundamentalJzodSchema as JzodSchema, // context.miroirFundamentalJzodSchema,
     schema,
+    [], // path
+    [], // unfodingReference,
+    schema, // rootSchema
+    0, // depth
     currentModel as any as MetaModel,
     currentMiroirModel as any as MetaModel
   );
@@ -56,7 +60,7 @@ function local_test(schema: JzodElement, instance: any): string[] {
     throw new Error(`Error while recursively unfolding JzodUnion: ${recursivelyUnfoldedSchema.error}`);
   }
   return getObjectUniondiscriminatorValuesFromResolvedSchema(
-    resolvedElementJzodSchema.element,
+    resolvedElementJzodSchema.resolvedSchema,
     unfoldedRawSchema.element,
     recursivelyUnfoldedSchema.result,
     (unfoldedRawSchema.element as JzodUnion).discriminator
@@ -64,31 +68,31 @@ function local_test(schema: JzodElement, instance: any): string[] {
 }
 
 describe("getObjectUniondiscriminatorValuesFromResolvedSchema", () => {
-    it("returns correct result for a simple union of objects with discriminator", () => {
-      const schema: JzodUnion = {
-        type: "union",
-        discriminator: "objectType",
-        definition: [
-          {
-            type: "object",
-            definition: {
-              objectType: { type: "literal", definition: "A" },
-              value: { type: "string" },
-            },
+  it("returns correct result for a simple union of objects with discriminator", () => {
+    const schema: JzodUnion = {
+      type: "union",
+      discriminator: "objectType",
+      definition: [
+        {
+          type: "object",
+          definition: {
+            objectType: { type: "literal", definition: "A" },
+            value: { type: "string" },
           },
-          {
-            type: "object",
-            definition: {
-              objectType: { type: "literal", definition: "B" },
-              value: { type: "number" },
-            },
+        },
+        {
+          type: "object",
+          definition: {
+            objectType: { type: "literal", definition: "B" },
+            value: { type: "number" },
           },
-        ],
-      };
-      const instance = { objectType: "A", value: "test" };
-      const result = local_test(schema, instance);
-      console.log("Result for simple union:", JSON.stringify(result, null, 2));
-      expect(result).toEqual(["A", "B"]);
-    });
+        },
+      ],
+    };
+    const instance = { objectType: "A", value: "test" };
+    const result = local_test(schema, instance);
+    console.log("Result for simple union:", JSON.stringify(result, null, 2));
+    expect(result).toEqual(["A", "B"]);
+  });
 
 });

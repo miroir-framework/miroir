@@ -18,7 +18,7 @@ MiroirLoggerFactory.registerLoggerToStart(
 
 const extensions = [javascript()];
 
-const JzodElementEditorReactCodeMirrorComponent: React.FC<JzodElementEditorReactCodeMirrorProps> = (
+export const JzodElementEditorReactCodeMirror: React.FC<JzodElementEditorReactCodeMirrorProps> = (
   props: JzodElementEditorReactCodeMirrorProps
 ) => {
   const {
@@ -46,7 +46,7 @@ const JzodElementEditorReactCodeMirrorComponent: React.FC<JzodElementEditorReact
   }
    useEffect(() => {
     // log.info(
-    //   "JzodElementEditorReactCodeMirrorComponent mounted with initialValue:",
+    //   "JzodElementEditorReactCodeMirror mounted with initialValue:",
     //   initialValue
     // );
     if (initialValue) {
@@ -179,9 +179,9 @@ const JzodElementEditorReactCodeMirrorComponent: React.FC<JzodElementEditorReact
 
 // Apply memoization to prevent unnecessary re-renders
 // TODO: is this useful / old school?
-export const JzodElementEditorReactCodeMirror = JzodElementEditorReactCodeMirrorComponent;
+// export const JzodElementEditorReactCodeMirror = JzodElementEditorReactCodeMirror;
 // React.memo(
-//   JzodElementEditorReactCodeMirrorComponent,
+//   JzodElementEditorReactCodeMirror,
 //   (prevProps, nextProps) => {
 //     // Custom comparison function to determine if the component should re-render
 //     return (

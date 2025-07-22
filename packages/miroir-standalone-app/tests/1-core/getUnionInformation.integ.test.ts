@@ -36,9 +36,19 @@ function local_getUnionInformation(
     throw new Error(`Error while resolving Jzod schema: ${resolvedElementJzodSchema.error}`);
   }
 
+  // const unfoldedRawSchema: UnfoldJzodSchemaOnceReturnType = unfoldJzodSchemaOnce(
+  //   miroirFundamentalJzodSchema as JzodSchema, // context.miroirFundamentalJzodSchema,
+  //   schema,
+  //   currentModel as any as MetaModel,
+  //   currentMiroirModel as any as MetaModel
+  // );
   const unfoldedRawSchema: UnfoldJzodSchemaOnceReturnType = unfoldJzodSchemaOnce(
     miroirFundamentalJzodSchema as JzodSchema, // context.miroirFundamentalJzodSchema,
     schema,
+    [], // path
+    [], // unfodingReference,
+    schema, // rootSchema
+    0, // depth
     currentModel as any as MetaModel,
     currentMiroirModel as any as MetaModel
   );
@@ -110,20 +120,71 @@ describe("getUnionInformation", () => {
     );
     console.log("Result for", expect.getState().currentTestName,":", JSON.stringify(result, null, 2));
     expect(result).toEqual({
-      jzodSchema: schema,
+      unfoldedRawSchema: {
+        type: "union",
+        discriminator: "objectType",
+        definition: [
+          {
+            type: "object",
+            definition: {
+              objectType: {
+                type: "literal",
+                definition: "A",
+              },
+              value: {
+                type: "string",
+              },
+            },
+          },
+          {
+            type: "object",
+            definition: {
+              objectType: {
+                type: "literal",
+                definition: "B",
+              },
+              value: {
+                type: "number",
+              },
+            },
+          },
+        ],
+      },
+      resolvedElementJzodSchema: {
+        type: "object",
+        definition: {
+          objectType: {
+            type: "literal",
+            definition: "A",
+          },
+          value: {
+            type: "string",
+          },
+        },
+      },
       objectBranches: [
         {
           type: "object",
           definition: {
-            objectType: { type: "literal", definition: "A" },
-            value: { type: "string" },
+            objectType: {
+              type: "literal",
+              definition: "A",
+            },
+            value: {
+              type: "string",
+            },
           },
         },
         {
           type: "object",
           definition: {
-            objectType: { type: "literal", definition: "B" },
-            value: { type: "number" },
+            objectType: {
+              type: "literal",
+              definition: "B",
+            },
+            value: {
+              type: "number",
+            },
           },
         },
       ],
@@ -178,86 +239,111 @@ describe("getUnionInformation", () => {
     );
     console.log("Result for", expect.getState().currentTestName,":", JSON.stringify(result, null, 2));
     expect(result).toEqual({
-      jzodSchema: {
-        type: "union",
-        discriminator: "objectType",
-        definition: [
+      "unfoldedRawSchema": {
+        "type": "union",
+        "discriminator": "objectType",
+        "definition": [
           {
-            type: "object",
-            definition: {
-              objectType: {
-                type: "literal",
-                definition: "A",
+            "type": "object",
+            "definition": {
+              "objectType": {
+                "type": "literal",
+                "definition": "A"
               },
-              value: {
-                type: "string",
-              },
-            },
+              "value": {
+                "type": "string"
+              }
+            }
           },
           {
-            type: "schemaReference",
-            definition: {
-              relativePath: "myObject",
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "myObject"
             },
-            context: {
-              myObject: {
-                type: "object",
-                definition: {
-                  objectType: {
-                    type: "literal",
-                    definition: "B",
+            "context": {
+              "myObject": {
+                "type": "object",
+                "definition": {
+                  "objectType": {
+                    "type": "literal",
+                    "definition": "B"
                   },
-                  value: {
-                    type: "number",
-                  },
-                },
+                  "value": {
+                    "type": "number"
+                  }
+                }
               },
-              myUnion: {
-                type: "union",
-                discriminator: "objectType",
-                definition: [
+              "myUnion": {
+                "type": "union",
+                "discriminator": "objectType",
+                "definition": [
                   {
-                    type: "object",
-                    definition: {
-                      objectType: {
-                        type: "literal",
-                        definition: "A",
+                    "type": "object",
+                    "definition": {
+                      "objectType": {
+                        "type": "literal",
+                        "definition": "A"
                       },
-                      value: {
-                        type: "string",
-                      },
-                    },
+                      "value": {
+                        "type": "string"
+                      }
+                    }
                   },
                   {
-                    type: "schemaReference",
-                    definition: {
-                      relativePath: "myObject",
-                    },
-                  },
-                ],
-              },
-            },
-          },
-        ],
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "myObject"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ]
       },
-      objectBranches: [
-        {
-          type: "object",
-          definition: {
-            objectType: { type: "literal", definition: "A" },
-            value: { type: "string" },
+      "resolvedElementJzodSchema": {
+        "type": "object",
+        "definition": {
+          "objectType": {
+            "type": "literal",
+            "definition": "A"
           },
+          "value": {
+            "type": "string"
+          }
+        }
+      },
+      "objectBranches": [
+        {
+          "type": "object",
+          "definition": {
+            "objectType": {
+              "type": "literal",
+              "definition": "A"
+            },
+            "value": {
+              "type": "string"
+            }
+          }
         },
         {
-          type: "object",
-          definition: {
-            objectType: { type: "literal", definition: "B" },
-            value: { type: "number" },
-          },
-        },
+          "type": "object",
+          "definition": {
+            "objectType": {
+              "type": "literal",
+              "definition": "B"
+            },
+            "value": {
+              "type": "number"
+            }
+          }
+        }
       ],
-      discriminator: "objectType",
-      discriminatorValues: ["A", "B"],
+      "discriminator": "objectType",
+      "discriminatorValues": [
+        "A",
+        "B"
+      ]
     });
   });
 

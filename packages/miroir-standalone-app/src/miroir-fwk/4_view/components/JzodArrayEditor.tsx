@@ -25,7 +25,6 @@ import { ExpandOrFoldObjectAttributes, JzodElementEditor } from "./JzodElementEd
 import { JzodArrayEditorProps } from "./JzodElementEditorInterface";
 import { ErrorFallbackComponent } from "./ErrorFallbackComponent";
 import { SizedAddBox, SizedButton } from "./Style";
-import { J } from "vitest/dist/chunks/environment.LoooBwUu";
 import { JzodUnion } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -107,10 +106,11 @@ interface ProgressiveArrayItemProps {
   rootLessListKeyArray: (string | number)[];
   currentArrayElementRawDefinition: UnfoldJzodSchemaOnceReturnTypeOK;
   resolvedElementJzodSchema: JzodElement | undefined;
+  typeCheckKeyMap?: Record<string, { rawSchema: JzodElement; resolvedSchema: JzodElement }>;
   usedIndentLevel: number;
   currentDeploymentUuid: string | undefined;
   currentApplicationSection: string | undefined;
-  localRootLessListKeyMap: any;
+  // localRootLessListKeyMap: any;
   foreignKeyObjects: any;
   insideAny: boolean | undefined;
   parentUnfoldedRawSchema: any;
@@ -126,10 +126,11 @@ const ProgressiveArrayItem: React.FC<ProgressiveArrayItemProps> = ({
   rootLessListKeyArray,
   currentArrayElementRawDefinition,
   resolvedElementJzodSchema,
+  typeCheckKeyMap,
   usedIndentLevel,
   currentDeploymentUuid,
   currentApplicationSection,
-  localRootLessListKeyMap,
+  // localRootLessListKeyMap,
   foreignKeyObjects,
   insideAny,
   parentUnfoldedRawSchema,
@@ -227,7 +228,8 @@ const ProgressiveArrayItem: React.FC<ProgressiveArrayItemProps> = ({
                     ? ((resolvedElementJzodSchema as JzodArray)?.definition as any)
                     : ((resolvedElementJzodSchema as JzodTuple).definition[index] as JzodElement)
                 }
-                localRootLessListKeyMap={localRootLessListKeyMap}
+                typeCheckKeyMap={ typeCheckKeyMap }
+                // localRootLessListKeyMap={localRootLessListKeyMap}
                 foreignKeyObjects={foreignKeyObjects}
                 insideAny={insideAny}
                 parentType={parentUnfoldedRawSchema.type}
@@ -258,7 +260,8 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
     rawJzodSchema,
     unfoldedRawSchema: parentUnfoldedRawSchema,
     resolvedElementJzodSchema,
-    localRootLessListKeyMap,
+    typeCheckKeyMap,
+    // localRootLessListKeyMap,
     // paramMiroirFundamentalJzodSchema,
     currentDeploymentUuid,
     currentApplicationSection,
@@ -543,10 +546,11 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
               rootLessListKeyArray={rootLessListKeyArray}
               currentArrayElementRawDefinition={currentArrayElementRawDefinition}
               resolvedElementJzodSchema={resolvedElementJzodSchema}
+              typeCheckKeyMap={typeCheckKeyMap}
               usedIndentLevel={usedIndentLevel}
               currentDeploymentUuid={currentDeploymentUuid}
               currentApplicationSection={currentApplicationSection}
-              localRootLessListKeyMap={localRootLessListKeyMap}
+              // localRootLessListKeyMap={localRootLessListKeyMap}
               foreignKeyObjects={foreignKeyObjects}
               insideAny={insideAny}
               parentUnfoldedRawSchema={parentUnfoldedRawSchema}
@@ -567,7 +571,8 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
     parentUnfoldedRawSchema,
     formik.values,
     resolvedElementJzodSchema,
-    localRootLessListKeyMap,
+    typeCheckKeyMap,
+    // localRootLessListKeyMap,
     currentDeploymentUuid,
     currentApplicationSection,
     usedIndentLevel,

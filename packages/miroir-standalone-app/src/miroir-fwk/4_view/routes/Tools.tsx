@@ -9,7 +9,6 @@ import { ChangeEvent, useCallback, useMemo, useState } from "react";
 const MyReactCodeMirror: any = ReactCodeMirror // TODO: solve the mystery: it was once well-typed, now the linter raises an error upon direct (default-typed) use!
 
 import {
-  ActionHandler,
   ApplicationSection,
   DomainAction,
   DomainControllerInterface,
@@ -20,6 +19,7 @@ import {
   MiroirConfigClient,
   MiroirLoggerFactory,
   StoreUnitConfiguration,
+  TestCompositeActionParams,
   TestSuiteContext,
   adminConfigurationDeploymentAdmin,
   adminConfigurationDeploymentMiroir,
@@ -41,7 +41,7 @@ import { adminConfigurationDeploymentParis, applicationParis, packageName } from
 import { getTestSuitesForBuildPlusRuntimeCompositeAction } from "../../4-tests/applicative.Library.BuildPlusRuntimeCompositeAction.js";
 import { expect } from "../../4-tests/test-expect.js";
 import { testOnLibrary_deleteLibraryDeployment } from "../../4-tests/tests-utils-testOnLibrary.js";
-import { TestCompositeActionParams, runTestOrTestSuite } from "../../4-tests/tests-utils.js";
+import { runTestOrTestSuite } from "../../4-tests/tests-utils.js";
 import { JzodEnumSchemaToJzodElementResolver, getCurrentEnumJzodSchemaResolver } from "../../JzodTools.js";
 import {
   useDomainControllerService,
@@ -139,7 +139,7 @@ export const ToolsPage: React.FC<any> = (
   // const miroirMetaModel: MetaModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
 
   // DOES NOTHING
-  const actionHandlerCreateApplication: ActionHandler = useMemo(()=> ({
+  const actionHandlerCreateApplication = useMemo(()=> ({
     interface: {
       actionJzodObjectSchema: {
         type: "object",
@@ -248,7 +248,7 @@ export const ToolsPage: React.FC<any> = (
   }),[])
 
   const [rawSchema, setRawSchema] = useState<JzodElement>(
-    actionHandlerCreateApplication.interface.actionJzodObjectSchema
+    actionHandlerCreateApplication.interface.actionJzodObjectSchema as JzodElement
   );
 
 
@@ -304,7 +304,7 @@ export const ToolsPage: React.FC<any> = (
           emptyObject,
         )
 
-        return configuration.status == "ok"? configuration.element : defaultObject;
+        return configuration.status == "ok"? configuration.resolvedSchema : defaultObject;
       }
     },
     [context, rawSchema, formState]
@@ -327,7 +327,7 @@ export const ToolsPage: React.FC<any> = (
       (testSuitesResultsSchema != undefined && testSuitesResultsSchema.context != undefined)
     ) {
       const configuration = jzodTypeCheck(
-        (miroirFundamentalJzodSchema.definition.context as any).testsResults,
+        (context.miroirFundamentalJzodSchema.definition as any).context.testsResults,
         testResults["applicative.Library.BuildPlusRuntimeCompositeAction.integ.test"],
         [], // currentValuePath
         [], // currentTypePath
@@ -337,7 +337,7 @@ export const ToolsPage: React.FC<any> = (
         emptyObject
       );
 
-      return configuration.status == "ok" ? configuration.element : defaultObject;
+      return configuration.status == "ok" ? configuration.resolvedSchema : defaultObject;
     }
   }, [context.miroirFundamentalJzodSchema, rawSchema, testResults]);
 
@@ -551,27 +551,38 @@ export const ToolsPage: React.FC<any> = (
   log.info(
     "Tools.tsx render",
     currentEnumJzodSchemaResolver,
+    "testResults",
     testResults,
+    "testSuitesResultsSchema",
     testSuitesResultsSchema,
+    "testSuitesResultsSchema.context",
     testSuitesResultsSchema.context,
+    "resolvedTestResultsJzodSchema",
     resolvedTestResultsJzodSchema,
-    (resolvedTestResultsJzodSchema as any)?.element,
+    // (resolvedTestResultsJzodSchema as any)?.element,
   );
   return (
     <>
       <div>Hello World!</div>
       {/* test results */}
       <div>
-        {
-        currentEnumJzodSchemaResolver != undefined &&
+        {currentEnumJzodSchemaResolver != undefined &&
         testResults &&
         testSuitesResultsSchema != undefined &&
         testSuitesResultsSchema.context != undefined &&
-        resolvedTestResultsJzodSchema != undefined
-        ? (
+        resolvedTestResultsJzodSchema != undefined ? (
           <div>
             <div>Test results:</div>
-            <JzodElementDisplay
+            <pre>
+            {testResults["applicative.Library.BuildPlusRuntimeCompositeAction.integ.test"] &&
+              JSON.stringify(
+                testResults["applicative.Library.BuildPlusRuntimeCompositeAction.integ.test"],
+                null,
+                2
+              )}
+
+            </pre>
+            {/* <JzodElementDisplay
               path={"applicative.Library.BuildPlusRuntimeCompositeAction.integ.test"}
               name={"applicative.Library.BuildPlusRuntimeCompositeAction.integ.test"}
               deploymentUuid={props.deploymentUuid}
@@ -583,7 +594,7 @@ export const ToolsPage: React.FC<any> = (
               resolvedElementJzodSchema={resolvedTestResultsJzodSchema}
               currentReportDeploymentSectionEntities={currentReportDeploymentSectionEntities}
               currentEnumJzodSchemaResolver={currentEnumJzodSchemaResolver}
-            ></JzodElementDisplay>
+            ></JzodElementDisplay> */}
           </div>
         ) : (
           <div>could not display test results!</div>
@@ -614,10 +625,7 @@ export const ToolsPage: React.FC<any> = (
         >
           {(formik) => (
             <>
-              <form
-                id={"form." + pageLabel}
-                onSubmit={formik.handleSubmit}
-              >
+              <form id={"form." + pageLabel} onSubmit={formik.handleSubmit}>
                 {resolvedJzodSchema === defaultObject ? (
                   <div>no object definition found!</div>
                 ) : (
@@ -627,11 +635,12 @@ export const ToolsPage: React.FC<any> = (
                       listKey={"ROOT"}
                       rootLessListKey={emptyString}
                       rootLessListKeyArray={emptyList}
-                      labelElement={pageLabel}
+                      labelElement={<>{pageLabel}</>}
                       currentDeploymentUuid={emptyString}
                       currentApplicationSection={dataSection}
                       rawJzodSchema={rawSchema}
                       resolvedElementJzodSchema={resolvedJzodSchema}
+                      localRootLessListKeyMap={{}}
                       foreignKeyObjects={emptyObject}
                       indentLevel={0}
                       // handleChange={formik.handleChange as any}

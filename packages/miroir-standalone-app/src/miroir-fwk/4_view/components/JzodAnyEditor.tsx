@@ -40,9 +40,10 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
     foreignKeyObjects,
     unionInformation,
     resolvedElementJzodSchema, // handleSelectLiteralChange,
-    localRootLessListKeyMap,
+    // localRootLessListKeyMap,
     labelElement,
     insideAny,
+    typeCheckKeyMap,
     // indentLevel,
     // visible = true, // added visibility prop
   } = props;
@@ -66,6 +67,7 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
             );
             const defaultValue = getDefaultValueForJzodSchemaWithResolution(
               type,
+              true, // force optional attributes to receive a default value
               miroirFundamentalJzodSchema as JzodSchema, // context.miroirFundamentalJzodSchema,
               currentModel,
               miroirMetaModel
@@ -88,7 +90,8 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
           currentApplicationSection={currentApplicationSection}
           unionInformation={unionInformation}
           resolvedElementJzodSchema={resolvedElementJzodSchema}
-          localRootLessListKeyMap={localRootLessListKeyMap}
+          typeCheckKeyMap={typeCheckKeyMap}
+          // localRootLessListKeyMap={localRootLessListKeyMap}
           labelElement={<></>}
           foreignKeyObjects={foreignKeyObjects}
           insideAny={true}

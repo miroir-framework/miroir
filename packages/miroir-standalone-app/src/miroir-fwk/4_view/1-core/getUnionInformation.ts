@@ -1,17 +1,13 @@
 import { JzodUnion, JzodUnion_RecursivelyUnfold_ReturnTypeOK, JzodElement } from "miroir-core";
 import { getObjectUniondiscriminatorValuesFromResolvedSchema } from "../../../getObjectUniondiscriminatorValuesFromResolvedSchema";
+import { UnionInformation } from "../components/JzodElementEditorInterface";
 
 export function getUnionInformation(
   unfoldedRawSchema: JzodUnion,
   resolvedElementJzodSchema: JzodElement | undefined,
   recursivelyUnfoldedRawSchema: JzodUnion_RecursivelyUnfold_ReturnTypeOK | undefined
 ):
-  | {
-      jzodSchema: JzodUnion;
-      objectBranches: JzodElement[];
-      discriminator: string;
-      discriminatorValues: string[];
-    }
+  | UnionInformation
   | undefined {
   const objectUniondiscriminatorValues = getObjectUniondiscriminatorValuesFromResolvedSchema(
     resolvedElementJzodSchema,
@@ -20,7 +16,8 @@ export function getUnionInformation(
     recursivelyUnfoldedRawSchema?.discriminator
   );
   return {
-    jzodSchema: unfoldedRawSchema,
+    unfoldedRawSchema: unfoldedRawSchema,
+    resolvedElementJzodSchema: resolvedElementJzodSchema,
     objectBranches: recursivelyUnfoldedRawSchema?.result ?? [],
     discriminator: recursivelyUnfoldedRawSchema?.discriminator as string,
     discriminatorValues: objectUniondiscriminatorValues,

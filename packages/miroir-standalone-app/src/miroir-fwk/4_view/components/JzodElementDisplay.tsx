@@ -61,8 +61,8 @@ export function JzodElementDisplay(props: JzodElementDisplayProps){
     "JzodElementDisplay",
     "props",
     props,
-    "targetJzodSchema",
-    targetJzodSchema,
+    "resolvedElementJzodSchema",
+    props.resolvedElementJzodSchema,
   )
   // log.info(
   //   "~~~~~~~~~~~~~~~~~~~~~~~~~~~~ path",

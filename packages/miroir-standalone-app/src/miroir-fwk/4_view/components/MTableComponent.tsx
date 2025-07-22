@@ -277,50 +277,73 @@ export const MTableComponent = (props: TableComponentProps) => {
   prevProps = props;
 
   // ##############################################################################################
-  const onCellClicked = useCallback((event:CellClickedEvent)=> {
-    // event.stopPropagation();
-    log.warn("onCellClicked event.colDef.field",event.colDef.field,"event",event,"props", props)
-    if (props.type == "EntityInstance" && event.colDef.field && event.colDef.field != "tools") {
-      // log.warn("onCellClicked props.currentMiroirEntityDefinition.jzodSchema",props.currentMiroirEntityDefinition.jzodSchema)
-      const columnDefinitionAttributeEntry = Object.entries(
-        props.currentEntityDefinition?.jzodSchema.definition ?? {}
-      ).find((a: [string, any]) => a[0] == event.colDef.field);
-      if (["name", "uuid"].includes(event.colDef.field)) {
-        // display current Entity Details for Entity Instance
-        navigate(
-          `/report/${contextDeploymentUuid}/${
-            ["MetaModel", "model"].includes(props.currentEntityDefinition.conceptLevel as any)? "model": context.applicationSection
-          }/${props.currentEntityDefinition?.defaultInstanceDetailsReportUuid}/${event.data.rawValue.uuid}`
-        );
+  const onCellClicked = useCallback(
+    (event: CellClickedEvent) => {
+      // Early return for non-navigable clicks
+      if (
+        props.type !== "EntityInstance" ||
+        !event.colDef.field ||
+        event.colDef.field === "tools"
+      ) {
+        return;
+      }
 
-      } else {
-        if (
-          columnDefinitionAttributeEntry &&
-          (columnDefinitionAttributeEntry[1] as any).type == "uuid" &&
-          (columnDefinitionAttributeEntry[1] as any).tag?.value?.targetEntity
-        ) {
-          const columnDefinitionAttribute = columnDefinitionAttributeEntry[1];
-  
-          const targetEntityDefinition: EntityDefinition | undefined = currentModel.entityDefinitions.find(
-            (e) => e.entityUuid == event.colDef.cellRendererParams.entityUuid
-          );
-  
+      const fieldName = event.colDef.field;
+      log.warn("onCellClicked event.colDef.field", fieldName, "event", event, "props", props);
+
+      // Use setTimeout to defer navigation and prevent blocking the UI thread
+      setTimeout(() => {
+        if (["name", "uuid"].includes(fieldName)) {
+          // display current Entity Details for Entity Instance
+          const applicationSection = ["MetaModel", "model"].includes(
+            props.currentEntityDefinition.conceptLevel as any
+          )
+            ? "model"
+            : context.applicationSection;
+
           navigate(
-            `/report/${contextDeploymentUuid}/${
-              (columnDefinitionAttribute as any)?.tag?.value?.targetEntityApplicationSection
-                ? (columnDefinitionAttribute as any)?.tag.value?.targetEntityApplicationSection
-                : context.applicationSection
-            }/${targetEntityDefinition?.defaultInstanceDetailsReportUuid}/${event.data.rawValue[event.colDef.field]}`
+            `/report/${contextDeploymentUuid}/${applicationSection}/${props.currentEntityDefinition?.defaultInstanceDetailsReportUuid}/${event.data.rawValue.uuid}`
           );
         } else {
-          log.info(
-            "onCellClicked cell is not an Entity Instance uuid, no navigation occurs.",
-            columnDefinitionAttributeEntry
-          );
+          // Cache schema definition lookup
+          const schemaDefinition = props.currentEntityDefinition?.jzodSchema.definition ?? {};
+          const columnDefinitionAttribute = schemaDefinition[fieldName];
+
+          if (
+            columnDefinitionAttribute &&
+            (columnDefinitionAttribute as any).type === "uuid" &&
+            (columnDefinitionAttribute as any).tag?.value?.targetEntity
+          ) {
+            const targetEntityDefinition: EntityDefinition | undefined =
+              currentModel.entityDefinitions.find(
+                (e) => e.entityUuid === event.colDef.cellRendererParams.entityUuid
+              );
+
+            const targetApplicationSection =
+              (columnDefinitionAttribute as any)?.tag?.value?.targetEntityApplicationSection ||
+              context.applicationSection;
+
+            navigate(
+              `/report/${contextDeploymentUuid}/${targetApplicationSection}/${targetEntityDefinition?.defaultInstanceDetailsReportUuid}/${event.data.rawValue[fieldName]}`
+            );
+          } else {
+            log.info(
+              "onCellClicked cell is not an Entity Instance uuid, no navigation occurs.",
+              columnDefinitionAttribute
+            );
+          }
         }
-      }
-    }
-  },[props,])
+      }, 0);
+    },
+    [
+      props.type,
+      (props as any).currentEntityDefinition,
+      contextDeploymentUuid,
+      context.applicationSection,
+      currentModel.entityDefinitions,
+      navigate,
+    ]
+  );
   
   
   // function onCellDoubleClicked(e:CellDoubleClickedEvent) {

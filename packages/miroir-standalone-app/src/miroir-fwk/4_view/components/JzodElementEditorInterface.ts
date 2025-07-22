@@ -5,12 +5,14 @@ import {
   EntityInstancesUuidIndex,
   JzodElement,
   JzodUnion,
+  KeyMapEntry,
   Uuid
 } from "miroir-core";
 import { JzodArray } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 export interface UnionInformation {
-  jzodSchema: JzodUnion;
+  unfoldedRawSchema: JzodUnion;
+  resolvedElementJzodSchema: JzodElement | undefined;
   objectBranches: JzodElement[];
   discriminator: string;
   discriminatorValues: string[];
@@ -29,7 +31,8 @@ export interface JzodEditorPropsRoot {
   initialFormState?: any;
   rawJzodSchema: JzodElement | undefined;
   resolvedElementJzodSchema: JzodElement | undefined;
-  localRootLessListKeyMap: Record<string, { resolvedElementJzodSchema: JzodElement }> | undefined;
+  // localRootLessListKeyMap: Record<string, { resolvedElementJzodSchema: JzodElement }> | undefined;
+  typeCheckKeyMap: Record<string, KeyMapEntry> | undefined;
   unionInformation?: UnionInformation | undefined; // prop drilling: for unions only
   foreignKeyObjects: Record<string, EntityInstancesUuidIndex>; // prop drilling: for uuid / objects only
   returnsEmptyElement?: boolean; // used to force the editor to return an empty element

@@ -69,7 +69,7 @@ export const JzodLiteralEditor = React.memo<JzodLiteralEditorProps>(function Jzo
         "handleSelectLiteralChange called but current object does not have information about the discriminated union type it must be part of!"
       );
     }
-    if (!unionInformation.jzodSchema.discriminator) {
+    if (!unionInformation.unfoldedRawSchema.discriminator) {
       throw new Error(
         "handleSelectLiteralChange called but current object does not have a discriminated union type!"
       );
@@ -77,28 +77,34 @@ export const JzodLiteralEditor = React.memo<JzodLiteralEditorProps>(function Jzo
 
     const currentAttributeName = rootLessListKeyArray[rootLessListKeyArray.length - 1];
 
-    // log.info(
-    //   "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ handleSelectLiteralChange event",
-    //   event.target.value,
-    //   "rootLessListKey",
-    //   rootLessListKey,
-    //   "attribute",
-    //   currentAttributeName,
-    //   "name",
-    //   name,
-    //   "unionInformation",
-    //   unionInformation,
-    //   // JSON.stringify(unionInformation, null, 2),
-    //   "formik.values",
-    //   formik.values
-    // );
-
+    log.info(
+      "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ handleSelectLiteralChange event",
+      event.target.value,
+      "rootLessListKey",
+      rootLessListKey,
+      "attribute",
+      currentAttributeName,
+      "name",
+      name,
+      "unionInformation",
+      unionInformation,
+      // JSON.stringify(unionInformation, null, 2),
+      "formik.values",
+      formik.values,
+      "unionInformation",
+      JSON.stringify(unionInformation, null, 2)
+    );
+    if (typeof unionInformation.unfoldedRawSchema.discriminator !== "string") {
+      throw new Error(
+        "handleSelectLiteralChange called but current object does not have a string discriminator!"
+      );
+    }
     const newJzodSchema: JzodElement | undefined = // attribute is either discriminator or sub-discriminator
       unionInformation.objectBranches.find(
         (a: JzodElement) =>
           a.type == "object" &&
-          a.definition[(unionInformation as any).jzodSchema.discriminator].type == "literal" &&
-          (a.definition[(unionInformation as any).jzodSchema.discriminator] as JzodLiteral)
+          a.definition[(unionInformation.unfoldedRawSchema as any).discriminator].type == "literal" &&
+          (a.definition[(unionInformation.unfoldedRawSchema as any).discriminator] as JzodLiteral)
             .definition == event.target.value
       );
     if (!newJzodSchema) {
@@ -106,19 +112,19 @@ export const JzodLiteralEditor = React.memo<JzodLiteralEditorProps>(function Jzo
         "handleSelectLiteralChange could not find union branch for discriminator " +
           unionInformation.discriminator +
           " in " +
-          JSON.stringify(unionInformation.jzodSchema)
+          JSON.stringify(unionInformation.unfoldedRawSchema)
       );
     } else {
-      // log.info(
-      //   "handleSelectLiteralChange found newJzodSchema",
-      //   newJzodSchema,
-      //   "for discriminator",
-      //   unionInformation.discriminator,
-      //   "value",
-      //   event.target.value
-      // );
+      log.info(
+        "handleSelectLiteralChange found newJzodSchema",
+        newJzodSchema,
+        "for discriminator",
+        unionInformation.discriminator,
+        "value",
+        event.target.value
+      );
     }
-    const newJzodSchemaWithOptional = unionInformation.jzodSchema.optional
+    const newJzodSchemaWithOptional = unionInformation.unfoldedRawSchema.optional
       ? {
           ...newJzodSchema,
           optional: true,
@@ -129,17 +135,18 @@ export const JzodLiteralEditor = React.memo<JzodLiteralEditorProps>(function Jzo
     const defaultValue = currentMiroirFundamentalJzodSchema
       ? getDefaultValueForJzodSchemaWithResolution(
           newJzodSchemaWithOptional,
+          true, // force optional attributes to receive a default value
           currentMiroirFundamentalJzodSchema, // context.miroirFundamentalJzodSchema,
           currentModel,
           miroirMetaModel
         )
       : undefined;
-    // log.info(
-    //   "handleSelectLiteralChange defaultValue",
-    //   defaultValue,
-    //   "formik.values",
-    //   JSON.stringify(formik.values, null, 2)
-    // );
+    log.info(
+      "handleSelectLiteralChange defaultValue",
+      defaultValue,
+      "formik.values",
+      JSON.stringify(formik.values, null, 2)
+    );
     formik.setFieldValue(
       // replacing parent value (the object containing the discriminator Literal)
       rootLessListKeyArray.slice(0, rootLessListKeyArray.length - 1).join("."),

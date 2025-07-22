@@ -25,6 +25,7 @@ import {
   Uuid,
   adminConfigurationDeploymentMiroir,
   dummyDomainManyQueryWithDeploymentUuid,
+  entityTest,
   getApplicationSection,
   getQueryRunnerParamsForDeploymentEntityState,
   jzodTypeCheck,
@@ -39,6 +40,7 @@ import {
 
 import { javascript } from '@codemirror/lang-javascript';
 import { Switch } from '@mui/material';
+import { ErrorBoundary } from "react-error-boundary";
 import { packageName } from '../../../constants.js';
 import { JzodEnumSchemaToJzodElementResolver, getCurrentEnumJzodSchemaResolver } from '../../JzodTools.js';
 import { cleanLevel } from '../constants.js';
@@ -48,6 +50,7 @@ import {
 } from "../ReduxHooks.js";
 import { JzodElementDisplay } from './JzodElementDisplay.js';
 import { JzodElementEditor } from './JzodElementEditor.js';
+import { ErrorFallbackComponent } from './ErrorFallbackComponent.js';
 import {
   measuredGetApplicationSection,
   measuredGetQueryRunnerParamsForDeploymentEntityState,
@@ -61,6 +64,19 @@ let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ReportSectionEntityInstance")
 ).then((logger: LoggerInterface) => {log = logger});
+
+// Safe stringify function that prevents "Invalid string length" errors
+function safeStringify(obj: any, maxLength: number = 2000): string {
+  try {
+    const str = JSON.stringify(obj, null, 2);
+    if (str && str.length > maxLength) {
+      return str.substring(0, maxLength) + "... [truncated]";
+    }
+    return str || "[unable to stringify]";
+  } catch (error) {
+    return `[stringify error: ${error instanceof Error ? error.message : 'unknown'}]`;
+  }
+}
 
 
 // // Performance metrics display component
@@ -124,12 +140,12 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   // Track performance immediately for initial render
   const componentKey = `ReportSectionEntityInstance-${props.instance?.uuid || props.entityUuid}`;
   
-  // log.info(
-  //   "++++++++++++++++++++++++++++++++ render",
-  //   ReportSectionEntityInstanceCount++,
-  //   "with props",
-  //   props
-  // );
+  log.info(
+    "++++++++++++++++++++++++++++++++ render",
+    ReportSectionEntityInstanceCount++,
+    "with props",
+    props
+  );
 
   const [displayAsStructuredElement, setDisplayAsStructuredElement] = useState(true);
   const [displayEditor, setDisplayEditor] = useState(true);
@@ -192,49 +208,6 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   // log.info("ReportSectionEntityInstance currentModel", currentModel);
   // log.info("ReportSectionEntityInstance currentMiroirModel", currentMiroirModel);
 
-  // let typeError: JSX.Element | undefined = undefined;
-  // const resolvedJzodSchema: ResolvedJzodSchemaReturnType | undefined = useMemo(() => {
-  //   let result: ResolvedJzodSchemaReturnType | undefined = undefined;
-  //   try {
-  //     result =
-  //       context.miroirFundamentalJzodSchema &&
-  //       currentReportTargetEntityDefinition?.jzodSchema &&
-  //       instance &&
-  //       currentModel
-  //         ? measuredJzodTypeCheck(
-  //             currentReportTargetEntityDefinition?.jzodSchema,
-  //             instance,
-  //             [], // currentValuePath
-  //             [], // currentTypePath
-  //             context.miroirFundamentalJzodSchema,
-  //             currentModel,
-  //             currentMiroirModel,
-  //             {}
-  //           )
-  //         : undefined;
-  //   } catch (e) {
-  //     log.error(
-  //       "ReportSectionEntityInstance useMemo error",
-  //       // JSON.stringify(e, Object.getOwnPropertyNames(e)),
-  //       e,
-  //       "props",
-  //       props,
-  //       "context",
-  //       context
-  //     );
-  //     result = {
-  //       status: "error",
-  //       valuePath: [],
-  //       typePath: [],
-  //       error: JSON.stringify(e, Object.getOwnPropertyNames(e)),
-  //     };
-  //   }
-  //   return result;
-  // }, [props, currentReportTargetEntityDefinition, instance, context]);
-  // log.info(
-  //   "ReportSectionEntityInstance jzodTypeCheck done for render", ReportSectionEntityInstanceCount ,"resolvedJzodSchema",
-  //   resolvedJzodSchema,
-  // );
 
   useEffect(() => {
     // Track render performance at the end of render
@@ -264,95 +237,6 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   }, [props.instance, props.entityUuid]);
   // });
   
-  // if (!resolvedJzodSchema || resolvedJzodSchema.status != "ok") {
-  //   log.error(
-  //     "ReportSectionEntityInstance could not resolve jzod schema",
-  //     // props,
-  //     // context,
-  //     resolvedJzodSchema
-  //   );
-  //   // return <>ReportSectionEntityInstance: could not resolve jzod schema: {JSON.stringify(resolvedJzodSchema)}</>;
-  //   // typeError = <>ReportSectionEntityInstance: could not resolve jzod schema: {JSON.stringify(resolvedJzodSchema, null, 2)}</>;
-  //   // Calculate the maximum line width for fixed sizing
-  //   const jsonString = JSON.stringify(resolvedJzodSchema, null, 2);
-  //   const lines = jsonString.split("\n");
-  //   const maxLineLength = Math.max(...lines.map((line) => line.length));
-  //   const fixedWidth = Math.min(Math.max(maxLineLength * 0.6, 1200), 1800); // 0.6px per character, min 400px, max 1200px
-
-  //   typeError = (
-  //     <ReactCodeMirror
-  //       editable={false}
-  //       height="100ex"
-  //       style={{
-  //         width: `${fixedWidth}px`, // Fixed width based on content
-  //         maxWidth: "90vw", // Prevent overflow on small screens
-  //       }}
-  //       value={jsonString}
-  //       extensions={[
-  //         ...codeMirrorExtensions,
-  //         EditorView.lineWrapping, // Enable line wrapping
-  //         EditorView.theme({
-  //           ".cm-editor": {
-  //             width: `${fixedWidth}px`,
-  //           },
-  //           ".cm-scroller": {
-  //             width: "100%",
-  //             overflowX: "auto", // Enable horizontal scrolling if needed
-  //           },
-  //           ".cm-content": {
-  //             minWidth: `${fixedWidth}px`,
-  //           },
-  //         }),
-  //       ]}
-  //       basicSetup={{
-  //         foldGutter: true,
-  //         lineNumbers: true,
-  //       }}
-  //     />
-  //   );
-  // }
-
-  
-  // const foreignKeyObjectsFetchQueryParams: SyncQueryRunnerParams<DeploymentEntityState> = useMemo(
-  //   () =>
-  //     measuredGetQueryRunnerParamsForDeploymentEntityState(
-  //       props.deploymentUuid &&
-  //         resolvedJzodSchema &&
-  //         resolvedJzodSchema.status == "ok" &&
-  //         resolvedJzodSchema.resolvedSchema.type == "uuid" &&
-  //         resolvedJzodSchema.resolvedSchema.tag?.value?.targetEntity
-  //         ? {
-  //             queryType: "boxedQueryWithExtractorCombinerTransformer",
-  //             deploymentUuid: props.deploymentUuid,
-  //             pageParams: {},
-  //             queryParams: {},
-  //             contextResults: {},
-  //             extractors: {
-  //               [resolvedJzodSchema.resolvedSchema.tag?.value?.targetEntity]: {
-  //                 extractorOrCombinerType: "extractorByEntityReturningObjectList",
-  //                 applicationSection: measuredGetApplicationSection(
-  //                   props.deploymentUuid,
-  //                   resolvedJzodSchema.resolvedSchema.tag?.value?.targetEntity
-  //                 ),
-  //                 parentName: "",
-  //                 parentUuid: resolvedJzodSchema.resolvedSchema.tag?.value?.targetEntity,
-  //               },
-  //             },
-  //           }
-  //         : dummyDomainManyQueryWithDeploymentUuid,
-  //       deploymentEntityStateSelectorMap
-  //     ),
-  //   [deploymentEntityStateSelectorMap, props.deploymentUuid, resolvedJzodSchema]
-  // );
-  
-  // const foreignKeyObjects: Record<string, EntityInstancesUuidIndex> =
-  //   useDeploymentEntityStateQuerySelectorForCleanedResult(
-  //     deploymentEntityStateSelectorMap.runQuery as SyncQueryRunner<
-  //       DeploymentEntityState,
-  //       Domain2QueryReturnType<DomainElementSuccess>
-  //     >,
-  //     foreignKeyObjectsFetchQueryParams
-  //   );
   
   // ##############################################################################################
   // const handleDisplayAsStructuredElementSwitchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -437,16 +321,6 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
           {/* <RenderPerformanceDisplay componentKey={componentKey} indentLevel={0} /> */}
 
           <p>ReportSectionEntityInstance: {ReportSectionEntityInstanceCount}</p>
-          {/* <div>
-            {typeError ? "typeError: " : ""}
-            <pre>{typeError ?? <></>}</pre>
-          </div> */}
-
-          {/* <div>
-            <pre>
-              {JSON.stringify(resolvedJzodSchema.element, null, 2)}
-            </pre>
-          </div> */}
           <div>
             {/* <label htmlFor="displayAsStructuredElementSwitch">Display as structured element:</label>
             <Switch
@@ -600,53 +474,53 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                         );
                       }
 
-                    const dynamicLocalRootLessListKeyMap = useMemo(() => {
-                      try {
-                        const result =
-                          context.miroirFundamentalJzodSchema != undefined &&
-                          currentReportTargetEntityDefinition?.jzodSchema &&
-                          resolvedJzodSchema &&
-                          resolvedJzodSchema.status == "ok" &&
-                          formik.values &&
-                          currentModel
-                            ? measuredRootLessListKeyMap(
-                                "",
-                                currentReportTargetEntityDefinition?.jzodSchema,
-                                resolvedJzodSchema.resolvedSchema,
-                                currentModel,
-                                currentMiroirModel,
-                                context.miroirFundamentalJzodSchema,
-                                formik.values
-                              )
-                            : undefined;
-                        log.info(
-                          "ReportSectionEntityInstance dynamicLocalRootLessListKeyMap result",
-                          result,
-                          "for currentReportTargetEntityDefinition",
-                          currentReportTargetEntityDefinition?.name,
-                          "formik.values",
-                          formik.values
-                        );
-                        return result;
-                      } catch (e) {
-                        log.warn(
-                          "ReportSectionEntityInstance dynamicLocalRootLessListKeyMap error",
-                          ReportSectionEntityInstanceCount,
-                          e
-                          // "props",
-                          // props,
-                          // "context",
-                          // context
-                        );
-                        return undefined;
-                      }
-                    }, [
-                      currentReportTargetEntityDefinition?.jzodSchema,
-                      currentModel,
-                      currentMiroirModel,
-                      context.miroirFundamentalJzodSchema,
-                      formik.values,
-                    ]);
+                    // const dynamicLocalRootLessListKeyMap = useMemo(() => {
+                    //   try {
+                    //     const result =
+                    //       context.miroirFundamentalJzodSchema != undefined &&
+                    //       currentReportTargetEntityDefinition?.jzodSchema &&
+                    //       resolvedJzodSchema &&
+                    //       resolvedJzodSchema.status == "ok" &&
+                    //       formik.values &&
+                    //       currentModel
+                    //         ? measuredRootLessListKeyMap(
+                    //             "",
+                    //             currentReportTargetEntityDefinition?.jzodSchema,
+                    //             resolvedJzodSchema.resolvedSchema,
+                    //             currentModel,
+                    //             currentMiroirModel,
+                    //             context.miroirFundamentalJzodSchema,
+                    //             formik.values
+                    //           )
+                    //         : undefined;
+                    //     log.info(
+                    //       "ReportSectionEntityInstance dynamicLocalRootLessListKeyMap result",
+                    //       result,
+                    //       "for currentReportTargetEntityDefinition",
+                    //       currentReportTargetEntityDefinition?.name,
+                    //       "formik.values",
+                    //       formik.values
+                    //     );
+                    //     return result;
+                    //   } catch (e) {
+                    //     log.warn(
+                    //       "ReportSectionEntityInstance dynamicLocalRootLessListKeyMap error",
+                    //       ReportSectionEntityInstanceCount,
+                    //       e
+                    //       // "props",
+                    //       // props,
+                    //       // "context",
+                    //       // context
+                    //     );
+                    //     return undefined;
+                    //   }
+                    // }, [
+                    //   currentReportTargetEntityDefinition?.jzodSchema,
+                    //   currentModel,
+                    //   currentMiroirModel,
+                    //   context.miroirFundamentalJzodSchema,
+                    //   formik.values,
+                    // ]);
                     const foreignKeyObjectsFetchQueryParams: SyncQueryRunnerParams<DeploymentEntityState> = useMemo(
                       () =>
                         measuredGetQueryRunnerParamsForDeploymentEntityState(
@@ -688,6 +562,11 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                         foreignKeyObjectsFetchQueryParams
                       );
 
+                    const instanceJsonString = JSON.stringify(instance, null, 2);
+                    const instanceJsonStringLines = instanceJsonString.split("\n");
+                    const instanceJsonStringMaxLineLength = Math.max(...instanceJsonStringLines.map((line) => line.length));
+                    const instanceJsonStringFixedWidth = Math.min(Math.max(instanceJsonStringMaxLineLength * 0.6, 1200), 1800); // 0.6px per character, min 400px, max 1200px
+
                     return (
                       <>
                         <div>
@@ -696,37 +575,64 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                         </div>
                         <form id={"form." + pageLabel} onSubmit={formik.handleSubmit}>
                           <div>
-                            <JzodElementEditor
-                              name={"ROOT"}
-                              listKey={"ROOT"}
-                              rootLessListKey=""
-                              rootLessListKeyArray={[]}
-                              labelElement={labelElement}
-                              indentLevel={0}
-                              currentDeploymentUuid={props.deploymentUuid}
-                              currentApplicationSection={props.applicationSection}
-                              rawJzodSchema={currentReportTargetEntityDefinition?.jzodSchema}
-                              resolvedElementJzodSchema={
-                                resolvedJzodSchema?.status == "ok"
-                                  ? resolvedJzodSchema.resolvedSchema
-                                  : undefined
-                              }
-                              hasTypeError={typeError != undefined}
-                              localRootLessListKeyMap={dynamicLocalRootLessListKeyMap}
-                              // localRootLessListKeyMap={{}}
-                              foreignKeyObjects={foreignKeyObjects}
-                              submitButton={
-                                <button
-                                  type="submit"
-                                  role="form"
-                                  name={pageLabel}
-                                  form={"form." + pageLabel}
-                                >
-                                  submit form.{pageLabel}
-                                </button>
-                              }
-                              // displayAsCode={!displayAsStructuredElement}
-                            />
+                            <ErrorBoundary
+                              FallbackComponent={({ error, resetErrorBoundary }) => (
+                                <ErrorFallbackComponent
+                                  error={error}
+                                  resetErrorBoundary={resetErrorBoundary}
+                                  context={{
+                                    origin: "ReportSectionEntityInstance",
+                                    objectType: "root_editor",
+                                    rootLessListKey: "ROOT",
+                                    currentValue: instance,
+                                    formikValues: undefined,
+                                    rawJzodSchema: currentReportTargetEntityDefinition?.jzodSchema,
+                                    localResolvedElementJzodSchemaBasedOnValue:
+                                      resolvedJzodSchema?.status == "ok"
+                                        ? resolvedJzodSchema.resolvedSchema
+                                        : undefined,
+                                  }}
+                                />
+                              )}
+                            >
+                              <JzodElementEditor
+                                name={"ROOT"}
+                                listKey={"ROOT"}
+                                rootLessListKey=""
+                                rootLessListKeyArray={[]}
+                                labelElement={labelElement}
+                                indentLevel={0}
+                                currentDeploymentUuid={props.deploymentUuid}
+                                currentApplicationSection={props.applicationSection}
+                                rawJzodSchema={currentReportTargetEntityDefinition?.jzodSchema}
+                                resolvedElementJzodSchema={
+                                  resolvedJzodSchema?.status == "ok"
+                                    ? resolvedJzodSchema.resolvedSchema
+                                    : undefined
+                                }
+                                hasTypeError={typeError != undefined}
+                                // localRootLessListKeyMap={dynamicLocalRootLessListKeyMap}
+                                typeCheckKeyMap={
+                                  resolvedJzodSchema?.status == "ok"
+                                    ? resolvedJzodSchema.keyMap
+                                    : {}
+                                }
+                                // localRootLessListKeyMap={{}}
+                                foreignKeyObjects={foreignKeyObjects}
+                                submitButton={
+                                  <button
+                                    type="submit"
+                                    role="form"
+                                    name={pageLabel}
+                                    form={"form." + pageLabel}
+                                  >
+                                    submit form.{pageLabel}
+                                  </button>
+                                }
+                              />
+                            </ErrorBoundary>
+                            {/* ) */}
+                            {/* } */}
                           </div>
                         </form>
                       </>
@@ -736,10 +642,6 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
               </div>
             ) : (
               <div>
-                {/* <div>
-                  {typeError ? "typeError: " : ""}
-                  <pre>{typeError ?? <></>}</pre>
-                </div> */}
                 {displayAsStructuredElement ? (
                   <div>Can not display non-editor as structured element</div>
                   // <JzodElementDisplay
@@ -758,7 +660,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                   // ></JzodElementDisplay>
                 ) : (
                   <div>
-                    <pre>{JSON.stringify(instance, null, 2)}</pre>
+                    <pre>{safeStringify(instance)}</pre>
                   </div>
                 )}
               </div>
@@ -781,7 +683,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
               </div>
               <div> ######################################## </div>
               <div style={{ whiteSpace: "pre-line" }}>
-                entity jzod schema: {JSON.stringify(instance?.jzodSchema)}
+                entity jzod schema: {safeStringify(instance?.jzodSchema)}
               </div>
             </div>
           )}

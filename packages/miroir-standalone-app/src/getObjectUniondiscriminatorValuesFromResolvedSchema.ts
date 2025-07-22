@@ -8,6 +8,19 @@ MiroirLoggerFactory.registerLoggerToStart(
   log = logger;
 });
 
+// Safe stringify function that prevents "Invalid string length" errors
+function safeStringify(obj: any, maxLength: number = 1000): string {
+  try {
+    const str = JSON.stringify(obj, null, 2);
+    if (str && str.length > maxLength) {
+      return str.substring(0, maxLength) + "... [truncated]";
+    }
+    return str || "[unable to stringify]";
+  } catch (error) {
+    return `[stringify error: ${error instanceof Error ? error.message : 'unknown'}]`;
+  }
+}
+
 // #####################################################################################################
 export function getObjectUniondiscriminatorValuesFromResolvedSchema(
   resolvedElementJzodSchema: JzodElement | undefined, // is it needed?
@@ -32,13 +45,19 @@ export function getObjectUniondiscriminatorValuesFromResolvedSchema(
         .flatMap((branch: any /** JzodObject */) => {
           // return (a.definition as any)[(unfoldedRawSchema as any).discriminator].definition}
           if (!branch || !branch.definition || !branch.definition[discriminator]) {
-            throw new Error(
-              "getObjectUniondiscriminatorValuesFromResolvedSchema found object branch without discriminator '" + discriminator + "': " + 
-              JSON.stringify(branch, null, 2) +
-              " in recursivelyUnfoldedRawSchemaList: " + 
-              JSON.stringify(recursivelyUnfoldedRawSchemaList, null, 2)
-            );
-            // return [];
+            // ATTENTION:
+            // there can be one object branch without discriminator, the one that will be chosen
+            //  when the value does not include any discriminator attribute
+
+            // throw new Error(
+            //   "getObjectUniondiscriminatorValuesFromResolvedSchema found object branch without discriminator '" +
+            //     discriminator +
+            //     "': " +
+            //     safeStringify(branch, 500) +
+            //     " in recursivelyUnfoldedRawSchemaList: " +
+            //     safeStringify(recursivelyUnfoldedRawSchemaList, 1000)
+            // );
+            return [];
           }
           switch (
             // typeof branch.definition[discriminator] == "string"
@@ -86,11 +105,11 @@ export function getObjectUniondiscriminatorValuesFromResolvedSchema(
                 // " discriminator type " +
                 //   branch.definition[discriminator]?.type +
                   ", found branch discriminator " +
-                  JSON.stringify(branch.definition[discriminator]) +
+                  safeStringify(branch.definition[discriminator], 200) +
                   ", for branch " +
-                  JSON.stringify(branch, null, 2) +
+                  safeStringify(branch, 500) +
                   ", for union " +
-                  JSON.stringify(recursivelyUnfoldedRawSchemaList, null, 2)
+                  safeStringify(recursivelyUnfoldedRawSchemaList, 1000)
               );
               // return [];
               break;

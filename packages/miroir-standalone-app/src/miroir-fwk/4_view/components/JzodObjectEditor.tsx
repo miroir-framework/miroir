@@ -18,12 +18,13 @@ import {
   alterObjectAtPath,
   ResolvedJzodSchemaReturnType,
   UnfoldJzodSchemaOnceReturnType,
+  KeyMapEntry,
 } from "miroir-core";
 
 import { indentShift } from "./JzodArrayEditor";
 import { ExpandOrFoldObjectAttributes, JzodElementEditor } from "./JzodElementEditor";
 import { useJzodElementEditorHooks } from "./JzodElementEditorHooks";
-import { JzodObjectEditorProps } from "./JzodElementEditorInterface";
+import { JzodObjectEditorProps, UnionInformation } from "./JzodElementEditorInterface";
 import { SizedButton, SizedAddBox, SmallIconButton, getItemsOrder } from "./Style";
 import { ErrorFallbackComponent } from "./ErrorFallbackComponent";
 import { packageName } from "../../../constants";
@@ -33,6 +34,7 @@ import {
   measuredUnfoldJzodSchemaOnce,
   measuredUseJzodElementEditorHooks,
 } from "../tools/hookPerformanceMeasure";
+import { keymap } from "@uiw/react-codemirror";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -150,7 +152,8 @@ const ProgressiveAttribute: FC<{
   rootLessListKeyArray: (string | number)[];
   localResolvedElementJzodSchemaBasedOnValue: JzodObject;
   unfoldedRawSchema: any;
-  unionInformation: any;
+  typeCheckKeyMap?: Record<string, KeyMapEntry>;
+  unionInformation: UnionInformation | undefined;
   currentValue: any;
   usedIndentLevel: number;
   definedOptionalAttributes: Set<string>;
@@ -170,6 +173,7 @@ const ProgressiveAttribute: FC<{
   rootLessListKeyArray,
   localResolvedElementJzodSchemaBasedOnValue,
   unfoldedRawSchema,
+  typeCheckKeyMap,
   unionInformation,
   currentValue,
   usedIndentLevel,
@@ -207,7 +211,7 @@ const ProgressiveAttribute: FC<{
   const {
     currentDeploymentUuid,
     currentApplicationSection,
-    localRootLessListKeyMap,
+    // localRootLessListKeyMap,
     foreignKeyObjects,
     insideAny,
     rawJzodSchema,
@@ -251,6 +255,16 @@ const ProgressiveAttribute: FC<{
     case "union": {
       let concreteObjectRawJzodSchema: JzodObject | undefined;
       let resolvedConcreteObjectJzodSchema: JzodObject | undefined;
+      log.info(
+        "JzodObjectEditor union",
+        rootLessListKey,
+        "received typeCheckKeyMap",
+        typeCheckKeyMap,
+      );
+      // const concreteObjectRawJzodSchema: JzodObject | undefined = (typeCheckKeyMap ?? {})[
+      //   rootLessListKey
+      // ].chosenUnionBranchRawSchema as JzodObject | undefined;
+      // const resolvedConcreteObjectJzodSchema: JzodObject | undefined = unionInformation?.resolvedElementJzodSchema;
 
       const possibleObjectTypes = unionInformation?.objectBranches.filter((a: any) => a.type == "object") ?? [];
 
@@ -288,12 +302,13 @@ const ProgressiveAttribute: FC<{
                 (a.definition[discriminator] as JzodEnum).definition.includes(discriminatorValue))
           ) as any;
         } else {
+          /* early return! */
           return (
             <div key={attributeListKey}>
               <span>
                 {attributeDisplayedLabel}{" "}
                 <span className="error">
-                  no discriminator value found in union for object {listKey} attribute {attribute[0]} attributeListKey {attributeListKey}
+                  no discriminator value found in union for object attributeListKey {attributeListKey}
                 </span>
               </span>
             </div>
@@ -357,6 +372,7 @@ const ProgressiveAttribute: FC<{
       }
 
       attributeRawJzodSchema = resolvedConcreteObjectJzodSchema.definition[attribute[0]];
+      // attributeRawJzodSchema = concreteObjectRawJzodSchema.definition[attribute[0]];
       break;
     }
     default: {
@@ -438,9 +454,10 @@ const ProgressiveAttribute: FC<{
             indentLevel={usedIndentLevel + 1}
             currentDeploymentUuid={currentDeploymentUuid}
             rawJzodSchema={attributeRawJzodSchema}
+            typeCheckKeyMap={typeCheckKeyMap}
             currentApplicationSection={currentApplicationSection}
             resolvedElementJzodSchema={currentAttributeDefinition}
-            localRootLessListKeyMap={localRootLessListKeyMap}
+            // localRootLessListKeyMap={localRootLessListKeyMap}
             foreignKeyObjects={foreignKeyObjects}
             unionInformation={unionInformation}
             insideAny={insideAny}
@@ -493,11 +510,12 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
     rootLessListKey,
     rootLessListKeyArray,
     rawJzodSchema,
+    typeCheckKeyMap,
     currentDeploymentUuid,
     currentApplicationSection,
     indentLevel,
     // resolvedElementJzodSchema,
-    localRootLessListKeyMap,
+    // localRootLessListKeyMap,
     insideAny,
     displayAsStructuredElementSwitch,
     deleteButtonElement,
@@ -663,6 +681,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
     const newAttributeValue = currentMiroirFundamentalJzodSchema
       ? measuredGetDefaultValueForJzodSchemaWithResolution(
           unfoldedRawSchema.definition,
+          true, // force optional attributes to receive a default value
           currentMiroirFundamentalJzodSchema,
           currentModel,
           miroirMetaModel
@@ -702,36 +721,38 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
       if (localResolvedElementJzodSchemaBasedOnValue?.type != "object") {
         throw "addObjectOptionalAttribute called for non-object type: " + unfoldedRawSchema.type;
       }
-      // log.info(
-      //   "addObjectOptionalAttribute clicked!",
-      //   listKey,
-      //   itemsOrder,
-      //   Object.keys(localResolvedElementJzodSchemaBasedOnValue.definition),
-      //   "formik",
-      //   formik.values,
-      //   // "unfoldedrawSchema",
-      //   // JSON.stringify(unfoldedRawSchema, null, 2),
-      //   // "discriminatedSchemaForObject",
-      //   // JSON.stringify(discriminatedSchemaForObject, null, 2),
-      //   "undefinedOptionalAttributes",
-      //   undefinedOptionalAttributes,
-      //   "attributeName",
-      //   attributeName
-      // );
+      log.info(
+        "addObjectOptionalAttribute clicked!",
+        listKey,
+        "for",
+        "attributeName",
+        attributeName,
+        "itemsOrder",
+        itemsOrder,
+        "objectKeys",
+        Object.keys(localResolvedElementJzodSchemaBasedOnValue.definition),
+        "formik",
+        formik.values,
+        // "unfoldedrawSchema",
+        // JSON.stringify(unfoldedRawSchema, null, 2),
+        // "discriminatedSchemaForObject",
+        // JSON.stringify(discriminatedSchemaForObject, null, 2),
+        "undefinedOptionalAttributes",
+        undefinedOptionalAttributes,
+      );
       const currentObjectValue = resolvePathOnObject(formik.values, rootLessListKeyArray);
-      // const newAttributeType: JzodElement = resolvePathOnObject(rawJzodSchema, [
-      // const newAttributeType: JzodElement = resolvePathOnObject(unfoldedRawSchema, [
       const newAttributeType: JzodElement = resolvePathOnObject(
         discriminatedSchemaForObject ?? unfoldedRawSchema,
+        // unfoldedRawSchema,
         ["definition", attributeName]
       );
-      // const newAttributeValue = getDefaultValueForJzodSchema(newAttributeType)
-      const newAttributeValue = currentMiroirFundamentalJzodSchema
-        ? measuredGetDefaultValueForJzodSchemaWithResolution(
+      const newAttributeValue = !!currentMiroirFundamentalJzodSchema
+        ? getDefaultValueForJzodSchemaWithResolution(
             newAttributeType,
+            true, // force optional attributes to receive a default value
             currentMiroirFundamentalJzodSchema,
             currentModel,
-            miroirMetaModel
+            miroirMetaModel,
           )
         : undefined;
 
@@ -739,6 +760,15 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
         ...currentObjectValue,
         [attributeName]: newAttributeValue,
       };
+      log.info(
+        "addObjectOptionalAttribute",
+        "newAttributeType",
+        newAttributeType,
+        "newAttributeValue",
+        newAttributeValue,
+        "newObjectValue",
+        JSON.stringify(newObjectValue, null, 2),
+      );
       const newItemsOrder = getItemsOrder(
         newObjectValue,
         discriminatedSchemaForObject ?? unfoldedRawSchema
@@ -767,6 +797,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
       props,
       itemsOrder,
       localResolvedElementJzodSchemaBasedOnValue,
+      discriminatedSchemaForObject,
       unfoldedRawSchema,
       currentMiroirFundamentalJzodSchema,
       currentModel,
@@ -826,6 +857,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
             rootLessListKeyArray={rootLessListKeyArray}
             localResolvedElementJzodSchemaBasedOnValue={localResolvedElementJzodSchemaBasedOnValue as JzodObject}
             unfoldedRawSchema={unfoldedRawSchema}
+            typeCheckKeyMap={typeCheckKeyMap}
             unionInformation={unionInformation}
             currentValue={currentValue}
             usedIndentLevel={usedIndentLevel}

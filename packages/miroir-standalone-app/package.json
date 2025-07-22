@@ -13,9 +13,9 @@
     "startDev": "vite --host",
     "build": "vite build --emptyOutDir",
     "build5": "npm run build",
-    "test": "cross-env VITE_TEST_MODE='true' vitest run --poolOptions.threads.singleThread --passWithNoTests -t",
-    "testByFile": "cross-env VITE_TEST_MODE='true' vitest run --reporter=verbose --poolOptions.forks.singleFork --passWithNoTests",
-    "testByFileWithFullLog": "cross-env VITE_TEST_MODE='true' DEBUG='vite-node:*' vitest run --reporter=verbose --poolOptions.threads.singleThread --disable-console-intercept --passWithNoTests"
+    "test": "cross-env VITE_TEST_MODE='true' vitest run --poolOptions.threads.singleThread --bail=1 -t",
+    "testByFile": "cross-env VITE_TEST_MODE='true' vitest run --reporter=verbose --poolOptions.forks.singleFork --bail=1",
+    "testByFileWithFullLog": "cross-env VITE_TEST_MODE='true' DEBUG='vite-node:*' vitest run --reporter=verbose --poolOptions.threads.singleThread --disable-console-intercept --bail=1"
   },
   "dependencies": {
     "@codemirror/lang-javascript": "^6.2.2",

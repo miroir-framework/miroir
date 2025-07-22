@@ -10,8 +10,10 @@ import {
   EntityAttribute,
   EntityInstance,
   EntityInstanceWithName,
+  JzodElement,
   JzodLiteral,
   LoggerInterface,
+  measurePerformance,
   MiroirLoggerFactory,
   mStringify
 } from "miroir-core";
@@ -44,6 +46,19 @@ MiroirLoggerFactory.registerLoggerToStart(
 ).then((logger: LoggerInterface) => {
   log = logger;
 });
+
+// Safe stringify function that prevents "Invalid string length" errors
+function safeStringify(obj: any, maxLength: number = 2000): string {
+  try {
+    const str = JSON.stringify(obj, null, 2);
+    if (str && str.length > maxLength) {
+      return str.substring(0, maxLength) + "... [truncated]";
+    }
+    return str || "[unable to stringify]";
+  } catch (error) {
+    return `[stringify error: ${error instanceof Error ? error.message : 'unknown'}]`;
+  }
+}
 
 // #####################################################################################################
 // const isUnderTest = true;
@@ -158,8 +173,20 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
     // object
     definedOptionalAttributes,
   // } = useJzodElementEditorHooks(props, count, "JzodElementEditor");
-  } = measuredUseJzodElementEditorHooks(props, count, "JzodElementEditor");
+  // } = measuredUseJzodElementEditorHooks(props, count, "JzodElementEditor");
+  } = measurePerformance("useJzodElementEditorHooks", useJzodElementEditorHooks)(props, count, "JzodElementEditor");
   
+  // const localResolvedElementJzodSchemaBasedOnValue: JzodElement | undefined = 
+  // // useMemo(() => {
+  //   props.typeCheckKeyMap && props.typeCheckKeyMap[props.rootLessListKey]
+  //     ? props.typeCheckKeyMap[props.rootLessListKey]?.resolvedSchema
+  //     : undefined;
+  //     // return result;
+  // // }, [
+  // //   props.typeCheckKeyMap,
+  // //   props.rootLessListKey,
+  // // ])
+  // ;
 
   // Handle switch for structured element display
   const handleDisplayAsStructuredElementSwitchChange = useCallback(
@@ -189,7 +216,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
         }
       } else {
         // if switching to code editor, reset the codeMirrorValue to the current value
-        setCodeMirrorValue(JSON.stringify(currentValue, null, 2));
+        setCodeMirrorValue(safeStringify(currentValue));
       }
       setDisplayAsStructuredElement(event.target.checked);
     },
@@ -314,14 +341,15 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
       if (!localResolvedElementJzodSchemaBasedOnValue) {
         return (
           <div>
-            Could not find schema for item: {props.rootLessListKey}
+            Could not find schema for element: {props.rootLessListKey}
             <br />
             {/* value {formik.values[props.rootLessListKey]} */}
-            value <pre>{JSON.stringify(currentValue, null, 2)}</pre>
+            {/* value <pre>{safeStringify(currentValue, 500)}</pre> */}
+            value <pre>{JSON.stringify(currentValue)}</pre>
             <br />
-            raw Jzod schema: {JSON.stringify(props.rawJzodSchema)}
+            raw Jzod schema: {safeStringify(props.rawJzodSchema, 500)}
             <br />
-            resolved schema: {JSON.stringify(localResolvedElementJzodSchemaBasedOnValue)}
+            resolved schema: {safeStringify(localResolvedElementJzodSchemaBasedOnValue, 500)}
           </div>
         );
       }
@@ -335,12 +363,13 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
             listKey={props.listKey}
             rootLessListKey={props.rootLessListKey}
             rootLessListKeyArray={props.rootLessListKeyArray}
-            localRootLessListKeyMap={props.localRootLessListKeyMap}
+            // localRootLessListKeyMap={props.localRootLessListKeyMap}
             rawJzodSchema={props.rawJzodSchema}
             currentDeploymentUuid={props.currentDeploymentUuid}
             currentApplicationSection={props.currentApplicationSection}
             unionInformation={unionInformation}
             resolvedElementJzodSchema={localResolvedElementJzodSchemaBasedOnValue}
+            typeCheckKeyMap={ props.typeCheckKeyMap }
             foreignKeyObjects={props.foreignKeyObjects}
           />
         );
@@ -371,7 +400,8 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               rootLessListKeyArray={props.rootLessListKeyArray}
               rawJzodSchema={props.rawJzodSchema}
               resolvedElementJzodSchema={localResolvedElementJzodSchemaBasedOnValue}
-              localRootLessListKeyMap={props.localRootLessListKeyMap}
+              typeCheckKeyMap={ props.typeCheckKeyMap }
+              // localRootLessListKeyMap={props.localRootLessListKeyMap}
               currentDeploymentUuid={props.currentDeploymentUuid}
               currentApplicationSection={props.currentApplicationSection}
               unionInformation={unionInformation}
@@ -395,10 +425,11 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               key={props.rootLessListKey}
               rootLessListKeyArray={props.rootLessListKeyArray}
               rootLessListKey={props.rootLessListKey}
-              localRootLessListKeyMap={props.localRootLessListKeyMap}
+              // localRootLessListKeyMap={props.localRootLessListKeyMap}
               rawJzodSchema={props.rawJzodSchema}
               unfoldedRawSchema={unfoldedRawSchema as any}
               resolvedElementJzodSchema={localResolvedElementJzodSchemaBasedOnValue}
+              typeCheckKeyMap={ props.typeCheckKeyMap }
               indentLevel={props.indentLevel + 1}
               itemsOrder={itemsOrder}
               hiddenFormItems={hiddenFormItems}
@@ -569,7 +600,8 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                 foreignKeyObjects={props.foreignKeyObjects}
                 rawJzodSchema={props.rawJzodSchema as JzodLiteral}
                 resolvedElementJzodSchema={localResolvedElementJzodSchemaBasedOnValue}
-                localRootLessListKeyMap={props.localRootLessListKeyMap}
+                typeCheckKeyMap={ props.typeCheckKeyMap }
+                // localRootLessListKeyMap={props.localRootLessListKeyMap}
                 unionInformation={props.unionInformation}
                 insideAny={props.insideAny}
               />
@@ -593,7 +625,8 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                 rootLessListKeyArray={props.rootLessListKeyArray}
                 rawJzodSchema={props.rawJzodSchema as any}
                 resolvedElementJzodSchema={localResolvedElementJzodSchemaBasedOnValue}
-                localRootLessListKeyMap={props.localRootLessListKeyMap}
+                typeCheckKeyMap={ props.typeCheckKeyMap }
+                // localRootLessListKeyMap={props.localRootLessListKeyMap}
                 foreignKeyObjects={props.foreignKeyObjects}
                 currentApplicationSection={props.currentApplicationSection}
                 currentDeploymentUuid={props.currentDeploymentUuid}
@@ -619,8 +652,9 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               currentApplicationSection={props.currentApplicationSection}
               currentDeploymentUuid={props.currentDeploymentUuid}
               rawJzodSchema={props.rawJzodSchema as JzodLiteral}
-              localRootLessListKeyMap={props.localRootLessListKeyMap}
+              // localRootLessListKeyMap={props.localRootLessListKeyMap}
               resolvedElementJzodSchema={localResolvedElementJzodSchemaBasedOnValue}
+              typeCheckKeyMap={ props.typeCheckKeyMap }
               unionInformation={props.unionInformation}
               parentType={props.parentType}
             />
@@ -702,12 +736,12 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
             <span>
               default case: {localResolvedElementJzodSchemaBasedOnValue.type}, for {props.listKey}
               values
-              <pre>{JSON.stringify(currentValue, null, 2)}</pre>
+              <pre>{safeStringify(currentValue, 500)}</pre>
               <br />
               <pre>
-                resolved Jzod schema: {JSON.stringify(localResolvedElementJzodSchemaBasedOnValue, null, 2)}
+                resolved Jzod schema: {safeStringify(localResolvedElementJzodSchemaBasedOnValue, 500)}
               </pre>
-              <pre>raw Jzod schema: {JSON.stringify(props.rawJzodSchema, null, 2)}</pre>
+              <pre>raw Jzod schema: {safeStringify(props.rawJzodSchema, 500)}</pre>
             </span>
           );
         }
@@ -777,12 +811,12 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
 
   return (
     <span>
-      {props.rootLessListKey === '' && <RenderPerformanceMetrics.RenderPerformanceDisplay componentKey={componentKey} indentLevel={props.indentLevel} />}
-      {/* {props.rootLessListKey === '' && <GlobalRenderPerformanceDisplay />} */}
-      {/* <span>JzodEditor: {count}</span> */}
-      {/* <span>
-        {props.rootLessListKey}: {localResolvedElementJzodSchemaBasedOnValue.type}
-      </span> */}
+      {props.rootLessListKey === "" && (
+        <RenderPerformanceMetrics.RenderPerformanceDisplay
+          componentKey={componentKey}
+          indentLevel={props.indentLevel}
+        />
+      )}
       {objectOrArrayOrAny ? (
         <Card
           id={props.rootLessListKey}
@@ -810,28 +844,29 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                 <span>{props.submitButton}</span>
               </span>
               <span>
-                <span style={{ display: "flex" }}>                  <span
-                  style={{
-                    display: !displayCodeEditor ? "none" : "inline-block",
-                  }}
-                >
-                  code editor:
-                  {shouldShowCodeEditor && (
-                    <JzodElementEditorReactCodeMirror
-                      initialValue={JSON.stringify(currentValue, null, 2)}
-                      codeMirrorValue={codeMirrorValue}
-                      setCodeMirrorValue={setCodeMirrorValue}
-                      codeMirrorIsValidJson={codeMirrorIsValidJson}
-                      setCodeMirrorIsValidJson={setCodeMirrorIsValidJson}
-                      rootLessListKey={props.rootLessListKey}
-                      rootLessListKeyArray={props.rootLessListKeyArray}
-                      hidden={!displayCodeEditor}
-                      insideAny={props.insideAny}
-                      isUnderTest={isUnderTest}
-                      displayAsStructuredElementSwitch={displayAsStructuredElementSwitch}
-                    />
-                  )}
-                </span>
+                <span style={{ display: "flex" }}>
+                  <span
+                    style={{
+                      display: !displayCodeEditor ? "none" : "inline-block",
+                    }}
+                  >
+                    code editor:
+                    {shouldShowCodeEditor && (
+                      <JzodElementEditorReactCodeMirror
+                        initialValue={safeStringify(currentValue)}
+                        codeMirrorValue={codeMirrorValue}
+                        setCodeMirrorValue={setCodeMirrorValue}
+                        codeMirrorIsValidJson={codeMirrorIsValidJson}
+                        setCodeMirrorIsValidJson={setCodeMirrorIsValidJson}
+                        rootLessListKey={props.rootLessListKey}
+                        rootLessListKeyArray={props.rootLessListKeyArray}
+                        hidden={!displayCodeEditor}
+                        insideAny={props.insideAny}
+                        isUnderTest={isUnderTest}
+                        displayAsStructuredElementSwitch={displayAsStructuredElementSwitch}
+                      />
+                    )}
+                  </span>
                 </span>
                 <span
                   style={{
@@ -869,7 +904,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
             {/* {props.labelElement} */}
             {shouldShowCodeEditor && (
               <JzodElementEditorReactCodeMirror
-                initialValue={JSON.stringify(currentValue, null, 2)}
+                initialValue={safeStringify(currentValue)}
                 codeMirrorValue={codeMirrorValue}
                 setCodeMirrorValue={setCodeMirrorValue}
                 codeMirrorIsValidJson={codeMirrorIsValidJson}

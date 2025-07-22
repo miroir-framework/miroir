@@ -64,7 +64,7 @@ export const ErrorFallbackComponent: React.FC<ErrorFallbackComponentProps> = ({
         {attributeRootLessListKeyArray && (
           <div key="2">attribute {attributeRootLessListKeyArray.join(".")}</div>
         )}
-        {attributeRootLessListKeyArray && formikValues && (
+        {/* {attributeRootLessListKeyArray && formikValues && (
           <div>
             calc attribute value{" "}
             {JSON.stringify(
@@ -73,7 +73,7 @@ export const ErrorFallbackComponent: React.FC<ErrorFallbackComponentProps> = ({
               2
             )}
           </div>
-        )}
+        )} */}
         {attributeName && (
           <div key="3">attribute name {attributeName}</div>
         )}
@@ -107,7 +107,7 @@ export const ErrorFallbackComponent: React.FC<ErrorFallbackComponentProps> = ({
             </pre>
           </>
         )} */}
-        <div>error {error.message}</div>
+        {/* <div>error {error.message}</div> */}
       </div>
     </div>
   );

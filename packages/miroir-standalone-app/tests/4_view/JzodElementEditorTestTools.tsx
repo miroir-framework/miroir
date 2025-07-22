@@ -52,6 +52,9 @@ import { MiroirContextReactProvider, useMiroirContextService } from "../../src/m
 import { useCurrentModel } from "../../src/miroir-fwk/4_view/ReduxHooks";
 import { emptyObject } from "../../src/miroir-fwk/4_view/routes/Tools";
 import { libraryApplicationInstances } from "../../src/miroir-fwk/4_view/uploadBooksAndReports";
+import { ResolvedJzodSchemaReturnType } from "miroir-core";
+import { measuredJzodTypeCheck } from "../../src/miroir-fwk/4_view/tools/hookPerformanceMeasure";
+import { jzodTypeCheck } from "miroir-core";
 
 export type TestMode = 'jzodElementEditor' | 'component';
 export type TestModeStar = 'jzodElementEditor' | 'component' | '*';
@@ -443,61 +446,78 @@ export const getJzodElementEditorForTest: (pageLabel: string) => React.FC<JzodEl
           validateOnBlur={false}
         >
           {(formik: FormikProps<any>) => {
-            // console.log("getJzodElementEditorForTest render formik, values", formik.values);
-            const localRootLessListKeyMap:
-              | Record<string, { resolvedElementJzodSchema: JzodElement }>
-              | undefined = useMemo(() => {
-              const result =
-                context.miroirFundamentalJzodSchema != undefined &&
-                effectiveRawJzodSchema &&
-                formik.values &&
-                currentModel
-                  ? rootLessListKeyMap(
-                      "",
-                      effectiveRawJzodSchema,
-                      undefined, // resolvedJzodSchema,
-                      currentModel,
-                      currentMiroirModel,
-                      context.miroirFundamentalJzodSchema,
-                      formik.values
-                    )
-                  : undefined;
-              console.log(
-                "getJzodElementEditorForTest @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ new rootLessListKeyMap value,",
-                "rootLessListKey",
-                rootLessListKey,
-                "for formik value",
-                formik.values,
-                // "rootLessListKeyMap",
-                // JSON.stringify(result, null, 2),
-                // "effectiveRawJzodSchema",
-                // JSON.stringify(effectiveRawJzodSchema, null, 2),
-              );
-              return result;
-            }, [
-              effectiveRawJzodSchema,
-              // initialFormState,
+            console.log(
+              "getJzodElementEditorForTest render formik, values",
               formik.values,
-              currentModel,
-              currentMiroirModel,
-              context.miroirFundamentalJzodSchema,
-            ]);
-            // console.log(
-            //   "getJzodElementEditorForTest",
-            //   "rootLessListKeyMap",
-            //   localRootLessListKeyMap
-            // );
-            const resolvedJzodSchema: JzodElement | undefined = useMemo(() => {
-              const result: JzodElement | undefined = localRootLessListKeyMap
-                ? // ? localRootLessListKeyMap[rootLessListKey].resolvedElementJzodSchema
-                  localRootLessListKeyMap[""].resolvedElementJzodSchema
-                : undefined;
+              "effectiveRawJzodSchema",
+              JSON.stringify(effectiveRawJzodSchema, null, 2)
+            );
+
+            let typeError: JSX.Element | undefined = undefined;
+            const resolvedJzodSchema: ResolvedJzodSchemaReturnType | undefined = useMemo(() => {
+              let result: ResolvedJzodSchemaReturnType | undefined = undefined;
+              try {
+                result =
+                  context.miroirFundamentalJzodSchema &&
+                  effectiveRawJzodSchema &&
+                  formik.values &&
+                  currentModel
+                    // ? measuredJzodTypeCheck(
+                    ? jzodTypeCheck(
+                        effectiveRawJzodSchema,
+                        formik.values,
+                        [], // currentValuePath
+                        [], // currentTypePath
+                        context.miroirFundamentalJzodSchema,
+                        currentModel,
+                        currentMiroirModel,
+                        {}
+                      )
+                    : undefined;
+              } catch (e) {
+                console.error(
+                  "ReportSectionEntityInstance useMemo error",
+                  // JSON.stringify(e, Object.getOwnPropertyNames(e)),
+                  e,
+                  "context",
+                  context
+                );
+                result = {
+                  status: "error",
+                  valuePath: [],
+                  typePath: [],
+                  error: JSON.stringify(e, Object.getOwnPropertyNames(e)),
+                };
+              }
               return result;
-            }, [effectiveRawJzodSchema, localRootLessListKeyMap, formik.values, context.miroirFundamentalJzodSchema]);
+            }, [formik.values, effectiveRawJzodSchema, context, currentModel]);
+                      // console.log(
+                      //   "ReportSectionEntityInstance jzodTypeCheck done for render", ReportSectionEntityInstanceCount ,"resolvedJzodSchema",
+                      //   resolvedJzodSchema,
+                      // );
+          if (!resolvedJzodSchema || resolvedJzodSchema.status != "ok") {
+            console.error(
+              "ReportSectionEntityInstance could not resolve jzod schema",
+              // props,
+              // context,
+              resolvedJzodSchema
+            );
+
+            // return <>ReportSectionEntityInstance: could not resolve jzod schema: {JSON.stringify(resolvedJzodSchema)}</>;
+            // typeError = <>ReportSectionEntityInstance: could not resolve jzod schema: {JSON.stringify(resolvedJzodSchema, null, 2)}</>;
+            // Calculate the maximum line width for fixed sizing
+            // const jsonString = JSON.stringify(resolvedJzodSchema, null, 2);
+            // const lines = jsonString.split("\n");
+            // const maxLineLength = Math.max(...lines.map((line) => line.length));
+            // const fixedWidth = Math.min(Math.max(maxLineLength * 0.6, 1200), 1800); // 0.6px per character, min 400px, max 1200px
+
+            typeError = (<pre>type error: {JSON.stringify(resolvedJzodSchema)}</pre>);
+          }
+
             return (
               <>
                 <form id={"form." + pageLabel} onSubmit={formik.handleSubmit}>
-                  {resolvedJzodSchema != undefined ? (
+                  {resolvedJzodSchema != undefined  && resolvedJzodSchema.status === "ok"? (
                     <>
                       <JzodElementEditor
                         name={name}
@@ -508,8 +528,9 @@ export const getJzodElementEditorForTest: (pageLabel: string) => React.FC<JzodEl
                         currentDeploymentUuid={context.deploymentUuid}
                         currentApplicationSection={"data"}
                         rawJzodSchema={effectiveRawJzodSchema}
-                        resolvedElementJzodSchema={resolvedJzodSchema}
-                        localRootLessListKeyMap={localRootLessListKeyMap}
+                        resolvedElementJzodSchema={resolvedJzodSchema.resolvedSchema}
+                        typeCheckKeyMap={resolvedJzodSchema.keyMap}
+                        // localRootLessListKeyMap={localRootLessListKeyMap}
                         foreignKeyObjects={emptyObject}
                         indentLevel={0}
                       />
@@ -519,8 +540,7 @@ export const getJzodElementEditorForTest: (pageLabel: string) => React.FC<JzodEl
                     </>
                   ) : (
                     <div>
-                      could not display editor because schema could not be resolved:{" "}
-                      {JSON.stringify(resolvedJzodSchema)}
+                      could not display editor because schema could not be resolved!
                     </div>
                   )}
                 </form>
