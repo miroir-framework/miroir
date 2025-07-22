@@ -160,16 +160,19 @@ export function getDefaultValueForJzodSchema(
 // ################################################################################################
 export function getDefaultValueForJzodSchemaWithResolution(
   jzodSchema: JzodElement,
+  forceOptional: boolean = false,
   miroirFundamentalJzodSchema: JzodSchema,
   currentModel?: MetaModel,
   miroirMetaModel?: MetaModel,
-  relativeReferenceJzodContext?: { [k: string]: JzodElement }
+  relativeReferenceJzodContext?: { [k: string]: JzodElement },
 ): any {
-  // log.info(
-  //   "getDefaultValueForJzodSchemaWithResolution called with jzodSchema",
-  //   jzodSchema
-  // );
-  if (jzodSchema.optional) {
+  log.info(
+    "getDefaultValueForJzodSchemaWithResolution called with jzodSchema",
+    jzodSchema,
+    "forceOptional",
+    forceOptional,
+  );
+  if (jzodSchema.optional && !forceOptional) {
     return undefined;
   }
   // let result
@@ -194,6 +197,7 @@ export function getDefaultValueForJzodSchemaWithResolution(
             a[0],
             getDefaultValueForJzodSchemaWithResolution(
               a[1],
+              forceOptional,
               miroirFundamentalJzodSchema,
               currentModel,
               miroirMetaModel,
@@ -298,6 +302,7 @@ export function getDefaultValueForJzodSchemaWithResolution(
       );
       return getDefaultValueForJzodSchemaWithResolution(
         resolvedReference,
+        forceOptional,
         miroirFundamentalJzodSchema,
         currentModel,
         miroirMetaModel,
@@ -322,6 +327,7 @@ export function getDefaultValueForJzodSchemaWithResolution(
       } else {
         return getDefaultValueForJzodSchemaWithResolution(
           jzodSchema.definition[0],
+          forceOptional,
           miroirFundamentalJzodSchema,
           currentModel,
           miroirMetaModel,

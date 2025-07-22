@@ -32,7 +32,9 @@ export const performanceMetrics: Record<string, PerformanceMetrics> = {}
 export function measurePerformance<T extends (...args: any[]) => any>(
   funcName: string, 
   func: T, 
-  logFrequency: number = 10
+  logFrequency: number = 10,
+  listKey?: string,
+  jzodSchema?: any
 ): T {
   // Initialize metrics for this function if needed
   if (!performanceMetrics[funcName]) {
@@ -59,16 +61,18 @@ export function measurePerformance<T extends (...args: any[]) => any>(
     metrics.maxDuration = Math.max(metrics.maxDuration, duration);
     metrics.minDuration = Math.min(metrics.minDuration, duration);
     
-    // if (metrics.callCount % logFrequency === 0) {
-    //   log.info(
-    //     `${funcName} performance - Call #${metrics.callCount}, ` +
-    //     `Duration: ${duration.toFixed(2)}ms, ` +
-    //     `Total: ${metrics.totalTime.toFixed(2)}ms, ` +
-    //     `Avg: ${(metrics.totalTime / metrics.callCount).toFixed(2)}ms, ` +
-    //     `Min: ${metrics.minDuration.toFixed(2)}ms, ` +
-    //     `Max: ${metrics.maxDuration.toFixed(2)}ms`
-    //   );
-    // }
+    if (metrics.callCount % logFrequency === 0) {
+      log.info(
+        `${funcName} performance - Call #${metrics.callCount},`,
+        `List Key: ${listKey || "N/A"}`,
+        `Duration: ${duration.toFixed(2)}ms,`,
+        `Total: ${metrics.totalTime.toFixed(2)}ms,`,
+        `Avg: ${(metrics.totalTime / metrics.callCount).toFixed(2)}ms,`,
+        `Min: ${metrics.minDuration.toFixed(2)}ms,`,
+        `Max: ${metrics.maxDuration.toFixed(2)}ms`,
+        `Jzod Schema:`, jzodSchema ?? "N/A",
+      );
+    }
     
     return result;
   };

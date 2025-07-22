@@ -66,6 +66,8 @@ export type JzodUnionResolvedTypeReturnType =
 // #################################################################################################
 export interface KeyMapEntry {
   rawSchema: JzodElement;
+  jzodObjectFlattenedSchema?: JzodObject;
+  recursivelyUnfoldedRawSchema?: JzodElement[];
   resolvedSchema: JzodElement;
   chosenUnionBranchRawSchema?: JzodElement; // for unions, this is the raw schema of the chosen branch
 }
@@ -896,7 +898,7 @@ export function jzodTypeCheck(
         })
       }
 
-      const extendedJzodSchema: JzodObject = jzodObjectFlatten(
+      const jzodObjectFlattenedSchema: JzodObject = jzodObjectFlatten(
         jzodSchema,
         miroirFundamentalJzodSchema,
         currentModel,
@@ -908,9 +910,9 @@ export function jzodTypeCheck(
       // checks that all attributes of the valueObject are present in the schema definition
       const resolvedObjectEntries:[string, ResolvedJzodSchemaReturnType][] = Object.entries(valueObject).map(
         (e: [string, any]) => {
-          if (extendedJzodSchema.definition[e[0]]) {
+          if (jzodObjectFlattenedSchema.definition[e[0]]) {
             const resultSchemaTmp = jzodTypeCheck(
-              extendedJzodSchema.definition[e[0]],
+              jzodObjectFlattenedSchema.definition[e[0]],
               e[1],
               [...currentValuePath, e[0]],
               [...currentTypePath, e[0]],
@@ -961,7 +963,7 @@ export function jzodTypeCheck(
         };
       }
       // checks that all mandatory attributes of the schema definition are present in the valueObject
-      const missingMandatoryAttributes = Object.entries(extendedJzodSchema.definition).filter(
+      const missingMandatoryAttributes = Object.entries(jzodObjectFlattenedSchema.definition).filter(
         (e: [string, JzodElement]) =>
           e[1].optional !== true &&
           e[1].nullable !== true &&
@@ -981,7 +983,7 @@ export function jzodTypeCheck(
         };
       }
       const resultResolvedJzodSchema: JzodObject = {
-        ...extendedJzodSchema,
+        ...jzodObjectFlattenedSchema,
         definition: Object.fromEntries(
           resolvedObjectEntries.map((e) => [
             e[0],
@@ -1011,10 +1013,10 @@ export function jzodTypeCheck(
           ...objecAttributeskeyMap,
           [currentValuePath.join(".")]: {
             rawSchema: jzodSchema,
-            resolvedSchema: resultResolvedJzodSchema
-          }// map the current value path to the resolved schema
-        }
-
+            resolvedSchema: resultResolvedJzodSchema,
+            jzodObjectFlattenedSchema: jzodObjectFlattenedSchema
+          }, // map the current value path to the resolved schema
+        },
       };
       break;
     }
@@ -1086,6 +1088,7 @@ export function jzodTypeCheck(
               keyMap: {
                 [currentValuePath.join(".")]: {
                   rawSchema: jzodSchema,
+                  recursivelyUnfoldedRawSchema: concreteUnfoldedJzodSchemas,
                   resolvedSchema: resultJzodSchema,
                   chosenUnionBranchRawSchema: resultJzodSchema
                 } // map the current value path to the resolved schema
@@ -1129,6 +1132,7 @@ export function jzodTypeCheck(
               keyMap: {
                 [currentValuePath.join(".")]: {
                   rawSchema: jzodSchema,
+                  recursivelyUnfoldedRawSchema: concreteUnfoldedJzodSchemas,
                   resolvedSchema: resultJzodSchema,
                   chosenUnionBranchRawSchema: resultJzodSchema
                 } // map the current value path to the resolved schema
@@ -1227,8 +1231,8 @@ export function jzodTypeCheck(
               resolvedSchema,
               keyMap: {
                 [currentValuePath.join(".")]: {
-                  // rawSchema: jzodSchema,
                   rawSchema: jzodSchema,
+                  recursivelyUnfoldedRawSchema: concreteUnfoldedJzodSchemas,
                   chosenUnionBranchRawSchema: resolveUnionResult.resolvedJzodObjectSchema,
                   resolvedSchema
                 } // map the current value path to the resolved schema
@@ -1303,7 +1307,8 @@ export function jzodTypeCheck(
               ...subResolvedSchemas.keyMap,
               [currentValuePath.join(".")]: {
                 rawSchema: jzodSchema,
-                chosenUnionBranchRawSchema: resolveUnionResult.resolvedJzodObjectSchema,
+                recursivelyUnfoldedRawSchema: concreteUnfoldedJzodSchemas,
+                chosenUnionBranchRawSchema: discriminatedSchemaForObject,
                 resolvedSchema: subResolvedSchemas.resolvedSchema,
               }, // map the current value path to the resolved schema
             },
@@ -1717,6 +1722,7 @@ export function jzodTypeCheck(
         keyMap: {
           [currentValuePath.join(".")]: {
             rawSchema: jzodSchema,
+            // resolvedSchema: jzodSchema
             resolvedSchema: valueToJzod(valueObject) as JzodElement
           } // map the current value path to the resolved schema
         }
@@ -1741,6 +1747,12 @@ export function jzodTypeCheck(
         typePath: currentTypePath,
         rawSchema: jzodSchema,
         resolvedSchema: jzodSchema,
+        keyMap: {
+          [currentValuePath.join(".")]: {
+            rawSchema: jzodSchema,
+            resolvedSchema: jzodSchema
+          } // map the current value path to the resolved schema
+        }
         // resolvedSchema: { ...jzodSchema, type: "string" }, // TODO: this is a shortcut assuming that all items in the array are of the same type, which is not always true
       };
       break;
@@ -1766,7 +1778,7 @@ export function jzodTypeCheck(
         keyMap: {
           [currentValuePath.join(".")]: {
             rawSchema: jzodSchema,
-            resolvedSchema: valueToJzod(valueObject) as JzodElement
+            resolvedSchema: jzodSchema
           } // map the current value path to the resolved schema
         }
       };
@@ -1792,7 +1804,7 @@ export function jzodTypeCheck(
         keyMap: {
           [currentValuePath.join(".")]: {
             rawSchema: jzodSchema,
-            resolvedSchema: valueToJzod(valueObject) as JzodElement
+            resolvedSchema: jzodSchema
           } // map the current value path to the resolved schema
         }
       };
@@ -1818,7 +1830,7 @@ export function jzodTypeCheck(
         keyMap: {
           [currentValuePath.join(".")]: {
             rawSchema: jzodSchema,
-            resolvedSchema: valueToJzod(valueObject) as JzodElement
+            resolvedSchema: jzodSchema
           } // map the current value path to the resolved schema
         }
       };
@@ -1844,7 +1856,7 @@ export function jzodTypeCheck(
         keyMap: {
           [currentValuePath.join(".")]: {
             rawSchema: jzodSchema,
-            resolvedSchema: valueToJzod(valueObject) as JzodElement
+            resolvedSchema: jzodSchema
           } // map the current value path to the resolved schema
         }
       };
@@ -1858,6 +1870,12 @@ export function jzodTypeCheck(
             typePath: currentTypePath,
             rawSchema: jzodSchema,
             resolvedSchema: jzodSchema,
+            keyMap: {
+              [currentValuePath.join(".")]: {
+                rawSchema: jzodSchema,
+                resolvedSchema: jzodSchema,
+              }, // map the current value path to the resolved schema
+            },
           };
         } else {
           return {
@@ -1904,7 +1922,8 @@ export function jzodTypeCheck(
         keyMap: {
           [currentValuePath.join(".")]: {
             rawSchema: jzodSchema,
-            resolvedSchema: valueToJzod(valueObject) as JzodElement
+            resolvedSchema: jzodSchema
+            // resolvedSchema: valueToJzod(valueObject) as JzodElement
           } // map the current value path to the resolved schema
         }
       };
