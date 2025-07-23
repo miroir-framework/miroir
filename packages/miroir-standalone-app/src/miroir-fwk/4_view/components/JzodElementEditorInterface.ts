@@ -36,7 +36,6 @@ export interface JzodEditorPropsRoot {
   // localRootLessListKeyMap: Record<string, { resolvedElementJzodSchema: JzodElement }> | undefined;
   typeCheckKeyMap: Record<string, KeyMapEntry> | undefined;
   // unions
-  recursivelyUnfoldedUnionSchema?: JzodUnion_RecursivelyUnfold_ReturnTypeOK | undefined;
   unfoldedUnionSchema?: JzodUnion | undefined; // prop drilling: for unions only
   // objects
   foreignKeyObjects: Record<string, EntityInstancesUuidIndex>; // prop drilling: for uuid / objects only

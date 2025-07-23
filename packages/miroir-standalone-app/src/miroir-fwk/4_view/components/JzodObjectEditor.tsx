@@ -477,7 +477,6 @@ const ProgressiveAttribute: FC<{
             currentApplicationSection={currentApplicationSection}
             resolvedElementJzodSchema={currentAttributeDefinition}
             foreignKeyObjects={foreignKeyObjects}
-            recursivelyUnfoldedUnionSchema={props.recursivelyUnfoldedUnionSchema}
             insideAny={insideAny}
             optional={definedOptionalAttributes.has(attribute[0])}
             parentType={unfoldedRawSchema?.type}

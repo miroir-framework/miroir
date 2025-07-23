@@ -55,9 +55,7 @@ export const JzodLiteralEditor: FC<JzodLiteralEditorProps> =  (
   const parentKey = rootLessListKey.includes('.') ? rootLessListKey.substring(0, rootLessListKey.lastIndexOf('.')) : '';
   const parentKeyMap = typeCheckKeyMap ? typeCheckKeyMap[parentKey] : undefined;
   const currentKeyMap = typeCheckKeyMap ? typeCheckKeyMap[rootLessListKey] : undefined;
-  // const unfoldedUnionSchema = currentKeyMap?.recursivelyUnfoldedUnionSchema?.result;
   const unfoldedUnionSchema = parentKeyMap?.recursivelyUnfoldedUnionSchema;
-  // const unfoldedUnionSchema = currentKeyMap?.;
 
   // Check if this literal is a discriminator
   const isDiscriminator = 

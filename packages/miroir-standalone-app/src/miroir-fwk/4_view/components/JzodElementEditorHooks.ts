@@ -72,7 +72,6 @@ export interface JzodElementEditorHooks {
   localResolvedElementJzodSchemaBasedOnValue: JzodElement | undefined;
   unfoldedRawSchema: JzodElement;
   // union
-  recursivelyUnfoldedUnionSchema: JzodUnion_RecursivelyUnfold_ReturnTypeOK | undefined;
   unfoldedUnionSchema: JzodUnion | undefined;
   // uuid, objects, arrays
   foreignKeyObjects: Record<string, EntityInstancesUuidIndex>
@@ -230,45 +229,10 @@ export function useJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
   //   "props.resolvedElementJzodSchema",
   //   props.resolvedElementJzodSchema,
   // );
-  const recursivelyUnfoldedUnionSchema: JzodUnion_RecursivelyUnfold_ReturnTypeOK | undefined =
-    unfoldedRawSchema &&
-    unfoldedRawSchema.type == "union" &&
-    currentTypecheckKeyMap?currentTypecheckKeyMap.recursivelyUnfoldedUnionSchema:undefined;
-
-  // const recursivelyUnfoldedRawSchema: JzodUnion_RecursivelyUnfold_ReturnType | undefined =
-  //   useMemo(() => {
-  //     if (
-  //       unfoldedRawSchema &&
-  //       unfoldedRawSchema.type == "union" &&
-  //       context.miroirFundamentalJzodSchema
-  //     ) {
-  //       // const result = measurePerformance(
-  //       //   "jzodUnion_recursivelyUnfold",
-  //       //   jzodUnion_recursivelyUnfold,
-  //       //   1,
-  //       //   props.rootLessListKey
-  //       // )(
-  //       //   unfoldedRawSchema,
-  //       //   new Set(),
-  //       //   context.miroirFundamentalJzodSchema,
-  //       //   currentModel,
-  //       //   miroirMetaModel,
-  //       //   {} // relativeReferenceJzodContext
-  //       // );
-  //       const result = jzodUnion_recursivelyUnfold(
-  //         unfoldedRawSchema,
-  //         new Set(),
-  //         context.miroirFundamentalJzodSchema,
-  //         currentModel,
-  //         miroirMetaModel,
-  //         {} // relativeReferenceJzodContext
-  //       );
-  //       return result;
-  //     } else {
-  //       return undefined;
-  //     }
-  //   }, [unfoldedRawSchema, context.miroirFundamentalJzodSchema, currentModel, miroirMetaModel])
-  // ;
+  // const recursivelyUnfoldedUnionSchema: JzodUnion_RecursivelyUnfold_ReturnTypeOK | undefined =
+  //   unfoldedRawSchema &&
+  //   unfoldedRawSchema.type == "union" &&
+  //   currentTypecheckKeyMap?currentTypecheckKeyMap.recursivelyUnfoldedUnionSchema:undefined;
 
   if (
     unfoldedRawSchema &&
@@ -286,27 +250,6 @@ export function useJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
     )
 
   }
-  // if (recursivelyUnfoldedRawSchema && recursivelyUnfoldedRawSchema.status != "ok") {
-  //   throw new Error(
-  //     "useJzodElementEditorHooks could not recursively unfold raw schema " +
-  //       "error " +
-  //       JSON.stringify(recursivelyUnfoldedRawSchema, null, 2) +
-  //       " unfoldedRawSchema " +
-  //       JSON.stringify(unfoldedRawSchema, null, 2) +
-  //       " count " +
-  //       count
-  //   );
-  // }
-  // log.info(
-  //   "useJzodElementEditorHooks count",
-  //   count,
-  //   "'" + props.rootLessListKey + "'",
-  //   "caller",
-  //   caller,
-  //   "jzodUnion_recursivelyUnfold",
-  //   "recursivelyUnfoldedRawSchema",
-  //   recursivelyUnfoldedRawSchema
-  // );
   // ##############################################################################################
   // ##############################################################################################
   // ##############################################################################################
@@ -484,7 +427,7 @@ export function useJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
     unfoldedRawSchema,
     foreignKeyObjects,
     unfoldedUnionSchema,
-    recursivelyUnfoldedUnionSchema,
+    // recursivelyUnfoldedUnionSchema,
     // Array / Object fold / unfold state
     hiddenFormItems,
     setHiddenFormItems,
