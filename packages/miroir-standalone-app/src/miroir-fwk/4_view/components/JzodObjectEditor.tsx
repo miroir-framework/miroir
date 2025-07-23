@@ -24,7 +24,7 @@ import {
 import { indentShift } from "./JzodArrayEditor";
 import { ExpandOrFoldObjectAttributes, JzodElementEditor } from "./JzodElementEditor";
 import { useJzodElementEditorHooks } from "./JzodElementEditorHooks";
-import { JzodObjectEditorProps, UnionInformation } from "./JzodElementEditorInterface";
+import { JzodObjectEditorProps } from "./JzodElementEditorInterface";
 import { SizedButton, SizedAddBox, SmallIconButton, getItemsOrder } from "./Style";
 import { ErrorFallbackComponent } from "./ErrorFallbackComponent";
 import { packageName } from "../../../constants";
@@ -153,7 +153,6 @@ const ProgressiveAttribute: FC<{
   localResolvedElementJzodSchemaBasedOnValue: JzodObject;
   unfoldedRawSchema: any;
   typeCheckKeyMap?: Record<string, KeyMapEntry>;
-  unionInformation: UnionInformation | undefined;
   currentValue: any;
   usedIndentLevel: number;
   definedOptionalAttributes: Set<string>;
@@ -174,7 +173,6 @@ const ProgressiveAttribute: FC<{
   localResolvedElementJzodSchemaBasedOnValue,
   unfoldedRawSchema,
   typeCheckKeyMap,
-  unionInformation,
   currentValue,
   usedIndentLevel,
   definedOptionalAttributes,
@@ -223,6 +221,8 @@ const ProgressiveAttribute: FC<{
   const attributeRootLessListKeyArray: (string | number)[] =
     rootLessListKeyArray.length > 0 ? [...rootLessListKeyArray, attribute[0]] : [attribute[0]];
 
+  const currentKeyMap = typeCheckKeyMap ? typeCheckKeyMap[rootLessListKey] : undefined;
+
   let attributeRawJzodSchema: JzodElement;
 
   if (!unfoldedRawSchema) {
@@ -255,18 +255,37 @@ const ProgressiveAttribute: FC<{
     case "union": {
       let concreteObjectRawJzodSchema: JzodObject | undefined;
       let resolvedConcreteObjectJzodSchema: JzodObject | undefined;
+      // if (props.rootLessListKey == "") {
+      //   log.info(
+      //     "JzodObjectEditor union",
+      //     rootLessListKey,
+      //     "received typeCheckKeyMap",
+      //     typeCheckKeyMap,
+      //   );
+      // } else {
+      //   log.info(
+      //     "JzodObjectEditor union",
+      //     rootLessListKey,
+      //     "currentKeyMap",
+      //     currentKeyMap
+      //   );
+      // }
+      const parentKey = rootLessListKey.includes(".")
+        ? rootLessListKey.substring(0, rootLessListKey.lastIndexOf("."))
+        : "";
+      const parentKeyMap = typeCheckKeyMap ? typeCheckKeyMap[parentKey] : undefined;
+      const possibleObjectTypes =
+        currentKeyMap?.recursivelyUnfoldedUnionSchema?.result.filter(
+          (a: any) => a.type == "object"
+        ) ?? [];
       log.info(
         "JzodObjectEditor union",
         rootLessListKey,
-        "received typeCheckKeyMap",
-        typeCheckKeyMap,
+        "currentKeyMap",
+        JSON.stringify(currentKeyMap, null, 2),
+        "parentKeyMap",
+        JSON.stringify(parentKeyMap, null, 2),
       );
-      // const concreteObjectRawJzodSchema: JzodObject | undefined = (typeCheckKeyMap ?? {})[
-      //   rootLessListKey
-      // ].chosenUnionBranchRawSchema as JzodObject | undefined;
-      // const resolvedConcreteObjectJzodSchema: JzodObject | undefined = unionInformation?.resolvedElementJzodSchema;
-
-      const possibleObjectTypes = unionInformation?.objectBranches.filter((a: any) => a.type == "object") ?? [];
 
       if (possibleObjectTypes.length == 0) {
         return (
@@ -457,9 +476,8 @@ const ProgressiveAttribute: FC<{
             typeCheckKeyMap={typeCheckKeyMap}
             currentApplicationSection={currentApplicationSection}
             resolvedElementJzodSchema={currentAttributeDefinition}
-            // localRootLessListKeyMap={localRootLessListKeyMap}
             foreignKeyObjects={foreignKeyObjects}
-            unionInformation={unionInformation}
+            recursivelyUnfoldedUnionSchema={props.recursivelyUnfoldedUnionSchema}
             insideAny={insideAny}
             optional={definedOptionalAttributes.has(attribute[0])}
             parentType={unfoldedRawSchema?.type}
@@ -547,7 +565,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
     // uuid
     foreignKeyObjects,
     // union
-    unionInformation,
+
     // Array / Object fold / unfold state
     hiddenFormItems,
     setHiddenFormItems,
@@ -556,8 +574,8 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
     definedOptionalAttributes,
     stringSelectList,
     undefinedOptionalAttributes,
-    // } = useJzodElementEditorHooks(props, count, "JzodElementEditor");
-  } = measuredUseJzodElementEditorHooks(props, count, "JzodElementEditor");
+    } = useJzodElementEditorHooks(props, count, "JzodElementEditor");
+  // } = measuredUseJzodElementEditorHooks(props, count, "JzodElementEditor");
 
   const currentMiroirFundamentalJzodSchema = context.miroirFundamentalJzodSchema;
   const usedIndentLevel: number = indentLevel ? indentLevel : 0;
@@ -858,7 +876,6 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
             localResolvedElementJzodSchemaBasedOnValue={localResolvedElementJzodSchemaBasedOnValue as JzodObject}
             unfoldedRawSchema={unfoldedRawSchema}
             typeCheckKeyMap={typeCheckKeyMap}
-            unionInformation={unionInformation}
             currentValue={currentValue}
             usedIndentLevel={usedIndentLevel}
             definedOptionalAttributes={definedOptionalAttributes}

@@ -76,7 +76,7 @@ export const JzodArrayEditorMoveButton: React.FC<JzodArrayMoveButtonProps> = ({
       itemsOrder,
       "newlist",
       JSON.stringify(newList, null, 2),
-      "formik.values",
+      "old formik.values",
       JSON.stringify(formik.values, null, 2),
     );
 

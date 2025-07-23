@@ -642,6 +642,9 @@ export {
   selectUnionBranchFromDiscriminator,
 } from "./1_core/jzod/jzodTypeCheck.js";
 export {
+  getObjectUniondiscriminatorValuesFromResolvedSchema
+} from "./1_core/jzod/getObjectUniondiscriminatorValuesFromResolvedSchema";
+export {
   JzodUnion_RecursivelyUnfold_ReturnTypeError,
   JzodUnion_RecursivelyUnfold_ReturnTypeOK,
   JzodUnion_RecursivelyUnfold_ReturnType,

@@ -164,7 +164,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
     // recursivelyUnfoldedRawSchema,
     foreignKeyObjects,
     // union
-    unionInformation,
+    unfoldedUnionSchema,
     // Array / Object fold / unfold state
     hiddenFormItems,
     setHiddenFormItems,
@@ -172,9 +172,9 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
     stringSelectList,
     // object
     definedOptionalAttributes,
-  // } = useJzodElementEditorHooks(props, count, "JzodElementEditor");
+  } = useJzodElementEditorHooks(props, count, "JzodElementEditor");
   // } = measuredUseJzodElementEditorHooks(props, count, "JzodElementEditor");
-  } = measurePerformance("useJzodElementEditorHooks", useJzodElementEditorHooks)(props, count, "JzodElementEditor");
+  // } = measurePerformance("useJzodElementEditorHooks", useJzodElementEditorHooks)(props, count, "JzodElementEditor");
   
   // const localResolvedElementJzodSchemaBasedOnValue: JzodElement | undefined = 
   // // useMemo(() => {
@@ -367,7 +367,6 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
             rawJzodSchema={props.rawJzodSchema}
             currentDeploymentUuid={props.currentDeploymentUuid}
             currentApplicationSection={props.currentApplicationSection}
-            unionInformation={unionInformation}
             resolvedElementJzodSchema={localResolvedElementJzodSchemaBasedOnValue}
             typeCheckKeyMap={ props.typeCheckKeyMap }
             foreignKeyObjects={props.foreignKeyObjects}
@@ -401,14 +400,11 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               rawJzodSchema={props.rawJzodSchema}
               resolvedElementJzodSchema={localResolvedElementJzodSchemaBasedOnValue}
               typeCheckKeyMap={ props.typeCheckKeyMap }
-              // localRootLessListKeyMap={props.localRootLessListKeyMap}
               currentDeploymentUuid={props.currentDeploymentUuid}
               currentApplicationSection={props.currentApplicationSection}
-              unionInformation={unionInformation}
               foreignKeyObjects={foreignKeyObjects}
               hidden={hideSubJzodEditor}
               displayAsStructuredElementSwitch={displayAsStructuredElementSwitch}
-              // jzodSchemaTooltip={JzodSchemaTooltip}
               parentType={props.parentType} // used to control the parent type of the element, used for record elements
               deleteButtonElement={props.deleteButtonElement}
             />
@@ -437,7 +433,6 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               currentApplicationSection={props.currentApplicationSection}
               currentDeploymentUuid={props.currentDeploymentUuid}
               foreignKeyObjects={props.foreignKeyObjects}
-              unionInformation={props.unionInformation}
               insideAny={props.insideAny}
               hidden={hideSubJzodEditor}
               displayAsStructuredElementSwitch={displayAsStructuredElementSwitch}
@@ -602,7 +597,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                 resolvedElementJzodSchema={localResolvedElementJzodSchemaBasedOnValue}
                 typeCheckKeyMap={ props.typeCheckKeyMap }
                 // localRootLessListKeyMap={props.localRootLessListKeyMap}
-                unionInformation={props.unionInformation}
+                unfoldedUnionSchema={ unfoldedUnionSchema }
                 insideAny={props.insideAny}
               />
             // </div>
@@ -631,7 +626,6 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                 currentApplicationSection={props.currentApplicationSection}
                 currentDeploymentUuid={props.currentDeploymentUuid}
                 enumValues={enumValues}
-                unionInformation={props.unionInformation}
                 forceTestingMode={props.forceTestingMode}
                 insideAny={props.insideAny}
               />
@@ -652,10 +646,8 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               currentApplicationSection={props.currentApplicationSection}
               currentDeploymentUuid={props.currentDeploymentUuid}
               rawJzodSchema={props.rawJzodSchema as JzodLiteral}
-              // localRootLessListKeyMap={props.localRootLessListKeyMap}
               resolvedElementJzodSchema={localResolvedElementJzodSchemaBasedOnValue}
               typeCheckKeyMap={ props.typeCheckKeyMap }
-              unionInformation={props.unionInformation}
               parentType={props.parentType}
             />
           );
@@ -769,8 +761,6 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
     localResolvedElementJzodSchemaBasedOnValue, 
     formik, 
     currentValue, 
-    // recursivelyUnfoldedRawSchema,
-    unionInformation,
     foreignKeyObjects,
     hideSubJzodEditor,
     displayAsStructuredElementSwitch,

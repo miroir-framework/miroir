@@ -38,7 +38,6 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
     currentDeploymentUuid,
     currentApplicationSection,
     foreignKeyObjects,
-    unionInformation,
     resolvedElementJzodSchema, // handleSelectLiteralChange,
     // localRootLessListKeyMap,
     labelElement,
@@ -88,7 +87,6 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
           rawJzodSchema={rawJzodSchema}
           currentDeploymentUuid={currentDeploymentUuid}
           currentApplicationSection={currentApplicationSection}
-          unionInformation={unionInformation}
           resolvedElementJzodSchema={resolvedElementJzodSchema}
           typeCheckKeyMap={typeCheckKeyMap}
           // localRootLessListKeyMap={localRootLessListKeyMap}

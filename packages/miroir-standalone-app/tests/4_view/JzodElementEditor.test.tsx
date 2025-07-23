@@ -131,6 +131,8 @@ export function getJzodArrayEditorTests(
             await act(() => {
               fireEvent.change(cell, { target: { value: "new value" } });
             });
+            await waitAfterUserInteraction();
+
             expect(cell).toContainHTML("new value");
           },
         },
@@ -200,18 +202,34 @@ export function getJzodArrayEditorTests(
             initialFormState: [{ objectType: "A", a: "value1" }, { objectType: "B", b: 2 }, { objectType: "A", a: "value3" }],
           },
           tests: async (expect, container) => {
-            const upButtons = screen.getAllByRole("ROOT.testField.button.down");
+            const formValuesBeforeTest = extractValuesFromRenderedElements(
+              expect,
+              container,
+              "testField",
+              "before up button click"
+            );
+            const beforeTestResult = formValuesToJSON(formValuesBeforeTest);
+            log.info(expect.getState().currentTestName, "beforeTestResult", beforeTestResult);
+            expect(beforeTestResult, "before up button click").toEqual([{ objectType: "A", a: "value1" }, { objectType: "B", b: 2 }, { objectType: "A", a: "value3" }]);
+
+            screen.debug(undefined, Infinity); // Prints entire DOM with no size limit
+            log.info(expect.getState().currentTestName, "clicking down button for first item");
+            const downButtons = screen.getAllByRole("ROOT.testField.button.down");
             await act(() => {
-              fireEvent.click(upButtons[0]); // Click the down button for the first item
+              fireEvent.click(downButtons[0]); // Click the down button for the first item
             });
+            // Wait for progressive rendering after the button click
+            await waitAfterUserInteraction();
+            log.info(expect.getState().currentTestName, "clicked up button for first item done");
             const formValues = extractValuesFromRenderedElements(
               expect,
               container,
               "testField",
-              "after down button click"
+              "after up button click"
             );
             const testResult = formValuesToJSON(formValues);
-            expect(testResult).toEqual([{ objectType: "B", b: 2 }, { objectType: "A", a: "value1" }, { objectType: "A", a: "value3" }]);
+            log.info(expect.getState().currentTestName, "testResult", testResult);
+            expect(testResult, "after up button click").toEqual([{ objectType: "B", b: 2 }, { objectType: "A", a: "value1" }, { objectType: "A", a: "value3" }]);
           },
         },
         "renders all array values of a plain 2-items tuple with a string and a number, in the right order": {
@@ -267,6 +285,8 @@ export function getJzodArrayEditorTests(
             await act(() => {
               fireEvent.click(addButton);
             });
+            // Wait for progressive rendering after the button click
+            await waitAfterUserInteraction();
             const formValues: Record<string, any> = extractValuesFromRenderedElements(
               expect,
               container,
@@ -317,6 +337,8 @@ export function getJzodArrayEditorTests(
             await act(() => {
               fireEvent.click(addButton);
             });
+            // Wait for progressive rendering after the button click
+            await waitAfterUserInteraction();
             const formValues: Record<string, any> = extractValuesFromRenderedElements(
               expect,
               container,
@@ -548,6 +570,7 @@ export function getJzodLiteralEditorTests(
                 console.log("##################### ACTION", );
                 fireEvent.change(input, { target: { value: "new value" } }) // React testing library does not throw error on editing disabled textbox, so we simulate it
               });
+              await waitAfterUserInteraction();
               expect(screen.getByDisplayValue(/test-value/)).toBeInTheDocument(); // value has not changed, because it is a literal
             }
         },
@@ -677,6 +700,7 @@ export function getJzodObjectEditorTests(
               fireEvent.change(inputA, { target: { value: "new string value" } });
               fireEvent.change(inputB, { target: { value: 100 } });
             });
+            await waitAfterUserInteraction();
             const values: Record<string, any> = extractValuesFromRenderedElements(
               expect,
               container,
@@ -947,6 +971,7 @@ export function getJzodObjectEditorTests(
               await act(() => {
                 fireEvent.blur(input); // Simulate blur to trigger validation and state update
               });
+              await waitAfterUserInteraction();
               expect(input).toHaveValue("renamedRecord");
               const values = extractValuesFromRenderedElements(expect, container, "testField", "after rename");
               const testResult = formValuesToJSON(values);
@@ -1132,6 +1157,7 @@ export function getJzodSimpleTypeEditorTests(
             await act(() => {
               fireEvent.change(input, { target: { value: "new text" } });
             });
+            await waitAfterUserInteraction();
             expect(input).toHaveValue("new text");
           },
         },
@@ -1156,6 +1182,7 @@ export function getJzodSimpleTypeEditorTests(
             await act(() => {
               fireEvent.change(input, { target: { value: "new text" } });
             });
+            await waitAfterUserInteraction();
             expect(input).toHaveValue("new text");
             // Simulate form submission
             const submit = screen.getByRole("form");
@@ -1207,6 +1234,7 @@ export function getJzodSimpleTypeEditorTests(
             await act(() => {
               fireEvent.change(input, { target: { value: 100 } });
             });
+            await waitAfterUserInteraction();
             expect(input).toHaveValue(100);
           },
         },
@@ -1251,6 +1279,7 @@ export function getJzodSimpleTypeEditorTests(
             await act(() => {
               fireEvent.change(input, { target: { value: "3c659c65-35f4-40e5-acf3-28115f35affa" } });
             });
+            await waitAfterUserInteraction();
             expect(input).toHaveValue("3c659c65-35f4-40e5-acf3-28115f35affa");
           },
         },
@@ -1387,6 +1416,7 @@ export function getJzodSimpleTypeEditorTests(
             await act(() => {
               fireEvent.change(input, { target: { value: 98765432109876543210n } });
             });
+            await waitAfterUserInteraction();
             expect(input).toHaveValue("98765432109876543210");
           },
         },
@@ -1551,7 +1581,7 @@ export function getJzodUnionEditorTests(
             });
             await waitAfterUserInteraction();
 
-            screen.debug(undefined, Infinity); // Prints entire DOM with no size limit
+            // screen.debug(undefined, Infinity); // Prints entire DOM with no size limit
             const valuesAfterChange: Record<string, any> = extractValuesFromRenderedElements(
               expect,
               container,
@@ -1973,49 +2003,49 @@ const jzodElementEditorTests: Record<
   string,
   JzodElementEditorTestSuite<any> & { modes?: ModesType }
 > = {
-  // JzodArrayEditor: { 
-  //   editor: JzodElementEditor, 
-  //   getJzodEditorTests: getJzodArrayEditorTests,
-  //   // modes: '*',
-  //   // modes: ['jzodElementEditor', 'component'],
-  //   modes: 'jzodElementEditor',
-  // },
-  // JzodEnumEditor: {
-  //   editor: JzodElementEditor,
-  //   getJzodEditorTests: getJzodEnumEditorTests,
-  //   // modes: '*',
-  //   modes: "jzodElementEditor",
-  //   // modes: "component",
-  // },
-  // JzodLiteralEditor: { 
-  //   editor: JzodElementEditor, 
-  //   getJzodEditorTests: getJzodLiteralEditorTests,
-  //   // modes: "*",
-  //   // modes: ['jzodElementEditor', 'component'],
-  //   modes: "jzodElementEditor",
-  //   // modes: "component",
-  // },
-  // JzodObjectEditor: { 
-  //   editor: JzodElementEditor, 
-  //   getJzodEditorTests: getJzodObjectEditorTests,
-  //   // modes: '*',
-  //   // modes: ['jzodElementEditor', 'component'],
-  //   modes: 'jzodElementEditor',
-  // },
-  // JzodSimpleTypeEditor: { 
-  //   editor: JzodElementEditor, 
-  //   getJzodEditorTests: getJzodSimpleTypeEditorTests,
-  //   // modes: '*',
-  //   // modes: ['jzodElementEditor', 'component'],
-  //   modes: 'jzodElementEditor',
-  // },
-  // JzodUnionEditor: { 
-  //   editor: JzodElementEditor, 
-  //   getJzodEditorTests: getJzodUnionEditorTests,
-  //   // modes: '*',
-  //   // modes: ['jzodElementEditor', 'component'],
-  //   modes: 'jzodElementEditor',
-  // },
+  JzodArrayEditor: { 
+    editor: JzodElementEditor, 
+    getJzodEditorTests: getJzodArrayEditorTests,
+    // modes: '*',
+    // modes: ['jzodElementEditor', 'component'],
+    modes: 'jzodElementEditor',
+  },
+  JzodEnumEditor: {
+    editor: JzodElementEditor,
+    getJzodEditorTests: getJzodEnumEditorTests,
+    // modes: '*',
+    modes: "jzodElementEditor",
+    // modes: "component",
+  },
+  JzodLiteralEditor: { 
+    editor: JzodElementEditor, 
+    getJzodEditorTests: getJzodLiteralEditorTests,
+    // modes: "*",
+    // modes: ['jzodElementEditor', 'component'],
+    modes: "jzodElementEditor",
+    // modes: "component",
+  },
+  JzodObjectEditor: { 
+    editor: JzodElementEditor, 
+    getJzodEditorTests: getJzodObjectEditorTests,
+    // modes: '*',
+    // modes: ['jzodElementEditor', 'component'],
+    modes: 'jzodElementEditor',
+  },
+  JzodSimpleTypeEditor: { 
+    editor: JzodElementEditor, 
+    getJzodEditorTests: getJzodSimpleTypeEditorTests,
+    // modes: '*',
+    // modes: ['jzodElementEditor', 'component'],
+    modes: 'jzodElementEditor',
+  },
+  JzodUnionEditor: { 
+    editor: JzodElementEditor, 
+    getJzodEditorTests: getJzodUnionEditorTests,
+    // modes: '*',
+    // modes: ['jzodElementEditor', 'component'],
+    modes: 'jzodElementEditor',
+  },
   // // ################# PERFORMANCE
   // JzodEditorPerformanceTests: {
   //   editor: JzodElementEditor,
@@ -2042,15 +2072,15 @@ const jzodElementEditorTests: Record<
   //   // modes: ['jzodElementEditor', 'component'],
   //   modes: 'jzodElementEditor',
   // },
-  // ################# ENDPOINTS
-  JzodEndpointEditor: { 
-    editor: JzodElementEditor, 
-    getJzodEditorTests: getJzodEndpointEditorTests,
-    performanceTests: true,
-    // modes: '*',
-    // modes: ['jzodElementEditor', 'component'],
-    modes: 'jzodElementEditor',
-  },
+  // // ################# ENDPOINTS
+  // JzodEndpointEditor: { 
+  //   editor: JzodElementEditor, 
+  //   getJzodEditorTests: getJzodEndpointEditorTests,
+  //   performanceTests: true,
+  //   // modes: '*',
+  //   // modes: ['jzodElementEditor', 'component'],
+  //   modes: 'jzodElementEditor',
+  // },
 };
 
 // ##############################################################################################

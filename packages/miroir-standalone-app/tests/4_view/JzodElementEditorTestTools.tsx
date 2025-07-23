@@ -982,13 +982,13 @@ export function extractValuesFromRenderedElements(
     "label", label,
     "step", step,
     "allInputs.length", allInputs.length,
-    "allInputs", allInputs.map((el) => ({
-      id: el.id,
-      name: (el as any).name,
-      type: (el as HTMLInputElement).type,
-      value: (el as HTMLInputElement).value,
-      defaultValue: (el as HTMLInputElement).defaultValue,
-    })),
+    // "allInputs", allInputs.map((el) => ({
+    //   id: el.id,
+    //   name: (el as any).name,
+    //   type: (el as HTMLInputElement).type,
+    //   value: (el as HTMLInputElement).value,
+    //   defaultValue: (el as HTMLInputElement).defaultValue,
+    // })),
   );
   console.log("extractValuesFromRenderedElements",
     "label", label,
@@ -1003,34 +1003,34 @@ export function extractValuesFromRenderedElements(
     "label", label,
     "step", step,
     "allCheckboxes.length", allCheckboxes.length,
-    'allCheckboxes', allCheckboxes.map((el) => ({
-      id: el.id,
-      name: (el as any).name,
-      checked: (el as HTMLInputElement).checked,
-    })),
+    // 'allCheckboxes', allCheckboxes.map((el) => ({
+    //   id: el.id,
+    //   name: (el as any).name,
+    //   checked: (el as HTMLInputElement).checked,
+    // })),
   );
 
   console.log("extractValuesFromRenderedElements",
     "label", label,
     "step", step,
     "allComboboxes.length", allComboboxes.length,
-    'allComboboxes', allComboboxes.map((el) => ({
-      id: el.id,
-      name: (el as any).name,
-      value: (el as HTMLInputElement).value,
-      defaultValue: (el as HTMLInputElement).defaultValue,
-    })),
+    // 'allComboboxes', allComboboxes.map((el) => ({
+    //   id: el.id,
+    //   name: (el as any).name,
+    //   value: (el as HTMLInputElement).value,
+    //   defaultValue: (el as HTMLInputElement).defaultValue,
+    // })),
   );
 
   console.log("extractValuesFromRenderedElements",
     "label", label,
     "step", step,
     "allOptions.length", allOptions.length,
-    'allOptions', Array.from(allOptions).map((el) => ({
-      id: el.id,
-      textContent: (el as HTMLOptionElement).textContent,
-      ariaLabel: el.getAttribute("aria-label"),
-    })),
+    // 'allOptions', Array.from(allOptions).map((el) => ({
+    //   id: el.id,
+    //   textContent: (el as HTMLOptionElement).textContent,
+    //   ariaLabel: el.getAttribute("aria-label"),
+    // })),
   );
   // Process miroirInput elements first (these are the main form inputs)
   allTestIdElements.forEach((element: Element) => {

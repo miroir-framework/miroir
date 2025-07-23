@@ -3,7 +3,7 @@ import { LoggerInterface, MiroirLoggerFactory, resolvePathOnObject } from "miroi
 import {
   JzodEnum
 } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import React, { useMemo } from "react";
+import React, { FC, useMemo } from "react";
 import { packageName } from "../../../constants";
 import { cleanLevel } from "../constants";
 import { JzodEnumEditorProps } from "./JzodElementEditorInterface";
@@ -18,8 +18,7 @@ MiroirLoggerFactory.registerLoggerToStart(
 });
 
 
-export const JzodEnumEditor = React.memo(
-  function JzodEnumEditorComponent({
+export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
     name,
     labelElement,
     rawJzodSchema,
@@ -27,32 +26,33 @@ export const JzodEnumEditor = React.memo(
     rootLessListKey,
     rootLessListKeyArray,
     forceTestingMode,
-    unionInformation,
-  }: JzodEnumEditorProps) {
+    typeCheckKeyMap,
+  }: JzodEnumEditorProps) => {
     // const currentValue = resolvePathOnObject(props.formik.values, props.rootLessListKeyArray);
     const formik = useFormikContext<Record<string, any>>();
+
+    const parentKey = rootLessListKey.includes(".")
+      ? rootLessListKey.substring(0, rootLessListKey.lastIndexOf("."))
+      : "";
+    const parentKeyMap = typeCheckKeyMap ? typeCheckKeyMap[parentKey] : undefined;
+    const currentKeyMap = typeCheckKeyMap ? typeCheckKeyMap[rootLessListKey] : undefined;
 
     // Log only when component renders to track performance
     // log.info(
     //   `JzodEnumEditor: render for ${name}, rootLessListKey=${rootLessListKey}, rawJzodSchema=${JSON.stringify(
     //     rawJzodSchema
     //   )}`,
-    //   `unionInformation=${JSON.stringify(unionInformation)}`
     // );
 
-    // Memoize the discrimination case check
-    const isDiscriminator = useMemo(
-      () =>
-        unionInformation?.discriminator &&
-        unionInformation?.discriminatorValues &&
-        name === unionInformation?.discriminator,
-      [unionInformation, name]
-    );
+    const isDiscriminator =
+      parentKeyMap?.discriminator &&
+      parentKeyMap?.discriminatorValues &&
+      name === parentKeyMap?.discriminator;
 
     // Memoize the menu items for better performance
     const menuItems = useMemo(() => {
       if (isDiscriminator) {
-        return unionInformation?.discriminatorValues.map((v, index) => (
+        return (parentKeyMap?.discriminatorValues??[]).map((v, index) => (
           <MenuItem key={v} value={v} aria-label={rootLessListKey + "." + index}>
             {v}
           </MenuItem>
@@ -64,7 +64,7 @@ export const JzodEnumEditor = React.memo(
           </MenuItem>
         ));
       }
-    }, [isDiscriminator, unionInformation, rawJzodSchema, rootLessListKey]);
+    }, [isDiscriminator, parentKeyMap, rawJzodSchema, rootLessListKey]);
 
     return LabeledEditor({
       labelElement: labelElement ?? <></>,
@@ -101,14 +101,4 @@ export const JzodEnumEditor = React.memo(
         </>
       ),
     });
-  },
-  (prevProps, nextProps) => {
-    // Custom comparison for React.memo
-    return (
-      prevProps.rootLessListKey === nextProps.rootLessListKey &&
-      prevProps.name === nextProps.name &&
-      JSON.stringify(prevProps.rawJzodSchema) === JSON.stringify(nextProps.rawJzodSchema) &&
-      JSON.stringify(prevProps.unionInformation) === JSON.stringify(nextProps.unionInformation)
-    );
   }
-);

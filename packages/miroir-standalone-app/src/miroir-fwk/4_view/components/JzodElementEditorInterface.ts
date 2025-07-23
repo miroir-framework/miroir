@@ -5,6 +5,8 @@ import {
   EntityInstancesUuidIndex,
   JzodElement,
   JzodUnion,
+  JzodUnion_RecursivelyUnfold_ReturnType,
+  JzodUnion_RecursivelyUnfold_ReturnTypeOK,
   KeyMapEntry,
   Uuid
 } from "miroir-core";
@@ -33,9 +35,13 @@ export interface JzodEditorPropsRoot {
   resolvedElementJzodSchema: JzodElement | undefined;
   // localRootLessListKeyMap: Record<string, { resolvedElementJzodSchema: JzodElement }> | undefined;
   typeCheckKeyMap: Record<string, KeyMapEntry> | undefined;
-  unionInformation?: UnionInformation | undefined; // prop drilling: for unions only
+  // unions
+  recursivelyUnfoldedUnionSchema?: JzodUnion_RecursivelyUnfold_ReturnTypeOK | undefined;
+  unfoldedUnionSchema?: JzodUnion | undefined; // prop drilling: for unions only
+  // objects
   foreignKeyObjects: Record<string, EntityInstancesUuidIndex>; // prop drilling: for uuid / objects only
   returnsEmptyElement?: boolean; // used to force the editor to return an empty element
+  // any
   insideAny?: boolean;
   hidden?: boolean; // used to control visibility of the editor
   optional?: boolean; // used to control if the displayed element can be removed or not

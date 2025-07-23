@@ -9,7 +9,7 @@ import {
   UnfoldJzodSchemaOnceReturnType,
 } from "miroir-core";
 import { describe, expect, it } from "vitest";
-import { getObjectUniondiscriminatorValuesFromResolvedSchema } from "../src/getObjectUniondiscriminatorValuesFromResolvedSchema";
+import { getObjectUniondiscriminatorValuesFromResolvedSchema } from "miroir-core/src/1_core/jzod/getObjectUniondiscriminatorValuesFromResolvedSchema";
 import currentMiroirModel from "./currentMiroirModel.json";
 import currentModel from "./currentModel.json";
 import { JzodUnion_RecursivelyUnfold_ReturnType } from "miroir-core";

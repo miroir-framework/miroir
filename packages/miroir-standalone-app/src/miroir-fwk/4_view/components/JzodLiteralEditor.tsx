@@ -1,6 +1,6 @@
 import { MenuItem } from "@mui/material";
 import { useFormikContext } from "formik";
-import React, { useCallback, useMemo } from "react";
+import React, { FC, useCallback, useMemo } from "react";
 
 
 import {
@@ -29,8 +29,7 @@ MiroirLoggerFactory.registerLoggerToStart(
 });
 
 let JzodLiteralEditorRenderCount: number = 0;
-export const JzodLiteralEditor = React.memo<JzodLiteralEditorProps>(function JzodLiteralEditorComponent(
-  // props: JzodLiteralEditorProps
+export const JzodLiteralEditor: FC<JzodLiteralEditorProps> =  (
   {
     name,
     labelElement,
@@ -39,10 +38,12 @@ export const JzodLiteralEditor = React.memo<JzodLiteralEditorProps>(function Jzo
     rootLessListKeyArray,
     currentDeploymentUuid,
     currentApplicationSection,
-    unionInformation,
+    typeCheckKeyMap,
+    // unfoldedUnionSchema,
+    // recursivelyUnfoldedUnionSchema,
     resolvedElementJzodSchema, // handleSelectLiteralChange,
   }
-) {
+) => {
   JzodLiteralEditorRenderCount++;
   const context = useMiroirContextService();
   const currentModel: MetaModel = useCurrentModel(currentDeploymentUuid);
@@ -50,26 +51,31 @@ export const JzodLiteralEditor = React.memo<JzodLiteralEditorProps>(function Jzo
   const currentMiroirFundamentalJzodSchema = context.miroirFundamentalJzodSchema;
 
   const formik = useFormikContext<Record<string, any>>();
-  
+
+  const parentKey = rootLessListKey.includes('.') ? rootLessListKey.substring(0, rootLessListKey.lastIndexOf('.')) : '';
+  const parentKeyMap = typeCheckKeyMap ? typeCheckKeyMap[parentKey] : undefined;
+  const currentKeyMap = typeCheckKeyMap ? typeCheckKeyMap[rootLessListKey] : undefined;
+  // const unfoldedUnionSchema = currentKeyMap?.recursivelyUnfoldedUnionSchema?.result;
+  const unfoldedUnionSchema = parentKeyMap?.recursivelyUnfoldedUnionSchema;
+  // const unfoldedUnionSchema = currentKeyMap?.;
+
   // Check if this literal is a discriminator
-  const isDiscriminator = useMemo(() => 
-    unionInformation?.discriminator && 
-    unionInformation?.discriminatorValues && 
-    name === unionInformation?.discriminator,
-    [unionInformation, name]
-  );
+  const isDiscriminator = 
+    parentKeyMap?.discriminator && 
+    parentKeyMap?.discriminatorValues && 
+    name === parentKeyMap?.discriminator;
   
   // ############################################################################################
   // uses setFormState to update the formik state (updating the parent value)
   const handleSelectLiteralChange = useCallback((event: any) => {
     // This literal is the discriminator of a discriminated union object.
 
-    if (!unionInformation) {
+    if (!parentKeyMap) {
       throw new Error(
         "handleSelectLiteralChange called but current object does not have information about the discriminated union type it must be part of!"
       );
     }
-    if (!unionInformation.unfoldedRawSchema.discriminator) {
+    if (!parentKeyMap.discriminator) {
       throw new Error(
         "handleSelectLiteralChange called but current object does not have a discriminated union type!"
       );
@@ -86,45 +92,60 @@ export const JzodLiteralEditor = React.memo<JzodLiteralEditorProps>(function Jzo
       currentAttributeName,
       "name",
       name,
-      "unionInformation",
-      unionInformation,
-      // JSON.stringify(unionInformation, null, 2),
       "formik.values",
       formik.values,
-      "unionInformation",
-      JSON.stringify(unionInformation, null, 2)
+      "currentKeyMap",
+      currentKeyMap
     );
-    if (typeof unionInformation.unfoldedRawSchema.discriminator !== "string") {
+    if (typeof parentKeyMap.discriminator !== "string") {
       throw new Error(
         "handleSelectLiteralChange called but current object does not have a string discriminator!"
       );
     }
+    if (!unfoldedUnionSchema) {
+      throw new Error(
+        "handleSelectLiteralChange called but unfoldedUnionSchema is undefined!"
+      );
+    }
+    //     unfoldedRawSchema: unfoldedRawSchema,
+    // resolvedElementJzodSchema: resolvedElementJzodSchema,
+    // objectBranches: recursivelyUnfoldedUnionSchema?.result ?? [],
+    // discriminator: recursivelyUnfoldedUnionSchema?.discriminator as string,
+    // discriminatorValues: objectUniondiscriminatorValues,
+
+    // TODO: handle array discriminators
+    if (!parentKeyMap.discriminator || typeof parentKeyMap.discriminator !== "string") {
+      throw new Error(
+        "handleSelectLiteralChange called but parentKeyMap.discriminator is not a string!"
+      );
+    }
+
     const newJzodSchema: JzodElement | undefined = // attribute is either discriminator or sub-discriminator
-      unionInformation.objectBranches.find(
+      parentKeyMap.recursivelyUnfoldedUnionSchema?.result.find(
         (a: JzodElement) =>
           a.type == "object" &&
-          a.definition[(unionInformation.unfoldedRawSchema as any).discriminator].type == "literal" &&
-          (a.definition[(unionInformation.unfoldedRawSchema as any).discriminator] as JzodLiteral)
+          a.definition[parentKeyMap.discriminator as string].type == "literal" &&
+          (a.definition[parentKeyMap.discriminator as string] as JzodLiteral)
             .definition == event.target.value
       );
     if (!newJzodSchema) {
       throw new Error(
         "handleSelectLiteralChange could not find union branch for discriminator " +
-          unionInformation.discriminator +
+          (parentKeyMap.discriminator as string) +
           " in " +
-          JSON.stringify(unionInformation.unfoldedRawSchema)
+          JSON.stringify(parentKeyMap.resolvedSchema)
       );
     } else {
       log.info(
         "handleSelectLiteralChange found newJzodSchema",
         newJzodSchema,
         "for discriminator",
-        unionInformation.discriminator,
+        parentKeyMap.discriminator,
         "value",
         event.target.value
       );
     }
-    const newJzodSchemaWithOptional = unionInformation.unfoldedRawSchema.optional
+    const newJzodSchemaWithOptional = parentKeyMap.rawSchema.optional
       ? {
           ...newJzodSchema,
           optional: true,
@@ -154,7 +175,6 @@ export const JzodLiteralEditor = React.memo<JzodLiteralEditorProps>(function Jzo
       false // do not validate on change
     );
   }, [
-    unionInformation,
     rootLessListKeyArray,
     rootLessListKey,
     name,
@@ -164,17 +184,25 @@ export const JzodLiteralEditor = React.memo<JzodLiteralEditorProps>(function Jzo
     miroirMetaModel
   ]);
 
+  log.info(
+    "JzodLiteralEditor render",
+    JzodLiteralEditorRenderCount,
+    "rootLessListKey",
+    rootLessListKey,
+    "currentKeyMap",
+    currentKeyMap,
+  );
   // Memoize discriminator values for better rendering performance
   const discriminatorMenuItems = useMemo(() => {
-    if (isDiscriminator && unionInformation?.discriminatorValues) {
-      return unionInformation.discriminatorValues.sort().map((v) => (
+    if (isDiscriminator && parentKeyMap?.discriminatorValues) {
+      return parentKeyMap.discriminatorValues.sort().map((v) => (
         <MenuItem key={v} value={v}>
           {v}
         </MenuItem>
       ));
     }
     return null;
-  }, [isDiscriminator, unionInformation]);
+  }, [isDiscriminator, currentKeyMap]);
   return LabeledEditor({
     labelElement: labelElement ?? <></>,
     editor: isDiscriminator ? (
@@ -205,44 +233,4 @@ export const JzodLiteralEditor = React.memo<JzodLiteralEditorProps>(function Jzo
       </>
     ),
   });
-  // return (
-  //   <>
-  //     {labelElement ?? <></>}
-  //     {isDiscriminator ? (
-  //       <>
-  //         <StyledSelect
-  //           id={rootLessListKey}
-  //           label={name}
-  //           variant="standard"
-  //           labelId="demo-simple-select-label"
-  //           {...formik.getFieldProps(rootLessListKey)}
-  //           onChange={handleSelectLiteralChange}
-  //         >
-  //           {discriminatorMenuItems}
-  //         </StyledSelect>
-  //         (literal discriminator)
-  //       </>
-  //     ) : (
-  //       <>
-  //         <input
-  //           type="text"
-  //           id={rootLessListKey}
-  //           name={rootLessListKey}
-  //           form={"form." + name}
-  //           value={formik.getFieldProps(rootLessListKey).value}
-  //           readOnly
-  //           disabled
-  //         />
-  //       </>
-  //     )}
-  //   </>
-  // );
-}, (prevProps, nextProps) => {
-  // Custom comparison for React.memo
-  return (
-    prevProps.rootLessListKey === nextProps.rootLessListKey &&
-    prevProps.name === nextProps.name &&
-    prevProps.currentDeploymentUuid === nextProps.currentDeploymentUuid &&
-    JSON.stringify(prevProps.unionInformation) === JSON.stringify(nextProps.unionInformation)
-  );
-});
+}
