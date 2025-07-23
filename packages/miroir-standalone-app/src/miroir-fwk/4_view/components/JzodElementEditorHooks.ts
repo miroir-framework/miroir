@@ -73,7 +73,6 @@ export interface JzodElementEditorHooks {
   // recursivelyUnfoldedRawSchema: JzodUnion_RecursivelyUnfold_ReturnType | undefined;
   unfoldedRawSchema: JzodElement;
   // union
-  discriminatedSchemaForObject: JzodObject | undefined
   recursivelyUnfoldedUnionSchema: JzodUnion_RecursivelyUnfold_ReturnTypeOK | undefined;
   unfoldedUnionSchema: JzodUnion | undefined;
   // uuid, objects, arrays
@@ -327,34 +326,6 @@ export function useJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
     [localResolvedElementJzodSchemaBasedOnValue, currentValue]
   );
 
-  // ######################### added union Object branch attribute #########################
-  // TODO: DIRTY: this is a hack to add the new attribute to the union object branch
-  // the addition should be done / resolved in the formik.values, not locally
-  // in that objective, the JzodElementEditor must be fast enough to allow re-rendering without issue
-   const discriminatedSchemaResult: JzodUnionResolvedTypeReturnType | undefined =
-     props.rawJzodSchema?.type == "union" &&
-     props.rawJzodSchema.discriminator &&
-     typeof currentValue == "object" &&
-     context.miroirFundamentalJzodSchema
-       ? jzodUnionResolvedTypeForObject(
-           recursivelyUnfoldedUnionSchema?.result ?? [],
-           props.rawJzodSchema.discriminator,
-           currentValue,
-           [], // currentValuePath
-           [], // currentTypePath
-           context.miroirFundamentalJzodSchema,
-           currentModel,
-           miroirMetaModel,
-           {} // relativeReferenceJzodContext
-         )
-       : undefined;
-
-  const discriminatedSchemaForObject: JzodObject | undefined = 
-    discriminatedSchemaResult?.status === "ok" 
-      ? discriminatedSchemaResult.resolvedJzodObjectSchema 
-      : undefined;
-
- 
   // ######################### foreignKeyObjects #########################
   const foreignKeyObjectsFetchQueryParams: SyncQueryRunnerParams<DeploymentEntityState> = useMemo(
     () =>
@@ -518,7 +489,6 @@ export function useJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
     // recursivelyUnfoldedRawSchema,
     unfoldedRawSchema,
     foreignKeyObjects,
-    discriminatedSchemaForObject,
     unfoldedUnionSchema,
     recursivelyUnfoldedUnionSchema,
     // Array / Object fold / unfold state

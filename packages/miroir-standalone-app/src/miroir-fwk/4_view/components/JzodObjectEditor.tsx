@@ -561,7 +561,6 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
     miroirMetaModel,
     // recursivelyUnfoldedRawSchema,
     unfoldedRawSchema,
-    discriminatedSchemaForObject,
     // uuid
     foreignKeyObjects,
     // union
@@ -576,6 +575,8 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
     undefinedOptionalAttributes,
     } = useJzodElementEditorHooks(props, count, "JzodElementEditor");
   // } = measuredUseJzodElementEditorHooks(props, count, "JzodElementEditor");
+
+  const currentKeyMap = typeCheckKeyMap ? typeCheckKeyMap[rootLessListKey] : undefined;
 
   const currentMiroirFundamentalJzodSchema = context.miroirFundamentalJzodSchema;
   const usedIndentLevel: number = indentLevel ? indentLevel : 0;
@@ -751,16 +752,12 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
         Object.keys(localResolvedElementJzodSchemaBasedOnValue.definition),
         "formik",
         formik.values,
-        // "unfoldedrawSchema",
-        // JSON.stringify(unfoldedRawSchema, null, 2),
-        // "discriminatedSchemaForObject",
-        // JSON.stringify(discriminatedSchemaForObject, null, 2),
         "undefinedOptionalAttributes",
         undefinedOptionalAttributes,
       );
       const currentObjectValue = resolvePathOnObject(formik.values, rootLessListKeyArray);
       const newAttributeType: JzodElement = resolvePathOnObject(
-        discriminatedSchemaForObject ?? unfoldedRawSchema,
+        currentKeyMap?.chosenUnionBranchRawSchema ?? currentKeyMap?.jzodObjectFlattenedSchema ?? unfoldedRawSchema,
         // unfoldedRawSchema,
         ["definition", attributeName]
       );
@@ -789,7 +786,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
       );
       const newItemsOrder = getItemsOrder(
         newObjectValue,
-        discriminatedSchemaForObject ?? unfoldedRawSchema
+        currentKeyMap?.chosenUnionBranchRawSchema ?? currentKeyMap?.jzodObjectFlattenedSchema ?? unfoldedRawSchema
       );
 
       // log.info(
@@ -815,7 +812,6 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
       props,
       itemsOrder,
       localResolvedElementJzodSchemaBasedOnValue,
-      discriminatedSchemaForObject,
       unfoldedRawSchema,
       currentMiroirFundamentalJzodSchema,
       currentModel,
