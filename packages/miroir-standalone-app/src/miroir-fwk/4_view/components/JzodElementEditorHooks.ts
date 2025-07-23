@@ -1,48 +1,38 @@
 import { FormikProps, useFormikContext } from "formik";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 
 
 import {
-  SyncBoxedExtractorOrQueryRunnerMap,
   DeploymentEntityState,
-  MetaModel,
-  JzodElement,
-  JzodUnion_RecursivelyUnfold_ReturnType,
-  JzodUnion,
-  adminConfigurationDeploymentMiroir,
-  resolvePathOnObject,
-  ResolvedJzodSchemaReturnType,
-  jzodTypeCheck,
-  unfoldJzodSchemaOnce,
-  jzodUnion_recursivelyUnfold,
-  LoggerInterface,
-  MiroirLoggerFactory,
   Domain2QueryReturnType,
   DomainElementSuccess,
+  EntityInstance,
   EntityInstancesUuidIndex,
+  JzodElement,
+  JzodUnion,
+  KeyMapEntry,
+  LoggerInterface,
+  MetaModel,
+  MiroirLoggerFactory,
+  SyncBoxedExtractorOrQueryRunnerMap,
   SyncQueryRunner,
   SyncQueryRunnerParams,
+  UnfoldJzodSchemaOnceReturnType,
+  adminConfigurationDeploymentMiroir,
   dummyDomainManyQueryWithDeploymentUuid,
   getApplicationSection,
   getQueryRunnerParamsForDeploymentEntityState,
-  EntityInstance,
-  jzodUnionResolvedTypeForObject,
-  JzodUnionResolvedTypeReturnType,
-  UnfoldJzodSchemaOnceReturnType,
-  measurePerformance,
-  KeyMapEntry,
-  JzodUnion_RecursivelyUnfold_ReturnTypeOK,
+  resolvePathOnObject,
+  unfoldJzodSchemaOnce
 } from "miroir-core";
+import { JzodObject } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { getMemoizedDeploymentEntityStateSelectorMap } from "miroir-localcache-redux";
-import { getUnionInformation } from "../1-core/getUnionInformation";
+import { packageName } from "../../../constants";
+import { cleanLevel } from "../constants";
 import { MiroirReactContext, useMiroirContextService } from "../MiroirContextReactProvider";
 import { useCurrentModel, useDeploymentEntityStateQuerySelectorForCleanedResult } from "../ReduxHooks";
 import { JzodEditorPropsRoot, noValue } from "./JzodElementEditorInterface";
 import { getItemsOrder } from "./Style";
-import { packageName } from "../../../constants";
-import { cleanLevel } from "../constants";
-import { JzodObject } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import { measuredUnfoldJzodSchemaOnce } from "../tools/hookPerformanceMeasure";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -71,8 +61,6 @@ export interface JzodElementEditorHooks {
   // currentValue jzod schema
   localResolvedElementJzodSchemaBasedOnValue: JzodElement | undefined;
   unfoldedRawSchema: JzodElement;
-  // union
-  unfoldedUnionSchema: JzodUnion | undefined;
   // uuid, objects, arrays
   foreignKeyObjects: Record<string, EntityInstancesUuidIndex>
   definedOptionalAttributes: Set<string>;
@@ -139,8 +127,6 @@ export function useJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
   const [codeMirrorIsValidJson, setCodeMirrorIsValidJson] = useState(true);
 
   const [displayAsStructuredElement, setDisplayAsStructuredElement] = useState(true);
-  // const [displayAsStructuredElement, setDisplayAsStructuredElement] = useState(false);
-
   // log.info("useJzodElementEditorHooks ", dbgInt++, "count", count, "caller", caller);
 
   // ################################################################################################
@@ -217,46 +203,12 @@ export function useJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
   }
   const unfoldedRawSchema: JzodElement = unfoldedRawSchemaReturnType.element;
 
-  // log.info(
-  //   "useJzodElementEditorHooks count",
-  //   count,
-  //   "'" + props.rootLessListKey + "'",
-  //   "unfoldJzodSchemaOnce",
-  //   "unfoldedRawSchema",
-  //   unfoldedRawSchema,
-  //   "props.rawJzodSchema",
-  //   props.rawJzodSchema,
-  //   "props.resolvedElementJzodSchema",
-  //   props.resolvedElementJzodSchema,
-  // );
-  // const recursivelyUnfoldedUnionSchema: JzodUnion_RecursivelyUnfold_ReturnTypeOK | undefined =
-  //   unfoldedRawSchema &&
-  //   unfoldedRawSchema.type == "union" &&
-  //   currentTypecheckKeyMap?currentTypecheckKeyMap.recursivelyUnfoldedUnionSchema:undefined;
-
-  if (
-    unfoldedRawSchema &&
-    unfoldedRawSchema.type == "union" &&
-    context.miroirFundamentalJzodSchema
-  ) {
-    log.info(
-      "useJzodElementEditorHooks count",
-      count,
-      "'" + props.rootLessListKey + "'",
-      // "currentTypecheckKeyMap",
-      // currentTypecheckKeyMap,
-      // "unfoldedRawSchema",
-      // unfoldedRawSchema,
-    )
-
-  }
   // ##############################################################################################
   // ##############################################################################################
   // ##############################################################################################
   // ##############################################################################################
   // ##############################################################################################
   // ########################## unionInformation #########################
-  const unfoldedUnionSchema: JzodUnion | undefined = unfoldedRawSchema.type == "union" ? unfoldedRawSchema : undefined;
 
   const [hiddenFormItems, setHiddenFormItems] = useState<{ [k: string]: boolean }>({});
   const itemsOrder: any[] = useMemo(
@@ -426,8 +378,6 @@ export function useJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
     localResolvedElementJzodSchemaBasedOnValue,
     unfoldedRawSchema,
     foreignKeyObjects,
-    unfoldedUnionSchema,
-    // recursivelyUnfoldedUnionSchema,
     // Array / Object fold / unfold state
     hiddenFormItems,
     setHiddenFormItems,

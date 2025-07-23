@@ -21,22 +21,17 @@ export interface UnionInformation {
 }
 
 export interface JzodEditorPropsRoot {
-  // label?: string;
   labelElement?: JSX.Element; // used to display a label in the editor
   name: string;
   listKey: string;
   rootLessListKey: string;
-  // rootLessListKeyArray: string[];
   rootLessListKeyArray: (string | number)[];
   currentDeploymentUuid?: Uuid,
   currentApplicationSection?: ApplicationSection;
   initialFormState?: any;
   rawJzodSchema: JzodElement | undefined;
   resolvedElementJzodSchema: JzodElement | undefined;
-  // localRootLessListKeyMap: Record<string, { resolvedElementJzodSchema: JzodElement }> | undefined;
   typeCheckKeyMap: Record<string, KeyMapEntry> | undefined;
-  // unions
-  unfoldedUnionSchema?: JzodUnion | undefined; // prop drilling: for unions only
   // objects
   foreignKeyObjects: Record<string, EntityInstancesUuidIndex>; // prop drilling: for uuid / objects only
   returnsEmptyElement?: boolean; // used to force the editor to return an empty element
@@ -44,12 +39,9 @@ export interface JzodEditorPropsRoot {
   insideAny?: boolean;
   hidden?: boolean; // used to control visibility of the editor
   optional?: boolean; // used to control if the displayed element can be removed or not
-  // elementBelongsToRecord?: boolean; // used to control if the element belongs to a record or not
   parentType?: string; // used to control the parent type of the element, used for record elements. TODO: accept real type enum
   deleteButtonElement?: JSX.Element; // used to display a delete button in the editor
   hasTypeError?: boolean; // used to control if the editor has a type error or not
-  // displayAsCode?: boolean; // used to display the editor as a structured element, not as code editor
-  // handleSelectLiteralChange?: (event: any) => void;
 }
 
 // ################################################################################################

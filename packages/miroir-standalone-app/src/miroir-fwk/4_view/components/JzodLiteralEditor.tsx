@@ -33,15 +33,10 @@ export const JzodLiteralEditor: FC<JzodLiteralEditorProps> =  (
   {
     name,
     labelElement,
-    listKey,
     rootLessListKey,
     rootLessListKeyArray,
     currentDeploymentUuid,
-    currentApplicationSection,
     typeCheckKeyMap,
-    // unfoldedUnionSchema,
-    // recursivelyUnfoldedUnionSchema,
-    resolvedElementJzodSchema, // handleSelectLiteralChange,
   }
 ) => {
   JzodLiteralEditorRenderCount++;
@@ -55,7 +50,6 @@ export const JzodLiteralEditor: FC<JzodLiteralEditorProps> =  (
   const parentKey = rootLessListKey.includes('.') ? rootLessListKey.substring(0, rootLessListKey.lastIndexOf('.')) : '';
   const parentKeyMap = typeCheckKeyMap ? typeCheckKeyMap[parentKey] : undefined;
   const currentKeyMap = typeCheckKeyMap ? typeCheckKeyMap[rootLessListKey] : undefined;
-  const unfoldedUnionSchema = parentKeyMap?.recursivelyUnfoldedUnionSchema;
 
   // Check if this literal is a discriminator
   const isDiscriminator = 
@@ -100,17 +94,6 @@ export const JzodLiteralEditor: FC<JzodLiteralEditorProps> =  (
         "handleSelectLiteralChange called but current object does not have a string discriminator!"
       );
     }
-    if (!unfoldedUnionSchema) {
-      throw new Error(
-        "handleSelectLiteralChange called but unfoldedUnionSchema is undefined!"
-      );
-    }
-    //     unfoldedRawSchema: unfoldedRawSchema,
-    // resolvedElementJzodSchema: resolvedElementJzodSchema,
-    // objectBranches: recursivelyUnfoldedUnionSchema?.result ?? [],
-    // discriminator: recursivelyUnfoldedUnionSchema?.discriminator as string,
-    // discriminatorValues: objectUniondiscriminatorValues,
-
     // TODO: handle array discriminators
     if (!parentKeyMap.discriminator || typeof parentKeyMap.discriminator !== "string") {
       throw new Error(

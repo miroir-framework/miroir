@@ -163,8 +163,6 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
     unfoldedRawSchema,
     // recursivelyUnfoldedRawSchema,
     foreignKeyObjects,
-    // union
-    unfoldedUnionSchema,
     // Array / Object fold / unfold state
     hiddenFormItems,
     setHiddenFormItems,
@@ -597,7 +595,6 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                 resolvedElementJzodSchema={localResolvedElementJzodSchemaBasedOnValue}
                 typeCheckKeyMap={ props.typeCheckKeyMap }
                 // localRootLessListKeyMap={props.localRootLessListKeyMap}
-                unfoldedUnionSchema={ unfoldedUnionSchema }
                 insideAny={props.insideAny}
               />
             // </div>
