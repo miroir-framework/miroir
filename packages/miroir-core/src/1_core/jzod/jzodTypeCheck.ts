@@ -1157,7 +1157,6 @@ export function jzodTypeCheck(
               keyMap: {
                 [currentValuePath.join(".")]: {
                   rawSchema: jzodSchema,
-                  // recursivelyUnfoldedRawSchema: concreteUnfoldedJzodSchemas,
                   recursivelyUnfoldedUnionSchema: recursivelyUnfoldedUnionSchema,
                   resolvedSchema: resultJzodSchema,
                   chosenUnionBranchRawSchema: resultJzodSchema,
@@ -1342,9 +1341,6 @@ export function jzodTypeCheck(
             subSchemas: subResolvedSchemas.subSchemas,
             keyMap: {
               ...(subResolvedSchemas.keyMap ?? {}),
-              // [currentValuePath.join(".")]: (subResolvedSchemas.keyMap ?? {})[
-              //   currentValuePath.join(".")
-              // ] ?
               [currentValuePath.join(".")]: {
                 ...((subResolvedSchemas.keyMap ?? {})[currentValuePath.join(".")] ?? {}), // useful for unions, where the keyMap is a map of value paths to sub-schemas
                 rawSchema: jzodSchema,
@@ -1354,25 +1350,6 @@ export function jzodTypeCheck(
                 discriminatorValues: objectUniondiscriminatorValues,
                 discriminator: recursivelyUnfoldedUnionSchema?.discriminator,
               },
-              // : {
-              //     // rawSchema: jzodSchema,
-              //     // resolvedSchema: subResolvedSchemas.resolvedSchema,
-              //     rawSchema: jzodSchema,
-              //     recursivelyUnfoldedUnionSchema: recursivelyUnfoldedUnionSchema,
-              //     chosenUnionBranchRawSchema: discriminatedSchemaForObject,
-              //     resolvedSchema: subResolvedSchemas.resolvedSchema,
-              //     discriminatorValues: objectUniondiscriminatorValues,
-              //     discriminator: recursivelyUnfoldedUnionSchema?.discriminator,
-              //   }, // map the current value path to the resolved schema
-              // [currentValuePath.join(".")]: {
-              //   rawSchema: jzodSchema,
-              //   // recursivelyUnfoldedRawSchema: concreteUnfoldedJzodSchemas,
-              //   recursivelyUnfoldedUnionSchema: recursivelyUnfoldedUnionSchema,
-              //   chosenUnionBranchRawSchema: discriminatedSchemaForObject,
-              //   resolvedSchema: subResolvedSchemas.resolvedSchema,
-              //   discriminatorValues: objectUniondiscriminatorValues,
-              //   discriminator: recursivelyUnfoldedUnionSchema?.discriminator,
-              // }, // map the current value path to the resolved schema
             },
           };
           break;
@@ -1630,15 +1607,6 @@ export function jzodTypeCheck(
         resolvedSchema,
         subSchemas: resolvedInnerSchemas,
         keyMap: {
-          // ...Object.fromEntries(
-          //   resolvedInnerSchemas.map((e, index) => [
-          //     currentValuePath.concat(index).join("."),
-          //     {
-          //       rawSchema: jzodSchema.definition[index],
-          //       resolvedSchema: (e as ResolvedJzodSchemaReturnTypeOK).resolvedSchema,
-          //     },
-          //   ])
-          // ),
           ...resolvedInnerSchemas.reduce((acc, e, index) => {
             if (e.status === "ok") {
               return {
@@ -1744,17 +1712,7 @@ export function jzodTypeCheck(
               : {})[currentValuePath.join(".")] ?? {}), // useful for unions, where the keyMap is a map of value paths to sub-schemas
             rawSchema: jzodSchema,
             resolvedSchema,
-            // recursivelyUnfoldedUnionSchema: recursivelyUnfoldedUnionSchema,
-            // chosenUnionBranchRawSchema: discriminatedSchemaForObject,
-            // resolvedSchema: subResolvedSchemas.resolvedSchema,
-            // discriminatorValues: objectUniondiscriminatorValues,
-            // discriminator: recursivelyUnfoldedUnionSchema?.discriminator,
           },
-
-          // [currentValuePath.join(".")]: {
-          //   rawSchema: jzodSchema,
-          //   resolvedSchema,
-          // }, // map the current value path to the resolved schema
         },
       };
       break;
