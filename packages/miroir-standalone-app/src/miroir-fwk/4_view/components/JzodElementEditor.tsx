@@ -116,6 +116,13 @@ export const ExpandOrFoldObjectAttributes = React.memo((props: {
       )}
     </LineIconButton>
   );
+}, (prevProps, nextProps) => {
+  // Custom comparison function for React.memo
+  return (
+    prevProps.listKey === nextProps.listKey &&
+    prevProps.setHiddenFormItems === nextProps.setHiddenFormItems &&
+    prevProps.hiddenFormItems[prevProps.listKey] === nextProps.hiddenFormItems[nextProps.listKey]
+  );
 });
 ExpandOrFoldObjectAttributes.displayName = "ExpandOrFoldObjectAttributes";
 
