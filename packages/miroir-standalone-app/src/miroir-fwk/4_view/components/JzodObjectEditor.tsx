@@ -163,6 +163,8 @@ const ProgressiveAttribute: FC<{
   currentModel: any;
   miroirMetaModel: any;
   measuredUnfoldJzodSchemaOnce: any;
+  hiddenFormItems: { [k: string]: boolean };
+  setHiddenFormItems: React.Dispatch<React.SetStateAction<{ [k: string]: boolean }>>;
 }> = ({
   attribute,
   attributeNumber,
@@ -183,6 +185,8 @@ const ProgressiveAttribute: FC<{
   currentModel,
   miroirMetaModel,
   measuredUnfoldJzodSchemaOnce,
+  hiddenFormItems,
+  setHiddenFormItems,
 }) => {
   const isTestMode = process.env.VITE_TEST_MODE === 'true';
   const [isRendered, setIsRendered] = useState(isTestMode);
@@ -491,6 +495,8 @@ const ProgressiveAttribute: FC<{
             currentApplicationSection={currentApplicationSection}
             resolvedElementJzodSchema={currentAttributeDefinition}
             foreignKeyObjects={foreignKeyObjects}
+            hiddenFormItems={hiddenFormItems}
+            setHiddenFormItems={setHiddenFormItems}
             insideAny={insideAny}
             optional={definedOptionalAttributes.has(attribute[0])}
             // parentType={currentKeyMap?.rawSchema?.type}
@@ -550,6 +556,8 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
     insideAny,
     displayAsStructuredElementSwitch,
     deleteButtonElement,
+    hiddenFormItems,
+    setHiddenFormItems,
     // parentType, // used to control the parent type of the element, used for record elements
   } = props;
 
@@ -579,8 +587,8 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
     // union
 
     // Array / Object fold / unfold state
-    hiddenFormItems,
-    setHiddenFormItems,
+    // hiddenFormItems,  // Now comes from props
+    // setHiddenFormItems,  // Now comes from props
     itemsOrder,
     // object
     definedOptionalAttributes,
@@ -890,6 +898,8 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
             currentModel={currentModel}
             miroirMetaModel={miroirMetaModel}
             measuredUnfoldJzodSchemaOnce={measuredUnfoldJzodSchemaOnce}
+            hiddenFormItems={hiddenFormItems}
+            setHiddenFormItems={setHiddenFormItems}
           />
         ))}
     </>

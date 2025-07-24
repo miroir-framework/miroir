@@ -35,7 +35,8 @@ MiroirLoggerFactory.registerLoggerToStart(
   log = logger;
 });
 
-export const indentShift = "1em + 4px"; // TODO: centralize style
+// export const indentShift = "1em + 4px"; // TODO: centralize style
+export const indentShift = "4px"; // TODO: centralize style
 
 interface JzodArrayMoveButtonProps {
   direction: "up" | "down";
@@ -119,6 +120,8 @@ interface ProgressiveArrayItemProps {
   itemsOrder: number[];
   formik: FormikContextType<Record<string, any>>;
   currentValue: any;
+  hiddenFormItems: { [k: string]: boolean };
+  setHiddenFormItems: React.Dispatch<React.SetStateAction<{ [k: string]: boolean }>>;
 }
 
 const ProgressiveArrayItem: React.FC<ProgressiveArrayItemProps> = ({
@@ -139,6 +142,8 @@ const ProgressiveArrayItem: React.FC<ProgressiveArrayItemProps> = ({
   itemsOrder,
   formik,
   currentValue,
+  hiddenFormItems,
+  setHiddenFormItems,
 }) => {
   const isTestMode = process.env.VITE_TEST_MODE === 'true';
   // const [isRendered, setIsRendered] = useState(false);
@@ -235,6 +240,8 @@ const ProgressiveArrayItem: React.FC<ProgressiveArrayItemProps> = ({
                 typeCheckKeyMap={ typeCheckKeyMap }
                 // localRootLessListKeyMap={localRootLessListKeyMap}
                 foreignKeyObjects={foreignKeyObjects}
+                hiddenFormItems={hiddenFormItems}
+                setHiddenFormItems={setHiddenFormItems}
                 insideAny={insideAny}
                 // parentType={parentUnfoldedRawSchema.type}
               />
@@ -461,6 +468,8 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
               itemsOrder={itemsOrder}
               formik={formik}
               currentValue={currentValue}
+              hiddenFormItems={hiddenFormItems}
+              setHiddenFormItems={setHiddenFormItems}
             />
           );
         })}

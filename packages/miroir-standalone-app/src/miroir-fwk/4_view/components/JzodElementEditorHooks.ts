@@ -58,9 +58,7 @@ export interface JzodElementEditorHooks {
   setCodeMirrorIsValidJson: React.Dispatch<React.SetStateAction<boolean>>;
   displayAsStructuredElement: boolean;
   setDisplayAsStructuredElement: React.Dispatch<React.SetStateAction<boolean>>;
-  // currentValue jzod schema
   localResolvedElementJzodSchemaBasedOnValue: JzodElement | undefined;
-  // unfoldedRawSchema: JzodElement;
   // uuid, objects, arrays
   foreignKeyObjects: Record<string, EntityInstancesUuidIndex>
   definedOptionalAttributes: Set<string>;
@@ -68,12 +66,7 @@ export interface JzodElementEditorHooks {
   stringSelectList: [string, EntityInstance][];
   // Array / Object fold / unfold, order
   itemsOrder: any[];
-  hiddenFormItems: { [k: string]: boolean };
-  setHiddenFormItems: React.Dispatch<
-    React.SetStateAction<{
-      [k: string]: boolean;
-    }>
-  >;
+  // hiddenFormItems and setHiddenFormItems moved to props
 }
 
 let count = 0;
@@ -118,9 +111,10 @@ export function useJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
     }
   }, [formik.values, props.rootLessListKeyArray]);
 
-  const currentTypecheckKeyMap: KeyMapEntry | undefined = props.typeCheckKeyMap && props.typeCheckKeyMap[props.rootLessListKey]?
-    props.typeCheckKeyMap[props.rootLessListKey]
-    : undefined;
+  const currentTypecheckKeyMap: KeyMapEntry | undefined =
+    props.typeCheckKeyMap && props.typeCheckKeyMap[props.rootLessListKey]
+      ? props.typeCheckKeyMap[props.rootLessListKey]
+      : undefined;
 
   const [codeMirrorValue, setCodeMirrorValue] = useState<string>("");
 
@@ -143,66 +137,6 @@ export function useJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
   const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<DeploymentEntityState> =
     useMemo(() => getMemoizedDeploymentEntityStateSelectorMap(), []);
 
-  // let unfoldedRawSchemaReturnType: UnfoldJzodSchemaOnceReturnType | undefined;
-  // try {
-  //   unfoldedRawSchemaReturnType = useMemo(() => {
-  //     log.info("useJzodElementEditorHooks calling unfoldJzodSchemaOnce", "count", count, ", caller", caller, "props.rawJzodSchema", props.rawJzodSchema);
-  //     const result = context.miroirFundamentalJzodSchema
-  //       // ? measurePerformance("unfoldJzodSchemaOnce", unfoldJzodSchemaOnce, 1, props.rootLessListKey, props.rawJzodSchema)(
-  //       ? unfoldJzodSchemaOnce(
-  //           context.miroirFundamentalJzodSchema, // context.miroirFundamentalJzodSchema,
-  //           props.rawJzodSchema,
-  //           [], // path
-  //           [], // unfoldingReference
-  //           props.rawJzodSchema, // rootSchema
-  //           0, // depth
-  //           currentModel,
-  //           miroirMetaModel
-  //         )
-  //       : undefined;
-  //     return {
-  //       ...result,
-  //       valuePath: [],
-  //       typePath: [],
-  //     } as any;
-  //   }, [
-  //     props.rawJzodSchema,
-  //     context.miroirFundamentalJzodSchema /*context.miroirFundamentalJzodSchema,*/,
-  //     currentModel,
-  //     miroirMetaModel,
-  //   ]);
-  // } catch (e) {
-  //   throw e as Error; // rethrow the error to be caught by the error boundary
-  //   // log.error(
-  //   //   "caught error upon calling unfoldJzodSchemaOnce! count",
-  //   //   count,
-  //   //   "key",
-  //   //   props.rootLessListKey,
-  //   //   "error",
-  //   //   e
-  //   // );
-  // }
-  // log.info("getJzodElementEditorHooks ", dbgInt++, "count", count, "caller", caller);
-  // if (!unfoldedRawSchemaReturnType || unfoldedRawSchemaReturnType.status == "error") {
-  //   throw new Error(
-  //     "useJzodElementEditorHooks could not unfold raw schema " +
-  //      "error " +
-  //       JSON.stringify(unfoldedRawSchemaReturnType, null, 2) +
-  //       " props.rawJzodSchema " +
-  //       JSON.stringify(props.rawJzodSchema, null, 2) +
-  //       // props.rawJzodSchema +
-  //       " count " +
-  //       count +
-  //       " result " +
-  //       // JSON.stringify(unfoldedRawSchemaReturnType, null, 2) +
-  //       unfoldedRawSchemaReturnType +
-  //       " miroirFundamentalJzodSchema " +
-  //       context.miroirFundamentalJzodSchema
-  //     // JSON.stringify(currentMiroirFundamentalJzodSchema, null, 2)
-  //   );
-  // }
-  // const unfoldedRawSchema: JzodElement = unfoldedRawSchemaReturnType.element;
-
   // ##############################################################################################
   // ##############################################################################################
   // ##############################################################################################
@@ -210,7 +144,7 @@ export function useJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
   // ##############################################################################################
   // ########################## unionInformation #########################
 
-  const [hiddenFormItems, setHiddenFormItems] = useState<{ [k: string]: boolean }>({});
+  // hiddenFormItems state moved to parent component
   const itemsOrder: any[] = useMemo(
     () => getItemsOrder(currentValue, localResolvedElementJzodSchemaBasedOnValue),
     [localResolvedElementJzodSchemaBasedOnValue, currentValue]
@@ -293,7 +227,11 @@ export function useJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
         .map((a) => a[0]);
     }
     return [];
-  }, [typeCheckKeyMapChosenUnionBranchObjectSchema, typeCheckMapJzodObjectFlattenedSchema, currentValue]);
+  }, [
+    typeCheckKeyMapChosenUnionBranchObjectSchema,
+    typeCheckMapJzodObjectFlattenedSchema,
+    currentValue,
+  ]);
 
   const definedOptionalAttributes: Set<string> = useMemo(() => {
     if (typeCheckMapJzodObjectFlattenedSchema) {
@@ -315,7 +253,11 @@ export function useJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
       );
     }
     return new Set();
-  }, [typeCheckMapJzodObjectFlattenedSchema, typeCheckKeyMapChosenUnionBranchObjectSchema, currentValue]);
+  }, [
+    typeCheckMapJzodObjectFlattenedSchema,
+    typeCheckKeyMapChosenUnionBranchObjectSchema,
+    currentValue,
+  ]);
 
   const stringSelectList = useMemo(() => {
     if (
@@ -348,11 +290,10 @@ export function useJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
     setCodeMirrorIsValidJson,
     deploymentEntityStateSelectorMap,
     localResolvedElementJzodSchemaBasedOnValue,
-    // unfoldedRawSchema,
     foreignKeyObjects,
     // Array / Object fold / unfold state
-    hiddenFormItems,
-    setHiddenFormItems,
+    // hiddenFormItems, // moved to props
+    // setHiddenFormItems, // moved to props
     itemsOrder,
     definedOptionalAttributes,
     stringSelectList,

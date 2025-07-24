@@ -167,8 +167,8 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
     // recursivelyUnfoldedRawSchema,
     foreignKeyObjects,
     // Array / Object fold / unfold state
-    hiddenFormItems,
-    setHiddenFormItems,
+    // hiddenFormItems,  // Now comes from props
+    // setHiddenFormItems,  // Now comes from props
     itemsOrder,
     stringSelectList,
     // object
@@ -176,6 +176,9 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
   } = useJzodElementEditorHooks(props, count, "JzodElementEditor");
   // } = measuredUseJzodElementEditorHooks(props, count, "JzodElementEditor");
   // } = measurePerformance("useJzodElementEditorHooks", useJzodElementEditorHooks)(props, count, "JzodElementEditor");
+  
+  // Extract hiddenFormItems and setHiddenFormItems from props
+  const { hiddenFormItems, setHiddenFormItems } = props;
   
   // const localResolvedElementJzodSchemaBasedOnValue: JzodElement | undefined = 
   // // useMemo(() => {
@@ -409,6 +412,8 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               foreignKeyObjects={foreignKeyObjects}
               hidden={hideSubJzodEditor}
               displayAsStructuredElementSwitch={displayAsStructuredElementSwitch}
+              hiddenFormItems={hiddenFormItems}
+              setHiddenFormItems={setHiddenFormItems}
               // parentType={props.parentType} // used to control the parent type of the element, used for record elements
               deleteButtonElement={props.deleteButtonElement}
             />

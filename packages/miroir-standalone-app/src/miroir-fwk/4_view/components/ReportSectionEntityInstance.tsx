@@ -149,6 +149,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
 
   const [displayAsStructuredElement, setDisplayAsStructuredElement] = useState(true);
   const [displayEditor, setDisplayEditor] = useState(true);
+  const [hiddenFormItems, setHiddenFormItems] = useState<{ [k: string]: boolean }>({});
 
   // const [formState, setFormState] = useState<any>(props.instance);
   // const [codeMirrorValue, setCodeMirrorValue] = useState<string>(() =>
@@ -619,6 +620,8 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                                 }
                                 // localRootLessListKeyMap={{}}
                                 foreignKeyObjects={foreignKeyObjects}
+                                hiddenFormItems={hiddenFormItems}
+                                setHiddenFormItems={setHiddenFormItems}
                                 submitButton={
                                   <button
                                     type="submit"

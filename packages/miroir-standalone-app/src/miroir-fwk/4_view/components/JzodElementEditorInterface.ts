@@ -50,7 +50,12 @@ export interface JzodElementEditorProps extends JzodEditorPropsRoot {
   unresolvedJzodSchema?: JzodElement | undefined;
   indentLevel: number;
   submitButton?: JSX.Element; // used to display a submit button in the editor
-
+  hiddenFormItems: { [k: string]: boolean };  
+  setHiddenFormItems: React.Dispatch<
+    React.SetStateAction<{
+      [k: string]: boolean;
+    }>
+  >;
 }
 
 // ################################################################################################
@@ -92,6 +97,12 @@ export interface JzodObjectEditorProps extends JzodEditorPropsRoot {
   deleteButtonElement?: JSX.Element; // used to display a delete button in the editor
   displayAsStructuredElementSwitch?: JSX.Element; // used to display switches in the editor
   jzodSchemaTooltip?: JSX.Element; // used to display the actual raw jzod schema as a tooltip
+  hiddenFormItems: { [k: string]: boolean };  
+  setHiddenFormItems: React.Dispatch<
+    React.SetStateAction<{
+      [k: string]: boolean;
+    }>
+  >;
 }
 
 // #####################################################################################################
