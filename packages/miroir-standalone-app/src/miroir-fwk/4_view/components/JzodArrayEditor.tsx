@@ -261,12 +261,8 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
     listKey,
     rootLessListKey,
     rootLessListKeyArray,
-    // rawJzodSchema,
-    // unfoldedRawSchema: parentUnfoldedRawSchema,
     resolvedElementJzodSchema,
     typeCheckKeyMap,
-    // localRootLessListKeyMap,
-    // paramMiroirFundamentalJzodSchema,
     currentDeploymentUuid,
     currentApplicationSection,
     indentLevel,
@@ -422,164 +418,32 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
         .map((attributeParam: [number, JzodElement]) => {
           const index: number = attributeParam[0];
           const attributeRootLessListKey: string = rootLessListKey.length > 0? rootLessListKey + "." + index : "" + index;
-          const attributeTypeCheckKeyMap = typeCheckKeyMap? typeCheckKeyMap[attributeRootLessListKey]: undefined;
-          // HACK HACK HACK
-          // TODO: allow individualized schmema resolution for items of an array, in case the definition of the array schema is a union type
-          // resulting type of an array type would be a tuple type.
-
-          // log.info(
-          //   "JzodArrayEditor array attribute",
-          //   index,
-          //   "attribute",
-          //   attribute,
-          // );
-          if (!attributeTypeCheckKeyMap) {
+          const currentArrayElementRawDefinition: JzodElement | undefined =
+            typeCheckKeyMap && typeCheckKeyMap[rootLessListKey].rawSchema.type !== "any"
+              ? typeCheckKeyMap[attributeRootLessListKey].rawSchema
+              : { type: "any" };
+          // const attributeTypeCheckKeyMap = typeCheckKeyMap? typeCheckKeyMap[attributeRootLessListKey]: undefined;
+          if (!currentArrayElementRawDefinition) {
+            log.error(
+              "JzodArrayEditor could not find typeCheckKeyMap for attribute",
+              index,
+              "in rootLessListKey",
+              rootLessListKey,
+              "with typeCheckKeyMap",
+              typeCheckKeyMap,
+              // typeCheckKeyMap?.[rootLessListKey],
+              // JSON.stringify(typeCheckKeyMap, null, 2)
+            );
             throw new Error(
               "JzodArrayEditor could not find typeCheckKeyMap for attribute " +
                 index +
                 " in rootLessListKey " +
-                rootLessListKey +
-                " with typeCheckKeyMap " +
-                JSON.stringify(typeCheckKeyMap, null, 2)
+                rootLessListKey
+                // " with typeCheckKeyMap " +
+                // JSON.stringify(typeCheckKeyMap, null, 2)
             );
           }
-          const currentArrayElementRawDefinition: JzodElement | undefined = attributeTypeCheckKeyMap.rawSchema;
-          // const currentArrayElementRawDefinition: UnfoldJzodSchemaOnceReturnType | undefined =
-          //   // useMemo(
-          //     (() => {
-          //       if (!context.miroirFundamentalJzodSchema) {
-          //         return undefined;
-          //       }
-          //       switch (rawJzodSchema?.type) {
-          //         case "array": {
-          //           return unfoldJzodSchemaOnce(
-          //             context.miroirFundamentalJzodSchema,
-          //             rawJzodSchema.definition,
-          //             [], // path
-          //             [], // unfoldingReference
-          //             rawJzodSchema, // rootSchema
-          //             0,
-          //             currentModel,
-          //             miroirMetaModel
-          //           );
-          //         }
-          //         case "tuple": {
-          //           return unfoldJzodSchemaOnce(
-          //             context.miroirFundamentalJzodSchema as any,
-          //             rawJzodSchema.definition[index],
-          //             [], // path
-          //             [], // unfoldingReference
-          //             rawJzodSchema, // rootSchema
-          //             0,
-          //             currentModel,
-          //             miroirMetaModel
-          //           );
-          //         }
-          //         case "union": {
-          //           const findFirstArrayInUnion = (union: JzodUnion): JzodArray | undefined => {
-          //             const topLevelArray = union.definition.find(e => e.type === "array");
-          //             if (topLevelArray) {
-          //               return topLevelArray as JzodArray;
-          //             }
-          //             for (const e of union.definition) {
-          //               if (e.type === "union") {
-          //                 const found = findFirstArrayInUnion(e as JzodUnion);
-          //                 if (found) {
-          //                   return found;
-          //                 }
-          //               }
-          //             }
-          //             return undefined;
-          //             // throw new Error(
-          //             //   "JzodArrayEditor could not find an array in union schema " +
-          //             //     JSON.stringify(union, null, 2)
-          //             // );
-          //           }
-          //           const arraySchema = findFirstArrayInUnion(rawJzodSchema as JzodUnion);
-          //           if (!arraySchema) {
-          //             return undefined;
-          //             // throw new Error(
-          //             //   "JzodArrayEditor could not find an array in union schema " +
-          //             //     JSON.stringify(rawJzodSchema, null, 2)
-          //             // );
-          //             // return {
-          //             //   status: "error",
-          //             //   element: undefined,
-          //             //   error: new Error(
-          //             //     "JzodArrayEditor could not find an array in union schema " +
-          //             //       JSON.stringify(rawJzodSchema, null, 2)
-          //             //   )
-          //             // }
-          //           }
-          //           return unfoldJzodSchemaOnce(
-          //             context.miroirFundamentalJzodSchema as any,
-          //             arraySchema.definition,
-          //             [], // path
-          //             [], // unfoldingReference
-          //             rawJzodSchema, // rootSchema
-          //             0,
-          //             currentModel,
-          //             miroirMetaModel
-          //           );
-          //         }
-          //         default:
-          //           return undefined;
-          //       }
-          //     })();
-          //     // },
-          //     // [rawJzodSchema, currentModel, miroirMetaModel]
-          //   // );
-          // const resolutionError =
-          //   currentArrayElementRawDefinition && currentArrayElementRawDefinition.status != "ok";
-          // if (!currentArrayElementRawDefinition || resolutionError) {
-          //   // throw new Error(
-          //   //   "JzodArrayEditor could not unfold jzod schema for " +
-          //   //     rootLessListKey +
-          //   //     " index " +
-          //   //     index +
-          //   //     " context.miroirFundamentalSchema is defined " +
-          //   //     !!context.miroirFundamentalJzodSchema +
-          //   //     " with rawJzodSchema " +
-          //   //     JSON.stringify(rawJzodSchema, null, 2) +
-          //   //     " and currentArrayElementRawDefinition " +
-          //   //     JSON.stringify(currentArrayElementRawDefinition, null, 2) +
-          //   //     " at " +
-          //   //     JSON.stringify(resolutionError, null, 2)
-          //   // );
-          //   return (
-          //     <div key={rootLessListKey + "." + index}>
-          //       <span>
-          //         JzodArrayEditor: Error unfolding Jzod schema for {rootLessListKey} index {index}: {JSON.stringify(currentArrayElementRawDefinition)}
-          //         <br />
-          //         {/* {currentArrayElementRawDefinition?.error ||
-          //           "Unknown error unfolding Jzod schema for " + rootLessListKey + " index " + index} */}
-                    
-          //         <br />
-          //         <span style={{ color: "red" }}>
-          //           {JSON.stringify(currentArrayElementRawDefinition, null, 2)}
-          //         </span>
-          //       </span>
-          //     </div>
-
-          //   )
-          // }
-
-          // log.info(
-          //   "JzodArrayEditor array attribute",
-          //   "rootLessListKey",
-          //   rootLessListKey,
-          //   "array [",
-          //   index,
-          //   "]",
-          //   "found raw schema",
-          //   // JSON.stringify(currentArrayElementRawDefinition, null, 2),
-          //   currentArrayElementRawDefinition,
-          //   "for rawJzodSchema",
-          //   rawJzodSchema,
-          //   "for value",
-          //   attributeParam[1],
-          //   // JSON.stringify(attributeParam[1], null, 2)
-          // );
+          // const currentArrayElementRawDefinition: JzodElement | undefined = attributeTypeCheckKeyMap.rawSchema;
           return (
             <ProgressiveArrayItem
               key={rootLessListKey + "." + index}

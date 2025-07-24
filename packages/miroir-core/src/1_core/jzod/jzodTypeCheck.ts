@@ -1579,6 +1579,9 @@ export function jzodTypeCheck(
             );
           }, {} as { [k: string]: { rawSchema: JzodElement; resolvedSchema: JzodElement } }),
           [currentValuePath.join(".")]: {
+            // ...((resolvedInnerSchemas.length > 0 && resolvedInnerSchemas[0].status == "ok"
+            //   ? resolvedInnerSchemas[0].keyMap ?? {}
+            //   : {})[currentValuePath.join(".")] ?? {}), // useful for unions, where the keyMap is a map of value paths to sub-schemas
             rawSchema: jzodSchema,
             resolvedSchema,
           }, // map the current value path to the resolved schema

@@ -604,7 +604,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                                 indentLevel={0}
                                 currentDeploymentUuid={props.deploymentUuid}
                                 currentApplicationSection={props.applicationSection}
-                                rawJzodSchema={currentReportTargetEntityDefinition?.jzodSchema}
+                                // rawJzodSchema={currentReportTargetEntityDefinition?.jzodSchema}
                                 resolvedElementJzodSchema={
                                   resolvedJzodSchema?.status == "ok"
                                     ? resolvedJzodSchema.resolvedSchema

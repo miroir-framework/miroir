@@ -215,7 +215,8 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
         }
       } else {
         // if switching to code editor, reset the codeMirrorValue to the current value
-        setCodeMirrorValue(safeStringify(currentValue));
+        // setCodeMirrorValue(safeStringify(currentValue));
+        setCodeMirrorValue(JSON.stringify(currentValue, null, 2));
       }
       setDisplayAsStructuredElement(event.target.checked);
     },
@@ -346,9 +347,11 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
             {/* value <pre>{safeStringify(currentValue, 500)}</pre> */}
             value <pre>{JSON.stringify(currentValue)}</pre>
             <br />
-            raw Jzod schema: {safeStringify(currentKeyMap?.rawSchema, 500)}
+            {/* raw Jzod schema: {safeStringify(currentKeyMap?.rawSchema, 500)} */}
+            raw Jzod schema: {JSON.stringify(currentKeyMap?.rawSchema, undefined, 2)}
             <br />
-            resolved schema: {safeStringify(localResolvedElementJzodSchemaBasedOnValue, 500)}
+            {/* resolved schema: {safeStringify(localResolvedElementJzodSchemaBasedOnValue, 500)} */}
+            resolved schema: {JSON.stringify(localResolvedElementJzodSchemaBasedOnValue, undefined, 2)}
           </div>
         );
       }
@@ -841,7 +844,8 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                     code editor:
                     {shouldShowCodeEditor && (
                       <JzodElementEditorReactCodeMirror
-                        initialValue={safeStringify(currentValue)}
+                        // initialValue={safeStringify(currentValue)}
+                        initialValue={JSON.stringify(currentValue, null, 2)}
                         codeMirrorValue={codeMirrorValue}
                         setCodeMirrorValue={setCodeMirrorValue}
                         codeMirrorIsValidJson={codeMirrorIsValidJson}
@@ -892,7 +896,8 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
             {/* {props.labelElement} */}
             {shouldShowCodeEditor && (
               <JzodElementEditorReactCodeMirror
-                initialValue={safeStringify(currentValue)}
+                // initialValue={safeStringify(currentValue)}
+                initialValue={JSON.stringify(currentValue, null, 2)}
                 codeMirrorValue={codeMirrorValue}
                 setCodeMirrorValue={setCodeMirrorValue}
                 codeMirrorIsValidJson={codeMirrorIsValidJson}

@@ -107,7 +107,7 @@ export const ErrorFallbackComponent: React.FC<ErrorFallbackComponentProps> = ({
             </pre>
           </>
         )} */}
-        {/* <div>error {error.message}</div> */}
+        <div>error {error.message}</div>
       </div>
     </div>
   );
