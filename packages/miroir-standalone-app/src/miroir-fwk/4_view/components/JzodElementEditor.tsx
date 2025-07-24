@@ -84,8 +84,8 @@ export interface EditorAttribute {
 
 // ################################################################################################
 export const ExpandOrFoldObjectAttributes = (props: {
-  hiddenFormItems: { [k: string]: boolean };
-  setHiddenFormItems: React.Dispatch<
+  foldedObjectAttributeOrArrayItems: { [k: string]: boolean };
+  setFoldedObjectAttributeOrArrayItems: React.Dispatch<
     React.SetStateAction<{
       [k: string]: boolean;
     }>
@@ -95,13 +95,13 @@ export const ExpandOrFoldObjectAttributes = (props: {
   const handleClick = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
     e.preventDefault();
-    props.setHiddenFormItems((prev) => ({
+    props.setFoldedObjectAttributeOrArrayItems((prev) => ({
       ...prev,
       [props.listKey]: !prev[props.listKey],
     }));
-  }, [props.listKey, props.setHiddenFormItems]);
+  }, [props.listKey, props.setFoldedObjectAttributeOrArrayItems]);
 
-  const isHidden = props.hiddenFormItems[props.listKey];
+  const isHidden = props.foldedObjectAttributeOrArrayItems[props.listKey];
 
   return (
     <LineIconButton
@@ -178,7 +178,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
   // } = measurePerformance("useJzodElementEditorHooks", useJzodElementEditorHooks)(props, count, "JzodElementEditor");
   
   // Extract hiddenFormItems and setHiddenFormItems from props
-  const { hiddenFormItems, setHiddenFormItems } = props;
+  const { foldedObjectAttributeOrArrayItems, setFoldedObjectAttributeOrArrayItems } = props;
   
   // const localResolvedElementJzodSchemaBasedOnValue: JzodElement | undefined = 
   // // useMemo(() => {
@@ -412,8 +412,8 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               foreignKeyObjects={foreignKeyObjects}
               hidden={hideSubJzodEditor}
               displayAsStructuredElementSwitch={displayAsStructuredElementSwitch}
-              hiddenFormItems={hiddenFormItems}
-              setHiddenFormItems={setHiddenFormItems}
+              foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
+              setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
               // parentType={props.parentType} // used to control the parent type of the element, used for record elements
               deleteButtonElement={props.deleteButtonElement}
             />
@@ -437,8 +437,8 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               typeCheckKeyMap={ props.typeCheckKeyMap }
               indentLevel={props.indentLevel + 1}
               itemsOrder={itemsOrder}
-              hiddenFormItems={hiddenFormItems}
-              setHiddenFormItems={setHiddenFormItems}
+              foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
+              setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
               currentApplicationSection={props.currentApplicationSection}
               currentDeploymentUuid={props.currentDeploymentUuid}
               foreignKeyObjects={props.foreignKeyObjects}
@@ -772,8 +772,8 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
     foreignKeyObjects,
     hideSubJzodEditor,
     displayAsStructuredElementSwitch,
-    hiddenFormItems,
-    setHiddenFormItems,
+    foldedObjectAttributeOrArrayItems,
+    setFoldedObjectAttributeOrArrayItems,
     itemsOrder,
     stringSelectList
   ]);

@@ -120,8 +120,8 @@ interface ProgressiveArrayItemProps {
   itemsOrder: number[];
   formik: FormikContextType<Record<string, any>>;
   currentValue: any;
-  hiddenFormItems: { [k: string]: boolean };
-  setHiddenFormItems: React.Dispatch<React.SetStateAction<{ [k: string]: boolean }>>;
+  foldedObjectAttributeOrArrayItems: { [k: string]: boolean };
+  setFoldedObjectAttributeOrArrayItems: React.Dispatch<React.SetStateAction<{ [k: string]: boolean }>>;
 }
 
 const ProgressiveArrayItem: React.FC<ProgressiveArrayItemProps> = ({
@@ -142,8 +142,8 @@ const ProgressiveArrayItem: React.FC<ProgressiveArrayItemProps> = ({
   itemsOrder,
   formik,
   currentValue,
-  hiddenFormItems,
-  setHiddenFormItems,
+  foldedObjectAttributeOrArrayItems: hiddenFormItems,
+  setFoldedObjectAttributeOrArrayItems: setHiddenFormItems,
 }) => {
   const isTestMode = process.env.VITE_TEST_MODE === 'true';
   // const [isRendered, setIsRendered] = useState(false);
@@ -240,8 +240,8 @@ const ProgressiveArrayItem: React.FC<ProgressiveArrayItemProps> = ({
                 typeCheckKeyMap={ typeCheckKeyMap }
                 // localRootLessListKeyMap={localRootLessListKeyMap}
                 foreignKeyObjects={foreignKeyObjects}
-                hiddenFormItems={hiddenFormItems}
-                setHiddenFormItems={setHiddenFormItems}
+                foldedObjectAttributeOrArrayItems={hiddenFormItems}
+                setFoldedObjectAttributeOrArrayItems={setHiddenFormItems}
                 insideAny={insideAny}
                 // parentType={parentUnfoldedRawSchema.type}
               />
@@ -274,8 +274,8 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
     currentApplicationSection,
     indentLevel,
     foreignKeyObjects,
-    hiddenFormItems,
-    setHiddenFormItems,
+    foldedObjectAttributeOrArrayItems: hiddenFormItems,
+    setFoldedObjectAttributeOrArrayItems: setHiddenFormItems,
     itemsOrder,
     insideAny,
     displayAsStructuredElementSwitch,
@@ -468,8 +468,8 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
               itemsOrder={itemsOrder}
               formik={formik}
               currentValue={currentValue}
-              hiddenFormItems={hiddenFormItems}
-              setHiddenFormItems={setHiddenFormItems}
+              foldedObjectAttributeOrArrayItems={hiddenFormItems}
+              setFoldedObjectAttributeOrArrayItems={setHiddenFormItems}
             />
           );
         })}
@@ -524,8 +524,8 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
           </span>
           <span id={rootLessListKey + "head"} key={rootLessListKey + "head"}>
             <ExpandOrFoldObjectAttributes
-              hiddenFormItems={hiddenFormItems}
-              setHiddenFormItems={setHiddenFormItems}
+              foldedObjectAttributeOrArrayItems={hiddenFormItems}
+              setFoldedObjectAttributeOrArrayItems={setHiddenFormItems}
               listKey={listKey}
             ></ExpandOrFoldObjectAttributes>
           </span>

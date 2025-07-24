@@ -163,8 +163,8 @@ const ProgressiveAttribute: FC<{
   currentModel: any;
   miroirMetaModel: any;
   measuredUnfoldJzodSchemaOnce: any;
-  hiddenFormItems: { [k: string]: boolean };
-  setHiddenFormItems: React.Dispatch<React.SetStateAction<{ [k: string]: boolean }>>;
+  foldedObjectAttributeOrArrayItems: { [k: string]: boolean };
+  setFoldedObjectAttributeOrArrayItems: React.Dispatch<React.SetStateAction<{ [k: string]: boolean }>>;
 }> = ({
   attribute,
   attributeNumber,
@@ -185,8 +185,8 @@ const ProgressiveAttribute: FC<{
   currentModel,
   miroirMetaModel,
   measuredUnfoldJzodSchemaOnce,
-  hiddenFormItems,
-  setHiddenFormItems,
+  foldedObjectAttributeOrArrayItems,
+  setFoldedObjectAttributeOrArrayItems,
 }) => {
   const isTestMode = process.env.VITE_TEST_MODE === 'true';
   const [isRendered, setIsRendered] = useState(isTestMode);
@@ -239,194 +239,6 @@ const ProgressiveAttribute: FC<{
     );
   }
 
-  // const attributeRawJzodSchema: JzodElement = currentKeyMap?.jzodObjectFlattenedSchema?.[attribute[0]];
-  // let attributeRawJzodSchema: JzodElement;
-
-  // const attributeDisplayedLabel: string = currentAttributeDefinition?.tag?.value?.defaultLabel ?? attribute[0];
-
-  // // Determine raw schema of attribute
-  // switch (currentKeyMap?.rawSchema?.type) {
-  //   case "any": {
-  //     attributeRawJzodSchema = currentKeyMap?.rawSchema;
-  //     break;
-  //   }
-  //   case "object": {
-  //     attributeRawJzodSchema = currentKeyMap?.rawSchema.definition[attribute[0]];
-  //     break;
-  //   }
-  //   case "record": {
-  //     attributeRawJzodSchema = currentKeyMap?.rawSchema.definition;
-  //     break;
-  //   }
-  //   case "union": {
-  //     let concreteObjectRawJzodSchema: JzodObject | undefined;
-  //     let resolvedConcreteObjectJzodSchema: JzodObject | undefined;
-  //     // if (props.rootLessListKey == "") {
-  //     //   log.info(
-  //     //     "JzodObjectEditor union",
-  //     //     rootLessListKey,
-  //     //     "received typeCheckKeyMap",
-  //     //     typeCheckKeyMap,
-  //     //   );
-  //     // } else {
-  //     //   log.info(
-  //     //     "JzodObjectEditor union",
-  //     //     rootLessListKey,
-  //     //     "currentKeyMap",
-  //     //     currentKeyMap
-  //     //   );
-  //     // }
-  //     const parentKey = rootLessListKey.includes(".")
-  //       ? rootLessListKey.substring(0, rootLessListKey.lastIndexOf("."))
-  //       : "";
-  //     const parentKeyMap = typeCheckKeyMap ? typeCheckKeyMap[parentKey] : undefined;
-  //     const possibleObjectTypes =
-  //       currentKeyMap?.recursivelyUnfoldedUnionSchema?.result.filter(
-  //         (a: any) => a.type == "object"
-  //       ) ?? [];
-  //     log.info(
-  //       "JzodObjectEditor union",
-  //       rootLessListKey,
-  //       "currentKeyMap",
-  //       JSON.stringify(currentKeyMap, null, 2),
-  //       "parentKeyMap",
-  //       JSON.stringify(parentKeyMap, null, 2),
-  //     );
-
-  //     if (possibleObjectTypes.length == 0) {
-  //       return (
-  //         <div key={attributeListKey}>
-  //           <span>
-  //             {attributeDisplayedLabel}{" "}
-  //             <span className="error">no object type found in union</span>
-  //           </span>
-  //         </div>
-  //       );
-  //     }
-
-  //     if (possibleObjectTypes.length > 1) {
-  //       if (!currentKeyMap?.rawSchema.discriminator) {
-  //         throw new Error(
-  //           "no discriminator found, could not choose branch of union type for object " +
-  //             currentKeyMap?.rawSchema +
-  //             " " +
-  //             localResolvedElementJzodSchemaBasedOnValue
-  //         );
-  //       }
-  //       const discriminator: string = (currentKeyMap?.rawSchema as any).discriminator;
-  //       const discriminatorValue = currentValue[discriminator];
-
-  //       if (discriminator && discriminatorValue) {
-  //         concreteObjectRawJzodSchema = possibleObjectTypes.find(
-  //           (a: any) =>
-  //             (a.type == "object" &&
-  //               a.definition[discriminator].type == "literal" &&
-  //               (a.definition[discriminator] as JzodLiteral).definition == discriminatorValue) ||
-  //             (a.type == "object" &&
-  //               a.definition[discriminator].type == "enum" &&
-  //               (a.definition[discriminator] as JzodEnum).definition.includes(discriminatorValue))
-  //         ) as any;
-  //       } else {
-  //         /* early return! */
-  //         return (
-  //           <div key={attributeListKey}>
-  //             <span>
-  //               {attributeDisplayedLabel}{" "}
-  //               <span className="error">
-  //                 no discriminator value found in union for object attributeListKey {attributeListKey}
-  //               </span>
-  //             </span>
-  //           </div>
-  //         );
-  //       }
-  //     } else {
-  //       concreteObjectRawJzodSchema = possibleObjectTypes[0] as JzodObject;
-  //     }
-
-  //     if (!concreteObjectRawJzodSchema) {
-  //       throw new Error(
-  //         "JzodElementEditor could not find concrete raw schema for " +
-  //           listKey +
-  //           " attribute " +
-  //           attribute[0] +
-  //           " listKey " +
-  //           attributeListKey +
-  //           " currentKeyMap?.rawSchema " +
-  //           JSON.stringify(currentKeyMap?.rawSchema, null, 2)
-  //       );
-  //     }
-
-  //     if (concreteObjectRawJzodSchema.type == "object" && concreteObjectRawJzodSchema.extend) {
-  //       const resolvedConcreteObjectJzodSchemaTmp = useMemo(() => {
-  //         return currentMiroirFundamentalJzodSchema
-  //           ? measuredUnfoldJzodSchemaOnce(
-  //               currentMiroirFundamentalJzodSchema,
-  //               concreteObjectRawJzodSchema,
-  //               [],
-  //               [],
-  //               concreteObjectRawJzodSchema,
-  //               0,
-  //               currentModel,
-  //               miroirMetaModel
-  //             )
-  //           : undefined;
-  //       }, [
-  //         currentMiroirFundamentalJzodSchema,
-  //         concreteObjectRawJzodSchema,
-  //         currentModel,
-  //         miroirMetaModel,
-  //       ]);
-
-  //       if (!resolvedConcreteObjectJzodSchemaTmp || resolvedConcreteObjectJzodSchemaTmp.status != "ok") {
-  //         throw new Error(
-  //           "JzodElementEditor resolve 'extend' clause for concrete raw schema for " +
-  //             listKey +
-  //             " attribute " +
-  //             attribute[0] +
-  //             " listKey " +
-  //             attributeListKey +
-  //             " concreteObjectRawJzodSchema " +
-  //             JSON.stringify(concreteObjectRawJzodSchema) +
-  //             " error " +
-  //             resolvedConcreteObjectJzodSchemaTmp?.error
-  //         );
-  //       }
-  //       resolvedConcreteObjectJzodSchema = resolvedConcreteObjectJzodSchemaTmp.element as JzodObject;
-  //     } else {
-  //       resolvedConcreteObjectJzodSchema = concreteObjectRawJzodSchema;
-  //     }
-
-  //     attributeRawJzodSchema = resolvedConcreteObjectJzodSchema.definition[attribute[0]];
-  //     // attributeRawJzodSchema = concreteObjectRawJzodSchema.definition[attribute[0]];
-  //     break;
-  //   }
-  //   default: {
-  //     log.error(
-  //       "JzodElementEditor currentKeyMap?.rawSchema.type incorrect for object, listKey=" +
-  //         listKey +
-  //         ", attribute='" +
-  //         attribute[0] +
-  //         "' attributeListKey='" +
-  //         attributeListKey +
-  //         "', currentKeyMap?.rawSchema?.type " +
-  //         currentKeyMap?.rawSchema?.type + 
-  //         ", currentKeyMap?.rawSchema " +
-  //         currentKeyMap?.rawSchema
-  //     );
-  //     throw new Error(
-  //       "JzodElementEditor currentKeyMap?.rawSchema.type incorrect for object, listKey=" +
-  //         listKey +
-  //         ", attribute='" +
-  //         attribute[0] +
-  //         "' attributeListKey='" +
-  //         attributeListKey +
-  //         "', currentKeyMap?.rawSchema?.type " +
-  //         currentKeyMap?.rawSchema?.type + 
-  //         ", currentKeyMap?.rawSchema " +
-  //         JSON.stringify(currentKeyMap?.rawSchema)
-  //     );
-  //   }
-  // }
 
   // Determine if this is a record type where attribute names should be editable
   const isRecordType = currentKeyMap?.rawSchema?.type === "record";
@@ -495,8 +307,8 @@ const ProgressiveAttribute: FC<{
             currentApplicationSection={currentApplicationSection}
             resolvedElementJzodSchema={currentAttributeDefinition}
             foreignKeyObjects={foreignKeyObjects}
-            hiddenFormItems={hiddenFormItems}
-            setHiddenFormItems={setHiddenFormItems}
+            foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
+            setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
             insideAny={insideAny}
             optional={definedOptionalAttributes.has(attribute[0])}
             // parentType={currentKeyMap?.rawSchema?.type}
@@ -556,8 +368,8 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
     insideAny,
     displayAsStructuredElementSwitch,
     deleteButtonElement,
-    hiddenFormItems,
-    setHiddenFormItems,
+    foldedObjectAttributeOrArrayItems,
+    setFoldedObjectAttributeOrArrayItems,
     // parentType, // used to control the parent type of the element, used for record elements
   } = props;
 
@@ -898,8 +710,8 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
             currentModel={currentModel}
             miroirMetaModel={miroirMetaModel}
             measuredUnfoldJzodSchemaOnce={measuredUnfoldJzodSchemaOnce}
-            hiddenFormItems={hiddenFormItems}
-            setHiddenFormItems={setHiddenFormItems}
+            foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
+            setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
           />
         ))}
     </>
@@ -922,7 +734,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
     currentModel,
     miroirMetaModel,
     measuredUnfoldJzodSchemaOnce,
-    hiddenFormItems // This is the key addition!
+    foldedObjectAttributeOrArrayItems // This is the key addition!
   ]);
   return (
     <div id={rootLessListKey} key={rootLessListKey}>
@@ -955,8 +767,8 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
           </span>
           <span id={rootLessListKey + "head"} key={rootLessListKey + "head"}>
             <ExpandOrFoldObjectAttributes
-              hiddenFormItems={hiddenFormItems}
-              setHiddenFormItems={setHiddenFormItems}
+              foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
+              setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
               listKey={listKey}
             ></ExpandOrFoldObjectAttributes>
           </span>
@@ -1027,7 +839,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
           id={listKey + ".inner"}
           style={{
             marginLeft: `calc(${indentShift})`,
-            display: hiddenFormItems[listKey] ? "none" : "block",
+            display: foldedObjectAttributeOrArrayItems[listKey] ? "none" : "block",
           }}
           key={`${rootLessListKey}|body`}
         >
