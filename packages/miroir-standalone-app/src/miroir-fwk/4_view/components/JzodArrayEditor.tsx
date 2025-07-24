@@ -408,11 +408,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
   // ##############################################################################################
   const arrayItems: JSX.Element = useMemo(()=>(
   // const arrayItems: JSX.Element = (
-    <div
-      id={listKey + ".inner"}
-      key={listKey + ".inner"}
-      style={{ display: hiddenFormItems[listKey] ? "none" : "block" }}
-    >
+    <>
       {(itemsOrder as number[])
         .map((i: number): [number, JzodElement] => [i, arrayValueObject[i]])
         .map((attributeParam: [number, JzodElement]) => {
@@ -468,7 +464,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
             />
           );
         })}
-    </div>
+    </>
   )
   // );
   , [
@@ -496,28 +492,73 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
   // ##############################################################################################
   return (
     <div id={rootLessListKey} key={rootLessListKey}>
-      <span>
-        {label}
-        <span>
-          {/* add new item: */}
-          {" ["}
-          <ExpandOrFoldObjectAttributes
-            hiddenFormItems={hiddenFormItems}
-            setHiddenFormItems={setHiddenFormItems}
-            listKey={listKey}
-          ></ExpandOrFoldObjectAttributes>
-          {displayAsStructuredElementSwitch}
-          <SizedButton
-            variant="text"
-            aria-label={rootLessListKey + ".add"}
-            onClick={addNewArrayItem}
+      <div>
+        <span
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "start",
+            alignItems: "center",
+          }}
+        >
+          <span>
+            <span
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                alignContent: "start",
+                alignItems: "center",
+              }}
+            >
+              {label}
+            </span>
+          </span>
+          <span id={rootLessListKey + "head"} key={rootLessListKey + "head"}>
+            <ExpandOrFoldObjectAttributes
+              hiddenFormItems={hiddenFormItems}
+              setHiddenFormItems={setHiddenFormItems}
+              listKey={listKey}
+            ></ExpandOrFoldObjectAttributes>
+          </span>
+          <span>
+            <SizedButton
+              variant="text"
+              aria-label={rootLessListKey + ".add"}
+              onClick={addNewArrayItem}
+              title="Add new array item"
+              style={{ 
+                flexShrink: 0,
+                marginLeft: "1em",
+              }}
+            >
+              <SizedAddBox />
+            </SizedButton>
+          </span>
+          <span
+            style={{
+              position: "absolute",
+              top: 4,
+              right: 4,
+              zIndex: 2,
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+            }}
           >
-            <SizedAddBox />
-          </SizedButton>
+            {displayAsStructuredElementSwitch ?? <></>}
+          </span>
         </span>
-        {arrayItems}
-        <div>{"]"}</div>
-      </span>
+        <div
+          id={listKey + ".inner"}
+          style={{
+            marginLeft: `calc(${indentShift})`,
+            display: hiddenFormItems[listKey] ? "none" : "block",
+          }}
+          key={`${rootLessListKey}|body`}
+        >
+          {arrayItems}
+        </div>
+      </div>
     </div>
   );
 };

@@ -83,7 +83,7 @@ export interface EditorAttribute {
 }
 
 // ################################################################################################
-export const ExpandOrFoldObjectAttributes = React.memo((props: {
+export const ExpandOrFoldObjectAttributes = (props: {
   hiddenFormItems: { [k: string]: boolean };
   setHiddenFormItems: React.Dispatch<
     React.SetStateAction<{
@@ -101,6 +101,8 @@ export const ExpandOrFoldObjectAttributes = React.memo((props: {
     }));
   }, [props.listKey, props.setHiddenFormItems]);
 
+  const isHidden = props.hiddenFormItems[props.listKey];
+
   return (
     <LineIconButton
       style={{
@@ -109,21 +111,14 @@ export const ExpandOrFoldObjectAttributes = React.memo((props: {
       }}
       onClick={handleClick}
     >
-      {props.hiddenFormItems[props.listKey] ? (
+      {isHidden ? (
         <ExpandMore sx={{ color: "darkgreen" }} />
       ) : (
         <ExpandLess />
       )}
     </LineIconButton>
   );
-}, (prevProps, nextProps) => {
-  // Custom comparison function for React.memo
-  return (
-    prevProps.listKey === nextProps.listKey &&
-    prevProps.setHiddenFormItems === nextProps.setHiddenFormItems &&
-    prevProps.hiddenFormItems[prevProps.listKey] === nextProps.hiddenFormItems[nextProps.listKey]
-  );
-});
+};
 ExpandOrFoldObjectAttributes.displayName = "ExpandOrFoldObjectAttributes";
 
 // #####################################################################################################

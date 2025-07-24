@@ -862,8 +862,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
 
   // ##############################################################################################
   // Memoize the array of rendered attributes to prevent unnecessary re-renders
-  // const attributeElements = useMemo(() => {
-  const attributeElements: JSX.Element = (
+  const attributeElements = useMemo(() => (
     <>
       {itemsOrder
         .map((i): [string, JzodElement] => [
@@ -894,7 +893,27 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
           />
         ))}
     </>
-  );
+  ), [
+    itemsOrder,
+    formik.values,
+    rootLessListKey,
+    props,
+    listKey,
+    rootLessListKeyArray,
+    localResolvedElementJzodSchemaBasedOnValue,
+    typeCheckKeyMap,
+    currentValue,
+    usedIndentLevel,
+    definedOptionalAttributes,
+    handleAttributeNameChange,
+    deleteElement,
+    formik,
+    currentMiroirFundamentalJzodSchema,
+    currentModel,
+    miroirMetaModel,
+    measuredUnfoldJzodSchemaOnce,
+    hiddenFormItems // This is the key addition!
+  ]);
   return (
     <div id={rootLessListKey} key={rootLessListKey}>
       {/* <span>JzodObjectEditor: {count}</span> */}
@@ -931,74 +950,52 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
               listKey={listKey}
             ></ExpandOrFoldObjectAttributes>
           </span>
-          <span
-            id={listKey + ".inner"}
-            style={{
-              marginLeft: `calc(${indentShift})`,
-              display: hiddenFormItems[listKey] ? "none" : "block",
-            }}
-            key={`${rootLessListKey}|body`}
-          >
-            {currentKeyMap?.rawSchema.type == "record" || currentKeyMap?.rawSchema.type == "any" ? (
-              <span>
-                <SizedButton
-                  id={rootLessListKey + ".addRecordAttribute"}
-                  variant="text"
-                  aria-label={rootLessListKey + ".addRecordAttribute"}
-                  onClick={addExtraRecordEntry}
-                >
-                  <SizedAddBox />
-                </SizedButton>
+          <span>
+            {/* add optional attributes buttons */}
+            {currentKeyMap?.rawSchema.type != "record" && undefinedOptionalAttributes.length > 0 ? (
+              <span
+                style={{
+                  display: "flex",
+                  flexFlow: "row wrap",
+                  alignItems: "center",
+                  gap: "1em",
+                  marginLeft: "1em",
+                }}
+              >
+                {undefinedOptionalAttributes.map((attributeName) => (
+                  <span
+                    key={attributeName}
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: "8px",
+                    }}
+                  >
+                    <SizedButton
+                      variant="text"
+                      aria-label={
+                        rootLessListKey + ".addObjectOptionalAttribute." + attributeName
+                      }
+                      onClick={() => addObjectOptionalAttribute(attributeName)}
+                      title={`Add optional attribute: ${attributeName}`}
+                      style={{ flexShrink: 0 }}
+                    >
+                      <SizedAddBox />
+                    </SizedButton>
+                    <span
+                      style={{
+                        fontSize: "0.8em",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      {attributeName}
+                    </span>
+                  </span>
+                ))}
               </span>
             ) : (
               <></>
             )}
-            <span>
-              {/* add optional attributes buttons */}
-              {currentKeyMap?.rawSchema.type != "record" && undefinedOptionalAttributes.length > 0 ? (
-                <span
-                  style={{
-                    display: "flex",
-                    flexFlow: "row wrap",
-                    alignItems: "center",
-                    gap: "1em",
-                  }}
-                >
-                  {undefinedOptionalAttributes.map((attributeName) => (
-                    <span
-                      key={attributeName}
-                      style={{
-                        display: "inline-flex",
-                        alignItems: "center",
-                        gap: "8px",
-                      }}
-                    >
-                      <SizedButton
-                        variant="text"
-                        aria-label={
-                          rootLessListKey + ".addObjectOptionalAttribute." + attributeName
-                        }
-                        onClick={() => addObjectOptionalAttribute(attributeName)}
-                        title={`Add optional attribute: ${attributeName}`}
-                        style={{ flexShrink: 0 }}
-                      >
-                        <SizedAddBox />
-                      </SizedButton>
-                      <span
-                        style={{
-                          fontSize: "0.8em",
-                          whiteSpace: "nowrap",
-                        }}
-                      >
-                        {attributeName}
-                      </span>
-                    </span>
-                  ))}
-                </span>
-              ) : (
-                <></>
-              )}
-            </span>
           </span>
           <span
             style={{
@@ -1016,13 +1013,30 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
             {/* {jzodSchemaTooltip ?? <></>} */}
           </span>
         </span>
-        {/* <div>ICIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII</div> */}
-        {/* <div>definedOptionalAttributes: {Array.from(definedOptionalAttributes).join(", ")}</div> */}
-        {/* <div>undefinedOptionalAttributes: {Array.from(undefinedOptionalAttributes).join(", ")}</div> */}
-        {/* <div><pre>{JSON.stringify(unfoldedRawSchema, null, 2)}</pre></div> */}
-        {/* <div>resolvedElement:<pre>{JSON.stringify(resolvedElementJzodSchema, null, 2)}</pre></div> */}
-        {/* <div>resolvedElement:<pre>{JSON.stringify(localResolvedElementJzodSchemaBasedOnValue, null, 2)}</pre></div> */}
-        <div>{attributeElements}</div>
+        <div
+          id={listKey + ".inner"}
+          style={{
+            marginLeft: `calc(${indentShift})`,
+            display: hiddenFormItems[listKey] ? "none" : "block",
+          }}
+          key={`${rootLessListKey}|body`}
+        >
+          {currentKeyMap?.rawSchema.type == "record" || currentKeyMap?.rawSchema.type == "any" ? (
+            <span>
+              <SizedButton
+                id={rootLessListKey + ".addRecordAttribute"}
+                variant="text"
+                aria-label={rootLessListKey + ".addRecordAttribute"}
+                onClick={addExtraRecordEntry}
+              >
+                <SizedAddBox />
+              </SizedButton>
+            </span>
+          ) : (
+            <></>
+          )}
+          <div>{attributeElements}</div>
+        </div>
       </div>
     </div>
   );
