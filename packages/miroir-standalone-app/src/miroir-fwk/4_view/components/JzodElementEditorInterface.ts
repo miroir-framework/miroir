@@ -29,7 +29,7 @@ export interface JzodEditorPropsRoot {
   currentDeploymentUuid?: Uuid,
   currentApplicationSection?: ApplicationSection;
   initialFormState?: any;
-  rawJzodSchema: JzodElement | undefined;
+  // rawJzodSchema: JzodElement | undefined;
   resolvedElementJzodSchema: JzodElement | undefined;
   typeCheckKeyMap: Record<string, KeyMapEntry> | undefined;
   // objects
@@ -39,7 +39,7 @@ export interface JzodEditorPropsRoot {
   insideAny?: boolean;
   hidden?: boolean; // used to control visibility of the editor
   optional?: boolean; // used to control if the displayed element can be removed or not
-  parentType?: string; // used to control the parent type of the element, used for record elements. TODO: accept real type enum
+  // parentType?: string; // used to control the parent type of the element, used for record elements. TODO: accept real type enum
   deleteButtonElement?: JSX.Element; // used to display a delete button in the editor
   hasTypeError?: boolean; // used to control if the editor has a type error or not
 }
@@ -58,7 +58,7 @@ export interface JzodArrayEditorProps extends JzodEditorPropsRoot {
   currentDeploymentUuid?: Uuid,
   currentApplicationSection?: ApplicationSection;
   resolvedElementJzodSchema: JzodElement | undefined;
-  unfoldedRawSchema: JzodArray;
+  // unfoldedRawSchema: JzodArray;
   indentLevel?: number;
   hiddenFormItems: { [k: string]: boolean };  
   setHiddenFormItems: React.Dispatch<

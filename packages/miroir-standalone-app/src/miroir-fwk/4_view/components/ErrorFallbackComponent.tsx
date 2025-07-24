@@ -42,7 +42,7 @@ export const ErrorFallbackComponent: React.FC<ErrorFallbackComponentProps> = ({
     attributeListKey,
     currentValue,
     formikValues,
-    rawJzodSchema,
+    // rawJzodSchema,
     unfoldedJzodSchema,
     localResolvedElementJzodSchemaBasedOnValue
   } = context;

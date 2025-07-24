@@ -60,7 +60,7 @@ export interface JzodElementEditorHooks {
   setDisplayAsStructuredElement: React.Dispatch<React.SetStateAction<boolean>>;
   // currentValue jzod schema
   localResolvedElementJzodSchemaBasedOnValue: JzodElement | undefined;
-  unfoldedRawSchema: JzodElement;
+  // unfoldedRawSchema: JzodElement;
   // uuid, objects, arrays
   foreignKeyObjects: Record<string, EntityInstancesUuidIndex>
   definedOptionalAttributes: Set<string>;
@@ -143,65 +143,65 @@ export function useJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
   const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<DeploymentEntityState> =
     useMemo(() => getMemoizedDeploymentEntityStateSelectorMap(), []);
 
-  let unfoldedRawSchemaReturnType: UnfoldJzodSchemaOnceReturnType | undefined;
-  try {
-    unfoldedRawSchemaReturnType = useMemo(() => {
-      const result = context.miroirFundamentalJzodSchema
-        // ? measurePerformance("unfoldJzodSchemaOnce", unfoldJzodSchemaOnce, 1, props.rootLessListKey, props.rawJzodSchema)(
-        ? unfoldJzodSchemaOnce(
-            context.miroirFundamentalJzodSchema, // context.miroirFundamentalJzodSchema,
-            props.rawJzodSchema,
-            [], // path
-            [], // unfoldingReference
-            props.rawJzodSchema, // rootSchema
-            0, // depth
-            currentModel,
-            miroirMetaModel
-          )
-        : undefined;
-      // log.info("useJzodElementEditorHooks unfoldJzodSchemaOnce", "count", count, "done, caller", caller);
-      return {
-        ...result,
-        valuePath: [],
-        typePath: [],
-      } as any;
-    }, [
-      props.rawJzodSchema,
-      context.miroirFundamentalJzodSchema /*context.miroirFundamentalJzodSchema,*/,
-      currentModel,
-      miroirMetaModel,
-    ]);
-  } catch (e) {
-    throw e as Error; // rethrow the error to be caught by the error boundary
-    // log.error(
-    //   "caught error upon calling unfoldJzodSchemaOnce! count",
-    //   count,
-    //   "key",
-    //   props.rootLessListKey,
-    //   "error",
-    //   e
-    // );
-  }
+  // let unfoldedRawSchemaReturnType: UnfoldJzodSchemaOnceReturnType | undefined;
+  // try {
+  //   unfoldedRawSchemaReturnType = useMemo(() => {
+  //     log.info("useJzodElementEditorHooks calling unfoldJzodSchemaOnce", "count", count, ", caller", caller, "props.rawJzodSchema", props.rawJzodSchema);
+  //     const result = context.miroirFundamentalJzodSchema
+  //       // ? measurePerformance("unfoldJzodSchemaOnce", unfoldJzodSchemaOnce, 1, props.rootLessListKey, props.rawJzodSchema)(
+  //       ? unfoldJzodSchemaOnce(
+  //           context.miroirFundamentalJzodSchema, // context.miroirFundamentalJzodSchema,
+  //           props.rawJzodSchema,
+  //           [], // path
+  //           [], // unfoldingReference
+  //           props.rawJzodSchema, // rootSchema
+  //           0, // depth
+  //           currentModel,
+  //           miroirMetaModel
+  //         )
+  //       : undefined;
+  //     return {
+  //       ...result,
+  //       valuePath: [],
+  //       typePath: [],
+  //     } as any;
+  //   }, [
+  //     props.rawJzodSchema,
+  //     context.miroirFundamentalJzodSchema /*context.miroirFundamentalJzodSchema,*/,
+  //     currentModel,
+  //     miroirMetaModel,
+  //   ]);
+  // } catch (e) {
+  //   throw e as Error; // rethrow the error to be caught by the error boundary
+  //   // log.error(
+  //   //   "caught error upon calling unfoldJzodSchemaOnce! count",
+  //   //   count,
+  //   //   "key",
+  //   //   props.rootLessListKey,
+  //   //   "error",
+  //   //   e
+  //   // );
+  // }
   // log.info("getJzodElementEditorHooks ", dbgInt++, "count", count, "caller", caller);
-  if (!unfoldedRawSchemaReturnType || unfoldedRawSchemaReturnType.status == "error") {
-    throw new Error(
-      "useJzodElementEditorHooks could not unfold raw schema " +
-       "error " +
-        JSON.stringify(unfoldedRawSchemaReturnType, null, 2) +
-        " props.rawJzodSchema " +
-        JSON.stringify(props.rawJzodSchema, null, 2) +
-        // props.rawJzodSchema +
-        " count " +
-        count +
-        " result " +
-        // JSON.stringify(unfoldedRawSchemaReturnType, null, 2) +
-        unfoldedRawSchemaReturnType +
-        " miroirFundamentalJzodSchema " +
-        context.miroirFundamentalJzodSchema
-      // JSON.stringify(currentMiroirFundamentalJzodSchema, null, 2)
-    );
-  }
-  const unfoldedRawSchema: JzodElement = unfoldedRawSchemaReturnType.element;
+  // if (!unfoldedRawSchemaReturnType || unfoldedRawSchemaReturnType.status == "error") {
+  //   throw new Error(
+  //     "useJzodElementEditorHooks could not unfold raw schema " +
+  //      "error " +
+  //       JSON.stringify(unfoldedRawSchemaReturnType, null, 2) +
+  //       " props.rawJzodSchema " +
+  //       JSON.stringify(props.rawJzodSchema, null, 2) +
+  //       // props.rawJzodSchema +
+  //       " count " +
+  //       count +
+  //       " result " +
+  //       // JSON.stringify(unfoldedRawSchemaReturnType, null, 2) +
+  //       unfoldedRawSchemaReturnType +
+  //       " miroirFundamentalJzodSchema " +
+  //       context.miroirFundamentalJzodSchema
+  //     // JSON.stringify(currentMiroirFundamentalJzodSchema, null, 2)
+  //   );
+  // }
+  // const unfoldedRawSchema: JzodElement = unfoldedRawSchemaReturnType.element;
 
   // ##############################################################################################
   // ##############################################################################################
@@ -221,8 +221,10 @@ export function useJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
     () =>
       getQueryRunnerParamsForDeploymentEntityState(
         props.currentDeploymentUuid &&
-          unfoldedRawSchema.type == "uuid" &&
-          unfoldedRawSchema.tag?.value?.targetEntity
+        currentTypecheckKeyMap &&
+        currentTypecheckKeyMap.rawSchema &&
+        currentTypecheckKeyMap.rawSchema.type == "uuid" &&
+        currentTypecheckKeyMap.rawSchema.tag?.value?.targetEntity
           ? {
               queryType: "boxedQueryWithExtractorCombinerTransformer",
               deploymentUuid: props.currentDeploymentUuid,
@@ -230,17 +232,17 @@ export function useJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
               queryParams: {},
               contextResults: {},
               extractors: {
-                [unfoldedRawSchema.tag?.value?.targetEntity]: {
+                [currentTypecheckKeyMap.rawSchema.tag?.value?.targetEntity]: {
                   extractorOrCombinerType: "extractorByEntityReturningObjectList",
                   applicationSection: getApplicationSection(
                     props.currentDeploymentUuid,
-                    unfoldedRawSchema.tag?.value?.targetEntity
+                    currentTypecheckKeyMap.rawSchema.tag?.value?.targetEntity
                   ),
                   parentName: "",
-                  parentUuid: unfoldedRawSchema.tag?.value?.targetEntity,
+                  parentUuid: currentTypecheckKeyMap.rawSchema.tag?.value?.targetEntity,
                   orderBy: {
                     attributeName:
-                      unfoldedRawSchema.tag?.value?.targetEntityOrderInstancesBy ?? "name",
+                      currentTypecheckKeyMap.rawSchema.tag?.value?.targetEntityOrderInstancesBy ?? "name",
                   },
                 },
               },
@@ -248,7 +250,7 @@ export function useJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
           : dummyDomainManyQueryWithDeploymentUuid,
         deploymentEntityStateSelectorMap
       ),
-    [deploymentEntityStateSelectorMap, props.currentDeploymentUuid, unfoldedRawSchema]
+    [deploymentEntityStateSelectorMap, props.currentDeploymentUuid, currentTypecheckKeyMap?.rawSchema]
   );
 
   const foreignKeyObjects: Record<string, EntityInstancesUuidIndex> =
@@ -278,42 +280,12 @@ export function useJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
   const undefinedOptionalAttributes: string[] = useMemo(() => {
     if (typeCheckMapJzodObjectFlattenedSchema) {
       const currentObjectAttributes = Object.keys(currentValue);
-      // log.info(
-      //   "useJzodElementEditorHooks count",
-      //   count,
-      //   "'" + props.rootLessListKey + "'",
-      //   "unfoldedRawSchema.type == 'object'",
-      //   "unfoldedRawSchema",
-      //   unfoldedRawSchema,
-      //   "typeCheckMapJzodObjectFlattenedSchema",
-      //   typeCheckMapJzodObjectFlattenedSchema !== undefined,
-      //   typeCheckMapJzodObjectFlattenedSchema,
-      //   "computing undefinedOptionalAttributes",
-      //   "typeCheckKeyMap",
-      //   props.typeCheckKeyMap
-      // );
-
       return Object.entries(typeCheckMapJzodObjectFlattenedSchema.definition)
         .filter((a) => a[1].optional)
         .filter((a) => !currentObjectAttributes.includes(a[0]))
         .map((a) => a[0]);
     }
     if (typeCheckKeyMapChosenUnionBranchObjectSchema) {
-      // log.info(
-      //   "useJzodElementEditorHooks count",
-      //   count,
-      //   "'" + props.rootLessListKey + "'",
-      //   "unfoldedRawSchema.type == 'union'",
-      //   "unfoldedRawSchema",
-      //   unfoldedRawSchema,
-      //   "typeCheckKeyMapChosenUnionBranchObjectSchema",
-      //   typeCheckKeyMapChosenUnionBranchObjectSchema !== undefined,
-      //   typeCheckKeyMapChosenUnionBranchObjectSchema,
-      //   "computing undefinedOptionalAttributes",
-      //   "typeCheckKeyMap",
-      //   props.typeCheckKeyMap
-      // );
-
       const currentObjectAttributes = Object.keys(currentValue);
       return Object.entries(typeCheckKeyMapChosenUnionBranchObjectSchema.definition)
         .filter((a) => a[1].optional)
@@ -321,7 +293,7 @@ export function useJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
         .map((a) => a[0]);
     }
     return [];
-  }, [unfoldedRawSchema, currentValue]);
+  }, [typeCheckKeyMapChosenUnionBranchObjectSchema, typeCheckMapJzodObjectFlattenedSchema, currentValue]);
 
   const definedOptionalAttributes: Set<string> = useMemo(() => {
     if (typeCheckMapJzodObjectFlattenedSchema) {
@@ -343,7 +315,7 @@ export function useJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
       );
     }
     return new Set();
-  }, [unfoldedRawSchema, currentValue]);
+  }, [typeCheckMapJzodObjectFlattenedSchema, typeCheckKeyMapChosenUnionBranchObjectSchema, currentValue]);
 
   const stringSelectList = useMemo(() => {
     if (
@@ -376,7 +348,7 @@ export function useJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
     setCodeMirrorIsValidJson,
     deploymentEntityStateSelectorMap,
     localResolvedElementJzodSchemaBasedOnValue,
-    unfoldedRawSchema,
+    // unfoldedRawSchema,
     foreignKeyObjects,
     // Array / Object fold / unfold state
     hiddenFormItems,

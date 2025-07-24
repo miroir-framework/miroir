@@ -141,6 +141,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
   // Create a unique key for this component instance
   const componentKey = `JzodElementEditor-${props.rootLessListKey || 'ROOT'}`;
 
+  const currentKeyMap = props.typeCheckKeyMap?.[props.rootLessListKey];
   // log.info(
   //   "JzodElementEditor",
   //   count,
@@ -160,7 +161,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
     setDisplayAsStructuredElement,
     currentValue,
     localResolvedElementJzodSchemaBasedOnValue,
-    unfoldedRawSchema,
+    // unfoldedRawSchema,
     // recursivelyUnfoldedRawSchema,
     foreignKeyObjects,
     // Array / Object fold / unfold state
@@ -264,7 +265,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
     props.hasTypeError ||
     !localResolvedElementJzodSchemaBasedOnValue || // same as props.hasTypeError?
     !displayAsStructuredElement ||
-    props.rawJzodSchema?.type == "any" ||
+    currentKeyMap?.rawSchema?.type == "any" ||
     ["undefined", "any"].includes(localResolvedElementJzodSchemaBasedOnValue.type);
 
   const hideSubJzodEditor = useMemo(() => 
@@ -345,7 +346,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
             {/* value <pre>{safeStringify(currentValue, 500)}</pre> */}
             value <pre>{JSON.stringify(currentValue)}</pre>
             <br />
-            raw Jzod schema: {safeStringify(props.rawJzodSchema, 500)}
+            raw Jzod schema: {safeStringify(currentKeyMap?.rawSchema, 500)}
             <br />
             resolved schema: {safeStringify(localResolvedElementJzodSchemaBasedOnValue, 500)}
           </div>
@@ -353,7 +354,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
       }
 
       // Handle "any" type
-      if (props.rawJzodSchema?.type === "any" && !props.insideAny) {
+      if (currentKeyMap?.rawSchema?.type === "any" && !props.insideAny) {
         return (
           <JzodAnyEditor
             name={props.name}
@@ -362,7 +363,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
             rootLessListKey={props.rootLessListKey}
             rootLessListKeyArray={props.rootLessListKeyArray}
             // localRootLessListKeyMap={props.localRootLessListKeyMap}
-            rawJzodSchema={props.rawJzodSchema}
+            // rawJzodSchema={props.rawJzodSchema}
             currentDeploymentUuid={props.currentDeploymentUuid}
             currentApplicationSection={props.currentApplicationSection}
             resolvedElementJzodSchema={localResolvedElementJzodSchemaBasedOnValue}
@@ -395,7 +396,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               indentLevel={props.indentLevel + 1}
               rootLessListKey={props.rootLessListKey}
               rootLessListKeyArray={props.rootLessListKeyArray}
-              rawJzodSchema={props.rawJzodSchema}
+              // rawJzodSchema={props.rawJzodSchema}
               resolvedElementJzodSchema={localResolvedElementJzodSchemaBasedOnValue}
               typeCheckKeyMap={ props.typeCheckKeyMap }
               currentDeploymentUuid={props.currentDeploymentUuid}
@@ -403,7 +404,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               foreignKeyObjects={foreignKeyObjects}
               hidden={hideSubJzodEditor}
               displayAsStructuredElementSwitch={displayAsStructuredElementSwitch}
-              parentType={props.parentType} // used to control the parent type of the element, used for record elements
+              // parentType={props.parentType} // used to control the parent type of the element, used for record elements
               deleteButtonElement={props.deleteButtonElement}
             />
           );
@@ -420,8 +421,8 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               rootLessListKeyArray={props.rootLessListKeyArray}
               rootLessListKey={props.rootLessListKey}
               // localRootLessListKeyMap={props.localRootLessListKeyMap}
-              rawJzodSchema={props.rawJzodSchema}
-              unfoldedRawSchema={unfoldedRawSchema as any}
+              // rawJzodSchema={props.rawJzodSchema}
+              // unfoldedRawSchema={unfoldedRawSchema as any}
               resolvedElementJzodSchema={localResolvedElementJzodSchemaBasedOnValue}
               typeCheckKeyMap={ props.typeCheckKeyMap }
               indentLevel={props.indentLevel + 1}
@@ -434,7 +435,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               insideAny={props.insideAny}
               hidden={hideSubJzodEditor}
               displayAsStructuredElementSwitch={displayAsStructuredElementSwitch}
-              parentType={props.parentType} // used to control the parent type of the element, used for record elements
+              // parentType={props.parentType} // used to control the parent type of the element, used for record elements
               deleteButtonElement={props.deleteButtonElement}
             />
           );
@@ -591,7 +592,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                 rootLessListKey={props.rootLessListKey}
                 rootLessListKeyArray={props.rootLessListKeyArray}
                 foreignKeyObjects={props.foreignKeyObjects}
-                rawJzodSchema={props.rawJzodSchema as JzodLiteral}
+                // rawJzodSchema={props.rawJzodSchema as JzodLiteral}
                 resolvedElementJzodSchema={localResolvedElementJzodSchemaBasedOnValue}
                 typeCheckKeyMap={ props.typeCheckKeyMap }
                 // localRootLessListKeyMap={props.localRootLessListKeyMap}
@@ -604,7 +605,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
           const enumValues: string[] =
             (localResolvedElementJzodSchemaBasedOnValue &&
               localResolvedElementJzodSchemaBasedOnValue.definition) ||
-            (props.rawJzodSchema && ((props.rawJzodSchema as any).definition ?? [])) ||
+            (currentKeyMap?.rawSchema && ((currentKeyMap.rawSchema as any).definition ?? [])) ||
             [];
           return (
             // <div style={{ width: "100%" }}>
@@ -615,7 +616,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                 listKey={props.listKey}
                 rootLessListKey={props.rootLessListKey}
                 rootLessListKeyArray={props.rootLessListKeyArray}
-                rawJzodSchema={props.rawJzodSchema as any}
+                // rawJzodSchema={props.rawJzodSchema as any}
                 resolvedElementJzodSchema={localResolvedElementJzodSchemaBasedOnValue}
                 typeCheckKeyMap={ props.typeCheckKeyMap }
                 // localRootLessListKeyMap={props.localRootLessListKeyMap}
@@ -642,10 +643,10 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               foreignKeyObjects={props.foreignKeyObjects}
               currentApplicationSection={props.currentApplicationSection}
               currentDeploymentUuid={props.currentDeploymentUuid}
-              rawJzodSchema={props.rawJzodSchema as JzodLiteral}
+              // rawJzodSchema={props.rawJzodSchema as JzodLiteral}
               resolvedElementJzodSchema={localResolvedElementJzodSchemaBasedOnValue}
               typeCheckKeyMap={ props.typeCheckKeyMap }
-              parentType={props.parentType}
+              // parentType={props.parentType}
             />
           );
         }
@@ -730,7 +731,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               <pre>
                 resolved Jzod schema: {safeStringify(localResolvedElementJzodSchemaBasedOnValue, 500)}
               </pre>
-              <pre>raw Jzod schema: {safeStringify(props.rawJzodSchema, 500)}</pre>
+              <pre>raw Jzod schema: {safeStringify(currentKeyMap?.rawSchema, 500)}</pre>
             </span>
           );
         }
@@ -746,8 +747,8 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
             rootLessListKey: props.rootLessListKey,
             currentValue,
             formikValues: formik.values,
-            rawJzodSchema: props.rawJzodSchema,
-            unfoldedJzodSchema: unfoldedRawSchema,
+            // rawJzodSchema: props.rawJzodSchema,
+            // unfoldedJzodSchema: unfoldedRawSchema,
             localResolvedElementJzodSchemaBasedOnValue,
           }}
         />

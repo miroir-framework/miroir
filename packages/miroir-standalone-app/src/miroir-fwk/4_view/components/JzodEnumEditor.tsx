@@ -21,7 +21,7 @@ MiroirLoggerFactory.registerLoggerToStart(
 export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
     name,
     labelElement,
-    rawJzodSchema,
+    // rawJzodSchema,
     listKey,
     rootLessListKey,
     rootLessListKeyArray,
@@ -36,7 +36,7 @@ export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
       : "";
     const parentKeyMap = typeCheckKeyMap ? typeCheckKeyMap[parentKey] : undefined;
     const currentKeyMap = typeCheckKeyMap ? typeCheckKeyMap[rootLessListKey] : undefined;
-
+    const rawJzodSchema = currentKeyMap?.rawSchema;
     // Log only when component renders to track performance
     // log.info(
     //   `JzodEnumEditor: render for ${name}, rootLessListKey=${rootLessListKey}, rawJzodSchema=${JSON.stringify(

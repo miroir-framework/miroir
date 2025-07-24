@@ -642,46 +642,6 @@ export function jzodUnionResolvedTypeForArray(
     concreteUnrolledJzodSchemas,
     unionChoices: arrayUnionChoices,
   };
-  // // select effective union branch based on the valuArray items
-  // // if array, all items must match the same union branch
-  // // if tuple, different items can match different union branches
-  // const selectUnionResult = selectUnionBranchFromDiscriminator(
-  //   arrayUnionChoices,
-  //   discriminator,
-  //   valueArray[0], // we take the first element of the array to determine the type
-  //   currentValuePath, // valuePath
-  //   currentTypePath, // typePath
-  //   // to resolve the extend clause of the object schema:
-  //   miroirFundamentalJzodSchema,
-  //   currentModel,
-  //   miroirMetaModel,
-  //   relativeReferenceJzodContext
-  // );
-  
-  // if (selectUnionResult.status === "error") {
-  //   return {
-  //     status: "error",
-  //     error: "jzodUnionResolvedTypeForArray failed to select union branch",
-  //     discriminator,
-  //     valuePath: currentValuePath,
-  //     typePath: currentTypePath,
-  //     value: valueArray,
-  //     concreteUnrolledJzodSchemas,
-  //     unionChoices: arrayUnionChoices,
-  //     innerError: selectUnionResult,
-  //   };
-  // }
-  // const {
-  //   currentDiscriminatedObjectJzodSchema,
-  //   flattenedUnionChoices,
-  //   chosenDiscriminator,
-  // } = selectUnionResult;
-  // return {
-  //   status: "ok",
-  //   resolvedJzodObjectSchema: currentDiscriminatedObjectJzodSchema,
-  //   arrayUnionChoices: arrayUnionChoices,
-  //   chosenDiscriminator,
-  // };
 } // end of jzodUnionResolvedTypeForArray
 
 // ################################################################################################
