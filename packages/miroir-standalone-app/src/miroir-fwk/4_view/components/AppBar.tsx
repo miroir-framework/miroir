@@ -15,6 +15,7 @@ import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import AdbIcon from '@mui/icons-material/Adb';
 import MenuIcon from '@mui/icons-material/Menu';
+import TocIcon from '@mui/icons-material/Toc';
 
 import { LoggerInterface, MiroirLoggerFactory, MiroirMenuItem } from 'miroir-core';
 
@@ -72,63 +73,63 @@ export interface AppBarProps extends MuiAppBarProps {
   children:any,
   width?: number,
   onWidthChange?: (width: number) => void,
+  // Document outline props
+  outlineOpen?: boolean,
+  outlineWidth?: number,
+  onOutlineToggle?: () => void,
   // theme: any
 }
 
 const StyledAppBar =
-// React.useEffect(
 styled(
   MuiAppBar as any, //TODO: correct typing error
-  {shouldForwardProp: (prop) => prop !== "open" && prop !== "width"}
+  {shouldForwardProp: (prop) => prop !== "open" && prop !== "width" && prop !== "outlineOpen" && prop !== "outlineWidth"}
 )<AppBarProps>(
-  ({ theme, open, width = SidebarWidth }) => ({
-    zIndex: theme.zIndex.drawer + 1,
-    // display: "flex",
-    // flexGrow: 1,
-    position: "static",
-    minHeight: 0,
-    // flexDirection:"row",
-    // justifyContent: "space-between"
-    // p: 2,
-    // height: "100px",
-    // transition: theme.transitions.create(
-    //   ["margin", "width"], 
-    //   {
-    //     easing: theme.transitions.easing.sharp,
-    //     duration: theme.transitions.duration.leavingScreen,
-    //   }
-    // ),
-    // ...(
-    //   !open && {
-    //     width: "100%",
-    //     // marginLeft: `-${SidebarWidth}px`,
-    //     // marginLeft: `240px`,
-    //   }
-    // ),
-    ...(
-      open && {
-        width: `calc(100% - ${width}px)`,
-        marginLeft: `${width}px`,
-        transition: theme.transitions.create(
-          ["margin", "width"], {
-            easing: theme.transitions.easing.easeOut,
-            duration: theme.transitions.duration.enteringScreen,
-          }
-        ),
-      }
-    ),
-    [theme.breakpoints.between('xs', 'sm')]: {
-      padding: '0 0px',
-      minHeight: "0px"
-    },
-    [theme.breakpoints.up('md')]: {
-      padding: '0 0px',
-      minHeight: "0px"
-    },
-  })
+  ({ theme, open, width = SidebarWidth, outlineOpen, outlineWidth = 300 }) => {
+    let appBarWidth = "100%";
+    let marginLeft = 0;
+    let marginRight = 0;
+
+    // Calculate width and margins based on both sidebars
+    if (open && outlineOpen) {
+      // Both sidebars open
+      appBarWidth = `calc(100% - ${width}px - ${outlineWidth}px)`;
+      marginLeft = width;
+      marginRight = outlineWidth;
+    } else if (open) {
+      // Only left sidebar open
+      appBarWidth = `calc(100% - ${width}px)`;
+      marginLeft = width;
+    } else if (outlineOpen) {
+      // Only right outline open
+      appBarWidth = `calc(100% - ${outlineWidth}px)`;
+      marginRight = outlineWidth;
+    }
+
+    return {
+      zIndex: theme.zIndex.drawer + 1,
+      position: "static",
+      minHeight: 0,
+      width: appBarWidth,
+      marginLeft: `${marginLeft}px`,
+      marginRight: `${marginRight}px`,
+      transition: theme.transitions.create(
+        ["margin", "width"], {
+          easing: theme.transitions.easing.easeOut,
+          duration: theme.transitions.duration.enteringScreen,
+        }
+      ),
+      [theme.breakpoints.between('xs', 'sm')]: {
+        padding: '0 0px',
+        minHeight: "0px"
+      },
+      [theme.breakpoints.up('md')]: {
+        padding: '0 0px',
+        minHeight: "0px"
+      },
+    };
+  }
 );
-// ,[props.open])
-;
 
 const Offset = styled('div')(({ theme }) => theme.mixins.toolbar);
 
@@ -162,7 +163,12 @@ export function AppBar(props:AppBarProps) {
   }
   
   return (
-    <StyledAppBar open={props.open} width={props.width}>
+    <StyledAppBar 
+      open={props.open} 
+      width={props.width} 
+      outlineOpen={props.outlineOpen} 
+      outlineWidth={props.outlineWidth}
+    >
       <>
         <MyToolbar disableGutters={false}>
             {/* <Box sx={{display:"flex"}}> */}
@@ -276,6 +282,19 @@ export function AppBar(props:AppBarProps) {
             </MyBox>
 
             <MyBox sx={{ flexGrow: 0, display: "flex" }}>
+              {/* Document Outline Toggle Button */}
+              {props.onOutlineToggle && (
+                <MyTooltip title={props.outlineOpen ? "Hide Document Outline" : "Show Document Outline"}>
+                  <MyIconButton 
+                    color="inherit"
+                    onClick={props.onOutlineToggle}
+                    sx={{ mr: 1 }}
+                  >
+                    <TocIcon />
+                  </MyIconButton>
+                </MyTooltip>
+              )}
+              
               <MyTooltip title="Open settings">
                 <MyIconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                   <MyAvatar alt="AVATAR" src="/static/images/avatar/2.jpg" />

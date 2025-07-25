@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useEffect } from 'react';
 import { Params } from 'react-router-dom';
 
 import {
@@ -25,6 +25,7 @@ import {
 
 import { useDeploymentEntityStateJzodSchemaSelector, useDeploymentEntityStateQuerySelector } from '../ReduxHooks.js';
 import { ReportSectionView } from './ReportSectionView.js';
+import { useDocumentOutlineContext } from './RootComponent.js';
 
 import { getMemoizedDeploymentEntityStateJzodSchemaSelectorMap, getMemoizedDeploymentEntityStateSelectorMap } from 'miroir-localcache-redux';
 import { packageName, ReportUrlParamKeys } from '../../../constants.js';
@@ -54,6 +55,9 @@ let count = 0
  */
 export const ReportView = (props: ReportViewProps) => {
   count++;
+
+  // Get outline context and update data when query results change
+  const outlineContext = useDocumentOutlineContext();
 
   const paramsAsdomainElements: Domain2QueryReturnType<Record<string,any>> = props.pageParams;
   // const paramsAsdomainElements: Domain2QueryReturnType<Record<string,any>> = useMemo(
@@ -266,6 +270,13 @@ export const ReportView = (props: ReportViewProps) => {
   );
   log.info("ReportView props.reportSection", props.reportDefinition);
 
+  // Update outline data when query results change
+  useEffect(() => {
+    if (deploymentEntityStateQueryResults && deploymentEntityStateQueryResults.elementType !== "failure") {
+      outlineContext.setOutlineData(deploymentEntityStateQueryResults);
+    }
+  }, [deploymentEntityStateQueryResults, outlineContext]);
+
   if (props.applicationSection) {
     {
       /* <div>
@@ -301,6 +312,9 @@ export const ReportView = (props: ReportViewProps) => {
                     applicationSection={props.applicationSection}
                     deploymentUuid={props.deploymentUuid}
                     paramsAsdomainElements={paramsAsdomainElements}
+                    // Pass outline state down from context
+                    isOutlineOpen={outlineContext.isOutlineOpen}
+                    onToggleOutline={outlineContext.onToggleOutline}
                   />
                 </div>
               ) : (

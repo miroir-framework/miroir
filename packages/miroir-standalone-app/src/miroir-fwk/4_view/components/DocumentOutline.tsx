@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import {
   Drawer,
   List,
@@ -45,6 +45,9 @@ export interface DocumentOutlineProps {
   onNavigate?: (path: string[]) => void;
   title?: string;
   width?: number;
+  minWidth?: number;
+  maxWidth?: number;
+  onWidthChange?: (width: number) => void;
 }
 
 // Helper function to determine the type icon
@@ -231,9 +234,16 @@ export const DocumentOutline: React.FC<DocumentOutlineProps> = ({
   onNavigate,
   title = "Document Outline",
   width = 300,
+  minWidth = 200,
+  maxWidth = 600,
+  onWidthChange,
 }) => {
   const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set());
   const [selectedPath, setSelectedPath] = useState<string>('');
+  const [currentWidth, setCurrentWidth] = useState(width);
+  const [isResizing, setIsResizing] = useState(false);
+  const resizeRef = useRef<HTMLDivElement>(null);
+  const drawerRef = useRef<HTMLDivElement>(null);
 
   // Build tree structure from data
   const treeNodes = useMemo(() => {
@@ -303,6 +313,50 @@ export const DocumentOutline: React.FC<DocumentOutlineProps> = ({
     setExpandedNodes(new Set());
   }, []);
 
+  // Resize functionality
+  const handleMouseDown = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsResizing(true);
+  }, []);
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!isResizing) return;
+      
+      // Calculate new width based on mouse position from the right edge
+      const newWidth = window.innerWidth - e.clientX;
+      const clampedWidth = Math.max(minWidth, Math.min(maxWidth, newWidth));
+      
+      setCurrentWidth(clampedWidth);
+      if (onWidthChange) {
+        onWidthChange(clampedWidth);
+      }
+    };
+
+    const handleMouseUp = () => {
+      setIsResizing(false);
+    };
+
+    if (isResizing) {
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+      document.body.style.cursor = 'ew-resize';
+      document.body.style.userSelect = 'none';
+    }
+
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+    };
+  }, [isResizing, minWidth, maxWidth, onWidthChange]);
+
+  // Update currentWidth when width prop changes
+  useEffect(() => {
+    setCurrentWidth(width);
+  }, [width]);
+
   if (!isOpen) {
     return (
       <IconButton
@@ -326,20 +380,46 @@ export const DocumentOutline: React.FC<DocumentOutlineProps> = ({
 
   return (
     <Drawer
+      ref={drawerRef}
       variant="persistent"
       anchor="right"
       open={isOpen}
       sx={{
-        width,
+        width: currentWidth,
         flexShrink: 0,
         '& .MuiDrawer-paper': {
-          width,
+          width: currentWidth,
           boxSizing: 'border-box',
           borderLeft: '1px solid #e0e0e0',
+          position: 'fixed',
+          top: 0, // Start from the very top
+          height: '100vh', // Full viewport height
         },
       }}
     >
-      <Box sx={{ padding: 1 }}>
+      {/* Resize handle */}
+      <Box
+        ref={resizeRef}
+        onMouseDown={handleMouseDown}
+        sx={{
+          position: 'absolute',
+          left: 0,
+          top: 0,
+          bottom: 0,
+          width: '4px',
+          backgroundColor: 'transparent',
+          cursor: 'ew-resize',
+          zIndex: 1000,
+          '&:hover': {
+            backgroundColor: 'rgba(0, 0, 0, 0.1)',
+          },
+          '&:active': {
+            backgroundColor: 'rgba(0, 0, 0, 0.2)',
+          },
+        }}
+      />
+      
+      <Box sx={{ padding: 1, paddingTop: '8px' }}> {/* Minimal top padding */}
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
           <Typography variant="h6" sx={{ fontSize: '1rem', fontWeight: 600 }}>
             {title}

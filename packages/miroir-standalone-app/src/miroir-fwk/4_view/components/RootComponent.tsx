@@ -12,7 +12,7 @@ import {
 import { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import { styled } from '@mui/material/styles';
-import { useEffect, useMemo, useState } from 'react';
+import { createContext, useContext, useCallback, useEffect, useMemo, useState } from 'react';
 import { Outlet } from 'react-router-dom';
 
 import { v4 as uuidv4 } from 'uuid';
@@ -49,6 +49,7 @@ import { deployments, packageName } from '../../../constants.js';
 import { cleanLevel } from '../constants.js';
 import { Sidebar } from "./Sidebar.js";
 import { SidebarWidth } from "./SidebarSection.js";
+import { DocumentOutline } from './DocumentOutline.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -59,6 +60,26 @@ MiroirLoggerFactory.registerLoggerToStart(
 const MuiBox: any = Box;
 
 export const emptyDomainElementObject: Domain2QueryReturnType<Record<string,any>> = {}
+
+// Document Outline Context
+export interface DocumentOutlineContextType {
+  isOutlineOpen: boolean;
+  outlineWidth: number;
+  outlineData: any;
+  onToggleOutline: () => void;
+  onNavigateToPath: (path: string[]) => void;
+  setOutlineData: (data: any) => void;
+}
+
+const DocumentOutlineContext = createContext<DocumentOutlineContextType | null>(null);
+
+export const useDocumentOutlineContext = () => {
+  const context = useContext(DocumentOutlineContext);
+  if (!context) {
+    throw new Error('useDocumentOutlineContext must be used within a DocumentOutlineProvider');
+  }
+  return context;
+};
 
 export interface RootComponentProps {
   // store:any;
@@ -94,41 +115,21 @@ interface AppBarProps extends MuiAppBarProps {
 }
 
 const StyledMain =
-// React.useEffect(
 styled(
   Main, 
-  {shouldForwardProp: (prop) => prop !== "open" && prop !== "width"}
+  {shouldForwardProp: (prop) => prop !== "open" && prop !== "width" && prop !== "outlineOpen" && prop !== "outlineWidth"}
 )<{
   open?: boolean;
   width?: number;
+  outlineOpen?: boolean;
+  outlineWidth?: number;
 }>(
-  ({ theme, open, width = SidebarWidth }) => ({
-    // zIndex: theme.zIndex.drawer + 1,
-    // display: "flex",
-    // flexGrow: 1,
-    // position: "static",
-    // flexDirection:"row",
-    // justifyContent: "space-between"
-    // p: 2,
-    // height: "100px",
-    // transition: theme.transitions.create(
-    //   ["margin", "width"], 
-    //   {
-    //     easing: theme.transitions.easing.sharp,
-    //     duration: theme.transitions.duration.leavingScreen,
-    //   }
-    // ),
-    // ...(
-    //   !open && {
-    //     width: "100%",
-    //     // marginLeft: `-${SidebarWidth}px`,
-    //     // marginLeft: `240px`,
-    //   }
-    // ),
+  ({ theme, open, width = SidebarWidth, outlineOpen, outlineWidth = 300 }) => ({
     ...(
       open && {
-        width: `calc(100% - ${width}px)`,
+        width: `calc(100% - ${width}px - ${outlineOpen ? outlineWidth : 0}px)`,
         marginLeft: `${width}px`,
+        marginRight: outlineOpen ? `${outlineWidth}px` : 0,
         transition: theme.transitions.create(
           ["margin", "width"], {
             easing: theme.transitions.easing.easeOut,
@@ -136,11 +137,19 @@ styled(
           }
         ),
       }
-    )
+    ),
+    ...(!open && outlineOpen && {
+      width: `calc(100% - ${outlineWidth}px)`,
+      marginRight: `${outlineWidth}px`,
+      transition: theme.transitions.create(
+        ["margin", "width"], {
+          easing: theme.transitions.easing.easeOut,
+          duration: theme.transitions.duration.enteringScreen,
+        }
+      ),
+    }),
   })
 );
-// ,[props.open])
-;
 
 const boxParams = { display: 'flex', flexGrow: 1, flexDirection:"column" };
 
@@ -153,6 +162,11 @@ export const RootComponent = (props: RootComponentProps) => {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error" | "info">("info");
+  
+  // DocumentOutline state
+  const [isOutlineOpen, setIsOutlineOpen] = useState(false);
+  const [outlineWidth, setOutlineWidth] = useState(300);
+  const [outlineData, setOutlineData] = useState<any>(null);
   
   log.info(
     "##################################### rendering root component",
@@ -201,6 +215,175 @@ export const RootComponent = (props: RootComponentProps) => {
     setSidebarWidth(width);
   }, [setSidebarWidth]);
 
+  // DocumentOutline handlers
+  const handleToggleOutline = useCallback(() => {
+    setIsOutlineOpen(prev => !prev);
+  }, []);
+
+  const handleNavigateToPath = useCallback((path: string[]) => {
+    const rootLessListKey = path.join('.');
+    
+    console.log('Attempting to navigate to path:', path, 'rootLessListKey:', rootLessListKey);
+    
+    // Helper function to escape CSS selectors
+    const escapeCSS = (str: string) => {
+      return str.replace(/[!"#$%&'()*+,.\/:;<=>?@[\\\]^`{|}~\s]/g, '\\$&');
+    };
+    
+    // Try multiple strategies to find the element
+    let targetElement: HTMLElement | null = null;
+    
+    // Strategy 1: Direct ID match
+    targetElement = document.getElementById(rootLessListKey);
+    
+    // Strategy 2: Try with escaped CSS selector
+    if (!targetElement) {
+      try {
+        const escapedSelector = escapeCSS(rootLessListKey);
+        targetElement = document.querySelector(`#${escapedSelector}`) as HTMLElement;
+      } catch (e) {
+        console.warn('CSS selector failed:', e);
+      }
+    }
+    
+    // Strategy 3: Try with data-testid
+    if (!targetElement) {
+      try {
+        const escapedSelector = escapeCSS(rootLessListKey);
+        targetElement = document.querySelector(`[data-testid="miroirInput"][id="${rootLessListKey}"]`) as HTMLElement;
+      } catch (e) {
+        // Ignore selector errors
+      }
+    }
+    
+    // Strategy 4: Try partial matches (contains)
+    if (!targetElement) {
+      // Split the path and try to find elements that contain parts of the path
+      const pathParts = path.slice(-2); // Take last 2 parts for a more specific search
+      const partialKey = pathParts.join('.');
+      
+      const candidates = Array.from(document.querySelectorAll('[id]'));
+      for (const candidate of candidates) {
+        const id = (candidate as HTMLElement).id;
+        if (id && id.includes(partialKey)) {
+          targetElement = candidate as HTMLElement;
+          console.log('Found partial match:', id);
+          break;
+        }
+      }
+    }
+    
+    // Strategy 5: Try finding by the last part of the path
+    if (!targetElement) {
+      const lastPart = path[path.length - 1];
+      const candidates = Array.from(document.querySelectorAll('[id]'));
+      for (const candidate of candidates) {
+        const id = (candidate as HTMLElement).id;
+        if (id && id.endsWith(lastPart)) {
+          targetElement = candidate as HTMLElement;
+          console.log('Found by last part match:', id);
+          break;
+        }
+      }
+    }
+    
+    // Strategy 6: Fuzzy search through all IDs
+    if (!targetElement) {
+      console.log('Trying fuzzy search...');
+      const allElementsWithIds = document.querySelectorAll('[id]');
+      const ids = Array.from(allElementsWithIds).map(el => ({
+        element: el as HTMLElement,
+        id: el.id
+      })).filter(item => item.id);
+      
+      // Look for elements that contain most of the path parts
+      const pathWords = path.join(' ').toLowerCase().split(/\s+/);
+      let bestMatch: { element: HTMLElement; score: number } | null = null;
+      
+      for (const {element, id} of ids) {
+        const idWords = id.toLowerCase().replace(/[._-]/g, ' ').split(/\s+/);
+        let score = 0;
+        
+        for (const pathWord of pathWords) {
+          if (pathWord.length > 2) { // Only consider meaningful words
+            for (const idWord of idWords) {
+              if (idWord.includes(pathWord) || pathWord.includes(idWord)) {
+                score++;
+              }
+            }
+          }
+        }
+        
+        if (score > 0 && (!bestMatch || score > bestMatch.score)) {
+          bestMatch = { element, score };
+        }
+      }
+      
+      if (bestMatch && bestMatch.score >= 2) { // Require at least 2 word matches
+        targetElement = bestMatch.element;
+        console.log('Found fuzzy match:', bestMatch.element.id, 'score:', bestMatch.score);
+      }
+    }
+    
+    if (targetElement) {
+      console.log('Found target element:', targetElement.id);
+      
+      // Scroll the element into view with smooth behavior
+      targetElement.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+        inline: 'nearest'
+      });
+      
+      // Optional: Add a temporary highlight effect
+      const originalBackgroundColor = targetElement.style.backgroundColor;
+      const originalBorder = targetElement.style.border;
+      const originalBorderRadius = targetElement.style.borderRadius;
+      
+      targetElement.style.backgroundColor = '#fff3cd';
+      targetElement.style.border = '2px solid #ffc107';
+      targetElement.style.borderRadius = '4px';
+      targetElement.style.transition = 'all 0.3s ease';
+      
+      // Remove the highlight after 2 seconds
+      setTimeout(() => {
+        targetElement!.style.backgroundColor = originalBackgroundColor;
+        targetElement!.style.border = originalBorder;
+        targetElement!.style.borderRadius = originalBorderRadius;
+        targetElement!.style.transition = '';
+      }, 2000);
+    } else {
+      console.warn('Element not found for path:', path, 'rootLessListKey:', rootLessListKey);
+      
+      // List all elements with IDs to help with debugging
+      const allElementsWithIds = document.querySelectorAll('[id]');
+      const ids = Array.from(allElementsWithIds).map(el => el.id).filter(id => id);
+      console.log('Available element IDs (first 20):', ids.slice(0, 20));
+      console.log('Total elements with IDs:', ids.length);
+      
+      // Show IDs that might be related
+      const relatedIds = ids.filter(id => {
+        const pathStr = path.join('').toLowerCase();
+        const idStr = id.toLowerCase();
+        return pathStr.includes(idStr.slice(-10)) || idStr.includes(pathStr.slice(-10));
+      });
+      
+      if (relatedIds.length > 0) {
+        console.log('Potentially related IDs:', relatedIds);
+      }
+    }
+  }, []);
+
+  // Document outline context value
+  const outlineContextValue: DocumentOutlineContextType = useMemo(() => ({
+    isOutlineOpen,
+    outlineWidth,
+    outlineData,
+    onToggleOutline: handleToggleOutline,
+    onNavigateToPath: handleNavigateToPath,
+    setOutlineData,
+  }), [isOutlineOpen, outlineWidth, outlineData, handleToggleOutline, handleNavigateToPath]);
+
   const showSnackbar = useMemo(() => (message: string, severity: "success" | "error" | "info" = "info") => {
     setSnackbarMessage(message);
     setSnackbarSeverity(severity);
@@ -223,7 +406,8 @@ export const RootComponent = (props: RootComponentProps) => {
 
 
   return (
-    <div>
+    <DocumentOutlineContext.Provider value={outlineContextValue}>
+      <div>
       {/* <PersistentDrawerLeft></PersistentDrawerLeft> */}
       {/* <Box sx={{ display: 'flex', flexDirection:"column", flexGrow: 1 }}> */}
       {/* Root loaded {loaded} */}
@@ -237,6 +421,9 @@ export const RootComponent = (props: RootComponentProps) => {
               open={drawerIsOpen}
               width={sidebarWidth}
               onWidthChange={handleSidebarWidthChange}
+              outlineOpen={isOutlineOpen}
+              outlineWidth={outlineWidth}
+              onOutlineToggle={handleToggleOutline}
             >
               Bar!
             </AppBar>
@@ -253,7 +440,12 @@ export const RootComponent = (props: RootComponentProps) => {
               ></Sidebar>
             </Grid>
             <Grid item>
-              <StyledMain open={drawerIsOpen} width={sidebarWidth}>
+              <StyledMain 
+                open={drawerIsOpen} 
+                width={sidebarWidth}
+                outlineOpen={isOutlineOpen}
+                outlineWidth={outlineWidth}
+              >
                 <p />
                   <div>uuid: {uuidv4()}</div>
                   <div>transactions: {JSON.stringify(transactions)}</div>
@@ -643,6 +835,17 @@ export const RootComponent = (props: RootComponentProps) => {
         {/* <Box sx={{ display: 'flex', flexDirection:"row", width: 1 }}> */}
         {/* </Box> */}
       </MuiBox>
+
+      {/* Document Outline - Full height on right side */}
+      <DocumentOutline
+        isOpen={isOutlineOpen}
+        onToggle={handleToggleOutline}
+        data={outlineData}
+        onNavigate={handleNavigateToPath}
+        title="Document Structure"
+        width={outlineWidth}
+        onWidthChange={setOutlineWidth}
+      />
       
       <Snackbar 
         open={snackbarOpen} 
@@ -659,5 +862,6 @@ export const RootComponent = (props: RootComponentProps) => {
         </Alert>
       </Snackbar>
     </div>
+    </DocumentOutlineContext.Provider>
   );
 };

@@ -36,6 +36,9 @@ export interface ReportSectionViewProps {
   paramsAsdomainElements: Domain2QueryReturnType<Record<string,any>>,
   reportSection: ReportSection,
   rootReport: RootReport,
+  // Note: Outline props removed since using context now
+  isOutlineOpen?: boolean,
+  onToggleOutline?: () => void,
 }
 
 // ###############################################################################################################

@@ -51,8 +51,8 @@ import {
 } from "../ReduxHooks.js";
 import { JzodElementDisplay } from './JzodElementDisplay.js';
 import { JzodElementEditor } from './JzodElementEditor.js';
-import { JzodElementEditorWithOutline } from './JzodElementEditorWithOutline.js';
 import { ErrorFallbackComponent } from './ErrorFallbackComponent.js';
+import { useDocumentOutlineContext } from './RootComponent.js';
 import {
   measuredGetApplicationSection,
   measuredGetQueryRunnerParamsForDeploymentEntityState,
@@ -125,6 +125,7 @@ export interface ReportSectionEntityInstanceProps {
   applicationSection: ApplicationSection,
   deploymentUuid: Uuid,
   entityUuid: Uuid,
+  // Note: Outline props removed since using context now
 }
 
 const codeMirrorExtensions = [javascript()];
@@ -151,8 +152,12 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
 
   const [displayAsStructuredElement, setDisplayAsStructuredElement] = useState(true);
   const [displayEditor, setDisplayEditor] = useState(true);
-  const [isOutlineOpen, setIsOutlineOpen] = useState(false);
   const [foldedObjectAttributeOrArrayItems, setFoldedObjectAttributeOrArrayItems] = useState<{ [k: string]: boolean }>({});
+
+  // Use outline context for outline state management
+  const outlineContext = useDocumentOutlineContext();
+  const isOutlineOpen = outlineContext.isOutlineOpen;
+  const handleToggleOutline = outlineContext.onToggleOutline;
 
   // const [formState, setFormState] = useState<any>(props.instance);
   // const [codeMirrorValue, setCodeMirrorValue] = useState<string>(() =>
@@ -251,11 +256,6 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   const handleDisplayEditorSwitchChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     setDisplayEditor(event.target.checked);
   },[setDisplayEditor]);
-  
-  // ##############################################################################################
-  const handleToggleOutline = useCallback(() => {
-    setIsOutlineOpen(prev => !prev);
-  }, []);
   
   // ##############################################################################################
   const onEditFormObject = useCallback(
@@ -570,7 +570,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                                 />
                               )}
                             >
-                              <JzodElementEditorWithOutline
+                              <JzodElementEditor
                                 name={"ROOT"}
                                 listKey={"ROOT"}
                                 rootLessListKey=""
@@ -606,13 +606,6 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                                     submit form.{pageLabel}
                                   </button>
                                 }
-                                // Document Outline specific props
-                                data={instance}
-                                outlineTitle={`${currentReportTargetEntity?.name || 'Entity'} Structure`}
-                                showOutlineToggle={false} // Hide the internal toggle since we have it in the header
-                                // External control of outline
-                                externalOutlineOpen={isOutlineOpen}
-                                onExternalOutlineToggle={handleToggleOutline}
                               />
                             </ErrorBoundary>
                             {/* ) */}

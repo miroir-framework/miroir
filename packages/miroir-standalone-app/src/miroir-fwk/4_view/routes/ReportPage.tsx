@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useRef, useCallback, createContext, useContext } from 'react';
 import { Params, useParams } from 'react-router-dom';
+import { Box } from '@mui/material';
 
 import {
   adminConfigurationDeploymentAdmin,
@@ -25,13 +26,12 @@ import { ReportView } from '../components/ReportView.js';
 import { PerformanceDisplayContainer } from '../components/PerformanceDisplayContainer.js';
 import { cleanLevel } from '../constants.js';
 import { RenderPerformanceMetrics } from '../tools/renderPerformanceMeasure.js';
+import { useDocumentOutlineContext } from '../components/RootComponent.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ReportPage")
 ).then((logger: LoggerInterface) => {log = logger});
-
-
 
 const miroirExpression: JzodElement = {
   type: "object",
@@ -63,6 +63,9 @@ export const ReportPage = () => {
   
   // State to control performance display visibility (off by default)
   const [showPerformanceDisplay, setShowPerformanceDisplay] = useState(false);
+
+  // Get outline context from RootComponent
+  const outlineContext = useDocumentOutlineContext();
 
   ReportPageCount++;
   log.info("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& ReportPage rendering count", ReportPageCount, "params", pageParams);
@@ -218,50 +221,55 @@ export const ReportPage = () => {
     log.info("ReportPage rendering count", ReportPageCount, "params", pageParams);
     log.info("ReportPage current metrics:", RenderPerformanceMetrics.renderMetrics);
     return (
-      <div>
-        <span>ReportPage: {ReportPageCount}</span>
-        <div>
-          <h3>erreurs: {JSON.stringify(errorLog)}</h3>
-        </div>
-        <div style={{ marginBottom: '10px' }}>
-          <label style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <input
-              type="checkbox"
-              checked={showPerformanceDisplay}
-              onChange={(e) => setShowPerformanceDisplay(e.target.checked)}
-            />
-            Show Performance Metrics
-          </label>
-        </div>
-        {/* <div>ReportPage displayed:{count}</div>
-        <div>ReportPage reportUuid: {params.reportUuid} </div> */}
-        {
-          pageParams.deploymentUuid &&
-          pageParams.applicationSection &&
-          pageParams.reportUuid &&
-          pageParams.reportUuid != "undefined" ? (
-            <>
-              <div>
-                deploymentUuid={pageParams.deploymentUuid}, applicationSection={pageParams.applicationSection},
-                reportUuid={pageParams.reportUuid}, instanceUuid={pageParams.instanceUuid}
-              </div>
-              <ReportView
-                applicationSection={pageParams.applicationSection as ApplicationSection}
-                deploymentUuid={pageParams.deploymentUuid}
-                instanceUuid={pageParams.instanceUuid}
-                pageParams={pageParams}
-                reportDefinition={currentMiroirReport?.definition}
+      <Box sx={{ display: 'flex', flexDirection: 'column', padding: 2 }}>
+        {/* Page Header */}
+        <Box sx={{ flexShrink: 0, marginBottom: 2 }}>
+          <span>ReportPage: {ReportPageCount}</span>
+          <div>
+            <h3>erreurs: {JSON.stringify(errorLog)}</h3>
+          </div>
+          <div style={{ marginBottom: '10px' }}>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <input
+                type="checkbox"
+                checked={showPerformanceDisplay}
+                onChange={(e) => setShowPerformanceDisplay(e.target.checked)}
               />
-              {showPerformanceDisplay && <PerformanceDisplayContainer />}
-            </>
-          ) : (
-            <span style={{ color: "red" }}>
-              ReportDisplay: no report to display, deploymentUuid={pageParams.deploymentUuid}, applicationSection=
-              {pageParams.applicationSection}, reportUuid={pageParams.reportUuid}
-            </span>
-          )
-        }
-      </div>
+              Show Performance Metrics
+            </label>
+          </div>
+        </Box>
+        
+        {/* Main Report Content */}
+        <Box sx={{ flexGrow: 1 }}>
+          {
+            pageParams.deploymentUuid &&
+            pageParams.applicationSection &&
+            pageParams.reportUuid &&
+            pageParams.reportUuid != "undefined" ? (
+              <>
+                <div style={{ padding: '16px' }}>
+                  deploymentUuid={pageParams.deploymentUuid}, applicationSection={pageParams.applicationSection},
+                  reportUuid={pageParams.reportUuid}, instanceUuid={pageParams.instanceUuid}
+                </div>
+                <ReportView
+                  applicationSection={pageParams.applicationSection as ApplicationSection}
+                  deploymentUuid={pageParams.deploymentUuid}
+                  instanceUuid={pageParams.instanceUuid}
+                  pageParams={pageParams}
+                  reportDefinition={currentMiroirReport?.definition}
+                />
+                {showPerformanceDisplay && <PerformanceDisplayContainer />}
+              </>
+            ) : (
+              <span style={{ color: "red", padding: '16px' }}>
+                ReportDisplay: no report to display, deploymentUuid={pageParams.deploymentUuid}, applicationSection=
+                {pageParams.applicationSection}, reportUuid={pageParams.reportUuid}
+              </span>
+            )
+          }
+        </Box>
+      </Box>
     );
   } else {
     return <>ReportPage Invalid parameters! {JSON.stringify(pageParams)}</>;
