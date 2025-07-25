@@ -494,14 +494,19 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
               setFoldedObjectAttributeOrArrayItems={setHiddenFormItems}
               listKey={listKey}
             ></FoldUnfoldObjectOrArray>
-            {!hiddenFormItems[listKey] && itemsOrder.length >= 2 && foldableItemsCount > 1 ? (
+            {!hiddenFormItems[listKey]  ? 
+            (
               <>
-                <FoldUnfoldAllObjectAttributesOrArrayItems
-                  foldedObjectAttributeOrArrayItems={hiddenFormItems}
-                  setFoldedObjectAttributeOrArrayItems={setHiddenFormItems}
-                  listKey={listKey}
-                  itemsOrder={itemsOrder.map(i => i.toString())}
-                ></FoldUnfoldAllObjectAttributesOrArrayItems>
+              {
+                itemsOrder.length >= 2 && foldableItemsCount > 1?(
+                    <FoldUnfoldAllObjectAttributesOrArrayItems
+                      foldedObjectAttributeOrArrayItems={hiddenFormItems}
+                      setFoldedObjectAttributeOrArrayItems={setHiddenFormItems}
+                      listKey={listKey}
+                      itemsOrder={itemsOrder.map(i => i.toString())}
+                    ></FoldUnfoldAllObjectAttributesOrArrayItems>
+                ): <></>
+              }
                 <SizedButton
                   variant="text"
                   aria-label={rootLessListKey + ".add"}
@@ -515,19 +520,6 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
                   <SizedAddBox />
                 </SizedButton>
               </>
-            ) : !hiddenFormItems[listKey] ? (
-              <SizedButton
-                variant="text"
-                aria-label={rootLessListKey + ".add"}
-                onClick={addNewArrayItem}
-                title="Add new array item"
-                style={{ 
-                  flexShrink: 0,
-                  marginLeft: "1em",
-                }}
-              >
-                <SizedAddBox />
-              </SizedButton>
             ) : (
               <></>
             )}

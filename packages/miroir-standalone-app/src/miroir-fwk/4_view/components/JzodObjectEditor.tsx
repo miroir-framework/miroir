@@ -779,6 +779,26 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
             )}
           </span>
           <span>
+            {/* add record attribute button for records */}
+            {currentTypeCheckKeyMap?.rawSchema.type == "record" && !foldedObjectAttributeOrArrayItems[listKey] ? (
+              <SizedButton
+                id={rootLessListKey + ".addRecordAttribute"}
+                variant="text"
+                aria-label={rootLessListKey + ".addRecordAttribute"}
+                onClick={addExtraRecordEntry}
+                title="Add new record attribute"
+                style={{ 
+                  flexShrink: 0,
+                  marginLeft: "1em",
+                }}
+              >
+                <SizedAddBox />
+              </SizedButton>
+            ) : (
+              <></>
+            )}
+          </span>
+          <span>
             {/* add optional attributes buttons */}
             {currentTypeCheckKeyMap?.rawSchema.type != "record" &&
             undefinedOptionalAttributes.length > 0 &&
@@ -841,7 +861,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
             {/* {jzodSchemaTooltip ?? <></>} */}
           </span>
         </span>
-        <div
+        <span
           id={listKey + ".inner"}
           style={{
             marginLeft: `calc(${indentShift})`,
@@ -849,22 +869,8 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
           }}
           key={`${rootLessListKey}|body`}
         >
-          {currentTypeCheckKeyMap?.rawSchema.type == "record" || currentTypeCheckKeyMap?.rawSchema.type == "any" ? (
-            <span>
-              <SizedButton
-                id={rootLessListKey + ".addRecordAttribute"}
-                variant="text"
-                aria-label={rootLessListKey + ".addRecordAttribute"}
-                onClick={addExtraRecordEntry}
-              >
-                <SizedAddBox />
-              </SizedButton>
-            </span>
-          ) : (
-            <></>
-          )}
           <div>{attributeElements}</div>
-        </div>
+        </span>
       </div>
     </div>
   );
