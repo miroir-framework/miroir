@@ -309,7 +309,7 @@ export const DocumentOutline: React.FC<DocumentOutlineProps> = ({
         onClick={onToggle}
         sx={{
           position: 'fixed',
-          left: 8,
+          right: 8,
           top: 100,
           zIndex: 1200,
           backgroundColor: 'white',
@@ -327,7 +327,7 @@ export const DocumentOutline: React.FC<DocumentOutlineProps> = ({
   return (
     <Drawer
       variant="persistent"
-      anchor="left"
+      anchor="right"
       open={isOpen}
       sx={{
         width,
@@ -335,7 +335,7 @@ export const DocumentOutline: React.FC<DocumentOutlineProps> = ({
         '& .MuiDrawer-paper': {
           width,
           boxSizing: 'border-box',
-          borderRight: '1px solid #e0e0e0',
+          borderLeft: '1px solid #e0e0e0',
         },
       }}
     >

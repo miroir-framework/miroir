@@ -39,7 +39,8 @@ import {
 } from "../MiroirContextReactProvider.js";
 
 import { javascript } from '@codemirror/lang-javascript';
-import { Switch } from '@mui/material';
+import { Switch, IconButton, Tooltip } from '@mui/material';
+import { Toc } from '@mui/icons-material';
 import { ErrorBoundary } from "react-error-boundary";
 import { packageName } from '../../../constants.js';
 import { JzodEnumSchemaToJzodElementResolver, getCurrentEnumJzodSchemaResolver } from '../../JzodTools.js';
@@ -150,6 +151,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
 
   const [displayAsStructuredElement, setDisplayAsStructuredElement] = useState(true);
   const [displayEditor, setDisplayEditor] = useState(true);
+  const [isOutlineOpen, setIsOutlineOpen] = useState(false);
   const [foldedObjectAttributeOrArrayItems, setFoldedObjectAttributeOrArrayItems] = useState<{ [k: string]: boolean }>({});
 
   // const [formState, setFormState] = useState<any>(props.instance);
@@ -251,6 +253,11 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   },[setDisplayEditor]);
   
   // ##############################################################################################
+  const handleToggleOutline = useCallback(() => {
+    setIsOutlineOpen(prev => !prev);
+  }, []);
+  
+  // ##############################################################################################
   const onEditFormObject = useCallback(
     async (data: any) => {
       // const newEntity:EntityInstance = Object.assign({...data as EntityInstance},{attributes:dialogFormObject?dialogFormObject['attributes']:[]});
@@ -262,7 +269,6 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
             {
               actionType: "transactionalInstanceAction",
               instanceAction: {
-                // actionType: "instanceAction",
                 actionType: "updateInstance",
                 deploymentUuid: props.deploymentUuid,
                 endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
@@ -279,12 +285,10 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                 }
               },
             },
-            // props.tableComponentReportType == "EntityInstance" ? currentModel : undefined
             currentModel
           );
         } else {
           const updateAction: InstanceAction = {
-            // actionType: "instanceAction",
             actionType: "updateInstance",
             deploymentUuid: props.deploymentUuid,
             endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
@@ -346,9 +350,29 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
               {/* {typeError ? "true" : "false"}{" "} */}
             </span>
           </div>
-          <h1>
-            {currentReportTargetEntity?.name} details: {instance.name}{" "}
-          </h1>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+            <h1 style={{ margin: 0 }}>
+              {currentReportTargetEntity?.name} details: {instance.name}{" "}
+            </h1>
+            {displayEditor && (
+              <Tooltip title={isOutlineOpen ? "Hide Document Outline" : "Show Document Outline"}>
+                <IconButton
+                  size="small"
+                  onClick={handleToggleOutline}
+                  sx={{
+                    marginLeft: 2,
+                    backgroundColor: 'white',
+                    boxShadow: 1,
+                    '&:hover': {
+                      backgroundColor: 'grey.100',
+                    },
+                  }}
+                >
+                  <Toc />
+                </IconButton>
+              </Tooltip>
+            )}
+          </div>
           {currentReportTargetEntity &&
           currentEnumJzodSchemaResolver &&
           currentReportTargetEntityDefinition &&
@@ -431,12 +455,8 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                       if (!resolvedJzodSchema || resolvedJzodSchema.status != "ok") {
                         log.error(
                           "ReportSectionEntityInstance could not resolve jzod schema",
-                          // props,
-                          // context,
                           resolvedJzodSchema
                         );
-                        // return <>ReportSectionEntityInstance: could not resolve jzod schema: {JSON.stringify(resolvedJzodSchema)}</>;
-                        // typeError = <>ReportSectionEntityInstance: could not resolve jzod schema: {JSON.stringify(resolvedJzodSchema, null, 2)}</>;
                         // Calculate the maximum line width for fixed sizing
                         const jsonString = JSON.stringify(resolvedJzodSchema, null, 2);
                         const lines = jsonString.split("\n");
@@ -476,53 +496,6 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                         );
                       }
 
-                    // const dynamicLocalRootLessListKeyMap = useMemo(() => {
-                    //   try {
-                    //     const result =
-                    //       context.miroirFundamentalJzodSchema != undefined &&
-                    //       currentReportTargetEntityDefinition?.jzodSchema &&
-                    //       resolvedJzodSchema &&
-                    //       resolvedJzodSchema.status == "ok" &&
-                    //       formik.values &&
-                    //       currentModel
-                    //         ? measuredRootLessListKeyMap(
-                    //             "",
-                    //             currentReportTargetEntityDefinition?.jzodSchema,
-                    //             resolvedJzodSchema.resolvedSchema,
-                    //             currentModel,
-                    //             currentMiroirModel,
-                    //             context.miroirFundamentalJzodSchema,
-                    //             formik.values
-                    //           )
-                    //         : undefined;
-                    //     log.info(
-                    //       "ReportSectionEntityInstance dynamicLocalRootLessListKeyMap result",
-                    //       result,
-                    //       "for currentReportTargetEntityDefinition",
-                    //       currentReportTargetEntityDefinition?.name,
-                    //       "formik.values",
-                    //       formik.values
-                    //     );
-                    //     return result;
-                    //   } catch (e) {
-                    //     log.warn(
-                    //       "ReportSectionEntityInstance dynamicLocalRootLessListKeyMap error",
-                    //       ReportSectionEntityInstanceCount,
-                    //       e
-                    //       // "props",
-                    //       // props,
-                    //       // "context",
-                    //       // context
-                    //     );
-                    //     return undefined;
-                    //   }
-                    // }, [
-                    //   currentReportTargetEntityDefinition?.jzodSchema,
-                    //   currentModel,
-                    //   currentMiroirModel,
-                    //   context.miroirFundamentalJzodSchema,
-                    //   formik.values,
-                    // ]);
                     const foreignKeyObjectsFetchQueryParams: SyncQueryRunnerParams<DeploymentEntityState> = useMemo(
                       () =>
                         measuredGetQueryRunnerParamsForDeploymentEntityState(
@@ -636,7 +609,10 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                                 // Document Outline specific props
                                 data={instance}
                                 outlineTitle={`${currentReportTargetEntity?.name || 'Entity'} Structure`}
-                                showOutlineToggle={true}
+                                showOutlineToggle={false} // Hide the internal toggle since we have it in the header
+                                // External control of outline
+                                externalOutlineOpen={isOutlineOpen}
+                                onExternalOutlineToggle={handleToggleOutline}
                               />
                             </ErrorBoundary>
                             {/* ) */}

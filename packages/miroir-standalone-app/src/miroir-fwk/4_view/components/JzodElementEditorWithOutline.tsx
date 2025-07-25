@@ -10,6 +10,9 @@ export interface JzodElementEditorWithOutlineProps extends JzodElementEditorProp
   outlineTitle?: string;
   data?: any; // The data to show in the outline
   customHeaderElements?: JSX.Element; // Additional elements to show in the header
+  // External control props
+  externalOutlineOpen?: boolean;
+  onExternalOutlineToggle?: () => void;
 }
 
 export const JzodElementEditorWithOutline: React.FC<JzodElementEditorWithOutlineProps> = ({
@@ -17,13 +20,15 @@ export const JzodElementEditorWithOutline: React.FC<JzodElementEditorWithOutline
   outlineTitle = "Document Structure",
   data,
   customHeaderElements,
+  externalOutlineOpen,
+  onExternalOutlineToggle,
   ...editorProps
 }) => {
-  const [isOutlineOpen, setIsOutlineOpen] = useState(false);
-
-  const handleToggleOutline = useCallback(() => {
-    setIsOutlineOpen(prev => !prev);
-  }, []);
+  const [internalOutlineOpen, setInternalOutlineOpen] = useState(false);
+  
+  // Use external control if provided, otherwise use internal state
+  const isOutlineOpen = externalOutlineOpen !== undefined ? externalOutlineOpen : internalOutlineOpen;
+  const handleToggleOutline = onExternalOutlineToggle || (() => setInternalOutlineOpen(prev => !prev));
 
   const handleNavigateToPath = useCallback((path: string[]) => {
     // Convert the path array to a rootLessListKey
@@ -88,22 +93,11 @@ export const JzodElementEditorWithOutline: React.FC<JzodElementEditorWithOutline
 
   return (
     <Box sx={{ display: 'flex', position: 'relative', width: '100%' }}>
-      {/* Document Outline Sidebar */}
-      {data && (
-        <DocumentOutline
-          isOpen={isOutlineOpen}
-          onToggle={handleToggleOutline}
-          data={data}
-          onNavigate={handleNavigateToPath}
-          title={outlineTitle}
-        />
-      )}
-      
       {/* Main Editor Content */}
       <Box sx={{ 
         flexGrow: 1, 
-        marginLeft: isOutlineOpen ? 0 : 0, 
-        transition: 'margin-left 0.3s',
+        marginRight: isOutlineOpen ? 0 : 0, 
+        transition: 'margin-right 0.3s',
         width: '100%'
       }}>
         {/* Use JzodElementEditorWithEnhancedHeader that includes outline button in the header */}
@@ -114,6 +108,17 @@ export const JzodElementEditorWithOutline: React.FC<JzodElementEditorWithOutline
           showOutlineToggle={showOutlineToggle && editorProps.rootLessListKey === "" && !!data}
         />
       </Box>
+      
+      {/* Document Outline Sidebar - moved to the right */}
+      {data && (
+        <DocumentOutline
+          isOpen={isOutlineOpen}
+          onToggle={handleToggleOutline}
+          data={data}
+          onNavigate={handleNavigateToPath}
+          title={outlineTitle}
+        />
+      )}
     </Box>
   );
 };
