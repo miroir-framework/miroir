@@ -22,7 +22,7 @@ import {
   useMiroirContextService
 } from "../MiroirContextReactProvider";
 import { useCurrentModel } from "../ReduxHooks";
-import { FoldUnfoldObjectOrArray, JzodElementEditor } from "./JzodElementEditor";
+import { FoldUnfoldObjectOrArray, FoldUnfoldAllObjectAttributesOrArrayItems, JzodElementEditor } from "./JzodElementEditor";
 import { JzodArrayEditorProps } from "./JzodElementEditorInterface";
 import { ErrorFallbackComponent } from "./ErrorFallbackComponent";
 import { SizedAddBox, SizedButton } from "./Style";
@@ -528,20 +528,30 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
               setFoldedObjectAttributeOrArrayItems={setHiddenFormItems}
               listKey={listKey}
             ></FoldUnfoldObjectOrArray>
-          </span>
-          <span>
-            <SizedButton
-              variant="text"
-              aria-label={rootLessListKey + ".add"}
-              onClick={addNewArrayItem}
-              title="Add new array item"
-              style={{ 
-                flexShrink: 0,
-                marginLeft: "1em",
-              }}
-            >
-              <SizedAddBox />
-            </SizedButton>
+            {!hiddenFormItems[listKey] ? (
+              <>
+                <FoldUnfoldAllObjectAttributesOrArrayItems
+                  foldedObjectAttributeOrArrayItems={hiddenFormItems}
+                  setFoldedObjectAttributeOrArrayItems={setHiddenFormItems}
+                  listKey={listKey}
+                  itemsOrder={itemsOrder.map(i => i.toString())}
+                ></FoldUnfoldAllObjectAttributesOrArrayItems>
+                <SizedButton
+                  variant="text"
+                  aria-label={rootLessListKey + ".add"}
+                  onClick={addNewArrayItem}
+                  title="Add new array item"
+                  style={{ 
+                    flexShrink: 0,
+                    marginLeft: "1em",
+                  }}
+                >
+                  <SizedAddBox />
+                </SizedButton>
+              </>
+            ) : (
+              <></>
+            )}
           </span>
           <span
             style={{
