@@ -3,7 +3,7 @@ import { createTheme, StyledEngineProvider } from "@mui/material";
 import { blue } from "@mui/material/colors";
 import { render, screen, waitFor, act, fireEvent } from "@testing-library/react";
 import { Formik, FormikProps } from "formik";
-import { Profiler, useCallback, useMemo } from "react";
+import { Profiler, useCallback, useMemo, useState } from "react";
 import { Provider } from "react-redux";
 import { expect, ExpectStatic, vi } from "vitest";
 
@@ -390,6 +390,8 @@ export const getJzodElementEditorForTest: (pageLabel: string) => React.FC<JzodEl
     JzodElementEditorForTestRenderCount++;
     const context = useMiroirContextService();
 
+    const [foldedObjectAttributeOrArrayItems, setFoldedObjectAttributeOrArrayItems] = useState<{ [k: string]: boolean }>({});
+    
     context.setDeploymentUuid
 
     const currentModel: MetaModel = useCurrentModel(selfApplicationDeploymentLibrary.uuid);
@@ -527,7 +529,9 @@ export const getJzodElementEditorForTest: (pageLabel: string) => React.FC<JzodEl
                         labelElement={labelElement}
                         currentDeploymentUuid={context.deploymentUuid}
                         currentApplicationSection={"data"}
-                        rawJzodSchema={effectiveRawJzodSchema}
+                        // rawJzodSchema={effectiveRawJzodSchema}
+                        foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
+                        setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
                         resolvedElementJzodSchema={resolvedJzodSchema.resolvedSchema}
                         typeCheckKeyMap={resolvedJzodSchema.keyMap}
                         // localRootLessListKeyMap={localRootLessListKeyMap}

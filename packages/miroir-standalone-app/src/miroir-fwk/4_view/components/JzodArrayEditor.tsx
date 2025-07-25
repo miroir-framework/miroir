@@ -22,7 +22,7 @@ import {
   useMiroirContextService
 } from "../MiroirContextReactProvider";
 import { useCurrentModel } from "../ReduxHooks";
-import { FoldUnfoldObjectAttributesOrArrayItems, JzodElementEditor } from "./JzodElementEditor";
+import { FoldUnfoldObjectOrArray, JzodElementEditor } from "./JzodElementEditor";
 import { JzodArrayEditorProps } from "./JzodElementEditorInterface";
 import { ErrorFallbackComponent } from "./ErrorFallbackComponent";
 import { SizedAddBox, SizedButton } from "./Style";
@@ -523,11 +523,11 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
             </span>
           </span>
           <span id={rootLessListKey + "head"} key={rootLessListKey + "head"}>
-            <FoldUnfoldObjectAttributesOrArrayItems
+            <FoldUnfoldObjectOrArray
               foldedObjectAttributeOrArrayItems={hiddenFormItems}
               setFoldedObjectAttributeOrArrayItems={setHiddenFormItems}
               listKey={listKey}
-            ></FoldUnfoldObjectAttributesOrArrayItems>
+            ></FoldUnfoldObjectOrArray>
           </span>
           <span>
             <SizedButton

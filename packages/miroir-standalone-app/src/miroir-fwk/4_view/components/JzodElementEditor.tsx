@@ -85,7 +85,7 @@ export interface EditorAttribute {
 }
 
 // ################################################################################################
-export const FoldUnfoldObjectAttributesOrArrayItems = (props: {
+export const FoldUnfoldObjectOrArray = (props: {
   foldedObjectAttributeOrArrayItems: { [k: string]: boolean };
   setFoldedObjectAttributeOrArrayItems: React.Dispatch<
     React.SetStateAction<{
@@ -121,7 +121,7 @@ export const FoldUnfoldObjectAttributesOrArrayItems = (props: {
     </LineIconButton>
   );
 };
-FoldUnfoldObjectAttributesOrArrayItems.displayName = "FoldUnfoldObjectAttributesOrArrayItems";
+FoldUnfoldObjectOrArray.displayName = "FoldUnfoldObjectOrArray";
 
 // ################################################################################################
 export const FoldUnfoldAllObjectAttributesOrArrayItems = (props: {

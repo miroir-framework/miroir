@@ -22,7 +22,7 @@ import {
 } from "miroir-core";
 
 import { indentShift } from "./JzodArrayEditor";
-import { FoldUnfoldObjectAttributesOrArrayItems, FoldUnfoldAllObjectAttributesOrArrayItems, JzodElementEditor } from "./JzodElementEditor";
+import { FoldUnfoldObjectOrArray, FoldUnfoldAllObjectAttributesOrArrayItems, JzodElementEditor } from "./JzodElementEditor";
 import { useJzodElementEditorHooks } from "./JzodElementEditorHooks";
 import { JzodObjectEditorProps } from "./JzodElementEditorInterface";
 import { SizedButton, SizedAddBox, SmallIconButton, getItemsOrder } from "./Style";
@@ -766,21 +766,27 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
             </span>
           </span>
           <span id={rootLessListKey + "head"} key={rootLessListKey + "head"}>
-            <FoldUnfoldObjectAttributesOrArrayItems
+            <FoldUnfoldObjectOrArray
               foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
               setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
               listKey={listKey}
-            ></FoldUnfoldObjectAttributesOrArrayItems>
-            <FoldUnfoldAllObjectAttributesOrArrayItems
-              foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
-              setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
-              listKey={listKey}
-              itemsOrder={itemsOrder}
-            ></FoldUnfoldAllObjectAttributesOrArrayItems>
+            ></FoldUnfoldObjectOrArray>
+            {!foldedObjectAttributeOrArrayItems[listKey] ? (
+              <FoldUnfoldAllObjectAttributesOrArrayItems
+                foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
+                setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
+                listKey={listKey}
+                itemsOrder={itemsOrder}
+              ></FoldUnfoldAllObjectAttributesOrArrayItems>
+            ) : (
+              <></>
+            )}
           </span>
           <span>
             {/* add optional attributes buttons */}
-            {currentKeyMap?.rawSchema.type != "record" && undefinedOptionalAttributes.length > 0 ? (
+            {currentKeyMap?.rawSchema.type != "record" &&
+            undefinedOptionalAttributes.length > 0 &&
+            !foldedObjectAttributeOrArrayItems[listKey] ? (
               <span
                 style={{
                   display: "flex",
@@ -801,9 +807,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
                   >
                     <SizedButton
                       variant="text"
-                      aria-label={
-                        rootLessListKey + ".addObjectOptionalAttribute." + attributeName
-                      }
+                      aria-label={rootLessListKey + ".addObjectOptionalAttribute." + attributeName}
                       onClick={() => addObjectOptionalAttribute(attributeName)}
                       title={`Add optional attribute: ${attributeName}`}
                       style={{ flexShrink: 0 }}
