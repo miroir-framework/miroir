@@ -3,6 +3,8 @@ import { ErrorBoundary, withErrorBoundary } from "react-error-boundary";
 
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
+import UnfoldLess from "@mui/icons-material/UnfoldLess";
+import UnfoldMore from "@mui/icons-material/UnfoldMore";
 import { Card, CardContent, MenuItem, Switch } from "@mui/material";
 import TextField from '@mui/material/TextField';
 
@@ -83,7 +85,7 @@ export interface EditorAttribute {
 }
 
 // ################################################################################################
-export const ExpandOrFoldObjectAttributes = (props: {
+export const FoldUnfoldObjectAttributesOrArrayItems = (props: {
   foldedObjectAttributeOrArrayItems: { [k: string]: boolean };
   setFoldedObjectAttributeOrArrayItems: React.Dispatch<
     React.SetStateAction<{
@@ -119,7 +121,63 @@ export const ExpandOrFoldObjectAttributes = (props: {
     </LineIconButton>
   );
 };
-ExpandOrFoldObjectAttributes.displayName = "ExpandOrFoldObjectAttributes";
+FoldUnfoldObjectAttributesOrArrayItems.displayName = "FoldUnfoldObjectAttributesOrArrayItems";
+
+// ################################################################################################
+export const FoldUnfoldAllObjectAttributesOrArrayItems = (props: {
+  foldedObjectAttributeOrArrayItems: { [k: string]: boolean };
+  setFoldedObjectAttributeOrArrayItems: React.Dispatch<
+    React.SetStateAction<{
+      [k: string]: boolean;
+    }>
+  >;
+  listKey: string;
+  itemsOrder: Array<string>;
+}): JSX.Element => {
+  const handleClick = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    
+    // Generate list keys for all child attributes
+    const childKeys = props.itemsOrder.map(attributeName => `${props.listKey}.${attributeName}`);
+    
+    // Check if any child is currently unfolded (visible)
+    const hasUnfoldedChildren = childKeys.some(key => !props.foldedObjectAttributeOrArrayItems[key]);
+    
+    // If any child is unfolded, fold all; otherwise unfold all
+    const shouldFoldAll = hasUnfoldedChildren;
+    
+    props.setFoldedObjectAttributeOrArrayItems((prev) => {
+      const newState = { ...prev };
+      childKeys.forEach(key => {
+        newState[key] = shouldFoldAll;
+      });
+      return newState;
+    });
+  }, [props.listKey, props.itemsOrder, props.foldedObjectAttributeOrArrayItems, props.setFoldedObjectAttributeOrArrayItems]);
+
+  // Check if all children are folded
+  const childKeys = props.itemsOrder.map(attributeName => `${props.listKey}.${attributeName}`);
+  const allChildrenFolded = childKeys.length > 0 && childKeys.every(key => props.foldedObjectAttributeOrArrayItems[key]);
+
+  return (
+    <LineIconButton
+      style={{
+        border: 0,
+        backgroundColor: "transparent",
+      }}
+      onClick={handleClick}
+      title={allChildrenFolded ? "Unfold all attributes" : "Fold all attributes"}
+    >
+      {allChildrenFolded ? (
+        <UnfoldMore sx={{ color: "darkblue" }} />
+      ) : (
+        <UnfoldLess sx={{ color: "darkorange" }} />
+      )}
+    </LineIconButton>
+  );
+};
+FoldUnfoldAllObjectAttributesOrArrayItems.displayName = "FoldUnfoldAllObjectAttributesOrArrayItems";
 
 // #####################################################################################################
 // #####################################################################################################

@@ -22,7 +22,7 @@ import {
 } from "miroir-core";
 
 import { indentShift } from "./JzodArrayEditor";
-import { ExpandOrFoldObjectAttributes, JzodElementEditor } from "./JzodElementEditor";
+import { FoldUnfoldObjectAttributesOrArrayItems, FoldUnfoldAllObjectAttributesOrArrayItems, JzodElementEditor } from "./JzodElementEditor";
 import { useJzodElementEditorHooks } from "./JzodElementEditorHooks";
 import { JzodObjectEditorProps } from "./JzodElementEditorInterface";
 import { SizedButton, SizedAddBox, SmallIconButton, getItemsOrder } from "./Style";
@@ -766,11 +766,17 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
             </span>
           </span>
           <span id={rootLessListKey + "head"} key={rootLessListKey + "head"}>
-            <ExpandOrFoldObjectAttributes
+            <FoldUnfoldObjectAttributesOrArrayItems
               foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
               setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
               listKey={listKey}
-            ></ExpandOrFoldObjectAttributes>
+            ></FoldUnfoldObjectAttributesOrArrayItems>
+            <FoldUnfoldAllObjectAttributesOrArrayItems
+              foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
+              setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
+              listKey={listKey}
+              itemsOrder={itemsOrder}
+            ></FoldUnfoldAllObjectAttributesOrArrayItems>
           </span>
           <span>
             {/* add optional attributes buttons */}
