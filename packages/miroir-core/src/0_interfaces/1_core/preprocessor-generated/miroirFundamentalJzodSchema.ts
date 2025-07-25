@@ -83,6 +83,16 @@ export const miroirFundamentalJzodSchema = {
                 "canBeTemplate": {
                   "type": "boolean",
                   "optional": true
+                },
+                "display": {
+                  "type": "object",
+                  "optional": true,
+                  "definition": {
+                    "displayedAttributeValueWhenFolded": {
+                      "type": "string",
+                      "optional": true
+                    }
+                  }
                 }
               }
             }
@@ -145,6 +155,16 @@ export const miroirFundamentalJzodSchema = {
                   "canBeTemplate": {
                     "type": "boolean",
                     "optional": true
+                  },
+                  "display": {
+                    "type": "object",
+                    "optional": true,
+                    "definition": {
+                      "displayedAttributeValueWhenFolded": {
+                        "type": "string",
+                        "optional": true
+                      }
+                    }
                   }
                 }
               }
@@ -9186,6 +9206,13 @@ export const miroirFundamentalJzodSchema = {
       },
       "objectInstanceReportSection": {
         "type": "object",
+        "tag": {
+          "value": {
+            "display": {
+              "displayedAttributeValueWhenFolded": "definition.label"
+            }
+          }
+        },
         "definition": {
           "type": {
             "type": "literal",
@@ -9264,6 +9291,13 @@ export const miroirFundamentalJzodSchema = {
       },
       "objectListReportSection": {
         "type": "object",
+        "tag": {
+          "value": {
+            "display": {
+              "displayedAttributeValueWhenFolded": "definition.label"
+            }
+          }
+        },
         "definition": {
           "type": {
             "type": "literal",
@@ -9804,6 +9838,13 @@ export const miroirFundamentalJzodSchema = {
             "context": {
               "objectInstanceReportSection": {
                 "type": "object",
+                "tag": {
+                  "value": {
+                    "display": {
+                      "displayedAttributeValueWhenFolded": "definition.label"
+                    }
+                  }
+                },
                 "definition": {
                   "type": {
                     "type": "literal",
@@ -9882,6 +9923,13 @@ export const miroirFundamentalJzodSchema = {
               },
               "objectListReportSection": {
                 "type": "object",
+                "tag": {
+                  "value": {
+                    "display": {
+                      "displayedAttributeValueWhenFolded": "definition.label"
+                    }
+                  }
+                },
                 "definition": {
                   "type": {
                     "type": "literal",
@@ -17486,6 +17534,39 @@ export const miroirFundamentalJzodSchema = {
                       }
                     }
                   ]
+                },
+                "display": {
+                  "optional": true,
+                  "type": "union",
+                  "definition": [
+                    {
+                      "type": "schemaReference",
+                      "definition": {
+                        "relativePath": "transformerForBuildCarryOnObject"
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "definition": {
+                        "displayedAttributeValueWhenFolded": {
+                          "type": "union",
+                          "optional": true,
+                          "definition": [
+                            {
+                              "type": "string",
+                              "optional": true
+                            },
+                            {
+                              "type": "schemaReference",
+                              "definition": {
+                                "relativePath": "transformerForBuildCarryOnObject"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  ]
                 }
               }
             }
@@ -17695,6 +17776,39 @@ export const miroirFundamentalJzodSchema = {
                                 "type": "schemaReference",
                                 "definition": {
                                   "relativePath": "transformerForBuildCarryOnObject"
+                                }
+                              }
+                            ]
+                          },
+                          "display": {
+                            "optional": true,
+                            "type": "union",
+                            "definition": [
+                              {
+                                "type": "schemaReference",
+                                "definition": {
+                                  "relativePath": "transformerForBuildCarryOnObject"
+                                }
+                              },
+                              {
+                                "type": "object",
+                                "definition": {
+                                  "displayedAttributeValueWhenFolded": {
+                                    "type": "union",
+                                    "optional": true,
+                                    "definition": [
+                                      {
+                                        "type": "string",
+                                        "optional": true
+                                      },
+                                      {
+                                        "type": "schemaReference",
+                                        "definition": {
+                                          "relativePath": "transformerForBuildCarryOnObject"
+                                        }
+                                      }
+                                    ]
+                                  }
                                 }
                               }
                             ]
@@ -30856,6 +30970,13 @@ export const miroirFundamentalJzodSchema = {
                     "context": {
                       "objectInstanceReportSection": {
                         "type": "object",
+                        "tag": {
+                          "value": {
+                            "display": {
+                              "displayedAttributeValueWhenFolded": "definition.label"
+                            }
+                          }
+                        },
                         "definition": {
                           "type": {
                             "type": "literal",
@@ -30937,6 +31058,13 @@ export const miroirFundamentalJzodSchema = {
                       },
                       "objectListReportSection": {
                         "type": "object",
+                        "tag": {
+                          "value": {
+                            "display": {
+                              "displayedAttributeValueWhenFolded": "definition.label"
+                            }
+                          }
+                        },
                         "definition": {
                           "type": {
                             "type": "literal",
@@ -38500,6 +38628,39 @@ export const miroirFundamentalJzodSchema = {
                       }
                     }
                   ]
+                },
+                "display": {
+                  "optional": true,
+                  "type": "union",
+                  "definition": [
+                    {
+                      "type": "schemaReference",
+                      "definition": {
+                        "relativePath": "transformerForBuildCarryOnObject"
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "definition": {
+                        "displayedAttributeValueWhenFolded": {
+                          "type": "union",
+                          "optional": true,
+                          "definition": [
+                            {
+                              "type": "string",
+                              "optional": true
+                            },
+                            {
+                              "type": "schemaReference",
+                              "definition": {
+                                "relativePath": "transformerForBuildCarryOnObject"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  ]
                 }
               }
             }
@@ -38694,6 +38855,39 @@ export const miroirFundamentalJzodSchema = {
                           "type": "schemaReference",
                           "definition": {
                             "relativePath": "transformerForBuildCarryOnObject"
+                          }
+                        }
+                      ]
+                    },
+                    "display": {
+                      "optional": true,
+                      "type": "union",
+                      "definition": [
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "relativePath": "transformerForBuildCarryOnObject"
+                          }
+                        },
+                        {
+                          "type": "object",
+                          "definition": {
+                            "displayedAttributeValueWhenFolded": {
+                              "type": "union",
+                              "optional": true,
+                              "definition": [
+                                {
+                                  "type": "string",
+                                  "optional": true
+                                },
+                                {
+                                  "type": "schemaReference",
+                                  "definition": {
+                                    "relativePath": "transformerForBuildCarryOnObject"
+                                  }
+                                }
+                              ]
+                            }
                           }
                         }
                       ]
@@ -38906,6 +39100,39 @@ export const miroirFundamentalJzodSchema = {
                                     "type": "schemaReference",
                                     "definition": {
                                       "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  }
+                                ]
+                              },
+                              "display": {
+                                "optional": true,
+                                "type": "union",
+                                "definition": [
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  },
+                                  {
+                                    "type": "object",
+                                    "definition": {
+                                      "displayedAttributeValueWhenFolded": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "definition": [
+                                          {
+                                            "type": "string",
+                                            "optional": true
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      }
                                     }
                                   }
                                 ]
@@ -43804,6 +44031,13 @@ export const miroirFundamentalJzodSchema = {
         ]
       },
       "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectListReportSection": {
+        "tag": {
+          "value": {
+            "display": {
+              "displayedAttributeValueWhenFolded": "definition.label"
+            }
+          }
+        },
         "type": "union",
         "definition": [
           {
@@ -43814,6 +44048,13 @@ export const miroirFundamentalJzodSchema = {
           },
           {
             "type": "object",
+            "tag": {
+              "value": {
+                "display": {
+                  "displayedAttributeValueWhenFolded": "definition.label"
+                }
+              }
+            },
             "definition": {
               "type": {
                 "type": "union",
@@ -44007,6 +44248,13 @@ export const miroirFundamentalJzodSchema = {
         ]
       },
       "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectInstanceReportSection": {
+        "tag": {
+          "value": {
+            "display": {
+              "displayedAttributeValueWhenFolded": "definition.label"
+            }
+          }
+        },
         "type": "union",
         "definition": [
           {
@@ -44017,6 +44265,13 @@ export const miroirFundamentalJzodSchema = {
           },
           {
             "type": "object",
+            "tag": {
+              "value": {
+                "display": {
+                  "displayedAttributeValueWhenFolded": "definition.label"
+                }
+              }
+            },
             "definition": {
               "type": {
                 "type": "union",
@@ -45656,6 +45911,16 @@ export const miroirFundamentalJzodSchema = {
                 "canBeTemplate": {
                   "type": "boolean",
                   "optional": true
+                },
+                "display": {
+                  "type": "object",
+                  "optional": true,
+                  "definition": {
+                    "displayedAttributeValueWhenFolded": {
+                      "type": "string",
+                      "optional": true
+                    }
+                  }
                 }
               }
             }
@@ -45718,6 +45983,16 @@ export const miroirFundamentalJzodSchema = {
                   "canBeTemplate": {
                     "type": "boolean",
                     "optional": true
+                  },
+                  "display": {
+                    "type": "object",
+                    "optional": true,
+                    "definition": {
+                      "displayedAttributeValueWhenFolded": {
+                        "type": "string",
+                        "optional": true
+                      }
+                    }
                   }
                 }
               }
@@ -50182,6 +50457,13 @@ export const miroirFundamentalJzodSchema = {
             "context": {
               "objectInstanceReportSection": {
                 "type": "object",
+                "tag": {
+                  "value": {
+                    "display": {
+                      "displayedAttributeValueWhenFolded": "definition.label"
+                    }
+                  }
+                },
                 "definition": {
                   "type": {
                     "type": "literal",
@@ -50260,6 +50542,13 @@ export const miroirFundamentalJzodSchema = {
               },
               "objectListReportSection": {
                 "type": "object",
+                "tag": {
+                  "value": {
+                    "display": {
+                      "displayedAttributeValueWhenFolded": "definition.label"
+                    }
+                  }
+                },
                 "definition": {
                   "type": {
                     "type": "literal",
@@ -52465,6 +52754,16 @@ export const miroirFundamentalJzodSchema = {
                 "canBeTemplate": {
                   "type": "boolean",
                   "optional": true
+                },
+                "display": {
+                  "type": "object",
+                  "optional": true,
+                  "definition": {
+                    "displayedAttributeValueWhenFolded": {
+                      "type": "string",
+                      "optional": true
+                    }
+                  }
                 }
               }
             }
@@ -52527,6 +52826,16 @@ export const miroirFundamentalJzodSchema = {
                   "canBeTemplate": {
                     "type": "boolean",
                     "optional": true
+                  },
+                  "display": {
+                    "type": "object",
+                    "optional": true,
+                    "definition": {
+                      "displayedAttributeValueWhenFolded": {
+                        "type": "string",
+                        "optional": true
+                      }
+                    }
                   }
                 }
               }
@@ -56954,6 +57263,13 @@ export const miroirFundamentalJzodSchema = {
             "context": {
               "objectInstanceReportSection": {
                 "type": "object",
+                "tag": {
+                  "value": {
+                    "display": {
+                      "displayedAttributeValueWhenFolded": "definition.label"
+                    }
+                  }
+                },
                 "definition": {
                   "type": {
                     "type": "literal",
@@ -57032,6 +57348,13 @@ export const miroirFundamentalJzodSchema = {
               },
               "objectListReportSection": {
                 "type": "object",
+                "tag": {
+                  "value": {
+                    "display": {
+                      "displayedAttributeValueWhenFolded": "definition.label"
+                    }
+                  }
+                },
                 "definition": {
                   "type": {
                     "type": "literal",
@@ -59234,6 +59557,16 @@ export const miroirFundamentalJzodSchema = {
                 "canBeTemplate": {
                   "type": "boolean",
                   "optional": true
+                },
+                "display": {
+                  "type": "object",
+                  "optional": true,
+                  "definition": {
+                    "displayedAttributeValueWhenFolded": {
+                      "type": "string",
+                      "optional": true
+                    }
+                  }
                 }
               }
             }
@@ -59296,6 +59629,16 @@ export const miroirFundamentalJzodSchema = {
                   "canBeTemplate": {
                     "type": "boolean",
                     "optional": true
+                  },
+                  "display": {
+                    "type": "object",
+                    "optional": true,
+                    "definition": {
+                      "displayedAttributeValueWhenFolded": {
+                        "type": "string",
+                        "optional": true
+                      }
+                    }
                   }
                 }
               }
@@ -63760,6 +64103,13 @@ export const miroirFundamentalJzodSchema = {
             "context": {
               "objectInstanceReportSection": {
                 "type": "object",
+                "tag": {
+                  "value": {
+                    "display": {
+                      "displayedAttributeValueWhenFolded": "definition.label"
+                    }
+                  }
+                },
                 "definition": {
                   "type": {
                     "type": "literal",
@@ -63838,6 +64188,13 @@ export const miroirFundamentalJzodSchema = {
               },
               "objectListReportSection": {
                 "type": "object",
+                "tag": {
+                  "value": {
+                    "display": {
+                      "displayedAttributeValueWhenFolded": "definition.label"
+                    }
+                  }
+                },
                 "definition": {
                   "type": {
                     "type": "literal",

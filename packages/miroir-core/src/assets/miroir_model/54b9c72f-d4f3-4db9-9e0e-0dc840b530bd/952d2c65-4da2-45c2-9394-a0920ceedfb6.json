@@ -128,6 +128,13 @@
         "context": {
           "objectInstanceReportSection": {
             "type": "object",
+            "tag": {
+              "value": {
+                "display": {
+                  "displayedAttributeValueWhenFolded": "definition.label"
+                }
+              }
+            },
             "definition": {
               "type": {
                 "type": "literal",
@@ -206,6 +213,13 @@
           },
           "objectListReportSection": {
             "type": "object",
+            "tag": {
+              "value": {
+                "display": {
+                  "displayedAttributeValueWhenFolded": "definition.label"
+                }
+              }
+            },
             "definition": {
               "type": {
                 "type": "literal",

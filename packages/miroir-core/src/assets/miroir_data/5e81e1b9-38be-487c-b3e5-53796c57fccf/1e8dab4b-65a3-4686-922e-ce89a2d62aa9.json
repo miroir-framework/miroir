@@ -79,6 +79,16 @@
                 "canBeTemplate": {
                   "type": "boolean",
                   "optional": true
+                },
+                "display": {
+                  "type": "object",
+                  "optional": true,
+                  "definition": {
+                    "displayedAttributeValueWhenFolded": {
+                      "type": "string",
+                      "optional": true
+                    }
+                  }
                 }
               }
             }
@@ -137,6 +147,16 @@
                   "canBeTemplate": {
                     "type": "boolean",
                     "optional": true
+                  },
+                  "display": {
+                    "type": "object",
+                    "optional": true,
+                    "definition": {
+                      "displayedAttributeValueWhenFolded": {
+                        "type": "string",
+                        "optional": true
+                      }
+                    }
                   }
                 }
               }
