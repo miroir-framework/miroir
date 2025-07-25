@@ -32,8 +32,15 @@ import { useCurrentModel } from '../ReduxHooks.js';
 import { cleanLevel } from '../constants.js';
 import { ToolsCellRenderer } from './GenderCellRenderer.js';
 import { JsonObjectDeleteFormDialog } from './JsonObjectDeleteFormDialog.js';
-import { JsonObjectEditFormDialog, JsonObjectEditFormDialogInputs } from './JsonObjectEditFormDialog.js';
-import { TableComponentProps, TableComponentRow, TableComponentTypeSchema } from './MTableComponentInterface.js';
+import {
+  JsonObjectEditFormDialog,
+  JsonObjectEditFormDialogInputs,
+} from "./JsonObjectEditFormDialog.js";
+import {
+  TableComponentProps,
+  TableComponentRow,
+  TableComponentTypeSchema,
+} from "./MTableComponentInterface.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -239,6 +246,28 @@ export const MTableComponent = (props: TableComponentProps) => {
     }
     setDeleteDialogFormIsOpen(true);
   },[props.instancesToDisplay]);
+
+  // ##############################################################################################
+  const handleDuplicateDialogFormOpen = useCallback((a?:TableComponentRow,event?:any) => {
+    event?.stopPropagation();
+    log.info('handleDuplicateDialogFormOpen called with props',props);
+    log.info('handleDuplicateDialogFormOpen called dialogFormObject',dialogFormObject, "event value", a);
+    
+    if (a) {
+      // Create a duplicate with a new random UUID
+      const duplicatedObject = {
+        ...a.rawValue,
+        uuid: crypto.randomUUID()
+      };
+      setdialogFormObject(duplicatedObject);
+      setdialogOuterFormObject(duplicatedObject);
+      log.info('handleDuplicateDialogFormOpen parameter is defined, created duplicate with new UUID',duplicatedObject);
+    } else {
+      setdialogFormObject(undefined);
+      log.info('handleDuplicateDialogFormOpen parameter is undefined, no value is passed to form. dialogFormObject',dialogFormObject);
+    }
+    setEditDialogFormIsOpen(true);
+  },[props.instancesToDisplay]);
   
   // ##############################################################################################
   const defaultColDef:ColDef | ColGroupDef = useMemo(()=>({
@@ -255,13 +284,14 @@ export const MTableComponent = (props: TableComponentProps) => {
       field: '',
       cellRenderer: ToolsCellRenderer,
       editable:false,
-      width: 140,
+      width: 180,
       cellRendererParams: {
         onClickEdit:handleEditDialogFormOpen,
+        onClickDuplicate:handleDuplicateDialogFormOpen,
         onClickDelete:handleDeleteDialogFormOpen
       },
     }
-  ].concat(props.columnDefs.columnDefs),[props.columnDefs]);
+  ].concat(props.columnDefs.columnDefs),[props.columnDefs, handleEditDialogFormOpen, handleDuplicateDialogFormOpen, handleDeleteDialogFormOpen]);
   
   // log.info(
   //   "MTableComponent started count",

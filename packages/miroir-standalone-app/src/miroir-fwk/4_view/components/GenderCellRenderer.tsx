@@ -37,6 +37,14 @@ export const ToolsCellRenderer: React.MemoExoticComponent<(props: ICellRendererP
         </button>
         <button
           onClick={() => {
+            console.log("ToolsCellRenderer calling onClickDuplicate!");
+            (props as any)["onClickDuplicate"](props.data);
+          }}
+        >
+          <Icon>content_copy</Icon>
+        </button>
+        <button
+          onClick={() => {
             console.log("ToolsCellRenderer calling onClickDelete!");
             (props as any)["onClickDelete"](props.data);
           }}

@@ -2,18 +2,22 @@ import _ from "lodash";
 
 import { Dialog, DialogTitle, Paper } from "@mui/material";
 import { styled } from "@mui/material/styles"; // For MUI v5
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 
 import { Formik, FormikProps } from "formik";
+import { ErrorBoundary } from "react-error-boundary";
 
 import {
   ApplicationSection,
+  DomainControllerInterface,
   EntityAttribute,
   EntityInstancesUuidIndex,
+  InstanceAction,
   JzodObject,
   LoggerInterface,
   MetaModel,
   MiroirLoggerFactory,
+  ResolvedJzodSchemaReturnType,
   Uuid,
   jzodTypeCheck
 } from "miroir-core";
@@ -24,7 +28,12 @@ import {
   useMiroirContextInnerFormOutput,
   useMiroirContextService
 } from "../MiroirContextReactProvider.js";
+import { useDomainControllerService } from "../MiroirContextReactProvider.js";
 import { JzodElementEditor } from "./JzodElementEditor.js";
+import { ErrorFallbackComponent } from "./ErrorFallbackComponent.js";
+import {
+  measuredJzodTypeCheck,
+} from "../tools/hookPerformanceMeasure.js";
 
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -197,12 +206,16 @@ interface JsonElementEditorDialogProps {
   entityDefinitionJzodSchema: JzodObject;
   resolvedJzodSchema: any;
   foreignKeyObjects: Record<string, EntityInstancesUuidIndex>;
+  currentAppModel: MetaModel;
+  currentMiroirModel: MetaModel;
+  miroirFundamentalJzodSchema: any;
   // dialog
   setdialogOuterFormObject: (obj: any) => void;
   handleAddObjectDialogFormSubmit: (data: any, source?: string) => Promise<any>;
   handleAddObjectDialogFormClose: (value: string) => void;
   formIsOpen: boolean;
   onCreateFormObject?: (a: any) => void;
+  onEditFormObject: (data: any) => Promise<void>;
   // 
   onSubmit: (data: JsonObjectEditFormDialogInputs) => void;
 }
@@ -219,14 +232,21 @@ const JsonElementEditorDialog: React.FC<JsonElementEditorDialogProps> = ({
   entityDefinitionJzodSchema,
   resolvedJzodSchema,
   foreignKeyObjects,
+  currentAppModel,
+  currentMiroirModel,
+  miroirFundamentalJzodSchema,
   setdialogOuterFormObject,
   handleAddObjectDialogFormSubmit,
   handleAddObjectDialogFormClose,
   onCreateFormObject,
+  onEditFormObject,
   formIsOpen,
   // 
   onSubmit,
 }) => {
+  // Add state for folded object attributes/array items
+  const [foldedObjectAttributeOrArrayItems, setFoldedObjectAttributeOrArrayItems] = useState<{ [k: string]: boolean }>({});
+
   const onCodeEditorChange = useCallback((values: any, viewUpdate: any) => {
     log.info('edit code received value:', values);
     setdialogOuterFormObject(JSON.parse(values));
@@ -242,13 +262,18 @@ const JsonElementEditorDialog: React.FC<JsonElementEditorDialogProps> = ({
       initialValues={formState}
       onSubmit={async (values, { setSubmitting, setErrors }) => {
         try {
+          log.info("onSubmit formik values", values);
+          
+          // Call the actual domain controller action (equivalent to ReportSectionEntityInstance)
+          await onEditFormObject(values);
+          
+          // Also handle the legacy form submission logic if needed
           if (onCreateFormObject) {
             log.info("onSubmit formik onCreateFormObject", values);
             await onCreateFormObject(values);
             await onSubmit(values);
           } else {
             log.info("onSubmit formik handleAddObjectDialogFormSubmit", values);
-            // setformHelperState(values);
             await handleAddObjectDialogFormSubmit(values, "param");
           }
         } catch (e) {
@@ -261,38 +286,106 @@ const JsonElementEditorDialog: React.FC<JsonElementEditorDialogProps> = ({
       //   log.info("onChange formik DOES NOTHING", e);
       // }}
     >
-      {(formik: FormikProps<any>) => (
-        <Dialog onClose={handleAddObjectDialogFormClose} open={formIsOpen} fullScreen>
-          <DialogTitle>{label} add / edit Element</DialogTitle>
-          <span>
-            form: {"form." + label}, JsonObjectEditFormDialog count {count}
-          </span>
-          <form
-            id={"form." + label}
-            onSubmit={formik.handleSubmit}
-          >
-            <span style={{paddingTop: 0, paddingBottom: 0}}>
-              <JzodElementEditor
-                name={"ROOT"}
-                listKey={"ROOT"}
-                rootLessListKey=""
-                rootLessListKeyArray={[]}
-                labelElement={labelElement}
-                currentDeploymentUuid={currentDeploymentUuid}
-                currentApplicationSection={currentApplicationSection}
-                rawJzodSchema={entityDefinitionJzodSchema}
-                localRootLessListKeyMap={{}}
-                resolvedElementJzodSchema={resolvedJzodSchema?.status == "ok" ? resolvedJzodSchema.resolvedSchema : undefined}
-                foreignKeyObjects={foreignKeyObjects}
-                indentLevel={0}
-              />
-              <button type="submit" name={label} form={"form." + label}>
-                submit form.{label}
-              </button>
+      {(formik: FormikProps<any>) => {
+        // Resolve the jzod schema inside Formik using formik.values
+        const resolvedJzodSchemaForFormik: ResolvedJzodSchemaReturnType | undefined = useMemo(() => {
+          let result: ResolvedJzodSchemaReturnType | undefined = undefined;
+          try {
+            result =
+              miroirFundamentalJzodSchema &&
+              entityDefinitionJzodSchema &&
+              formik.values &&
+              currentAppModel
+                ? measuredJzodTypeCheck(
+                    entityDefinitionJzodSchema,
+                    formik.values,
+                    [], // currentValuePath
+                    [], // currentTypePath
+                    miroirFundamentalJzodSchema,
+                    currentAppModel,
+                    currentMiroirModel,
+                    {}
+                  )
+                : undefined;
+          } catch (e) {
+            log.error(
+              "JsonElementEditorDialog useMemo error",
+              e
+            );
+            result = {
+              status: "error",
+              valuePath: [],
+              typePath: [],
+              error: JSON.stringify(e, Object.getOwnPropertyNames(e)),
+            };
+          }
+          return result;
+        }, [formik.values, entityDefinitionJzodSchema, miroirFundamentalJzodSchema, currentAppModel, currentMiroirModel]);
+
+        return (
+          <Dialog onClose={handleAddObjectDialogFormClose} open={formIsOpen} fullScreen>
+            <DialogTitle>{label} add / edit Element</DialogTitle>
+            <span>
+              form: {"form." + label}, JsonObjectEditFormDialog count {count}
             </span>
-          </form>
-        </Dialog>
-      )}
+            <form
+              id={"form." + label}
+              onSubmit={formik.handleSubmit}
+            >
+              <span style={{paddingTop: 0, paddingBottom: 0}}>
+                <ErrorBoundary
+                  FallbackComponent={({ error, resetErrorBoundary }) => (
+                    <ErrorFallbackComponent
+                      error={error}
+                      resetErrorBoundary={resetErrorBoundary}
+                      context={{
+                        origin: "JsonObjectEditFormDialog",
+                        objectType: "root_editor",
+                        rootLessListKey: "ROOT",
+                        currentValue: formState,
+                        formikValues: formik.values,
+                        rawJzodSchema: entityDefinitionJzodSchema,
+                        localResolvedElementJzodSchemaBasedOnValue:
+                          resolvedJzodSchemaForFormik?.status == "ok"
+                            ? (resolvedJzodSchemaForFormik as any).resolvedSchema
+                            : undefined,
+                      }}
+                    />
+                  )}
+                >
+                  <JzodElementEditor
+                    name={"ROOT"}
+                    listKey={"ROOT"}
+                    rootLessListKey=""
+                    rootLessListKeyArray={[]}
+                    labelElement={labelElement}
+                    currentDeploymentUuid={currentDeploymentUuid}
+                    currentApplicationSection={currentApplicationSection}
+                    // rawJzodSchema={entityDefinitionJzodSchema}
+                    // localRootLessListKeyMap={{}}
+                    resolvedElementJzodSchema={resolvedJzodSchemaForFormik?.status == "ok" ? (resolvedJzodSchemaForFormik as any).resolvedSchema : undefined}
+                    hasTypeError={resolvedJzodSchemaForFormik?.status !== "ok"}
+                    typeCheckKeyMap={
+                      resolvedJzodSchemaForFormik?.status == "ok"
+                        ? (resolvedJzodSchemaForFormik as any).keyMap
+                        : {}
+                    }
+                    foreignKeyObjects={foreignKeyObjects}
+                    foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
+                    setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
+                    indentLevel={0}
+                    submitButton={
+                      <button type="submit" name={label} form={"form." + label}>
+                        submit form.{label}
+                      </button>
+                    }
+                  />
+                </ErrorBoundary>
+              </span>
+            </form>
+          </Dialog>
+        );
+      }}
     </Formik>
   );
 };
@@ -331,55 +424,109 @@ export function JsonObjectEditFormDialog(props: JsonObjectEditFormDialogProps) {
     entityDefinitionJzodSchema
   );
   const context = useMiroirContextService();
+  const domainController: DomainControllerInterface = useDomainControllerService();
 
   const [dialogOuterFormObject, setdialogOuterFormObject] = useMiroirContextInnerFormOutput();
   // const [formHelperState, setformHelperState] = useMiroirContextformHelperState();
 
   const formIsOpen = addObjectdialogFormIsOpen || (!showButton && props.isOpen);
 
+  // We'll pass a simple validation that the dialog is ready, actual resolution happens in Formik
   const resolvedJzodSchema = useMemo(
-    () => context.miroirFundamentalJzodSchema &&
-    entityDefinitionJzodSchema &&
-    defaultFormValuesObject &&
-    dialogOuterFormObject &&
-    currentAppModel ?
-    jzodTypeCheck(
-      entityDefinitionJzodSchema,
-      dialogOuterFormObject,
-      [],
-      [],
-      context.miroirFundamentalJzodSchema,
-      currentAppModel,
-      currentMiroirModel,
-      {}
-    ): undefined,
-    [props, dialogOuterFormObject, context.miroirFundamentalJzodSchema]
-  )
-  if (!resolvedJzodSchema || resolvedJzodSchema.status == "error") {
+    () => {
+      if (context.miroirFundamentalJzodSchema &&
+        entityDefinitionJzodSchema &&
+        defaultFormValuesObject &&
+        dialogOuterFormObject &&
+        currentAppModel) {
+        return { status: "ok", keyMap: {} }; // Simplified - actual resolution in Formik
+      }
+      return undefined;
+    },
+    [context.miroirFundamentalJzodSchema, entityDefinitionJzodSchema, defaultFormValuesObject, dialogOuterFormObject, currentAppModel]
+  );
+
+  if (!resolvedJzodSchema) {
     log.error(
-      "JsonObjectEditFormDialog jzodTypeCheck failed for valueObject",
-      defaultFormValuesObject,
-      "jzodSchema",
-      entityDefinitionJzodSchema,
-      " resolvedJzodSchema",
-      resolvedJzodSchema
+      "JsonObjectEditFormDialog prerequisites not met",
+      "defaultFormValuesObject", defaultFormValuesObject,
+      "entityDefinitionJzodSchema", entityDefinitionJzodSchema,
+      "dialogOuterFormObject", dialogOuterFormObject
     );
-    throw new Error(
-      "JsonObjectEditFormDialog jzodTypeCheck failed for valueObject: " +
-        JSON.stringify(defaultFormValuesObject, null, 2) +
-        " jzodSchema: " +
-        JSON.stringify(entityDefinitionJzodSchema, null, 2) +
-        " resolvedJzodSchema: " +
-        JSON.stringify(resolvedJzodSchema, null, 2)
+    return (
+      <div>
+        Prerequisites not met for JsonObjectEditFormDialog:
+        <ul>
+          <li>miroirFundamentalJzodSchema: {context.miroirFundamentalJzodSchema ? "✓" : "✗"}</li>
+          <li>entityDefinitionJzodSchema: {entityDefinitionJzodSchema ? "✓" : "✗"}</li>
+          <li>defaultFormValuesObject: {defaultFormValuesObject ? "✓" : "✗"}</li>
+          <li>dialogOuterFormObject: {dialogOuterFormObject ? "✓" : "✗"}</li>
+          <li>currentAppModel: {currentAppModel ? "✓" : "✗"}</li>
+        </ul>
+      </div>
     );
   }
-  log.info(
-    "called jzodTypeCheck for valueObject",
-    defaultFormValuesObject,
-    "jzodSchema",
-    entityDefinitionJzodSchema,
-    " resolvedJzodSchema",
-    resolvedJzodSchema
+
+  // ##############################################################################################
+  // Equivalent to onEditFormObject from ReportSectionEntityInstance
+  const onEditFormObject = useCallback(
+    async (data: any) => {
+      log.info("JsonObjectEditFormDialog onEditFormObject called with new object value", data);
+
+      if (currentDeploymentUuid) {
+        if (currentApplicationSection == "model") {
+          await domainController.handleAction(
+            {
+              actionType: "transactionalInstanceAction",
+              instanceAction: {
+                actionType: "updateInstance",
+                deploymentUuid: currentDeploymentUuid,
+                endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                payload: {
+                  applicationSection: "model",
+                  objects: [
+                    {
+                      parentName: data.name,
+                      parentUuid: data.parentUuid,
+                      applicationSection: currentApplicationSection,
+                      instances: [data],
+                    },
+                  ],
+                }
+              },
+            },
+            currentAppModel
+          );
+        } else {
+          const updateAction: InstanceAction = {
+            actionType: "updateInstance",
+            deploymentUuid: currentDeploymentUuid,
+            endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+            payload: {
+              applicationSection: currentApplicationSection
+                ? currentApplicationSection
+                : "data",
+              objects: [
+                {
+                  parentName: data.name,
+                  parentUuid: data.parentUuid,
+                  applicationSection: currentApplicationSection
+                    ? currentApplicationSection
+                    : "data",
+                  instances: [data],
+                },
+              ],
+            }
+          };
+          await domainController.handleAction(updateAction);
+        }
+      } else {
+        throw new Error(
+          "JsonObjectEditFormDialog onEditFormObject currentDeploymentUuid is undefined."
+        );
+      }
+    },
+    [domainController, currentDeploymentUuid, currentApplicationSection, currentAppModel]
   );
 
   const handleAddObjectDialogFormClose = useCallback((value: string) => {
@@ -402,7 +549,7 @@ export function JsonObjectEditFormDialog(props: JsonObjectEditFormDialogProps) {
         dialogOuterFormObject,
       );
 
-      const effectiveData = source == "param" && data?data:dialogOuterFormObject;
+      const effectiveData = source == "param" && data ? data : dialogOuterFormObject;
       log.info("handleAddObjectDialogFormSubmit called with dialogOuterFormObject", dialogOuterFormObject);
 
       let result: any;
@@ -418,11 +565,23 @@ export function JsonObjectEditFormDialog(props: JsonObjectEditFormDialogProps) {
         props,
         "passed value",
       );
-      result = onSubmit(newVersion);
-      handleAddObjectDialogFormClose("");
+      
+      try {
+        // Call the actual domain controller action to save the data
+        await onEditFormObject(newVersion);
+        
+        // Also call the original onSubmit callback for any additional handling
+        result = onSubmit(newVersion);
+        
+        handleAddObjectDialogFormClose("");
+      } catch (error) {
+        log.error("Error in handleAddObjectDialogFormSubmit:", error);
+        throw error;
+      }
+      
       return result;
     },
-    [props,JSON.stringify(dialogOuterFormObject, null, 2)]
+    [onEditFormObject, onSubmit, dialogOuterFormObject, handleAddObjectDialogFormClose]
   );
 
   return (
@@ -446,12 +605,16 @@ export function JsonObjectEditFormDialog(props: JsonObjectEditFormDialogProps) {
           handleAddObjectDialogFormClose={handleAddObjectDialogFormClose}
           formIsOpen={formIsOpen}
           onCreateFormObject={onCreateFormObject}
+          onEditFormObject={onEditFormObject}
           onSubmit={onSubmit}
           currentDeploymentUuid={currentDeploymentUuid}
           currentApplicationSection={currentApplicationSection}
           entityDefinitionJzodSchema={entityDefinitionJzodSchema}
           resolvedJzodSchema={resolvedJzodSchema}
           foreignKeyObjects={foreignKeyObjects}
+          currentAppModel={currentAppModel}
+          currentMiroirModel={currentMiroirModel}
+          miroirFundamentalJzodSchema={context.miroirFundamentalJzodSchema}
           count={count}
         />
       ) : (
