@@ -172,7 +172,10 @@ const TreeNodeComponent = React.memo<{
 
   const indentLevel = node.level * 16;
 
-  const typeIcon = useMemo(() => getTypeIcon(node.type, hasChildren, isExpanded), [node.type, hasChildren, isExpanded]);
+  const typeIcon = useMemo(
+    () => getTypeIcon(node.type, hasChildren, isExpanded),
+    [node.type, hasChildren, isExpanded]
+  );
   const typeColor = useMemo(() => getTypeColor(node.type), [node.type]);
 
   return (
@@ -237,6 +240,12 @@ const TreeNodeComponent = React.memo<{
   );
 });
 
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
 // Main Document Outline component - optimized with React.memo
 export const DocumentOutline = React.memo<DocumentOutlineProps>(({
   isOpen,

@@ -196,6 +196,13 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
 
   const pageLabel: string = props.applicationSection + "." + currentReportTargetEntity?.name;
 
+  // Update the outline title when the current entity changes
+  useEffect(() => {
+    if (currentReportTargetEntity?.name) {
+      outlineContext.setOutlineTitle(currentReportTargetEntity.name + " details");
+    }
+  }, [currentReportTargetEntity?.name, outlineContext.setOutlineTitle]);
+
   const labelElement = useMemo(() => {
     return pageLabel ? <span id={"label." + pageLabel}>{pageLabel}</span> : undefined;
   }, [pageLabel]);

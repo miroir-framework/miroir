@@ -60,16 +60,6 @@ export const ReportView = (props: ReportViewProps) => {
   const outlineContext = useDocumentOutlineContext();
 
   const paramsAsdomainElements: Domain2QueryReturnType<Record<string,any>> = props.pageParams;
-  // const paramsAsdomainElements: Domain2QueryReturnType<Record<string,any>> = useMemo(
-  //   () => ({
-  //     elementType: "object",
-  //     elementValue: Object.fromEntries(
-  //       Object.entries(props.pageParams).map((e) => [e[0], { elementType: "string", elementValue: e[1] ?? "" }])
-  //     ),
-  //   }),
-  //   [props.pageParams]
-  // );
-  // log.info("########################## ReportView rendering", count, "props", JSON.stringify(props, null, 2));
   log.info("########################## ReportView rendering", count, "props", props);
 
   // log.info(
@@ -87,6 +77,7 @@ export const ReportView = (props: ReportViewProps) => {
     []
   );
 
+  // fetching report definition
   const deploymentEntityStateFetchQueryTemplate: BoxedQueryTemplateWithExtractorCombinerTransformer = useMemo(
     () =>
       props.reportDefinition.extractorTemplates &&
@@ -130,30 +121,32 @@ export const ReportView = (props: ReportViewProps) => {
   log.info("resolvedQuery", resolvedTemplateQuery);
   log.info("################################################################ resolved query Template DONE");
 
+  // fetching report data
   const usedQuery: BoxedQueryWithExtractorCombinerTransformer = useMemo(
     () =>
-    props.pageParams.deploymentUuid && props.pageParams.applicationSection && props.pageParams.reportUuid
-      ? props.reportDefinition.extractors
-        ? {
+      props.pageParams.deploymentUuid &&
+      props.pageParams.applicationSection &&
+      props.pageParams.reportUuid
+        ? props.reportDefinition.extractors
+          ? {
+              queryType: "boxedQueryWithExtractorCombinerTransformer",
+              deploymentUuid: props.pageParams.deploymentUuid,
+              pageParams: props.pageParams,
+              queryParams: {},
+              contextResults: {},
+              extractors: props.reportDefinition.extractors,
+              combiners: props.reportDefinition.combiners,
+              runtimeTransformers: props.reportDefinition.runtimeTransformers,
+            }
+          : resolvedTemplateQuery
+        : {
             queryType: "boxedQueryWithExtractorCombinerTransformer",
-            deploymentUuid: props.pageParams.deploymentUuid,
-            pageParams: props.pageParams,
+            deploymentUuid: "",
+            pageParams: paramsAsdomainElements,
             queryParams: {},
             contextResults: {},
-            extractors: props.reportDefinition.extractors,
-            // extractorTemplates: props.reportDefinition.extractorTemplates,
-            combiners: props.reportDefinition.combiners,
-            runtimeTransformers: props.reportDefinition.runtimeTransformers,
-          }
-        : resolvedTemplateQuery
-      : {
-          queryType: "boxedQueryWithExtractorCombinerTransformer",
-          deploymentUuid: "",
-          pageParams: paramsAsdomainElements,
-          queryParams: {},
-          contextResults: {},
-          extractors: {},
-        },
+            extractors: {},
+          },
     [props.reportDefinition, props.pageParams, resolvedTemplateQuery]
   );
   resolvedTemplateQuery;
@@ -167,32 +160,20 @@ export const ReportView = (props: ReportViewProps) => {
       ),
     [deploymentEntityStateSelectorMap, usedQuery]
   );
-  // // log.info(
-  // //   "-------------------------------------------------- props.reportSection",
-  // //   props.reportSection,
-  // //   "props.reportSection?.extractors",
-  // //   props.reportSection?.extractors,
-  // // )
-  // log.info("################################################################ Fecth Template report data")
 
   // log.info("deploymentEntityStateQueryTemplateResults",deploymentEntityStateQueryTemplateResults)
 
   log.info("################################################################ Fecth NON-Template report data", usedQuery);
 
-  const deploymentEntityStateQueryResults: Domain2QueryReturnType<Domain2QueryReturnType<Record<string,any>>> = useDeploymentEntityStateQuerySelector(
+  const deploymentEntityStateQueryResults: Domain2QueryReturnType<
+    Domain2QueryReturnType<Record<string, any>>
+  > = useDeploymentEntityStateQuerySelector(
     deploymentEntityStateSelectorMap.runQuery,
     deploymentEntityStateFetchQueryParams
   );
 
   log.info("deploymentEntityStateQueryResults", deploymentEntityStateQueryResults);
 
-  // log.info(
-  //   "-------------------------------------------------- props.reportSection",
-  //   "domainElementObject",
-  //   domainElementObject,
-  //   // "fetchedDataJzodSchema",
-  //   // fetchedDataJzodSchema
-  // );
 
   const jzodSchemaSelectorMap: QueryRunnerMapForJzodSchema<DeploymentEntityState> = useMemo(
     () => getMemoizedDeploymentEntityStateJzodSchemaSelectorMap(),
@@ -270,30 +251,38 @@ export const ReportView = (props: ReportViewProps) => {
   );
   log.info("ReportView props.reportSection", props.reportDefinition);
 
+  const outlineElement = useMemo(() => {
+    if (
+      deploymentEntityStateQueryResults &&
+      deploymentEntityStateQueryResults.elementType !== "failure"
+    ) {
+      if (Object.keys(deploymentEntityStateQueryResults).length > 0) {
+        // throw new Error(
+        //   "ReportView: No data found for the given query parameters: " +
+        //     JSON.stringify(deploymentEntityStateQueryResults)
+        // );
+        const reportRootAttribute = (deploymentEntityStateQueryResults as any)[
+          Object.keys(deploymentEntityStateQueryResults)[0]
+        ];
+    
+        const outlineElement = {
+          [reportRootAttribute.name ?? Object.keys(deploymentEntityStateQueryResults)[0]]:
+            reportRootAttribute,
+        }
+        // outlineContext.setOutlineData(outlineElement);
+        return outlineElement;
+      }
+      // outlineContext.setOutlineData(deploymentEntityStateQueryResults);
+    }
+  }, [deploymentEntityStateQueryResults]);
   // Update outline data when query results change
   useEffect(() => {
-    if (deploymentEntityStateQueryResults && deploymentEntityStateQueryResults.elementType !== "failure") {
-      outlineContext.setOutlineData(deploymentEntityStateQueryResults);
+    if (outlineElement) {
+      outlineContext.setOutlineData(outlineElement);
     }
-  }, [deploymentEntityStateQueryResults, outlineContext]);
+  }, [outlineElement, outlineContext]);
 
   if (props.applicationSection) {
-    {
-      /* <div>
-      <div>
-        deploymentUuid:
-        {props.deploymentUuid}
-      </div>
-      <div>
-        section: 
-        {props.applicationSection}
-      </div>
-      <div>
-        selfApplication:
-        {props.applicationSection}
-      </div>
-    </div> */
-    }
     return (
       <>
         {

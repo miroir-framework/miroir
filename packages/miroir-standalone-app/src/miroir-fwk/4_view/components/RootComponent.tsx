@@ -66,9 +66,11 @@ export interface DocumentOutlineContextType {
   isOutlineOpen: boolean;
   outlineWidth: number;
   outlineData: any;
+  outlineTitle: string;
   onToggleOutline: () => void;
   onNavigateToPath: (path: string[]) => void;
   setOutlineData: (data: any) => void;
+  setOutlineTitle: (title: string) => void;
 }
 
 const DocumentOutlineContext = createContext<DocumentOutlineContextType | null>(null);
@@ -167,6 +169,7 @@ export const RootComponent = (props: RootComponentProps) => {
   const [isOutlineOpen, setIsOutlineOpen] = useState(false);
   const [outlineWidth, setOutlineWidth] = useState(300);
   const [outlineData, setOutlineData] = useState<any>(null);
+  const [outlineTitle, setOutlineTitle] = useState<string>("Document Structure");
   
   log.info(
     "##################################### rendering root component",
@@ -196,11 +199,26 @@ export const RootComponent = (props: RootComponentProps) => {
 
   const handleDrawerOpen = useMemo(() => () => {
     setDrawerIsOpen(true);
-  }, [setDrawerIsOpen]);
+    // If opening sidebar, close outline
+    if (isOutlineOpen) {
+      setIsOutlineOpen(false);
+    }
+  }, [setDrawerIsOpen, isOutlineOpen]);
 
   const handleDrawerClose = useMemo(() => () => {
     setDrawerIsOpen(false);
+    // Note: When closing sidebar, we don't automatically open outline
+    // The user can manually open it if needed
   }, [setDrawerIsOpen]);
+
+  // Coordinated drawer state handler for sidebar
+  const handleDrawerStateChange = useMemo(() => (isOpen: boolean) => {
+    if (isOpen) {
+      handleDrawerOpen();
+    } else {
+      handleDrawerClose();
+    }
+  }, [handleDrawerOpen, handleDrawerClose]);
 
   const handleChangeDisplayedDeployment = useMemo(() => (event: SelectChangeEvent) => {
     event.stopPropagation();
@@ -215,10 +233,17 @@ export const RootComponent = (props: RootComponentProps) => {
     setSidebarWidth(width);
   }, [setSidebarWidth]);
 
-  // DocumentOutline handlers
+  // DocumentOutline handlers with sidebar coordination
   const handleToggleOutline = useCallback(() => {
-    setIsOutlineOpen(prev => !prev);
-  }, []);
+    setIsOutlineOpen(prev => {
+      const newOutlineState = !prev;
+      // If opening outline, close sidebar
+      if (newOutlineState && drawerIsOpen) {
+        setDrawerIsOpen(false);
+      }
+      return newOutlineState;
+    });
+  }, [drawerIsOpen]);
 
   const handleNavigateToPath = useCallback((path: string[]) => {
     const rootLessListKey = path.join('.');
@@ -375,14 +400,19 @@ export const RootComponent = (props: RootComponentProps) => {
   }, []);
 
   // Document outline context value
-  const outlineContextValue: DocumentOutlineContextType = useMemo(() => ({
-    isOutlineOpen,
-    outlineWidth,
-    outlineData,
-    onToggleOutline: handleToggleOutline,
-    onNavigateToPath: handleNavigateToPath,
-    setOutlineData,
-  }), [isOutlineOpen, outlineWidth, outlineData, handleToggleOutline, handleNavigateToPath]);
+  const outlineContextValue: DocumentOutlineContextType = useMemo(
+    () => ({
+      isOutlineOpen,
+      outlineWidth,
+      outlineData,
+      outlineTitle,
+      onToggleOutline: handleToggleOutline,
+      onNavigateToPath: handleNavigateToPath,
+      setOutlineData,
+      setOutlineTitle,
+    }),
+    [isOutlineOpen, outlineWidth, outlineData, outlineTitle, handleToggleOutline, handleNavigateToPath]
+  );
 
   const showSnackbar = useMemo(() => (message: string, severity: "success" | "error" | "info" = "info") => {
     setSnackbarMessage(message);
@@ -434,7 +464,7 @@ export const RootComponent = (props: RootComponentProps) => {
               {/* <SidebarSection open={drawerIsOpen} setOpen={setDrawerIsOpen}></SidebarSection> */}
               <Sidebar 
                 open={drawerIsOpen} 
-                setOpen={setDrawerIsOpen} 
+                setOpen={handleDrawerStateChange} 
                 width={sidebarWidth}
                 onWidthChange={handleSidebarWidthChange}
               ></Sidebar>
@@ -842,7 +872,7 @@ export const RootComponent = (props: RootComponentProps) => {
         onToggle={handleToggleOutline}
         data={outlineData}
         onNavigate={handleNavigateToPath}
-        title="Document Structure"
+        title={outlineTitle}
         width={outlineWidth}
         onWidthChange={setOutlineWidth}
       />
