@@ -64,25 +64,8 @@ const closedMixin = (theme: Theme): CSSObject => ({
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
   }),
-
-  // display: "flex",
   display: "none"
-  // overflowX: 'hidden',
-  // width: "0px",
-  // width: `calc(${theme.spacing(7)} + 1px)`,
-  // [theme.breakpoints.up('sm')]: {
-  //   width: `calc(${theme.spacing(8)} + 1px)`,
-  // },
 });
-
-const StyledDrawerHeader = styled('div')(({ theme }) => ({
-  // display: 'flex',
-  alignItems: 'center',
-  padding: theme.spacing(0, 1),
-  // necessary for content to be below app bar
-  ...theme.mixins.toolbar,
-  justifyContent: 'flex-end',
-}));
 
 export interface ResponsiveAppBarProps {
   handleDrawerOpen: ()=>void,
@@ -185,20 +168,6 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
   const styledDrawerSx = useMemo(()=>({alignItems: "end"}),[])
 
 
-  // const dynIcon = React.createElement(AutoStories, {});
-  // <StyledDrawer
-  //   sx={drawerSx}
-  //   variant="permanent"
-  //   // variant="persistent"
-  //   open={props.open}
-  // >
-  //   <StyledDrawerHeader sx={styledDrawerSx}>
-  //     <IconButton onClick={() => props.setOpen(false)}>
-  //       {theme.direction === "ltr" ? <ChevronLeftIcon /> : <ChevronRightIcon />}
-  //     </IconButton>
-  //   </StyledDrawerHeader>
-  //   count: {count}
-  //   <Divider />
 
   return (
     <>

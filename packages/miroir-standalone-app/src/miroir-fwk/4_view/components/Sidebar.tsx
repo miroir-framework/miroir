@@ -65,12 +65,12 @@ const closedMixin = (theme: Theme): CSSObject => ({
 });
 
 const StyledDrawerHeader = styled('div')(({ theme }) => ({
-  // display: 'flex',
+  display: 'flex',
   alignItems: 'center',
-  padding: theme.spacing(0, 1),
-  // necessary for content to be below app bar
-  ...theme.mixins.toolbar,
-  justifyContent: 'flex-end',
+  padding: theme.spacing(1, 1),
+  minHeight: 'auto', // Remove default toolbar height
+  justifyContent: 'flex-start',
+  fontSize: theme.typography.body1.fontSize, // Use normal body font size
 }));
 
 const ResizeHandle = styled('div')(({ theme }) => ({
@@ -204,123 +204,52 @@ export const Sidebar:FC<{open:boolean, setOpen: (v:boolean)=>void, width?: numbe
   //   miroirMenusDomainElementObject?.menus
   // );
   const drawerSx = useMemo(()=>({flexDirection:'column', position: 'relative'}),[])
-  const styledDrawerSx = useMemo(()=>({alignItems: "end"}),[])
-
-
+  const styledDrawerSx = useMemo(()=>({}),[]) // Remove alignItems: "end" to let StyledDrawerHeader center the items
   // const dynIcon = React.createElement(AutoStories, {});
 
   return (
-    <StyledDrawer
-      sx={drawerSx}
-      variant="permanent"
-      // variant="persistent"
-      open={props.open}
-      width={props.width}
-    >
+    <StyledDrawer sx={drawerSx} variant="permanent" open={props.open} width={props.width}>
       <StyledDrawerHeader sx={styledDrawerSx}>
         <LocalIconButton onClick={() => props.setOpen(false)}>
           {theme.direction === "ltr" ? <LocalChevronLeftIcon /> : <LocalChevronRightIcon />}
         </LocalIconButton>
+        <span style={{ marginLeft: '8px' }}>count: {count}</span>
       </StyledDrawerHeader>
-      count: {count}
       <LocalDivider />
       <SidebarSection
         deploymentUuid={adminConfigurationDeploymentAdmin.uuid}
         menuUuid={menuDefaultAdmin.uuid}
         open={props.open}
         setOpen={props.setOpen}
-      >
-      </SidebarSection>
+      ></SidebarSection>
       <LocalDivider />
       <SidebarSection
         deploymentUuid={adminConfigurationDeploymentMiroir.uuid}
         menuUuid={menuDefaultMiroir.uuid}
         open={props.open}
         setOpen={props.setOpen}
-      >
-      </SidebarSection>
-      {/* <Divider />
-      <SidebarSection
-        deploymentUuid="f97cce64-78e9-419f-a4bd-5cbf52833ede"
-        menuUuid="84c178cc-1b1b-497a-a035-9b3d756bb085"
-        open={props.open}
-        setOpen={props.setOpen}
-      >
-      </SidebarSection> */}
-      {/* <Divider />
-      <SidebarSection
-        deploymentUuid={adminConfigurationDeploymentTest1.uuid}
-        menuUuid={menuDefaultTest1.uuid}
-        open={props.open}
-        setOpen={props.setOpen}
-      >
-      </SidebarSection> */}
-      {/* ################################################################################### */}
+      ></SidebarSection>
       <LocalDivider />
       <SidebarSection
         deploymentUuid={adminConfigurationDeploymentParis.uuid}
         menuUuid={defaultMenuParisUuid}
         open={props.open}
         setOpen={props.setOpen}
-      >
-      </SidebarSection>
+      ></SidebarSection>
       <LocalDivider />
       <SidebarSection
         deploymentUuid={adminConfigurationDeploymentLibrary.uuid}
         menuUuid={menuDefaultLibrary.uuid}
         open={props.open}
         setOpen={props.setOpen}
-      >
-      </SidebarSection>
-      {/* ################################################################################### */}
-
-        {/* {sideBarDefaultItems.map((i: any, index: number) => ( */}
-        {/* TODO: DRY the menuSection display!*/}
-        {/* {
-          !(miroirMenusDomainElementObject?.menus as any)?.definition?.menuType ||
-          (miroirMenusDomainElementObject?.menus as any)?.definition?.menuType == "simpleMenu"?
-          <List disablePadding dense>
-            {(
-              (miroirMenusDomainElementObject?.menus as any)?.definition?.definition ?? sideBarDefaultItems
-              ).map((i: any, index: number) => (
-              <ListItem key={i.label} disablePadding>
-                <ListItemButton sx={{padding: 0}} component={Link} to={`/report/${i.selfApplication}/${i.section}/${i.reportUuid}/xxxxxx`}>
-                  <ListItemIcon>
-                    <Icon>{i.icon}</Icon>
-                  </ListItemIcon>
-                  <ListItemText primary={i.label} />
-                </ListItemButton>
-              </ListItem>
-            ))}
-          </List>
-          :
-          <List disablePadding dense>
-            {(
-              (miroirMenusDomainElementObject?.menus as any)?.definition?.definition ?? []
-              ).flatMap((menuSection: any, index: number) => (
-                menuSection.items.map(
-                  (curr:any, index: number) => (
-                    <ListItem key={curr.label + index} disablePadding>
-                      <ListItemButton component={Link} to={`/report/${curr.selfApplication}/${curr.section}/${curr.reportUuid}/xxxxxx`}>
-                        <ListItemIcon>
-                          <Icon>{curr.icon}</Icon>
-                        </ListItemIcon>
-                        <ListItemText primary={curr.label} />
-                      </ListItemButton>
-                    </ListItem>
-                  ), 
-                ).concat([<Divider key={menuSection.label + "Divider"}/>])
-              )
-            )}
-          </List>
-        } */}
+      ></SidebarSection>
       <LocalDivider />
       {/* Resize handle - only show when sidebar is open */}
       {props.open && (
-        <ResizeHandle 
+        <ResizeHandle
           ref={resizeRef}
           onMouseDown={handleMouseDown}
-          style={{ cursor: isResizing ? 'col-resize' : 'col-resize' }}
+          style={{ cursor: isResizing ? "col-resize" : "col-resize" }}
         />
       )}
     </StyledDrawer>

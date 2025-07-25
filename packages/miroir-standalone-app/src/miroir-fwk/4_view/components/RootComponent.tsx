@@ -170,6 +170,8 @@ export const RootComponent = (props: RootComponentProps) => {
   const [outlineWidth, setOutlineWidth] = useState(300);
   const [outlineData, setOutlineData] = useState<any>(null);
   const [outlineTitle, setOutlineTitle] = useState<string>("Document Structure");
+  // Remember sidebar state before outline was opened
+  const [sidebarStateBeforeOutline, setSidebarStateBeforeOutline] = useState<boolean | null>(null);
   
   log.info(
     "##################################### rendering root component",
@@ -237,13 +239,24 @@ export const RootComponent = (props: RootComponentProps) => {
   const handleToggleOutline = useCallback(() => {
     setIsOutlineOpen(prev => {
       const newOutlineState = !prev;
-      // If opening outline, close sidebar
-      if (newOutlineState && drawerIsOpen) {
-        setDrawerIsOpen(false);
+      
+      if (newOutlineState) {
+        // Opening outline: remember current sidebar state and close it
+        setSidebarStateBeforeOutline(drawerIsOpen);
+        if (drawerIsOpen) {
+          setDrawerIsOpen(false);
+        }
+      } else {
+        // Closing outline: restore sidebar to its previous state
+        if (sidebarStateBeforeOutline !== null) {
+          setDrawerIsOpen(sidebarStateBeforeOutline);
+          setSidebarStateBeforeOutline(null);
+        }
       }
+      
       return newOutlineState;
     });
-  }, [drawerIsOpen]);
+  }, [drawerIsOpen, sidebarStateBeforeOutline]);
 
   const handleNavigateToPath = useCallback((path: string[]) => {
     const rootLessListKey = path.join('.');
@@ -861,9 +874,6 @@ export const RootComponent = (props: RootComponentProps) => {
             </Grid>
           </Grid>
         </Grid>
-        {/* <StyledDrawerHeader /> */}
-        {/* <Box sx={{ display: 'flex', flexDirection:"row", width: 1 }}> */}
-        {/* </Box> */}
       </MuiBox>
 
       {/* Document Outline - Full height on right side */}
