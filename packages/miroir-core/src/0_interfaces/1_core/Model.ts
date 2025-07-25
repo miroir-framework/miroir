@@ -35,3 +35,5 @@ export type DeploymentUuidToReportsEntitiesDefinitionsMapping = {
       };
   }
 };
+
+export const foldableElementTypes = [ "array", "tuple", "object", "record" ]; // no union or reference since we use the resolved type!

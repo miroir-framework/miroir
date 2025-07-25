@@ -459,7 +459,10 @@ export {
   jzodSchemaDefinitionSchema,
 } from "./0_interfaces/1_core/JzodSchemaDefinition.js";
 export { DeploymentMode } from "./0_interfaces/1_core/MiroirConfig.js";
-export { DeploymentUuidToReportsEntitiesDefinitionsMapping } from "./0_interfaces/1_core/Model.js";
+export {
+  DeploymentUuidToReportsEntitiesDefinitionsMapping,
+  foldableElementTypes,
+} from "./0_interfaces/1_core/Model.js";
 export {
   // SelfApplicationDeploymentConfigurationSchema,
   // SelfApplicationDeploymentConfiguration,

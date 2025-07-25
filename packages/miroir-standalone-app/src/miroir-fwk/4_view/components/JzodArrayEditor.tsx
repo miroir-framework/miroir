@@ -2,6 +2,7 @@
 import { ErrorBoundary } from "react-error-boundary";
 import {
   adminConfigurationDeploymentMiroir,
+  foldableElementTypes,
   getDefaultValueForJzodSchema,
   getDefaultValueForJzodSchemaWithResolution,
   JzodArray,
@@ -308,7 +309,6 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
   //   JSON.stringify(rawJzodSchema, null, 2),
   // );
 
-  // const currentMiroirFundamentalJzodSchema = context.miroirFundamentalJzodSchema;
   const currentModel: MetaModel = useCurrentModel(currentDeploymentUuid);
   const miroirMetaModel: MetaModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
   // ??
@@ -317,10 +317,17 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
   const arrayValueObject = resolvePathOnObject(formik.values, rootLessListKeyArray);
 
   const currentTypeCheckKeyMap = typeCheckKeyMap ? typeCheckKeyMap[rootLessListKey] : undefined;
-  const parentKey = rootLessListKey.includes(".")
-    ? rootLessListKey.substring(0, rootLessListKey.lastIndexOf("."))
-    : "";
-  const parentKeyMap = typeCheckKeyMap ? typeCheckKeyMap[parentKey] : undefined;
+  // const parentKey = rootLessListKey.includes(".")
+  //   ? rootLessListKey.substring(0, rootLessListKey.lastIndexOf("."))
+  //   : "";
+  // const parentKeyMap = typeCheckKeyMap ? typeCheckKeyMap[parentKey] : undefined;
+
+  const foldableItemsCount = useMemo(() => {
+    return currentTypeCheckKeyMap?.resolvedSchema.type === "tuple" // for array type, the resolvedSchema is a JzodTuple
+      ? (currentTypeCheckKeyMap.resolvedSchema as JzodTuple).definition.filter(
+        (item: JzodElement) => foldableElementTypes.includes(item.type)
+      ).length : 0
+  }, [currentTypeCheckKeyMap?.resolvedSchema]);
 
   // ##############################################################################################
   const addNewArrayItem = useCallback(
@@ -338,15 +345,6 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
             JSON.stringify(context.miroirFundamentalJzodSchema, null, 2)
         );
       }
-      // const newItem = getDefaultValueForJzodSchema(rawJzodSchema.definition)
-      // const newItem = getDefaultValueForJzodSchema(parentUnfoldedRawSchema.definition)
-      // cases:
-      // 1. array of primitives: e.g. ["value1", "value2", "value3"]
-      // 2. array of objects: e.g. [{ key1: "value1", key2: "value2" }, { key1: "value3", key2: "value4" }]
-      // 3. array of unions: e.g. [{ key1: "value1" }, "value2", { key1: "value3" }]
-      // 4. array of references
-      // 
-      // array is in a union?
       const newItem = getDefaultValueForJzodSchemaWithResolution(
         currentTypeCheckKeyMap?.rawSchema.definition,
         false,
@@ -375,30 +373,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
         JSON.stringify(newArrayValue, null, 2),
       );
 
-      // log.info(
-      //   "JzodArrayEditor addNewArrayItem",
-      //   "listKey",
-      //   listKey,
-      //   "rootLessListKey",
-      //   rootLessListKey,
-      //   "rootLessListKeyArray",
-      //   rootLessListKeyArray,
-      //   "rawJzodSchema",
-      //   rawJzodSchema,
-      //   "newArrayValue",
-      //   JSON.stringify(newArrayValue, null, 2),
-      //   "arrayValueObject",
-      //   JSON.stringify(arrayValueObject, null, 2),
-      //   "formik.values",
-      //   JSON.stringify(formik.values, null, 2),
-      //   "itemsOrder",
-      //   JSON.stringify(itemsOrder, null, 2),
-      //   "getItemsOrder(newArrayValue, resolvedElementJzodSchema)",
-      //   JSON.stringify(getItemsOrder(newArrayValue, resolvedElementJzodSchema), null, 2)
-      // );
-
       // Update the specific field in Formik state
-      // formik.setFieldValue("testField", newArrayValue, false); // Disable validation
       formik.setFieldValue(rootLessListKey, newArrayValue, true); // enable validation / refresh of formik component
 
       // // Update the items order
@@ -408,8 +383,6 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
       formik,
       currentTypeCheckKeyMap?.rawSchema,
       arrayValueObject,
-      // resolvedElementJzodSchema,
-      // parentUnfoldedRawSchema,
     ]
   );
   // ##############################################################################################
@@ -477,25 +450,18 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
   )
   // );
   , [
-    // listKey,
     rootLessListKey,
-    // rootLessListKeyArray,
-    // rawJzodSchema,
-    // parentUnfoldedRawSchema,
     formik.values,
     resolvedElementJzodSchema,
     typeCheckKeyMap,
-    // localRootLessListKeyMap,
     currentDeploymentUuid,
     currentApplicationSection,
     usedIndentLevel,
     foreignKeyObjects,
-    // hiddenFormItems[listKey],
     hiddenFormItems,
     itemsOrder,
     insideAny,
     displayAsStructuredElementSwitch,
-    // formik.values[rootLessListKey],
   ])
   ;
   // ##############################################################################################
@@ -528,7 +494,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
               setFoldedObjectAttributeOrArrayItems={setHiddenFormItems}
               listKey={listKey}
             ></FoldUnfoldObjectOrArray>
-            {!hiddenFormItems[listKey] ? (
+            {!hiddenFormItems[listKey] && itemsOrder.length >= 2 && foldableItemsCount > 1 ? (
               <>
                 <FoldUnfoldAllObjectAttributesOrArrayItems
                   foldedObjectAttributeOrArrayItems={hiddenFormItems}
@@ -549,6 +515,19 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
                   <SizedAddBox />
                 </SizedButton>
               </>
+            ) : !hiddenFormItems[listKey] ? (
+              <SizedButton
+                variant="text"
+                aria-label={rootLessListKey + ".add"}
+                onClick={addNewArrayItem}
+                title="Add new array item"
+                style={{ 
+                  flexShrink: 0,
+                  marginLeft: "1em",
+                }}
+              >
+                <SizedAddBox />
+              </SizedButton>
             ) : (
               <></>
             )}

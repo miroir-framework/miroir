@@ -19,6 +19,7 @@ import {
   ResolvedJzodSchemaReturnType,
   UnfoldJzodSchemaOnceReturnType,
   KeyMapEntry,
+  foldableElementTypes,
 } from "miroir-core";
 
 import { indentShift } from "./JzodArrayEditor";
@@ -358,19 +359,15 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
     labelElement,
     rootLessListKey,
     rootLessListKeyArray,
-    // rawJzodSchema,
     typeCheckKeyMap,
     currentDeploymentUuid,
     currentApplicationSection,
     indentLevel,
-    // resolvedElementJzodSchema,
-    // localRootLessListKeyMap,
     insideAny,
     displayAsStructuredElementSwitch,
     deleteButtonElement,
     foldedObjectAttributeOrArrayItems,
     setFoldedObjectAttributeOrArrayItems,
-    // parentType, // used to control the parent type of the element, used for record elements
   } = props;
 
   // count++;
@@ -392,24 +389,16 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
     formik,
     localResolvedElementJzodSchemaBasedOnValue,
     miroirMetaModel,
-    // recursivelyUnfoldedRawSchema,
-    // unfoldedRawSchema,
-    // uuid
-    // foreignKeyObjects,
-    // union
-
     // Array / Object fold / unfold state
-    // hiddenFormItems,  // Now comes from props
-    // setHiddenFormItems,  // Now comes from props
     itemsOrder,
     // object
     definedOptionalAttributes,
-    stringSelectList,
+    // stringSelectList,
     undefinedOptionalAttributes,
     } = useJzodElementEditorHooks(props, count, "JzodElementEditor");
   // } = measuredUseJzodElementEditorHooks(props, count, "JzodElementEditor");
 
-  const currentKeyMap = typeCheckKeyMap ? typeCheckKeyMap[rootLessListKey] : undefined;
+  const currentTypeCheckKeyMap = typeCheckKeyMap ? typeCheckKeyMap[rootLessListKey] : undefined;
 
   const currentMiroirFundamentalJzodSchema = context.miroirFundamentalJzodSchema;
   const usedIndentLevel: number = indentLevel ? indentLevel : 0;
@@ -429,6 +418,13 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
     () => resolvePathOnObject(formik.values, rootLessListKeyArray),
     [formik.values, rootLessListKeyArray]
   );
+
+  const foldableItemsCount = useMemo(() => {
+    return currentTypeCheckKeyMap?.resolvedSchema.type === "object" // for record / object type, the resolvedSchema is a JzodObject
+      ? Object.values(currentTypeCheckKeyMap.resolvedSchema.definition).filter(
+        (item: JzodElement) => foldableElementTypes.includes(item.type)
+      ).length : 0
+  }, [currentTypeCheckKeyMap?.resolvedSchema]);
 
   // ##############################################################################################
   // JzodSchemaTooltip
@@ -524,15 +520,15 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
     //   "formik",
     //   formik.values
     // );
-    if (currentKeyMap?.rawSchema.type != "record" || currentKeyMap.rawSchema?.type != "record") {
-      throw "addExtraRecordEntry called for non-record type: " + currentKeyMap?.rawSchema.type;
+    if (currentTypeCheckKeyMap?.rawSchema.type != "record" || currentTypeCheckKeyMap.rawSchema?.type != "record") {
+      throw "addExtraRecordEntry called for non-record type: " + currentTypeCheckKeyMap?.rawSchema.type;
     }
 
-    const newAttributeType: JzodElement = (currentKeyMap.rawSchema as JzodRecord)?.definition;
+    const newAttributeType: JzodElement = (currentTypeCheckKeyMap.rawSchema as JzodRecord)?.definition;
     // log.info("addExtraRecordEntry newAttributeType", JSON.stringify(newAttributeType, null, 2));
     const newAttributeValue = currentMiroirFundamentalJzodSchema
       ? measuredGetDefaultValueForJzodSchemaWithResolution(
-          currentKeyMap?.rawSchema.definition,
+          currentTypeCheckKeyMap?.rawSchema.definition,
           true, // force optional attributes to receive a default value
           currentMiroirFundamentalJzodSchema,
           currentModel,
@@ -544,7 +540,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
     const newRecordValue: any = { ["newRecordEntry"]: newAttributeValue, ...currentValue };
     // log.info("addExtraRecordEntry", "newValue", newRecordValue);
 
-    const newItemsOrder = getItemsOrder(newRecordValue, currentKeyMap.rawSchema);
+    const newItemsOrder = getItemsOrder(newRecordValue, currentTypeCheckKeyMap.rawSchema);
     // log.info("addExtraRecordEntry", "itemsOrder", itemsOrder, "newItemsOrder", newItemsOrder);
 
     formik.setFieldValue(rootLessListKey, newRecordValue);
@@ -570,7 +566,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
   const addObjectOptionalAttribute = useCallback(
     async (attributeName: string) => {
       if (localResolvedElementJzodSchemaBasedOnValue?.type != "object") {
-        throw "addObjectOptionalAttribute called for non-object type: " + currentKeyMap?.rawSchema.type;
+        throw "addObjectOptionalAttribute called for non-object type: " + currentTypeCheckKeyMap?.rawSchema.type;
       }
       log.info(
         "addObjectOptionalAttribute clicked!",
@@ -589,7 +585,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
       );
       const currentObjectValue = resolvePathOnObject(formik.values, rootLessListKeyArray);
       const newAttributeType: JzodElement = resolvePathOnObject(
-        currentKeyMap?.chosenUnionBranchRawSchema ?? currentKeyMap?.jzodObjectFlattenedSchema ?? currentKeyMap?.rawSchema,
+        currentTypeCheckKeyMap?.chosenUnionBranchRawSchema ?? currentTypeCheckKeyMap?.jzodObjectFlattenedSchema ?? currentTypeCheckKeyMap?.rawSchema,
         ["definition", attributeName]
       );
       const newAttributeValue = !!currentMiroirFundamentalJzodSchema
@@ -617,7 +613,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
       );
       const newItemsOrder = getItemsOrder(
         newObjectValue,
-        currentKeyMap?.chosenUnionBranchRawSchema ?? currentKeyMap?.jzodObjectFlattenedSchema ?? currentKeyMap?.rawSchema
+        currentTypeCheckKeyMap?.chosenUnionBranchRawSchema ?? currentTypeCheckKeyMap?.jzodObjectFlattenedSchema ?? currentTypeCheckKeyMap?.rawSchema
       );
 
       // log.info(
@@ -771,7 +767,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
               setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
               listKey={listKey}
             ></FoldUnfoldObjectOrArray>
-            {!foldedObjectAttributeOrArrayItems[listKey] ? (
+            {!foldedObjectAttributeOrArrayItems[listKey] && itemsOrder.length >= 2 && foldableItemsCount > 1 ? (
               <FoldUnfoldAllObjectAttributesOrArrayItems
                 foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
                 setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
@@ -784,7 +780,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
           </span>
           <span>
             {/* add optional attributes buttons */}
-            {currentKeyMap?.rawSchema.type != "record" &&
+            {currentTypeCheckKeyMap?.rawSchema.type != "record" &&
             undefinedOptionalAttributes.length > 0 &&
             !foldedObjectAttributeOrArrayItems[listKey] ? (
               <span
@@ -853,7 +849,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
           }}
           key={`${rootLessListKey}|body`}
         >
-          {currentKeyMap?.rawSchema.type == "record" || currentKeyMap?.rawSchema.type == "any" ? (
+          {currentTypeCheckKeyMap?.rawSchema.type == "record" || currentTypeCheckKeyMap?.rawSchema.type == "any" ? (
             <span>
               <SizedButton
                 id={rootLessListKey + ".addRecordAttribute"}
