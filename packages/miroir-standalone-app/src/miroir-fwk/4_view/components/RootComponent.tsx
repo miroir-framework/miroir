@@ -42,6 +42,7 @@ import {
   useDomainControllerService,
   useLocalCacheTransactions,
   useMiroirContextService,
+  useViewParams,
 } from "../MiroirContextReactProvider.js";
 import AppBar from './AppBar.js';
 
@@ -160,7 +161,11 @@ export const RootComponent = (props: RootComponentProps) => {
   // const params = useParams<any>() as Readonly<Params<ReportUrlParamKeys>>;
   count++;
   const [drawerIsOpen, setDrawerIsOpen] = useState(true);
-  const [sidebarWidth, setSidebarWidth] = useState(SidebarWidth);
+  
+  // Use ViewParams for sidebar width management
+  const viewParams = useViewParams();
+  const [sidebarWidth, setSidebarWidth] = useState(viewParams?.sidebarWidth ?? SidebarWidth);
+  
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error" | "info">("info");
@@ -233,7 +238,9 @@ export const RootComponent = (props: RootComponentProps) => {
 
   const handleSidebarWidthChange = useMemo(() => (width: number) => {
     setSidebarWidth(width);
-  }, [setSidebarWidth]);
+    // Keep ViewParams in sync with sidebar width changes
+    viewParams?.updateSidebarWidth(width);
+  }, [setSidebarWidth, viewParams]);
 
   // DocumentOutline handlers with sidebar coordination
   const handleToggleOutline = useCallback(() => {

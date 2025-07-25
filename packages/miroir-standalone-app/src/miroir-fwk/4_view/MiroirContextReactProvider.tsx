@@ -22,6 +22,10 @@ import {
 
 import { packageName } from "../../constants.js";
 import { cleanLevel } from "./constants.js";
+import { ViewParams } from "./ViewParams.js";
+
+// Export ViewParams for use in other components
+export { ViewParams };
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -48,9 +52,12 @@ export interface MiroirReactContext {
   setDeploymentUuidToReportsEntitiesDefinitionsMapping: React.Dispatch<React.SetStateAction<DeploymentUuidToReportsEntitiesDefinitionsMapping>>,
   miroirFundamentalJzodSchema: JzodSchema | undefined,
   setMiroirFundamentalJzodSchema: React.Dispatch<React.SetStateAction<JzodElement>>,
+  viewParams: ViewParams,
 }
 
-const miroirReactContext = createContext<MiroirReactContext>({} as MiroirReactContext);
+const miroirReactContext = createContext<MiroirReactContext>({
+  viewParams: new ViewParams(),
+} as MiroirReactContext);
 
 // #############################################################################################
 // export function MiroirContextReactProvider(props:any extends {miroirContext:MiroirContextInterface}) {
@@ -73,6 +80,9 @@ export function MiroirContextReactProvider(props: {
     JzodSchema | undefined
   >(globalMiroirFundamentalJzodSchema as JzodSchema);
   // useState<JzodSchema>({name: "dummyJzodSchema", parentName: "JzodSchema", parentUuid:"", uuid: ""});
+
+  // Create ViewParams instance to track UI state
+  const [viewParams] = useState(() => new ViewParams(250)); // Default sidebar width of 200px
 
   // const value = useMemo<MiroirReactContext>(()=>({
   const value = useMemo<MiroirReactContext>(
@@ -99,6 +109,7 @@ export function MiroirContextReactProvider(props: {
         console.log("setMiroirFundamentalJzodSchema called with", Object.keys(a ?? {}).length);
         setMiroirFundamentalJzodSchema(a);
       },
+      viewParams,
     }),
     [
       deploymentUuid,
@@ -109,6 +120,7 @@ export function MiroirContextReactProvider(props: {
       innerFormOutput,
       props.miroirContext,
       props.domainController,
+      viewParams,
     ]
   );
   return <miroirReactContext.Provider value={value}>{props.children}</miroirReactContext.Provider>;
@@ -132,6 +144,11 @@ export function useMiroirContextService() {
 // #############################################################################################
 export function useMiroirContext() {
   return useContext(miroirReactContext).miroirContext;
+}
+
+// #############################################################################################
+export function useViewParams() {
+  return useContext(miroirReactContext)?.viewParams;
 }
 
 // #############################################################################################
