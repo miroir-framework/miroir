@@ -50,6 +50,7 @@ import {
 } from "../ReduxHooks.js";
 import { JzodElementDisplay } from './JzodElementDisplay.js';
 import { JzodElementEditor } from './JzodElementEditor.js';
+import { JzodElementEditorWithOutline } from './JzodElementEditorWithOutline.js';
 import { ErrorFallbackComponent } from './ErrorFallbackComponent.js';
 import {
   measuredGetApplicationSection,
@@ -596,7 +597,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                                 />
                               )}
                             >
-                              <JzodElementEditor
+                              <JzodElementEditorWithOutline
                                 name={"ROOT"}
                                 listKey={"ROOT"}
                                 rootLessListKey=""
@@ -632,6 +633,10 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                                     submit form.{pageLabel}
                                   </button>
                                 }
+                                // Document Outline specific props
+                                data={instance}
+                                outlineTitle={`${currentReportTargetEntity?.name || 'Entity'} Structure`}
+                                showOutlineToggle={true}
                               />
                             </ErrorBoundary>
                             {/* ) */}

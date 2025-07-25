@@ -396,7 +396,7 @@ export const HomePage = (props: RootComponentProps) => {
         </button>
       </span> */}
       {/* Modify Book entity name */}
-      <span>
+      {/* <span>
         <button
           onClick={async () => {
             await domainController.handleAction(
@@ -416,9 +416,9 @@ export const HomePage = (props: RootComponentProps) => {
         >
           Modify Book entity name
         </button>
-      </span>
+      </span> */}
       {/* modify report list name */}
-      <span>
+      {/* <span>
         <button
           onClick={async () => {
             await domainController.handleAction(
@@ -451,9 +451,9 @@ export const HomePage = (props: RootComponentProps) => {
         >
           Modify Report List name
         </button>
-      </span>
+      </span> */}
       {/* remove author entity */}
-      <span>
+      {/* <span>
         <button
           onClick={async () => {
             await domainController.handleAction(
@@ -471,7 +471,7 @@ export const HomePage = (props: RootComponentProps) => {
         >
           Remove Author entity
         </button>
-      </span>
+      </span> */}
       <p />
       <div>uuid: {uuidv4()}</div>
       <div>transactions: {JSON.stringify(transactions)}</div>

@@ -787,27 +787,29 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
             >
               {labelElement}
               {/* Show folded display value when object is folded and a value is available */}
-              {foldedObjectAttributeOrArrayItems[listKey] && (() => {
-                const foldedDisplayValue = getFoldedDisplayValue();
-                return foldedDisplayValue !== null ? (
-                  <span
-                    style={{
-                      marginLeft: "0.5em",
-                      padding: "2px 6px",
-                      backgroundColor: "#f0f0f0",
-                      borderRadius: "3px",
-                      fontSize: "0.9em",
-                      color: "#666",
-                      fontStyle: "italic",
-                    }}
-                    title={`Folded value: ${foldedDisplayValue}`}
-                  >
-                    {typeof foldedDisplayValue === 'string' && foldedDisplayValue.length > 30 
-                      ? foldedDisplayValue.substring(0, 100) + '...' 
-                      : String(foldedDisplayValue)}
-                  </span>
-                ) : null;
-              })()}
+              {foldedObjectAttributeOrArrayItems &&
+                foldedObjectAttributeOrArrayItems[listKey] &&
+                (() => {
+                  const foldedDisplayValue = getFoldedDisplayValue();
+                  return foldedDisplayValue !== null ? (
+                    <span
+                      style={{
+                        marginLeft: "0.5em",
+                        padding: "2px 6px",
+                        backgroundColor: "#f0f0f0",
+                        borderRadius: "3px",
+                        fontSize: "0.9em",
+                        color: "#666",
+                        fontStyle: "italic",
+                      }}
+                      title={`Folded value: ${foldedDisplayValue}`}
+                    >
+                      {typeof foldedDisplayValue === "string" && foldedDisplayValue.length > 30
+                        ? foldedDisplayValue.substring(0, 100) + "..."
+                        : String(foldedDisplayValue)}
+                    </span>
+                  ) : null;
+                })()}
             </span>
           </span>
           <span id={rootLessListKey + "head"} key={rootLessListKey + "head"}>
@@ -816,7 +818,9 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
               setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
               listKey={listKey}
             ></FoldUnfoldObjectOrArray>
-            {!foldedObjectAttributeOrArrayItems[listKey] && itemsOrder.length >= 2 && foldableItemsCount > 1 ? (
+            {(!foldedObjectAttributeOrArrayItems || !foldedObjectAttributeOrArrayItems[listKey]) &&
+            itemsOrder.length >= 2 &&
+            foldableItemsCount > 1 ? (
               <FoldUnfoldAllObjectAttributesOrArrayItems
                 foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
                 setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
@@ -829,14 +833,15 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
           </span>
           <span>
             {/* add record attribute button for records */}
-            {currentTypeCheckKeyMap?.rawSchema.type == "record" && !foldedObjectAttributeOrArrayItems[listKey] ? (
+            {currentTypeCheckKeyMap?.rawSchema.type == "record" &&
+            !foldedObjectAttributeOrArrayItems[listKey] ? (
               <SizedButton
                 id={rootLessListKey + ".addRecordAttribute"}
                 variant="text"
                 aria-label={rootLessListKey + ".addRecordAttribute"}
                 onClick={addExtraRecordEntry}
                 title="Add new record attribute"
-                style={{ 
+                style={{
                   flexShrink: 0,
                   marginLeft: "1em",
                 }}
@@ -851,7 +856,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
             {/* add optional attributes buttons */}
             {currentTypeCheckKeyMap?.rawSchema.type != "record" &&
             undefinedOptionalAttributes.length > 0 &&
-            !foldedObjectAttributeOrArrayItems[listKey] ? (
+            (!foldedObjectAttributeOrArrayItems || !foldedObjectAttributeOrArrayItems[listKey]) ? (
               <span
                 style={{
                   display: "flex",
@@ -914,7 +919,10 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
           id={listKey + ".inner"}
           style={{
             marginLeft: `calc(${indentShift})`,
-            display: foldedObjectAttributeOrArrayItems[listKey] ? "none" : "block",
+            display:
+              foldedObjectAttributeOrArrayItems && foldedObjectAttributeOrArrayItems[listKey]
+                ? "none"
+                : "block",
           }}
           key={`${rootLessListKey}|body`}
         >

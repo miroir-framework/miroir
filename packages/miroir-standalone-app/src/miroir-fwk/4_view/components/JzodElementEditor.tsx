@@ -36,7 +36,6 @@ import {
   StyledSelect
 } from "./Style.js";
 import { ErrorFallbackComponent } from "./ErrorFallbackComponent.js";
-import { measuredUseJzodElementEditorHooks } from "../tools/hookPerformanceMeasure.js";
 import { RenderPerformanceMetrics } from "../tools/renderPerformanceMeasure.js";
 
 
@@ -103,7 +102,7 @@ export const FoldUnfoldObjectOrArray = (props: {
     }));
   }, [props.listKey, props.setFoldedObjectAttributeOrArrayItems]);
 
-  const isHidden = props.foldedObjectAttributeOrArrayItems[props.listKey];
+  const isFolded = props.foldedObjectAttributeOrArrayItems && props.foldedObjectAttributeOrArrayItems[props.listKey];
 
   return (
     <LineIconButton
@@ -113,7 +112,7 @@ export const FoldUnfoldObjectOrArray = (props: {
       }}
       onClick={handleClick}
     >
-      {isHidden ? (
+      {isFolded ? (
         <ExpandMore sx={{ color: "darkgreen" }} />
       ) : (
         <ExpandLess />
@@ -142,7 +141,10 @@ export const FoldUnfoldAllObjectAttributesOrArrayItems = (props: {
     const childKeys = props.itemsOrder.map(attributeName => `${props.listKey}.${attributeName}`);
     
     // Check if any child is currently unfolded (visible)
-    const hasUnfoldedChildren = childKeys.some(key => !props.foldedObjectAttributeOrArrayItems[key]);
+    const hasUnfoldedChildren = childKeys.some(
+      (key) =>
+        !props.foldedObjectAttributeOrArrayItems || !props.foldedObjectAttributeOrArrayItems[key]
+    );
     
     // If any child is unfolded, fold all; otherwise unfold all
     const shouldFoldAll = hasUnfoldedChildren;
@@ -158,7 +160,12 @@ export const FoldUnfoldAllObjectAttributesOrArrayItems = (props: {
 
   // Check if all children are folded
   const childKeys = props.itemsOrder.map(attributeName => `${props.listKey}.${attributeName}`);
-  const allChildrenFolded = childKeys.length > 0 && childKeys.every(key => props.foldedObjectAttributeOrArrayItems[key]);
+  const allChildrenFolded =
+    childKeys.length > 0 &&
+    childKeys.every(
+      (key) =>
+        props.foldedObjectAttributeOrArrayItems && props.foldedObjectAttributeOrArrayItems[key]
+    );
 
   return (
     <LineIconButton

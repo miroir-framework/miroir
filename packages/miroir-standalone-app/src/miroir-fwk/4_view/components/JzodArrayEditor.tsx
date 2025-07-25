@@ -275,8 +275,8 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
     currentApplicationSection,
     indentLevel,
     foreignKeyObjects,
-    foldedObjectAttributeOrArrayItems: hiddenFormItems,
-    setFoldedObjectAttributeOrArrayItems: setHiddenFormItems,
+    foldedObjectAttributeOrArrayItems,
+    setFoldedObjectAttributeOrArrayItems,
     itemsOrder,
     insideAny,
     displayAsStructuredElementSwitch,
@@ -441,8 +441,8 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
               itemsOrder={itemsOrder}
               formik={formik}
               currentValue={currentValue}
-              foldedObjectAttributeOrArrayItems={hiddenFormItems}
-              setFoldedObjectAttributeOrArrayItems={setHiddenFormItems}
+              foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
+              setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
             />
           );
         })}
@@ -458,7 +458,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
     currentApplicationSection,
     usedIndentLevel,
     foreignKeyObjects,
-    hiddenFormItems,
+    foldedObjectAttributeOrArrayItems,
     itemsOrder,
     insideAny,
     displayAsStructuredElementSwitch,
@@ -490,18 +490,18 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
           </span>
           <span id={rootLessListKey + "head"} key={rootLessListKey + "head"}>
             <FoldUnfoldObjectOrArray
-              foldedObjectAttributeOrArrayItems={hiddenFormItems}
-              setFoldedObjectAttributeOrArrayItems={setHiddenFormItems}
+              foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
+              setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
               listKey={listKey}
             ></FoldUnfoldObjectOrArray>
-            {!hiddenFormItems[listKey]  ? 
+            {!foldedObjectAttributeOrArrayItems || !foldedObjectAttributeOrArrayItems[listKey]  ? 
             (
               <>
               {
                 itemsOrder.length >= 2 && foldableItemsCount > 1?(
                     <FoldUnfoldAllObjectAttributesOrArrayItems
-                      foldedObjectAttributeOrArrayItems={hiddenFormItems}
-                      setFoldedObjectAttributeOrArrayItems={setHiddenFormItems}
+                      foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
+                      setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
                       listKey={listKey}
                       itemsOrder={itemsOrder.map(i => i.toString())}
                     ></FoldUnfoldAllObjectAttributesOrArrayItems>
@@ -542,7 +542,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
           id={listKey + ".inner"}
           style={{
             marginLeft: `calc(${indentShift})`,
-            display: hiddenFormItems[listKey] ? "none" : "block",
+            display: foldedObjectAttributeOrArrayItems && foldedObjectAttributeOrArrayItems[listKey] ? "none" : "block",
           }}
           key={`${rootLessListKey}|body`}
         >
