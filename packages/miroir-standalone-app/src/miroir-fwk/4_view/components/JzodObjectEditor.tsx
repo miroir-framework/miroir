@@ -649,6 +649,33 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
   );
 
   // ##############################################################################################
+  // Get displayed value when object is folded
+  const getFoldedDisplayValue = useCallback(() => {
+    // Check if there's a displayedAttributeValueWhenFolded path in the schema's tag
+    const displayPath = localResolvedElementJzodSchemaBasedOnValue?.tag?.value?.display?.displayedAttributeValueWhenFolded;
+    
+    if (!displayPath || !currentValue) {
+      return null;
+    }
+
+    try {
+      // Convert string path to array if needed (e.g., "name" or "user.name" -> ["name"] or ["user", "name"])
+      const pathArray = Array.isArray(displayPath) ? displayPath : displayPath.split('.');
+      const displayValue = resolvePathOnObject(currentValue, pathArray);
+      
+      // Only return the value if it exists and is not null/undefined
+      if (displayValue !== null && displayValue !== undefined) {
+        return displayValue;
+      }
+    } catch (error) {
+      // If path resolution fails, don't show anything
+      log.warn("Failed to resolve displayedAttributeValueWhenFolded path:", displayPath, "on object:", currentValue, "error:", error);
+    }
+
+    return null;
+  }, [localResolvedElementJzodSchemaBasedOnValue, currentValue]);
+
+  // ##############################################################################################
   const deleteElement = (rootLessListKeyArray: (string | number)[]) => () => {
     if (rootLessListKeyArray.length > 0) {
       const newFormState: any = deleteObjectAtPath(formik.values, rootLessListKeyArray);
@@ -759,6 +786,28 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
               }}
             >
               {labelElement}
+              {/* Show folded display value when object is folded and a value is available */}
+              {foldedObjectAttributeOrArrayItems[listKey] && (() => {
+                const foldedDisplayValue = getFoldedDisplayValue();
+                return foldedDisplayValue !== null ? (
+                  <span
+                    style={{
+                      marginLeft: "0.5em",
+                      padding: "2px 6px",
+                      backgroundColor: "#f0f0f0",
+                      borderRadius: "3px",
+                      fontSize: "0.9em",
+                      color: "#666",
+                      fontStyle: "italic",
+                    }}
+                    title={`Folded value: ${foldedDisplayValue}`}
+                  >
+                    {typeof foldedDisplayValue === 'string' && foldedDisplayValue.length > 30 
+                      ? foldedDisplayValue.substring(0, 100) + '...' 
+                      : String(foldedDisplayValue)}
+                  </span>
+                ) : null;
+              })()}
             </span>
           </span>
           <span id={rootLessListKey + "head"} key={rootLessListKey + "head"}>
