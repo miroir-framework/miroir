@@ -50,7 +50,7 @@ import { deployments, packageName } from '../../../constants.js';
 import { cleanLevel } from '../constants.js';
 import { Sidebar } from "./Sidebar.js";
 import { SidebarWidth } from "./SidebarSection.js";
-import { DocumentOutline } from './DocumentOutline.js';
+import { InstanceEditorOutline } from './InstanceEditorOutline.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -170,7 +170,7 @@ export const RootComponent = (props: RootComponentProps) => {
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error" | "info">("info");
   
-  // DocumentOutline state
+  // InstanceEditorOutline state
   const [isOutlineOpen, setIsOutlineOpen] = useState(false);
   const [outlineWidth, setOutlineWidth] = useState(300);
   const [outlineData, setOutlineData] = useState<any>(null);
@@ -242,7 +242,7 @@ export const RootComponent = (props: RootComponentProps) => {
     viewParams?.updateSidebarWidth(width);
   }, [setSidebarWidth, viewParams]);
 
-  // DocumentOutline handlers with sidebar coordination
+  // InstanceEditorOutline handlers with sidebar coordination
   const handleToggleOutline = useCallback(() => {
     setIsOutlineOpen(prev => {
       const newOutlineState = !prev;
@@ -884,7 +884,7 @@ export const RootComponent = (props: RootComponentProps) => {
       </MuiBox>
 
       {/* Document Outline - Full height on right side */}
-      <DocumentOutline
+      <InstanceEditorOutline
         isOpen={isOutlineOpen}
         onToggle={handleToggleOutline}
         data={outlineData}

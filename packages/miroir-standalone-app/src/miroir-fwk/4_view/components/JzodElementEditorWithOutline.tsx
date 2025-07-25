@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useMemo } from 'react';
 import { Box, IconButton, Tooltip } from '@mui/material';
 import { Toc } from '@mui/icons-material';
-import { DocumentOutline } from './DocumentOutline.js';
+import { InstanceEditorOutline } from './InstanceEditorOutline.js';
 import { JzodElementEditor } from './JzodElementEditor.js';
 import { JzodElementEditorProps } from './JzodElementEditorInterface.js';
 
@@ -111,7 +111,7 @@ export const JzodElementEditorWithOutline: React.FC<JzodElementEditorWithOutline
       
       {/* Document Outline Sidebar - moved to the right */}
       {data && (
-        <DocumentOutline
+        <InstanceEditorOutline
           isOpen={isOutlineOpen}
           onToggle={handleToggleOutline}
           data={data}

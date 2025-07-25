@@ -1,5 +1,5 @@
 /**
- * DocumentOutline Component - Optimized for Performance
+ * InstanceEditorOutline Component - Optimized for Performance
  * 
  * Performance optimizations implemented:
  * 1. React.memo on main component and TreeNodeComponent
@@ -247,7 +247,7 @@ const TreeNodeComponent = React.memo<{
 // ################################################################################################
 // ################################################################################################
 // Main Document Outline component - optimized with React.memo
-export const DocumentOutline = React.memo<DocumentOutlineProps>(({
+export const InstanceEditorOutline = React.memo<DocumentOutlineProps>(({
   isOpen,
   onToggle,
   data,
@@ -516,4 +516,4 @@ export const DocumentOutline = React.memo<DocumentOutlineProps>(({
   );
 });
 
-export default DocumentOutline;
+export default InstanceEditorOutline;
