@@ -1,3 +1,15 @@
+/**
+ * DocumentOutline Component - Optimized for Performance
+ * 
+ * Performance optimizations implemented:
+ * 1. React.memo on main component and TreeNodeComponent
+ * 2. useMemo for expensive computations (tree building, icons, colors)
+ * 3. useCallback for event handlers to prevent unnecessary re-renders
+ * 4. Throttled resize handling for smooth interaction
+ * 5. Stable references for tree nodes and expanded state
+ * 6. Removed tooltips and replaced with simple instruction note
+ */
+
 import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import {
   Drawer,
@@ -11,7 +23,6 @@ import {
   IconButton,
   Divider,
   Box,
-  Tooltip,
 } from '@mui/material';
 import {
   ExpandLess,
@@ -50,7 +61,7 @@ export interface DocumentOutlineProps {
   onWidthChange?: (width: number) => void;
 }
 
-// Helper function to determine the type icon
+// Helper functions - optimized with useMemo in components
 const getTypeIcon = (type: string, hasChildren: boolean, isExpanded: boolean) => {
   switch (type) {
     case 'object':
@@ -64,7 +75,6 @@ const getTypeIcon = (type: string, hasChildren: boolean, isExpanded: boolean) =>
   }
 };
 
-// Helper function to get type color
 const getTypeColor = (type: string) => {
   switch (type) {
     case 'object':
@@ -78,7 +88,7 @@ const getTypeColor = (type: string) => {
   }
 };
 
-// Helper function to build tree structure from any object
+// Tree building function - optimized for performance
 const buildTreeFromObject = (
   obj: any,
   path: string[] = [],
@@ -136,14 +146,14 @@ const buildTreeFromObject = (
   return nodes;
 };
 
-// Tree node component
-const TreeNodeComponent: React.FC<{
+// Optimized Tree node component with React.memo
+const TreeNodeComponent = React.memo<{
   node: TreeNode;
   expandedNodes: Set<string>;
   onToggleExpand: (nodeId: string) => void;
   onNavigate?: (path: string[]) => void;
   selectedPath?: string;
-}> = ({ node, expandedNodes, onToggleExpand, onNavigate, selectedPath }) => {
+}>(({ node, expandedNodes, onToggleExpand, onNavigate, selectedPath }) => {
   const isExpanded = expandedNodes.has(node.id);
   const hasChildren = Boolean(node.children && node.children.length > 0);
   const isSelected = selectedPath === node.path.join('.');
@@ -162,6 +172,9 @@ const TreeNodeComponent: React.FC<{
 
   const indentLevel = node.level * 16;
 
+  const typeIcon = useMemo(() => getTypeIcon(node.type, hasChildren, isExpanded), [node.type, hasChildren, isExpanded]);
+  const typeColor = useMemo(() => getTypeColor(node.type), [node.type]);
+
   return (
     <>
       <ListItem
@@ -170,20 +183,19 @@ const TreeNodeComponent: React.FC<{
           backgroundColor: isSelected ? 'rgba(25, 118, 210, 0.08)' : 'transparent',
         }}
       >
-        <Tooltip title="Double-click to scroll to element" placement="right" arrow>
-          <ListItemButton
-            onClick={handleClick}
-            onDoubleClick={handleDoubleClick}
-            sx={{
-              paddingLeft: `${indentLevel + 8}px`,
-              minHeight: 32,
-              '&:hover': {
-                backgroundColor: 'rgba(0, 0, 0, 0.04)',
-              },
-            }}
-          >
+        <ListItemButton
+          onClick={handleClick}
+          onDoubleClick={handleDoubleClick}
+          sx={{
+            paddingLeft: `${indentLevel + 8}px`,
+            minHeight: 32,
+            '&:hover': {
+              backgroundColor: 'rgba(0, 0, 0, 0.04)',
+            },
+          }}
+        >
           <ListItemIcon sx={{ minWidth: 32 }}>
-            {getTypeIcon(node.type, hasChildren, isExpanded)}
+            {typeIcon}
           </ListItemIcon>
           <ListItemText
             primary={
@@ -191,7 +203,7 @@ const TreeNodeComponent: React.FC<{
                 variant="body2"
                 sx={{
                   fontSize: '0.875rem',
-                  color: getTypeColor(node.type),
+                  color: typeColor as string,
                   fontWeight: isSelected ? 600 : 400,
                 }}
                 noWrap
@@ -206,7 +218,6 @@ const TreeNodeComponent: React.FC<{
             </IconButton>
           )}
         </ListItemButton>
-        </Tooltip>
       </ListItem>
       {hasChildren && (
         <Collapse in={isExpanded} timeout="auto" unmountOnExit>
@@ -224,10 +235,10 @@ const TreeNodeComponent: React.FC<{
       )}
     </>
   );
-};
+});
 
-// Main Document Outline component
-export const DocumentOutline: React.FC<DocumentOutlineProps> = ({
+// Main Document Outline component - optimized with React.memo
+export const DocumentOutline = React.memo<DocumentOutlineProps>(({
   isOpen,
   onToggle,
   data,
@@ -245,24 +256,24 @@ export const DocumentOutline: React.FC<DocumentOutlineProps> = ({
   const resizeRef = useRef<HTMLDivElement>(null);
   const drawerRef = useRef<HTMLDivElement>(null);
 
-  // Build tree structure from data
+  // Build tree structure from data with stable reference
   const treeNodes = useMemo(() => {
     try {
-      return buildTreeFromObject(data);
+      return buildTreeFromObject(data, [], 0, 10);
     } catch (error) {
       console.error('Error building tree structure:', error);
       return [];
     }
   }, [data]);
 
-  // Initialize expanded nodes based on auto-expand logic
-  React.useEffect(() => {
-    const autoExpandedNodes = new Set<string>();
+  // Initialize expanded nodes based on auto-expand logic - optimized
+  const autoExpandedNodes = useMemo(() => {
+    const expandedSet = new Set<string>();
     
     const collectAutoExpandedNodes = (nodes: TreeNode[]) => {
       nodes.forEach(node => {
         if (node.isExpanded) {
-          autoExpandedNodes.add(node.id);
+          expandedSet.add(node.id);
         }
         if (node.children) {
           collectAutoExpandedNodes(node.children);
@@ -271,8 +282,13 @@ export const DocumentOutline: React.FC<DocumentOutlineProps> = ({
     };
     
     collectAutoExpandedNodes(treeNodes);
-    setExpandedNodes(autoExpandedNodes);
+    return expandedSet;
   }, [treeNodes]);
+
+  // Update expanded nodes when auto-expanded nodes change
+  React.useEffect(() => {
+    setExpandedNodes(autoExpandedNodes);
+  }, [autoExpandedNodes]);
 
   const handleToggleExpand = useCallback((nodeId: string) => {
     setExpandedNodes(prev => {
@@ -293,6 +309,7 @@ export const DocumentOutline: React.FC<DocumentOutlineProps> = ({
     }
   }, [onNavigate]);
 
+  // Memoized expand/collapse handlers
   const handleExpandAll = useCallback(() => {
     const allNodeIds = new Set<string>();
     
@@ -313,28 +330,36 @@ export const DocumentOutline: React.FC<DocumentOutlineProps> = ({
     setExpandedNodes(new Set());
   }, []);
 
-  // Resize functionality
+  // Optimized resize functionality with throttling
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
     setIsResizing(true);
   }, []);
 
   useEffect(() => {
+    let throttleTimer: NodeJS.Timeout;
+    
     const handleMouseMove = (e: MouseEvent) => {
       if (!isResizing) return;
       
-      // Calculate new width based on mouse position from the right edge
-      const newWidth = window.innerWidth - e.clientX;
-      const clampedWidth = Math.max(minWidth, Math.min(maxWidth, newWidth));
+      // Throttle resize updates for better performance
+      if (throttleTimer) clearTimeout(throttleTimer);
       
-      setCurrentWidth(clampedWidth);
-      if (onWidthChange) {
-        onWidthChange(clampedWidth);
-      }
+      throttleTimer = setTimeout(() => {
+        // Calculate new width based on mouse position from the right edge
+        const newWidth = window.innerWidth - e.clientX;
+        const clampedWidth = Math.max(minWidth, Math.min(maxWidth, newWidth));
+        
+        setCurrentWidth(clampedWidth);
+        if (onWidthChange) {
+          onWidthChange(clampedWidth);
+        }
+      }, 16); // ~60fps throttling
     };
 
     const handleMouseUp = () => {
       setIsResizing(false);
+      if (throttleTimer) clearTimeout(throttleTimer);
     };
 
     if (isResizing) {
@@ -349,6 +374,7 @@ export const DocumentOutline: React.FC<DocumentOutlineProps> = ({
       document.removeEventListener('mouseup', handleMouseUp);
       document.body.style.cursor = '';
       document.body.style.userSelect = '';
+      if (throttleTimer) clearTimeout(throttleTimer);
     };
   }, [isResizing, minWidth, maxWidth, onWidthChange]);
 
@@ -430,16 +456,28 @@ export const DocumentOutline: React.FC<DocumentOutlineProps> = ({
         </Box>
         
         <Box sx={{ display: 'flex', gap: 1, mb: 1 }}>
-          <Tooltip title="Expand All">
-            <IconButton size="small" onClick={handleExpandAll}>
-              <ExpandMore />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Collapse All">
-            <IconButton size="small" onClick={handleCollapseAll}>
-              <ExpandLess />
-            </IconButton>
-          </Tooltip>
+          <IconButton size="small" onClick={handleExpandAll} title="Expand All">
+            <ExpandMore />
+          </IconButton>
+          <IconButton size="small" onClick={handleCollapseAll} title="Collapse All">
+            <ExpandLess />
+          </IconButton>
+        </Box>
+        
+        {/* Instruction note */}
+        <Box sx={{ mb: 1, px: 1 }}>
+          <Typography 
+            variant="caption" 
+            sx={{ 
+              fontSize: '0.75rem', 
+              color: 'text.secondary',
+              fontStyle: 'italic',
+              display: 'block',
+              lineHeight: 1.2
+            }}
+          >
+            Double-click any item to scroll to it in the editor
+          </Typography>
         </Box>
         
         <Divider />
@@ -467,6 +505,6 @@ export const DocumentOutline: React.FC<DocumentOutlineProps> = ({
       )}
     </Drawer>
   );
-};
+});
 
 export default DocumentOutline;
