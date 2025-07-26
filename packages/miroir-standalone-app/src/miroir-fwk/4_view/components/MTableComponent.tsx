@@ -26,13 +26,13 @@ import { packageName } from '../../../constants.js';
 import EntityEditor from '../EntityEditor.js';
 import {
   useMiroirContextInnerFormOutput,
-  useMiroirContextService
+  useMiroirContextService,
+  useViewParams
 } from '../MiroirContextReactProvider.js';
 import { useCurrentModel } from '../ReduxHooks.js';
 import { cleanLevel } from '../constants.js';
 import { calculateAdaptiveColumnWidths } from '../adaptiveColumnWidths.js';
 import { ToolsCellRenderer } from './GenderCellRenderer.js';
-import { useGridContext } from './GridContextProvider.js';
 import { GlideDataGridComponent } from './GlideDataGridComponent.js';
 import { JsonObjectDeleteFormDialog } from './JsonObjectDeleteFormDialog.js';
 import {
@@ -69,7 +69,8 @@ export const MTableComponent = (props: TableComponentProps) => {
   log.info(":::::::::::::::::::::::::: MTableComponent refreshing with props",props);
   
   const navigate = useNavigate();
-  const { gridType } = useGridContext();
+  const viewParams = useViewParams();
+  const gridType = viewParams?.gridType || 'ag-grid';
   const context = useMiroirContextService();
   const contextDeploymentUuid = context.deploymentUuid;
 

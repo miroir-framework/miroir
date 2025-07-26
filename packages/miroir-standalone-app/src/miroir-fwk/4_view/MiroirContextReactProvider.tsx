@@ -13,7 +13,9 @@ import {
   MiroirContextInterface,
   MiroirLoggerFactory,
   miroirFundamentalJzodSchema as globalMiroirFundamentalJzodSchema,
-  Uuid
+  Uuid,
+  ViewParams,
+  GridType
 } from "miroir-core";
 import {
   ReduxStateChanges,
@@ -22,10 +24,6 @@ import {
 
 import { packageName } from "../../constants.js";
 import { cleanLevel } from "./constants.js";
-import { ViewParams } from "./ViewParams.js";
-
-// Export ViewParams for use in other components
-export { ViewParams };
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -81,8 +79,17 @@ export function MiroirContextReactProvider(props: {
   >(globalMiroirFundamentalJzodSchema as JzodSchema);
   // useState<JzodSchema>({name: "dummyJzodSchema", parentName: "JzodSchema", parentUuid:"", uuid: ""});
 
-  // Create ViewParams instance to track UI state
-  const [viewParams] = useState(() => new ViewParams(250)); // Default sidebar width of 200px
+  // Create ViewParams instance to track UI state with reactive state
+  const [sidebarWidth, setSidebarWidth] = useState(250);
+  const [gridType, setGridType] = useState<GridType>('ag-grid');
+  
+  const viewParams = useMemo(() => {
+    const params = new ViewParams(sidebarWidth, gridType);
+    // Override setters to use React state
+    params.updateSidebarWidth = (width: number) => setSidebarWidth(width);
+    params.setGridType = (type: GridType) => setGridType(type);
+    return params;
+  }, [sidebarWidth, gridType]);
 
   // const value = useMemo<MiroirReactContext>(()=>({
   const value = useMemo<MiroirReactContext>(
@@ -121,6 +128,8 @@ export function MiroirContextReactProvider(props: {
       props.miroirContext,
       props.domainController,
       viewParams,
+      sidebarWidth,
+      gridType,
     ]
   );
   return <miroirReactContext.Provider value={value}>{props.children}</miroirReactContext.Provider>;

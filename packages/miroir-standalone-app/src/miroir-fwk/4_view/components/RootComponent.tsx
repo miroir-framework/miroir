@@ -48,7 +48,6 @@ import {
   useViewParams,
 } from "../MiroirContextReactProvider.js";
 import AppBar from './AppBar.js';
-import { GridProvider, useGridContext } from './GridContextProvider.js';
 
 import { deployments, packageName } from '../../../constants.js';
 import { cleanLevel } from '../constants.js';
@@ -460,9 +459,8 @@ export const RootComponent = (props: RootComponentProps) => {
 
 
   return (
-    <GridProvider>
-      <DocumentOutlineContext.Provider value={outlineContextValue}>
-        <div>
+    <DocumentOutlineContext.Provider value={outlineContextValue}>
+      <div>
       {/* <PersistentDrawerLeft></PersistentDrawerLeft> */}
       {/* <Box sx={{ display: 'flex', flexDirection:"column", flexGrow: 1 }}> */}
       {/* Root loaded {loaded} */}
@@ -738,149 +736,9 @@ export const RootComponent = (props: RootComponentProps) => {
                     </button>
                   </span>
 
-                  {/* <button
-                    onClick={async () => {
-                      const remoteStore:PersistenceStoreLocalOrRemoteInterface = domainController.getRemoteStore();
-                      if (!miroirConfig) {
-                        throw new Error("no miroirConfig given, it has to be given on the command line starting the server!");
-                      }
-                      log.info(
-                        "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ INITMODEL START @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
-                      );
-                      await domainController.handleAction({
-                        actionType: "modelAction",
-                        actionName: "initModel",
-                        deploymentUuid:adminConfigurationDeploymentMiroir.uuid,
-                        endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                        params: {
-                          dataStoreType: "miroir",
-                          metaModel: defaultMiroirMetaModel,
-                          selfApplication: selfApplicationMiroir,
-                          applicationDeploymentConfiguration: adminConfigurationDeploymentMiroir,
-                          applicationModelBranch: selfApplicationModelBranchMiroirMasterBranch,
-                          applicationStoreBasedConfiguration: selfApplicationStoreBasedConfigurationMiroir,
-                          applicationVersion: selfApplicationVersionInitialMiroirVersion,
-                        },
-                      });
-                      await domainController.handleAction({
-                        actionType: "modelAction",
-                        actionName: "initModel",
-                        deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
-                        endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                        params: {
-                          dataStoreType: "app",
-                          metaModel: defaultMiroirMetaModel,
-                          selfApplication: selfApplicationLibrary,
-                          applicationDeploymentConfiguration: adminConfigurationDeploymentLibrary,
-                          applicationModelBranch: selfApplicationModelBranchLibraryMasterBranch,
-                          applicationStoreBasedConfiguration: selfApplicationStoreBasedConfigurationLibrary,
-                          applicationVersion: selfApplicationVersionLibraryInitialVersion,
-                        },
-                      });
-                      // TODO: transactional action must not autocommit! initModel neither?!
-                      // .then(
-                      // async () => {
-                      log.info(
-                        "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ INITMODEL DONE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
-                      );
-                      await domainController.handleAction({
-                        actionType: "modelAction",
-                        actionName: "rollback",
-                        deploymentUuid:adminConfigurationDeploymentMiroir.uuid,
-                        endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                      });
-                      await domainController.handleAction({
-                        actionType: "modelAction",
-                        actionName: "rollback",
-                        deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
-                        endpoint: "7947ae40-eb34-4149-887b-15a9021e714e"
-                      });
-                
-                      // }
-                      // );
-                    }}
-                  >
-                    Init database
-                  </button> */}
-                  {/* <button
-                    onClick={async () => {
-                      log.info("creating bundle")
-                      const remoteStore:PersistenceStoreLocalOrRemoteInterface = domainController.getRemoteStore();
-                      await remoteStore.handlePersistenceAction({
-                        actionType: "bundleAction",
-                        actionName: "createBundle",
-                        deploymentUuid: adminConfigurationDeploymentLibrary.uuid
-                      })
-                    }
-                  }
-                  >
-                    create Library SelfApplication Bundle
-                  </button> */}
                 </span>
                 <p />
                 <span>
-                  {/* <button
-                    onClick={async () => {
-                      await uploadBooksAndReports(domainController, defaultMiroirMetaModel);
-                      await domainController.handleAction({
-                        actionType: "modelAction",
-                        actionName: "remoteLocalCacheRollback",
-                        endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                        deploymentUuid:adminConfigurationDeploymentMiroir.uuid,
-                      });
-                      await domainController.handleAction({
-                        actionType: "modelAction",
-                        actionName: "remoteLocalCacheRollback",
-                        endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                        deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
-                      });
-                    }}
-                  >
-                    upload App configuration to database
-                  </button> */}
-                  {/* <button
-                    onClick={async () => {
-                      const query:BoxedQueryTemplateWithExtractorCombinerTransformer = {
-                        queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
-                        deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-                        contextResults: {
-                          elementType: "object",
-                          elementValue: {}
-                        },
-                        pageParams: {
-                          elementType: "object",
-                          elementValue: {}
-                        },
-                        queryParams: {
-                          elementType: "object",
-                          elementValue: {}
-                        },
-                        extractorTemplates: {
-                          "select": {
-                            "authors": {
-                              "extractorOrCombinerType": "extractorTemplateForObjectListByEntity",
-                              "parentName": "Author",
-                              "parentUuid": {
-                                "transformerType": "constantUuid",
-                                "value": "d7a144ff-d1b9-4135-800c-a7cfc1f38733"
-                              }
-                            }
-                          }
-                        }
-                      } 
-                      await domainController.handleAction({
-                        actionType: "runBoxedQueryTemplateOrBoxedExtractorTemplateAction",
-                        actionName: "runQuery",
-                        deploymentUuid:query.deploymentUuid,
-                        endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-                        query: query
-                      });
-                
-                      // await uploadBooksAndReports(domainController, defaultMiroirMetaModel);
-                    }}
-                  >
-                    send query to database
-                  </button> */}
                 </span>
                 <Outlet></Outlet>
               </StyledMain>
@@ -916,36 +774,37 @@ export const RootComponent = (props: RootComponentProps) => {
       </Snackbar>
     </div>
     </DocumentOutlineContext.Provider>
-    </GridProvider>
   );
 };
 
 // Grid Switch Component
 const GridSwitchComponent: React.FC = () => {
-  const { gridType, setGridType } = useGridContext();
+  const viewParams = useViewParams();
 
   const handleGridTypeChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-    setGridType(event.target.checked ? 'glide-data-grid' : 'ag-grid');
-  }, [setGridType]);
+    viewParams?.setGridType(event.target.checked ? 'glide-data-grid' : 'ag-grid');
+  }, [viewParams]);
 
   return (
-    <Box sx={{ mb: 2, p: 1, border: '1px solid #e0e0e0', borderRadius: 1, backgroundColor: '#f5f5f5' }}>
+    <Box
+      sx={{ mb: 2, p: 1, border: "1px solid #e0e0e0", borderRadius: 1, backgroundColor: "#f5f5f5" }}
+    >
       <FormControlLabel
         control={
           <Switch
-            checked={gridType === 'glide-data-grid'}
+            checked={viewParams?.gridType === "glide-data-grid"}
             onChange={handleGridTypeChange}
             name="gridType"
             color="primary"
           />
         }
         label={
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             <Typography variant="body2" color="textSecondary">
               Grid Type:
             </Typography>
             <Typography variant="body2" fontWeight="bold">
-              {gridType === 'ag-grid' ? 'AG-Grid' : 'Glide Data Grid'}
+              {viewParams?.gridType === "ag-grid" ? "AG-Grid" : "Glide Data Grid"}
             </Typography>
           </Box>
         }

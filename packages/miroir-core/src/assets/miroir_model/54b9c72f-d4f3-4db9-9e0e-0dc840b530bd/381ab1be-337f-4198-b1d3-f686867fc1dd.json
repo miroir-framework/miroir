@@ -76,12 +76,28 @@
           }
         }
       },
+      "storageAccess": {
+        "type": "enum",
+        "definition": [
+          "none",
+          "localStorage",
+          "persistentStorage"
+        ],
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 6,
+            "defaultLabel": "Storage Access",
+            "editable": false
+          }
+        }
+      },
       "selfApplication": {
         "type": "uuid",
         "optional": true,
         "tag": {
           "value": {
-            "id": 6,
+            "id": 7,
             "defaultLabel": "SelfApplication",
             "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
             "editable": false
@@ -92,7 +108,7 @@
         "type": "string",
         "tag": {
           "value": {
-            "id": 7,
+            "id": 8,
             "defaultLabel": "Name",
             "editable": true
           }
@@ -103,7 +119,7 @@
         "optional": true,
         "tag": {
           "value": {
-            "id": 8,
+            "id": 9,
             "defaultLabel": "SelfApplication",
             "editable": true
           }
@@ -114,7 +130,7 @@
         "optional": true,
         "tag": {
           "value": {
-            "id": 9,
+            "id": 10,
             "defaultLabel": "Description",
             "editable": true
           }

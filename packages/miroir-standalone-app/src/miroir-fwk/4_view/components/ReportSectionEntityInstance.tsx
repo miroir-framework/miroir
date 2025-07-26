@@ -1,7 +1,7 @@
-import { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react';
-import { Formik, FormikProps } from 'formik';
 import { EditorView } from '@codemirror/view';
 import ReactCodeMirror from '@uiw/react-codemirror';
+import { Formik, FormikProps } from 'formik';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import {
   ApplicationSection,
@@ -24,12 +24,7 @@ import {
   SyncQueryRunnerParams,
   Uuid,
   adminConfigurationDeploymentMiroir,
-  dummyDomainManyQueryWithDeploymentUuid,
-  entityTest,
-  getApplicationSection,
-  getQueryRunnerParamsForDeploymentEntityState,
-  jzodTypeCheck,
-  rootLessListKeyMap
+  dummyDomainManyQueryWithDeploymentUuid
 } from "miroir-core";
 import { getMemoizedDeploymentEntityStateSelectorMap } from 'miroir-localcache-redux';
 
@@ -39,8 +34,8 @@ import {
 } from "../MiroirContextReactProvider.js";
 
 import { javascript } from '@codemirror/lang-javascript';
-import { Switch, IconButton, Tooltip } from '@mui/material';
 import { Toc } from '@mui/icons-material';
+import { IconButton, Switch, Tooltip } from '@mui/material';
 import { ErrorBoundary } from "react-error-boundary";
 import { packageName } from '../../../constants.js';
 import { JzodEnumSchemaToJzodElementResolver, getCurrentEnumJzodSchemaResolver } from '../../JzodTools.js';
@@ -49,17 +44,15 @@ import {
   useCurrentModel,
   useDeploymentEntityStateQuerySelectorForCleanedResult
 } from "../ReduxHooks.js";
-import { JzodElementDisplay } from './JzodElementDisplay.js';
-import { JzodElementEditor } from './JzodElementEditor.js';
-import { ErrorFallbackComponent } from './ErrorFallbackComponent.js';
-import { useDocumentOutlineContext } from './RootComponent.js';
 import {
   measuredGetApplicationSection,
   measuredGetQueryRunnerParamsForDeploymentEntityState,
-  measuredJzodTypeCheck,
-  measuredRootLessListKeyMap,
+  measuredJzodTypeCheck
 } from "../tools/hookPerformanceMeasure.js";
 import { RenderPerformanceMetrics } from '../tools/renderPerformanceMeasure.js';
+import { ErrorFallbackComponent } from './ErrorFallbackComponent.js';
+import { JzodElementEditor } from './JzodElementEditor.js';
+import { useDocumentOutlineContext } from './RootComponent.js';
 // import { GlobalRenderPerformanceDisplay, RenderPerformanceDisplay, trackRenderPerformance } from '../tools/renderPerformanceMeasure.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;

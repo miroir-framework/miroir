@@ -1254,10 +1254,12 @@ export function getMiroirFundamentalJzodSchema(
             },
           },
         },
-        conceptLevel: {
-          type: "enum",
-          definition: ["MetaModel", "Model", "Data"],
-        },
+        conceptLevel: entityDefinitionEntity.jzodSchema.definition.conceptLevel,
+        // {
+        //   type: "enum",
+        //   definition: ["MetaModel", "Model", "Data"],
+        // },
+        storageAccess: entityDefinitionEntity.jzodSchema.definition.storageAccess,
         dataStoreType: {
           type: "enum",
           definition: ["miroir", "app"],

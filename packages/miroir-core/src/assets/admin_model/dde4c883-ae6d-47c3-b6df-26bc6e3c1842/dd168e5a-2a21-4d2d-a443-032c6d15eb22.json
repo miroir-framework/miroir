@@ -46,6 +46,13 @@
             "selfApplication": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
             "reportUuid": "2d690e4f-16f6-4332-be6c-45d5179b3981",
             "icon": "folder"
+          },
+          {
+            "label": "ViewParams",
+            "section": "data",
+            "selfApplication": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+            "reportUuid": "a0503a52-befd-4dcd-90c8-3c96c90f805d",
+            "icon": "folder"
           }
         ]
       }

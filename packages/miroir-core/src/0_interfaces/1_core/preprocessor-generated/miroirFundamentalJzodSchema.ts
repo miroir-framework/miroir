@@ -6387,7 +6387,31 @@ export const miroirFundamentalJzodSchema = {
           "MetaModel",
           "Model",
           "Data"
-        ]
+        ],
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 5,
+            "defaultLabel": "Concept Level",
+            "editable": false
+          }
+        }
+      },
+      "storageAccess": {
+        "type": "enum",
+        "definition": [
+          "none",
+          "localStorage",
+          "persistentStorage"
+        ],
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 6,
+            "defaultLabel": "Storage Access",
+            "editable": false
+          }
+        }
       },
       "dataStoreType": {
         "type": "enum",
@@ -7148,12 +7172,28 @@ export const miroirFundamentalJzodSchema = {
               }
             }
           },
+          "storageAccess": {
+            "type": "enum",
+            "definition": [
+              "none",
+              "localStorage",
+              "persistentStorage"
+            ],
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 6,
+                "defaultLabel": "Storage Access",
+                "editable": false
+              }
+            }
+          },
           "selfApplication": {
             "type": "uuid",
             "optional": true,
             "tag": {
               "value": {
-                "id": 6,
+                "id": 7,
                 "defaultLabel": "SelfApplication",
                 "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
                 "editable": false
@@ -7164,7 +7204,7 @@ export const miroirFundamentalJzodSchema = {
             "type": "string",
             "tag": {
               "value": {
-                "id": 7,
+                "id": 8,
                 "defaultLabel": "Name",
                 "editable": true
               }
@@ -7175,7 +7215,7 @@ export const miroirFundamentalJzodSchema = {
             "optional": true,
             "tag": {
               "value": {
-                "id": 8,
+                "id": 9,
                 "defaultLabel": "SelfApplication",
                 "editable": true
               }
@@ -7186,7 +7226,7 @@ export const miroirFundamentalJzodSchema = {
             "optional": true,
             "tag": {
               "value": {
-                "id": 9,
+                "id": 10,
                 "defaultLabel": "Description",
                 "editable": true
               }
@@ -27566,12 +27606,47 @@ export const miroirFundamentalJzodSchema = {
                   }
                 }
               },
+              "storageAccess": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "enum",
+                    "definition": [
+                      "none",
+                      "localStorage",
+                      "persistentStorage"
+                    ],
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "id": 6,
+                        "defaultLabel": "Storage Access",
+                        "editable": false
+                      }
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "transformerForBuildCarryOnObject"
+                    }
+                  }
+                ],
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "id": 6,
+                    "defaultLabel": "Storage Access",
+                    "editable": false
+                  }
+                }
+              },
               "selfApplication": {
                 "type": "union",
                 "optional": true,
                 "tag": {
                   "value": {
-                    "id": 6,
+                    "id": 7,
                     "defaultLabel": "SelfApplication",
                     "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
                     "editable": false
@@ -27583,7 +27658,7 @@ export const miroirFundamentalJzodSchema = {
                     "optional": true,
                     "tag": {
                       "value": {
-                        "id": 6,
+                        "id": 7,
                         "defaultLabel": "SelfApplication",
                         "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
                         "editable": false
@@ -27602,7 +27677,7 @@ export const miroirFundamentalJzodSchema = {
                 "type": "union",
                 "tag": {
                   "value": {
-                    "id": 7,
+                    "id": 8,
                     "defaultLabel": "Name",
                     "editable": true
                   }
@@ -27612,7 +27687,7 @@ export const miroirFundamentalJzodSchema = {
                     "type": "string",
                     "tag": {
                       "value": {
-                        "id": 7,
+                        "id": 8,
                         "defaultLabel": "Name",
                         "editable": true
                       }
@@ -27631,7 +27706,7 @@ export const miroirFundamentalJzodSchema = {
                 "optional": true,
                 "tag": {
                   "value": {
-                    "id": 8,
+                    "id": 9,
                     "defaultLabel": "SelfApplication",
                     "editable": true
                   }
@@ -27642,7 +27717,7 @@ export const miroirFundamentalJzodSchema = {
                     "optional": true,
                     "tag": {
                       "value": {
-                        "id": 8,
+                        "id": 9,
                         "defaultLabel": "SelfApplication",
                         "editable": true
                       }
@@ -27661,7 +27736,7 @@ export const miroirFundamentalJzodSchema = {
                 "optional": true,
                 "tag": {
                   "value": {
-                    "id": 9,
+                    "id": 10,
                     "defaultLabel": "Description",
                     "editable": true
                   }
@@ -27672,7 +27747,7 @@ export const miroirFundamentalJzodSchema = {
                     "optional": true,
                     "tag": {
                       "value": {
-                        "id": 9,
+                        "id": 10,
                         "defaultLabel": "Description",
                         "editable": true
                       }
