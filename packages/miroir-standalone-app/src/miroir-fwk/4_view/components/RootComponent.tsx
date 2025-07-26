@@ -480,17 +480,21 @@ export const RootComponent = (props: RootComponentProps) => {
   const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<DeploymentEntityState> =
   useMemo(() => getMemoizedDeploymentEntityStateSelectorMap(), []);
 
-  const defaultViewParamsFromAdminStorageFetchQueryResults: Record<string, EntityInstancesUuidIndex> =
-    useDeploymentEntityStateQuerySelectorForCleanedResult(
-      deploymentEntityStateSelectorMap.runQuery as SyncQueryRunner<
-        DeploymentEntityState,
-        Domain2QueryReturnType<DomainElementSuccess>
-      >,
-      defaultViewParamsFromAdminStorageFetchQueryParams(deploymentEntityStateSelectorMap)
-    );
+  const defaultViewParamsFromAdminStorageFetchQueryResults: Record<
+    string,
+    EntityInstancesUuidIndex
+  > = useDeploymentEntityStateQuerySelectorForCleanedResult(
+    deploymentEntityStateSelectorMap.runQuery as SyncQueryRunner<
+      DeploymentEntityState,
+      Domain2QueryReturnType<DomainElementSuccess>
+    >,
+    currentModel?.entities?.length > 0
+      ? defaultViewParamsFromAdminStorageFetchQueryParams(deploymentEntityStateSelectorMap)
+      : getQueryRunnerParamsForDeploymentEntityState(dummyDomainManyQueryWithDeploymentUuid)
+  );
 
   const defaultViewParamsFromAdminStorage: ViewParams | undefined =
-    defaultViewParamsFromAdminStorageFetchQueryResults?.["viewParams"] as any;
+    defaultViewParamsFromAdminStorageFetchQueryResults?.["viewParams"] as any || defaultAdminViewParams;
 
   log.info(
     "RootComponent: defaultViewParamsFromAdminStorageFetchQueryResults",
@@ -887,7 +891,7 @@ export const RootComponent = (props: RootComponentProps) => {
 };
 
 
-
+// ################################################################################################
 // Grid Switch Component
 const GridSwitchComponent: React.FC<{ defaultviewParamsFromAdminDb?: ViewParams | null }> = (
   { defaultviewParamsFromAdminDb }: { defaultviewParamsFromAdminDb?: ViewParams | null } = {}

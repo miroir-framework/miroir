@@ -16,13 +16,16 @@ import { Link } from 'react-router-dom';
 
 
 import {
+  adminConfigurationDeploymentAdmin,
   adminConfigurationDeploymentMiroir,
   DeploymentEntityState,
   Domain2QueryReturnType,
+  dummyDomainManyQueryWithDeploymentUuid,
   entityMenu,
   getApplicationSection,
   getQueryRunnerParamsForDeploymentEntityState,
   LoggerInterface,
+  MetaModel,
   MiroirLoggerFactory,
   SyncBoxedExtractorOrQueryRunnerMap,
   SyncQueryRunnerParams,
@@ -31,7 +34,7 @@ import {
 import { getMemoizedDeploymentEntityStateSelectorMap } from 'miroir-localcache-redux';
 import { packageName } from '../../../constants.js';
 import { cleanLevel } from '../constants.js';
-import { useDeploymentEntityStateQuerySelector } from '../ReduxHooks.js';
+import { useCurrentModel, useDeploymentEntityStateQuerySelector } from '../ReduxHooks.js';
 
 const MatDivider: any = Divider;
 const MatList: any = List;
@@ -123,6 +126,9 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
   // const domainController: DomainControllerInterface = useDomainControllerService();
   // const miroirConfig = context.getMiroirConfig();
   // const context = useMiroirContext();
+  const currentModel: MetaModel = useCurrentModel(
+    adminConfigurationDeploymentAdmin.uuid
+  );
 
   const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<DeploymentEntityState> = useMemo(
     () => getMemoizedDeploymentEntityStateSelectorMap(),
@@ -130,28 +136,36 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
   )
 
   const fetchDeploymentMenusQueryParams: SyncQueryRunnerParams<DeploymentEntityState> = useMemo(
-    () => 
-    getQueryRunnerParamsForDeploymentEntityState({
-      queryType: "boxedQueryWithExtractorCombinerTransformer",
-      deploymentUuid: props.deploymentUuid,
-      pageParams: {},
-      queryParams: {},
-      contextResults: {},
-      extractors: {
-        menus: {
-          extractorOrCombinerType: "extractorForObjectByDirectReference",
-          parentName: "Menu",
-          applicationSection: getApplicationSection(props.deploymentUuid,entityMenu.uuid),
-          parentUuid: entityMenu.uuid,
-          instanceUuid: props.menuUuid,
-        },
-      },
-    }, deploymentEntityStateSelectorMap),
-    [deploymentEntityStateSelectorMap]
+    () =>
+      getQueryRunnerParamsForDeploymentEntityState(
+        currentModel?.entities?.length > 0? 
+        {
+              queryType: "boxedQueryWithExtractorCombinerTransformer",
+              deploymentUuid: props.deploymentUuid,
+              pageParams: {},
+              queryParams: {},
+              contextResults: {},
+              extractors: {
+                menus: {
+                  extractorOrCombinerType: "extractorForObjectByDirectReference",
+                  parentName: "Menu",
+                  applicationSection: getApplicationSection(props.deploymentUuid, entityMenu.uuid),
+                  parentUuid: entityMenu.uuid,
+                  instanceUuid: props.menuUuid,
+                },
+              },
+            }
+          : dummyDomainManyQueryWithDeploymentUuid
+          ,
+        deploymentEntityStateSelectorMap
+      ),
+    [deploymentEntityStateSelectorMap, currentModel, props.deploymentUuid, props.menuUuid]
   );
 
   // log.info("fetchDeploymentMenusQueryParams",fetchDeploymentMenusQueryParams)
-  const miroirMenusDomainElementObject: Domain2QueryReturnType<Domain2QueryReturnType<Record<string,any>>> = useDeploymentEntityStateQuerySelector(
+  const miroirMenusDomainElementObject: Domain2QueryReturnType<
+    Domain2QueryReturnType<Record<string, any>>
+  > = useDeploymentEntityStateQuerySelector(
     deploymentEntityStateSelectorMap.runQuery,
     fetchDeploymentMenusQueryParams
   );
