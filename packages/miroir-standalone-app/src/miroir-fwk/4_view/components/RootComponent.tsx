@@ -70,6 +70,7 @@ import { Sidebar } from "./Sidebar.js";
 import { SidebarWidth } from "./SidebarSection.js";
 import { InstanceEditorOutline } from './InstanceEditorOutline.js';
 import { useCurrentModel, useDeploymentEntityStateQuerySelectorForCleanedResult } from "../ReduxHooks.js";
+import { ViewParamsUpdateQueue, ViewParamsUpdateQueueConfig } from './ViewParamsUpdateQueue.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -488,29 +489,87 @@ export const RootComponent = (props: RootComponentProps) => {
       defaultViewParamsFromAdminStorageFetchQueryParams(deploymentEntityStateSelectorMap)
     );
 
+  const defaultViewParamsFromAdminStorage: ViewParams | undefined =
+    defaultViewParamsFromAdminStorageFetchQueryResults?.["viewParams"] as any;
+
   log.info(
     "RootComponent: defaultViewParamsFromAdminStorageFetchQueryResults",
-    (defaultViewParamsFromAdminStorageFetchQueryResults?.["viewParams"] as any)
-      ?.sidebarWidth,
+    defaultViewParamsFromAdminStorage,
     defaultViewParamsFromAdminStorageFetchQueryResults
   );
-  const [sidebarWidth, setSidebarWidth] = useState(
-    (defaultViewParamsFromAdminStorageFetchQueryResults?.["viewParams"] as any)
-      ?.sidebarWidth ?? SidebarWidth
+  
+  // Get the database sidebar width value
+  const dbSidebarWidth = defaultViewParamsFromAdminStorage?.sidebarWidth;
+  
+  // Use local state for sidebar width that can be overridden by user
+  const [sidebarWidth, setSidebarWidth] = useState(dbSidebarWidth ?? SidebarWidth);
+  const [userHasChangedSidebarWidth, setUserHasChangedSidebarWidth] = useState(false);
+
+  // Initialize the ViewParamsUpdateQueue
+  const updateQueue = useMemo(() => {
+    if (!defaultViewParamsFromAdminStorageFetchQueryResults?.["viewParams"]) {
+      return null;
+    }
+    
+    const viewParamsInstanceUuid = Object.keys(defaultViewParamsFromAdminStorageFetchQueryResults["viewParams"])[0];
+    
+    if (!viewParamsInstanceUuid) {
+      return null;
+    }
+
+    const config: ViewParamsUpdateQueueConfig = {
+      // delayMs: 60000, // 1 minute
+      delayMs: 5000, // 1 minute
+      deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
+      viewParamsInstanceUuid: viewParamsInstanceUuid
+    };
+
+    try {
+      return ViewParamsUpdateQueue.getInstance(config, domainController);
+    } catch (error) {
+      log.error("Failed to initialize ViewParamsUpdateQueue", error);
+      return null;
+    }
+  }, [defaultViewParamsFromAdminStorageFetchQueryResults, domainController]);
+
+  // Update sidebar width when database value changes (only if user hasn't made changes)
+  useEffect(() => {
+    if (!userHasChangedSidebarWidth && dbSidebarWidth && dbSidebarWidth !== sidebarWidth) {
+      setSidebarWidth(dbSidebarWidth);
+      log.info("RootComponent: Updated sidebar width from database", dbSidebarWidth);
+    }
+  }, [dbSidebarWidth, userHasChangedSidebarWidth, sidebarWidth]);
+
+  const handleSidebarWidthChange = useMemo(
+    () => (width: number) => {
+      setSidebarWidth(width);
+      setUserHasChangedSidebarWidth(true);
+
+      // Queue the update if the new width is different from the database value
+      if (defaultViewParamsFromAdminStorage && updateQueue && width !== dbSidebarWidth) {
+        updateQueue.queueUpdate({
+          currentValue: defaultViewParamsFromAdminStorage,
+          updates: {
+            sidebarWidth: width,
+          }
+        });
+        log.info("RootComponent: Queued sidebar width update", width);
+      }
+    },
+    [setSidebarWidth, updateQueue, dbSidebarWidth, defaultViewParamsFromAdminStorage]
   );
 
-  // Update sidebar width when defaultViewParamsFromAdminStorageFetchQueryResults changes
+  // Cleanup the queue on unmount
   useEffect(() => {
-    const newSidebarWidth = (defaultViewParamsFromAdminStorageFetchQueryResults?.["viewParams"] as any)
-      ?.sidebarWidth;
-    if (newSidebarWidth && newSidebarWidth !== sidebarWidth) {
-      setSidebarWidth(newSidebarWidth);
-    }
-  }, [defaultViewParamsFromAdminStorageFetchQueryResults, sidebarWidth]);
-
-  const handleSidebarWidthChange = useMemo(() => (width: number) => {
-    setSidebarWidth(width);
-  }, [setSidebarWidth]);
+    return () => {
+      if (updateQueue) {
+        // Flush any pending updates before unmounting
+        updateQueue.flushImmediately().catch(error => {
+          log.error("Failed to flush pending updates on unmount", error);
+        });
+      }
+    };
+  }, [updateQueue]);
 
   return (
     <DocumentOutlineContext.Provider value={outlineContextValue}>
