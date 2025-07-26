@@ -7,7 +7,10 @@ import {
   SelectChangeEvent,
   Snackbar,
   Alert,
-  Toolbar
+  Toolbar,
+  Switch,
+  FormControlLabel,
+  Typography
 } from "@mui/material";
 import { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -45,6 +48,7 @@ import {
   useViewParams,
 } from "../MiroirContextReactProvider.js";
 import AppBar from './AppBar.js';
+import { GridProvider, useGridContext } from './GridContextProvider.js';
 
 import { deployments, packageName } from '../../../constants.js';
 import { cleanLevel } from '../constants.js';
@@ -456,8 +460,9 @@ export const RootComponent = (props: RootComponentProps) => {
 
 
   return (
-    <DocumentOutlineContext.Provider value={outlineContextValue}>
-      <div>
+    <GridProvider>
+      <DocumentOutlineContext.Provider value={outlineContextValue}>
+        <div>
       {/* <PersistentDrawerLeft></PersistentDrawerLeft> */}
       {/* <Box sx={{ display: 'flex', flexDirection:"column", flexGrow: 1 }}> */}
       {/* Root loaded {loaded} */}
@@ -501,6 +506,7 @@ export const RootComponent = (props: RootComponentProps) => {
                   <div>transactions: {JSON.stringify(transactions)}</div>
                   <div>loaded: {count}</div>
                 <p />
+                <GridSwitchComponent />
                 <div>
                   <FormControl fullWidth>
                     <InputLabel id="demo-simple-select-label">Chosen selfApplication Deployment</InputLabel>
@@ -910,5 +916,40 @@ export const RootComponent = (props: RootComponentProps) => {
       </Snackbar>
     </div>
     </DocumentOutlineContext.Provider>
+    </GridProvider>
+  );
+};
+
+// Grid Switch Component
+const GridSwitchComponent: React.FC = () => {
+  const { gridType, setGridType } = useGridContext();
+
+  const handleGridTypeChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    setGridType(event.target.checked ? 'glide-data-grid' : 'ag-grid');
+  }, [setGridType]);
+
+  return (
+    <Box sx={{ mb: 2, p: 1, border: '1px solid #e0e0e0', borderRadius: 1, backgroundColor: '#f5f5f5' }}>
+      <FormControlLabel
+        control={
+          <Switch
+            checked={gridType === 'glide-data-grid'}
+            onChange={handleGridTypeChange}
+            name="gridType"
+            color="primary"
+          />
+        }
+        label={
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Typography variant="body2" color="textSecondary">
+              Grid Type:
+            </Typography>
+            <Typography variant="body2" fontWeight="bold">
+              {gridType === 'ag-grid' ? 'AG-Grid' : 'Glide Data Grid'}
+            </Typography>
+          </Box>
+        }
+      />
+    </Box>
   );
 };

@@ -16,6 +16,8 @@ import {
   DefaultCellRenderer,
 } from "./components/SelectEntityInstanceEditor.js";
 import { cleanLevel } from "./constants.js";
+import { calculateAdaptiveColumnWidths, ColumnWidthSpec } from "./adaptiveColumnWidths.js";
+import { TableComponentRow } from "./components/MTableComponentInterface.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -30,6 +32,7 @@ export function getColumnDefinitionsFromEntityDefinitionAttribute(
   jzodSchema: JzodElement,
   // jzodObjectSchema?: JzodObject,
   entityDefinition?: EntityDefinition | undefined,
+  width?: number,
 ): ColDef<any> {
 
   if (jzodSchema?.tag?.value?.targetEntity) {
@@ -50,6 +53,7 @@ export function getColumnDefinitionsFromEntityDefinitionAttribute(
         entityUuid: jzodSchema?.tag?.value?.targetEntity,
         entityDefinition
       },
+      width: width,
     };
     // log.info(
     //   "column with targetEntity named",
@@ -96,6 +100,7 @@ export function getColumnDefinitionsFromEntityDefinitionAttribute(
           entityUuid: entityDefinition?.entityUuid??"",
           entityDefinition
         },
+        width: width,
       };
       break;
     }
@@ -106,6 +111,7 @@ export function getColumnDefinitionsFromEntityDefinitionAttribute(
         cellEditor: GenderCellEditor,
         cellEditorPopup: true,
         editable: true,
+        width: width,
       };
       break;
     }
@@ -114,6 +120,7 @@ export function getColumnDefinitionsFromEntityDefinitionAttribute(
       return {
         field: name,
         headerName: jzodSchema.tag?.value?.defaultLabel ? jzodSchema.tag?.value?.defaultLabel : name,
+        width: width,
       };
     }
     default: {
@@ -135,6 +142,7 @@ export function getColumnDefinitionsFromEntityDefinitionAttribute(
           columnName: name,
         },
         headerName: jzodSchema.tag?.value?.defaultLabel ? jzodSchema.tag?.value?.defaultLabel : name,
+        width: width,
         // "sort":'asc'
       };
       break;
@@ -147,7 +155,9 @@ export function getColumnDefinitionsFromEntityDefinitionJzodObjectSchema(
   deploymentUuid: string,
   jzodSchema: JzodElement | undefined,
   viewAttributes?: string[],
-  entityDefinition?: EntityDefinition | undefined
+  entityDefinition?: EntityDefinition | undefined,
+  rowData?: TableComponentRow[],
+  availableWidth?: number
 ): ColDef<any>[] {
   log.info(
     "getColumnDefinitionsFromEntityDefinitionJzodObjectSchema",
@@ -160,12 +170,15 @@ export function getColumnDefinitionsFromEntityDefinitionJzodObjectSchema(
     "entityDefinition",
     entityDefinition
   );
+  
+  let columnDefs: ColDef<any>[] = [];
+  
   switch (jzodSchema?.type) {
     case "object":
       {
         const schemaKeys = Object.keys(jzodSchema.definition)
         if (viewAttributes) {
-          return viewAttributes
+          columnDefs = viewAttributes
             .filter((a: string) => [a, schemaKeys.find((b) => b == a)])
             .map((a: string) =>
               getColumnDefinitionsFromEntityDefinitionAttribute(
@@ -176,18 +189,38 @@ export function getColumnDefinitionsFromEntityDefinitionJzodObjectSchema(
               )
             );
         } else {
-          return (
-            Object.entries(jzodSchema.definition ? jzodSchema.definition : {})
-              .map((e: [string, any]) =>
-                getColumnDefinitionsFromEntityDefinitionAttribute(deploymentUuid, e[0], e[1], entityDefinition)
-              )
-          );
+          columnDefs = Object.entries(jzodSchema.definition ? jzodSchema.definition : {})
+            .map((e: [string, any]) =>
+              getColumnDefinitionsFromEntityDefinitionAttribute(deploymentUuid, e[0], e[1], entityDefinition)
+            );
         }
       }
       break;
     default: {
-      return [];
+      columnDefs = [];
       break;
     }
   }
+
+  // Calculate adaptive widths if row data is provided
+  if (rowData && rowData.length > 0 && columnDefs.length > 0) {
+    const widthSpecs = calculateAdaptiveColumnWidths(
+      columnDefs,
+      rowData,
+      availableWidth || 1200,
+      jzodSchema?.type === "object" ? jzodSchema.definition : undefined
+    );
+
+    // Apply calculated widths to column definitions
+    columnDefs.forEach((colDef, index) => {
+      const widthSpec = widthSpecs.find(spec => spec.field === colDef.field);
+      if (widthSpec) {
+        colDef.width = Math.round(widthSpec.calculatedWidth);
+        colDef.minWidth = Math.round(widthSpec.minWidth);
+        colDef.maxWidth = Math.round(widthSpec.maxWidth);
+      }
+    });
+  }
+
+  return columnDefs;
 }

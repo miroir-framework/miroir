@@ -5,6 +5,8 @@ import { Icon } from '@mui/material';
 import React, { memo, useMemo } from 'react';
 import { packageName } from '../../../constants';
 import { cleanLevel } from '../constants';
+import { TableActionButtons } from './TableActionButtons.js';
+import { TableComponentRow } from './MTableComponentInterface.js';
 
 // export default (props) => {
 //   const image = props.value === 'Male' ? 'male.png' : 'female.png';
@@ -25,33 +27,20 @@ MiroirLoggerFactory.registerLoggerToStart(
 
 export const ToolsCellRenderer: React.MemoExoticComponent<(props: ICellRendererParams) => JSX.Element> = memo(
   (props: ICellRendererParams) => {
+    const row = props.data as TableComponentRow;
+    const onEdit = (props as any)["onClickEdit"];
+    const onDuplicate = (props as any)["onClickDuplicate"];  
+    const onDelete = (props as any)["onClickDelete"];
+
     return (
-      <span>
-        <button
-          onClick={() => {
-            console.log("ToolsCellRenderer calling onClickEdit!");
-            (props as any)["onClickEdit"](props.data);
-          }}
-        >
-          <Icon>create</Icon>
-        </button>
-        <button
-          onClick={() => {
-            console.log("ToolsCellRenderer calling onClickDuplicate!");
-            (props as any)["onClickDuplicate"](props.data);
-          }}
-        >
-          <Icon>content_copy</Icon>
-        </button>
-        <button
-          onClick={() => {
-            console.log("ToolsCellRenderer calling onClickDelete!");
-            (props as any)["onClickDelete"](props.data);
-          }}
-        >
-          <Icon>delete</Icon>
-        </button>
-      </span>
+      <TableActionButtons
+        row={row}
+        onEdit={onEdit}
+        onDuplicate={onDuplicate}
+        onDelete={onDelete}
+        variant="ag-grid"
+        size="small"
+      />
     );
   }
 );
