@@ -27,7 +27,10 @@ import { useDeploymentEntityStateJzodSchemaSelector, useDeploymentEntityStateQue
 import { ReportSectionView } from './ReportSectionView.js';
 import { useDocumentOutlineContext } from './RootComponent.js';
 
-import { getMemoizedDeploymentEntityStateJzodSchemaSelectorMap, getMemoizedDeploymentEntityStateSelectorMap } from 'miroir-localcache-redux';
+import {
+  getMemoizedDeploymentEntityStateJzodSchemaSelectorMap,
+  getMemoizedDeploymentEntityStateSelectorMap,
+} from "miroir-localcache-redux";
 import { packageName, ReportUrlParamKeys } from '../../../constants.js';
 import { cleanLevel } from '../constants.js';
 

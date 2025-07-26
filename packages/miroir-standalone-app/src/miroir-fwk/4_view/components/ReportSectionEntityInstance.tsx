@@ -248,11 +248,6 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   
   
   // ##############################################################################################
-  // const handleDisplayAsStructuredElementSwitchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-  //   setDisplayAsStructuredElement(event.target.checked);
-  // };
-  
-  // ##############################################################################################
   const handleDisplayEditorSwitchChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     setDisplayEditor(event.target.checked);
   },[setDisplayEditor]);
@@ -328,13 +323,6 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
 
           <p>ReportSectionEntityInstance: {ReportSectionEntityInstanceCount}</p>
           <div>
-            {/* <label htmlFor="displayAsStructuredElementSwitch">Display as structured element:</label>
-            <Switch
-              checked={displayAsStructuredElement}
-              id="displayAsStructuredElementSwitch"
-              onChange={handleDisplayAsStructuredElementSwitchChange}
-              inputProps={{ "aria-label": "Display as structured element" }}
-            /> */}
             <label htmlFor="displayEditorSwitch">Display editor:</label>
             <Switch
               checked={displayEditor}

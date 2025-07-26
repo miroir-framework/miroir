@@ -856,6 +856,7 @@ export {
   testSuites,
   transformerTestsDisplayResults,
 } from "./4_services/TestTools.js";
+export { defaultViewParamsFromAdminStorageFetchQueryParams } from "./4_views/viewParams";
 
 export {
   ignorePostgresExtraAttributes,
@@ -885,7 +886,12 @@ export {
 console.log("miroir-core: DONE exports");
 
 console.log("miroir-core: loading MIROIR json files");
+// admin
 const entityAdminApplication = require("../src/assets/admin_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/25d935e7-9e93-42c2-aade-0472b883492b.json"); //assert { type: "json" };
+const entityViewParams = require("../src/assets/admin_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/b9765b7c-b614-4126-a0e2-634463f99937.json"); //assert { type: "json" };
+const entityDefinitionViewParams = require("../src/assets/admin_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/4cb43523-350f-49bd-813e-ab7d5cef78b2.json"); //assert { type: "json" };
+const defaultAdminViewParams = require("../src/assets/admin_data/b9765b7c-b614-4126-a0e2-634463f99937/441cb6fd-2728-4a16-b170-ebceec1ce6c2.json"); //assert { type: "json" };
+// miroir model
 const entityEndpointVersion = require("./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/3d8da4d4-8f76-4bb4-9212-14869d81c00c.json");
 const entityEntity = require("./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json");
 const entityEntityDefinition = require("./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd.json");
@@ -1067,6 +1073,10 @@ export {
   transformerJzodSchema,
   transformerMenuV1,
   undoRedoEndpointVersionV1,
+  // admin
+  entityViewParams,
+  entityDefinitionViewParams,
+  defaultAdminViewParams,
 };
 
 // ################################################################################################

@@ -73,19 +73,6 @@ export const ReportPage = () => {
   useEffect(() => context.setApplicationSection((pageParams.applicationSection as ApplicationSection) ?? "data"));
 
   const errorLog = useErrorLogService();
-  // const currentModel: MetaModel = useCurrentModel(params.deploymentUuid);
-
-  // TODO: REMOVE HARD-CODED LIST!!! WHAT IS IT USEFUL FOR???
-  // const deployments = [
-  //   adminConfigurationDeploymentAdmin,
-  //   adminConfigurationDeploymentMiroir,
-
-  //   adminConfigurationDeploymentLibrary,
-  //   adminConfigurationDeploymentTest1,
-  //   adminConfigurationDeploymentTest4,
-  // ] as any[]; //type for Admin SelfApplication Deployment Entity Definition
-  // ] as SelfApplicationDeploymentConfiguration[];
-
 
   const adminAppModel: MetaModel = useCurrentModel(adminConfigurationDeploymentAdmin.uuid);
   const miroirMetaModel: MetaModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);

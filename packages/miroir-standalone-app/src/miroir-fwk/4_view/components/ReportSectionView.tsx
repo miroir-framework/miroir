@@ -115,20 +115,15 @@ export const ReportSectionView = (props: ReportSectionViewProps) => {
         )
       : undefined;
   const currentListReportTargetEntityDefinition: EntityDefinition | undefined =
-    entityDefinitions?.find((e:EntityDefinition) => e?.entityUuid === currentListReportTargetEntity?.uuid);
+    entityDefinitions?.find(
+      (e: EntityDefinition) => e?.entityUuid === currentListReportTargetEntity?.uuid
+    );
 
   const entityInstance = props.queryResults && props.reportSection.type == "objectInstanceReportSection"
   ? (props.queryResults as any)[
       props.reportSection.definition.fetchedDataReference ?? ""
     ]
-    // ]?.elementValue
   : undefined
-  // const entityInstance = props.queryResults.elementValue && props.reportSection.type == "objectInstanceReportSection"
-  // ? (props.queryResults.elementValue as any)[
-  //     props.reportSection.definition.fetchedDataReference ?? ""
-  //   ]
-  //   // ]?.elementValue
-  // : undefined
 
   log.info(
     "entityInstance",
@@ -139,41 +134,9 @@ export const ReportSectionView = (props: ReportSectionViewProps) => {
     props
   );
 
-
-
-
-
-  // log.info(
-  //   "ReportSectionView displayedDeploymentDefinition",
-  //   displayedDeploymentDefinition,
-  //   "props.reportSection",
-  //   props.reportSection,
-  //   "currentReportTargetEntity",
-  //   currentReportTargetEntity
-  // );
-
   const styles = useMemo(()=>({
-    // display: "flex",
-    // width: '100%',
-    // height: '100%',
-    // flex: '1 1 auto',
-    // overflow: "hidden",
-    // height: "280px", // do not set height if domLayout='autoHeight' on AgGridReact
     width: "80vw",
   }),[])
-
-  // log.info(
-  //   "ReportSectionView",
-  //   "deploymentUuid",
-  //   props.deploymentUuid,
-  //   props.applicationSection,
-  //   "domainElement",
-  //   props.domainElementObject
-  // );
-
-  // log.info('ReportSectionView props.reportSection',props.reportSection);
-
-
 
   if (props.applicationSection) {
     return (
@@ -190,24 +153,6 @@ export const ReportSectionView = (props: ReportSectionViewProps) => {
                     <tr>
                       <td>grid not supported yet!</td>
                     </tr>
-                    {/* {
-                        props.reportSection.definition.map(
-                          (reportSection, index) => {
-                            return (
-                              <tr key={index}>
-                                <td>
-                                  <ReportSection
-                                    deploymentUuid={props.deploymentUuid}
-                                    applicationSection={props.applicationSection}
-                                    reportSection={reportSection}
-                                    instanceUuid={props.instanceUuid}
-                                  />
-                                </td>
-                              </tr>
-                            )
-                          }
-                        )
-                      } */}
                   </tbody>
                 </table>
               </div>

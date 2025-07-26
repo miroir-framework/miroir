@@ -13,13 +13,22 @@ import 'ag-grid-community/styles/ag-theme-alpine.css';
 
 
 import {
+  DeploymentEntityState,
+  Domain2QueryReturnType,
+  DomainElementSuccess,
   EntityDefinition,
   EntityInstance,
+  EntityInstancesUuidIndex,
   JzodObject,
   LoggerInterface,
   MetaModel,
   MiroirLoggerFactory,
-  adminConfigurationDeploymentMiroir
+  SyncBoxedExtractorOrQueryRunnerMap,
+  SyncQueryRunner,
+  ViewParams,
+  adminConfigurationDeploymentMiroir,
+  defaultAdminViewParams,
+  defaultViewParamsFromAdminStorageFetchQueryParams
 } from "miroir-core";
 
 import { packageName } from '../../../constants.js';
@@ -27,9 +36,9 @@ import EntityEditor from '../EntityEditor.js';
 import {
   useMiroirContextInnerFormOutput,
   useMiroirContextService,
-  useViewParams
+  // useViewParams
 } from '../MiroirContextReactProvider.js';
-import { useCurrentModel } from '../ReduxHooks.js';
+import { useCurrentModel, useDeploymentEntityStateQuerySelectorForCleanedResult } from '../ReduxHooks.js';
 import { cleanLevel } from '../constants.js';
 import { calculateAdaptiveColumnWidths } from '../adaptiveColumnWidths.js';
 import { ToolsCellRenderer } from './GenderCellRenderer.js';
@@ -44,6 +53,7 @@ import {
   TableComponentRow,
   TableComponentTypeSchema,
 } from "./MTableComponentInterface.js";
+import { getMemoizedDeploymentEntityStateSelectorMap } from 'miroir-localcache-redux';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -69,10 +79,31 @@ export const MTableComponent = (props: TableComponentProps) => {
   log.info(":::::::::::::::::::::::::: MTableComponent refreshing with props",props);
   
   const navigate = useNavigate();
-  const viewParams = useViewParams();
-  const gridType = viewParams?.gridType || 'ag-grid';
   const context = useMiroirContextService();
   const contextDeploymentUuid = context.deploymentUuid;
+
+
+    // const viewParams = useViewParams();
+  const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<DeploymentEntityState> =
+  useMemo(() => getMemoizedDeploymentEntityStateSelectorMap(), []);
+    
+  const defaultViewParamsFromAdminStorageFetchQueryResults: Record<string, EntityInstancesUuidIndex> =
+    useDeploymentEntityStateQuerySelectorForCleanedResult(
+      deploymentEntityStateSelectorMap.runQuery as SyncQueryRunner<
+        DeploymentEntityState,
+        Domain2QueryReturnType<DomainElementSuccess>
+      >,
+      defaultViewParamsFromAdminStorageFetchQueryParams(deploymentEntityStateSelectorMap)
+    );
+  
+  const viewParams: ViewParams | undefined = defaultViewParamsFromAdminStorageFetchQueryResults?.[
+    "viewParams"
+  ] as any;
+
+  log.info("MTableComponent viewParams", viewParams, "defaultViewParamsFromAdminStorageFetchQueryResults", defaultViewParamsFromAdminStorageFetchQueryResults);
+  const gridType = viewParams?.gridType || 'ag-grid';
+
+
 
   // TODO: redundant?
   const [dialogOuterFormObject, setdialogOuterFormObject] = useMiroirContextInnerFormOutput();

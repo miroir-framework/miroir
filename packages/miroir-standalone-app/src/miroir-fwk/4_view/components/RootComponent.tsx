@@ -28,24 +28,39 @@ import {
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
   BoxedQueryTemplateWithExtractorCombinerTransformer,
+  defaultAdminViewParams,
   defaultMiroirMetaModel,
+  defaultViewParamsFromAdminStorageFetchQueryParams,
+  DeploymentEntityState,
   Domain2ElementFailed,
   Domain2QueryReturnType,
   DomainControllerInterface,
+  DomainElementSuccess,
+  dummyDomainManyQueryWithDeploymentUuid,
   entityDeployment,
+  EntityInstancesUuidIndex,
+  entityViewParams,
+  getQueryRunnerParamsForDeploymentEntityState,
   LoggerInterface,
+  MetaModel,
   miroirFundamentalJzodSchema,
   MiroirLoggerFactory,
+  RunBoxedExtractorAction,
+  RunBoxedExtractorOrQueryAction,
   StoreOrBundleAction,
-  StoreUnitConfiguration
+  StoreUnitConfiguration,
+  SyncBoxedExtractorOrQueryRunnerMap,
+  SyncQueryRunner,
+  SyncQueryRunnerParams,
+  ViewParams
 } from "miroir-core";
-import { ReduxStateChanges } from "miroir-localcache-redux";
+import { getMemoizedDeploymentEntityStateSelectorMap, ReduxStateChanges } from "miroir-localcache-redux";
 
 import {
   useDomainControllerService,
   useLocalCacheTransactions,
   useMiroirContextService,
-  useViewParams,
+  // useViewParams,
 } from "../MiroirContextReactProvider.js";
 import AppBar from './AppBar.js';
 
@@ -54,6 +69,7 @@ import { cleanLevel } from '../constants.js';
 import { Sidebar } from "./Sidebar.js";
 import { SidebarWidth } from "./SidebarSection.js";
 import { InstanceEditorOutline } from './InstanceEditorOutline.js';
+import { useCurrentModel, useDeploymentEntityStateQuerySelectorForCleanedResult } from "../ReduxHooks.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -159,15 +175,19 @@ styled(
 
 const boxParams = { display: 'flex', flexGrow: 1, flexDirection:"column" };
 
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
 let count = 0;
 export const RootComponent = (props: RootComponentProps) => {
   // const params = useParams<any>() as Readonly<Params<ReportUrlParamKeys>>;
   count++;
   const [drawerIsOpen, setDrawerIsOpen] = useState(true);
   
-  // Use ViewParams for sidebar width management
-  const viewParams = useViewParams();
-  const [sidebarWidth, setSidebarWidth] = useState(viewParams?.sidebarWidth ?? SidebarWidth);
+  // // Use ViewParams for sidebar width management
+  // const viewParams = useViewParams();
+  // const [sidebarWidth, setSidebarWidth] = useState(viewParams?.sidebarWidth ?? SidebarWidth);
   
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
@@ -192,6 +212,10 @@ export const RootComponent = (props: RootComponentProps) => {
   const transactions: ReduxStateChanges[] = useLocalCacheTransactions();
   const miroirConfig = context.miroirContext.getMiroirConfig();
 
+  const currentModel: MetaModel = useCurrentModel(
+    adminConfigurationDeploymentAdmin.uuid
+  );
+  
   if (miroirConfig && miroirConfig.miroirConfigType != "client") {
     throw new Error("RootComponent: miroirConfig.miroirConfigType != 'client' " + JSON.stringify(miroirConfig));
   }
@@ -238,12 +262,6 @@ export const RootComponent = (props: RootComponentProps) => {
     setDisplayedApplicationSection('data');
     // setDisplayedReportUuid("");
   }, [setDisplayedDeploymentUuid, setDisplayedApplicationSection]);
-
-  const handleSidebarWidthChange = useMemo(() => (width: number) => {
-    setSidebarWidth(width);
-    // Keep ViewParams in sync with sidebar width changes
-    viewParams?.updateSidebarWidth(width);
-  }, [setSidebarWidth, viewParams]);
 
   // InstanceEditorOutline handlers with sidebar coordination
   const handleToggleOutline = useCallback(() => {
@@ -458,15 +476,37 @@ export const RootComponent = (props: RootComponentProps) => {
   }, [showSnackbar]);
 
 
+  const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<DeploymentEntityState> =
+  useMemo(() => getMemoizedDeploymentEntityStateSelectorMap(), []);
+
+  const defaultViewParamsFromAdminStorageFetchQueryResults: Record<string, EntityInstancesUuidIndex> =
+    useDeploymentEntityStateQuerySelectorForCleanedResult(
+      deploymentEntityStateSelectorMap.runQuery as SyncQueryRunner<
+        DeploymentEntityState,
+        Domain2QueryReturnType<DomainElementSuccess>
+      >,
+      defaultViewParamsFromAdminStorageFetchQueryParams(deploymentEntityStateSelectorMap)
+    );
+
+  log.info(
+    "RootComponent: defaultViewParamsFromAdminStorageFetchQueryResults",
+    (defaultViewParamsFromAdminStorageFetchQueryResults?.["viewParams"] as any)
+      ?.sidebarWidth,
+    defaultViewParamsFromAdminStorageFetchQueryResults
+  );
+  const [sidebarWidth, setSidebarWidth] = useState(
+    (defaultViewParamsFromAdminStorageFetchQueryResults?.["viewParams"] as any)
+      ?.sidebarWidth ?? SidebarWidth
+  );
+
+  const handleSidebarWidthChange = useMemo(() => (width: number) => {
+    setSidebarWidth(width);
+  }, [setSidebarWidth, defaultViewParamsFromAdminStorageFetchQueryResults]);
+
   return (
     <DocumentOutlineContext.Provider value={outlineContextValue}>
       <div>
-      {/* <PersistentDrawerLeft></PersistentDrawerLeft> */}
-      {/* <Box sx={{ display: 'flex', flexDirection:"column", flexGrow: 1 }}> */}
-      {/* Root loaded {loaded} */}
-      {/* <p /> */}
       <MuiBox sx={boxParams}>
-        {/* <CssBaseline /> */}
         <Grid container direction="column">
           <Grid item>
             <AppBar 
@@ -485,6 +525,7 @@ export const RootComponent = (props: RootComponentProps) => {
           <Grid item container>
             <Grid item>
               {/* <SidebarSection open={drawerIsOpen} setOpen={setDrawerIsOpen}></SidebarSection> */}
+              {sideBarComponent}
               <Sidebar 
                 open={drawerIsOpen} 
                 setOpen={handleDrawerStateChange} 
@@ -504,7 +545,11 @@ export const RootComponent = (props: RootComponentProps) => {
                   <div>transactions: {JSON.stringify(transactions)}</div>
                   <div>loaded: {count}</div>
                 <p />
-                <GridSwitchComponent />
+                <GridSwitchComponent 
+                  defaultviewParamsFromAdminDb={
+                    defaultViewParamsFromAdminStorageFetchQueryResults && defaultViewParamsFromAdminStorageFetchQueryResults["viewParams"]?
+                    defaultViewParamsFromAdminStorageFetchQueryResults["viewParams"][defaultAdminViewParams.uuid] as any : undefined}
+                />
                 <div>
                   <FormControl fullWidth>
                     <InputLabel id="demo-simple-select-label">Chosen selfApplication Deployment</InputLabel>
@@ -568,7 +613,6 @@ export const RootComponent = (props: RootComponentProps) => {
                       }
 
                       log.info("fetching instances from datastore for deployment", adminConfigurationDeploymentMiroir);
-                      // const localMiroirConfig = miroirConfig.client as MiroirConfigForRestClient;
                       const configurations = miroirConfig.client.emulateServer
                         ? miroirConfig.client.deploymentStorageConfig
                         : miroirConfig.client.serverConfig.storeSectionConfiguration;
@@ -777,13 +821,20 @@ export const RootComponent = (props: RootComponentProps) => {
   );
 };
 
+
+
 // Grid Switch Component
-const GridSwitchComponent: React.FC = () => {
-  const viewParams = useViewParams();
+const GridSwitchComponent: React.FC<{ defaultviewParamsFromAdminDb?: ViewParams | null }> = (
+  { defaultviewParamsFromAdminDb }: { defaultviewParamsFromAdminDb?: ViewParams | null } = {}
+) => {
+  // const viewParams = useViewParams();
+
 
   const handleGridTypeChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-    viewParams?.setGridType(event.target.checked ? 'glide-data-grid' : 'ag-grid');
-  }, [viewParams]);
+    // viewParams?.setGridType(event.target.checked ? 'glide-data-grid' : 'ag-grid');
+    defaultviewParamsFromAdminDb?.setGridType(event.target.checked ? 'glide-data-grid' : 'ag-grid');
+  }, [defaultviewParamsFromAdminDb]);
+  // }, [viewParams]);
 
   return (
     <Box
@@ -792,7 +843,8 @@ const GridSwitchComponent: React.FC = () => {
       <FormControlLabel
         control={
           <Switch
-            checked={viewParams?.gridType === "glide-data-grid"}
+            // checked={viewParams?.gridType === "glide-data-grid"}
+            checked={defaultviewParamsFromAdminDb?.gridType === "glide-data-grid"}
             onChange={handleGridTypeChange}
             name="gridType"
             color="primary"
@@ -804,7 +856,8 @@ const GridSwitchComponent: React.FC = () => {
               Grid Type:
             </Typography>
             <Typography variant="body2" fontWeight="bold">
-              {viewParams?.gridType === "ag-grid" ? "AG-Grid" : "Glide Data Grid"}
+              {/* {viewParams?.gridType === "ag-grid" ? "AG-Grid" : "Glide Data Grid"} */}
+              {defaultviewParamsFromAdminDb?.gridType === "ag-grid" ? "AG-Grid" : "Glide Data Grid"}
             </Typography>
           </Box>
         }

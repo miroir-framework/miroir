@@ -111,7 +111,6 @@ export interface ResponsiveAppBarProps {
   children:any,
 }
 
-// const Sidebar = MuiDrawer;
 const StyledDrawer = styled(LocalMuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' && prop !== 'width' })<{
   open?: boolean;
   width?: number;
@@ -156,7 +155,17 @@ const muiIcons = {
 //    const Icon = icon && MUIcon[icon];
 //    return ({Icon && <Icon />})
 // }
-export const Sidebar:FC<{open:boolean, setOpen: (v:boolean)=>void, width?: number, onWidthChange?: (width: number) => void}> = (props: {open:boolean, setOpen: (v:boolean)=>void, width?: number, onWidthChange?: (width: number) => void}) => {
+export const Sidebar: FC<{
+  open: boolean;
+  setOpen: (v: boolean) => void;
+  width?: number;
+  onWidthChange?: (width: number) => void;
+}> = (props: {
+  open: boolean;
+  setOpen: (v: boolean) => void;
+  width?: number;
+  onWidthChange?: (width: number) => void;
+}) => {
   count++;
   const theme = useTheme();
   const [isResizing, setIsResizing] = useState(false);
@@ -167,12 +176,15 @@ export const Sidebar:FC<{open:boolean, setOpen: (v:boolean)=>void, width?: numbe
     setIsResizing(true);
   }, []);
 
-  const handleMouseMove = useCallback((e: MouseEvent) => {
-    if (isResizing && props.onWidthChange) {
-      const newWidth = Math.max(150, Math.min(500, e.clientX)); // Min 150px, Max 500px
-      props.onWidthChange(newWidth);
-    }
-  }, [isResizing, props.onWidthChange]);
+  const handleMouseMove = useCallback(
+    (e: MouseEvent) => {
+      if (isResizing && props.onWidthChange) {
+        const newWidth = Math.max(150, Math.min(500, e.clientX)); // Min 150px, Max 500px
+        props.onWidthChange(newWidth);
+      }
+    },
+    [isResizing, props.onWidthChange]
+  );
 
   const handleMouseUp = useCallback(() => {
     setIsResizing(false);
@@ -181,16 +193,16 @@ export const Sidebar:FC<{open:boolean, setOpen: (v:boolean)=>void, width?: numbe
   // Add global mouse event listeners when resizing
   useEffect(() => {
     if (isResizing) {
-      document.addEventListener('mousemove', handleMouseMove);
-      document.addEventListener('mouseup', handleMouseUp);
+      document.addEventListener("mousemove", handleMouseMove);
+      document.addEventListener("mouseup", handleMouseUp);
     } else {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseup", handleMouseUp);
     }
 
     return () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseup", handleMouseUp);
     };
   }, [isResizing, handleMouseMove, handleMouseUp]);
 
@@ -203,8 +215,8 @@ export const Sidebar:FC<{open:boolean, setOpen: (v:boolean)=>void, width?: numbe
   //   miroirMenusDomainElementObject,
   //   miroirMenusDomainElementObject?.menus
   // );
-  const drawerSx = useMemo(()=>({flexDirection:'column', position: 'relative'}),[])
-  const styledDrawerSx = useMemo(()=>({}),[]) // Remove alignItems: "end" to let StyledDrawerHeader center the items
+  const drawerSx = useMemo(() => ({ flexDirection: "column", position: "relative" }), []);
+  const styledDrawerSx = useMemo(() => ({}), []); // Remove alignItems: "end" to let StyledDrawerHeader center the items
   // const dynIcon = React.createElement(AutoStories, {});
 
   return (
@@ -213,7 +225,7 @@ export const Sidebar:FC<{open:boolean, setOpen: (v:boolean)=>void, width?: numbe
         <LocalIconButton onClick={() => props.setOpen(false)}>
           {theme.direction === "ltr" ? <LocalChevronLeftIcon /> : <LocalChevronRightIcon />}
         </LocalIconButton>
-        <span style={{ marginLeft: '8px' }}>count: {count}</span>
+        <span style={{ marginLeft: "8px" }}>count: {count}</span>
       </StyledDrawerHeader>
       <LocalDivider />
       <SidebarSection
@@ -254,5 +266,5 @@ export const Sidebar:FC<{open:boolean, setOpen: (v:boolean)=>void, width?: numbe
       )}
     </StyledDrawer>
   );
-}
+};
 
