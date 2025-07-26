@@ -499,9 +499,18 @@ export const RootComponent = (props: RootComponentProps) => {
       ?.sidebarWidth ?? SidebarWidth
   );
 
+  // Update sidebar width when defaultViewParamsFromAdminStorageFetchQueryResults changes
+  useEffect(() => {
+    const newSidebarWidth = (defaultViewParamsFromAdminStorageFetchQueryResults?.["viewParams"] as any)
+      ?.sidebarWidth;
+    if (newSidebarWidth && newSidebarWidth !== sidebarWidth) {
+      setSidebarWidth(newSidebarWidth);
+    }
+  }, [defaultViewParamsFromAdminStorageFetchQueryResults, sidebarWidth]);
+
   const handleSidebarWidthChange = useMemo(() => (width: number) => {
     setSidebarWidth(width);
-  }, [setSidebarWidth, defaultViewParamsFromAdminStorageFetchQueryResults]);
+  }, [setSidebarWidth]);
 
   return (
     <DocumentOutlineContext.Provider value={outlineContextValue}>
@@ -525,7 +534,6 @@ export const RootComponent = (props: RootComponentProps) => {
           <Grid item container>
             <Grid item>
               {/* <SidebarSection open={drawerIsOpen} setOpen={setDrawerIsOpen}></SidebarSection> */}
-              {sideBarComponent}
               <Sidebar 
                 open={drawerIsOpen} 
                 setOpen={handleDrawerStateChange} 
