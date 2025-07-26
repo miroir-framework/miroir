@@ -57,6 +57,7 @@ import { JsonObjectEditFormDialog, JsonObjectEditFormDialogInputs } from "./Json
 import { noValue } from "./JzodElementEditorInterface.js";
 import { MTableComponent } from "./MTableComponent.js";
 import { TableComponentType, TableComponentTypeSchema } from "./MTableComponentInterface.js";
+import { useRenderTracker } from "../tools/renderCountTracker.js";
 
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -181,7 +182,6 @@ export function defaultFormValues(
 }
 
 // ##########################################################################################
-let count = 0
 let prevProps = {};
 let prevColumnDefs:{columnDefs: ColDef<any>[]} = {columnDefs:[]};
 let prevJzodSchema;
@@ -197,9 +197,14 @@ let prevInstancesWithStringifiedJsonAttributes: { instancesWithStringifiedJsonAt
 export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   props: ReportComponentProps
 ) => {
-  count++;
   prevProps = props;
+  
+  // Track render counts with centralized tracker
+  const currentNavigationKey = `${props.deploymentUuid}-${props.chosenApplicationSection}`;
+  const { navigationCount, totalCount } = useRenderTracker("ReportSectionListDisplay", currentNavigationKey);
+  
   // log.info('@@@@@@@@@@@@@@@@@@@@@@@ ReportSectionListDisplay',count,props === prevProps, equal(props,prevProps));
+  log.info('@@@@@@@@@@@@@@@@@@@@@@@ ReportSectionListDisplay', 'navigationCount', navigationCount, 'totalCount', totalCount, 'props === prevProps', props === prevProps);
   const context = useMiroirContextService();
   
   // log.info('ReportSectionListDisplay props.domainElement',props.domainElement);
@@ -702,7 +707,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   
   return (
     <div className="MiroirReport-global" style={{ display: "block" }}>
-      <div> rendered ReportSectionListDisplay: {count} times.</div>
+      <div> ReportSectionListDisplay renders: {navigationCount} (total: {totalCount}) times.</div>
       {/* labelll:{props.select?.label?<span>{props.select?.label}</span>:<></>} */}
       {currentReportTargetEntity && currentReportTargetEntityDefinition ? (
         !!tableColumnDefs ? (

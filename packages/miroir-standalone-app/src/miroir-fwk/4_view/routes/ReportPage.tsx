@@ -27,6 +27,7 @@ import { PerformanceDisplayContainer } from '../components/PerformanceDisplayCon
 import { cleanLevel } from '../constants.js';
 import { RenderPerformanceMetrics } from '../tools/renderPerformanceMeasure.js';
 import { useDocumentOutlineContext } from '../components/RootComponent.js';
+import { useRenderTracker } from '../tools/renderCountTracker.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -55,11 +56,14 @@ const miroirExpression: JzodElement = {
 // ] as any[]; //type for Admin SelfApplication Deployment Entity Definition
 
 
-let ReportPageCount = 0;
 // ###############################################################################################################
 export const ReportPage = () => {
   const pageParams: Params<ReportUrlParamKeys> = useParams<ReportUrlParamKeys>();
   const context = useMiroirContextService();
+  
+  // Track render counts with centralized tracker
+  const currentNavigationKey = `${pageParams.deploymentUuid}-${pageParams.applicationSection}-${pageParams.reportUuid}-${pageParams.instanceUuid}`;
+  const { navigationCount, totalCount } = useRenderTracker("ReportPage", currentNavigationKey);
   
   // State to control performance display visibility (off by default)
   const [showPerformanceDisplay, setShowPerformanceDisplay] = useState(false);
@@ -67,8 +71,7 @@ export const ReportPage = () => {
   // Get outline context from RootComponent
   const outlineContext = useDocumentOutlineContext();
 
-  ReportPageCount++;
-  log.info("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& ReportPage rendering count", ReportPageCount, "params", pageParams);
+  log.info("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& ReportPage rendering", "navigationCount", navigationCount, "totalCount", totalCount, "params", pageParams);
   useEffect(() => context.setDeploymentUuid(pageParams.deploymentUuid ? pageParams.deploymentUuid : ""));
   useEffect(() => context.setApplicationSection((pageParams.applicationSection as ApplicationSection) ?? "data"));
 
@@ -205,13 +208,13 @@ export const ReportPage = () => {
   log.info("currentMiroirReport", currentMiroirReport);
 
   if (pageParams.applicationSection) {
-    log.info("ReportPage rendering count", ReportPageCount, "params", pageParams);
+    log.info("ReportPage rendering", "navigationCount", navigationCount, "totalCount", totalCount, "params", pageParams);
     // log.info("ReportPage current metrics:", RenderPerformanceMetrics.renderMetrics);
     return (
       <Box sx={{ display: 'flex', flexDirection: 'column', padding: 2 }}>
         {/* Page Header */}
         <Box sx={{ flexShrink: 0, marginBottom: 2 }}>
-          <span>ReportPage: {ReportPageCount}</span>
+          <span>ReportPage renders: {navigationCount} (total: {totalCount})</span>
           <div>
             <h3>erreurs: {JSON.stringify(errorLog)}</h3>
           </div>

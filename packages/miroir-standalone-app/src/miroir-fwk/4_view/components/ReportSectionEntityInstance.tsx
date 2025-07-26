@@ -53,6 +53,7 @@ import { RenderPerformanceMetrics } from '../tools/renderPerformanceMeasure.js';
 import { ErrorFallbackComponent } from './ErrorFallbackComponent.js';
 import { JzodElementEditor } from './JzodElementEditor.js';
 import { useDocumentOutlineContext } from './RootComponent.js';
+import { useRenderTracker } from '../tools/renderCountTracker.js';
 // import { GlobalRenderPerformanceDisplay, RenderPerformanceDisplay, trackRenderPerformance } from '../tools/renderPerformanceMeasure.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -125,7 +126,6 @@ const codeMirrorExtensions = [javascript()];
 
 // const label = { inputProps: { 'aria-label': 'Color switch demo' } };
 
-let ReportSectionEntityInstanceCount = 0
 // ###############################################################################################################
 export const ReportSectionEntityInstance = (props: ReportSectionEntityInstanceProps) => {
   const renderStartTime = performance.now();
@@ -133,12 +133,17 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   const errorLog = useErrorLogService();
   const context = useMiroirContextService();
 
+  // Track render counts with centralized tracker
+  const navigationKey = `${props.deploymentUuid}-${props.applicationSection}-${props.entityUuid}-${props.instance?.uuid || 'no-instance'}`;
+  const { navigationCount, totalCount } = useRenderTracker("ReportSectionEntityInstance", navigationKey);
+
   // Track performance immediately for initial render
   const componentKey = `ReportSectionEntityInstance-${props.instance?.uuid || props.entityUuid}`;
   
   log.info(
     "++++++++++++++++++++++++++++++++ render",
-    ReportSectionEntityInstanceCount++,
+    "navigationCount", navigationCount,
+    "totalCount", totalCount,
     "with props",
     props
   );
@@ -321,7 +326,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
         <div>
           {/* <RenderPerformanceDisplay componentKey={componentKey} indentLevel={0} /> */}
 
-          <p>ReportSectionEntityInstance: {ReportSectionEntityInstanceCount}</p>
+          <p>ReportSectionEntityInstance renders: {navigationCount} (total: {totalCount})</p>
           <div>
             <label htmlFor="displayEditorSwitch">Display editor:</label>
             <Switch
@@ -437,7 +442,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                         return result;
                       }, [props, currentReportTargetEntityDefinition, instance, context]);
                       log.info(
-                        "ReportSectionEntityInstance jzodTypeCheck done for render", ReportSectionEntityInstanceCount ,"resolvedJzodSchema",
+                        "ReportSectionEntityInstance jzodTypeCheck done for render", navigationCount ,"resolvedJzodSchema",
                         resolvedJzodSchema,
                       );
                       if (!resolvedJzodSchema || resolvedJzodSchema.status != "ok") {

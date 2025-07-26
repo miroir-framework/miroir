@@ -21,11 +21,13 @@ import { useMiroirContextService } from '../MiroirContextReactProvider.js';
 import { cleanLevel } from '../constants.js';
 import { ReportSectionEntityInstance } from './ReportSectionEntityInstance.js';
 import { ReportSectionListDisplay } from './ReportSectionListDisplay.js';
+import { useRenderTracker } from '../tools/renderCountTracker.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ReportSectionView")
 ).then((logger: LoggerInterface) => {log = logger});
+
 
 
 export interface ReportSectionViewProps {
@@ -82,7 +84,11 @@ export const ReportSectionView = (props: ReportSectionViewProps) => {
   const context = useMiroirContextService();
   // const errorLog = useErrorLogService();
 
-  log.info("########################## render with props", props);
+  // Track render counts with centralized tracker (using report section since RootReport doesn't have uuid)
+  const currentNavigationKey = `${props.deploymentUuid}-${props.applicationSection}-${JSON.stringify(props.reportSection)}`;
+  const { navigationCount, totalCount } = useRenderTracker("ReportSectionView", currentNavigationKey);
+
+  log.info("########################## ReportSectionView render", "navigationCount", navigationCount, "totalCount", totalCount, "props", props);
 
 
   // ##############################################################################################
@@ -141,6 +147,9 @@ export const ReportSectionView = (props: ReportSectionViewProps) => {
   if (props.applicationSection) {
     return (
       <div>
+        <div style={{ fontSize: '12px', color: '#666', padding: '2px' }}>
+          ReportSectionView renders: {navigationCount} (total: {totalCount})
+        </div>
         {/* params:{JSON.stringify(params)}
         <p /> */}
         {/* <p>ReportSection</p> */}

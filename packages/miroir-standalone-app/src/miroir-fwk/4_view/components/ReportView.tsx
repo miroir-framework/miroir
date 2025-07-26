@@ -33,6 +33,7 @@ import {
 } from "miroir-localcache-redux";
 import { packageName, ReportUrlParamKeys } from '../../../constants.js';
 import { cleanLevel } from '../constants.js';
+import { useRenderTracker } from '../tools/renderCountTracker.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -48,8 +49,6 @@ export interface ReportViewProps {
   reportDefinition: RootReport,
 }
 
-let count = 0
-// ###############################################################################################################
 /**
  * It role is to gather the data that must be displayed by the potentially many sections of the report.
  * 
@@ -57,14 +56,16 @@ let count = 0
  * @returns 
  */
 export const ReportView = (props: ReportViewProps) => {
-  count++;
+  // Track render counts with centralized tracker
+  const currentNavigationKey = `${props.deploymentUuid}-${props.applicationSection}-${props.pageParams.reportUuid}-${props.pageParams.instanceUuid}`;
+  const { navigationCount, totalCount } = useRenderTracker("ReportView", currentNavigationKey);
 
   // Get outline context and update data when query results change
   const outlineContext = useDocumentOutlineContext();
 
   const paramsAsdomainElements: Domain2QueryReturnType<Record<string,any>> = props.pageParams;
   // log.info("########################## ReportView rendering", count, "props", props);
-  log.info("########################## ReportView rendering", count);
+  log.info("########################## ReportView rendering", "navigationCount", navigationCount, "totalCount", totalCount);
 
   // log.info(
   //   "deploymentUuid",
@@ -296,7 +297,7 @@ export const ReportView = (props: ReportViewProps) => {
             <>
               {props.deploymentUuid ? (
                 <div>
-                  <div>ReportView rendered {count}</div>
+                  <div>ReportView renders: {navigationCount} (total: {totalCount})</div>
                   <ReportSectionView
                     queryResults={deploymentEntityStateQueryResults}
                     fetchedDataJzodSchema={fetchedDataJzodSchema}

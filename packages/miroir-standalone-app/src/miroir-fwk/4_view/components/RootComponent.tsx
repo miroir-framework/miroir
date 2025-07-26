@@ -93,6 +93,7 @@ import {
   useMiroirContextService,
   // useViewParams,
 } from "../MiroirContextReactProvider.js";
+import { useRenderTracker } from "../tools/renderCountTracker.js";
 import AppBar from './AppBar.js';
 
 import { deployments, packageName } from '../../../constants.js';
@@ -211,7 +212,6 @@ const boxParams = { display: 'flex', flexGrow: 1, flexDirection:"column" };
 // ################################################################################################
 // ################################################################################################
 // ################################################################################################
-let count = 0;
 /**
  * RootComponent - Optimized for React 18 Batching
  * 
@@ -224,7 +224,7 @@ let count = 0;
  */
 export const RootComponent = (props: RootComponentProps) => {
   // const params = useParams<any>() as Readonly<Params<ReportUrlParamKeys>>;
-  count++;
+  
   const [drawerIsOpen, setDrawerIsOpen] = useState(true);
   
   // // Use ViewParams for sidebar width management
@@ -243,17 +243,23 @@ export const RootComponent = (props: RootComponentProps) => {
   // Remember sidebar state before outline was opened
   const [sidebarStateBeforeOutline, setSidebarStateBeforeOutline] = useState<boolean | null>(null);
   
-  log.info(
-    "##################################### rendering root component",
-    "count",
-    count,
-  );
-
   const domainController: DomainControllerInterface = useDomainControllerService();
   const context = useMiroirContextService();
   // Optimize transactions selector to avoid unnecessary re-renders during bulk operations
   const transactions: ReduxStateChanges[] = useLocalCacheTransactions();
   const miroirConfig = context.miroirContext.getMiroirConfig();
+
+  // Track render counts with centralized tracker
+  const currentNavigationKey = `${context.deploymentUuid}-${context.applicationSection}`;
+  const { navigationCount, totalCount } = useRenderTracker("RootComponent", currentNavigationKey);
+  
+  log.info(
+    "##################################### rendering root component",
+    "totalRenderCount",
+    totalCount,
+    "navigationRenderCount", 
+    navigationCount,
+  );
 
   // Memoize current model to prevent unnecessary re-renders
   const currentModel: MetaModel = useCurrentModel(
@@ -673,7 +679,7 @@ export const RootComponent = (props: RootComponentProps) => {
                 <p />
                   <div>uuid: {uuidv4()}</div>
                   <div>transactions: {JSON.stringify(transactions)}</div>
-                  <div>loaded: {count}</div>
+                  <div>RootComponent renders: {navigationCount} (total: {totalCount})</div>
                 <p />
                 <GridSwitchComponent 
                   defaultviewParamsFromAdminDb={defaultViewParamsFromAdminStorage}
