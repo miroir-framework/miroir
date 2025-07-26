@@ -38,9 +38,9 @@ interface GlideDataGridComponentProps {
   props: TableComponentProps;
   onCellClicked?: (cell: Item, event: CellClickedEventArgs) => void;
   onCellEdited?: (cell: Item, newValue: EditableGridCell) => void;
-  onRowEdit?: (row: TableComponentRow) => void;
-  onRowDelete?: (row: TableComponentRow) => void;
-  onRowDuplicate?: (row: TableComponentRow) => void;
+  onRowEdit?: (row: TableComponentRow, event?: any) => void;
+  onRowDelete?: (row: TableComponentRow, event?: any) => void;
+  onRowDuplicate?: (row: TableComponentRow, event?: any) => void;
 }
 
 export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
@@ -97,7 +97,7 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
     ([col, row]: Item): GridCell => {
       const rowData = tableComponentRows.tableComponentRowUuidIndexSchema[row];
       const colData = glideColumns[col];
-      
+
       if (!rowData || !colData) {
         return {
           kind: GridCellKind.Text,
@@ -109,46 +109,48 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
 
       // Special handling for tools column
       if (colData.id === "tools") {
+        const toolsCellData = {
+          kind: "tools-cell",
+          row: rowData,
+          onEdit: (row: TableComponentRow, event?: any) => {
+            log.info("GlideDataGrid: Edit button clicked", { row, event });
+            if (onRowEdit) {
+              onRowEdit(row, event);
+            }
+          },
+          onDuplicate: (row: TableComponentRow, event?: any) => {
+            log.info("GlideDataGrid: Duplicate button clicked", { row, event });
+            if (onRowDuplicate) {
+              onRowDuplicate(row, event);
+            }
+          },
+          onDelete: (row: TableComponentRow, event?: any) => {
+            log.info("GlideDataGrid: Delete button clicked", { row, event });
+            if (onRowDelete) {
+              onRowDelete(row, event);
+            }
+          },
+        } as ToolsCellData;
+
         return {
           kind: GridCellKind.Custom,
-          data: {
-            kind: "tools-cell",
-            row: rowData,
-            onEdit: (row: TableComponentRow, event?: any) => {
-              log.info("GlideDataGrid: Edit button clicked", { row, event });
-              if (onRowEdit) {
-                onRowEdit(row, event);
-              }
-            },
-            onDuplicate: (row: TableComponentRow, event?: any) => {
-              log.info("GlideDataGrid: Duplicate button clicked", { row, event });
-              if (onRowDuplicate) {
-                onRowDuplicate(row, event);
-              }
-            },
-            onDelete: (row: TableComponentRow, event?: any) => {
-              log.info("GlideDataGrid: Delete button clicked", { row, event });
-              if (onRowDelete) {
-                onRowDelete(row, event);
-              }
-            },
-          } as ToolsCellData,
+          data: toolsCellData,
           copyData: "Actions",
           allowOverlay: false, // Disable overlay since we handle clicks directly
         } as ToolsCell;
       }
 
       const attributeName = colData.id || "";
-      
+
       // Check if this is a foreign key column by looking at the column definition
       const columnDef = props.columnDefs.columnDefs.find((cd: any) => cd.field === attributeName);
       const isFK = columnDef?.cellRendererParams?.isFK;
       const entityUuid = columnDef?.cellRendererParams?.entityUuid;
-      
+
       if (isFK && entityUuid) {
         // This is a foreign key column - display the referenced object's name
         const foreignKeyUuid = (rowData.rawValue as any)[attributeName];
-        
+
         if (!foreignKeyUuid) {
           return {
             kind: GridCellKind.Text,
@@ -157,7 +159,7 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
             allowOverlay: true,
           };
         }
-        
+
         // Check if foreign key objects are available
         if (!rowData.foreignKeyObjects || !rowData.foreignKeyObjects[entityUuid]) {
           const errorMessage = `Foreign key object not found for entity ${entityUuid}`;
@@ -165,9 +167,9 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
             attributeName,
             entityUuid,
             foreignKeyUuid,
-            availableEntities: Object.keys(rowData.foreignKeyObjects || {})
+            availableEntities: Object.keys(rowData.foreignKeyObjects || {}),
           });
-          
+
           return {
             kind: GridCellKind.Text,
             data: `${foreignKeyUuid} (not found)`,
@@ -175,9 +177,9 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
             allowOverlay: true,
           };
         }
-        
+
         const referencedInstance = rowData.foreignKeyObjects[entityUuid][foreignKeyUuid];
-        
+
         if (!referencedInstance) {
           return {
             kind: GridCellKind.Text,
@@ -186,10 +188,10 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
             allowOverlay: true,
           };
         }
-        
+
         // Display the name of the referenced instance
         const displayName = (referencedInstance as any).name || foreignKeyUuid;
-        
+
         return {
           kind: GridCellKind.Text,
           data: displayName,
@@ -198,7 +200,8 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
         };
       } else {
         // Regular column - use displayedValue or rawValue
-        const cellValue = rowData.displayedValue[attributeName] || (rowData.rawValue as any)[attributeName];
+        const cellValue =
+          rowData.displayedValue[attributeName] || (rowData.rawValue as any)[attributeName];
         const displayValue = cellValue != null ? String(cellValue) : "";
 
         return {
@@ -291,23 +294,23 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
           accentColor: "#1976d2",
           accentFg: "#ffffff",
           accentLight: "rgba(25, 118, 210, 0.1)",
-          textDark: "#313139",
-          textMedium: "#737383",
-          textLight: "#b2b2c0",
-          textBubble: "#313139",
-          bgIconHeader: "#737383",
+          textDark: "#1a1a1a",        // Much darker text
+          textMedium: "#333333",      // Darker medium text
+          textLight: "#666666",       // Darker light text
+          textBubble: "#1a1a1a",      // Darker bubble text
+          bgIconHeader: "#444444",    // Darker icon header background
           fgIconHeader: "#ffffff",
-          textHeader: "#313139",
+          textHeader: "#1a1a1a",      // Darker header text
           textHeaderSelected: "#000000",
           bgCell: "#ffffff",
-          bgCellMedium: "#fafafb",
-          bgHeader: "#f7f7f8",
-          bgHeaderHasFocus: "#e6e6e6",
-          bgHeaderHovered: "#f0f0f0",
+          bgCellMedium: "#f8f8f8",    // Slightly darker cell background
+          bgHeader: "#f0f0f0",        // Slightly darker header background
+          bgHeaderHasFocus: "#e0e0e0", // Darker focused header
+          bgHeaderHovered: "#e8e8e8",  // Darker hovered header
           bgBubble: "#ffffff",
           bgBubbleSelected: "#ffffff",
           bgSearchResult: "#fff9c4",
-          borderColor: "rgba(115, 116, 131, 0.16)",
+          borderColor: "rgba(0, 0, 0, 0.2)",     // Darker borders
           drilldownBorder: "rgba(0, 0, 0, 0)",
           linkColor: "#1976d2",
           headerFontStyle: "600 13px",

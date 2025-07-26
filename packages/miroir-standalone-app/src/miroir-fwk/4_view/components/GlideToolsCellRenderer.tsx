@@ -1,7 +1,7 @@
 import React from 'react';
 import { CustomCell, CustomRenderer, GridCellKind, getMiddleCenterBias } from '@glideapps/glide-data-grid';
-import { TableActionButtons, TableActionButtonsProps } from './TableActionButtons.js';
 import { TableComponentRow } from './MTableComponentInterface.js';
+import { renderMaterialIconToCanvas } from './MaterialIconCanvasRenderer.js';
 
 export interface ToolsCellData {
   kind: 'tools-cell';
@@ -13,7 +13,7 @@ export interface ToolsCellData {
 
 export type ToolsCell = CustomCell<ToolsCellData>;
 
-const renderer: CustomRenderer<ToolsCell> = {
+const glideToolsCellRenderer: CustomRenderer<ToolsCell> = {
   kind: GridCellKind.Custom,
   isMatch: (c): c is ToolsCell => (c.data as any)?.kind === 'tools-cell',
   draw: (args, cell) => {
@@ -24,26 +24,36 @@ const renderer: CustomRenderer<ToolsCell> = {
     ctx.fillStyle = theme.bgCell;
     ctx.fillRect(rect.x, rect.y, rect.width, rect.height);
 
-    // Draw action icons
-    ctx.fillStyle = theme.textMedium;
-    ctx.font = '16px Material Icons';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    
-    const iconSize = 16;
     const iconSpacing = 25;
-    const totalWidth = iconSpacing * 2; // 3 icons with spacing
+    const totalWidth = iconSpacing * 2;
     const startX = rect.x + (rect.width - totalWidth) / 2;
     const centerY = rect.y + rect.height / 2;
-    
-    // Draw edit icon (create)
-    ctx.fillText('✏️', startX, centerY);
-    
-    // Draw duplicate icon (content_copy)
-    ctx.fillText('📄', startX + iconSpacing, centerY);
-    
-    // Draw delete icon (delete)
-    ctx.fillText('🗑️', startX + iconSpacing * 2, centerY);
+    const iconSize = 16;
+
+    // Use darker color for better contrast
+    const iconColor = theme.textDark || '#313139';
+
+    // Draw the three Material Design icons using the utility function
+    renderMaterialIconToCanvas(ctx, 'Create', {
+      x: startX,
+      y: centerY,
+      size: iconSize,
+      color: iconColor
+    });
+
+    renderMaterialIconToCanvas(ctx, 'ContentCopy', {
+      x: startX + iconSpacing,
+      y: centerY,
+      size: iconSize,
+      color: iconColor
+    });
+
+    renderMaterialIconToCanvas(ctx, 'Delete', {
+      x: startX + iconSpacing * 2,
+      y: centerY,
+      size: iconSize,
+      color: iconColor
+    });
 
     return true;
   },
@@ -57,23 +67,25 @@ const renderer: CustomRenderer<ToolsCell> = {
     const iconSpacing = 25;
     const totalWidth = iconSpacing * 2;
     const rect = args.bounds;
-    const startX = rect.x + (rect.width - totalWidth) / 2;
-    const relativeX = posX - startX;
     
-    if (relativeX >= -12 && relativeX <= 12) {
-      // Edit icon clicked - call with same signature as AG-Grid
+    // posX is already relative to the cell, so we need to calculate icon positions relative to cell start
+    const cellStartX = (rect.width - totalWidth) / 2;
+    const relativeX = posX - cellStartX;
+    
+    if (relativeX >= -15 && relativeX <= 15) {
+      // Edit icon clicked
       if (onEdit) {
-        onEdit(row, args); // Pass the event args as second parameter
+        onEdit(row, args);
       }
-    } else if (relativeX >= iconSpacing - 12 && relativeX <= iconSpacing + 12) {
-      // Duplicate icon clicked - call with same signature as AG-Grid
+    } else if (relativeX >= iconSpacing - 15 && relativeX <= iconSpacing + 15) {
+      // Duplicate icon clicked
       if (onDuplicate) {
-        onDuplicate(row, args); // Pass the event args as second parameter
+        onDuplicate(row, args);
       }
-    } else if (relativeX >= iconSpacing * 2 - 12 && relativeX <= iconSpacing * 2 + 12) {
-      // Delete icon clicked - call with same signature as AG-Grid
+    } else if (relativeX >= iconSpacing * 2 - 15 && relativeX <= iconSpacing * 2 + 15) {
+      // Delete icon clicked
       if (onDelete) {
-        onDelete(row, args); // Pass the event args as second parameter
+        onDelete(row, args);
       }
     }
     
@@ -81,4 +93,4 @@ const renderer: CustomRenderer<ToolsCell> = {
   },
 };
 
-export default renderer;
+export default glideToolsCellRenderer;

@@ -210,7 +210,7 @@ export const MTableComponent = (props: TableComponentProps) => {
 
   // ##############################################################################################
   const handleEditDialogFormOpen = useCallback((a?:TableComponentRow,event?:any) => {
-    event?.stopPropagation();
+    // event?.stopPropagation();
     log.info('handleEditDialogFormOpen called with props',props);
     log.info('handleEditDialogFormOpen called dialogFormObject',dialogFormObject, "event value", a);
     
@@ -227,7 +227,7 @@ export const MTableComponent = (props: TableComponentProps) => {
 
   // ##############################################################################################
   const handleEditDialogFormClose = useCallback((value?: string, event?:any) => {
-    event?.stopPropagation();
+    // event?.stopPropagation();
     log.info('handleEditDialogFormClose',value);
     
     setEditDialogFormIsOpen(false);
@@ -235,7 +235,7 @@ export const MTableComponent = (props: TableComponentProps) => {
 
   // ##############################################################################################
   const handleDeleteDialogFormOpen = useCallback((a?:TableComponentRow,event?:any) => {
-    event?.stopPropagation();
+    // event?.stopPropagation();
     log.info('handleDeleteDialogFormOpen called with props',props);
     log.info('handleDeleteDialogFormOpen called dialogFormObject',dialogFormObject, "event value", a);
     
@@ -253,7 +253,7 @@ export const MTableComponent = (props: TableComponentProps) => {
 
   // ##############################################################################################
   const handleDuplicateDialogFormOpen = useCallback((a?:TableComponentRow,event?:any) => {
-    event?.stopPropagation();
+    // event?.stopPropagation();
     log.info('handleDuplicateDialogFormOpen called with props',props);
     log.info('handleDuplicateDialogFormOpen called dialogFormObject',dialogFormObject, "event value", a);
     

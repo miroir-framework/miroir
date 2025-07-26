@@ -1,6 +1,9 @@
 import React from 'react';
-import { Icon, IconButton } from '@mui/material';
+import { IconButton } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import CreateIcon from '@mui/icons-material/Create';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { LoggerInterface, MiroirLoggerFactory } from "miroir-core";
 
 import { packageName } from '../../../constants.js';
@@ -59,7 +62,7 @@ export const EditActionButton: React.FC<BaseActionButtonProps> = ({
         }}
         title="Edit"
       >
-        <Icon style={{ fontSize: '16px' }}>create</Icon>
+        <CreateIcon style={{ fontSize: '16px' }} />
       </button>
     );
   }
@@ -70,7 +73,7 @@ export const EditActionButton: React.FC<BaseActionButtonProps> = ({
       size={size}
       title="Edit"
     >
-      <Icon>create</Icon>
+      <CreateIcon />
     </ActionButton>
   );
 };
@@ -104,7 +107,7 @@ export const DuplicateActionButton: React.FC<BaseActionButtonProps> = ({
         }}
         title="Duplicate"
       >
-        <Icon style={{ fontSize: '16px' }}>content_copy</Icon>
+        <ContentCopyIcon style={{ fontSize: '16px' }} />
       </button>
     );
   }
@@ -115,7 +118,7 @@ export const DuplicateActionButton: React.FC<BaseActionButtonProps> = ({
       size={size}
       title="Duplicate"
     >
-      <Icon>content_copy</Icon>
+      <ContentCopyIcon />
     </ActionButton>
   );
 };
@@ -149,7 +152,7 @@ export const DeleteActionButton: React.FC<BaseActionButtonProps> = ({
         }}
         title="Delete"
       >
-        <Icon style={{ fontSize: '16px' }}>delete</Icon>
+        <DeleteIcon style={{ fontSize: '16px' }} />
       </button>
     );
   }
@@ -160,7 +163,7 @@ export const DeleteActionButton: React.FC<BaseActionButtonProps> = ({
       size={size}
       title="Delete"
     >
-      <Icon>delete</Icon>
+      <DeleteIcon />
     </ActionButton>
   );
 };
