@@ -91,7 +91,7 @@ export class ViewParamsUpdateQueue {
       this.processPendingUpdates();
     }, this.config.delayMs);
 
-    this.log.info(`ViewParamsUpdateQueue: timer set for ${this.config.delayMs}ms`);
+    // this.log.info(`ViewParamsUpdateQueue: timer set for ${this.config.delayMs}ms`);
   }
 
   // ##############################################################################################
@@ -118,9 +118,6 @@ export class ViewParamsUpdateQueue {
               applicationSection: "data" as const,
               instances: [
                 {
-                  // uuid: this.config.viewParamsInstanceUuid,
-                  // parentUuid: "dde4c883-ae6d-47c3-b6df-26bc6e3c1842", // TODO: TEST FOR ERROR WHEN SENT INSTANCE OF WRONG TYPE! IT MUST SEND AN ERROR, EVEN WHEN STORING IN FILE SYSTEM
-                  // parentUuid: entityViewParams.uuid, // ViewParams entity UUID
                   ...this.pendingUpdates?.currentValue,
                   ...this.pendingUpdates?.updates,
                 } as EntityInstance,
@@ -159,10 +156,6 @@ export class ViewParamsUpdateQueue {
 
   public getPendingUpdates(): ViewParamsUpdate | undefined {
     return this.pendingUpdates;
-    // return {
-    //   updates: this.pendingUpdates?.updates,
-    //   currentValue: this.pendingUpdates?.currentValue || undefined,
-    // };
   }
 
   public flushImmediately(): Promise<void> {

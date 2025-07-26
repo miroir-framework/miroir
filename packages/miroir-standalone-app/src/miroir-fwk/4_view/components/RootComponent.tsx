@@ -507,11 +507,11 @@ export const RootComponent = (props: RootComponentProps) => {
 
   // Initialize the ViewParamsUpdateQueue
   const updateQueue = useMemo(() => {
-    if (!defaultViewParamsFromAdminStorageFetchQueryResults?.["viewParams"]) {
+    if (!defaultViewParamsFromAdminStorage) {
       return null;
     }
     
-    const viewParamsInstanceUuid = Object.keys(defaultViewParamsFromAdminStorageFetchQueryResults["viewParams"])[0];
+    const viewParamsInstanceUuid = Object.keys(defaultViewParamsFromAdminStorage)[0];
     
     if (!viewParamsInstanceUuid) {
       return null;
@@ -536,7 +536,7 @@ export const RootComponent = (props: RootComponentProps) => {
   useEffect(() => {
     if (!userHasChangedSidebarWidth && dbSidebarWidth && dbSidebarWidth !== sidebarWidth) {
       setSidebarWidth(dbSidebarWidth);
-      log.info("RootComponent: Updated sidebar width from database", dbSidebarWidth);
+      // log.info("RootComponent: Updated sidebar width from database", dbSidebarWidth);
     }
   }, [dbSidebarWidth, userHasChangedSidebarWidth, sidebarWidth]);
 
@@ -613,9 +613,7 @@ export const RootComponent = (props: RootComponentProps) => {
                   <div>loaded: {count}</div>
                 <p />
                 <GridSwitchComponent 
-                  defaultviewParamsFromAdminDb={
-                    defaultViewParamsFromAdminStorageFetchQueryResults && defaultViewParamsFromAdminStorageFetchQueryResults["viewParams"]?
-                    defaultViewParamsFromAdminStorageFetchQueryResults["viewParams"][defaultAdminViewParams.uuid] as any : undefined}
+                  defaultviewParamsFromAdminDb={defaultViewParamsFromAdminStorage}
                 />
                 <div>
                   <FormControl fullWidth>

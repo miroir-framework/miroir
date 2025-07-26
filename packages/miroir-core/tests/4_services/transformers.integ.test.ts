@@ -192,16 +192,18 @@ const beforeAll = async () => {
       actionType: "createInstance",
       actionLabel: "CreateLibraryStoreInstances",
       endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-      applicationSection: "data",
       deploymentUuid: paramAdminConfigurationDeploymentUuid,
-      objects: libraryEntitesAndInstances.map((e) => {
-        return {
-          parentName: e.entity.name,
-          parentUuid: e.entity.uuid,
-          applicationSection: "data",
-          instances: e.instances,
-        };
-      }),
+      payload: {
+        applicationSection: "data",
+        objects: libraryEntitesAndInstances.map((e) => {
+          return {
+            parentName: e.entity.name,
+            parentUuid: e.entity.uuid,
+            applicationSection: "data",
+            instances: e.instances,
+          };
+        }),
+      }
     });
     console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ END beforeAll");
   }

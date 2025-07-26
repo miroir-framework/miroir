@@ -102,13 +102,13 @@ Ran all test suites with tests matching "domainSelector".
 To run the Transformer tests, in unit configuration (transformers are executed by the client or server, in memory)
 
 ```sh
-RUN_TEST=transformers.unit.test npm run vitestByFile -w miroir-core -- 'transformers.unit'
+RUN_TEST=transformers.unit.test npm run testByFile -w miroir-core -- 'transformers.unit'
 ```
 
 To run the Transformer tests, in integration configuration (transformers are executed on the database as sql queries)
 
 ```sh
-RUN_TEST=transformers.integ.test npm run vitestByFile -w miroir-core -- 'transformers.integ'
+RUN_TEST=transformers.integ.test npm run testByFile -w miroir-core -- 'transformers.integ'
 ```
 
 

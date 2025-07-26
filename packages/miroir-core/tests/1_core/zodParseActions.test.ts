@@ -243,16 +243,18 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       actionType: "createInstance",
       endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
       deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
-      applicationSection: "data",
-      objects: [
-        {
-          parentName: entityMenu.name,
-          parentUuid: entityMenu.uuid,
-          applicationSection: "model",
-          instances: [menuDefaultMiroir as Entity],
-        },
-      ],
-    },
+      payload: {
+        applicationSection: "data",
+        objects: [
+          {
+            parentName: entityMenu.name,
+            parentUuid: entityMenu.uuid,
+            applicationSection: "model",
+            instances: [menuDefaultMiroir as Entity],
+          },
+        ],
+      },
+    }
   },
   "updateInstance InstanceAction is parsable": {
     zodSchema: domainAction,
@@ -260,15 +262,17 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       actionType: "updateInstance",
       endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
       deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
-      applicationSection: "data",
-      objects: [
-        {
-          parentName: entityMenu.name,
-          parentUuid: entityMenu.uuid,
-          applicationSection: "model",
-          instances: [menuDefaultMiroir as EntityInstance],
-        },
-      ],
+      payload: {
+        applicationSection: "data",
+        objects: [
+          {
+            parentName: entityMenu.name,
+            parentUuid: entityMenu.uuid,
+            applicationSection: "model",
+            instances: [menuDefaultMiroir as EntityInstance],
+          },
+        ],
+      }
     },
   },
   "deleteInstance InstanceAction is parsable": {
@@ -277,15 +281,17 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       actionType: "deleteInstance",
       endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
       deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
-      applicationSection: "data",
-      objects: [
-        {
-          parentName: entityMenu.name,
-          parentUuid: entityMenu.uuid,
-          applicationSection: "model",
-          instances: [menuDefaultMiroir as Entity],
-        },
-      ],
+      payload: {
+        applicationSection: "data",
+        objects: [
+          {
+            parentName: entityMenu.name,
+            parentUuid: entityMenu.uuid,
+            applicationSection: "model",
+            instances: [menuDefaultMiroir as Entity],
+          },
+        ],
+      }
     },
   },
   "deleteInstanceWithCascade InstanceAction is parsable": {
@@ -294,15 +300,17 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       actionType: "deleteInstanceWithCascade",
       endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
       deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
-      applicationSection: "data",
-      objects: [
-        {
-          parentName: entityMenu.name,
-          parentUuid: entityMenu.uuid,
-          applicationSection: "model",
-          instances: [menuDefaultMiroir as Entity],
-        },
-      ],
+      payload: {
+        applicationSection: "data",
+        objects: [
+          {
+            parentName: entityMenu.name,
+            parentUuid: entityMenu.uuid,
+            applicationSection: "model",
+            instances: [menuDefaultMiroir as Entity],
+          },
+        ],
+      }
     },
   },
   "getInstances InstanceAction is parsable": {
@@ -311,8 +319,10 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       actionType: "getInstances",
       endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
       deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
-      applicationSection: "data",
-      parentUuid: entityMenu.uuid,
+      payload: {
+        applicationSection: "data",
+        parentUuid: entityMenu.uuid,
+      }
     },
   },
   "getInstance InstanceAction is parsable": {
@@ -321,9 +331,11 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       actionType: "getInstance",
       endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
       deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
-      applicationSection: "data",
-      parentUuid: entityMenu.uuid,
-      uuid: "eaac459c-6c2b-475c-8ae4-c6c3032dae00", // This is the uuid of the menuDefaultMiroir instance
+      payload: {
+        parentUuid: entityMenu.uuid,
+        applicationSection: "data",
+        uuid: "eaac459c-6c2b-475c-8ae4-c6c3032dae00", // This is the uuid of the menuDefaultMiroir instance
+      }
     },
   },
   // ##############################################################################################
@@ -334,14 +346,16 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       actionType: "loadNewInstancesInLocalCache",
       endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
       deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
-      objects: [
-        {
-          parentName: entityMenu.name,
-          parentUuid: entityMenu.uuid,
-          applicationSection: "model",
-          instances: [menuDefaultMiroir as Entity],
-        },
-      ],
+      payload: {
+        objects: [
+          {
+            parentName: entityMenu.name,
+            parentUuid: entityMenu.uuid,
+            applicationSection: "model",
+            instances: [menuDefaultMiroir as Entity],
+          },
+        ],
+      }
     },
   },
   "undoRedoAction undo is parsable": {
@@ -372,16 +386,18 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
         actionType: "createInstance",
         deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
         endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-        applicationSection: "data",
-        objects: [
-          {
-            parentName: entityMenu.name,
-            parentUuid: entityMenu.uuid,
-            applicationSection: "model",
-            instances: [menuDefaultMiroir as Entity],
-          },
-        ],
-      },
+        payload: {
+          applicationSection: "data",
+          objects: [
+            {
+              parentName: entityMenu.name,
+              parentUuid: entityMenu.uuid,
+              applicationSection: "model",
+              instances: [menuDefaultMiroir as Entity],
+            },
+          ],
+        },
+      }
     },
   },
   // ##############################################################################################
@@ -621,29 +637,33 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
           actionType: "createInstance",
           endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
           deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
-          applicationSection: "data",
-          objects: [
-            {
-              parentName: entityMenu.name,
-              parentUuid: entityMenu.uuid,
-              applicationSection: "model",
-              instances: [menuDefaultMiroir as Entity],
-            },
-          ],
+          payload: {
+            applicationSection: "data",
+            objects: [
+              {
+                parentName: entityMenu.name,
+                parentUuid: entityMenu.uuid,
+                applicationSection: "model",
+                instances: [menuDefaultMiroir as Entity],
+              },
+            ],
+          }
         },
         {
           actionType: "updateInstance",
           endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
           deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
-          applicationSection: "data",
-          objects: [
-            {
-              parentName: entityMenu.name,
-              parentUuid: entityMenu.uuid,
-              applicationSection: "model",
-              instances: [menuDefaultMiroir as EntityInstance],
-            },
-          ],
+          payload: {
+            applicationSection: "data",
+            objects: [
+              {
+                parentName: entityMenu.name,
+                parentUuid: entityMenu.uuid,
+                applicationSection: "model",
+                instances: [menuDefaultMiroir as EntityInstance],
+              },
+            ],
+          }
         },
       ],
     },
