@@ -150,20 +150,20 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
     [deploymentEntityStateSelectorMap]
   );
 
-  log.info("fetchDeploymentMenusQueryParams",fetchDeploymentMenusQueryParams)
+  // log.info("fetchDeploymentMenusQueryParams",fetchDeploymentMenusQueryParams)
   const miroirMenusDomainElementObject: Domain2QueryReturnType<Domain2QueryReturnType<Record<string,any>>> = useDeploymentEntityStateQuerySelector(
     deploymentEntityStateSelectorMap.runQuery,
     fetchDeploymentMenusQueryParams
   );
 
-  log.info("deploymentEntityStateDomainElementObject",miroirMenusDomainElementObject)
-  console.log(
-    "SidebarSection refresh",
-    count++,
-    "found miroir menu:",
-    miroirMenusDomainElementObject,
-    // miroirMenusDomainElementObject?.elementValue
-  );
+  // log.info("deploymentEntityStateDomainElementObject",miroirMenusDomainElementObject)
+  // console.log(
+  //   "SidebarSection refresh",
+  //   count++,
+  //   "found miroir menu:",
+  //   miroirMenusDomainElementObject,
+  //   // miroirMenusDomainElementObject?.elementValue
+  // );
   const drawerSx = useMemo(()=>({flexDirection:'column'}),[])
   const styledDrawerSx = useMemo(()=>({alignItems: "end"}),[])
 

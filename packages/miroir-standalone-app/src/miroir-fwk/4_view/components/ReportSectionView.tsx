@@ -89,7 +89,7 @@ export const ReportSectionView = (props: ReportSectionViewProps) => {
   const displayedDeploymentDefinition: SelfApplicationDeploymentConfiguration | undefined = deployments.find(
     (d) => d.uuid == props.deploymentUuid
   );
-  log.info("ReportSectionView displayedDeploymentDefinition", displayedDeploymentDefinition);
+  // log.info("ReportSectionView displayedDeploymentDefinition", displayedDeploymentDefinition);
 
   const { availableReports, entities, entityDefinitions } = useMemo(() => {
     return displayedDeploymentDefinition &&
@@ -105,7 +105,7 @@ export const ReportSectionView = (props: ReportSectionViewProps) => {
     props.applicationSection,
   ]);
     
-  log.info("ReportSectionView availableReports",availableReports);
+  // log.info("ReportSectionView availableReports",availableReports);
 
   const currentListReportTargetEntity: Entity | undefined =
     props.reportSection?.type === "objectListReportSection" 
@@ -125,14 +125,14 @@ export const ReportSectionView = (props: ReportSectionViewProps) => {
     ]
   : undefined
 
-  log.info(
-    "entityInstance",
-    entityInstance,
-    "props.reportSection.definition.fetchedDataReference",
-    (props.reportSection?.definition as any)?.fetchedDataReference,
-    "props",
-    props
-  );
+  // log.info(
+  //   "entityInstance",
+  //   entityInstance,
+  //   "props.reportSection.definition.fetchedDataReference",
+  //   (props.reportSection?.definition as any)?.fetchedDataReference,
+  //   "props",
+  //   props
+  // );
 
   const styles = useMemo(()=>({
     width: "80vw",

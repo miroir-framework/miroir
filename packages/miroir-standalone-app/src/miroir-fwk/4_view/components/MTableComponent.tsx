@@ -100,7 +100,7 @@ export const MTableComponent = (props: TableComponentProps) => {
     "viewParams"
   ] as any;
 
-  log.info("MTableComponent viewParams", viewParams, "defaultViewParamsFromAdminStorageFetchQueryResults", defaultViewParamsFromAdminStorageFetchQueryResults);
+  // log.info("MTableComponent viewParams", viewParams, "defaultViewParamsFromAdminStorageFetchQueryResults", defaultViewParamsFromAdminStorageFetchQueryResults);
   const gridType = viewParams?.gridType || 'ag-grid';
 
 

@@ -9,7 +9,6 @@ import {
   EntityInstance,
   EntityInstancesUuidIndex,
   JzodElement,
-  JzodUnion,
   KeyMapEntry,
   LoggerInterface,
   MetaModel,
@@ -17,13 +16,11 @@ import {
   SyncBoxedExtractorOrQueryRunnerMap,
   SyncQueryRunner,
   SyncQueryRunnerParams,
-  UnfoldJzodSchemaOnceReturnType,
   adminConfigurationDeploymentMiroir,
   dummyDomainManyQueryWithDeploymentUuid,
   getApplicationSection,
   getQueryRunnerParamsForDeploymentEntityState,
-  resolvePathOnObject,
-  unfoldJzodSchemaOnce
+  resolvePathOnObject
 } from "miroir-core";
 import { JzodObject } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { getMemoizedDeploymentEntityStateSelectorMap } from "miroir-localcache-redux";
@@ -292,8 +289,6 @@ export function useJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
     localResolvedElementJzodSchemaBasedOnValue,
     foreignKeyObjects,
     // Array / Object fold / unfold state
-    // hiddenFormItems, // moved to props
-    // setHiddenFormItems, // moved to props
     itemsOrder,
     definedOptionalAttributes,
     stringSelectList,

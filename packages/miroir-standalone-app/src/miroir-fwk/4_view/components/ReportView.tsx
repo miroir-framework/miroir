@@ -63,7 +63,8 @@ export const ReportView = (props: ReportViewProps) => {
   const outlineContext = useDocumentOutlineContext();
 
   const paramsAsdomainElements: Domain2QueryReturnType<Record<string,any>> = props.pageParams;
-  log.info("########################## ReportView rendering", count, "props", props);
+  // log.info("########################## ReportView rendering", count, "props", props);
+  log.info("########################## ReportView rendering", count);
 
   // log.info(
   //   "deploymentUuid",
@@ -111,7 +112,7 @@ export const ReportView = (props: ReportViewProps) => {
 
   // log.info("deploymentEntityStateFetchQueryTemplateParams",deploymentEntityStateFetchQueryTemplateParams)
 
-  log.info("################################################################ resolving query Template");
+  // log.info("################################################################ resolving query Template");
 
   const resolvedTemplateQuery: BoxedQueryWithExtractorCombinerTransformer = useMemo(
     () =>
@@ -121,8 +122,8 @@ export const ReportView = (props: ReportViewProps) => {
     [deploymentEntityStateFetchQueryTemplate]
   );
 
-  log.info("resolvedQuery", resolvedTemplateQuery);
-  log.info("################################################################ resolved query Template DONE");
+  // log.info("resolvedQuery", resolvedTemplateQuery);
+  // log.info("################################################################ resolved query Template DONE");
 
   // fetching report data
   const usedQuery: BoxedQueryWithExtractorCombinerTransformer = useMemo(
@@ -166,7 +167,7 @@ export const ReportView = (props: ReportViewProps) => {
 
   // log.info("deploymentEntityStateQueryTemplateResults",deploymentEntityStateQueryTemplateResults)
 
-  log.info("################################################################ Fecth NON-Template report data", usedQuery);
+  // log.info("################################################################ Fecth NON-Template report data", usedQuery);
 
   const deploymentEntityStateQueryResults: Domain2QueryReturnType<
     Domain2QueryReturnType<Record<string, any>>
@@ -175,7 +176,7 @@ export const ReportView = (props: ReportViewProps) => {
     deploymentEntityStateFetchQueryParams
   );
 
-  log.info("deploymentEntityStateQueryResults", deploymentEntityStateQueryResults);
+  // log.info("deploymentEntityStateQueryResults", deploymentEntityStateQueryResults);
 
 
   const jzodSchemaSelectorMap: QueryRunnerMapForJzodSchema<DeploymentEntityState> = useMemo(
@@ -183,7 +184,7 @@ export const ReportView = (props: ReportViewProps) => {
     []
   );
 
-  log.info("################################################################ Fecth NON-Template report schema");
+  // log.info("################################################################ Fecth NON-Template report schema");
 
   const fetchedDataJzodSchemaParams: ExtractorRunnerParamsForJzodSchema<
     QueryByQuery2GetParamJzodSchema,
@@ -237,22 +238,22 @@ export const ReportView = (props: ReportViewProps) => {
     fetchedDataJzodSchemaParams
   ) as RecordOfJzodObject | undefined; // TODO: use correct return type
 
-  log.info(
-    "ReportView found",
-    "fetchedDataJzodSchema",
-    fetchedDataJzodSchema,
-    "fetchedDataJzodSchemaParams",
-    fetchedDataJzodSchemaParams,
-    "props.reportSection?.extractorTemplates",
-    props.reportDefinition?.extractorTemplates,
-    "props.reportSection?.combinerTemplates",
-    props.reportDefinition?.combinerTemplates,
-    "props.reportSection?.runtimeTransformers",
-    props.reportDefinition?.runtimeTransformers,
-    "deploymentEntityStateQueryResults",
-    deploymentEntityStateQueryResults,
-  );
-  log.info("ReportView props.reportSection", props.reportDefinition);
+  // log.info(
+  //   "ReportView found",
+  //   "fetchedDataJzodSchema",
+  //   fetchedDataJzodSchema,
+  //   "fetchedDataJzodSchemaParams",
+  //   fetchedDataJzodSchemaParams,
+  //   "props.reportSection?.extractorTemplates",
+  //   props.reportDefinition?.extractorTemplates,
+  //   "props.reportSection?.combinerTemplates",
+  //   props.reportDefinition?.combinerTemplates,
+  //   "props.reportSection?.runtimeTransformers",
+  //   props.reportDefinition?.runtimeTransformers,
+  //   "deploymentEntityStateQueryResults",
+  //   deploymentEntityStateQueryResults,
+  // );
+  // log.info("ReportView props.reportSection", props.reportDefinition);
 
   const outlineElement = useMemo(() => {
     if (

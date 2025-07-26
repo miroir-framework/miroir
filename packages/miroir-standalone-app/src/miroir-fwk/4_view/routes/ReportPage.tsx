@@ -197,7 +197,7 @@ export const ReportPage = () => {
     pageParams.applicationSection,
   ]);
   // log.info("displayedDeploymentDefinition", displayedDeploymentDefinition);
-  log.info("ReportPage availableReports", availableReports);
+  // log.info("ReportPage availableReports", availableReports);
 
   const currentMiroirReport: Report =
     availableReports?.find((r: Report) => r.uuid == pageParams.reportUuid) ?? defaultReport;
@@ -206,7 +206,7 @@ export const ReportPage = () => {
 
   if (pageParams.applicationSection) {
     log.info("ReportPage rendering count", ReportPageCount, "params", pageParams);
-    log.info("ReportPage current metrics:", RenderPerformanceMetrics.renderMetrics);
+    // log.info("ReportPage current metrics:", RenderPerformanceMetrics.renderMetrics);
     return (
       <Box sx={{ display: 'flex', flexDirection: 'column', padding: 2 }}>
         {/* Page Header */}
