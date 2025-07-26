@@ -52,10 +52,45 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
   onRowDelete,
   onRowDuplicate,
 }) => {
+  const containerRef = React.useRef<HTMLDivElement>(null);
+  const [containerWidth, setContainerWidth] = React.useState(1200);
+
+  // Monitor container width changes
+  React.useEffect(() => {
+    const updateWidth = () => {
+      if (containerRef.current) {
+        const width = containerRef.current.clientWidth;
+        setContainerWidth(width);
+      }
+    };
+
+    updateWidth();
+    window.addEventListener('resize', updateWidth);
+    return () => window.removeEventListener('resize', updateWidth);
+  }, []);
+
+  // Calculate height based on data
+  const height = useMemo(() => {
+    const rowCount = tableComponentRows.tableComponentRowUuidIndexSchema.length;
+    if (rowCount > 50) {
+      return Math.min(window.innerHeight * 0.5, 600); // 50vh but max 600px
+    } else {
+      return Math.min(rowCount * 34 + 36, 400); // Auto height with max
+    }
+  }, [tableComponentRows.tableComponentRowUuidIndexSchema.length]);
+
   // Convert columnDefs to Glide format
   const glideColumns: GridColumn[] = useMemo(() => {
-    // Calculate adaptive widths based on data and available space
-    const availableWidth = 1200; // Default, could be made dynamic based on container width
+    // Calculate if vertical scrollbar will be needed
+    const rowCount = tableComponentRows.tableComponentRowUuidIndexSchema.length;
+    const maxRowsWithoutScroll = Math.floor((height - 36) / 34); // 36px header, 34px per row
+    const needsVerticalScrollbar = rowCount > maxRowsWithoutScroll;
+    
+    // Only subtract scrollbar width if we actually need scrollbars
+    const scrollbarWidth = needsVerticalScrollbar ? 17 : 0;
+    const borderWidth = 2; // Container border
+    const availableWidth = containerWidth - scrollbarWidth - borderWidth;
+    
     const jzodSchema = props.type === TableComponentTypeSchema.enum.EntityInstance && 
       props.currentEntityDefinition?.jzodSchema?.definition ? 
       props.currentEntityDefinition.jzodSchema.definition : undefined;
@@ -67,6 +102,27 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
       jzodSchema
     );
 
+    // The algorithm already ensures exact width matching
+    // No additional adjustment needed here
+
+    // Debug logging for width distribution
+    const finalTotalWidth = widthSpecs.reduce((sum, spec) => sum + spec.calculatedWidth, 0);
+    log.info("GlideDataGrid column width distribution", {
+      containerWidth,
+      rowCount,
+      maxRowsWithoutScroll,
+      needsVerticalScrollbar,
+      scrollbarWidth,
+      borderWidth,
+      availableWidth,
+      finalTotalWidth,
+      difference: Math.abs(finalTotalWidth - availableWidth),
+      columnWidths: widthSpecs.map(spec => ({
+        field: spec.field || 'tools',
+        width: Math.round(spec.calculatedWidth)
+      }))
+    });
+
     const columns: GridColumn[] = [];
     
     // Add tools column with calculated width
@@ -74,7 +130,7 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
     columns.push({
       title: "Actions",
       id: "tools",
-      width: toolsSpec?.calculatedWidth || 180,
+      width: Math.round(toolsSpec?.calculatedWidth || 180),
     });
     
     // Add data columns with calculated widths
@@ -84,13 +140,13 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
         columns.push({
           title: colDef.headerName || colDef.field,
           id: colDef.field,
-          width: widthSpec?.calculatedWidth || 150,
+          width: Math.round(widthSpec?.calculatedWidth || 150),
         });
       }
     });
     
     return columns;
-  }, [props.columnDefs, tableComponentRows, props.type, props]);
+  }, [props.columnDefs, tableComponentRows, props.type, props, containerWidth, height]);
 
   // Get cell content
   const getCellContent = useCallback(
@@ -252,18 +308,9 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
     [onCellEdited]
   );
 
-  // Calculate height based on data
-  const height = useMemo(() => {
-    const rowCount = tableComponentRows.tableComponentRowUuidIndexSchema.length;
-    if (rowCount > 50) {
-      return Math.min(window.innerHeight * 0.5, 600); // 50vh but max 600px
-    } else {
-      return Math.min(rowCount * 34 + 36, 400); // Auto height with max
-    }
-  }, [tableComponentRows.tableComponentRowUuidIndexSchema.length]);
-
   return (
     <div
+      ref={containerRef}
       style={{
         ...props.styles,
         height: `${height}px`,
@@ -285,6 +332,7 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
         rangeSelect="none"
         columnSelect="none"
         rowSelect="none"
+        width={containerWidth}
         keybindings={{
           selectAll: false,
           selectRow: false,

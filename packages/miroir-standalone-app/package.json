@@ -10,7 +10,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "startDev": "vite --host",
+    "dev": "vite --host",
     "build": "vite build --emptyOutDir",
     "build5": "npm run build",
     "test": "cross-env VITE_TEST_MODE='true' vitest run --poolOptions.threads.singleThread --bail=1 -t",

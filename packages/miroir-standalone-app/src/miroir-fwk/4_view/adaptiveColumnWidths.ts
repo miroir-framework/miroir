@@ -170,51 +170,30 @@ export function calculateAdaptiveColumnWidths(
     };
   });
 
-  // Adjust widths to fit available space
+  // Adjust widths to fit available space exactly
   const totalCalculatedWidth = columnSpecs.reduce((sum, spec) => sum + spec.calculatedWidth, 0);
-  const availableSpace = availableWidth - 20; // Account for scrollbar
+  const availableSpace = availableWidth; // Use the space already adjusted for scrollbars by caller
 
-  if (totalCalculatedWidth > availableSpace) {
-    // Need to shrink columns proportionally, respecting minimums
-    const totalMinWidth = columnSpecs.reduce((sum, spec) => sum + spec.minWidth, 0);
-    
-    if (totalMinWidth <= availableSpace) {
-      // Can fit by shrinking flexible columns
-      const flexibleSpace = availableSpace - totalMinWidth;
-      const totalFlexible = columnSpecs.reduce((sum, spec) => 
-        sum + Math.max(0, spec.calculatedWidth - spec.minWidth), 0);
-      
-      if (totalFlexible > 0) {
-        const ratio = flexibleSpace / totalFlexible;
-        columnSpecs.forEach(spec => {
-          const flexibleWidth = Math.max(0, spec.calculatedWidth - spec.minWidth);
-          spec.calculatedWidth = spec.minWidth + (flexibleWidth * ratio);
-        });
-      }
-    } else {
-      // Even minimums don't fit, use proportional minimums
-      const ratio = availableSpace / totalMinWidth;
-      columnSpecs.forEach(spec => {
-        spec.calculatedWidth = spec.minWidth * ratio;
-      });
-    }
-  } else if (totalCalculatedWidth < availableSpace * 0.8) {
-    // Expand columns to use more space if we're using less than 80%
-    const extraSpace = availableSpace - totalCalculatedWidth;
-    const expandableColumns = columnSpecs.filter(spec => spec.calculatedWidth < spec.maxWidth);
-    
-    if (expandableColumns.length > 0) {
-      const totalExpandable = expandableColumns.reduce((sum, spec) => 
-        sum + (spec.maxWidth - spec.calculatedWidth), 0);
-      
-      if (totalExpandable > 0) {
-        const ratio = Math.min(1, extraSpace / totalExpandable);
-        expandableColumns.forEach(spec => {
-          const expandable = spec.maxWidth - spec.calculatedWidth;
-          spec.calculatedWidth += expandable * ratio;
-        });
-      }
-    }
+  // Always force exact width matching by proportional distribution
+  const targetWidthRatio = availableSpace / totalCalculatedWidth;
+  
+  if (Math.abs(totalCalculatedWidth - availableSpace) > 0.1) {
+    // Apply proportional scaling to all columns
+    columnSpecs.forEach(spec => {
+      spec.calculatedWidth = spec.calculatedWidth * targetWidthRatio;
+    });
+  }
+
+  // Final verification and adjustment to ensure perfect width match
+  const finalTotalWidth = columnSpecs.reduce((sum, spec) => sum + spec.calculatedWidth, 0);
+  const finalDifference = availableSpace - finalTotalWidth;
+  
+  if (Math.abs(finalDifference) > 0.01) {
+    // Apply the remaining difference to the largest column
+    const largestColumn = columnSpecs.reduce((largest, current) => 
+      current.calculatedWidth > largest.calculatedWidth ? current : largest
+    );
+    largestColumn.calculatedWidth += finalDifference;
   }
 
   return columnSpecs;
