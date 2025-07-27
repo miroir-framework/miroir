@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import {
   DataEditor,
   GridCell,
@@ -32,6 +32,13 @@ MiroirLoggerFactory.registerLoggerToStart(
   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "GlideDataGridComponent")
 ).then((logger: LoggerInterface) => {log = logger});
 
+// Sorting types
+type SortDirection = 'asc' | 'desc' | null;
+interface SortState {
+  columnId: string;
+  direction: SortDirection;
+}
+
 interface GlideDataGridComponentProps {
   tableComponentRows: { tableComponentRowUuidIndexSchema: TableComponentRow[] };
   columnDefs: { columnDefs: any[] };
@@ -63,6 +70,9 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
 }) => {
   const containerRef = React.useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = React.useState(1200);
+  
+  // Sorting state
+  const [sortState, setSortState] = useState<SortState>({ columnId: '', direction: null });
 
   // Monitor container width changes
   React.useEffect(() => {
@@ -78,15 +88,66 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
     return () => window.removeEventListener('resize', updateWidth);
   }, []);
 
+  // Handle header clicks for sorting
+  const handleHeaderClick = useCallback((columnIndex: number) => {
+    // We need to access the columns directly from the columnDefs since glideColumns isn't available yet
+    if (columnIndex === 0) return; // Skip tools column (index 0)
+    
+    // Find the corresponding column definition
+    const dataColumnIndex = columnIndex - 1; // Subtract 1 because tools column is at index 0
+    const colDef = columnDefs.columnDefs[dataColumnIndex];
+    if (!colDef || colDef.sortable === false) return; // Skip if sorting is disabled
+    
+    const columnId = colDef.field;
+    if (!columnId) return;
+    
+    setSortState(prevState => {
+      if (prevState.columnId === columnId) {
+        // Same column - cycle through: null -> asc -> desc -> null
+        const nextDirection: SortDirection = 
+          prevState.direction === null ? 'asc' :
+          prevState.direction === 'asc' ? 'desc' : null;
+        return { columnId, direction: nextDirection };
+      } else {
+        // Different column - start with ascending
+        return { columnId, direction: 'asc' };
+      }
+    });
+  }, [columnDefs]);
+
+  // Sort the data based on current sort state
+  const sortedTableRows = useMemo(() => {
+    if (!sortState.direction || !sortState.columnId) {
+      return tableComponentRows.tableComponentRowUuidIndexSchema;
+    }
+
+    const sorted = [...tableComponentRows.tableComponentRowUuidIndexSchema].sort((a, b) => {
+      const aValue = (a.displayedValue as any)[sortState.columnId] || (a.rawValue as any)[sortState.columnId] || '';
+      const bValue = (b.displayedValue as any)[sortState.columnId] || (b.rawValue as any)[sortState.columnId] || '';
+      
+      // Convert to strings for comparison
+      const aStr = String(aValue).toLowerCase();
+      const bStr = String(bValue).toLowerCase();
+      
+      let comparison = 0;
+      if (aStr < bStr) comparison = -1;
+      else if (aStr > bStr) comparison = 1;
+      
+      return sortState.direction === 'asc' ? comparison : -comparison;
+    });
+
+    return sorted;
+  }, [tableComponentRows, sortState]);
+
   // Calculate height based on data
   const height = useMemo(() => {
-    const rowCount = tableComponentRows.tableComponentRowUuidIndexSchema.length;
+    const rowCount = sortedTableRows.length;
     if (rowCount > 50) {
       return Math.min(window.innerHeight * 0.5, 600); // 50vh but max 600px
     } else {
       return Math.min(rowCount * 34 + 36, 400); // Auto height with max
     }
-  }, [tableComponentRows.tableComponentRowUuidIndexSchema.length]);
+  }, [sortedTableRows.length]);
 
   // Convert columnDefs to Glide format
   const glideColumns: GridColumn[] = useMemo(() => {
@@ -143,12 +204,20 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
       width: Math.round(toolsSpec?.calculatedWidth || toolsColumnDefinition.width),
     });
 
-    // Add data columns with calculated widths
+    // Add data columns with calculated widths and sorting indicators
     columnDefs.columnDefs.forEach((colDef: any) => {
       if (colDef.field) {
         const widthSpec = widthSpecs.find((spec) => spec.field === colDef.field);
+        
+        // Add sorting indicator to title if this column is being sorted
+        let title = colDef.headerName || colDef.field;
+        if (sortState.columnId === colDef.field && sortState.direction) {
+          const arrow = sortState.direction === 'asc' ? ' ↑' : ' ↓';
+          title = title + arrow;
+        }
+        
         columns.push({
-          title: colDef.headerName || colDef.field,
+          title,
           id: colDef.field,
           width: Math.round(widthSpec?.calculatedWidth || 150),
         });
@@ -165,12 +234,13 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
     containerWidth,
     height,
     toolsColumnDefinition,
+    sortState,
   ]);
 
   // Get cell content
   const getCellContent = useCallback(
     ([col, row]: Item): GridCell => {
-      const rowData = tableComponentRows.tableComponentRowUuidIndexSchema[row];
+      const rowData = sortedTableRows[row];
       const colData = glideColumns[col];
 
       if (!rowData || !colData) {
@@ -287,14 +357,14 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
         };
       }
     },
-    [tableComponentRows, glideColumns, columnDefs, onRowEdit, onRowDuplicate, onRowDelete, toolsColumnDefinition]
+    [sortedTableRows, glideColumns, columnDefs, onRowEdit, onRowDuplicate, onRowDelete, toolsColumnDefinition]
   );
 
   // Handle cell clicks
   const handleCellClicked = useCallback(
     (cell: Item, event: CellClickedEventArgs) => {
       const [col, row] = cell;
-      const rowData = tableComponentRows.tableComponentRowUuidIndexSchema[row];
+      const rowData = sortedTableRows[row];
       const colData = glideColumns[col];
       
       // Handle tools column clicks - these should be handled by the custom cell renderer
@@ -312,7 +382,7 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
         onCellClicked(cell, event);
       }
     },
-    [tableComponentRows, glideColumns, onCellClicked, toolsColumnDefinition]
+    [sortedTableRows, glideColumns, onCellClicked, toolsColumnDefinition]
   );
 
   // Handle cell edits
@@ -340,10 +410,11 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
     >
       <DataEditor
         columns={glideColumns}
-        rows={tableComponentRows.tableComponentRowUuidIndexSchema.length}
+        rows={sortedTableRows.length}
         getCellContent={getCellContent}
         onCellClicked={handleCellClicked}
         onCellEdited={handleCellEdited}
+        onHeaderClicked={handleHeaderClick}
         customRenderers={[glideToolsCellRenderer]}
         smoothScrollX={true}
         smoothScrollY={true}
