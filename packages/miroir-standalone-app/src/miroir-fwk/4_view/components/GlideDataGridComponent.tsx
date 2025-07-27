@@ -22,7 +22,7 @@ import {
   IconButton,
   Typography 
 } from '@mui/material';
-import { FilterList as FilterIcon, Clear as ClearIcon } from '@mui/icons-material';
+import { FilterList as FilterIcon, Clear as ClearIcon, Add as AddIcon, Remove as RemoveIcon } from '@mui/icons-material';
 
 import { 
   EntityDefinition,
@@ -52,11 +52,25 @@ interface SortState {
   direction: SortDirection;
 }
 
-type FilterType = 'contains' | 'startsWith' | 'endsWith' | 'equals' | 'notEqual';
-interface FilterState {
-  columnId: string | null;
+type FilterType = 'contains' | 'startsWith' | 'endsWith' | 'equals' | 'notEqual' | 'notContains' | 'notStartsWith' | 'notEndsWith';
+type FilterLogic = 'AND' | 'OR';
+
+interface FilterCondition {
+  id: string;
+  columnId: string;
   type: FilterType;
   value: string;
+}
+
+interface ColumnFilterGroup {
+  columnId: string;
+  conditions: FilterCondition[];
+  logic: FilterLogic; // AND/OR logic for conditions within this column
+}
+
+interface FilterState {
+  columnGroups: ColumnFilterGroup[];
+  globalLogic: FilterLogic; // AND/OR logic between different columns
 }
 
 interface GlideDataGridComponentProps {
@@ -95,20 +109,116 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
   const [sortState, setSortState] = useState<SortState>({ columnId: '', direction: null });
   
   // Filtering state
-  const [filterState, setFilterState] = useState<FilterState>({ columnId: null, type: 'contains', value: '' });
+  const [filterState, setFilterState] = useState<FilterState>({ 
+    columnGroups: [],
+    globalLogic: 'AND' 
+  });
+  
+  // Currently selected column for adding new filters
+  const [selectedColumnId, setSelectedColumnId] = useState<string | null>(null);
   
   // Ref for the filter value input to enable focus
   const filterValueRef = useRef<HTMLInputElement>(null);
 
-  // Focus the filter value input when a column is selected
+  // Focus the filter value input when a column is selected or condition is added
   useEffect(() => {
-    if (filterState.columnId && filterValueRef.current) {
+    const hasConditions = filterState.columnGroups.some(group => group.conditions.length > 0);
+    if (selectedColumnId && filterValueRef.current && hasConditions) {
       // Small delay to ensure the input is rendered
       setTimeout(() => {
         filterValueRef.current?.focus();
       }, 100);
     }
-  }, [filterState.columnId]);
+  }, [selectedColumnId, filterState.columnGroups.length]);
+
+  // Helper functions for managing filter conditions
+  const generateFilterId = () => Math.random().toString(36).substr(2, 9);
+
+  const addFilterCondition = useCallback((columnId: string) => {
+    const newCondition: FilterCondition = {
+      id: generateFilterId(),
+      columnId,
+      type: 'contains',
+      value: ''
+    };
+
+    setFilterState(prev => {
+      const existingGroupIndex = prev.columnGroups.findIndex(group => group.columnId === columnId);
+      
+      if (existingGroupIndex >= 0) {
+        // Add to existing column group
+        const updatedGroups = [...prev.columnGroups];
+        updatedGroups[existingGroupIndex] = {
+          ...updatedGroups[existingGroupIndex],
+          conditions: [...updatedGroups[existingGroupIndex].conditions, newCondition]
+        };
+        return { ...prev, columnGroups: updatedGroups };
+      } else {
+        // Create new column group
+        const newGroup: ColumnFilterGroup = {
+          columnId,
+          conditions: [newCondition],
+          logic: 'AND'
+        };
+        return { ...prev, columnGroups: [...prev.columnGroups, newGroup] };
+      }
+    });
+  }, []);
+
+  const updateFilterCondition = useCallback((conditionId: string, updates: Partial<FilterCondition>) => {
+    setFilterState(prev => ({
+      ...prev,
+      columnGroups: prev.columnGroups.map(group => ({
+        ...group,
+        conditions: group.conditions.map(condition => 
+          condition.id === conditionId ? { ...condition, ...updates } : condition
+        )
+      }))
+    }));
+  }, []);
+
+  const removeFilterCondition = useCallback((conditionId: string) => {
+    setFilterState(prev => ({
+      ...prev,
+      columnGroups: prev.columnGroups
+        .map(group => ({
+          ...group,
+          conditions: group.conditions.filter(condition => condition.id !== conditionId)
+        }))
+        .filter(group => group.conditions.length > 0) // Remove empty groups
+    }));
+  }, []);
+
+  const updateColumnGroupLogic = useCallback((columnId: string, logic: FilterLogic) => {
+    setFilterState(prev => ({
+      ...prev,
+      columnGroups: prev.columnGroups.map(group => 
+        group.columnId === columnId ? { ...group, logic } : group
+      )
+    }));
+  }, []);
+
+  const removeColumnGroup = useCallback((columnId: string) => {
+    setFilterState(prev => ({
+      ...prev,
+      columnGroups: prev.columnGroups.filter(group => group.columnId !== columnId)
+    }));
+  }, []);
+
+  const clearAllFilters = useCallback(() => {
+    setFilterState({ columnGroups: [], globalLogic: 'AND' });
+    setSelectedColumnId(null);
+  }, []);
+
+  // Auto-add first condition when column is selected
+  useEffect(() => {
+    if (selectedColumnId) {
+      const existingGroup = filterState.columnGroups.find(group => group.columnId === selectedColumnId);
+      if (!existingGroup || existingGroup.conditions.length === 0) {
+        addFilterCondition(selectedColumnId);
+      }
+    }
+  }, [selectedColumnId, addFilterCondition, filterState.columnGroups]);
 
   // Monitor container width changes
   React.useEffect(() => {
@@ -182,25 +292,54 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
     let filteredRows = tableComponentRows.tableComponentRowUuidIndexSchema;
 
     // Apply filtering if active
-    if (filterState.columnId && filterState.value.trim()) {
+    if (filterState.columnGroups.length > 0) {
       filteredRows = filteredRows.filter((row) => {
-        const cellValue = getFilterValue(row, filterState.columnId!);
-        const searchValue = filterState.value.toLowerCase();
-        const cellStr = cellValue.toLowerCase();
+        // Evaluate each column group
+        const columnGroupResults = filterState.columnGroups.map(group => {
+          const cellValue = getFilterValue(row, group.columnId);
+          const cellStr = cellValue.toLowerCase();
 
-        switch (filterState.type) {
-          case 'contains':
-            return cellStr.includes(searchValue);
-          case 'startsWith':
-            return cellStr.startsWith(searchValue);
-          case 'endsWith':
-            return cellStr.endsWith(searchValue);
-          case 'equals':
-            return cellStr === searchValue;
-          case 'notEqual':
-            return cellStr !== searchValue;
-          default:
-            return true;
+          // Evaluate each condition within this column group
+          const conditionResults = group.conditions.map(condition => {
+            if (!condition.value.trim()) return true; // Empty conditions are ignored
+            
+            const searchValue = condition.value.toLowerCase();
+            
+            switch (condition.type) {
+              case 'contains':
+                return cellStr.includes(searchValue);
+              case 'startsWith':
+                return cellStr.startsWith(searchValue);
+              case 'endsWith':
+                return cellStr.endsWith(searchValue);
+              case 'equals':
+                return cellStr === searchValue;
+              case 'notEqual':
+                return cellStr !== searchValue;
+              case 'notContains':
+                return !cellStr.includes(searchValue);
+              case 'notStartsWith':
+                return !cellStr.startsWith(searchValue);
+              case 'notEndsWith':
+                return !cellStr.endsWith(searchValue);
+              default:
+                return true;
+            }
+          });
+
+          // Apply AND/OR logic within this column group
+          if (group.logic === 'AND') {
+            return conditionResults.every(result => result);
+          } else {
+            return conditionResults.some(result => result);
+          }
+        });
+
+        // Apply global AND/OR logic between column groups
+        if (filterState.globalLogic === 'AND') {
+          return columnGroupResults.every(result => result);
+        } else {
+          return columnGroupResults.some(result => result);
         }
       });
     }
@@ -308,8 +447,12 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
         }
         
         // Add filter indicator
-        if (filterState.columnId === colDef.field && filterState.value.trim()) {
-          title = title + ' 🔍';
+        const columnGroup = filterState.columnGroups.find(group => group.columnId === colDef.field);
+        if (columnGroup && columnGroup.conditions.length > 0) {
+          const activeConditions = columnGroup.conditions.filter(c => c.value.trim());
+          if (activeConditions.length > 0) {
+            title = title + ` 🔍${activeConditions.length > 1 ? `(${activeConditions.length})` : ''}`;
+          }
         }
         
         columns.push({
@@ -507,77 +650,183 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
     >
       {/* Filter Toolbar */}
       <Box sx={{ 
-        display: 'flex', 
-        gap: 1, 
-        alignItems: 'center', 
         padding: 1, 
         borderBottom: '1px solid #e0e0e0',
         backgroundColor: '#f8f8f8',
-        minHeight: 40
       }}>
-        <FormControl size="small" sx={{ minWidth: 120 }}>
-          <InputLabel>Filter Column</InputLabel>
-          <Select
-            value={filterState.columnId || ''}
-            label="Filter Column"
-            onChange={(e) => setFilterState(prev => ({ 
-              ...prev, 
-              columnId: e.target.value || null 
-            }))}
-          >
-            <MenuItem value="">None</MenuItem>
-            {columnDefs.columnDefs
-              .filter((colDef: any) => colDef.filter !== false)
-              .map((colDef: any) => (
-                <MenuItem key={colDef.field} value={colDef.field}>
-                  {colDef.headerName || colDef.field}
-                </MenuItem>
-              ))
-            }
-          </Select>
-        </FormControl>
-        
-        {filterState.columnId && (
-          <>
-            <FormControl size="small" sx={{ minWidth: 100 }}>
-              <InputLabel>Type</InputLabel>
+        {/* Main Controls Row */}
+        <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', mb: 1 }}>
+          <FormControl size="small" sx={{ minWidth: 120 }}>
+            <InputLabel>Add Filter Column</InputLabel>
+            <Select
+              value={selectedColumnId || ''}
+              label="Add Filter Column"
+              onChange={(e) => {
+                const newColumnId = e.target.value || null;
+                setSelectedColumnId(newColumnId);
+              }}
+            >
+              <MenuItem value="">None</MenuItem>
+              {columnDefs.columnDefs
+                .filter((colDef: any) => colDef.filter !== false)
+                .map((colDef: any) => (
+                  <MenuItem key={colDef.field} value={colDef.field}>
+                    {colDef.headerName || colDef.field}
+                  </MenuItem>
+                ))
+              }
+            </Select>
+          </FormControl>
+          
+          {filterState.columnGroups.length > 1 && (
+            <FormControl size="small" sx={{ minWidth: 120 }}>
+              <InputLabel>Between Columns</InputLabel>
               <Select
-                value={filterState.type}
-                label="Type"
+                value={filterState.globalLogic}
+                label="Between Columns"
                 onChange={(e) => setFilterState(prev => ({ 
                   ...prev, 
-                  type: e.target.value as FilterType 
+                  globalLogic: e.target.value as FilterLogic 
                 }))}
               >
-                <MenuItem value="contains">Contains</MenuItem>
-                <MenuItem value="startsWith">Starts With</MenuItem>
-                <MenuItem value="endsWith">Ends With</MenuItem>
-                <MenuItem value="equals">Equals</MenuItem>
-                <MenuItem value="notEqual">Not Equal</MenuItem>
+                <MenuItem value="AND">AND</MenuItem>
+                <MenuItem value="OR">OR</MenuItem>
               </Select>
             </FormControl>
-            
-            <TextField
-              inputRef={filterValueRef}
-              size="small"
-              label="Filter Value"
-              value={filterState.value}
-              onChange={(e) => setFilterState(prev => ({ 
-                ...prev, 
-                value: e.target.value 
-              }))}
-              sx={{ minWidth: 150 }}
-            />
-            
+          )}
+          
+          {filterState.columnGroups.length > 0 && (
             <IconButton
               size="small"
-              onClick={() => setFilterState({ columnId: null, type: 'contains', value: '' })}
-              title="Clear Filter"
+              onClick={clearAllFilters}
+              title="Clear All Filters"
             >
               <ClearIcon />
             </IconButton>
-          </>
+          )}
+        </Box>
+
+        {/* Column Filter Groups */}
+        {filterState.columnGroups.length === 0 && (
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, py: 1 }}>
+            <Typography variant="body2" color="text.secondary">
+              Select a column above to start filtering
+            </Typography>
+          </Box>
         )}
+        
+        {filterState.columnGroups.map((group, groupIndex) => (
+          <Box key={group.columnId} sx={{ 
+            border: '1px solid #e0e0e0', 
+            borderRadius: 1, 
+            padding: 1, 
+            mb: 1,
+            backgroundColor: '#ffffff'
+          }}>
+            {/* Column Group Header */}
+            <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', mb: 1 }}>
+              {groupIndex > 0 && (
+                <Typography variant="body2" sx={{ 
+                  minWidth: 60, 
+                  textAlign: 'center', 
+                  fontWeight: 'bold',
+                  color: 'primary.main',
+                  backgroundColor: 'primary.light',
+                  borderRadius: 1,
+                  px: 1,
+                  py: 0.5
+                }}>
+                  {filterState.globalLogic}
+                </Typography>
+              )}
+              
+              <Typography variant="subtitle2" sx={{ fontWeight: 'bold', flex: 1 }}>
+                {columnDefs.columnDefs.find((col: any) => col.field === group.columnId)?.headerName || group.columnId}
+              </Typography>
+              
+              {group.conditions.length > 1 && (
+                <FormControl size="small" sx={{ minWidth: 80 }}>
+                  <InputLabel>Logic</InputLabel>
+                  <Select
+                    value={group.logic}
+                    label="Logic"
+                    onChange={(e) => updateColumnGroupLogic(group.columnId, e.target.value as FilterLogic)}
+                  >
+                    <MenuItem value="AND">AND</MenuItem>
+                    <MenuItem value="OR">OR</MenuItem>
+                  </Select>
+                </FormControl>
+              )}
+              
+              <IconButton
+                size="small"
+                onClick={() => addFilterCondition(group.columnId)}
+                title="Add Condition"
+                color="primary"
+              >
+                <AddIcon />
+              </IconButton>
+              
+              <IconButton
+                size="small"
+                onClick={() => removeColumnGroup(group.columnId)}
+                title="Remove Column Filter"
+              >
+                <ClearIcon />
+              </IconButton>
+            </Box>
+
+            {/* Filter Conditions for this column */}
+            {group.conditions.map((condition, conditionIndex) => (
+              <Box key={condition.id} sx={{ display: 'flex', gap: 1, alignItems: 'center', mb: 1, ml: groupIndex > 0 ? 8 : 0 }}>
+                {conditionIndex > 0 && (
+                  <Typography variant="body2" sx={{ minWidth: 40, textAlign: 'center', fontWeight: 'bold' }}>
+                    {group.logic}
+                  </Typography>
+                )}
+                
+                <FormControl size="small" sx={{ minWidth: 120 }}>
+                  <InputLabel>Type</InputLabel>
+                  <Select
+                    value={condition.type}
+                    label="Type"
+                    onChange={(e) => updateFilterCondition(condition.id, { type: e.target.value as FilterType })}
+                  >
+                    <MenuItem value="contains">Contains</MenuItem>
+                    <MenuItem value="notContains">Not Contains</MenuItem>
+                    <MenuItem value="startsWith">Starts With</MenuItem>
+                    <MenuItem value="notStartsWith">Not Starts With</MenuItem>
+                    <MenuItem value="endsWith">Ends With</MenuItem>
+                    <MenuItem value="notEndsWith">Not Ends With</MenuItem>
+                    <MenuItem value="equals">Equals</MenuItem>
+                    <MenuItem value="notEqual">Not Equal</MenuItem>
+                  </Select>
+                </FormControl>
+                
+                <TextField
+                  inputRef={
+                    group.columnId === selectedColumnId && 
+                    conditionIndex === group.conditions.length - 1 ? 
+                    filterValueRef : undefined
+                  }
+                  size="small"
+                  label="Filter Value"
+                  value={condition.value}
+                  onChange={(e) => updateFilterCondition(condition.id, { value: e.target.value })}
+                  sx={{ minWidth: 150 }}
+                />
+                
+                <IconButton
+                  size="small"
+                  onClick={() => removeFilterCondition(condition.id)}
+                  title="Remove Condition"
+                >
+                  <RemoveIcon />
+                </IconButton>
+              </Box>
+            ))}
+          </Box>
+        ))}
       </Box>
       
       <DataEditor
