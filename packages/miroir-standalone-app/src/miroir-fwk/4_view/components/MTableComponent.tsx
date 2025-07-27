@@ -489,12 +489,32 @@ export const MTableComponent = (props: TableComponentProps) => {
     }
   }),[]);
 
+  // Calculate adaptive column widths once and reuse for both AgGrid and GlideDataGrid
+  const calculatedColumnWidths = useMemo(() => {
+    if (tableComponentRows.tableComponentRowUuidIndexSchema.length > 0) {
+      const availableWidth = 1200; // Could be made dynamic based on container width
+      const jzodSchema =
+        props.type === TableComponentTypeSchema.enum.EntityInstance &&
+        (props as any).currentEntityDefinition?.jzodSchema?.definition
+          ? (props as any).currentEntityDefinition.jzodSchema.definition
+          : undefined;
 
-  const columnDefs:(ColDef | ColGroupDef)[] = useMemo(()=>{
+      return calculateAdaptiveColumnWidths(
+        props.columnDefs.columnDefs, // Pass the original column defs without tools column
+        tableComponentRows.tableComponentRowUuidIndexSchema,
+        availableWidth,
+        jzodSchema
+      );
+    }
+    return undefined;
+  }, [props.columnDefs, tableComponentRows, props.type, (props as any).currentEntityDefinition]);
+
+
+  const columnDefs: (ColDef | ColGroupDef)[] = useMemo(() => {
     // Start with the base column definitions
     const baseColumnDefs = [
       {
-        field: '',
+        field: "",
         cellRenderer: ToolsCellRenderer,
         editable: false,
         sortable: false,
@@ -502,34 +522,36 @@ export const MTableComponent = (props: TableComponentProps) => {
         resizable: false,
         width: 180,
         cellRendererParams: {
-          onClickEdit:handleEditDialogFormOpen,
-          onClickDuplicate:handleDuplicateDialogFormOpen,
-          onClickDelete:handleDeleteDialogFormOpen
+          onClickEdit: handleEditDialogFormOpen,
+          onClickDuplicate: handleDuplicateDialogFormOpen,
+          onClickDelete: handleDeleteDialogFormOpen,
         },
-      }
+      },
     ].concat(
       // Transform the column definitions to work with the nested data structure
       props.columnDefs.columnDefs.map((colDef: any) => ({
         ...colDef,
         // Add value getter to access the correct data path
         valueGetter: (params: any) => {
-          if (!params.data || !colDef.field) return '';
-          
+          if (!params.data || !colDef.field) return "";
+
           // Check if this is a foreign key column
           const isFK = colDef.cellRendererParams?.isFK;
           const entityUuid = colDef.cellRendererParams?.entityUuid;
-          
+
           if (isFK && entityUuid && params.data?.foreignKeyObjects?.[entityUuid]) {
             // For foreign key columns, return the name of the referenced entity
             const foreignKeyUuid = params.data.rawValue?.[colDef.field];
             if (foreignKeyUuid && params.data.foreignKeyObjects[entityUuid][foreignKeyUuid]) {
-              return params.data.foreignKeyObjects[entityUuid][foreignKeyUuid].name || '';
+              return params.data.foreignKeyObjects[entityUuid][foreignKeyUuid].name || "";
             }
-            return ''; // No foreign key object found
+            return ""; // No foreign key object found
           }
-          
+
           // For regular columns, use displayedValue or rawValue
-          return params.data.displayedValue?.[colDef.field] ?? params.data.rawValue?.[colDef.field] ?? '';
+          return (
+            params.data.displayedValue?.[colDef.field] ?? params.data.rawValue?.[colDef.field] ?? ""
+          );
         },
         // Add value setter for editable cells
         valueSetter: (params: any) => {
@@ -545,59 +567,49 @@ export const MTableComponent = (props: TableComponentProps) => {
         },
         // Override filter value getter to ensure filtering works on the correct data
         filterValueGetter: (params: any) => {
-          if (!params.data || !colDef.field) return '';
-          
+          if (!params.data || !colDef.field) return "";
+
           // Check if this is a foreign key column
           const isFK = colDef.cellRendererParams?.isFK;
           const entityUuid = colDef.cellRendererParams?.entityUuid;
-          
+
           if (isFK && entityUuid && params.data?.foreignKeyObjects?.[entityUuid]) {
             // For foreign key columns, return the name of the referenced entity
             const foreignKeyUuid = params.data.rawValue?.[colDef.field];
             if (foreignKeyUuid && params.data.foreignKeyObjects[entityUuid][foreignKeyUuid]) {
-              return params.data.foreignKeyObjects[entityUuid][foreignKeyUuid].name || '';
+              return params.data.foreignKeyObjects[entityUuid][foreignKeyUuid].name || "";
             }
-            return ''; // No foreign key object found
+            return ""; // No foreign key object found
           }
-          
+
           // For regular columns, use displayedValue or rawValue
-          return params.data.displayedValue?.[colDef.field] ?? params.data.rawValue?.[colDef.field] ?? '';
+          return (
+            params.data.displayedValue?.[colDef.field] ?? params.data.rawValue?.[colDef.field] ?? ""
+          );
         },
         // Enable specific filter types based on data type
         filter: true,
         filterParams: {
-          filterOptions: ['contains', 'startsWith', 'endsWith', 'equals', 'notEqual'],
-          defaultOption: 'contains',
+          filterOptions: ["contains", "startsWith", "endsWith", "equals", "notEqual"],
+          defaultOption: "contains",
           suppressAndOrCondition: false,
-        }
+        },
       }))
     );
 
-    // Apply adaptive widths if we have row data
-    if (tableComponentRows.tableComponentRowUuidIndexSchema.length > 0) {
-      const availableWidth = 1200; // Could be made dynamic based on container width
-      const jzodSchema = props.type === TableComponentTypeSchema.enum.EntityInstance && 
-        (props as any).currentEntityDefinition?.jzodSchema?.definition ? 
-        (props as any).currentEntityDefinition.jzodSchema.definition : undefined;
-
-      const widthSpecs = calculateAdaptiveColumnWidths(
-        props.columnDefs.columnDefs, // Pass the original column defs without tools column
-        tableComponentRows.tableComponentRowUuidIndexSchema,
-        availableWidth,
-        jzodSchema
-      );
-
+    // Apply adaptive widths if we have calculated them
+    if (calculatedColumnWidths) {
       // Apply calculated widths to the base column definitions
       baseColumnDefs.forEach((colDef: any, index) => {
         if (index === 0) {
           // Tools column - use the calculated tools width
-          const toolsSpec = widthSpecs.find(spec => spec.type === 'tools');
+          const toolsSpec = calculatedColumnWidths.find((spec) => spec.type === "tools");
           if (toolsSpec) {
             colDef.width = Math.round(toolsSpec.calculatedWidth);
           }
         } else {
           // Data columns - find matching width spec
-          const widthSpec = widthSpecs.find(spec => spec.field === colDef.field);
+          const widthSpec = calculatedColumnWidths.find((spec) => spec.field === colDef.field);
           if (widthSpec) {
             colDef.width = Math.round(widthSpec.calculatedWidth);
             colDef.minWidth = Math.round(widthSpec.minWidth);
@@ -608,7 +620,13 @@ export const MTableComponent = (props: TableComponentProps) => {
     }
 
     return baseColumnDefs;
-  },[props.columnDefs, handleEditDialogFormOpen, handleDuplicateDialogFormOpen, handleDeleteDialogFormOpen, tableComponentRows, props.type, (props as any).currentEntityDefinition]);
+  }, [
+    props.columnDefs,
+    handleEditDialogFormOpen,
+    handleDuplicateDialogFormOpen,
+    handleDeleteDialogFormOpen,
+    calculatedColumnWidths,
+  ]);
   
   // log.info(
   //   "MTableComponent started count",
@@ -835,49 +853,50 @@ export const MTableComponent = (props: TableComponentProps) => {
           ) : (
             <></>
           )}
-          {
-            gridType === 'ag-grid' ? (
-              <>
-                {/* Global Clear All Filters Icon */}
-                {hasAnyFilter && (
-                  <div style={{ 
-                    marginBottom: '8px', 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    gap: '8px',
-                    fontSize: '14px'
-                  }}>
-                    <span 
-                      className="mtable-global-clear-filters"
-                      onClick={handleGlobalClearAllFilters}
-                      style={{
-                        color: '#ff8c00',
-                        cursor: 'pointer',
-                        fontWeight: 'bold',
-                        fontSize: '16px',
-                        padding: '4px 8px',
-                        border: '1px solid #ff8c00',
-                        borderRadius: '4px',
-                        backgroundColor: '#fff8f0',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '4px'
-                      }}
-                      title="Clear all filters"
-                    >
-                      ▼ Clear All Filters
-                    </span>
-                  </div>
-                )}
+          {gridType === "ag-grid" ? (
+            <>
+              {/* Global Clear All Filters Icon */}
+              {hasAnyFilter && (
                 <div
-                  id="tata"
-                  className="ag-theme-alpine"
-                  style={
-                    tableComponentRows.tableComponentRowUuidIndexSchema.length > 50
-                      ? { ...props.styles, height: "50vh" }
-                      : props.styles
-                  }
+                  style={{
+                    marginBottom: "8px",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "8px",
+                    fontSize: "14px",
+                  }}
                 >
+                  <span
+                    className="mtable-global-clear-filters"
+                    onClick={handleGlobalClearAllFilters}
+                    style={{
+                      color: "#ff8c00",
+                      cursor: "pointer",
+                      fontWeight: "bold",
+                      fontSize: "16px",
+                      padding: "4px 8px",
+                      border: "1px solid #ff8c00",
+                      borderRadius: "4px",
+                      backgroundColor: "#fff8f0",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "4px",
+                    }}
+                    title="Clear all filters"
+                  >
+                    ▼ Clear All Filters
+                  </span>
+                </div>
+              )}
+              <div
+                id="tata"
+                className="ag-theme-alpine"
+                style={
+                  tableComponentRows.tableComponentRowUuidIndexSchema.length > 50
+                    ? { ...props.styles, height: "50vh" }
+                    : props.styles
+                }
+              >
                 {/* Custom CSS for orange filter icons */}
                 <style>{`
                   /* Hide filter icons by default, show orange when filtered */
@@ -912,12 +931,18 @@ export const MTableComponent = (props: TableComponentProps) => {
                   }
                 `}</style>
                 <AgGridReact
-                  domLayout={tableComponentRows.tableComponentRowUuidIndexSchema.length > 50 ? "normal" : "autoHeight"}
+                  domLayout={
+                    tableComponentRows.tableComponentRowUuidIndexSchema.length > 50
+                      ? "normal"
+                      : "autoHeight"
+                  }
                   columnDefs={columnDefs}
                   rowData={tableComponentRows.tableComponentRowUuidIndexSchema}
                   getRowId={(params) => {
                     // Use the entity instance UUID for row identification
-                    return params.data?.rawValue?.uuid ? params.data?.rawValue?.uuid : params.data?.rawValue?.id || Math.random().toString();
+                    return params.data?.rawValue?.uuid
+                      ? params.data?.rawValue?.uuid
+                      : params.data?.rawValue?.id || Math.random().toString();
                   }}
                   defaultColDef={defaultColDef}
                   onCellClicked={onCellClicked}
@@ -928,59 +953,58 @@ export const MTableComponent = (props: TableComponentProps) => {
                   enableCellTextSelection={true}
                   suppressRowClickSelection={true}
                   animateRows={true}
-                  //
-                  // onCellEditingStarted={onCellEditingStarted}
-                  // onCellEditingStopped={onCellEditingStopped}
-                  // onRowDataUpdated={onRowDataUpdated}
-                  // onCellDoubleClicked={onCellDoubleClicked}
-                  // onRowValueChanged={onRowValueChanged}
                 ></AgGridReact>
               </div>
-              </>
-            ) : (
-              <GlideDataGridComponent
-                tableComponentRows={tableComponentRows}
-                props={props}
-                onCellClicked={onGlideGridCellClicked}
-                onCellEdited={(cell, newValue) => {
-                  // Handle cell edit for Glide Data Grid
-                  log.info("Glide cell edited", cell, newValue);
-                  // You might want to implement similar logic to onCellValueChanged
-                }}
-                onRowEdit={handleEditDialogFormOpen}
-                onRowDelete={handleDeleteDialogFormOpen}
-                onRowDuplicate={handleDuplicateDialogFormOpen}
-              />
-            )
-          }
+            </>
+          ) : (
+            <GlideDataGridComponent
+              tableComponentRows={tableComponentRows}
+              columnDefs={props.columnDefs}
+              styles={props.styles}
+              type={props.type}
+              currentEntityDefinition={props.type === 'EntityInstance' ? (props as any).currentEntityDefinition : undefined}
+              calculatedColumnWidths={calculatedColumnWidths}
+              onCellClicked={onGlideGridCellClicked}
+              onCellEdited={(cell, newValue) => {
+                // Handle cell edit for Glide Data Grid
+                log.info("Glide cell edited", cell, newValue);
+                // You might want to implement similar logic to onCellValueChanged
+              }}
+              onRowEdit={handleEditDialogFormOpen}
+              onRowDelete={handleDeleteDialogFormOpen}
+              onRowDuplicate={handleDuplicateDialogFormOpen}
+            />
+          )}
         </div>
       ) : (
         // <div className="ag-theme-alpine" style={{height: 200, width: 200}}>
         <div className="ag-theme-alpine">
           {/* Global Clear All Filters Icon */}
           {hasAnyFilter && (
-            <div style={{ 
-              marginBottom: '8px', 
-              display: 'flex', 
-              alignItems: 'center', 
-              gap: '8px',
-              fontSize: '14px'
-            }}>
-              <span 
+            <div
+              style={{
+                marginBottom: "8px",
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+                fontSize: "14px",
+              }}
+            >
+              <span
                 className="mtable-global-clear-filters"
                 onClick={handleGlobalClearAllFilters}
                 style={{
-                  color: '#ff8c00',
-                  cursor: 'pointer',
-                  fontWeight: 'bold',
-                  fontSize: '16px',
-                  padding: '4px 8px',
-                  border: '1px solid #ff8c00',
-                  borderRadius: '4px',
-                  backgroundColor: '#fff8f0',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '4px'
+                  color: "#ff8c00",
+                  cursor: "pointer",
+                  fontWeight: "bold",
+                  fontSize: "16px",
+                  padding: "4px 8px",
+                  border: "1px solid #ff8c00",
+                  borderRadius: "4px",
+                  backgroundColor: "#fff8f0",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "4px",
                 }}
                 title="Clear all filters"
               >
