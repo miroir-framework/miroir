@@ -208,6 +208,11 @@ export function getColumnDefinitionsFromEntityDefinitionJzodObjectSchema(
       columnDefs,
       rowData,
       availableWidth || 1200,
+      {
+        field: "",
+        headerName: "Actions",
+        width: 120,
+      },
       jzodSchema?.type === "object" ? jzodSchema.definition : undefined
     );
 

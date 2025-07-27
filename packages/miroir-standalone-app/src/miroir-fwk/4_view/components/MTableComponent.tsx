@@ -510,8 +510,8 @@ export const MTableComponent = (props: TableComponentProps) => {
         props.columnDefs.columnDefs, // Pass the original column defs without tools column
         tableComponentRows.tableComponentRowUuidIndexSchema,
         availableWidth,
+        toolsColumnDefinition, // Pass the tools column definition
         jzodSchema,
-        toolsColumnDefinition // Pass the tools column definition
       );
       
       // Log the calculated widths for debugging
@@ -1054,17 +1054,10 @@ export const MTableComponent = (props: TableComponentProps) => {
             </div>
           )}
           <div>Not EntityInstance</div>
-          {/* MtableComponent {props.type} {JSON.stringify(props.columnDefs.columnDefs)} {JSON.stringify(props.rowData)} */}
-          {/* <AgGridReact
-            columnDefs={dummyColumnDefs}
-            rowData={dummyRowData}
-          ></AgGridReact> */}
           <AgGridReact
             domLayout="autoHeight"
             columnDefs={props.columnDefs.columnDefs}
             rowData={props.rowData}
-            // rowData={props.rowData}
-            // rowData={gridData}
             getRowId={(params: any) => {
               log.info("MtableComponent getRowId", params);
               return params?.data["uuid"]
@@ -1077,13 +1070,6 @@ export const MTableComponent = (props: TableComponentProps) => {
             }}
             defaultColDef={defaultColDef}
             onCellClicked={onCellClicked}
-            // onCellValueChanged={onCellValueChanged}
-            //
-            // onCellEditingStarted={onCellEditingStarted}
-            // onCellEditingStopped={onCellEditingStopped}
-            // onRowDataUpdated={onRowDataUpdated}
-            // onCellDoubleClicked={onCellDoubleClicked}
-            // onRowValueChanged={onRowValueChanged}
           ></AgGridReact>
         </div>
       )}

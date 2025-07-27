@@ -115,8 +115,8 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
         columnDefs.columnDefs,
         tableComponentRows.tableComponentRowUuidIndexSchema,
         availableWidth,
+        toolsColumnDefinition,
         jzodSchema,
-        toolsColumnDefinition
       );
     }
 
