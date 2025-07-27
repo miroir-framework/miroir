@@ -330,7 +330,9 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
           {/* <RenderPerformanceDisplay componentKey={componentKey} indentLevel={0} /> */}
 
           {showPerformanceDisplay && (
-            <p>ReportSectionEntityInstance renders: {navigationCount} (total: {totalCount})</p>
+            <p>
+              ReportSectionEntityInstance renders: {navigationCount} (total: {totalCount})
+            </p>
           )}
           <div>
             <label htmlFor="displayEditorSwitch">Display editor:</label>
@@ -348,7 +350,20 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
               {/* {typeError ? "true" : "false"}{" "} */}
             </span>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              marginBottom: "16px",
+              position: "sticky",
+              top: 0,
+              backgroundColor: "white",
+              zIndex: 1000,
+              padding: "8px 0",
+              boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+            }}
+          >
             <h1 style={{ margin: 0 }}>
               {currentReportTargetEntity?.name} details: {instance.name}{" "}
             </h1>
@@ -359,10 +374,10 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                   onClick={handleToggleOutline}
                   sx={{
                     marginLeft: 2,
-                    backgroundColor: 'white',
+                    backgroundColor: "white",
                     boxShadow: 1,
-                    '&:hover': {
-                      backgroundColor: 'grey.100',
+                    "&:hover": {
+                      backgroundColor: "grey.100",
                     },
                   }}
                 >
@@ -407,8 +422,9 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                 >
                   {(formik: FormikProps<Record<string, any>>) => {
                     // Create a memoized localRootLessListKeyMap that updates when formik values change
-                      let typeError: JSX.Element | undefined = undefined;
-                      const resolvedJzodSchema: ResolvedJzodSchemaReturnType | undefined = useMemo(() => {
+                    let typeError: JSX.Element | undefined = undefined;
+                    const resolvedJzodSchema: ResolvedJzodSchemaReturnType | undefined =
+                      useMemo(() => {
                         let result: ResolvedJzodSchemaReturnType | undefined = undefined;
                         try {
                           result =
@@ -446,86 +462,91 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                         }
                         return result;
                       }, [props, currentReportTargetEntityDefinition, instance, context]);
-                      log.info(
-                        "ReportSectionEntityInstance jzodTypeCheck done for render", navigationCount ,"resolvedJzodSchema",
-                        resolvedJzodSchema,
-                      );
-                      if (!resolvedJzodSchema || resolvedJzodSchema.status != "ok") {
-                        log.error(
-                          "ReportSectionEntityInstance could not resolve jzod schema",
-                          resolvedJzodSchema
-                        );
-                        // Calculate the maximum line width for fixed sizing
-                        const jsonString = JSON.stringify(resolvedJzodSchema, null, 2);
-                        const lines = jsonString.split("\n");
-                        const maxLineLength = Math.max(...lines.map((line) => line.length));
-                        const fixedWidth = Math.min(Math.max(maxLineLength * 0.6, 1200), 1800); // 0.6px per character, min 400px, max 1200px
-
-                        typeError = (
-                          <ReactCodeMirror
-                            editable={false}
-                            height="100ex"
-                            style={{
-                              width: `${fixedWidth}px`, // Fixed width based on content
-                              maxWidth: "90vw", // Prevent overflow on small screens
-                            }}
-                            value={jsonString}
-                            extensions={[
-                              ...codeMirrorExtensions,
-                              EditorView.lineWrapping, // Enable line wrapping
-                              EditorView.theme({
-                                ".cm-editor": {
-                                  width: `${fixedWidth}px`,
-                                },
-                                ".cm-scroller": {
-                                  width: "100%",
-                                  overflowX: "auto", // Enable horizontal scrolling if needed
-                                },
-                                ".cm-content": {
-                                  minWidth: `${fixedWidth}px`,
-                                },
-                              }),
-                            ]}
-                            basicSetup={{
-                              foldGutter: true,
-                              lineNumbers: true,
-                            }}
-                          />
-                        );
-                      }
-
-                    const foreignKeyObjectsFetchQueryParams: SyncQueryRunnerParams<DeploymentEntityState> = useMemo(
-                      () =>
-                        measuredGetQueryRunnerParamsForDeploymentEntityState(
-                          props.deploymentUuid &&
-                            resolvedJzodSchema &&
-                            resolvedJzodSchema.status == "ok" &&
-                            resolvedJzodSchema.resolvedSchema.type == "uuid" &&
-                            resolvedJzodSchema.resolvedSchema.tag?.value?.targetEntity
-                            ? {
-                                queryType: "boxedQueryWithExtractorCombinerTransformer",
-                                deploymentUuid: props.deploymentUuid,
-                                pageParams: {},
-                                queryParams: {},
-                                contextResults: {},
-                                extractors: {
-                                  [resolvedJzodSchema.resolvedSchema.tag?.value?.targetEntity]: {
-                                    extractorOrCombinerType: "extractorByEntityReturningObjectList",
-                                    applicationSection: measuredGetApplicationSection(
-                                      props.deploymentUuid,
-                                      resolvedJzodSchema.resolvedSchema.tag?.value?.targetEntity
-                                    ),
-                                    parentName: "",
-                                    parentUuid: resolvedJzodSchema.resolvedSchema.tag?.value?.targetEntity,
-                                  },
-                                },
-                              }
-                            : dummyDomainManyQueryWithDeploymentUuid,
-                          deploymentEntityStateSelectorMap
-                        ),
-                      [deploymentEntityStateSelectorMap, props.deploymentUuid, resolvedJzodSchema]
+                    log.info(
+                      "ReportSectionEntityInstance jzodTypeCheck done for render",
+                      navigationCount,
+                      "resolvedJzodSchema",
+                      resolvedJzodSchema
                     );
-                    
+                    if (!resolvedJzodSchema || resolvedJzodSchema.status != "ok") {
+                      log.error(
+                        "ReportSectionEntityInstance could not resolve jzod schema",
+                        resolvedJzodSchema
+                      );
+                      // Calculate the maximum line width for fixed sizing
+                      const jsonString = JSON.stringify(resolvedJzodSchema, null, 2);
+                      const lines = jsonString.split("\n");
+                      const maxLineLength = Math.max(...lines.map((line) => line.length));
+                      const fixedWidth = Math.min(Math.max(maxLineLength * 0.6, 1200), 1800); // 0.6px per character, min 400px, max 1200px
+
+                      typeError = (
+                        <ReactCodeMirror
+                          editable={false}
+                          height="100ex"
+                          style={{
+                            width: `${fixedWidth}px`, // Fixed width based on content
+                            maxWidth: "90vw", // Prevent overflow on small screens
+                          }}
+                          value={jsonString}
+                          extensions={[
+                            ...codeMirrorExtensions,
+                            EditorView.lineWrapping, // Enable line wrapping
+                            EditorView.theme({
+                              ".cm-editor": {
+                                width: `${fixedWidth}px`,
+                              },
+                              ".cm-scroller": {
+                                width: "100%",
+                                overflowX: "auto", // Enable horizontal scrolling if needed
+                              },
+                              ".cm-content": {
+                                minWidth: `${fixedWidth}px`,
+                              },
+                            }),
+                          ]}
+                          basicSetup={{
+                            foldGutter: true,
+                            lineNumbers: true,
+                          }}
+                        />
+                      );
+                    }
+
+                    const foreignKeyObjectsFetchQueryParams: SyncQueryRunnerParams<DeploymentEntityState> =
+                      useMemo(
+                        () =>
+                          measuredGetQueryRunnerParamsForDeploymentEntityState(
+                            props.deploymentUuid &&
+                              resolvedJzodSchema &&
+                              resolvedJzodSchema.status == "ok" &&
+                              resolvedJzodSchema.resolvedSchema.type == "uuid" &&
+                              resolvedJzodSchema.resolvedSchema.tag?.value?.targetEntity
+                              ? {
+                                  queryType: "boxedQueryWithExtractorCombinerTransformer",
+                                  deploymentUuid: props.deploymentUuid,
+                                  pageParams: {},
+                                  queryParams: {},
+                                  contextResults: {},
+                                  extractors: {
+                                    [resolvedJzodSchema.resolvedSchema.tag?.value?.targetEntity]: {
+                                      extractorOrCombinerType:
+                                        "extractorByEntityReturningObjectList",
+                                      applicationSection: measuredGetApplicationSection(
+                                        props.deploymentUuid,
+                                        resolvedJzodSchema.resolvedSchema.tag?.value?.targetEntity
+                                      ),
+                                      parentName: "",
+                                      parentUuid:
+                                        resolvedJzodSchema.resolvedSchema.tag?.value?.targetEntity,
+                                    },
+                                  },
+                                }
+                              : dummyDomainManyQueryWithDeploymentUuid,
+                            deploymentEntityStateSelectorMap
+                          ),
+                        [deploymentEntityStateSelectorMap, props.deploymentUuid, resolvedJzodSchema]
+                      );
+
                     const foreignKeyObjects: Record<string, EntityInstancesUuidIndex> =
                       useDeploymentEntityStateQuerySelectorForCleanedResult(
                         deploymentEntityStateSelectorMap.runQuery as SyncQueryRunner<
@@ -537,8 +558,13 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
 
                     const instanceJsonString = JSON.stringify(instance, null, 2);
                     const instanceJsonStringLines = instanceJsonString.split("\n");
-                    const instanceJsonStringMaxLineLength = Math.max(...instanceJsonStringLines.map((line) => line.length));
-                    const instanceJsonStringFixedWidth = Math.min(Math.max(instanceJsonStringMaxLineLength * 0.6, 1200), 1800); // 0.6px per character, min 400px, max 1200px
+                    const instanceJsonStringMaxLineLength = Math.max(
+                      ...instanceJsonStringLines.map((line) => line.length)
+                    );
+                    const instanceJsonStringFixedWidth = Math.min(
+                      Math.max(instanceJsonStringMaxLineLength * 0.6, 1200),
+                      1800
+                    ); // 0.6px per character, min 400px, max 1200px
 
                     return (
                       <>
@@ -592,8 +618,12 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                                 }
                                 // localRootLessListKeyMap={{}}
                                 foreignKeyObjects={foreignKeyObjects}
-                                foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
-                                setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
+                                foldedObjectAttributeOrArrayItems={
+                                  foldedObjectAttributeOrArrayItems
+                                }
+                                setFoldedObjectAttributeOrArrayItems={
+                                  setFoldedObjectAttributeOrArrayItems
+                                }
                                 submitButton={
                                   <button
                                     type="submit"
@@ -619,6 +649,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
               <div>
                 {displayAsStructuredElement ? (
                   <div>Can not display non-editor as structured element</div>
+                ) : (
                   // <JzodElementDisplay
                   //   path={instance?.name}
                   //   name={instance?.name}
@@ -633,7 +664,6 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                   //   currentReportDeploymentSectionEntities={currentReportDeploymentSectionEntities}
                   //   currentEnumJzodSchemaResolver={currentEnumJzodSchemaResolver}
                   // ></JzodElementDisplay>
-                ) : (
                   <div>
                     <pre>{safeStringify(instance)}</pre>
                   </div>
