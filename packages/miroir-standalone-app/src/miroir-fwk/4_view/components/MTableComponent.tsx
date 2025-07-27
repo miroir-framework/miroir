@@ -41,7 +41,7 @@ import {
 } from '../MiroirContextReactProvider.js';
 import { useCurrentModel, useDeploymentEntityStateQuerySelectorForCleanedResult } from '../ReduxHooks.js';
 import { cleanLevel } from '../constants.js';
-import { calculateAdaptiveColumnWidths } from '../adaptiveColumnWidths.js';
+import { calculateAdaptiveColumnWidths, ToolsColumnDefinition } from '../adaptiveColumnWidths.js';
 import { ToolsCellRenderer } from './GenderCellRenderer.js';
 import { GlideDataGridComponent } from './GlideDataGridComponent.js';
 import { JsonObjectDeleteFormDialog } from './JsonObjectDeleteFormDialog.js';
@@ -489,6 +489,13 @@ export const MTableComponent = (props: TableComponentProps) => {
     }
   }),[]);
 
+  // Define tools column configuration once to ensure consistency across grid types
+  const toolsColumnDefinition: ToolsColumnDefinition = useMemo(() => ({
+    field: "",
+    headerName: "Actions", 
+    width: 120
+  }), []);
+
   // Calculate adaptive column widths once and reuse for both AgGrid and GlideDataGrid
   const calculatedColumnWidths = useMemo(() => {
     if (tableComponentRows.tableComponentRowUuidIndexSchema.length > 0) {
@@ -499,28 +506,45 @@ export const MTableComponent = (props: TableComponentProps) => {
           ? (props as any).currentEntityDefinition.jzodSchema.definition
           : undefined;
 
-      return calculateAdaptiveColumnWidths(
+      const widthSpecs = calculateAdaptiveColumnWidths(
         props.columnDefs.columnDefs, // Pass the original column defs without tools column
         tableComponentRows.tableComponentRowUuidIndexSchema,
         availableWidth,
-        jzodSchema
+        jzodSchema,
+        toolsColumnDefinition // Pass the tools column definition
       );
+      
+      // Log the calculated widths for debugging
+      log.info("MTableComponent calculated column widths", {
+        availableWidth,
+        totalCalculatedWidth: widthSpecs.reduce((sum, spec) => sum + spec.calculatedWidth, 0),
+        columnWidths: widthSpecs.map(spec => ({
+          field: spec.field || 'tools',
+          type: spec.type,
+          minWidth: spec.minWidth,
+          maxWidth: spec.maxWidth,
+          calculatedWidth: spec.calculatedWidth
+        }))
+      });
+      
+      return widthSpecs;
     }
     return undefined;
-  }, [props.columnDefs, tableComponentRows, props.type, (props as any).currentEntityDefinition]);
+  }, [props.columnDefs, tableComponentRows, props.type, (props as any).currentEntityDefinition, toolsColumnDefinition]);
 
 
   const columnDefs: (ColDef | ColGroupDef)[] = useMemo(() => {
-    // Start with the base column definitions
+    // Start with the base column definitions using the shared tools column definition
     const baseColumnDefs = [
       {
-        field: "",
+        field: toolsColumnDefinition.field,
+        headerName: toolsColumnDefinition.headerName,
         cellRenderer: ToolsCellRenderer,
         editable: false,
         sortable: false,
         filter: false,
         resizable: false,
-        width: 180,
+        width: toolsColumnDefinition.width,
         cellRendererParams: {
           onClickEdit: handleEditDialogFormOpen,
           onClickDuplicate: handleDuplicateDialogFormOpen,
@@ -599,6 +623,8 @@ export const MTableComponent = (props: TableComponentProps) => {
 
     // Apply adaptive widths if we have calculated them
     if (calculatedColumnWidths) {
+      log.info("MTableComponent applying calculated widths to AgGrid columns");
+      
       // Apply calculated widths to the base column definitions
       baseColumnDefs.forEach((colDef: any, index) => {
         if (index === 0) {
@@ -606,6 +632,10 @@ export const MTableComponent = (props: TableComponentProps) => {
           const toolsSpec = calculatedColumnWidths.find((spec) => spec.type === "tools");
           if (toolsSpec) {
             colDef.width = Math.round(toolsSpec.calculatedWidth);
+            colDef.minWidth = Math.round(toolsSpec.minWidth);
+            colDef.maxWidth = Math.round(toolsSpec.maxWidth);
+            // Prevent AgGrid from auto-sizing this column
+            colDef.suppressSizeToFit = true;
           }
         } else {
           // Data columns - find matching width spec
@@ -614,6 +644,15 @@ export const MTableComponent = (props: TableComponentProps) => {
             colDef.width = Math.round(widthSpec.calculatedWidth);
             colDef.minWidth = Math.round(widthSpec.minWidth);
             colDef.maxWidth = Math.round(widthSpec.maxWidth);
+            // Allow some flexibility for data columns but respect our calculations
+            colDef.suppressSizeToFit = false;
+            
+            log.debug(`Applied width to column ${colDef.field}:`, {
+              calculated: widthSpec.calculatedWidth,
+              min: widthSpec.minWidth,
+              max: widthSpec.maxWidth,
+              type: widthSpec.type
+            });
           }
         }
       });
@@ -626,6 +665,7 @@ export const MTableComponent = (props: TableComponentProps) => {
     handleDuplicateDialogFormOpen,
     handleDeleteDialogFormOpen,
     calculatedColumnWidths,
+    toolsColumnDefinition,
   ]);
   
   // log.info(
@@ -964,6 +1004,7 @@ export const MTableComponent = (props: TableComponentProps) => {
               type={props.type}
               currentEntityDefinition={props.type === 'EntityInstance' ? (props as any).currentEntityDefinition : undefined}
               calculatedColumnWidths={calculatedColumnWidths}
+              toolsColumnDefinition={toolsColumnDefinition}
               onCellClicked={onGlideGridCellClicked}
               onCellEdited={(cell, newValue) => {
                 // Handle cell edit for Glide Data Grid

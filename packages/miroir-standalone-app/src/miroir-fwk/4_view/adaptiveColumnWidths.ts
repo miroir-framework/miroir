@@ -10,6 +10,12 @@ export interface ColumnWidthSpec {
   type: 'tools' | 'uuid' | 'name' | 'foreignKey' | 'text' | 'number' | 'boolean' | 'date' | 'object';
 }
 
+export interface ToolsColumnDefinition {
+  field: string;
+  headerName: string;
+  width: number;
+}
+
 // ################################################################################################
 /**
  * Calculate adaptive column widths based on content, column type, and available space
@@ -18,17 +24,25 @@ export function calculateAdaptiveColumnWidths(
   columnDefs: any[],
   rowData: TableComponentRow[],
   availableWidth: number = 1200,
-  jzodSchema?: Record<string, JzodElement>
+  jzodSchema?: Record<string, JzodElement>,
+  toolsColumnDef?: ToolsColumnDefinition
 ): ColumnWidthSpec[] {
   const CHAR_WIDTH = 8; // Average character width in pixels
   const MIN_COLUMN_WIDTH = 80;
   const MAX_COLUMN_WIDTH = 400;
-  const TOOLS_COLUMN_WIDTH = 180;
   const PADDING = 16; // Column padding
+  
+  // Use provided tools column definition or default
+  const defaultToolsColumnDef: ToolsColumnDefinition = {
+    field: '',
+    headerName: 'Actions',
+    width: 120
+  };
+  const toolsColumn = toolsColumnDef || defaultToolsColumnDef;
   
   // Add tools column if not present
   const allColumns = [
-    { field: '', headerName: 'Actions', type: 'tools' as const },
+    { field: toolsColumn.field, headerName: toolsColumn.headerName, type: 'tools' as const },
     ...columnDefs.filter(cd => cd.field && cd.field !== 'tools' && cd.field !== '')
   ];
 
@@ -78,9 +92,9 @@ export function calculateAdaptiveColumnWidths(
         return {
           field,
           headerName,
-          minWidth: TOOLS_COLUMN_WIDTH,
-          maxWidth: TOOLS_COLUMN_WIDTH,
-          calculatedWidth: TOOLS_COLUMN_WIDTH,
+          minWidth: toolsColumn.width,
+          maxWidth: toolsColumn.width,
+          calculatedWidth: toolsColumn.width,
           type
         };
       case 'uuid':

@@ -24,7 +24,7 @@ import {
   TableComponentRow,
   TableComponentTypeSchema,
 } from "./MTableComponentInterface.js";
-import { calculateAdaptiveColumnWidths } from '../adaptiveColumnWidths.js';
+import { calculateAdaptiveColumnWidths, ColumnWidthSpec, ToolsColumnDefinition } from '../adaptiveColumnWidths.js';
 import glideToolsCellRenderer, { ToolsCell, ToolsCellData } from './GlideToolsCellRenderer.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -38,7 +38,8 @@ interface GlideDataGridComponentProps {
   styles?: any;
   type: string;
   currentEntityDefinition?: EntityDefinition;
-  calculatedColumnWidths?: { field?: string; type?: string; calculatedWidth: number }[];
+  calculatedColumnWidths?: ColumnWidthSpec[];
+  toolsColumnDefinition: ToolsColumnDefinition;
   onCellClicked?: (cell: Item, event: CellClickedEventArgs) => void;
   onCellEdited?: (cell: Item, newValue: EditableGridCell) => void;
   onRowEdit?: (row: TableComponentRow, event?: any) => void;
@@ -53,6 +54,7 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
   type,
   currentEntityDefinition,
   calculatedColumnWidths,
+  toolsColumnDefinition,
   onCellClicked,
   onCellEdited,
   onRowEdit,
@@ -88,7 +90,7 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
 
   // Convert columnDefs to Glide format
   const glideColumns: GridColumn[] = useMemo(() => {
-    let widthSpecs: { field?: string; type?: string; calculatedWidth: number }[];
+    let widthSpecs: ColumnWidthSpec[];
 
     if (calculatedColumnWidths && calculatedColumnWidths.length > 0) {
       // Use pre-calculated widths from MTableComponent
@@ -98,20 +100,23 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
       const rowCount = tableComponentRows.tableComponentRowUuidIndexSchema.length;
       const maxRowsWithoutScroll = Math.floor((height - 36) / 34); // 36px header, 34px per row
       const needsVerticalScrollbar = rowCount > maxRowsWithoutScroll;
-      
+
       const scrollbarWidth = needsVerticalScrollbar ? 17 : 0;
       const borderWidth = 2; // Container border
       const availableWidth = containerWidth - scrollbarWidth - borderWidth;
-      
-      const jzodSchema = type === TableComponentTypeSchema.enum.EntityInstance && 
-        currentEntityDefinition?.jzodSchema?.definition ? 
-        currentEntityDefinition.jzodSchema.definition : undefined;
+
+      const jzodSchema =
+        type === TableComponentTypeSchema.enum.EntityInstance &&
+        currentEntityDefinition?.jzodSchema?.definition
+          ? currentEntityDefinition.jzodSchema.definition
+          : undefined;
 
       widthSpecs = calculateAdaptiveColumnWidths(
         columnDefs.columnDefs,
         tableComponentRows.tableComponentRowUuidIndexSchema,
         availableWidth,
-        jzodSchema
+        jzodSchema,
+        toolsColumnDefinition
       );
     }
 
@@ -121,26 +126,27 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
       containerWidth,
       finalTotalWidth,
       usingPreCalculatedWidths: calculatedColumnWidths && calculatedColumnWidths.length > 0,
-      columnWidths: widthSpecs.map(spec => ({
-        field: spec.field || 'tools',
-        width: Math.round(spec.calculatedWidth)
-      }))
+      columnWidths: widthSpecs.map((spec) => ({
+        field: spec.field || "tools",
+        type: spec.type,
+        width: Math.round(spec.calculatedWidth),
+      })),
     });
 
     const columns: GridColumn[] = [];
-    
-    // Add tools column with calculated width
-    const toolsSpec = widthSpecs.find(spec => spec.type === 'tools');
+
+    // Add tools column with calculated width using shared definition
+    const toolsSpec = widthSpecs.find((spec) => spec.type === "tools");
     columns.push({
-      title: "Actions",
-      id: "tools",
-      width: Math.round(toolsSpec?.calculatedWidth || 180),
+      title: toolsColumnDefinition.headerName,
+      id: toolsColumnDefinition.field || "tools",
+      width: Math.round(toolsSpec?.calculatedWidth || toolsColumnDefinition.width),
     });
-    
+
     // Add data columns with calculated widths
     columnDefs.columnDefs.forEach((colDef: any) => {
-      if (colDef.field && colDef.field !== 'tools') {
-        const widthSpec = widthSpecs.find(spec => spec.field === colDef.field);
+      if (colDef.field) {
+        const widthSpec = widthSpecs.find((spec) => spec.field === colDef.field);
         columns.push({
           title: colDef.headerName || colDef.field,
           id: colDef.field,
@@ -148,9 +154,18 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
         });
       }
     });
-    
+
     return columns;
-  }, [columnDefs, tableComponentRows, type, currentEntityDefinition, calculatedColumnWidths, containerWidth, height]);
+  }, [
+    columnDefs,
+    tableComponentRows,
+    type,
+    currentEntityDefinition,
+    calculatedColumnWidths,
+    containerWidth,
+    height,
+    toolsColumnDefinition,
+  ]);
 
   // Get cell content
   const getCellContent = useCallback(
@@ -168,7 +183,7 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
       }
 
       // Special handling for tools column
-      if (colData.id === "tools") {
+      if (colData.id === (toolsColumnDefinition.field || "tools")) {
         const toolsCellData = {
           kind: "tools-cell",
           row: rowData,
@@ -272,7 +287,7 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
         };
       }
     },
-    [tableComponentRows, glideColumns, columnDefs, onRowEdit, onRowDuplicate, onRowDelete]
+    [tableComponentRows, glideColumns, columnDefs, onRowEdit, onRowDuplicate, onRowDelete, toolsColumnDefinition]
   );
 
   // Handle cell clicks
@@ -283,7 +298,7 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
       const colData = glideColumns[col];
       
       // Handle tools column clicks - these should be handled by the custom cell renderer
-      if (colData.id === "tools") {
+      if (colData.id === (toolsColumnDefinition.field || "tools")) {
         // Don't log or interfere - let the custom renderer handle it
         return;
       }
@@ -297,7 +312,7 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
         onCellClicked(cell, event);
       }
     },
-    [tableComponentRows, glideColumns, onCellClicked]
+    [tableComponentRows, glideColumns, onCellClicked, toolsColumnDefinition]
   );
 
   // Handle cell edits
