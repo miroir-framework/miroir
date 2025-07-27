@@ -845,7 +845,12 @@ export const MTableComponent = (props: TableComponentProps) => {
   
   // const domLayout = tableComponentRows.tableComponentRowUuidIndexSchema.length > 10?"normal":"autoHeight";
   return (
-    <div>
+    <div style={{ 
+      width: '100%', 
+      maxWidth: '100%', 
+      overflow: 'hidden', 
+      boxSizing: 'border-box' 
+    }}>
       {/* <span>MtableComponent count {count}</span>
       <br /> */}
       {/* <span>{props.type}</span>
@@ -931,11 +936,15 @@ export const MTableComponent = (props: TableComponentProps) => {
               <div
                 id="tata"
                 className="ag-theme-alpine"
-                style={
-                  tableComponentRows.tableComponentRowUuidIndexSchema.length > 50
+                style={{
+                  ...(tableComponentRows.tableComponentRowUuidIndexSchema.length > 50
                     ? { ...props.styles, height: "50vh" }
-                    : props.styles
-                }
+                    : props.styles),
+                  width: '100%',
+                  maxWidth: '100%',
+                  overflow: 'hidden',
+                  boxSizing: 'border-box',
+                }}
               >
                 {/* Custom CSS for orange filter icons */}
                 <style>{`
@@ -968,6 +977,39 @@ export const MTableComponent = (props: TableComponentProps) => {
                     color: #ff8c00 !important;
                     background-color: #ff8c00 !important;
                     border-color: #ff8c00 !important;
+                  }
+                  
+                  /* Prevent overflow and ensure proper width constraints */
+                  #tata {
+                    width: 100% !important;
+                    max-width: 100% !important;
+                    overflow: hidden !important;
+                    box-sizing: border-box !important;
+                  }
+                  
+                  #tata .ag-root-wrapper {
+                    width: 100% !important;
+                    max-width: 100% !important;
+                    overflow: hidden !important;
+                  }
+                  
+                  #tata .ag-root {
+                    width: 100% !important;
+                    max-width: 100% !important;
+                    overflow: hidden !important;
+                  }
+                  
+                  #tata .ag-header {
+                    width: 100% !important;
+                    max-width: 100% !important;
+                    overflow: hidden !important;
+                  }
+                  
+                  #tata .ag-body-viewport {
+                    width: 100% !important;
+                    max-width: 100% !important;
+                    overflow-x: auto !important;
+                    overflow-y: auto !important;
                   }
                 `}</style>
                 <AgGridReact

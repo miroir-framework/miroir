@@ -22,7 +22,12 @@ import {
   IconButton,
   Typography 
 } from '@mui/material';
-import { FilterList as FilterIcon, Clear as ClearIcon, Add as AddIcon, Remove as RemoveIcon } from '@mui/icons-material';
+import {
+  FilterList as FilterIcon,
+  Clear as ClearIcon,
+  Add as AddIcon,
+  Remove as RemoveIcon,
+} from "@mui/icons-material";
 
 import { 
   EntityDefinition,
@@ -644,8 +649,11 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
         ...styles,
         height: `${height}px`,
         width: '100%',
+        maxWidth: '100%',
         border: '1px solid #e0e0e0',
         borderRadius: '4px',
+        overflow: 'hidden', // Prevent any overflow
+        boxSizing: 'border-box', // Include border in width calculation
       }}
     >
       {/* Filter Toolbar */}
@@ -653,9 +661,22 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
         padding: 1, 
         borderBottom: '1px solid #e0e0e0',
         backgroundColor: '#f8f8f8',
+        width: '100%',
+        maxWidth: '100%',
+        overflow: 'hidden',
+        boxSizing: 'border-box',
       }}>
         {/* Main Controls Row */}
-        <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', mb: 1 }}>
+        <Box sx={{ 
+          display: 'flex', 
+          gap: 1, 
+          alignItems: 'center', 
+          mb: 1,
+          flexWrap: 'wrap', // Allow wrapping on small screens
+          width: '100%',
+          maxWidth: '100%',
+          overflow: 'hidden',
+        }}>
           <FormControl size="small" sx={{ minWidth: 120 }}>
             <InputLabel>Add Filter Column</InputLabel>
             <Select
@@ -721,10 +742,22 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
             borderRadius: 1, 
             padding: 1, 
             mb: 1,
-            backgroundColor: '#ffffff'
+            backgroundColor: '#ffffff',
+            width: '100%',
+            maxWidth: '100%',
+            overflow: 'hidden',
+            boxSizing: 'border-box',
           }}>
             {/* Column Group Header */}
-            <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', mb: 1 }}>
+            <Box sx={{ 
+              display: 'flex', 
+              gap: 1, 
+              alignItems: 'center', 
+              mb: 1,
+              flexWrap: 'wrap', // Allow wrapping on small screens
+              width: '100%',
+              maxWidth: '100%',
+            }}>
               {groupIndex > 0 && (
                 <Typography variant="body2" sx={{ 
                   minWidth: 60, 
@@ -778,7 +811,16 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
 
             {/* Filter Conditions for this column */}
             {group.conditions.map((condition, conditionIndex) => (
-              <Box key={condition.id} sx={{ display: 'flex', gap: 1, alignItems: 'center', mb: 1, ml: groupIndex > 0 ? 8 : 0 }}>
+              <Box key={condition.id} sx={{ 
+                display: 'flex', 
+                gap: 1, 
+                alignItems: 'center', 
+                mb: 1, 
+                ml: groupIndex > 0 ? 8 : 0,
+                flexWrap: 'wrap', // Allow wrapping on small screens
+                width: '100%',
+                maxWidth: '100%',
+              }}>
                 {conditionIndex > 0 && (
                   <Typography variant="body2" sx={{ minWidth: 40, textAlign: 'center', fontWeight: 'bold' }}>
                     {group.logic}
@@ -813,7 +855,7 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
                   label="Filter Value"
                   value={condition.value}
                   onChange={(e) => updateFilterCondition(condition.id, { value: e.target.value })}
-                  sx={{ minWidth: 150 }}
+                  sx={{ minWidth: 120, maxWidth: 200, flex: 1 }} // More responsive sizing
                 />
                 
                 <IconButton
@@ -829,26 +871,34 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
         ))}
       </Box>
       
-      <DataEditor
-        columns={glideColumns}
-        rows={sortedAndFilteredTableRows.length}
-        getCellContent={getCellContent}
-        onCellClicked={handleCellClicked}
-        onCellEdited={handleCellEdited}
-        onHeaderClicked={handleHeaderClick}
-        customRenderers={[glideToolsCellRenderer]}
-        smoothScrollX={true}
-        smoothScrollY={true}
-        isDraggable={false}
-        rangeSelect="none"
-        columnSelect="none"
-        rowSelect="none"
-        width={containerWidth}
-        keybindings={{
-          selectAll: false,
-          selectRow: false,
-          selectColumn: false,
-        }}
+      <div style={{ 
+        width: '100%', 
+        height: `${height - 2}px`, // Subtract 2px for borders
+        maxWidth: '100%', 
+        overflow: 'hidden',
+        position: 'relative',
+      }}>
+        <DataEditor
+          columns={glideColumns}
+          rows={sortedAndFilteredTableRows.length}
+          getCellContent={getCellContent}
+          onCellClicked={handleCellClicked}
+          onCellEdited={handleCellEdited}
+          onHeaderClicked={handleHeaderClick}
+          customRenderers={[glideToolsCellRenderer]}
+          smoothScrollX={true}
+          smoothScrollY={true}
+          isDraggable={false}
+          rangeSelect="none"
+          columnSelect="none"
+          rowSelect="none"
+          width={Math.max(containerWidth - 2, 300)} // Ensure minimum width but respect container
+          height={height - 2} // Subtract border height
+          keybindings={{
+            selectAll: false,
+            selectRow: false,
+            selectColumn: false,
+          }}
         theme={{
           accentColor: "#1976d2",
           accentFg: "#ffffff",
@@ -877,6 +927,7 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
           fontFamily: "Inter, Roboto, -apple-system, BlinkMacSystemFont, avenir next, avenir, segoe ui, helvetica neue, helvetica, Ubuntu, noto, arial, sans-serif",
         }}
       />
+      </div>
     </div>
   );
 };

@@ -5,3 +5,44 @@
 .MuiToolbar-gutters {
   height: 0px!important;
 }
+
+/* Prevent table components from overflowing their containers */
+.ag-theme-alpine {
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+}
+
+.ag-theme-alpine .ag-root-wrapper {
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow: hidden !important;
+}
+
+.ag-theme-alpine .ag-root {
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow: hidden !important;
+}
+
+.ag-theme-alpine .ag-header {
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow: hidden !important;
+}
+
+.ag-theme-alpine .ag-body-viewport {
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow-x: auto !important;
+  overflow-y: auto !important;
+}
+
+/* Ensure Glide Data Grid also respects container width */
+.gdg-data-editor-container {
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+}
