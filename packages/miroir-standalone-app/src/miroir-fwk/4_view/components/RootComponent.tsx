@@ -81,6 +81,7 @@ import {
   SyncQueryRunner,
   SyncQueryRunnerParams,
   TableTheme,
+  AppTheme,
   ViewParamsData
 } from "miroir-core";
 import { getMemoizedDeploymentEntityStateSelectorMap, ReduxStateChanges } from "miroir-localcache-redux";
@@ -92,6 +93,7 @@ import {
   // useViewParams,
 } from "../MiroirContextReactProvider.js";
 import { TableThemeProvider } from '../contexts/TableThemeContext.js';
+import { MiroirThemeProvider } from '../contexts/MiroirThemeContext.js';
 import { useRenderTracker } from "../tools/renderCountTracker.js";
 import AppBar from './AppBar.js';
 
@@ -664,6 +666,24 @@ export const RootComponent = (props: RootComponentProps) => {
     [updateQueue, defaultViewParamsFromAdminStorage]
   );
 
+  // App theme change handler
+  const handleAppThemeChange = useMemo(
+    () => (newThemeId: string) => {
+      if (defaultViewParamsFromAdminStorage && updateQueue) {
+        const currentAppTheme = defaultViewParamsFromAdminStorage.appTheme || 'default';
+        
+        updateQueue.queueUpdate({
+          currentValue: defaultViewParamsFromAdminStorage,
+          updates: {
+            appTheme: newThemeId as AppTheme,
+          }
+        }, true); // Force immediate processing for app theme changes
+        log.info("RootComponent: Queued app theme change (immediate)", { from: currentAppTheme, to: newThemeId });
+      }
+    },
+    [updateQueue, defaultViewParamsFromAdminStorage]
+  );
+
   // Cleanup the queue on unmount
   useEffect(() => {
     return () => {
@@ -678,11 +698,15 @@ export const RootComponent = (props: RootComponentProps) => {
 
   return (
     <DocumentOutlineContext.Provider value={outlineContextValue}>
-      <TableThemeProvider 
-        currentThemeId={defaultViewParamsFromAdminStorage?.tableTheme || 'default'}
-        onThemeChange={handleTableThemeChange}
+      <MiroirThemeProvider 
+        currentThemeId={defaultViewParamsFromAdminStorage?.appTheme || 'default'}
+        onThemeChange={handleAppThemeChange}
       >
-        <div>
+        <TableThemeProvider 
+          currentThemeId={defaultViewParamsFromAdminStorage?.tableTheme || 'default'}
+          onThemeChange={handleTableThemeChange}
+        >
+          <div>
       <MuiBox sx={boxParams}>
         <Grid container direction="column">
           <Grid item>
@@ -1017,7 +1041,8 @@ export const RootComponent = (props: RootComponentProps) => {
         </Alert>
       </Snackbar>
     </div>
-      </TableThemeProvider>
+        </TableThemeProvider>
+      </MiroirThemeProvider>
     </DocumentOutlineContext.Provider>
   );
 };

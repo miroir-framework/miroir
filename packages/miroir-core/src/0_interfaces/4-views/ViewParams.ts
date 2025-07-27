@@ -10,6 +10,11 @@ export const tableTheme: JzodEnum = {
   definition: ["default", "dark", "compact", "material"],
 }
 
+export const appTheme: JzodEnum = {
+  type: "enum",
+  definition: ["default", "dark", "compact", "material"],
+}
+
 export const viewParams: JzodElement = {
   type: "object",
   // tag: {
@@ -21,11 +26,13 @@ export const viewParams: JzodElement = {
     sidebarWidth: { type: "number" },
     gridType: { type: "enum", definition: ["ag-grid", "glide-data-grid"] },
     tableTheme: { type: "enum", definition: ["default", "dark", "compact", "material"] },
+    appTheme: { type: "enum", definition: ["default", "dark", "compact", "material"] },
   },
 };
 
 export type GridType = "ag-grid" | "glide-data-grid";
 export type TableTheme = "default" | "dark" | "compact" | "material";
+export type AppTheme = "default" | "dark" | "compact" | "material";
 
 // Interface for ViewParams as entity instance data (plain object)
 export interface ViewParamsData {
@@ -38,17 +45,25 @@ export interface ViewParamsData {
   sidebarWidth: number;
   gridType: GridType;
   tableTheme: TableTheme;
+  appTheme: AppTheme;
 }
 
 export class ViewParams {
   private _sidebarWidth: number;
   private _gridType: GridType;
   private _tableTheme: TableTheme;
+  private _appTheme: AppTheme;
 
-  constructor(initialSidebarWidth: number = 250, initialGridType: GridType = 'ag-grid', initialTableTheme: TableTheme = 'default') {
+  constructor(
+    initialSidebarWidth: number = 250, 
+    initialGridType: GridType = 'ag-grid', 
+    initialTableTheme: TableTheme = 'default',
+    initialAppTheme: AppTheme = 'default'
+  ) {
     this._sidebarWidth = initialSidebarWidth;
     this._gridType = initialGridType;
     this._tableTheme = initialTableTheme;
+    this._appTheme = initialAppTheme;
   }
 
   get sidebarWidth(): number {
@@ -77,5 +92,13 @@ export class ViewParams {
 
   setTableTheme(theme: TableTheme): void {
     this._tableTheme = theme;
+  }
+
+  get appTheme(): AppTheme {
+    return this._appTheme;
+  }
+
+  setAppTheme(theme: AppTheme): void {
+    this._appTheme = theme;
   }
 }

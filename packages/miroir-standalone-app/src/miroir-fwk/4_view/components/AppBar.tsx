@@ -25,6 +25,7 @@ import { cleanLevel } from '../constants.js';
 import { SidebarWidth } from './SidebarSection.js';
 import { useMiroirContextService } from '../MiroirContextReactProvider.js';
 import { TableThemeSelector } from '../components/TableThemeSelector';
+import { MiroirThemeSelector } from '../components/MiroirThemeSelector';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -288,6 +289,9 @@ export function AppBar(props:AppBarProps) {
             </MyBox>
 
             <MyBox sx={{ flexGrow: 0, display: "flex" }}>
+              {/* App Theme Selector */}
+              <MiroirThemeSelector showDescription={false} label="Theme" />
+              
               {/* Table Theme Selector */}
               <TableThemeSelector showDescription={false}/>
 

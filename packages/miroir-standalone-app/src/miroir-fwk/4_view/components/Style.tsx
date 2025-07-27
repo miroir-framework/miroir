@@ -1,3 +1,23 @@
+// ################################################################################################
+// DEPRECATED: This file contains legacy styled components using @emotion/styled
+// 
+// These components have been superseded by the unified MiroirTheme system.
+// Please migrate to the new themed components from ThemedComponents.tsx
+//
+// Migration guide:
+// - SizedButton -> ThemedButton with size="sm"
+// - SizedAddBox -> ThemedContainer with icon styling
+// - SizedIcon -> Use useMiroirTheme() with theme.components.icon.size
+// - SmallIconButton -> ThemedButton with variant="outlined" and size="sm"
+// - LineIconButton -> Use useThemedStyles().lineIconButton
+// - StyledSelect -> Use useThemedStyles().styledSelect
+// - LabeledEditor -> Import from ThemedComponents.tsx
+//
+// For new development, use the MiroirTheme system:
+// import { useMiroirTheme, useThemedStyles } from '../contexts/MiroirThemeContext';
+// import { ThemedButton, ThemedInput, ThemedContainer } from './ThemedComponents';
+// ################################################################################################
+
 import styled from "@emotion/styled";
 import AddBox from "@mui/icons-material/AddBox";
 import Clear from "@mui/icons-material/Clear";
@@ -10,20 +30,24 @@ import IconButton from "@mui/material/IconButton";
 import Select from "@mui/material/Select";
 import { JzodElement } from "miroir-core";
 
-// import styled from "@emotion/styled";
-// import { Select } from "@mui/material";
-
+// ⚠️ DEPRECATED: Use ThemedButton with size="sm" instead
 export const SizedButton = styled(Button)(({ theme }) => ({
   height: "1em",
   width: "auto",
   minWidth: "1em",
   padding: "0px",
 }));
+
+// ⚠️ DEPRECATED: Use themed icon from ThemedComponents instead
 export const SizedAddBox = styled(AddBox)(({ theme }) => ({ height: "1em", width: "1em" }));
 
+// ⚠️ DEPRECATED: Use themed icon styling instead
 export const SizedIcon = styled(Icon)(({ theme }) => ({ height: "1em", width: "1em" }));
 
+// ⚠️ DEPRECATED: Use ThemedButton with appropriate props instead
 export const SmallIconButton = styled(IconButton)(({ theme }) => ({ size: "small" }));
+
+// ⚠️ DEPRECATED: Use useThemedStyles().lineIconButton instead
 export const LineIconButton = styled(IconButton)(({ theme }) => ({
   padding: 0,
   // boxSizing: "border-box",
@@ -31,6 +55,7 @@ export const LineIconButton = styled(IconButton)(({ theme }) => ({
   // transform: "scale(1.5)",
 }));
 
+// ⚠️ DEPRECATED: Use useThemedStyles().styledSelect instead
 export const StyledSelect = styled(Select)(({ theme }) => ({
   // backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
   // ...theme.typography.body2,
@@ -46,6 +71,7 @@ const labelStyle = {
   paddingRight: "10px",
 };
 
+// ⚠️ DEPRECATED: Use StyledLabel from ThemedComponents instead
 const StyledLabel = styled("label")(({ theme }) => ({
   ...theme,
   paddingRight: "10px",
@@ -63,9 +89,7 @@ export function getItemsOrder(currentValue: any, jzodSchema: JzodElement | undef
     : [];
 }
 
-// #####################################################################################################
-// EDITOR
-// #####################################################################################################
+// ⚠️ DEPRECATED: Use LabeledEditor from ThemedComponents instead
 export const LabeledEditor: React.FC<{
   labelElement: JSX.Element;
   editor: JSX.Element;
