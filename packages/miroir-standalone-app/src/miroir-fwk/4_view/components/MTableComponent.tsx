@@ -880,108 +880,35 @@ export const MTableComponent = (props: TableComponentProps) => {
                 >
                 {/* Custom CSS for orange filter icons */}
                 <style>{`
-                  /* Hide filter icons by default */
+                  /* Hide filter icons by default, show orange when filtered */
                   #tata .ag-header-icon.ag-filter-icon {
                     display: none !important;
                   }
                   
-                  /* Show filter icons only when column is filtered */
-                  #tata .ag-header-cell-filtered .ag-header-icon.ag-filter-icon {
+                  #tata .ag-header-cell-filtered .ag-header-icon.ag-filter-icon,
+                  #tata .ag-header-cell-filtered .ag-icon-filter,
+                  #tata .ag-header-cell-filtered .ag-icon-menu {
                     display: inline-block !important;
                     color: #ff8c00 !important;
+                    fill: #ff8c00 !important;
                     cursor: pointer !important;
                     opacity: 1 !important;
                     visibility: visible !important;
-                  }
-                  
-                  /* Global clear filters icon styling */
-                  #tata .global-clear-filters {
-                    color: #ff8c00 !important;
-                    cursor: pointer !important;
-                    margin-left: 8px !important;
-                    font-size: 14px !important;
                     z-index: 1000 !important;
                     position: relative !important;
-                    display: none !important;
-                    opacity: 1 !important;
-                    user-select: none !important;
-                    font-weight: bold !important;
-                    visibility: hidden !important;
                   }
                   
-                  #tata .global-clear-filters:hover {
-                    color: #ff6600 !important;
-                    transform: scale(1.1);
-                  }
-                  
-                  /* Target the actual SVG/path elements for orange color */
+                  /* Target SVG elements */
                   #tata .ag-header-cell-filtered .ag-header-icon.ag-filter-icon svg,
                   #tata .ag-header-cell-filtered .ag-header-icon.ag-filter-icon svg path,
-                  #tata .ag-header-cell-filtered .ag-header-icon.ag-filter-icon path {
+                  #tata .ag-header-cell-filtered .ag-header-icon.ag-filter-icon path,
+                  #tata .ag-header-cell-filtered .ag-header-icon.ag-filter-icon:before,
+                  #tata .ag-header-cell-filtered .ag-header-icon.ag-filter-icon:after {
                     fill: #ff8c00 !important;
                     stroke: #ff8c00 !important;
                     color: #ff8c00 !important;
-                  }
-                  
-                  /* Target CSS-based icons (some ag-grid themes use CSS shapes) */
-                  #tata .ag-header-cell-filtered .ag-header-icon.ag-filter-icon:before,
-                  #tata .ag-header-cell-filtered .ag-header-icon.ag-filter-icon:after {
-                    color: #ff8c00 !important;
                     background-color: #ff8c00 !important;
                     border-color: #ff8c00 !important;
-                  }
-                  
-                  /* Hover state for filtered columns */
-                  #tata .ag-header-cell-filtered .ag-header-icon.ag-filter-icon:hover {
-                    color: #ff6600 !important;
-                  }
-                  
-                  #tata .ag-header-cell-filtered .ag-header-icon.ag-filter-icon:hover svg,
-                  #tata .ag-header-cell-filtered .ag-header-icon.ag-filter-icon:hover svg path,
-                  #tata .ag-header-cell-filtered .ag-header-icon.ag-filter-icon:hover path {
-                    fill: #ff6600 !important;
-                    stroke: #ff6600 !important;
-                    color: #ff6600 !important;
-                  }
-                  
-                  #tata .ag-header-cell-filtered .ag-header-icon.ag-filter-icon:hover:before,
-                  #tata .ag-header-cell-filtered .ag-header-icon.ag-filter-icon:hover:after {
-                    color: #ff6600 !important;
-                    background-color: #ff6600 !important;
-                    border-color: #ff6600 !important;
-                  }
-                  
-                  /* Ensure proper z-index for click handling */
-                  #tata .ag-header-cell-filtered .ag-header-icon.ag-filter-icon {
-                    z-index: 1000 !important;
-                    position: relative !important;
-                  }
-                  
-                  /* Target specific ag-grid filter icon classes that might be used */
-                  #tata .ag-header-cell-filtered .ag-icon-filter,
-                  #tata .ag-header-cell-filtered .ag-icon-menu {
-                    color: #ff8c00 !important;
-                    fill: #ff8c00 !important;
-                    display: inline-block !important;
-                  }
-                  
-                  #tata .ag-header-cell-filtered .ag-icon-filter:hover,
-                  #tata .ag-header-cell-filtered .ag-icon-menu:hover {
-                    color: #ff6600 !important;
-                    fill: #ff6600 !important;
-                  }
-                  
-                  /* Force override any theme-specific styles */
-                  #tata.ag-theme-alpine .ag-header-cell-filtered .ag-header-icon.ag-filter-icon,
-                  #tata.ag-theme-alpine .ag-header-cell-filtered .ag-icon-filter {
-                    color: #ff8c00 !important;
-                    fill: #ff8c00 !important;
-                  }
-                  
-                  /* Additional targeting for ag-grid alpine theme filter icons */
-                  .ag-theme-alpine #tata .ag-header-cell-filtered .ag-header-icon.ag-filter-icon,
-                  .ag-theme-alpine #tata .ag-header-cell-filtered [class*="ag-icon"]:not(.ag-icon-none) {
-                    color: #ff8c00 !important;
                   }
                 `}</style>
                 <AgGridReact
