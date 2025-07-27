@@ -2,10 +2,11 @@ import {
   CellClickedEvent,
   CellValueChangedEvent,
   ColDef,
-  ColGroupDef
+  ColGroupDef,
+  GridApi
 } from 'ag-grid-community';
 import { AgGridReact } from 'ag-grid-react';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState, useRef, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 
 import 'ag-grid-community/styles/ag-grid.css';
@@ -81,6 +82,7 @@ export const MTableComponent = (props: TableComponentProps) => {
   const navigate = useNavigate();
   const context = useMiroirContextService();
   const contextDeploymentUuid = context.deploymentUuid;
+  const gridApiRef = useRef<GridApi | null>(null);
 
 
     // const viewParams = useViewParams();
@@ -103,11 +105,163 @@ export const MTableComponent = (props: TableComponentProps) => {
   // log.info("MTableComponent viewParams", viewParams, "defaultViewParamsFromAdminStorageFetchQueryResults", defaultViewParamsFromAdminStorageFetchQueryResults);
   const gridType = viewParams?.gridType || 'ag-grid';
 
+  // ##############################################################################################
+  const onGridReady = useCallback((params: any) => {
+    gridApiRef.current = params.api;
+    
+    // Add custom filter icon click handler after grid is ready
+    setTimeout(() => {
+      // Function to update visibility of global clear icon and attach event listeners
+      const updateFilterUI = () => {
+        const filterModel = gridApiRef.current?.getFilterModel();
+        const hasAnyFilterActive = filterModel && Object.keys(filterModel).length > 0;
+        
+        // Update state to trigger re-render of global clear icon
+        setHasAnyFilter(!!hasAnyFilterActive);
+        
+        // Attach listeners to individual filter icons
+        const filterIcons = document.querySelectorAll('#tata .ag-header-cell-filtered .ag-filter-icon, #tata .ag-header-cell-filtered .ag-icon-filter');
+        filterIcons.forEach((icon) => {
+          // Remove existing listeners to avoid duplicates
+          const newIcon = icon.cloneNode(true);
+          icon.parentNode?.replaceChild(newIcon, icon);
+          
+          // Add new click handler for individual column filter clear
+          const clickHandler = (e: Event) => {
+            e.preventDefault();
+            e.stopPropagation();
+            e.stopImmediatePropagation();
+            
+            const headerCell = (e.target as HTMLElement).closest('.ag-header-cell');
+            if (headerCell && gridApiRef.current) {
+              const colId = headerCell.getAttribute('col-id');
+              if (colId) {
+                const currentFilterModel = gridApiRef.current.getFilterModel();
+                if (currentFilterModel && currentFilterModel[colId]) {
+                  delete currentFilterModel[colId];
+                  gridApiRef.current.setFilterModel(currentFilterModel);
+                  log.info(`Filter cleared for column: ${colId}`);
+                }
+              }
+            }
+            return false;
+          };
+          newIcon.addEventListener('click', clickHandler, true);
+        });
+        
+        // Attach listener to global clear icon
+        const globalIconForListener = document.querySelector('#tata .global-clear-filters');
+        if (globalIconForListener) {
+          // Remove existing listeners
+          const newGlobalIcon = globalIconForListener.cloneNode(true);
+          globalIconForListener.parentNode?.replaceChild(newGlobalIcon, globalIconForListener);
+          
+          newGlobalIcon.addEventListener('click', (e: Event) => {
+            e.preventDefault();
+            e.stopPropagation();
+            e.stopImmediatePropagation();
+            if (gridApiRef.current) {
+              gridApiRef.current.setFilterModel(null);
+              log.info('All filters cleared via global icon click');
+            }
+            return false;
+          }, true);
+        }
+      };
+      
+      // Initial update
+      updateFilterUI();
+      
+      // Listen for filter changes to update UI
+      if (gridApiRef.current) {
+        gridApiRef.current.addEventListener('filterChanged', () => {
+          setTimeout(updateFilterUI, 50);
+        });
+      }
+    }, 100);
+  }, []);
+
+  // ##############################################################################################
+  const handleFilterIconClick = useCallback((event: MouseEvent) => {
+    // Check if the clicked element is a filter icon or its parent/child elements
+    const target = event.target as HTMLElement;
+    
+    // Only handle clicks on filter icons in filtered columns
+    const isFilterIcon = target.classList.contains('ag-filter-icon') || 
+                         target.closest('.ag-filter-icon') || 
+                         target.querySelector('.ag-filter-icon') ||
+                         target.classList.contains('ag-icon-filter') ||
+                         target.closest('.ag-icon-filter');
+    
+    // Check if the column is currently filtered
+    const headerCell = target.closest('.ag-header-cell');
+    const isFiltered = headerCell?.classList.contains('ag-header-cell-filtered');
+    
+    // Check if this is the global clear all filters icon
+    const isGlobalClearIcon = target.classList.contains('mtable-global-clear-filters') || 
+                          target.closest('.mtable-global-clear-filters');
+                          
+    if (isGlobalClearIcon) {
+      event.preventDefault();
+      event.stopPropagation();
+      event.stopImmediatePropagation();
+      
+      // Clear all filters
+      if (gridApiRef.current) {
+        gridApiRef.current.setFilterModel(null);
+        log.info('All filters cleared');
+      }
+      return false;
+    } else if (isFilterIcon && isFiltered && headerCell) {
+      event.preventDefault();
+      event.stopPropagation();
+      event.stopImmediatePropagation();
+      
+      // Clear filter for this specific column only
+      if (gridApiRef.current) {
+        const colId = headerCell.getAttribute('col-id');
+        if (colId) {
+          const currentFilterModel = gridApiRef.current.getFilterModel();
+          if (currentFilterModel && currentFilterModel[colId]) {
+            delete currentFilterModel[colId];
+            gridApiRef.current.setFilterModel(currentFilterModel);
+            log.info(`Filter cleared for column: ${colId}`);
+          }
+        }
+      }
+      return false;
+    }
+  }, []);
+
+  // ##############################################################################################
+  const handleGlobalClearAllFilters = useCallback(() => {
+    if (gridApiRef.current) {
+      gridApiRef.current.setFilterModel(null);
+      log.info('All filters cleared');
+    }
+  }, []);
+
+  // ##############################################################################################
+  // Attach event listener for filter icon clicks
+  useEffect(() => {
+    const gridContainer = document.getElementById('tata');
+    if (gridContainer) {
+      // Use capture phase to intercept before other handlers
+      gridContainer.addEventListener('click', handleFilterIconClick, true);
+      gridContainer.addEventListener('mousedown', handleFilterIconClick, true);
+      return () => {
+        gridContainer.removeEventListener('click', handleFilterIconClick, true);
+        gridContainer.removeEventListener('mousedown', handleFilterIconClick, true);
+      };
+    }
+  }, [handleFilterIconClick]);
+
 
 
   // TODO: redundant?
   const [dialogOuterFormObject, setdialogOuterFormObject] = useMiroirContextInnerFormOutput();
   const [dialogFormObject, setdialogFormObject] = useState<undefined | any>(undefined);
+  const [hasAnyFilter, setHasAnyFilter] = useState(false);
 
   // TODO: redundant?
   const [addObjectdialogFormIsOpen, setAddObjectdialogFormIsOpen] = useState(false);
@@ -323,6 +477,15 @@ export const MTableComponent = (props: TableComponentProps) => {
       suppressAndOrCondition: false,
       trimInput: true,
       debounceMs: 300,
+    },
+    // Customize header to handle filter icon clicks
+    headerComponentParams: {
+      onFilterClick: () => {
+        if (gridApiRef.current) {
+          gridApiRef.current.setFilterModel(null);
+          log.info('Filters cleared via header component');
+        }
+      }
     }
   }),[]);
 
@@ -674,15 +837,153 @@ export const MTableComponent = (props: TableComponentProps) => {
           )}
           {
             gridType === 'ag-grid' ? (
-              <div
-                id="tata"
-                className="ag-theme-alpine"
-                style={
-                  tableComponentRows.tableComponentRowUuidIndexSchema.length > 50
-                    ? { ...props.styles, height: "50vh" }
-                    : props.styles
-                }
-              >
+              <>
+                {/* Global Clear All Filters Icon */}
+                {hasAnyFilter && (
+                  <div style={{ 
+                    marginBottom: '8px', 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    gap: '8px',
+                    fontSize: '14px'
+                  }}>
+                    <span 
+                      className="mtable-global-clear-filters"
+                      onClick={handleGlobalClearAllFilters}
+                      style={{
+                        color: '#ff8c00',
+                        cursor: 'pointer',
+                        fontWeight: 'bold',
+                        fontSize: '16px',
+                        padding: '4px 8px',
+                        border: '1px solid #ff8c00',
+                        borderRadius: '4px',
+                        backgroundColor: '#fff8f0',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '4px'
+                      }}
+                      title="Clear all filters"
+                    >
+                      ▼ Clear All Filters
+                    </span>
+                  </div>
+                )}
+                <div
+                  id="tata"
+                  className="ag-theme-alpine"
+                  style={
+                    tableComponentRows.tableComponentRowUuidIndexSchema.length > 50
+                      ? { ...props.styles, height: "50vh" }
+                      : props.styles
+                  }
+                >
+                {/* Custom CSS for orange filter icons */}
+                <style>{`
+                  /* Hide filter icons by default */
+                  #tata .ag-header-icon.ag-filter-icon {
+                    display: none !important;
+                  }
+                  
+                  /* Show filter icons only when column is filtered */
+                  #tata .ag-header-cell-filtered .ag-header-icon.ag-filter-icon {
+                    display: inline-block !important;
+                    color: #ff8c00 !important;
+                    cursor: pointer !important;
+                    opacity: 1 !important;
+                    visibility: visible !important;
+                  }
+                  
+                  /* Global clear filters icon styling */
+                  #tata .global-clear-filters {
+                    color: #ff8c00 !important;
+                    cursor: pointer !important;
+                    margin-left: 8px !important;
+                    font-size: 14px !important;
+                    z-index: 1000 !important;
+                    position: relative !important;
+                    display: none !important;
+                    opacity: 1 !important;
+                    user-select: none !important;
+                    font-weight: bold !important;
+                    visibility: hidden !important;
+                  }
+                  
+                  #tata .global-clear-filters:hover {
+                    color: #ff6600 !important;
+                    transform: scale(1.1);
+                  }
+                  
+                  /* Target the actual SVG/path elements for orange color */
+                  #tata .ag-header-cell-filtered .ag-header-icon.ag-filter-icon svg,
+                  #tata .ag-header-cell-filtered .ag-header-icon.ag-filter-icon svg path,
+                  #tata .ag-header-cell-filtered .ag-header-icon.ag-filter-icon path {
+                    fill: #ff8c00 !important;
+                    stroke: #ff8c00 !important;
+                    color: #ff8c00 !important;
+                  }
+                  
+                  /* Target CSS-based icons (some ag-grid themes use CSS shapes) */
+                  #tata .ag-header-cell-filtered .ag-header-icon.ag-filter-icon:before,
+                  #tata .ag-header-cell-filtered .ag-header-icon.ag-filter-icon:after {
+                    color: #ff8c00 !important;
+                    background-color: #ff8c00 !important;
+                    border-color: #ff8c00 !important;
+                  }
+                  
+                  /* Hover state for filtered columns */
+                  #tata .ag-header-cell-filtered .ag-header-icon.ag-filter-icon:hover {
+                    color: #ff6600 !important;
+                  }
+                  
+                  #tata .ag-header-cell-filtered .ag-header-icon.ag-filter-icon:hover svg,
+                  #tata .ag-header-cell-filtered .ag-header-icon.ag-filter-icon:hover svg path,
+                  #tata .ag-header-cell-filtered .ag-header-icon.ag-filter-icon:hover path {
+                    fill: #ff6600 !important;
+                    stroke: #ff6600 !important;
+                    color: #ff6600 !important;
+                  }
+                  
+                  #tata .ag-header-cell-filtered .ag-header-icon.ag-filter-icon:hover:before,
+                  #tata .ag-header-cell-filtered .ag-header-icon.ag-filter-icon:hover:after {
+                    color: #ff6600 !important;
+                    background-color: #ff6600 !important;
+                    border-color: #ff6600 !important;
+                  }
+                  
+                  /* Ensure proper z-index for click handling */
+                  #tata .ag-header-cell-filtered .ag-header-icon.ag-filter-icon {
+                    z-index: 1000 !important;
+                    position: relative !important;
+                  }
+                  
+                  /* Target specific ag-grid filter icon classes that might be used */
+                  #tata .ag-header-cell-filtered .ag-icon-filter,
+                  #tata .ag-header-cell-filtered .ag-icon-menu {
+                    color: #ff8c00 !important;
+                    fill: #ff8c00 !important;
+                    display: inline-block !important;
+                  }
+                  
+                  #tata .ag-header-cell-filtered .ag-icon-filter:hover,
+                  #tata .ag-header-cell-filtered .ag-icon-menu:hover {
+                    color: #ff6600 !important;
+                    fill: #ff6600 !important;
+                  }
+                  
+                  /* Force override any theme-specific styles */
+                  #tata.ag-theme-alpine .ag-header-cell-filtered .ag-header-icon.ag-filter-icon,
+                  #tata.ag-theme-alpine .ag-header-cell-filtered .ag-icon-filter {
+                    color: #ff8c00 !important;
+                    fill: #ff8c00 !important;
+                  }
+                  
+                  /* Additional targeting for ag-grid alpine theme filter icons */
+                  .ag-theme-alpine #tata .ag-header-cell-filtered .ag-header-icon.ag-filter-icon,
+                  .ag-theme-alpine #tata .ag-header-cell-filtered [class*="ag-icon"]:not(.ag-icon-none) {
+                    color: #ff8c00 !important;
+                  }
+                `}</style>
                 <AgGridReact
                   domLayout={tableComponentRows.tableComponentRowUuidIndexSchema.length > 50 ? "normal" : "autoHeight"}
                   columnDefs={columnDefs}
@@ -694,6 +995,7 @@ export const MTableComponent = (props: TableComponentProps) => {
                   defaultColDef={defaultColDef}
                   onCellClicked={onCellClicked}
                   onCellValueChanged={onCellValueChanged}
+                  onGridReady={onGridReady}
                   // Enable advanced filtering and sorting features
                   enableRangeSelection={true}
                   enableCellTextSelection={true}
@@ -707,6 +1009,7 @@ export const MTableComponent = (props: TableComponentProps) => {
                   // onRowValueChanged={onRowValueChanged}
                 ></AgGridReact>
               </div>
+              </>
             ) : (
               <GlideDataGridComponent
                 tableComponentRows={tableComponentRows}
@@ -727,6 +1030,37 @@ export const MTableComponent = (props: TableComponentProps) => {
       ) : (
         // <div className="ag-theme-alpine" style={{height: 200, width: 200}}>
         <div className="ag-theme-alpine">
+          {/* Global Clear All Filters Icon */}
+          {hasAnyFilter && (
+            <div style={{ 
+              marginBottom: '8px', 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: '8px',
+              fontSize: '14px'
+            }}>
+              <span 
+                className="mtable-global-clear-filters"
+                onClick={handleGlobalClearAllFilters}
+                style={{
+                  color: '#ff8c00',
+                  cursor: 'pointer',
+                  fontWeight: 'bold',
+                  fontSize: '16px',
+                  padding: '4px 8px',
+                  border: '1px solid #ff8c00',
+                  borderRadius: '4px',
+                  backgroundColor: '#fff8f0',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '4px'
+                }}
+                title="Clear all filters"
+              >
+                ▼ Clear All Filters
+              </span>
+            </div>
+          )}
           <div>Not EntityInstance</div>
           {/* MtableComponent {props.type} {JSON.stringify(props.columnDefs.columnDefs)} {JSON.stringify(props.rowData)} */}
           {/* <AgGridReact

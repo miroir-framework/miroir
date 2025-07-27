@@ -192,8 +192,6 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   const currentReportTargetEntityDefinition: EntityDefinition | undefined =
     currentReportDeploymentSectionEntityDefinitions?.find((e) => e?.entityUuid === currentReportTargetEntity?.uuid);
 
-  const entityJzodSchemaDefinition: { [attributeName: string]: JzodElement } | undefined =
-    currentReportTargetEntityDefinition?.jzodSchema.definition;
 
   const pageLabel: string = props.applicationSection + "." + currentReportTargetEntity?.name;
 
