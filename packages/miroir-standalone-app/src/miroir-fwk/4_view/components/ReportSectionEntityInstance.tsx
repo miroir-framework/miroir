@@ -136,7 +136,8 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   const showPerformanceDisplay = context.showPerformanceDisplay;
 
   // Track render counts with centralized tracker
-  const navigationKey = `${props.deploymentUuid}-${props.applicationSection}-${props.entityUuid}-${props.instance?.uuid || 'no-instance'}`;
+  // Use deployment-level key to maintain consistency across all entity instance navigation
+  const navigationKey = `${props.deploymentUuid}-${props.applicationSection}`;
   const { navigationCount, totalCount } = useRenderTracker("ReportSectionEntityInstance", navigationKey);
 
   // Track performance immediately for initial render

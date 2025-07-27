@@ -84,8 +84,9 @@ export const ReportSectionView = (props: ReportSectionViewProps) => {
   const context = useMiroirContextService();
   const showPerformanceDisplay = context.showPerformanceDisplay;
 
-  // Track render counts with centralized tracker (using report section since RootReport doesn't have uuid)
-  const currentNavigationKey = `${props.deploymentUuid}-${props.applicationSection}-${JSON.stringify(props.reportSection)}`;
+  // Track render counts with centralized tracker
+  // Use deployment-level key to maintain consistency across all navigation within same deployment
+  const currentNavigationKey = `${props.deploymentUuid}-${props.applicationSection}`;
   const { navigationCount, totalCount } = useRenderTracker("ReportSectionView", currentNavigationKey);
 
   log.info("########################## ReportSectionView render", "navigationCount", navigationCount, "totalCount", totalCount, "props", props);

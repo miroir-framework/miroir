@@ -59,7 +59,8 @@ export interface ReportViewProps {
  */
 export const ReportView = (props: ReportViewProps) => {
   // Track render counts with centralized tracker
-  const currentNavigationKey = `${props.deploymentUuid}-${props.applicationSection}-${props.pageParams.reportUuid}-${props.pageParams.instanceUuid}`;
+  // Use deployment-level key to maintain consistency across all report navigation within same deployment
+  const currentNavigationKey = `${props.deploymentUuid}-${props.applicationSection}`;
   const { navigationCount, totalCount } = useRenderTracker("ReportView", currentNavigationKey);
 
   // Get outline context and update data when query results change

@@ -62,8 +62,8 @@ export const ReportPage = () => {
   const context = useMiroirContextService();
   
   // Track render counts with centralized tracker
-  // Use report-level key (without instanceUuid) to maintain consistency across instance navigation
-  const currentNavigationKey = `${pageParams.deploymentUuid}-${pageParams.applicationSection}-${pageParams.reportUuid}`;
+  // Use deployment-level key to maintain consistency across all navigation within same deployment
+  const currentNavigationKey = `${pageParams.deploymentUuid}-${pageParams.applicationSection}`;
   const { navigationCount, totalCount } = useRenderTracker("ReportPage", currentNavigationKey);
 
   // Get outline context from RootComponent
@@ -163,19 +163,18 @@ export const ReportPage = () => {
   );
 
   useEffect(() => {
-    // Only reset metrics if we're navigating to a different report or deployment
-    // Don't reset when just changing instanceUuid (drilling down into an instance)
-    const currentReportKey = `${pageParams.deploymentUuid}-${pageParams.applicationSection}-${pageParams.reportUuid}`;
+    // Only reset metrics if we're navigating to a different deployment
+    // Keep metrics when navigating between different reports/entities within the same deployment
+    const currentDeploymentKey = `${pageParams.deploymentUuid}-${pageParams.applicationSection}`;
     
-    // Store the current report key to compare with previous (excluding instanceUuid)
-    const previousReportKey = sessionStorage.getItem('currentReportKey');
-    if (previousReportKey && previousReportKey !== currentReportKey) {
+    // Store the current deployment key to compare with previous
+    const previousDeploymentKey = sessionStorage.getItem('currentDeploymentKey');
+    if (previousDeploymentKey && previousDeploymentKey !== currentDeploymentKey) {
       RenderPerformanceMetrics.resetMetrics();
-      log.info("RenderPerformanceMetrics reset for new report/deployment");
+      log.info("RenderPerformanceMetrics reset for new deployment/section");
     }
-    sessionStorage.setItem('currentReportKey', currentReportKey);
+    sessionStorage.setItem('currentDeploymentKey', currentDeploymentKey);
   }, [
-    pageParams.reportUuid,
     pageParams.deploymentUuid,
     pageParams.applicationSection,
   ]);

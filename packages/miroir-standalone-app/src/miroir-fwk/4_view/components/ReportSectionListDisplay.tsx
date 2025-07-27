@@ -714,7 +714,9 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   
   return (
     <div className="MiroirReport-global" style={{ display: "block" }}>
-      <div> ReportSectionListDisplay renders: {navigationCount} (total: {totalCount}) times.</div>
+      {context.showPerformanceDisplay && (
+        <div> ReportSectionListDisplay renders: {navigationCount} (total: {totalCount}) times.</div>
+      )}
       {/* labelll:{props.select?.label?<span>{props.select?.label}</span>:<></>} */}
       {currentReportTargetEntity && currentReportTargetEntityDefinition ? (
         !!tableColumnDefs ? (

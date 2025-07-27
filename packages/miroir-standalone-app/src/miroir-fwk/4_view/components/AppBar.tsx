@@ -302,20 +302,39 @@ export function AppBar(props:AppBarProps) {
                 </MyBox>
               )}
               
-            {/* Show Performance Metrics Checkbox */}
+            {/* Performance Monitor Indicator */}
             {context.setShowPerformanceDisplay && (
-              <MyBox sx={{ display: "flex", alignItems: "center", mr: 2 }}>
-                <input
-                  type="checkbox"
-                  id="showPerformanceMetrics"
-                  checked={!!context.showPerformanceDisplay}
-                  onChange={e => context.setShowPerformanceDisplay?.(e.target.checked)}
-                  style={{ marginRight: 4 }}
-                />
-                <label htmlFor="showPerformanceMetrics" style={{ color: 'white', fontSize: '0.875rem', userSelect: 'none' }}>
-                  Show Performance Metrics
-                </label>
-              </MyBox>
+              <MyTooltip title={context.showPerformanceDisplay ? "Performance Monitor: ON (click to disable)" : "Performance Monitor: OFF (click to enable)"}>
+                <MyButton
+                  onClick={() => context.setShowPerformanceDisplay?.(!context.showPerformanceDisplay)}
+                  sx={{
+                    mr: 2,
+                    px: 1,
+                    py: 0.5,
+                    backgroundColor: 'transparent',
+                    color: context.showPerformanceDisplay ? '#00ff88' : '#cccccc',
+                    textShadow: context.showPerformanceDisplay 
+                      ? '0 0 8px rgba(0, 255, 136, 0.9), 0 0 16px rgba(0, 255, 136, 0.7), 0 0 24px rgba(0, 255, 136, 0.5)' 
+                      : 'none',
+                    border: 'none',
+                    transition: 'all 0.3s ease-in-out',
+                    fontSize: '0.875rem',
+                    fontWeight: 'bold',
+                    textTransform: 'none',
+                    minWidth: 'auto',
+                    cursor: 'pointer',
+                    '&:hover': {
+                      backgroundColor: 'transparent',
+                      color: context.showPerformanceDisplay ? '#00ff66' : '#999999',
+                      textShadow: context.showPerformanceDisplay 
+                        ? '0 0 12px rgba(0, 255, 102, 1), 0 0 20px rgba(0, 255, 102, 0.8), 0 0 32px rgba(0, 255, 102, 0.6)' 
+                        : 'none',
+                    }
+                  }}
+                >
+                  Performance Monitor
+                </MyButton>
+              </MyTooltip>
             )}              {/* Document Outline Toggle Button */}
               {props.onOutlineToggle && (
                 <MyTooltip title={props.outlineOpen ? "Hide Document Outline" : "Show Document Outline"}>
