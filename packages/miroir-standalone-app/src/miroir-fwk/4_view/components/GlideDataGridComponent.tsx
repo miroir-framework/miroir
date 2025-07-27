@@ -86,6 +86,7 @@ interface GlideDataGridComponentProps {
   currentEntityDefinition?: EntityDefinition;
   calculatedColumnWidths?: ColumnWidthSpec[];
   toolsColumnDefinition: ToolsColumnDefinition;
+  maxRows?: number; // Maximum number of rows to show (controls table height)
   onCellClicked?: (cell: Item, event: CellClickedEventArgs) => void;
   onCellEdited?: (cell: Item, newValue: EditableGridCell) => void;
   onRowEdit?: (row: TableComponentRow, event?: any) => void;
@@ -101,6 +102,7 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
   currentEntityDefinition,
   calculatedColumnWidths,
   toolsColumnDefinition,
+  maxRows,
   onCellClicked,
   onCellEdited,
   onRowEdit,
@@ -378,9 +380,44 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
     if (rowCount > 50) {
       return Math.min(window.innerHeight * 0.5, 600); // 50vh but max 600px
     } else {
-      return Math.min(rowCount * 34 + 36, 400); // Auto height with max
+      // Calculate exact height to prevent extra empty rows
+      const headerHeight = 36; // Grid header height
+      const rowHeight = 34; // Height per row
+      
+      // Calculate filter toolbar height more precisely
+      const filterPadding = 16; // 2 * 8px (padding: 1 in MUI theme)
+      const filterBorderBottom = 1; // Border bottom
+      const mainControlsRowHeight = 40; // Height of select controls (size="small")
+      const mainControlsMarginBottom = 8; // mb: 1 in MUI theme
+      
+      // Calculate dynamic height based on number of active filter groups
+      const columnGroupsHeight = filterState.columnGroups.length > 0 
+        ? filterState.columnGroups.reduce((total, group) => {
+            const groupBaseHeight = 60; // Base height for column group container
+            const conditionsHeight = group.conditions.length * 50; // Each condition row
+            return total + groupBaseHeight + conditionsHeight;
+          }, 0)
+        : 24; // "Select a column above to start filtering" text height
+      
+      const filterToolbarHeight = filterPadding + filterBorderBottom + mainControlsRowHeight + 
+                                  mainControlsMarginBottom + columnGroupsHeight;
+      
+      const calculatedHeight = rowCount * rowHeight + headerHeight + filterToolbarHeight;
+      
+      // Log the calculation for debugging
+      log.info("GlideDataGrid height calculation", {
+        rowCount,
+        rowHeight,
+        headerHeight,
+        filterToolbarHeight,
+        filterGroupsCount: filterState.columnGroups.length,
+        totalCalculatedHeight: calculatedHeight
+      });
+      
+      // Apply reasonable bounds but prioritize exact calculation for small datasets
+      return Math.min(calculatedHeight, 600);
     }
-  }, [sortedAndFilteredTableRows.length]);
+  }, [sortedAndFilteredTableRows.length, filterState.columnGroups]);
 
   // Convert columnDefs to Glide format
   const glideColumns: GridColumn[] = useMemo(() => {
@@ -893,7 +930,7 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
           columnSelect="none"
           rowSelect="none"
           width={Math.max(containerWidth - 2, 300)} // Ensure minimum width but respect container
-          height={height - 2} // Subtract border height
+          height={Math.max(Math.min(sortedAndFilteredTableRows.length, maxRows || 50) * 34 + 36, 100)} // DataEditor height = visible rows + header only
           keybindings={{
             selectAll: false,
             selectRow: false,

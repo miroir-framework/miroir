@@ -29,6 +29,7 @@ export const tableComponentCorePropsSchema = z.object({
   deploymentUuid: z.string().uuid(),
   paramsAsdomainElements: domainElementObject,
   foreignKeyObjects: z.record(z.string(),entityInstancesUuidIndex),
+  maxRows: z.number().optional(), // Maximum number of rows to show (controls table height)
 });
 
 export const tableComponentEntityInstancePropsSchema = tableComponentCorePropsSchema.extend({

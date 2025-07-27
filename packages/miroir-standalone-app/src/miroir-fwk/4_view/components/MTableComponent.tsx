@@ -1047,6 +1047,7 @@ export const MTableComponent = (props: TableComponentProps) => {
               currentEntityDefinition={props.type === 'EntityInstance' ? (props as any).currentEntityDefinition : undefined}
               calculatedColumnWidths={calculatedColumnWidths}
               toolsColumnDefinition={toolsColumnDefinition}
+              maxRows={props.maxRows}
               onCellClicked={onGlideGridCellClicked}
               onCellEdited={(cell, newValue) => {
                 // Handle cell edit for Glide Data Grid

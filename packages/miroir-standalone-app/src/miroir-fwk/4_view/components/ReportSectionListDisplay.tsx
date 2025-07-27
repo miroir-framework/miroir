@@ -775,6 +775,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
                   instancesToDisplay={instancesToDisplay}
                   deploymentUuid={props.deploymentUuid}
                   displayTools={true}
+                  maxRows={5}
                   onRowEdit={onEditFormObject}
                   onRowDelete={onDeleteFormObject}
                   sortByAttribute={props.section.definition.sortByAttribute}
