@@ -41,6 +41,7 @@ import {
 } from "../MiroirContextReactProvider.js";
 import { useCurrentModel } from "../ReduxHooks.js";
 import { JzodElementEditor } from "../components/JzodElementEditor.js";
+import { PageContainer } from "../components/PageContainer.js";
 import { cleanLevel } from "../constants.js";
 
 
@@ -674,7 +675,7 @@ export const ConceptPage: React.FC<any> = (
   }, []);
 
   return (
-    <>
+    <PageContainer>
       <div>
         <Formik
           enableReinitialize={true}
@@ -777,6 +778,6 @@ export const ConceptPage: React.FC<any> = (
           )
         }
       </div>
-    </>
+    </PageContainer>
   )
 }

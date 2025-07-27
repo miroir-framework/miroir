@@ -44,6 +44,7 @@ import {
   useMiroirContextService
 } from "../MiroirContextReactProvider.js";
 import { useCurrentModel } from "../ReduxHooks.js";
+import { PageContainer } from "../components/PageContainer.js";
 
 
 // import entityPublisher from "../../assets/library_model/";
@@ -241,7 +242,19 @@ export const HomePage = (props: RootComponentProps) => {
   
 
   return (
-    <div>
+    <PageContainer
+      withSidebar={true}
+      withDocumentOutline={false} // HomePage typically doesn't have document outline
+      customSx={{
+        // HomePage specific styling
+        backgroundColor: 'background.default',
+        '& button': {
+          margin: 1,
+          maxWidth: '100%',
+          wordWrap: 'break-word',
+        },
+      }}
+    >
       {/* <PersistentDrawerLeft></PersistentDrawerLeft> */}
       {/* <Box sx={{ display: 'flex' }}> */}
       {/* undo */}
@@ -594,6 +607,6 @@ export const HomePage = (props: RootComponentProps) => {
         </div>
       )}
       {/* </Box> */}
-    </div>
+    </PageContainer>
   );
 };

@@ -28,6 +28,7 @@ import { cleanLevel } from '../constants.js';
 import { RenderPerformanceMetrics } from '../tools/renderPerformanceMeasure.js';
 import { useDocumentOutlineContext } from '../components/RootComponent.js';
 import { useRenderTracker } from '../tools/renderCountTracker.js';
+import { PageContainer } from '../components/PageContainer.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -207,7 +208,17 @@ export const ReportPage = () => {
     log.info("ReportPage rendering", "navigationCount", navigationCount, "totalCount", totalCount, "params", pageParams);
     // log.info("ReportPage current metrics:", RenderPerformanceMetrics.renderMetrics);
     return (
-      <Box sx={{ display: 'flex', flexDirection: 'column', padding: 2 }}>
+      <PageContainer
+        withSidebar={true}
+        withDocumentOutline={true} // ReportPage has document outline
+        customSx={{
+          // ReportPage specific styling
+          '& .miroir-table-container': {
+            maxWidth: '100%',
+            overflow: 'hidden',
+          },
+        }}
+      >
         {/* Page Header */}
         <Box sx={{ flexShrink: 0, marginBottom: 2 }}>
           {context.showPerformanceDisplay && (
@@ -247,7 +258,7 @@ export const ReportPage = () => {
             )
           }
         </Box>
-      </Box>
+      </PageContainer>
     );
   } else {
     return <>ReportPage Invalid parameters! {JSON.stringify(pageParams)}</>;

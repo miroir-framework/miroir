@@ -8,6 +8,7 @@ import {
 } from "miroir-core";
 import { useState } from "react";
 import { z } from "zod";
+import { PageContainer } from "../components/PageContainer.js";
 
 let count = 0;
 
@@ -79,7 +80,7 @@ export const CheckPage: React.FC<any> = (
   };
 
   return (
-    <div>
+    <PageContainer>
       <h1>Check</h1>
       This is the Check page. It has been rendered {count} times.
       <br />
@@ -107,6 +108,6 @@ export const CheckPage: React.FC<any> = (
           {JSON.stringify(testSubPart, null, 2)}
         </pre>
       </div>
-    </div>
+    </PageContainer>
   );
 };
