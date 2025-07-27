@@ -57,6 +57,7 @@ import {
 } from "../../../constants.js";
 import { ReportView } from "../components/ReportView.js";
 import { cleanLevel } from "../constants.js";
+import { EndpointActionCaller } from "../components/EndpointActionCaller.js";
 
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -536,6 +537,14 @@ export const HomePage = (props: RootComponentProps) => {
       </div>
       <p />
       <p />
+      <EndpointActionCaller
+        key={"aaaa"}
+          // currentDeploymentUuid={displayedDeploymentUuid}
+          // currentApplicationSection={displayedApplicationSection}
+          // currentReportUuid={displayedReportUuid}
+        />
+        {/* </EndpointActionCaller> */}
+
       {/* <Box sx={{ minWidth: 50 }}> */}
       <div>
         <FormControl fullWidth>
