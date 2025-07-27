@@ -351,7 +351,21 @@ export const MTableComponent = (props: TableComponentProps) => {
         // Add value getter to access the correct data path
         valueGetter: (params: any) => {
           if (!params.data || !colDef.field) return '';
-          // First try displayedValue (for formatted data), then fallback to rawValue
+          
+          // Check if this is a foreign key column
+          const isFK = colDef.cellRendererParams?.isFK;
+          const entityUuid = colDef.cellRendererParams?.entityUuid;
+          
+          if (isFK && entityUuid && params.data?.foreignKeyObjects?.[entityUuid]) {
+            // For foreign key columns, return the name of the referenced entity
+            const foreignKeyUuid = params.data.rawValue?.[colDef.field];
+            if (foreignKeyUuid && params.data.foreignKeyObjects[entityUuid][foreignKeyUuid]) {
+              return params.data.foreignKeyObjects[entityUuid][foreignKeyUuid].name || '';
+            }
+            return ''; // No foreign key object found
+          }
+          
+          // For regular columns, use displayedValue or rawValue
           return params.data.displayedValue?.[colDef.field] ?? params.data.rawValue?.[colDef.field] ?? '';
         },
         // Add value setter for editable cells
@@ -369,6 +383,21 @@ export const MTableComponent = (props: TableComponentProps) => {
         // Override filter value getter to ensure filtering works on the correct data
         filterValueGetter: (params: any) => {
           if (!params.data || !colDef.field) return '';
+          
+          // Check if this is a foreign key column
+          const isFK = colDef.cellRendererParams?.isFK;
+          const entityUuid = colDef.cellRendererParams?.entityUuid;
+          
+          if (isFK && entityUuid && params.data?.foreignKeyObjects?.[entityUuid]) {
+            // For foreign key columns, return the name of the referenced entity
+            const foreignKeyUuid = params.data.rawValue?.[colDef.field];
+            if (foreignKeyUuid && params.data.foreignKeyObjects[entityUuid][foreignKeyUuid]) {
+              return params.data.foreignKeyObjects[entityUuid][foreignKeyUuid].name || '';
+            }
+            return ''; // No foreign key object found
+          }
+          
+          // For regular columns, use displayedValue or rawValue
           return params.data.displayedValue?.[colDef.field] ?? params.data.rawValue?.[colDef.field] ?? '';
         },
         // Enable specific filter types based on data type
