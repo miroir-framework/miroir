@@ -26,7 +26,8 @@ import { useCurrentModel } from "../ReduxHooks";
 import { FoldUnfoldObjectOrArray, FoldUnfoldAllObjectAttributesOrArrayItems, JzodElementEditor } from "./JzodElementEditor";
 import { JzodArrayEditorProps } from "./JzodElementEditorInterface";
 import { ErrorFallbackComponent } from "./ErrorFallbackComponent";
-import { SizedAddBox, SizedButton } from "./Style";
+import { ThemedSizedButton, ThemedAddIcon } from "./ThemedComponents";
+import { useMiroirTheme } from '../contexts/MiroirThemeContext';
 // import { JzodUnion } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -507,8 +508,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
                     ></FoldUnfoldAllObjectAttributesOrArrayItems>
                 ): <></>
               }
-                <SizedButton
-                  variant="text"
+                <ThemedSizedButton
                   aria-label={rootLessListKey + ".add"}
                   onClick={addNewArrayItem}
                   title="Add new array item"
@@ -517,8 +517,8 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
                     marginLeft: "1em",
                   }}
                 >
-                  <SizedAddBox />
-                </SizedButton>
+                  <ThemedAddIcon />
+                </ThemedSizedButton>
               </>
             ) : (
               <></>

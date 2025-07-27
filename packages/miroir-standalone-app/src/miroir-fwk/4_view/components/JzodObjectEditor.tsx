@@ -26,7 +26,16 @@ import { indentShift } from "./JzodArrayEditor";
 import { FoldUnfoldObjectOrArray, FoldUnfoldAllObjectAttributesOrArrayItems, JzodElementEditor } from "./JzodElementEditor";
 import { useJzodElementEditorHooks } from "./JzodElementEditorHooks";
 import { JzodObjectEditorProps } from "./JzodElementEditorInterface";
-import { SizedButton, SizedAddBox, SmallIconButton, getItemsOrder } from "./Style";
+import { getItemsOrder } from "./Style";
+import { 
+  ThemedSmallIconButton,
+  ThemedSizedButton, 
+  ThemedAddIcon,
+  ThemedEditableInput,
+  ThemedLoadingCard,
+  ThemedFoldedValueDisplay
+} from "./ThemedComponents";
+import { useMiroirTheme } from '../contexts/MiroirThemeContext';
 import { ErrorFallbackComponent } from "./ErrorFallbackComponent";
 import { packageName } from "../../../constants";
 import { cleanLevel } from "../constants";
@@ -121,8 +130,7 @@ const EditableAttributeName: FC<{
   }, [initialValue, isEditing]);
 
   return (
-    <input
-      type="text"
+    <ThemedEditableInput
       value={localValue}
       name={"meta-" + rootLessListKey + "-NAME"}
       aria-label={"meta-" + rootLessListKey + "-NAME"}
@@ -130,15 +138,8 @@ const EditableAttributeName: FC<{
       onFocus={() => setIsEditing(true)}
       onBlur={handleCommit}
       onKeyDown={handleKeyDown}
-      style={{
-        border: "1px solid #ccc",
-        borderRadius: "4px",
-        padding: "2px 4px",
-        fontSize: "inherit",
-        fontFamily: "inherit",
-        minWidth: "60px",
-        width: `${Math.max(60, localValue.length * 8 + 16)}px`,
-      }}
+      minWidth={60}
+      dynamicWidth={true}
     />
   );
 };
@@ -270,9 +271,7 @@ const ProgressiveAttribute: FC<{
   return (
     <div key={attributeListKey}>
       {!isRendered ? (
-        <div style={{ height: '40px', display: 'flex', alignItems: 'center', color: '#999', paddingLeft: '20px' }}>
-          <span style={{ fontSize: '0.9em' }}>Loading {attribute[0]}...</span>
-        </div>
+        <ThemedLoadingCard message={`Loading ${attribute[0]}...`} />
       ) : (
         <ErrorBoundary
           FallbackComponent={({ error, resetErrorBoundary }) => (
@@ -315,7 +314,7 @@ const ProgressiveAttribute: FC<{
             // parentType={currentKeyMap?.rawSchema?.type}
             deleteButtonElement={
               <>
-                <SmallIconButton
+                <ThemedSmallIconButton
                   id={attributeRootLessListKey + "-removeOptionalAttributeOrRecordEntry"}
                   aria-label={attributeRootLessListKey + "-removeOptionalAttributeOrRecordEntry"}
                   onClick={deleteElement(attributeRootLessListKeyArray)}
@@ -325,7 +324,7 @@ const ProgressiveAttribute: FC<{
                   }}
                 >
                   <Clear />
-                </SmallIconButton>
+                </ThemedSmallIconButton>
               </>
             }
           />
@@ -792,22 +791,11 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
                 (() => {
                   const foldedDisplayValue = getFoldedDisplayValue();
                   return foldedDisplayValue !== null ? (
-                    <span
-                      style={{
-                        marginLeft: "0.5em",
-                        padding: "2px 6px",
-                        backgroundColor: "#f0f0f0",
-                        borderRadius: "3px",
-                        fontSize: "0.9em",
-                        color: "#666",
-                        fontStyle: "italic",
-                      }}
+                    <ThemedFoldedValueDisplay
+                      value={String(foldedDisplayValue)}
                       title={`Folded value: ${foldedDisplayValue}`}
-                    >
-                      {typeof foldedDisplayValue === "string" && foldedDisplayValue.length > 30
-                        ? foldedDisplayValue.substring(0, 100) + "..."
-                        : String(foldedDisplayValue)}
-                    </span>
+                      maxLength={100}
+                    />
                   ) : null;
                 })()}
             </span>
@@ -835,9 +823,8 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
             {/* add record attribute button for records */}
             {currentTypeCheckKeyMap?.rawSchema.type == "record" &&
             !foldedObjectAttributeOrArrayItems[listKey] ? (
-              <SizedButton
+              <ThemedSizedButton
                 id={rootLessListKey + ".addRecordAttribute"}
-                variant="text"
                 aria-label={rootLessListKey + ".addRecordAttribute"}
                 onClick={addExtraRecordEntry}
                 title="Add new record attribute"
@@ -846,8 +833,8 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
                   marginLeft: "1em",
                 }}
               >
-                <SizedAddBox />
-              </SizedButton>
+                <ThemedAddIcon />
+              </ThemedSizedButton>
             ) : (
               <></>
             )}
@@ -875,15 +862,14 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
                       gap: "8px",
                     }}
                   >
-                    <SizedButton
-                      variant="text"
+                    <ThemedSizedButton
                       aria-label={rootLessListKey + ".addObjectOptionalAttribute." + attributeName}
                       onClick={() => addObjectOptionalAttribute(attributeName)}
                       title={`Add optional attribute: ${attributeName}`}
                       style={{ flexShrink: 0 }}
                     >
-                      <SizedAddBox />
-                    </SizedButton>
+                      <ThemedAddIcon />
+                    </ThemedSizedButton>
                     <span
                       style={{
                         fontSize: "0.8em",

@@ -7,7 +7,7 @@ import React, { FC, useMemo } from "react";
 import { packageName } from "../../../constants";
 import { cleanLevel } from "../constants";
 import { JzodEnumEditorProps } from "./JzodElementEditorInterface";
-import { LabeledEditor, StyledSelect } from "./Style";
+import { ThemedLabeledEditor, ThemedSelect } from "./ThemedComponents";
 import { useFormikContext } from "formik";
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -66,39 +66,43 @@ export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
       }
     }, [isDiscriminator, parentKeyMap, rawJzodSchema, rootLessListKey]);
 
-    return LabeledEditor({
-      labelElement: labelElement ?? <></>,
-      editor: isDiscriminator ? (
-        <>
-          <StyledSelect
-            id={rootLessListKey}
-            // aria-label={rootLessListKey}
-            labelId="demo-simple-select-label"
-            variant="standard"
-            {...formik.getFieldProps(rootLessListKey)}
-            name={rootLessListKey}
-          >
-            {menuItems}
-          </StyledSelect>
-        </>
-      ) : (
-        <>
-          <StyledSelect
-            id={rootLessListKey}
-            // aria-label={rootLessListKey}
-            labelId="demo-simple-select-label"
-            variant="standard"
-            {...formik.getFieldProps(rootLessListKey)}
-            name={rootLessListKey}
-          >
-            {menuItems}
-          </StyledSelect>
-          {forceTestingMode ? (
-            <div>enumValues={JSON.stringify((rawJzodSchema as JzodEnum).definition)}</div>
+    return (
+      <ThemedLabeledEditor
+        labelElement={labelElement ?? <></>}
+        editor={
+          isDiscriminator ? (
+            <>
+              <ThemedSelect
+                id={rootLessListKey}
+                // aria-label={rootLessListKey}
+                labelId="demo-simple-select-label"
+                variant="standard"
+                {...formik.getFieldProps(rootLessListKey)}
+                name={rootLessListKey}
+              >
+                {menuItems}
+              </ThemedSelect>
+            </>
           ) : (
-            <></>
-          )}
-        </>
-      ),
-    });
+            <>
+              <ThemedSelect
+                id={rootLessListKey}
+                // aria-label={rootLessListKey}
+                labelId="demo-simple-select-label"
+                variant="standard"
+                {...formik.getFieldProps(rootLessListKey)}
+                name={rootLessListKey}
+              >
+                {menuItems}
+              </ThemedSelect>
+              {forceTestingMode ? (
+                <div>enumValues={JSON.stringify((rawJzodSchema as JzodEnum).definition)}</div>
+              ) : (
+                <></>
+              )}
+            </>
+          )
+        }
+      />
+    );
   }

@@ -19,7 +19,7 @@ import { cleanLevel } from "../constants";
 import { useMiroirContextService } from "../MiroirContextReactProvider";
 import { useCurrentModel } from "../ReduxHooks";
 import { JzodLiteralEditorProps } from "./JzodElementEditorInterface";
-import { LabeledEditor, StyledSelect } from "./Style";
+import { ThemedLabeledEditor, ThemedSelect } from "./ThemedComponents";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -184,34 +184,38 @@ export const JzodLiteralEditor: FC<JzodLiteralEditorProps> =  (
     }
     return null;
   }, [isDiscriminator, currentKeyMap]);
-  return LabeledEditor({
-    labelElement: labelElement ?? <></>,
-    editor: isDiscriminator ? (
-      <>
-        <StyledSelect
-          id={rootLessListKey}
-          label={name}
-          variant="standard"
-          labelId="demo-simple-select-label"
-          {...formik.getFieldProps(rootLessListKey)}
-          onChange={handleSelectLiteralChange}
-        >
-          {discriminatorMenuItems}
-        </StyledSelect>
-        (literal discriminator)
-      </>
-    ) : (
-      <>
-        <input
-          type="text"
-          id={rootLessListKey}
-          name={rootLessListKey}
-          form={"form." + name}
-          value={formik.getFieldProps(rootLessListKey).value}
-          readOnly
-          disabled
-        />
-      </>
-    ),
-  });
+  return (
+    <ThemedLabeledEditor
+      labelElement={labelElement ?? <></>}
+      editor={
+        isDiscriminator ? (
+          <>
+            <ThemedSelect
+              id={rootLessListKey}
+              label={name}
+              variant="standard"
+              labelId="demo-simple-select-label"
+              {...formik.getFieldProps(rootLessListKey)}
+              onChange={handleSelectLiteralChange}
+            >
+              {discriminatorMenuItems}
+            </ThemedSelect>
+            (literal discriminator)
+          </>
+        ) : (
+          <>
+            <input
+              type="text"
+              id={rootLessListKey}
+              name={rootLessListKey}
+              form={"form." + name}
+              value={formik.getFieldProps(rootLessListKey).value}
+              readOnly
+              disabled
+            />
+          </>
+        )
+      }
+    />
+  );
 }
