@@ -87,6 +87,8 @@ interface GlideDataGridComponentProps {
   calculatedColumnWidths?: ColumnWidthSpec[];
   toolsColumnDefinition: ToolsColumnDefinition;
   maxRows?: number; // Maximum number of rows to show (controls table height)
+  theme?: any; // Table theme for unified styling
+  glideTheme?: any; // Glide-specific theme object
   onCellClicked?: (cell: Item, event: CellClickedEventArgs) => void;
   onCellEdited?: (cell: Item, newValue: EditableGridCell) => void;
   onRowEdit?: (row: TableComponentRow, event?: any) => void;
@@ -103,6 +105,8 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
   calculatedColumnWidths,
   toolsColumnDefinition,
   maxRows,
+  theme,
+  glideTheme,
   onCellClicked,
   onCellEdited,
   onRowEdit,
@@ -687,17 +691,19 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
         height: `${height}px`,
         width: '100%',
         maxWidth: '100%',
-        border: '1px solid #e0e0e0',
-        borderRadius: '4px',
-        overflow: 'hidden', // Prevent any overflow
-        boxSizing: 'border-box', // Include border in width calculation
+        border: theme?.components?.table?.border || '1px solid #e0e0e0',
+        borderRadius: theme?.components?.table?.borderRadius || '4px',
+        overflow: 'hidden',
+        boxSizing: 'border-box',
+        fontFamily: theme?.typography?.fontFamily || 'inherit',
+        fontSize: theme?.typography?.fontSize || '14px',
       }}
     >
       {/* Filter Toolbar */}
       <Box sx={{ 
         padding: 1, 
-        borderBottom: '1px solid #e0e0e0',
-        backgroundColor: '#f8f8f8',
+        borderBottom: `1px solid ${theme?.colors?.border || '#e0e0e0'}`,
+        backgroundColor: theme?.components?.toolbar?.background || '#f8f8f8',
         width: '100%',
         maxWidth: '100%',
         overflow: 'hidden',
@@ -936,32 +942,32 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
             selectRow: false,
             selectColumn: false,
           }}
-        theme={{
-          accentColor: "#1976d2",
+        theme={glideTheme || {
+          accentColor: theme?.colors?.primary || "#1976d2",
           accentFg: "#ffffff",
           accentLight: "rgba(25, 118, 210, 0.1)",
-          textDark: "#1a1a1a",        // Much darker text
-          textMedium: "#333333",      // Darker medium text
-          textLight: "#666666",       // Darker light text
-          textBubble: "#1a1a1a",      // Darker bubble text
-          bgIconHeader: "#444444",    // Darker icon header background
+          textDark: theme?.colors?.text || "#1a1a1a",
+          textMedium: theme?.colors?.textSecondary || "#333333",
+          textLight: theme?.colors?.textSecondary || "#666666",
+          textBubble: theme?.colors?.text || "#1a1a1a",
+          bgIconHeader: "#444444",
           fgIconHeader: "#ffffff",
-          textHeader: "#1a1a1a",      // Darker header text
+          textHeader: theme?.colors?.text || "#1a1a1a",
           textHeaderSelected: "#000000",
-          bgCell: "#ffffff",
-          bgCellMedium: "#f8f8f8",    // Slightly darker cell background
-          bgHeader: "#f0f0f0",        // Slightly darker header background
-          bgHeaderHasFocus: "#e0e0e0", // Darker focused header
-          bgHeaderHovered: "#e8e8e8",  // Darker hovered header
-          bgBubble: "#ffffff",
-          bgBubbleSelected: "#ffffff",
+          bgCell: theme?.colors?.background || "#ffffff",
+          bgCellMedium: theme?.colors?.surface || "#f8f8f8",
+          bgHeader: theme?.components?.header?.background || "#f0f0f0",
+          bgHeaderHasFocus: theme?.colors?.hover || "#e0e0e0",
+          bgHeaderHovered: theme?.colors?.hover || "#e8e8e8",
+          bgBubble: theme?.colors?.background || "#ffffff",
+          bgBubbleSelected: theme?.colors?.background || "#ffffff",
           bgSearchResult: "#fff9c4",
-          borderColor: "rgba(0, 0, 0, 0.2)",     // Darker borders
+          borderColor: theme?.colors?.border || "rgba(0, 0, 0, 0.2)",
           drilldownBorder: "rgba(0, 0, 0, 0)",
-          linkColor: "#1976d2",
-          headerFontStyle: "600 13px",
-          baseFontStyle: "13px",
-          fontFamily: "Inter, Roboto, -apple-system, BlinkMacSystemFont, avenir next, avenir, segoe ui, helvetica neue, helvetica, Ubuntu, noto, arial, sans-serif",
+          linkColor: theme?.colors?.primary || "#1976d2",
+          headerFontStyle: `${theme?.components?.header?.fontWeight || 600} ${theme?.components?.header?.fontSize || '13px'}`,
+          baseFontStyle: theme?.typography?.fontSize || "13px",
+          fontFamily: theme?.typography?.fontFamily || "Inter, Roboto, -apple-system, BlinkMacSystemFont, avenir next, avenir, segoe ui, helvetica neue, helvetica, Ubuntu, noto, arial, sans-serif",
         }}
       />
       </div>

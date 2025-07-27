@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState, useRef, useCallback, createContext, useContext } from 'react';
 import { Params, useParams } from 'react-router-dom';
-import { Box } from '@mui/material';
+import { Box, Divider } from '@mui/material';
 
 import {
   adminConfigurationDeploymentAdmin,
@@ -29,6 +29,7 @@ import { RenderPerformanceMetrics } from '../tools/renderPerformanceMeasure.js';
 import { useDocumentOutlineContext } from '../components/RootComponent.js';
 import { useRenderTracker } from '../tools/renderCountTracker.js';
 import { PageContainer } from '../components/PageContainer.js';
+import { TableThemeSelector } from '../components/TableThemeSelector.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

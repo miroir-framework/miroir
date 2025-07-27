@@ -24,6 +24,7 @@ import { packageName } from '../../../constants.js';
 import { cleanLevel } from '../constants.js';
 import { SidebarWidth } from './SidebarSection.js';
 import { useMiroirContextService } from '../MiroirContextReactProvider.js';
+import { TableThemeSelector } from '../components/TableThemeSelector';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -287,6 +288,9 @@ export function AppBar(props:AppBarProps) {
             </MyBox>
 
             <MyBox sx={{ flexGrow: 0, display: "flex" }}>
+              {/* Table Theme Selector */}
+              <TableThemeSelector showDescription={false}/>
+
               {/* Grid Type Toggle Button */}
               {props.gridType && props.onGridTypeToggle && (
                 <MyTooltip title={`Switch to ${props.gridType === 'ag-grid' ? 'Glide Data Grid' : 'AG-Grid'}`}>
@@ -316,6 +320,7 @@ export function AppBar(props:AppBarProps) {
                   </MyButton>
                 </MyTooltip>
               )}
+              
               
             {/* Performance Monitor Indicator */}
             {context.setShowPerformanceDisplay && (

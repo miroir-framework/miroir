@@ -90,6 +90,7 @@ import {
   useMiroirContextService,
   // useViewParams,
 } from "../MiroirContextReactProvider.js";
+import { TableThemeProvider } from '../contexts/TableThemeContext.js';
 import { useRenderTracker } from "../tools/renderCountTracker.js";
 import AppBar from './AppBar.js';
 
@@ -658,7 +659,8 @@ export const RootComponent = (props: RootComponentProps) => {
 
   return (
     <DocumentOutlineContext.Provider value={outlineContextValue}>
-      <div>
+      <TableThemeProvider>
+        <div>
       <MuiBox sx={boxParams}>
         <Grid container direction="column">
           <Grid item>
@@ -993,6 +995,7 @@ export const RootComponent = (props: RootComponentProps) => {
         </Alert>
       </Snackbar>
     </div>
+      </TableThemeProvider>
     </DocumentOutlineContext.Provider>
   );
 };

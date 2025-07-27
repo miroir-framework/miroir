@@ -55,6 +55,47 @@ import {
   TableComponentTypeSchema,
 } from "./MTableComponentInterface.js";
 import { getMemoizedDeploymentEntityStateSelectorMap } from 'miroir-localcache-redux';
+import { useCurrentTableTheme } from '../contexts/TableThemeContext.js';
+import { TableTheme, DeepPartial, createTableTheme } from '../themes/TableTheme.js';
+import { generateAgGridStyles, generateGlideTheme, getFilterToolbarStyles } from '../themes/TableStyleGenerators.js';
+
+// ################################################################################################
+// Unified Table Styling Configuration
+// 
+// This section provides a comprehensive theming system that works uniformly across both 
+// AG-Grid and Glide Data Grid implementations. The theme system includes:
+//
+// 1. TableTheme interface - Defines all styling properties
+// 2. defaultTableTheme - Default theme matching current display
+// 3. Theme variants - Pre-built themes (dark, compact, material)
+// 4. Helper functions - Generate grid-specific styles
+//
+// Usage Examples:
+// 
+// // Use default theme
+// <MTableComponent {...props} />
+//
+// // Use a predefined theme variant
+// <MTableComponent {...props} theme={darkTableTheme} />
+//
+// // Custom theme with overrides
+// <MTableComponent {...props} theme={{
+//   colors: { primary: '#ff0000' },
+//   typography: { fontSize: '16px' }
+// }} />
+//
+// // Create a completely custom theme
+// const customTheme = createTableTheme({
+//   colors: { primary: '#purple' },
+//   components: { 
+//     header: { background: '#lightgray' }
+//   }
+// });
+// <MTableComponent {...props} theme={customTheme} />
+//
+// The system automatically generates appropriate styles for both grid types,
+// ensuring visual consistency regardless of which grid implementation is used.
+// ################################################################################################
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -76,8 +117,24 @@ const autoSizeStrategy = {
   ]
 };
 // ################################################################################################
-export const MTableComponent = (props: TableComponentProps) => {
+export const MTableComponent = (props: TableComponentProps & { theme?: DeepPartial<TableTheme> }) => {
   log.info(":::::::::::::::::::::::::: MTableComponent refreshing with props",props);
+  
+  // Get theme from context first, then allow prop overrides
+  const contextTheme = useCurrentTableTheme();
+  
+  // Use the unified table theme with optional overrides
+  const tableTheme = useMemo(() => {
+    // Start with context theme, then apply any prop overrides
+    return props.theme ? createTableTheme({
+      ...contextTheme,
+      ...props.theme,
+    }) : contextTheme;
+  }, [contextTheme, props.theme]);
+  
+  const filterToolbarStyles = useMemo(() => getFilterToolbarStyles(tableTheme), [tableTheme]);
+  const agGridStyles = useMemo(() => generateAgGridStyles(tableTheme), [tableTheme]);
+  const glideTheme = useMemo(() => generateGlideTheme(tableTheme), [tableTheme]);
   
   const navigate = useNavigate();
   const context = useMiroirContextService();
@@ -849,8 +906,11 @@ export const MTableComponent = (props: TableComponentProps) => {
       width: '100%', 
       maxWidth: '100%', 
       overflow: 'hidden', 
-      boxSizing: 'border-box' 
+      boxSizing: 'border-box',
+      fontFamily: tableTheme.typography.fontFamily,
     }}>
+      {/* Apply unified table styles */}
+      <style>{agGridStyles}</style>
       {/* <span>MtableComponent count {count}</span>
       <br /> */}
       {/* <span>{props.type}</span>
@@ -902,31 +962,11 @@ export const MTableComponent = (props: TableComponentProps) => {
             <>
               {/* Global Clear All Filters Icon */}
               {hasAnyFilter && (
-                <div
-                  style={{
-                    marginBottom: "8px",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "8px",
-                    fontSize: "14px",
-                  }}
-                >
+                <div style={filterToolbarStyles.container}>
                   <span
                     className="mtable-global-clear-filters"
                     onClick={handleGlobalClearAllFilters}
-                    style={{
-                      color: "#ff8c00",
-                      cursor: "pointer",
-                      fontWeight: "bold",
-                      fontSize: "16px",
-                      padding: "4px 8px",
-                      border: "1px solid #ff8c00",
-                      borderRadius: "4px",
-                      backgroundColor: "#fff8f0",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "4px",
-                    }}
+                    style={filterToolbarStyles.clearAllButton}
                     title="Clear all filters"
                   >
                     ▼ Clear All Filters
@@ -938,80 +978,23 @@ export const MTableComponent = (props: TableComponentProps) => {
                 className="ag-theme-alpine"
                 style={{
                   ...(tableComponentRows.tableComponentRowUuidIndexSchema.length > 50
-                    ? { ...props.styles, height: "50vh" }
-                    : props.styles),
+                    ? { 
+                        ...props.styles, 
+                        height: "50vh", 
+                        maxHeight: tableTheme.components.table.maxHeight 
+                      }
+                    : {
+                        ...props.styles,
+                        minHeight: tableTheme.components.table.minHeight
+                      }),
                   width: '100%',
                   maxWidth: '100%',
                   overflow: 'hidden',
                   boxSizing: 'border-box',
+                  borderRadius: tableTheme.components.table.borderRadius,
+                  border: tableTheme.components.table.border,
                 }}
               >
-                {/* Custom CSS for orange filter icons */}
-                <style>{`
-                  /* Hide filter icons by default, show orange when filtered */
-                  #tata .ag-header-icon.ag-filter-icon {
-                    display: none !important;
-                  }
-                  
-                  #tata .ag-header-cell-filtered .ag-header-icon.ag-filter-icon,
-                  #tata .ag-header-cell-filtered .ag-icon-filter,
-                  #tata .ag-header-cell-filtered .ag-icon-menu {
-                    display: inline-block !important;
-                    color: #ff8c00 !important;
-                    fill: #ff8c00 !important;
-                    cursor: pointer !important;
-                    opacity: 1 !important;
-                    visibility: visible !important;
-                    z-index: 1000 !important;
-                    position: relative !important;
-                  }
-                  
-                  /* Target SVG elements */
-                  #tata .ag-header-cell-filtered .ag-header-icon.ag-filter-icon svg,
-                  #tata .ag-header-cell-filtered .ag-header-icon.ag-filter-icon svg path,
-                  #tata .ag-header-cell-filtered .ag-header-icon.ag-filter-icon path,
-                  #tata .ag-header-cell-filtered .ag-header-icon.ag-filter-icon:before,
-                  #tata .ag-header-cell-filtered .ag-header-icon.ag-filter-icon:after {
-                    fill: #ff8c00 !important;
-                    stroke: #ff8c00 !important;
-                    color: #ff8c00 !important;
-                    background-color: #ff8c00 !important;
-                    border-color: #ff8c00 !important;
-                  }
-                  
-                  /* Prevent overflow and ensure proper width constraints */
-                  #tata {
-                    width: 100% !important;
-                    max-width: 100% !important;
-                    overflow: hidden !important;
-                    box-sizing: border-box !important;
-                  }
-                  
-                  #tata .ag-root-wrapper {
-                    width: 100% !important;
-                    max-width: 100% !important;
-                    overflow: hidden !important;
-                  }
-                  
-                  #tata .ag-root {
-                    width: 100% !important;
-                    max-width: 100% !important;
-                    overflow: hidden !important;
-                  }
-                  
-                  #tata .ag-header {
-                    width: 100% !important;
-                    max-width: 100% !important;
-                    overflow: hidden !important;
-                  }
-                  
-                  #tata .ag-body-viewport {
-                    width: 100% !important;
-                    max-width: 100% !important;
-                    overflow-x: auto !important;
-                    overflow-y: auto !important;
-                  }
-                `}</style>
                 <AgGridReact
                   domLayout={
                     tableComponentRows.tableComponentRowUuidIndexSchema.length > 50
@@ -1042,12 +1025,20 @@ export const MTableComponent = (props: TableComponentProps) => {
             <GlideDataGridComponent
               tableComponentRows={tableComponentRows}
               columnDefs={props.columnDefs}
-              styles={props.styles}
+              styles={{
+                ...props.styles,
+                fontFamily: tableTheme.typography.fontFamily,
+                fontSize: tableTheme.typography.fontSize,
+                borderRadius: tableTheme.components.table.borderRadius,
+                border: tableTheme.components.table.border,
+              }}
               type={props.type}
               currentEntityDefinition={props.type === 'EntityInstance' ? (props as any).currentEntityDefinition : undefined}
               calculatedColumnWidths={calculatedColumnWidths}
               toolsColumnDefinition={toolsColumnDefinition}
               maxRows={props.maxRows}
+              theme={tableTheme}
+              glideTheme={glideTheme}
               onCellClicked={onGlideGridCellClicked}
               onCellEdited={(cell, newValue) => {
                 // Handle cell edit for Glide Data Grid
@@ -1062,34 +1053,17 @@ export const MTableComponent = (props: TableComponentProps) => {
         </div>
       ) : (
         // <div className="ag-theme-alpine" style={{height: 200, width: 200}}>
-        <div className="ag-theme-alpine">
+        <div className="ag-theme-alpine" style={{
+          borderRadius: tableTheme.components.table.borderRadius,
+          border: tableTheme.components.table.border,
+        }}>
           {/* Global Clear All Filters Icon */}
           {hasAnyFilter && (
-            <div
-              style={{
-                marginBottom: "8px",
-                display: "flex",
-                alignItems: "center",
-                gap: "8px",
-                fontSize: "14px",
-              }}
-            >
+            <div style={filterToolbarStyles.container}>
               <span
                 className="mtable-global-clear-filters"
                 onClick={handleGlobalClearAllFilters}
-                style={{
-                  color: "#ff8c00",
-                  cursor: "pointer",
-                  fontWeight: "bold",
-                  fontSize: "16px",
-                  padding: "4px 8px",
-                  border: "1px solid #ff8c00",
-                  borderRadius: "4px",
-                  backgroundColor: "#fff8f0",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "4px",
-                }}
+                style={filterToolbarStyles.clearAllButton}
                 title="Clear all filters"
               >
                 ▼ Clear All Filters
