@@ -20,45 +20,44 @@ export const EntityInstanceCellRenderer =  memo((props: ICellRendererParams<Tabl
   
   const attributeName: string = props.colDef?.field??"unknown attribute name";
   if (isFK && !props.data?.foreignKeyObjects) {
-    throw new Error("EntityInstanceCellRenderer no foreign key objects found for attribute '" + attributeName + "'"); 
+    log.warn("EntityInstanceCellRenderer: no foreign key objects found for attribute '" + attributeName + "'");
+    return <span>No foreign key data</span>;
   }
   if (isFK && !props.data?.foreignKeyObjects[entityUuid]) {
-    throw new Error(
-      "EntityInstanceCellRenderer no foreign key objects found for attribute '" +
-        attributeName +
-        "' entity uuid " +
-        entityUuid +
-        " foreign key entities " +
-        // Object.keys(props.data?.foreignKeyObjects??{})
-        JSON.stringify(props.data?.foreignKeyObjects??{}) +
-        " entity definition " + 
-        JSON.stringify(props.colDef?.cellRendererParams.entityDefinition, null, 2) +
-        " deploymentUuid " + props.data?.deploymentUuid
-    ); 
+    log.warn(
+      "EntityInstanceCellRenderer: no foreign key objects found for entity",
+      "attribute", attributeName,
+      "entity uuid", entityUuid,
+      "available foreign key entities", Object.keys(props.data?.foreignKeyObjects??{}),
+      "entity definition", props.colDef?.cellRendererParams.entityDefinition,
+      "deploymentUuid", props.data?.deploymentUuid
+    );
+    return <span>Foreign key entity not found</span>;
   }
   
   if (isFK && !(props.data?.rawValue as any)[attributeName]) {
-    throw new Error(
-      "EntityInstanceCellRenderer no foreign key uuid found for attribute '" +
-        attributeName +
-        "' on raw value " +
-        JSON.stringify(props.data?.rawValue) +
-        " deploymentUuid " + props.data?.deploymentUuid
-    ); 
+    // Handle case where foreign key attribute doesn't exist on this entity
+    // This can happen when a column is configured for an attribute that doesn't exist on the current entity
+    log.warn(
+      "EntityInstanceCellRenderer: foreign key attribute '" + attributeName + "' not found on entity",
+      "raw value", props.data?.rawValue,
+      "deploymentUuid", props.data?.deploymentUuid
+    );
+    return <span>N/A</span>;
   }
 
   if (isFK && !props.data?.foreignKeyObjects[entityUuid][(props.data?.rawValue as any)[attributeName]]) {
-    throw new Error(
-      "EntityInstanceCellRenderer no foreign key object found for attribute " +
-        attributeName +
-        " on raw value " +
-        JSON.stringify(props.data?.rawValue) +
-        " target entity uuid " + entityUuid + 
-        " target object uuid " + (props.data?.rawValue as any)[attributeName] +
-        " deploymentUuid " + props.data?.deploymentUuid +
-        " foreign key instances " +
-        Object.keys(props.data?.foreignKeyObjects[entityUuid]??{})
-    ); 
+    // Handle case where foreign key object is not found
+    // This can happen when the foreign key entity hasn't been fetched or doesn't exist
+    log.warn(
+      "EntityInstanceCellRenderer: foreign key object not found for attribute " + attributeName,
+      "raw value", props.data?.rawValue,
+      "target entity uuid", entityUuid,
+      "target object uuid", (props.data?.rawValue as any)[attributeName],
+      "deploymentUuid", props.data?.deploymentUuid,
+      "available foreign key instances", Object.keys(props.data?.foreignKeyObjects[entityUuid]??{})
+    );
+    return <span>Not found</span>;
   }
 
   const instanceToDisplay2 = isFK?props.data?.foreignKeyObjects[entityUuid][(props.data?.rawValue as any)[attributeName]]:props.data?.rawValue

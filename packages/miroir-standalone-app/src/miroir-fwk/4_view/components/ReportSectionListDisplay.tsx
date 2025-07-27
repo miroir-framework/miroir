@@ -44,6 +44,7 @@ import { getMemoizedDeploymentEntityStateSelectorForTemplateMap } from "miroir-l
 
 import AddBox from "@mui/icons-material/AddBox";
 import { packageName } from "../../../constants.js";
+import { deleteCascade } from "../scripts.js";
 import {
   useDomainControllerService,
   useMiroirContextInnerFormOutput,
@@ -52,7 +53,6 @@ import {
 import { useCurrentModel, useDeploymentEntityStateQuerySelectorForCleanedResult } from "../ReduxHooks.js";
 import { cleanLevel } from "../constants.js";
 import { getColumnDefinitionsFromEntityDefinitionJzodObjectSchema } from "../getColumnDefinitionsFromEntityAttributes.js";
-import { deleteCascade } from "../scripts.js";
 import { JsonObjectEditFormDialog, JsonObjectEditFormDialogInputs } from "./JsonObjectEditFormDialog.js";
 import { noValue } from "./JzodElementEditorInterface.js";
 import { MTableComponent } from "./MTableComponent.js";
@@ -260,15 +260,16 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   // const currentApplicationSection = (props.section?.definition as any)["applicationSection"]??"data";
   const currentApplicationSection = props.chosenApplicationSection??"data";
 
-  const instancesToDisplayJzodSchema: JzodObject | undefined = useMemo(()=>
-    props.fetchedDataJzodSchema &&
-    props.section.type == "objectListReportSection" &&
-    props.section.definition.fetchedDataReference &&
-    props.fetchedDataJzodSchema[props.section.definition.fetchedDataReference]
-      ? props.fetchedDataJzodSchema[props.section.definition.fetchedDataReference]
-      : currentReportTargetEntityDefinition?.jzodSchema
-    ,[props, props.fetchedDataJzodSchema, props.section.type, props.section.definition.fetchedDataReference]
-  )
+  const instancesToDisplayJzodSchema: JzodObject | undefined = useMemo(
+    () =>
+      props.fetchedDataJzodSchema &&
+      props.section.type == "objectListReportSection" &&
+      props.section.definition.fetchedDataReference &&
+      props.fetchedDataJzodSchema[props.section.definition.fetchedDataReference]
+        ? props.fetchedDataJzodSchema[props.section.definition.fetchedDataReference]
+        : currentReportTargetEntityDefinition?.jzodSchema,
+    [props.fetchedDataJzodSchema, props.section, currentReportTargetEntityDefinition?.jzodSchema]
+  );
 
   const instancesToDisplayViewAttributes: string[] | undefined = useMemo(()=>
     currentReportTargetEntityDefinition?.viewAttributes
@@ -284,7 +285,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
         currentReportTargetEntityDefinition
       ),
     }),
-    [instancesToDisplayJzodSchema, instancesToDisplayViewAttributes, currentReportTargetEntityDefinition]
+    [props.deploymentUuid, instancesToDisplayJzodSchema, instancesToDisplayViewAttributes, currentReportTargetEntityDefinition]
   );
   // log.info(
   //   "ReportSectionListDisplay rendering",
@@ -306,18 +307,61 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   // );
 
   const foreignKeyObjectsAttributeDefinition:[string, JzodElement][] = useMemo(
-    ()=>  Object.entries(
-        props.tableComponentReportType == TableComponentTypeSchema.enum.EntityInstance
-          ? currentReportTargetEntityDefinition?.jzodSchema.definition ?? {}
-          : {}
-      ).filter((e) => e[1].tag?.value?.targetEntity)
-    ,
+    ()=> {
+      if (props.tableComponentReportType !== TableComponentTypeSchema.enum.EntityInstance) {
+        return [];
+      }
+
+      const mainEntityDefinition = currentReportTargetEntityDefinition?.jzodSchema.definition ?? {};
+      const result: [string, JzodElement][] = [];
+      const allForeignKeyEntities = new Set<string>();
+      const processedEntities = new Set<string>();
+      
+      // First, add all direct foreign key attributes from the main entity
+      Object.entries(mainEntityDefinition).forEach(([attributeName, schema]: [string, any]) => {
+        if (schema.tag?.value?.targetEntity) {
+          result.push([attributeName, schema]);
+          allForeignKeyEntities.add(schema.tag.value.targetEntity);
+        }
+      });
+      
+      // Recursive function to find additional foreign key entities that need to be fetched
+      const findAdditionalForeignKeyEntities = (entityUuid: string) => {
+        if (processedEntities.has(entityUuid)) {
+          return;
+        }
+        processedEntities.add(entityUuid);
+        
+        const entityDef = entityDefinitions.find(e => e.entityUuid === entityUuid);
+        if (entityDef) {
+          Object.entries(entityDef.jzodSchema.definition).forEach(([nestedAttributeName, schema]: [string, any]) => {
+            if (schema.tag?.value?.targetEntity && !allForeignKeyEntities.has(schema.tag.value.targetEntity)) {
+              // Add a synthetic entry for the foreign key entity that needs to be fetched
+              // but is not a direct attribute of the main entity
+              const syntheticKey = `__fk_${schema.tag.value.targetEntity}`;
+              result.push([syntheticKey, schema]);
+              allForeignKeyEntities.add(schema.tag.value.targetEntity);
+              
+              // Recursively find foreign keys of this entity
+              findAdditionalForeignKeyEntities(schema.tag.value.targetEntity);
+            }
+          });
+        }
+      };
+      
+      // Find all nested foreign key entities starting from the direct foreign key entities
+      const directForeignKeyEntities = Array.from(allForeignKeyEntities);
+      directForeignKeyEntities.forEach(entityUuid => {
+        findAdditionalForeignKeyEntities(entityUuid);
+      });
+      
+      return result;
+    },
     [
-      deploymentEntityStateSelectorMap,
-      props.deploymentUuid,
-      props.paramsAsdomainElements,
-      currentReportTargetEntityDefinition,
+      currentReportTargetEntityDefinition?.jzodSchema.definition,
+      currentReportTargetEntityDefinition?.entityUuid,
       props.tableComponentReportType,
+      entityDefinitions,
     ]
   );
 
@@ -381,11 +425,10 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
       )
     },
     [
-      deploymentEntityStateSelectorMap,
+      foreignKeyObjectsAttributeDefinition,
       props.deploymentUuid,
       props.paramsAsdomainElements,
-      currentReportTargetEntityDefinition,
-      props.tableComponentReportType,
+      deploymentEntityStateSelectorMap,
     ]
   );
   // log.info(
@@ -402,7 +445,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
     foreignKeyObjectsFetchQueryParams
   );
 
-  // log.info("ReportSectionListDisplay foreignKeyObjects", foreignKeyObjects);
+  // log.info("ReportSectionListDisplay foreignKeyObjects", Object.keys(foreignKeyObjects), foreignKeyObjects);
 
   // log.info(
   //   "foreignKeyObjectsAttributeDefinition",
@@ -488,7 +531,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
         throw new Error('ReportComponent onSubmitOuterDialog props.displayedDeploymentDefinition is undefined.')
       }
     },
-    []
+    [domainController, props.displayedDeploymentDefinition, props.chosenApplicationSection, props.tableComponentReportType, currentApplicationSection, currentModel]
   )
 
   // ##############################################################################################
@@ -549,7 +592,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
         throw new Error('ReportComponent onSubmitOuterDialog props.displayedDeploymentDefinition is undefined.')
       }
     },
-    [domainController, props.displayedDeploymentDefinition, props.chosenApplicationSection]
+    [domainController, props.displayedDeploymentDefinition, props.chosenApplicationSection, props.tableComponentReportType, currentModel]
   )
 
 
@@ -625,7 +668,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
       //   throw new Error('ReportComponent onSubmitOuterDialog props.displayedDeploymentDefinition is undefined.')
       }
     },
-    [domainController, props]
+    [domainController, props.displayedDeploymentDefinition, props.chosenApplicationSection, currentReportTargetEntityDefinition, currentModel]
   )
 
   
@@ -641,7 +684,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
     props.domainElementObject[props.section.definition.fetchedDataReference]
       ? props.domainElementObject[props.section.definition.fetchedDataReference] as any as EntityInstancesUuidIndex
       : {}
-    ,[props.domainElementObject,]
+    ,[props.domainElementObject, props.section?.definition.fetchedDataReference]
   );
 
   const defaultFormValuesObject = useMemo(
@@ -651,7 +694,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
       [],
       currentReportTargetEntity,
       props.displayedDeploymentDefinition
-    ):undefined, [currentReportTargetEntity, currentReportTargetEntityDefinition]
+    ):undefined, [currentReportTargetEntity, currentReportTargetEntityDefinition, props.tableComponentReportType, props.displayedDeploymentDefinition]
   )
   // log.info("calling JsonObjectEditFormDialog with defaultFormValuesObject", defaultFormValuesObject)
 
@@ -671,7 +714,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
         
       // }
     },
-    []
+    [setAddObjectdialogFormIsOpen]
   )
 
   // ##############################################################################################
@@ -688,7 +731,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
     setAddObjectdialogFormIsOpen(true);
     // reset(props.defaultFormValuesObject);
     setdialogOuterFormObject(a);
-  },[props]);
+  },[defaultFormValuesObject, setAddObjectdialogFormIsOpen, setdialogOuterFormObject]);
 
   // ##############################################################################################
   const handleAddObjectDialogTableRowFormClose = useCallback((value?: string, event?:any) => {
@@ -696,7 +739,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
     log.info('ReportComponent handleDialogTableRowFormClose',value);
     
     setAddObjectdialogFormIsOpen(false);
-  },[]);
+  },[setAddObjectdialogFormIsOpen]);
 
 
   // log.info("instancesToDisplay",instancesToDisplay);

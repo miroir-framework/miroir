@@ -312,6 +312,18 @@ export const MTableComponent = (props: TableComponentProps) => {
     filter: true,
     resizable: true,
     cellEditor: EntityEditor,
+    // Disable floating filter to save space - filters are still accessible via column menu
+    floatingFilter: false,
+    // Set minimum width for better column sizing
+    minWidth: 100,
+    // Enable flexible filter options
+    filterParams: {
+      filterOptions: ['contains', 'startsWith', 'endsWith', 'equals', 'notEqual'],
+      defaultOption: 'contains',
+      suppressAndOrCondition: false,
+      trimInput: true,
+      debounceMs: 300,
+    }
   }),[]);
 
 
@@ -321,7 +333,10 @@ export const MTableComponent = (props: TableComponentProps) => {
       {
         field: '',
         cellRenderer: ToolsCellRenderer,
-        editable:false,
+        editable: false,
+        sortable: false,
+        filter: false,
+        resizable: false,
         width: 180,
         cellRendererParams: {
           onClickEdit:handleEditDialogFormOpen,
@@ -329,7 +344,42 @@ export const MTableComponent = (props: TableComponentProps) => {
           onClickDelete:handleDeleteDialogFormOpen
         },
       }
-    ].concat(props.columnDefs.columnDefs);
+    ].concat(
+      // Transform the column definitions to work with the nested data structure
+      props.columnDefs.columnDefs.map((colDef: any) => ({
+        ...colDef,
+        // Add value getter to access the correct data path
+        valueGetter: (params: any) => {
+          if (!params.data || !colDef.field) return '';
+          // First try displayedValue (for formatted data), then fallback to rawValue
+          return params.data.displayedValue?.[colDef.field] ?? params.data.rawValue?.[colDef.field] ?? '';
+        },
+        // Add value setter for editable cells
+        valueSetter: (params: any) => {
+          if (!params.data || !colDef.field) return false;
+          // Update both displayedValue and rawValue
+          if (params.data.displayedValue) {
+            params.data.displayedValue[colDef.field] = params.newValue;
+          }
+          if (params.data.rawValue) {
+            params.data.rawValue[colDef.field] = params.newValue;
+          }
+          return true;
+        },
+        // Override filter value getter to ensure filtering works on the correct data
+        filterValueGetter: (params: any) => {
+          if (!params.data || !colDef.field) return '';
+          return params.data.displayedValue?.[colDef.field] ?? params.data.rawValue?.[colDef.field] ?? '';
+        },
+        // Enable specific filter types based on data type
+        filter: true,
+        filterParams: {
+          filterOptions: ['contains', 'startsWith', 'endsWith', 'equals', 'notEqual'],
+          defaultOption: 'contains',
+          suppressAndOrCondition: false,
+        }
+      }))
+    );
 
     // Apply adaptive widths if we have row data
     if (tableComponentRows.tableComponentRowUuidIndexSchema.length > 0) {
@@ -608,13 +658,18 @@ export const MTableComponent = (props: TableComponentProps) => {
                   domLayout={tableComponentRows.tableComponentRowUuidIndexSchema.length > 50 ? "normal" : "autoHeight"}
                   columnDefs={columnDefs}
                   rowData={tableComponentRows.tableComponentRowUuidIndexSchema}
-                  // getRowId={(params) => {
-                  //   // log.info("MtableComponent getRowId", params);
-                  //   return params.data?.rawValue?.uuid ? params.data?.rawValue?.uuid : params.data?.rawValue?.id;
-                  // }}
+                  getRowId={(params) => {
+                    // Use the entity instance UUID for row identification
+                    return params.data?.rawValue?.uuid ? params.data?.rawValue?.uuid : params.data?.rawValue?.id || Math.random().toString();
+                  }}
                   defaultColDef={defaultColDef}
                   onCellClicked={onCellClicked}
                   onCellValueChanged={onCellValueChanged}
+                  // Enable advanced filtering and sorting features
+                  enableRangeSelection={true}
+                  enableCellTextSelection={true}
+                  suppressRowClickSelection={true}
+                  animateRows={true}
                   //
                   // onCellEditingStarted={onCellEditingStarted}
                   // onCellEditingStopped={onCellEditingStopped}
