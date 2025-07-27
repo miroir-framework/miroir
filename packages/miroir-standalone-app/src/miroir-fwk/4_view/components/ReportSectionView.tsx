@@ -38,9 +38,9 @@ export interface ReportSectionViewProps {
   paramsAsdomainElements: Domain2QueryReturnType<Record<string,any>>,
   reportSection: ReportSection,
   rootReport: RootReport,
-  // Note: Outline props removed since using context now
   isOutlineOpen?: boolean,
   onToggleOutline?: () => void,
+  showPerformanceDisplay?: boolean;
 }
 
 // ###############################################################################################################
@@ -82,7 +82,7 @@ const interpolateExpression = (
 // ###############################################################################################################
 export const ReportSectionView = (props: ReportSectionViewProps) => {
   const context = useMiroirContextService();
-  // const errorLog = useErrorLogService();
+  const showPerformanceDisplay = context.showPerformanceDisplay;
 
   // Track render counts with centralized tracker (using report section since RootReport doesn't have uuid)
   const currentNavigationKey = `${props.deploymentUuid}-${props.applicationSection}-${JSON.stringify(props.reportSection)}`;
@@ -147,14 +147,16 @@ export const ReportSectionView = (props: ReportSectionViewProps) => {
   if (props.applicationSection) {
     return (
       <div>
-        <div style={{ fontSize: '12px', color: '#666', padding: '2px' }}>
-          ReportSectionView renders: {navigationCount} (total: {totalCount})
-        </div>
-        {/* params:{JSON.stringify(params)}
-        <p /> */}
-        {/* <p>ReportSection</p> */}
         {props.applicationSection && props.reportSection ? (
           <div>
+            {showPerformanceDisplay && (
+              <div style={{ fontSize: '12px', color: '#666', padding: '2px' }}>
+                ReportSectionView renders: {navigationCount} (total: {totalCount})
+              </div>
+            )}
+            {/* params:{JSON.stringify(params)}
+            <p /> */}
+            {/* <p>ReportSection</p> */}
             {props.reportSection?.type === "grid" ? (
               <div>
                 <table>

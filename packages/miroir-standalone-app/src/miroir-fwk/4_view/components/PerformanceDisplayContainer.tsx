@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
 import { RenderPerformanceMetrics } from '../tools/renderPerformanceMeasure.js';
+import { useMiroirContextService } from '../MiroirContextReactProvider.js';
 
 // Separate component to manage performance display state independently
 export const PerformanceDisplayContainer = () => {
+  const context = useMiroirContextService();
   const [updateTrigger, setUpdateTrigger] = useState(0);
 
   useEffect(() => {
@@ -21,12 +23,8 @@ export const PerformanceDisplayContainer = () => {
     };
   }, []);
 
-  // Only render if we have metrics to display and there are performance issues
-  const hasSignificantPerformanceIssues = Object.values(RenderPerformanceMetrics.renderMetrics).some(
-    metrics => metrics.averageRenderTime > 10 || metrics.maxRenderTime > 50
-  );
-
-  if (Object.keys(RenderPerformanceMetrics.renderMetrics).length === 0 || !hasSignificantPerformanceIssues) {
+  // Only render if performance display is enabled and we have metrics
+  if (!context.showPerformanceDisplay || Object.keys(RenderPerformanceMetrics.renderMetrics).length === 0) {
     return null;
   }
 

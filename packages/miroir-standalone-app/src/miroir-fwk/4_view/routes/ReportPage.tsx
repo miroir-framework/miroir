@@ -62,11 +62,9 @@ export const ReportPage = () => {
   const context = useMiroirContextService();
   
   // Track render counts with centralized tracker
-  const currentNavigationKey = `${pageParams.deploymentUuid}-${pageParams.applicationSection}-${pageParams.reportUuid}-${pageParams.instanceUuid}`;
+  // Use report-level key (without instanceUuid) to maintain consistency across instance navigation
+  const currentNavigationKey = `${pageParams.deploymentUuid}-${pageParams.applicationSection}-${pageParams.reportUuid}`;
   const { navigationCount, totalCount } = useRenderTracker("ReportPage", currentNavigationKey);
-  
-  // State to control performance display visibility (off by default)
-  const [showPerformanceDisplay, setShowPerformanceDisplay] = useState(false);
 
   // Get outline context from RootComponent
   const outlineContext = useDocumentOutlineContext();
@@ -165,19 +163,18 @@ export const ReportPage = () => {
   );
 
   useEffect(() => {
-    // Only reset metrics if we're navigating to a different report
-    // This preserves metrics for the current page
-    const currentKey = `${pageParams.deploymentUuid}-${pageParams.applicationSection}-${pageParams.reportUuid}-${pageParams.instanceUuid}`;
+    // Only reset metrics if we're navigating to a different report or deployment
+    // Don't reset when just changing instanceUuid (drilling down into an instance)
+    const currentReportKey = `${pageParams.deploymentUuid}-${pageParams.applicationSection}-${pageParams.reportUuid}`;
     
-    // Store the current key to compare with previous
-    const previousKey = sessionStorage.getItem('currentReportKey');
-    if (previousKey && previousKey !== currentKey) {
+    // Store the current report key to compare with previous (excluding instanceUuid)
+    const previousReportKey = sessionStorage.getItem('currentReportKey');
+    if (previousReportKey && previousReportKey !== currentReportKey) {
       RenderPerformanceMetrics.resetMetrics();
-      log.info("RenderPerformanceMetrics reset for new report");
+      log.info("RenderPerformanceMetrics reset for new report/deployment");
     }
-    sessionStorage.setItem('currentReportKey', currentKey);
+    sessionStorage.setItem('currentReportKey', currentReportKey);
   }, [
-    pageParams.instanceUuid,
     pageParams.reportUuid,
     pageParams.deploymentUuid,
     pageParams.applicationSection,
@@ -214,19 +211,11 @@ export const ReportPage = () => {
       <Box sx={{ display: 'flex', flexDirection: 'column', padding: 2 }}>
         {/* Page Header */}
         <Box sx={{ flexShrink: 0, marginBottom: 2 }}>
-          <span>ReportPage renders: {navigationCount} (total: {totalCount})</span>
+          {context.showPerformanceDisplay && (
+            <span>ReportPage renders: {navigationCount} (total: {totalCount})</span>
+          )}
           <div>
             <h3>erreurs: {JSON.stringify(errorLog)}</h3>
-          </div>
-          <div style={{ marginBottom: '10px' }}>
-            <label style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <input
-                type="checkbox"
-                checked={showPerformanceDisplay}
-                onChange={(e) => setShowPerformanceDisplay(e.target.checked)}
-              />
-              Show Performance Metrics
-            </label>
           </div>
         </Box>
         
@@ -249,7 +238,7 @@ export const ReportPage = () => {
                   pageParams={pageParams}
                   reportDefinition={currentMiroirReport?.definition}
                 />
-                {showPerformanceDisplay && <PerformanceDisplayContainer />}
+                {context.showPerformanceDisplay && <PerformanceDisplayContainer />}
               </>
             ) : (
               <span style={{ color: "red", padding: '16px' }}>

@@ -26,6 +26,7 @@ import {
 import { useDeploymentEntityStateJzodSchemaSelector, useDeploymentEntityStateQuerySelector } from '../ReduxHooks.js';
 import { ReportSectionView } from './ReportSectionView.js';
 import { useDocumentOutlineContext } from './RootComponent.js';
+import { useMiroirContextService } from "../MiroirContextReactProvider.js";
 
 import {
   getMemoizedDeploymentEntityStateJzodSchemaSelectorMap,
@@ -47,6 +48,7 @@ export interface ReportViewProps {
   instanceUuid?: Uuid,
   pageParams: Params<ReportUrlParamKeys>,
   reportDefinition: RootReport,
+  showPerformanceDisplay?: boolean;
 }
 
 /**
@@ -287,6 +289,9 @@ export const ReportView = (props: ReportViewProps) => {
     }
   }, [outlineElement, outlineContext]);
 
+  const context = useMiroirContextService();
+  const showPerformanceDisplay = context.showPerformanceDisplay;
+
   if (props.applicationSection) {
     return (
       <>
@@ -297,7 +302,9 @@ export const ReportView = (props: ReportViewProps) => {
             <>
               {props.deploymentUuid ? (
                 <div>
-                  <div>ReportView renders: {navigationCount} (total: {totalCount})</div>
+                  {showPerformanceDisplay && (
+                    <div>ReportView renders: {navigationCount} (total: {totalCount})</div>
+                  )}
                   <ReportSectionView
                     queryResults={deploymentEntityStateQueryResults}
                     fetchedDataJzodSchema={fetchedDataJzodSchema}

@@ -120,6 +120,7 @@ export interface ReportSectionEntityInstanceProps {
   deploymentUuid: Uuid,
   entityUuid: Uuid,
   // Note: Outline props removed since using context now
+  showPerformanceDisplay?: boolean;
 }
 
 const codeMirrorExtensions = [javascript()];
@@ -132,6 +133,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   
   const errorLog = useErrorLogService();
   const context = useMiroirContextService();
+  const showPerformanceDisplay = context.showPerformanceDisplay;
 
   // Track render counts with centralized tracker
   const navigationKey = `${props.deploymentUuid}-${props.applicationSection}-${props.entityUuid}-${props.instance?.uuid || 'no-instance'}`;
@@ -326,7 +328,9 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
         <div>
           {/* <RenderPerformanceDisplay componentKey={componentKey} indentLevel={0} /> */}
 
-          <p>ReportSectionEntityInstance renders: {navigationCount} (total: {totalCount})</p>
+          {showPerformanceDisplay && (
+            <p>ReportSectionEntityInstance renders: {navigationCount} (total: {totalCount})</p>
+          )}
           <div>
             <label htmlFor="displayEditorSwitch">Display editor:</label>
             <Switch

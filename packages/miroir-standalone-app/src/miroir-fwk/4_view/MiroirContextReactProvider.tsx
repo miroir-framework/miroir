@@ -51,6 +51,8 @@ export interface MiroirReactContext {
   miroirFundamentalJzodSchema: JzodSchema | undefined,
   setMiroirFundamentalJzodSchema: React.Dispatch<React.SetStateAction<JzodElement>>,
   viewParams: ViewParams,
+  showPerformanceDisplay: boolean,
+  setShowPerformanceDisplay: React.Dispatch<React.SetStateAction<boolean>>,
 }
 
 const miroirReactContext = createContext<MiroirReactContext>({
@@ -82,6 +84,11 @@ export function MiroirContextReactProvider(props: {
   // Create ViewParams instance to track UI state with reactive state
   const [sidebarWidth, setSidebarWidth] = useState(250);
   const [gridType, setGridType] = useState<GridType>('ag-grid');
+  const [showPerformanceDisplay, setShowPerformanceDisplay] = useState(() => {
+    // Persist showPerformanceDisplay state across navigation
+    const saved = sessionStorage.getItem('showPerformanceDisplay');
+    return saved ? JSON.parse(saved) : false;
+  });
   
   const viewParams = useMemo(() => {
     const params = new ViewParams(sidebarWidth, gridType);
@@ -117,6 +124,12 @@ export function MiroirContextReactProvider(props: {
         setMiroirFundamentalJzodSchema(a);
       },
       viewParams,
+      showPerformanceDisplay,
+      setShowPerformanceDisplay: (value: boolean | ((prev: boolean) => boolean)) => {
+        const newValue = typeof value === 'function' ? value(showPerformanceDisplay) : value;
+        setShowPerformanceDisplay(newValue);
+        sessionStorage.setItem('showPerformanceDisplay', JSON.stringify(newValue));
+      },
     }),
     [
       deploymentUuid,
@@ -130,6 +143,7 @@ export function MiroirContextReactProvider(props: {
       viewParams,
       sidebarWidth,
       gridType,
+      showPerformanceDisplay,
     ]
   );
   return <miroirReactContext.Provider value={value}>{props.children}</miroirReactContext.Provider>;

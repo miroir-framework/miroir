@@ -675,9 +675,13 @@ export const RootComponent = (props: RootComponentProps) => {
                 outlineWidth={outlineWidth}
               >
                 <p />
-                  <div>uuid: {uuidv4()}</div>
-                  <div>transactions: {JSON.stringify(transactions)}</div>
-                  <div>RootComponent renders: {navigationCount} (total: {totalCount})</div>
+                {context.showPerformanceDisplay && (
+                  <>
+                    <div>uuid: {uuidv4()}</div>
+                    <div>transactions: {JSON.stringify(transactions)}</div>
+                    <div>RootComponent renders: {navigationCount} (total: {totalCount})</div>
+                  </>
+                )}
                 <p />
                 <div>
                   <FormControl fullWidth>

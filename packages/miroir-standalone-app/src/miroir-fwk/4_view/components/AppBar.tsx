@@ -23,6 +23,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { packageName } from '../../../constants.js';
 import { cleanLevel } from '../constants.js';
 import { SidebarWidth } from './SidebarSection.js';
+import { useMiroirContextService } from '../MiroirContextReactProvider.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -143,6 +144,7 @@ export function AppBar(props:AppBarProps) {
   const theme = useTheme();
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
+  const context = useMiroirContextService();
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
@@ -300,7 +302,21 @@ export function AppBar(props:AppBarProps) {
                 </MyBox>
               )}
               
-              {/* Document Outline Toggle Button */}
+            {/* Show Performance Metrics Checkbox */}
+            {context.setShowPerformanceDisplay && (
+              <MyBox sx={{ display: "flex", alignItems: "center", mr: 2 }}>
+                <input
+                  type="checkbox"
+                  id="showPerformanceMetrics"
+                  checked={!!context.showPerformanceDisplay}
+                  onChange={e => context.setShowPerformanceDisplay?.(e.target.checked)}
+                  style={{ marginRight: 4 }}
+                />
+                <label htmlFor="showPerformanceMetrics" style={{ color: 'white', fontSize: '0.875rem', userSelect: 'none' }}>
+                  Show Performance Metrics
+                </label>
+              </MyBox>
+            )}              {/* Document Outline Toggle Button */}
               {props.onOutlineToggle && (
                 <MyTooltip title={props.outlineOpen ? "Hide Document Outline" : "Show Document Outline"}>
                   <MyIconButton 
