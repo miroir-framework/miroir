@@ -1,3 +1,5 @@
+import * as React from 'react';
+
 // Performance tracking for JzodElementEditor renders
 export interface RenderPerformanceMetricsElement {
   renderCount: number;
@@ -131,6 +133,53 @@ export class RenderPerformanceMetrics {
   static GlobalRenderPerformanceDisplay = (props: {
     renderMetrics: Record<string, RenderPerformanceMetricsElement>;
   }) => {
+    const [position, setPosition] = React.useState(() => {
+      // Load position from sessionStorage
+      const saved = sessionStorage.getItem('performanceStatsPosition');
+      return saved ? JSON.parse(saved) : { x: 10, y: 10 };
+    });
+    const [isDragging, setIsDragging] = React.useState(false);
+    const [dragStart, setDragStart] = React.useState({ x: 0, y: 0 });
+    const dragRef = React.useRef<HTMLDivElement>(null);
+
+    const handleMouseDown = React.useCallback((e: React.MouseEvent) => {
+      if (e.target === dragRef.current || (e.target as HTMLElement)?.closest('.drag-handle')) {
+        setIsDragging(true);
+        setDragStart({
+          x: e.clientX - position.x,
+          y: e.clientY - position.y
+        });
+        e.preventDefault();
+      }
+    }, [position]);
+
+    const handleMouseMove = React.useCallback((e: MouseEvent) => {
+      if (isDragging) {
+        const newPosition = {
+          x: e.clientX - dragStart.x,
+          y: e.clientY - dragStart.y
+        };
+        setPosition(newPosition);
+        // Save position to sessionStorage
+        sessionStorage.setItem('performanceStatsPosition', JSON.stringify(newPosition));
+      }
+    }, [isDragging, dragStart]);
+
+    const handleMouseUp = React.useCallback(() => {
+      setIsDragging(false);
+    }, []);
+
+    React.useEffect(() => {
+      if (isDragging) {
+        document.addEventListener('mousemove', handleMouseMove);
+        document.addEventListener('mouseup', handleMouseUp);
+        return () => {
+          document.removeEventListener('mousemove', handleMouseMove);
+          document.removeEventListener('mouseup', handleMouseUp);
+        };
+      }
+    }, [isDragging, handleMouseMove, handleMouseUp]);
+
     const totalRenders = Object.values(props.renderMetrics).reduce(
       (sum, metrics) => sum + metrics.renderCount,
       0
@@ -146,6 +195,8 @@ export class RenderPerformanceMetrics {
 
     return (
       <div
+        ref={dragRef}
+        onMouseDown={handleMouseDown}
         style={{
           fontSize: "0.7rem",
           color: "#333",
@@ -155,23 +206,31 @@ export class RenderPerformanceMetrics {
           borderRadius: "4px",
           fontFamily: "monospace",
           position: "fixed",
-          top: "10px",
-          left: "10px",
+          top: `${position.y}px`,
+          left: `${position.x}px`,
           zIndex: 9999,
           maxWidth: "500px",
           maxHeight: "80vh",
           overflow: "auto",
           boxShadow: "0 4px 8px rgba(0,0,0,0.2)",
+          cursor: isDragging ? 'grabbing' : 'grab',
+          userSelect: 'none',
         }}
       >
         <div
+          className="drag-handle"
           style={{
             fontWeight: "bold",
             borderBottom: "1px solid #ddd",
             marginBottom: "8px",
             padding: "4px 0",
+            cursor: 'grab',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px'
           }}
         >
+          <span style={{ fontSize: '12px', opacity: 0.7 }}>⋮⋮</span>
           ReportPage Performance Stats
         </div>
         <div style={{ marginBottom: "8px", padding: "4px 0", borderBottom: "1px solid #eee" }}>
