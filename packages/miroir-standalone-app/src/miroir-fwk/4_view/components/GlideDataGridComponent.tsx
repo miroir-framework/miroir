@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState, useRef, useEffect } from 'react';
 import {
   DataEditor,
   GridCell,
@@ -10,6 +10,19 @@ import {
   EditableGridCell,
 } from '@glideapps/glide-data-grid';
 import "@glideapps/glide-data-grid/dist/index.css";
+import { 
+  Popover, 
+  Box, 
+  TextField, 
+  Select, 
+  MenuItem, 
+  FormControl, 
+  InputLabel, 
+  Button,
+  IconButton,
+  Typography 
+} from '@mui/material';
+import { FilterList as FilterIcon, Clear as ClearIcon } from '@mui/icons-material';
 
 import { 
   EntityDefinition,
@@ -32,11 +45,18 @@ MiroirLoggerFactory.registerLoggerToStart(
   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "GlideDataGridComponent")
 ).then((logger: LoggerInterface) => {log = logger});
 
-// Sorting types
+// Sorting and filtering types
 type SortDirection = 'asc' | 'desc' | null;
 interface SortState {
   columnId: string;
   direction: SortDirection;
+}
+
+type FilterType = 'contains' | 'startsWith' | 'endsWith' | 'equals' | 'notEqual';
+interface FilterState {
+  columnId: string | null;
+  type: FilterType;
+  value: string;
 }
 
 interface GlideDataGridComponentProps {
@@ -73,6 +93,22 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
   
   // Sorting state
   const [sortState, setSortState] = useState<SortState>({ columnId: '', direction: null });
+  
+  // Filtering state
+  const [filterState, setFilterState] = useState<FilterState>({ columnId: null, type: 'contains', value: '' });
+  
+  // Ref for the filter value input to enable focus
+  const filterValueRef = useRef<HTMLInputElement>(null);
+
+  // Focus the filter value input when a column is selected
+  useEffect(() => {
+    if (filterState.columnId && filterValueRef.current) {
+      // Small delay to ensure the input is rendered
+      setTimeout(() => {
+        filterValueRef.current?.focus();
+      }, 100);
+    }
+  }, [filterState.columnId]);
 
   // Monitor container width changes
   React.useEffect(() => {
@@ -96,10 +132,13 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
     // Find the corresponding column definition
     const dataColumnIndex = columnIndex - 1; // Subtract 1 because tools column is at index 0
     const colDef = columnDefs.columnDefs[dataColumnIndex];
-    if (!colDef || colDef.sortable === false) return; // Skip if sorting is disabled
+    if (!colDef) return;
     
     const columnId = colDef.field;
     if (!columnId) return;
+    
+    // Handle sorting
+    if (colDef.sortable === false) return; // Skip if sorting is disabled
     
     setSortState(prevState => {
       if (prevState.columnId === columnId) {
@@ -115,19 +154,69 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
     });
   }, [columnDefs]);
 
-  // Sort the data based on current sort state
-  const sortedTableRows = useMemo(() => {
-    if (!sortState.direction || !sortState.columnId) {
-      return tableComponentRows.tableComponentRowUuidIndexSchema;
+  // Helper function to get the filter value for a column, handling foreign keys correctly
+  const getFilterValue = useCallback((row: any, columnField: string): string => {
+    const columnDef = columnDefs.columnDefs.find((colDef: any) => colDef.field === columnField);
+    
+    if (!columnDef || !row) return '';
+    
+    // Check if this is a foreign key column
+    const isFK = columnDef?.cellRendererParams?.isFK;
+    const entityUuid = columnDef?.cellRendererParams?.entityUuid;
+    
+    if (isFK && entityUuid && row.foreignKeyObjects?.[entityUuid]) {
+      // For foreign key columns, return the name of the referenced entity
+      const foreignKeyUuid = row.rawValue?.[columnField];
+      if (foreignKeyUuid && row.foreignKeyObjects[entityUuid][foreignKeyUuid]) {
+        return row.foreignKeyObjects[entityUuid][foreignKeyUuid].name || '';
+      }
+      return ''; // No foreign key object found
+    }
+    
+    // For regular columns, use displayedValue or rawValue
+    return (row.displayedValue?.[columnField] || row.rawValue?.[columnField] || '').toString();
+  }, [columnDefs]);
+
+  // Apply filtering and sorting to the data
+  const sortedAndFilteredTableRows = useMemo(() => {
+    let filteredRows = tableComponentRows.tableComponentRowUuidIndexSchema;
+
+    // Apply filtering if active
+    if (filterState.columnId && filterState.value.trim()) {
+      filteredRows = filteredRows.filter((row) => {
+        const cellValue = getFilterValue(row, filterState.columnId!);
+        const searchValue = filterState.value.toLowerCase();
+        const cellStr = cellValue.toLowerCase();
+
+        switch (filterState.type) {
+          case 'contains':
+            return cellStr.includes(searchValue);
+          case 'startsWith':
+            return cellStr.startsWith(searchValue);
+          case 'endsWith':
+            return cellStr.endsWith(searchValue);
+          case 'equals':
+            return cellStr === searchValue;
+          case 'notEqual':
+            return cellStr !== searchValue;
+          default:
+            return true;
+        }
+      });
     }
 
-    const sorted = [...tableComponentRows.tableComponentRowUuidIndexSchema].sort((a, b) => {
-      const aValue = (a.displayedValue as any)[sortState.columnId] || (a.rawValue as any)[sortState.columnId] || '';
-      const bValue = (b.displayedValue as any)[sortState.columnId] || (b.rawValue as any)[sortState.columnId] || '';
+    // Apply sorting if active
+    if (!sortState.direction || !sortState.columnId) {
+      return filteredRows;
+    }
+
+    const sorted = [...filteredRows].sort((a, b) => {
+      const aValue = getFilterValue(a, sortState.columnId);
+      const bValue = getFilterValue(b, sortState.columnId);
       
       // Convert to strings for comparison
-      const aStr = String(aValue).toLowerCase();
-      const bStr = String(bValue).toLowerCase();
+      const aStr = aValue.toLowerCase();
+      const bStr = bValue.toLowerCase();
       
       let comparison = 0;
       if (aStr < bStr) comparison = -1;
@@ -137,17 +226,17 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
     });
 
     return sorted;
-  }, [tableComponentRows, sortState]);
+  }, [tableComponentRows, sortState, filterState, getFilterValue]);
 
   // Calculate height based on data
   const height = useMemo(() => {
-    const rowCount = sortedTableRows.length;
+    const rowCount = sortedAndFilteredTableRows.length;
     if (rowCount > 50) {
       return Math.min(window.innerHeight * 0.5, 600); // 50vh but max 600px
     } else {
       return Math.min(rowCount * 34 + 36, 400); // Auto height with max
     }
-  }, [sortedTableRows.length]);
+  }, [sortedAndFilteredTableRows.length]);
 
   // Convert columnDefs to Glide format
   const glideColumns: GridColumn[] = useMemo(() => {
@@ -209,11 +298,18 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
       if (colDef.field) {
         const widthSpec = widthSpecs.find((spec) => spec.field === colDef.field);
         
-        // Add sorting indicator to title if this column is being sorted
+        // Add sorting and filtering indicators to title
         let title = colDef.headerName || colDef.field;
+        
+        // Add sorting indicator
         if (sortState.columnId === colDef.field && sortState.direction) {
           const arrow = sortState.direction === 'asc' ? ' ↑' : ' ↓';
           title = title + arrow;
+        }
+        
+        // Add filter indicator
+        if (filterState.columnId === colDef.field && filterState.value.trim()) {
+          title = title + ' 🔍';
         }
         
         columns.push({
@@ -235,12 +331,13 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
     height,
     toolsColumnDefinition,
     sortState,
+    filterState,
   ]);
 
   // Get cell content
   const getCellContent = useCallback(
     ([col, row]: Item): GridCell => {
-      const rowData = sortedTableRows[row];
+      const rowData = sortedAndFilteredTableRows[row];
       const colData = glideColumns[col];
 
       if (!rowData || !colData) {
@@ -357,14 +454,14 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
         };
       }
     },
-    [sortedTableRows, glideColumns, columnDefs, onRowEdit, onRowDuplicate, onRowDelete, toolsColumnDefinition]
+    [sortedAndFilteredTableRows, glideColumns, columnDefs, onRowEdit, onRowDuplicate, onRowDelete, toolsColumnDefinition]
   );
 
   // Handle cell clicks
   const handleCellClicked = useCallback(
     (cell: Item, event: CellClickedEventArgs) => {
       const [col, row] = cell;
-      const rowData = sortedTableRows[row];
+      const rowData = sortedAndFilteredTableRows[row];
       const colData = glideColumns[col];
       
       // Handle tools column clicks - these should be handled by the custom cell renderer
@@ -382,7 +479,7 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
         onCellClicked(cell, event);
       }
     },
-    [sortedTableRows, glideColumns, onCellClicked, toolsColumnDefinition]
+    [sortedAndFilteredTableRows, glideColumns, onCellClicked, toolsColumnDefinition]
   );
 
   // Handle cell edits
@@ -408,9 +505,84 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
         borderRadius: '4px',
       }}
     >
+      {/* Filter Toolbar */}
+      <Box sx={{ 
+        display: 'flex', 
+        gap: 1, 
+        alignItems: 'center', 
+        padding: 1, 
+        borderBottom: '1px solid #e0e0e0',
+        backgroundColor: '#f8f8f8',
+        minHeight: 40
+      }}>
+        <FormControl size="small" sx={{ minWidth: 120 }}>
+          <InputLabel>Filter Column</InputLabel>
+          <Select
+            value={filterState.columnId || ''}
+            label="Filter Column"
+            onChange={(e) => setFilterState(prev => ({ 
+              ...prev, 
+              columnId: e.target.value || null 
+            }))}
+          >
+            <MenuItem value="">None</MenuItem>
+            {columnDefs.columnDefs
+              .filter((colDef: any) => colDef.filter !== false)
+              .map((colDef: any) => (
+                <MenuItem key={colDef.field} value={colDef.field}>
+                  {colDef.headerName || colDef.field}
+                </MenuItem>
+              ))
+            }
+          </Select>
+        </FormControl>
+        
+        {filterState.columnId && (
+          <>
+            <FormControl size="small" sx={{ minWidth: 100 }}>
+              <InputLabel>Type</InputLabel>
+              <Select
+                value={filterState.type}
+                label="Type"
+                onChange={(e) => setFilterState(prev => ({ 
+                  ...prev, 
+                  type: e.target.value as FilterType 
+                }))}
+              >
+                <MenuItem value="contains">Contains</MenuItem>
+                <MenuItem value="startsWith">Starts With</MenuItem>
+                <MenuItem value="endsWith">Ends With</MenuItem>
+                <MenuItem value="equals">Equals</MenuItem>
+                <MenuItem value="notEqual">Not Equal</MenuItem>
+              </Select>
+            </FormControl>
+            
+            <TextField
+              inputRef={filterValueRef}
+              size="small"
+              label="Filter Value"
+              value={filterState.value}
+              onChange={(e) => setFilterState(prev => ({ 
+                ...prev, 
+                value: e.target.value 
+              }))}
+              sx={{ minWidth: 150 }}
+            />
+            
+            <IconButton
+              size="small"
+              onClick={() => setFilterState({ columnId: null, type: 'contains', value: '' })}
+              title="Clear Filter"
+            >
+              <ClearIcon />
+            </IconButton>
+          </>
+        )}
+      </Box>
+      
       <DataEditor
         columns={glideColumns}
-        rows={sortedTableRows.length}
+        rows={sortedAndFilteredTableRows.length}
         getCellContent={getCellContent}
         onCellClicked={handleCellClicked}
         onCellEdited={handleCellEdited}
