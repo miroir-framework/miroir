@@ -53,6 +53,7 @@ import {
 import { useCurrentModel, useDeploymentEntityStateQuerySelectorForCleanedResult } from "../ReduxHooks.js";
 import { cleanLevel } from "../constants.js";
 import { getColumnDefinitionsFromEntityDefinitionJzodObjectSchema } from "../getColumnDefinitionsFromEntityAttributes.js";
+import { analyzeForeignKeyAttributes, convertToLegacyFormat } from "../utils/foreignKeyAttributeAnalyzer.js";
 import { JsonObjectEditFormDialog, JsonObjectEditFormDialogInputs } from "./JsonObjectEditFormDialog.js";
 import { noValue } from "./JzodElementEditorInterface.js";
 import { MTableComponent } from "./MTableComponent.js";
@@ -312,50 +313,13 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
         return [];
       }
 
-      const mainEntityDefinition = currentReportTargetEntityDefinition?.jzodSchema.definition ?? {};
-      const result: [string, JzodElement][] = [];
-      const allForeignKeyEntities = new Set<string>();
-      const processedEntities = new Set<string>();
-      
-      // First, add all direct foreign key attributes from the main entity
-      Object.entries(mainEntityDefinition).forEach(([attributeName, schema]: [string, any]) => {
-        if (schema.tag?.value?.targetEntity) {
-          result.push([attributeName, schema]);
-          allForeignKeyEntities.add(schema.tag.value.targetEntity);
-        }
-      });
-      
-      // Recursive function to find additional foreign key entities that need to be fetched
-      const findAdditionalForeignKeyEntities = (entityUuid: string) => {
-        if (processedEntities.has(entityUuid)) {
-          return;
-        }
-        processedEntities.add(entityUuid);
-        
-        const entityDef = entityDefinitions.find(e => e.entityUuid === entityUuid);
-        if (entityDef) {
-          Object.entries(entityDef.jzodSchema.definition).forEach(([nestedAttributeName, schema]: [string, any]) => {
-            if (schema.tag?.value?.targetEntity && !allForeignKeyEntities.has(schema.tag.value.targetEntity)) {
-              // Add a synthetic entry for the foreign key entity that needs to be fetched
-              // but is not a direct attribute of the main entity
-              const syntheticKey = `__fk_${schema.tag.value.targetEntity}`;
-              result.push([syntheticKey, schema]);
-              allForeignKeyEntities.add(schema.tag.value.targetEntity);
-              
-              // Recursively find foreign keys of this entity
-              findAdditionalForeignKeyEntities(schema.tag.value.targetEntity);
-            }
-          });
-        }
-      };
-      
-      // Find all nested foreign key entities starting from the direct foreign key entities
-      const directForeignKeyEntities = Array.from(allForeignKeyEntities);
-      directForeignKeyEntities.forEach(entityUuid => {
-        findAdditionalForeignKeyEntities(entityUuid);
-      });
-      
-      return result;
+      const foreignKeyAttributes = analyzeForeignKeyAttributes(
+        currentReportTargetEntityDefinition,
+        entityDefinitions,
+        { includeTransitive: true, maxDepth: 5 }
+      );
+
+      return convertToLegacyFormat(foreignKeyAttributes);
     },
     [
       currentReportTargetEntityDefinition?.jzodSchema.definition,
