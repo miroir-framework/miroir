@@ -625,6 +625,25 @@ export const RootComponent = (props: RootComponentProps) => {
     [setSidebarWidth, updateQueue, dbSidebarWidth, defaultViewParamsFromAdminStorage]
   );
 
+  // Grid type toggle handler
+  const handleGridTypeToggle = useMemo(
+    () => () => {
+      if (defaultViewParamsFromAdminStorage && updateQueue) {
+        const currentGridType = defaultViewParamsFromAdminStorage.gridType || 'ag-grid';
+        const newGridType = currentGridType === 'ag-grid' ? 'glide-data-grid' : 'ag-grid';
+        
+        updateQueue.queueUpdate({
+          currentValue: defaultViewParamsFromAdminStorage,
+          updates: {
+            gridType: newGridType,
+          }
+        }, true); // Force immediate processing for grid type changes
+        log.info("RootComponent: Queued grid type toggle (immediate)", { from: currentGridType, to: newGridType });
+      }
+    },
+    [updateQueue, defaultViewParamsFromAdminStorage]
+  );
+
   // Cleanup the queue on unmount
   useEffect(() => {
     return () => {
@@ -652,6 +671,7 @@ export const RootComponent = (props: RootComponentProps) => {
               outlineWidth={outlineWidth}
               onOutlineToggle={handleToggleOutline}
               gridType={defaultViewParamsFromAdminStorage?.gridType || 'ag-grid'}
+              onGridTypeToggle={handleGridTypeToggle}
             >
               Bar!
             </AppBar>

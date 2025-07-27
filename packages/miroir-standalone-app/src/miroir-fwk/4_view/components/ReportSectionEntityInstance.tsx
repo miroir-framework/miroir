@@ -160,11 +160,6 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   const isOutlineOpen = outlineContext.isOutlineOpen;
   const handleToggleOutline = outlineContext.onToggleOutline;
 
-  // const [formState, setFormState] = useState<any>(props.instance);
-  // const [codeMirrorValue, setCodeMirrorValue] = useState<string>(() =>
-  //   // "\"start!\""
-  //   JSON.stringify(currentValue, null, 2)
-  // );
 
   const instance: any = props.instance;
 

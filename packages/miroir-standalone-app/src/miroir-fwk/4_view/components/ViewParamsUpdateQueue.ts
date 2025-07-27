@@ -76,8 +76,8 @@ export class ViewParamsUpdateQueue {
   }
 
   // ##############################################################################################
-  public queueUpdate(updates: ViewParamsUpdate): void {
-    this.log.info("ViewParamsUpdateQueue: queueing updates", updates);
+  public queueUpdate(updates: ViewParamsUpdate, forceImmediate: boolean = false): void {
+    this.log.info("ViewParamsUpdateQueue: queueing updates", updates, "forceImmediate:", forceImmediate);
 
     // Merge new updates with pending ones
     this.pendingUpdates = {
@@ -85,11 +85,18 @@ export class ViewParamsUpdateQueue {
       ...updates,
     };
 
-    // Clear existing timer and start a new one
+    // Clear existing timer
     this.clearTimer();
-    this.timer = setTimeout(() => {
+
+    if (forceImmediate) {
+      // Process immediately
       this.processPendingUpdates();
-    }, this.config.delayMs);
+    } else {
+      // Start a new timer for delayed processing
+      this.timer = setTimeout(() => {
+        this.processPendingUpdates();
+      }, this.config.delayMs);
+    }
 
     // this.log.info(`ViewParamsUpdateQueue: timer set for ${this.config.delayMs}ms`);
   }

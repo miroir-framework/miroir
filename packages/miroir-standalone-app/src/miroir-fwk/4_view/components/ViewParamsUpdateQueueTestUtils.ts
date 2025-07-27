@@ -48,6 +48,18 @@ export class ViewParamsUpdateQueueTestUtils {
   }
 
   /**
+   * Demonstrates immediate processing via queueUpdate parameter
+   */
+  static testImmediateProcessing(queue: ViewParamsUpdateQueue): void {
+    console.log('Testing immediate processing with queueUpdate...');
+    queue.queueUpdate(
+      { currentValue: defaultAdminViewParams, updates: {gridType: 'glide-data-grid'} },
+      true // Force immediate processing
+    );
+    console.log('Grid type update queued with immediate processing.');
+  }
+
+  /**
    * Shows queue status
    */
   static logQueueStatus(queue: ViewParamsUpdateQueue): void {
@@ -66,8 +78,11 @@ const queue = ViewParamsUpdateQueueTestUtils.createTestQueue(
   5000 // 5 second delay for testing
 );
 
-// Test rapid changes
+// Test rapid changes (delayed processing)
 ViewParamsUpdateQueueTestUtils.simulateRapidSidebarChanges(queue);
+
+// Test immediate processing
+ViewParamsUpdateQueueTestUtils.testImmediateProcessing(queue);
 
 // Check status
 ViewParamsUpdateQueueTestUtils.logQueueStatus(queue);

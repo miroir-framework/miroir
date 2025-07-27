@@ -78,8 +78,9 @@ export interface AppBarProps extends MuiAppBarProps {
   outlineOpen?: boolean,
   outlineWidth?: number,
   onOutlineToggle?: () => void,
-  // Grid type display
+  // Grid type display and toggle
   gridType?: string,
+  onGridTypeToggle?: () => void,
   // theme: any
 }
 
@@ -286,20 +287,34 @@ export function AppBar(props:AppBarProps) {
             </MyBox>
 
             <MyBox sx={{ flexGrow: 0, display: "flex" }}>
-              {/* Grid Type Display */}
-              {props.gridType && (
-                <MyBox sx={{ display: "flex", alignItems: "center", mr: 2 }}>
-                  <MyTypography 
-                    variant="body2" 
-                    sx={{ 
-                      color: 'white', 
+              {/* Grid Type Toggle Button */}
+              {props.gridType && props.onGridTypeToggle && (
+                <MyTooltip title={`Switch to ${props.gridType === 'ag-grid' ? 'Glide Data Grid' : 'AG-Grid'}`}>
+                  <MyButton
+                    onClick={props.onGridTypeToggle}
+                    sx={{
+                      mr: 2,
+                      px: 1,
+                      py: 0.5,
+                      backgroundColor: 'transparent',
+                      color: 'white',
                       opacity: 0.8,
-                      fontSize: '0.875rem'
+                      border: 'none',
+                      transition: 'all 0.3s ease-in-out',
+                      fontSize: '0.875rem',
+                      fontWeight: 'normal',
+                      textTransform: 'none',
+                      minWidth: 'auto',
+                      cursor: 'pointer',
+                      '&:hover': {
+                        backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                        opacity: 1,
+                      }
                     }}
                   >
                     Grid: {props.gridType === 'ag-grid' ? 'AG-Grid' : 'Glide Data Grid'}
-                  </MyTypography>
-                </MyBox>
+                  </MyButton>
+                </MyTooltip>
               )}
               
             {/* Performance Monitor Indicator */}
