@@ -80,7 +80,8 @@ import {
   SyncBoxedExtractorOrQueryRunnerMap,
   SyncQueryRunner,
   SyncQueryRunnerParams,
-  ViewParams
+  TableTheme,
+  ViewParamsData
 } from "miroir-core";
 import { getMemoizedDeploymentEntityStateSelectorMap, ReduxStateChanges } from "miroir-localcache-redux";
 
@@ -548,7 +549,7 @@ export const RootComponent = (props: RootComponentProps) => {
   );
 
   // Optimize ViewParams state management to reduce re-renders
-  const defaultViewParamsFromAdminStorage: ViewParams | undefined = useMemo(
+  const defaultViewParamsFromAdminStorage: ViewParamsData | undefined = useMemo(
     () => defaultViewParamsFromAdminStorageFetchQueryResults?.["viewParams"] as any || defaultAdminViewParams,
     [defaultViewParamsFromAdminStorageFetchQueryResults]
   );
@@ -645,6 +646,24 @@ export const RootComponent = (props: RootComponentProps) => {
     [updateQueue, defaultViewParamsFromAdminStorage]
   );
 
+  // Table theme change handler
+  const handleTableThemeChange = useMemo(
+    () => (newThemeId: string) => {
+      if (defaultViewParamsFromAdminStorage && updateQueue) {
+        const currentTableTheme = defaultViewParamsFromAdminStorage.tableTheme || 'default';
+        
+        updateQueue.queueUpdate({
+          currentValue: defaultViewParamsFromAdminStorage,
+          updates: {
+            tableTheme: newThemeId as TableTheme,
+          }
+        }, true); // Force immediate processing for table theme changes
+        log.info("RootComponent: Queued table theme change (immediate)", { from: currentTableTheme, to: newThemeId });
+      }
+    },
+    [updateQueue, defaultViewParamsFromAdminStorage]
+  );
+
   // Cleanup the queue on unmount
   useEffect(() => {
     return () => {
@@ -659,7 +678,10 @@ export const RootComponent = (props: RootComponentProps) => {
 
   return (
     <DocumentOutlineContext.Provider value={outlineContextValue}>
-      <TableThemeProvider>
+      <TableThemeProvider 
+        currentThemeId={defaultViewParamsFromAdminStorage?.tableTheme || 'default'}
+        onThemeChange={handleTableThemeChange}
+      >
         <div>
       <MuiBox sx={boxParams}>
         <Grid container direction="column">

@@ -4,12 +4,12 @@ import {
   entityViewParams,
   LoggerInterface,
   MiroirLoggerFactory,
-  ViewParams,
+  ViewParamsData,
 } from "miroir-core";
 
 export interface ViewParamsUpdate {
-  currentValue: ViewParams | undefined;
-  updates: Partial<ViewParams>;
+  currentValue: ViewParamsData | undefined;
+  updates: Partial<ViewParamsData>;
   // sidebarWidth?: number;
   // Add other view params here as needed
 }

@@ -5,6 +5,11 @@ export const gridType: JzodEnum = {
   definition: ["ag-grid", "glide-data-grid"],
 }
 
+export const tableTheme: JzodEnum = {
+  type: "enum",
+  definition: ["default", "dark", "compact", "material"],
+}
+
 export const viewParams: JzodElement = {
   type: "object",
   // tag: {
@@ -15,18 +20,35 @@ export const viewParams: JzodElement = {
   definition: {
     sidebarWidth: { type: "number" },
     gridType: { type: "enum", definition: ["ag-grid", "glide-data-grid"] },
+    tableTheme: { type: "enum", definition: ["default", "dark", "compact", "material"] },
   },
 };
 
 export type GridType = "ag-grid" | "glide-data-grid";
+export type TableTheme = "default" | "dark" | "compact" | "material";
+
+// Interface for ViewParams as entity instance data (plain object)
+export interface ViewParamsData {
+  uuid: string;
+  parentName: string;
+  parentUuid: string;
+  name: string;
+  defaultLabel?: string;
+  description?: string;
+  sidebarWidth: number;
+  gridType: GridType;
+  tableTheme: TableTheme;
+}
 
 export class ViewParams {
   private _sidebarWidth: number;
   private _gridType: GridType;
+  private _tableTheme: TableTheme;
 
-  constructor(initialSidebarWidth: number = 250, initialGridType: GridType = 'ag-grid') {
+  constructor(initialSidebarWidth: number = 250, initialGridType: GridType = 'ag-grid', initialTableTheme: TableTheme = 'default') {
     this._sidebarWidth = initialSidebarWidth;
     this._gridType = initialGridType;
+    this._tableTheme = initialTableTheme;
   }
 
   get sidebarWidth(): number {
@@ -47,5 +69,13 @@ export class ViewParams {
 
   setGridType(type: GridType): void {
     this._gridType = type;
+  }
+
+  get tableTheme(): TableTheme {
+    return this._tableTheme;
+  }
+
+  setTableTheme(theme: TableTheme): void {
+    this._tableTheme = theme;
   }
 }

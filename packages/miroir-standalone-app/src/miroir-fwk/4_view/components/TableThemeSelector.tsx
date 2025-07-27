@@ -11,6 +11,7 @@ import {
 } from '@mui/material';
 import { Palette, DarkMode, CompressOutlined, Style } from '@mui/icons-material';
 import { useTableTheme, TableThemeOption } from '../contexts/TableThemeContext.js';
+import { TableTheme } from 'miroir-core';
 
 interface TableThemeSelectorProps {
   size?: 'small' | 'medium';
@@ -65,7 +66,7 @@ export const TableThemeSelector: React.FC<TableThemeSelectorProps> = ({
   } = useTableTheme();
 
   const handleThemeChange = (event: SelectChangeEvent<string>) => {
-    selectTheme(event.target.value);
+    selectTheme(event.target.value as TableTheme);
   };
 
   return (

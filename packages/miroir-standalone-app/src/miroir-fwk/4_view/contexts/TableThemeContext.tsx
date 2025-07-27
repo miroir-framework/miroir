@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, ReactNode, useCallback } from 'react';
+import { TableTheme as TableThemeId } from 'miroir-core';
 import { 
   defaultTableTheme, 
   darkTableTheme, 
@@ -9,7 +10,7 @@ import {
 
 // Define the available theme options
 export interface TableThemeOption {
-  id: string;
+  id: TableThemeId;
   name: string;
   description: string;
   theme: TableTheme;
@@ -45,9 +46,9 @@ export const tableThemeOptions: TableThemeOption[] = [
 // Context interface
 interface TableThemeContextType {
   currentTheme: TableTheme;
-  currentThemeId: string;
+  currentThemeId: TableThemeId;
   currentThemeOption: TableThemeOption;
-  selectTheme: (themeId: string) => void;
+  selectTheme: (themeId: TableThemeId) => void;
   availableThemes: TableThemeOption[];
 }
 
@@ -63,31 +64,47 @@ const TableThemeContext = createContext<TableThemeContextType>({
 // Provider component
 interface TableThemeProviderProps {
   children: ReactNode;
-  defaultThemeId?: string;
+  defaultThemeId?: TableThemeId;
+  // Controlled mode props
+  currentThemeId?: TableThemeId;
+  onThemeChange?: (themeId: TableThemeId) => void;
 }
 
 export const TableThemeProvider: React.FC<TableThemeProviderProps> = ({ 
   children, 
-  defaultThemeId = 'default' 
+  defaultThemeId = 'default',
+  currentThemeId: controlledThemeId,
+  onThemeChange: controlledOnThemeChange,
 }) => {
-  const [currentThemeId, setCurrentThemeId] = useState(defaultThemeId);
+  const [internalThemeId, setInternalThemeId] = useState<TableThemeId>(defaultThemeId);
+  
+  // Determine if we're in controlled mode
+  const isControlled = controlledThemeId !== undefined;
+  const currentThemeId = isControlled ? controlledThemeId : internalThemeId;
 
-  const selectTheme = useCallback((themeId: string) => {
+  const selectTheme = useCallback((themeId: TableThemeId) => {
     const validTheme = tableThemeOptions.find(option => option.id === themeId);
     if (validTheme) {
-      setCurrentThemeId(themeId);
-      // Store preference in localStorage for persistence
-      localStorage.setItem('miroir-table-theme', themeId);
+      if (isControlled) {
+        // In controlled mode, call the external handler
+        controlledOnThemeChange?.(themeId);
+      } else {
+        // In uncontrolled mode, update internal state and localStorage
+        setInternalThemeId(themeId);
+        localStorage.setItem('miroir-table-theme', themeId);
+      }
     }
-  }, []);
+  }, [isControlled, controlledOnThemeChange]);
 
-  // Initialize theme from localStorage on first render
+  // Initialize theme from localStorage on first render (only in uncontrolled mode)
   React.useEffect(() => {
-    const savedTheme = localStorage.getItem('miroir-table-theme');
-    if (savedTheme && tableThemeOptions.find(option => option.id === savedTheme)) {
-      setCurrentThemeId(savedTheme);
+    if (!isControlled) {
+      const savedTheme = localStorage.getItem('miroir-table-theme') as TableThemeId;
+      if (savedTheme && tableThemeOptions.find(option => option.id === savedTheme)) {
+        setInternalThemeId(savedTheme);
+      }
     }
-  }, []);
+  }, [isControlled]);
 
   const currentThemeOption = tableThemeOptions.find(option => option.id === currentThemeId) || tableThemeOptions[0];
   const currentTheme = currentThemeOption.theme;
