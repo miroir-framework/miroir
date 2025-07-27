@@ -54,6 +54,18 @@ import { ErrorFallbackComponent } from './ErrorFallbackComponent.js';
 import { JzodElementEditor } from './JzodElementEditor.js';
 import { useDocumentOutlineContext } from './RootComponent.js';
 import { useRenderTracker } from '../tools/renderCountTracker.js';
+import { useMiroirTheme } from '../contexts/MiroirThemeContext.js';
+import { 
+  ThemedContainer, 
+  ThemedButton, 
+  ThemedHeaderSection, 
+  ThemedTitle, 
+  ThemedStatusText, 
+  ThemedCodeBlock, 
+  ThemedPreformattedText, 
+  ThemedLabel, 
+  ThemedText 
+} from "./ThemedComponents";
 // import { GlobalRenderPerformanceDisplay, RenderPerformanceDisplay, trackRenderPerformance } from '../tools/renderPerformanceMeasure.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -134,6 +146,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   const errorLog = useErrorLogService();
   const context = useMiroirContextService();
   const showPerformanceDisplay = context.showPerformanceDisplay;
+  const { currentTheme } = useMiroirTheme();
 
   // Track render counts with centralized tracker
   // Use deployment-level key to maintain consistency across all entity instance navigation
@@ -198,7 +211,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   }, [currentReportTargetEntity?.name, outlineContext.setOutlineTitle]);
 
   const labelElement = useMemo(() => {
-    return pageLabel ? <span id={"label." + pageLabel}>{pageLabel}</span> : undefined;
+    return pageLabel ? <ThemedLabel id={"label." + pageLabel}>{pageLabel}</ThemedLabel> : undefined;
   }, [pageLabel]);
 
   const currentMiroirModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
@@ -318,14 +331,14 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   // ##############################################################################################
   if (instance) {
     return (
-      <div>
+      <ThemedContainer>
         <div>
           {/* <RenderPerformanceDisplay componentKey={componentKey} indentLevel={0} /> */}
 
           {showPerformanceDisplay && (
-            <p>
+            <ThemedText>
               ReportSectionEntityInstance renders: {navigationCount} (total: {totalCount})
-            </p>
+            </ThemedText>
           )}
           <div>
             <label htmlFor="displayEditorSwitch">Display editor:</label>
@@ -337,29 +350,16 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
             />
           </div>
           <div>
-            <span>
+            <ThemedStatusText>
               displayAsStructuredElement: {displayAsStructuredElement ? "true" : "false"}{" "}
               displayEditor: {displayEditor ? "true" : "false"} hasTypeError:{" "}
               {/* {typeError ? "true" : "false"}{" "} */}
-            </span>
+            </ThemedStatusText>
           </div>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              marginBottom: "16px",
-              position: "sticky",
-              top: 0,
-              backgroundColor: "white",
-              zIndex: 1000,
-              padding: "8px 0",
-              boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-            }}
-          >
-            <h1 style={{ margin: 0 }}>
+          <ThemedHeaderSection>
+            <ThemedTitle>
               {currentReportTargetEntity?.name} details: {instance.name}{" "}
-            </h1>
+            </ThemedTitle>
             {displayEditor && (
               <Tooltip title={isOutlineOpen ? "Hide Document Outline" : "Show Document Outline"}>
                 <IconButton
@@ -367,10 +367,11 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                   onClick={handleToggleOutline}
                   sx={{
                     marginLeft: 2,
-                    backgroundColor: "white",
-                    boxShadow: 1,
+                    backgroundColor: currentTheme.colors.surface,
+                    color: currentTheme.colors.text,
+                    boxShadow: currentTheme.elevation.low,
                     "&:hover": {
-                      backgroundColor: "grey.100",
+                      backgroundColor: currentTheme.colors.hover || currentTheme.colors.primaryLight,
                     },
                   }}
                 >
@@ -378,7 +379,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                 </IconButton>
               </Tooltip>
             )}
-          </div>
+          </ThemedHeaderSection>
           {currentReportTargetEntity &&
           currentEnumJzodSchemaResolver &&
           currentReportTargetEntityDefinition &&
@@ -563,7 +564,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                       <>
                         <div>
                           {typeError ? "typeError: " : ""}
-                          <pre>{typeError ?? <></>}</pre>
+                          <ThemedCodeBlock>{typeError ?? <></>}</ThemedCodeBlock>
                         </div>
                         <form id={"form." + pageLabel} onSubmit={formik.handleSubmit}>
                           <div>
@@ -658,7 +659,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                   //   currentEnumJzodSchemaResolver={currentEnumJzodSchemaResolver}
                   // ></JzodElementDisplay>
                   <div>
-                    <pre>{safeStringify(instance)}</pre>
+                    <ThemedCodeBlock>{safeStringify(instance)}</ThemedCodeBlock>
                   </div>
                 )}
               </div>
@@ -674,20 +675,20 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                 {currentReportTargetEntity?.name ?? "report target entity not found!"}
               </div>
               {/* <div>resolved schema: {JSON.stringify(resolvedJzodSchema)}</div> */}
-              <div style={{ whiteSpace: "pre-line" }}>
+              <ThemedPreformattedText>
                 target entity definition:{" "}
                 {currentReportTargetEntityDefinition?.name ??
                   "report target entity definition not found!"}
-              </div>
+              </ThemedPreformattedText>
               <div> ######################################## </div>
-              <div style={{ whiteSpace: "pre-line" }}>
+              <ThemedPreformattedText>
                 entity jzod schema: {safeStringify(instance?.jzodSchema)}
-              </div>
+              </ThemedPreformattedText>
             </div>
           )}
         </div>
         {/* <PerformanceMetricsDisplay /> */}
-      </div>
+      </ThemedContainer>
     );
   } else {
     return <>ReportSectionEntityInstance: No instance to display!</>;
