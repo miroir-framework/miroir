@@ -77,6 +77,8 @@ export interface AppBarProps extends MuiAppBarProps {
   outlineOpen?: boolean,
   outlineWidth?: number,
   onOutlineToggle?: () => void,
+  // Grid type display
+  gridType?: string,
   // theme: any
 }
 
@@ -282,6 +284,22 @@ export function AppBar(props:AppBarProps) {
             </MyBox>
 
             <MyBox sx={{ flexGrow: 0, display: "flex" }}>
+              {/* Grid Type Display */}
+              {props.gridType && (
+                <MyBox sx={{ display: "flex", alignItems: "center", mr: 2 }}>
+                  <MyTypography 
+                    variant="body2" 
+                    sx={{ 
+                      color: 'white', 
+                      opacity: 0.8,
+                      fontSize: '0.875rem'
+                    }}
+                  >
+                    Grid: {props.gridType === 'ag-grid' ? 'AG-Grid' : 'Glide Data Grid'}
+                  </MyTypography>
+                </MyBox>
+              )}
+              
               {/* Document Outline Toggle Button */}
               {props.onOutlineToggle && (
                 <MyTooltip title={props.outlineOpen ? "Hide Document Outline" : "Show Document Outline"}>

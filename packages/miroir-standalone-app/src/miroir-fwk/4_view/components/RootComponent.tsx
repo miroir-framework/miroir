@@ -38,10 +38,7 @@ import {
   SelectChangeEvent,
   Snackbar,
   Alert,
-  Toolbar,
-  Switch,
-  FormControlLabel,
-  Typography
+  Toolbar
 } from "@mui/material";
 import { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -654,6 +651,7 @@ export const RootComponent = (props: RootComponentProps) => {
               outlineOpen={isOutlineOpen}
               outlineWidth={outlineWidth}
               onOutlineToggle={handleToggleOutline}
+              gridType={defaultViewParamsFromAdminStorage?.gridType || 'ag-grid'}
             >
               Bar!
             </AppBar>
@@ -681,9 +679,6 @@ export const RootComponent = (props: RootComponentProps) => {
                   <div>transactions: {JSON.stringify(transactions)}</div>
                   <div>RootComponent renders: {navigationCount} (total: {totalCount})</div>
                 <p />
-                <GridSwitchComponent 
-                  defaultviewParamsFromAdminDb={defaultViewParamsFromAdminStorage}
-                />
                 <div>
                   <FormControl fullWidth>
                     <InputLabel id="demo-simple-select-label">Chosen selfApplication Deployment</InputLabel>
@@ -975,50 +970,5 @@ export const RootComponent = (props: RootComponentProps) => {
       </Snackbar>
     </div>
     </DocumentOutlineContext.Provider>
-  );
-};
-
-
-// ################################################################################################
-// Grid Switch Component
-const GridSwitchComponent: React.FC<{ defaultviewParamsFromAdminDb?: ViewParams | null }> = (
-  { defaultviewParamsFromAdminDb }: { defaultviewParamsFromAdminDb?: ViewParams | null } = {}
-) => {
-  // const viewParams = useViewParams();
-
-
-  const handleGridTypeChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-    // viewParams?.setGridType(event.target.checked ? 'glide-data-grid' : 'ag-grid');
-    defaultviewParamsFromAdminDb?.setGridType(event.target.checked ? 'glide-data-grid' : 'ag-grid');
-  }, [defaultviewParamsFromAdminDb]);
-  // }, [viewParams]);
-
-  return (
-    <Box
-      sx={{ mb: 2, p: 1, border: "1px solid #e0e0e0", borderRadius: 1, backgroundColor: "#f5f5f5" }}
-    >
-      <FormControlLabel
-        control={
-          <Switch
-            // checked={viewParams?.gridType === "glide-data-grid"}
-            checked={defaultviewParamsFromAdminDb?.gridType === "glide-data-grid"}
-            onChange={handleGridTypeChange}
-            name="gridType"
-            color="primary"
-          />
-        }
-        label={
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            <Typography variant="body2" color="textSecondary">
-              Grid Type:
-            </Typography>
-            <Typography variant="body2" fontWeight="bold">
-              {/* {viewParams?.gridType === "ag-grid" ? "AG-Grid" : "Glide Data Grid"} */}
-              {defaultviewParamsFromAdminDb?.gridType === "ag-grid" ? "AG-Grid" : "Glide Data Grid"}
-            </Typography>
-          </Box>
-        }
-      />
-    </Box>
   );
 };
