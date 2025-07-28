@@ -22,6 +22,7 @@ import { cleanLevel } from '../constants.js';
 import { ReportSectionEntityInstance } from './ReportSectionEntityInstance.js';
 import { ReportSectionListDisplay } from './ReportSectionListDisplay.js';
 import { useRenderTracker } from '../tools/renderCountTracker.js';
+import { ThemedBox } from './ThemedComponents.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -151,9 +152,15 @@ export const ReportSectionView = (props: ReportSectionViewProps) => {
         {props.applicationSection && props.reportSection ? (
           <div>
             {showPerformanceDisplay && (
-              <div style={{ fontSize: '12px', color: '#666', padding: '2px' }}>
+              <ThemedBox 
+                style={{ 
+                  fontSize: '12px', 
+                  opacity: 0.6, 
+                  padding: '2px' 
+                }}
+              >
                 ReportSectionView renders: {navigationCount} (total: {totalCount})
-              </div>
+              </ThemedBox>
             )}
             {/* params:{JSON.stringify(params)}
             <p /> */}

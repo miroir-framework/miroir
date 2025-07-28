@@ -37,12 +37,8 @@ import {
   SyncQueryRunnerParams
 } from "miroir-core";
 
-import { Button } from "@mui/material";
-
-
-import { getMemoizedDeploymentEntityStateSelectorForTemplateMap } from "miroir-localcache-redux";
-
 import AddBox from "@mui/icons-material/AddBox";
+import { getMemoizedDeploymentEntityStateSelectorForTemplateMap } from "miroir-localcache-redux";
 import { packageName } from "../../../constants.js";
 import { deleteCascade } from "../scripts.js";
 import {
@@ -59,6 +55,7 @@ import { noValue } from "./JzodElementEditorInterface.js";
 import { MTableComponent } from "./MTableComponent.js";
 import { TableComponentType, TableComponentTypeSchema } from "./MTableComponentInterface.js";
 import { useRenderTracker } from "../tools/renderCountTracker.js";
+import { ThemedBox, ThemedButton, ThemedSpan } from "./ThemedComponents.js";
 
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -713,7 +710,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   // log.info("tableColumnDefs",tableColumnDefs);
   
   return (
-    <div className="MiroirReport-global" style={{ display: "block" }}>
+    <ThemedBox className="MiroirReport-global" display="block">
       {context.showPerformanceDisplay && (
         <div> ReportSectionListDisplay renders: {navigationCount} (total: {totalCount}) times.</div>
       )}
@@ -726,16 +723,15 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
             <div>{/* colonnes: {JSON.stringify(columnDefs)} */}</div>
             <h3>
               {props.defaultlabel ?? currentReportTargetEntityDefinition?.name??"No Entity Found!"}
-              <Button
-                sx={{marginLeft: "10px"}}
-                variant="outlined"
-                onClick={(event) => {
-                  event?.stopPropagation();
+              <ThemedButton
+                style={{marginLeft: "10px"}}
+                variant="secondary"
+                onClick={() => {
                   handleAddObjectDialogFormButtonClick(props.defaultlabel ?? currentReportTargetEntityDefinition?.name??"No Entity Found!", defaultFormValuesObject);
                 }}
               >
                 <AddBox />
-              </Button>
+              </ThemedButton>
             </h3>
             {
               addObjectdialogFormIsOpen?
@@ -790,9 +786,9 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
           <span>No elements in the report</span>
         )
       ) : (
-        <span style={{color: "red"}}>ReportSectionListDisplay, no report to display: {JSON.stringify(props.section)}</span>
+        <ThemedSpan style={{ color: "red" }}>ReportSectionListDisplay, no report to display: {JSON.stringify(props.section)}</ThemedSpan>
       )}
-    </div>
+    </ThemedBox>
   );
   // } else { // props.tableComponentReportType == "JSON_ARRAY"
   //   // const existingRows = dialogOuterFormObject && dialogOuterFormObject['attributes']?dialogOuterFormObject['attributes']:props.rowData

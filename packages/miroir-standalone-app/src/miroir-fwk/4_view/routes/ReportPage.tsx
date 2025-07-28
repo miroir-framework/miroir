@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState, useRef, useCallback, createContext, useContext } from 'react';
 import { Params, useParams } from 'react-router-dom';
-import { Box, Divider } from '@mui/material';
 
 import {
   adminConfigurationDeploymentAdmin,
@@ -30,6 +29,7 @@ import { useDocumentOutlineContext } from '../components/RootComponent.js';
 import { useRenderTracker } from '../tools/renderCountTracker.js';
 import { PageContainer } from '../components/PageContainer.js';
 import { TableThemeSelector } from '../components/TableThemeSelector.js';
+import { ThemedBox, ThemedSpan } from '../components/ThemedComponents.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -221,17 +221,17 @@ export const ReportPage = () => {
         }}
       >
         {/* Page Header */}
-        <Box sx={{ flexShrink: 0, marginBottom: 2 }}>
+        <ThemedBox flexGrow={0} marginBottom="16px">
           {context.showPerformanceDisplay && (
             <span>ReportPage renders: {navigationCount} (total: {totalCount})</span>
           )}
           <div>
             <h3>erreurs: {JSON.stringify(errorLog)}</h3>
           </div>
-        </Box>
+        </ThemedBox>
         
         {/* Main Report Content */}
-        <Box sx={{ flexGrow: 1 }}>
+        <ThemedBox flexGrow={1}>
           {
             pageParams.deploymentUuid &&
             pageParams.applicationSection &&
@@ -252,13 +252,16 @@ export const ReportPage = () => {
                 {context.showPerformanceDisplay && <PerformanceDisplayContainer />}
               </>
             ) : (
-              <span style={{ color: "red", padding: '16px' }}>
+              <ThemedSpan 
+                style={{ color: "red" }} 
+                padding="16px"
+              >
                 ReportDisplay: no report to display, deploymentUuid={pageParams.deploymentUuid}, applicationSection=
                 {pageParams.applicationSection}, reportUuid={pageParams.reportUuid}
-              </span>
+              </ThemedSpan>
             )
           }
-        </Box>
+        </ThemedBox>
       </PageContainer>
     );
   } else {

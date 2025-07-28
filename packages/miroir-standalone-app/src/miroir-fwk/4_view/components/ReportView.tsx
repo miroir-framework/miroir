@@ -27,6 +27,7 @@ import { useDeploymentEntityStateJzodSchemaSelector, useDeploymentEntityStateQue
 import { ReportSectionView } from './ReportSectionView.js';
 import { useDocumentOutlineContext } from './RootComponent.js';
 import { useMiroirContextService } from "../MiroirContextReactProvider.js";
+import { ThemedSpan } from './ThemedComponents.js';
 
 import {
   getMemoizedDeploymentEntityStateJzodSchemaSelectorMap,
@@ -320,7 +321,7 @@ export const ReportView = (props: ReportViewProps) => {
                   />
                 </div>
               ) : (
-                <div style={{ color: "red" }}>no deployment found!</div>
+                <ThemedSpan style={{ color: "red" }}>no deployment found!</ThemedSpan>
               )}
             </>
           )
