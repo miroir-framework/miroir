@@ -37,6 +37,7 @@ import {
   Close,
   MenuOpen,
 } from '@mui/icons-material';
+import { useMiroirTheme } from '../contexts/MiroirThemeContext.js';
 
 // Types for tree structure
 export interface TreeNode {
@@ -75,16 +76,16 @@ const getTypeIcon = (type: string, hasChildren: boolean, isExpanded: boolean) =>
   }
 };
 
-const getTypeColor = (type: string) => {
+const getTypeColor = (type: string, theme: any) => {
   switch (type) {
     case 'object':
-      return '#2196f3';
+      return theme.colors.primary;
     case 'array':
-      return '#4caf50';
+      return theme.colors.success;
     case 'root':
-      return '#9c27b0';
+      return theme.colors.secondary;
     default:
-      return '#757575';
+      return theme.colors.textSecondary;
   }
 };
 
@@ -154,6 +155,7 @@ const TreeNodeComponent = React.memo<{
   onNavigate?: (path: string[]) => void;
   selectedPath?: string;
 }>(({ node, expandedNodes, onToggleExpand, onNavigate, selectedPath }) => {
+  const miroirTheme = useMiroirTheme();
   const isExpanded = expandedNodes.has(node.id);
   const hasChildren = Boolean(node.children && node.children.length > 0);
   const isSelected = selectedPath === node.path.join('.');
@@ -176,14 +178,14 @@ const TreeNodeComponent = React.memo<{
     () => getTypeIcon(node.type, hasChildren, isExpanded),
     [node.type, hasChildren, isExpanded]
   );
-  const typeColor = useMemo(() => getTypeColor(node.type), [node.type]);
+  const typeColor = useMemo(() => getTypeColor(node.type, miroirTheme.currentTheme), [node.type, miroirTheme.currentTheme]);
 
   return (
     <>
       <ListItem
         disablePadding
         sx={{
-          backgroundColor: isSelected ? 'rgba(25, 118, 210, 0.08)' : 'transparent',
+          backgroundColor: isSelected ? miroirTheme.currentTheme.colors.selected : 'transparent',
         }}
       >
         <ListItemButton
@@ -193,11 +195,11 @@ const TreeNodeComponent = React.memo<{
             paddingLeft: `${indentLevel + 8}px`,
             minHeight: 32,
             '&:hover': {
-              backgroundColor: 'rgba(0, 0, 0, 0.04)',
+              backgroundColor: miroirTheme.currentTheme.colors.hover,
             },
           }}
         >
-          <ListItemIcon sx={{ minWidth: 32 }}>
+          <ListItemIcon sx={{ minWidth: 32, color: typeColor }}>
             {typeIcon}
           </ListItemIcon>
           <ListItemText
@@ -216,7 +218,13 @@ const TreeNodeComponent = React.memo<{
             }
           />
           {hasChildren && (
-            <IconButton size="small" sx={{ padding: '2px' }}>
+            <IconButton 
+              size="small" 
+              sx={{ 
+                padding: '2px',
+                color: miroirTheme.currentTheme.colors.text,
+              }}
+            >
               {isExpanded ? <ExpandLess /> : <ExpandMore />}
             </IconButton>
           )}
@@ -258,6 +266,7 @@ export const InstanceEditorOutline = React.memo<DocumentOutlineProps>(({
   maxWidth = 600,
   onWidthChange,
 }) => {
+  const miroirTheme = useMiroirTheme();
   const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set());
   const [selectedPath, setSelectedPath] = useState<string>('');
   const [currentWidth, setCurrentWidth] = useState(width);
@@ -401,10 +410,12 @@ export const InstanceEditorOutline = React.memo<DocumentOutlineProps>(({
           right: 8,
           top: 100,
           zIndex: 1200,
-          backgroundColor: 'white',
+          backgroundColor: miroirTheme.currentTheme.colors.surface,
+          color: miroirTheme.currentTheme.colors.text,
           boxShadow: 2,
+          border: `1px solid ${miroirTheme.currentTheme.colors.border}`,
           '&:hover': {
-            backgroundColor: 'grey.100',
+            backgroundColor: miroirTheme.currentTheme.colors.hover,
           },
         }}
       >
@@ -425,7 +436,9 @@ export const InstanceEditorOutline = React.memo<DocumentOutlineProps>(({
         '& .MuiDrawer-paper': {
           width: currentWidth,
           boxSizing: 'border-box',
-          borderLeft: '1px solid #e0e0e0',
+          borderLeft: `1px solid ${miroirTheme.currentTheme.colors.border}`,
+          backgroundColor: miroirTheme.currentTheme.colors.surface,
+          color: miroirTheme.currentTheme.colors.text,
           position: 'fixed',
           top: 0, // Start from the very top
           height: '100vh', // Full viewport height
@@ -446,29 +459,50 @@ export const InstanceEditorOutline = React.memo<DocumentOutlineProps>(({
           cursor: 'ew-resize',
           zIndex: 1000,
           '&:hover': {
-            backgroundColor: 'rgba(0, 0, 0, 0.1)',
+            backgroundColor: miroirTheme.currentTheme.colors.hover,
           },
           '&:active': {
-            backgroundColor: 'rgba(0, 0, 0, 0.2)',
+            backgroundColor: miroirTheme.currentTheme.colors.selected,
           },
         }}
       />
       
-      <Box sx={{ padding: 1, paddingTop: '8px' }}> {/* Minimal top padding */}
+      <Box sx={{ padding: 1, paddingTop: '8px', backgroundColor: miroirTheme.currentTheme.colors.surface }}> {/* Minimal top padding */}
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
-          <Typography variant="h6" sx={{ fontSize: '1rem', fontWeight: 600 }}>
+          <Typography 
+            variant="h6" 
+            sx={{ 
+              fontSize: '1rem', 
+              fontWeight: 600,
+              color: miroirTheme.currentTheme.colors.text,
+            }}
+          >
             {title}
           </Typography>
-          <IconButton size="small" onClick={onToggle}>
+          <IconButton 
+            size="small" 
+            onClick={onToggle}
+            sx={{ color: miroirTheme.currentTheme.colors.text }}
+          >
             <Close />
           </IconButton>
         </Box>
         
         <Box sx={{ display: 'flex', gap: 1, mb: 1 }}>
-          <IconButton size="small" onClick={handleExpandAll} title="Expand All">
+          <IconButton 
+            size="small" 
+            onClick={handleExpandAll} 
+            title="Expand All"
+            sx={{ color: miroirTheme.currentTheme.colors.text }}
+          >
             <ExpandMore />
           </IconButton>
-          <IconButton size="small" onClick={handleCollapseAll} title="Collapse All">
+          <IconButton 
+            size="small" 
+            onClick={handleCollapseAll} 
+            title="Collapse All"
+            sx={{ color: miroirTheme.currentTheme.colors.text }}
+          >
             <ExpandLess />
           </IconButton>
         </Box>
@@ -479,7 +513,7 @@ export const InstanceEditorOutline = React.memo<DocumentOutlineProps>(({
             variant="caption" 
             sx={{ 
               fontSize: '0.75rem', 
-              color: 'text.secondary',
+              color: miroirTheme.currentTheme.colors.textSecondary,
               fontStyle: 'italic',
               display: 'block',
               lineHeight: 1.2
@@ -489,10 +523,10 @@ export const InstanceEditorOutline = React.memo<DocumentOutlineProps>(({
           </Typography>
         </Box>
         
-        <Divider />
+        <Divider sx={{ backgroundColor: miroirTheme.currentTheme.colors.divider }} />
       </Box>
       
-      <List dense sx={{ flexGrow: 1, overflow: 'auto' }}>
+      <List dense sx={{ flexGrow: 1, overflow: 'auto', backgroundColor: miroirTheme.currentTheme.colors.surface }}>
         {treeNodes.map((node) => (
           <TreeNodeComponent
             key={node.id}
@@ -506,8 +540,11 @@ export const InstanceEditorOutline = React.memo<DocumentOutlineProps>(({
       </List>
       
       {treeNodes.length === 0 && (
-        <Box sx={{ padding: 2, textAlign: 'center' }}>
-          <Typography variant="body2" color="text.secondary">
+        <Box sx={{ padding: 2, textAlign: 'center', backgroundColor: miroirTheme.currentTheme.colors.surface }}>
+          <Typography 
+            variant="body2" 
+            sx={{ color: miroirTheme.currentTheme.colors.textSecondary }}
+          >
             No structure to display
           </Typography>
         </Box>

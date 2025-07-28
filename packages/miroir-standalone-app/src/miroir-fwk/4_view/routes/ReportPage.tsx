@@ -30,6 +30,7 @@ import { useRenderTracker } from '../tools/renderCountTracker.js';
 import { PageContainer } from '../components/PageContainer.js';
 import { TableThemeSelector } from '../components/TableThemeSelector.js';
 import { ThemedBox, ThemedSpan } from '../components/ThemedComponents.js';
+import { useMiroirTheme } from '../contexts/MiroirThemeContext.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -62,6 +63,7 @@ const miroirExpression: JzodElement = {
 export const ReportPage = () => {
   const pageParams: Params<ReportUrlParamKeys> = useParams<ReportUrlParamKeys>();
   const context = useMiroirContextService();
+  const theme = useMiroirTheme();
   
   // Track render counts with centralized tracker
   // Use deployment-level key to maintain consistency across all navigation within same deployment
@@ -238,10 +240,10 @@ export const ReportPage = () => {
             pageParams.reportUuid &&
             pageParams.reportUuid != "undefined" ? (
               <>
-                <div style={{ padding: '16px' }}>
+                <ThemedBox padding="16px">
                   deploymentUuid={pageParams.deploymentUuid}, applicationSection={pageParams.applicationSection},
                   reportUuid={pageParams.reportUuid}, instanceUuid={pageParams.instanceUuid}
-                </div>
+                </ThemedBox>
                 <ReportView
                   applicationSection={pageParams.applicationSection as ApplicationSection}
                   deploymentUuid={pageParams.deploymentUuid}
@@ -253,7 +255,7 @@ export const ReportPage = () => {
               </>
             ) : (
               <ThemedSpan 
-                style={{ color: "red" }} 
+                style={{ color: theme.currentTheme.colors.error }} 
                 padding="16px"
               >
                 ReportDisplay: no report to display, deploymentUuid={pageParams.deploymentUuid}, applicationSection=

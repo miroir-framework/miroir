@@ -9,22 +9,13 @@ import { LoggerInterface, MiroirLoggerFactory } from "miroir-core";
 import { packageName } from '../../../constants.js';
 import { cleanLevel } from '../constants.js';
 import { TableComponentRow } from './MTableComponentInterface.js';
+import { useMiroirTheme } from '../contexts/MiroirThemeContext.js';
+import { ThemedSmallIconButton } from './ThemedComponents.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "TableActionButtonComponents")
 ).then((logger: LoggerInterface) => {log = logger});
-
-const ActionButton = styled(IconButton)(({ theme }) => ({
-  padding: theme.spacing(0.5),
-  fontSize: '16px',
-  '& .MuiIcon-root': {
-    fontSize: '16px',
-  },
-  '&:hover': {
-    backgroundColor: theme.palette.action.hover,
-  },
-}));
 
 export interface BaseActionButtonProps {
   row: TableComponentRow;
@@ -68,13 +59,12 @@ export const EditActionButton: React.FC<BaseActionButtonProps> = ({
   }
 
   return (
-    <ActionButton
+    <ThemedSmallIconButton
       onClick={handleClick}
-      size={size}
       title="Edit"
     >
       <CreateIcon />
-    </ActionButton>
+    </ThemedSmallIconButton>
   );
 };
 
@@ -113,13 +103,12 @@ export const DuplicateActionButton: React.FC<BaseActionButtonProps> = ({
   }
 
   return (
-    <ActionButton
+    <ThemedSmallIconButton
       onClick={handleClick}
-      size={size}
       title="Duplicate"
     >
       <ContentCopyIcon />
-    </ActionButton>
+    </ThemedSmallIconButton>
   );
 };
 
@@ -158,12 +147,11 @@ export const DeleteActionButton: React.FC<BaseActionButtonProps> = ({
   }
 
   return (
-    <ActionButton
+    <ThemedSmallIconButton
       onClick={handleClick}
-      size={size}
       title="Delete"
     >
       <DeleteIcon />
-    </ActionButton>
+    </ThemedSmallIconButton>
   );
 };

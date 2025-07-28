@@ -785,7 +785,7 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
             borderRadius: 1, 
             padding: 1, 
             mb: 1,
-            backgroundColor: '#ffffff',
+            backgroundColor: theme?.colors?.background || '#ffffff',
             width: '100%',
             maxWidth: '100%',
             overflow: 'hidden',

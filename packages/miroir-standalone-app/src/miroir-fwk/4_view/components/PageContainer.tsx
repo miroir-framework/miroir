@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Box, BoxProps, useTheme } from '@mui/material';
+import { Box, BoxProps } from '@mui/material';
+import { useMiroirTheme } from '../contexts/MiroirThemeContext.js';
 
 interface PageContainerProps extends Omit<BoxProps, 'sx'> {
   children: React.ReactNode;
@@ -32,7 +33,7 @@ export const PageContainer: React.FC<PageContainerProps> = ({
   customSx = {},
   ...boxProps
 }) => {
-  const theme = useTheme();
+  const theme = useMiroirTheme();
   
   // Calculate dynamic width based on layout elements
   const calculateWidth = () => {
@@ -52,6 +53,10 @@ export const PageContainer: React.FC<PageContainerProps> = ({
     <Box
       {...boxProps}
       sx={{
+        // Theme-based styling
+        backgroundColor: theme.currentTheme.colors.background,
+        color: theme.currentTheme.colors.text,
+        
         // Layout constraints - use 100% since RootComponent handles sidebar/outline margins
         width,
         minWidth: '320px', // Minimum width for mobile
@@ -91,8 +96,8 @@ export const PageContainer: React.FC<PageContainerProps> = ({
           maxWidth: '100% !important',
         },
         
-        // Responsive breakpoints - simplified since RootComponent handles layout
-        [theme.breakpoints.down('sm')]: {
+        // Responsive breakpoints - use CSS media queries instead
+        '@media (max-width: 600px)': {
           padding: 0.5,
         },
         

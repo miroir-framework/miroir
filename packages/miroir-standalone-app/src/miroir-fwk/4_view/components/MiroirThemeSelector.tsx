@@ -62,7 +62,8 @@ export const MiroirThemeSelector: React.FC<MiroirThemeSelectorProps> = ({
     currentThemeId, 
     currentThemeOption, 
     selectTheme, 
-    availableThemes 
+    availableThemes,
+    currentTheme: miroirTheme
   } = useMiroirTheme();
 
   const handleThemeChange = (event: SelectChangeEvent<string>) => {
@@ -71,7 +72,31 @@ export const MiroirThemeSelector: React.FC<MiroirThemeSelectorProps> = ({
 
   return (
     <Box sx={{ minWidth: 200 }}>
-      <FormControl size={size} variant={variant} fullWidth>
+      <FormControl 
+        size={size} 
+        variant={variant} 
+        fullWidth
+        sx={{
+          '& .MuiInputLabel-root': {
+            color: miroirTheme.components.appBar.textColor,
+          },
+          '& .MuiOutlinedInput-root': {
+            color: miroirTheme.components.appBar.textColor,
+            '& fieldset': {
+              borderColor: miroirTheme.components.appBar.textColor,
+            },
+            '&:hover fieldset': {
+              borderColor: miroirTheme.components.appBar.textColor,
+            },
+            '&.Mui-focused fieldset': {
+              borderColor: miroirTheme.components.appBar.textColor,
+            },
+          },
+          '& .MuiSelect-icon': {
+            color: miroirTheme.components.appBar.textColor,
+          },
+        }}
+      >
         <InputLabel id="miroir-theme-selector-label">{label}</InputLabel>
         <Select
           labelId="miroir-theme-selector-label"
@@ -83,7 +108,16 @@ export const MiroirThemeSelector: React.FC<MiroirThemeSelectorProps> = ({
             '& .MuiSelect-select': {
               display: 'flex',
               alignItems: 'center',
+              color: miroirTheme.components.appBar.textColor,
             },
+          }}
+          MenuProps={{
+            PaperProps: {
+              sx: {
+                backgroundColor: miroirTheme.colors.surface,
+                color: miroirTheme.colors.text,
+              }
+            }
           }}
         >
           {availableThemes.map((themeOption) => (
@@ -95,13 +129,21 @@ export const MiroirThemeSelector: React.FC<MiroirThemeSelectorProps> = ({
                 alignItems: 'center',
                 justifyContent: 'space-between',
                 minHeight: 48,
+                color: miroirTheme.colors.text,
+                '&:hover': {
+                  backgroundColor: miroirTheme.colors.hover,
+                },
               }}
             >
               <Box sx={{ display: 'flex', alignItems: 'center', flex: 1 }}>
                 {getThemeColorIndicator(themeOption)}
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                   {getThemeIcon(themeOption.id)}
-                  <Typography variant="body2" component="span">
+                  <Typography 
+                    variant="body2" 
+                    component="span"
+                    sx={{ color: miroirTheme.colors.text }}
+                  >
                     {themeOption.name}
                   </Typography>
                 </Box>
@@ -123,12 +165,12 @@ export const MiroirThemeSelector: React.FC<MiroirThemeSelectorProps> = ({
       {showDescription && currentThemeOption && (
         <Typography 
           variant="caption" 
-          color="text.secondary" 
           sx={{ 
             display: 'block', 
             mt: 0.5,
             fontSize: '0.75rem',
             lineHeight: 1.2,
+            color: miroirTheme.components.appBar.textColor,
           }}
         >
           {currentThemeOption.description}

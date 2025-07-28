@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
 import { default as MuiAppBar, AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
-import { styled, useTheme } from '@mui/material/styles';
+import { styled } from '@mui/material/styles';
 import { 
   Icon, 
   Toolbar, 
@@ -23,6 +23,7 @@ import { LoggerInterface, MiroirLoggerFactory, MiroirMenuItem } from 'miroir-cor
 import { Link, useNavigate } from 'react-router-dom';
 import { packageName } from '../../../constants.js';
 import { cleanLevel } from '../constants.js';
+import { useMiroirTheme } from '../contexts/MiroirThemeContext.js';
 import { SidebarWidth } from './SidebarSection.js';
 import { useMiroirContextService } from '../MiroirContextReactProvider.js';
 import { TableThemeSelector } from '../components/TableThemeSelector';
@@ -103,23 +104,18 @@ styled(
     }
 
     return {
-      zIndex: theme.zIndex.drawer + 1,
+      zIndex: 1201, // Higher than drawer (1200) to appear above it
       position: "static",
       minHeight: 0,
       width: appBarWidth,
       marginLeft: `${marginLeft}px`,
       marginRight: `${marginRight}px`,
-      transition: theme.transitions.create(
-        ["margin", "width"], {
-          easing: theme.transitions.easing.easeOut,
-          duration: theme.transitions.duration.enteringScreen,
-        }
-      ),
-      [theme.breakpoints.between('xs', 'sm')]: {
+      transition: 'margin 0.3s ease-out, width 0.3s ease-out',
+      '@media (max-width: 600px)': {
         padding: '0 0px',
         minHeight: "0px"
       },
-      [theme.breakpoints.up('md')]: {
+      '@media (min-width: 960px)': {
         padding: '0 0px',
         minHeight: "0px"
       },
@@ -127,14 +123,13 @@ styled(
   }
 );
 
-const Offset = styled('div')(({ theme }) => theme.mixins.toolbar);
-
+// ################################################################################################
 export function AppBar(props:AppBarProps) {
   // react hooks
   const navigate = useNavigate();
 
   // custom hooks
-  const theme = useTheme();
+  const miroirTheme = useMiroirTheme();
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
   const context = useMiroirContextService();
@@ -165,6 +160,12 @@ export function AppBar(props:AppBarProps) {
       width={props.width} 
       outlineOpen={props.outlineOpen} 
       outlineWidth={props.outlineWidth}
+      sx={{
+        backgroundColor: miroirTheme.currentTheme.components.appBar.background,
+        color: miroirTheme.currentTheme.components.appBar.textColor,
+        borderBottom: miroirTheme.currentTheme.components.appBar.borderBottom,
+        boxShadow: miroirTheme.currentTheme.components.appBar.elevation,
+      }}
     >
       <>
         <Toolbar disableGutters={false}>
@@ -199,7 +200,7 @@ export function AppBar(props:AppBarProps) {
                   <Icon
                     sx={{
                       mr: 2,
-                      color: 'white',
+                      color: miroirTheme.currentTheme.components.appBar.textColor,
                     }}
                   >home</Icon>
                 </Link>
@@ -269,7 +270,7 @@ export function AppBar(props:AppBarProps) {
                     <Button
                       key={page.label}
                       onClick={(e:any) =>goToLabelPage(e,page.label)}
-                      sx={{ my: 2, color: 'white', display: 'block' }}
+                      sx={{ my: 2, color: miroirTheme.currentTheme.components.appBar.textColor, display: 'block' }}
                     >
                       {page.label}
                     </Button>
@@ -295,9 +296,10 @@ export function AppBar(props:AppBarProps) {
                       px: 1,
                       py: 0.5,
                       backgroundColor: 'transparent',
-                      color: 'white',
+                      color: miroirTheme.currentTheme.components.appBar.textColor,
                       opacity: 0.8,
-                      border: 'none',
+                      border: `1px solid ${miroirTheme.currentTheme.components.appBar.textColor}`,
+                      borderRadius: 1,
                       transition: 'all 0.3s ease-in-out',
                       fontSize: '0.875rem',
                       fontWeight: 'normal',
@@ -305,7 +307,8 @@ export function AppBar(props:AppBarProps) {
                       minWidth: 'auto',
                       cursor: 'pointer',
                       '&:hover': {
-                        backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                        backgroundColor: miroirTheme.currentTheme.colors.hover,
+                        color: miroirTheme.currentTheme.colors.text,
                         opacity: 1,
                       }
                     }}
@@ -326,11 +329,16 @@ export function AppBar(props:AppBarProps) {
                     px: 1,
                     py: 0.5,
                     backgroundColor: 'transparent',
-                    color: context.showPerformanceDisplay ? '#00ff88' : '#cccccc',
+                    color: context.showPerformanceDisplay 
+                      ? miroirTheme.currentTheme.colors.success 
+                      : miroirTheme.currentTheme.components.appBar.textColor,
+                    border: `1px solid ${context.showPerformanceDisplay 
+                      ? miroirTheme.currentTheme.colors.success 
+                      : miroirTheme.currentTheme.components.appBar.textColor}`,
+                    borderRadius: 1,
                     textShadow: context.showPerformanceDisplay 
-                      ? '0 0 8px rgba(0, 255, 136, 0.9), 0 0 16px rgba(0, 255, 136, 0.7), 0 0 24px rgba(0, 255, 136, 0.5)' 
+                      ? `0 0 8px ${miroirTheme.currentTheme.colors.success}aa, 0 0 16px ${miroirTheme.currentTheme.colors.success}77, 0 0 24px ${miroirTheme.currentTheme.colors.success}55` 
                       : 'none',
-                    border: 'none',
                     transition: 'all 0.3s ease-in-out',
                     fontSize: '0.875rem',
                     fontWeight: 'bold',
@@ -338,10 +346,12 @@ export function AppBar(props:AppBarProps) {
                     minWidth: 'auto',
                     cursor: 'pointer',
                     '&:hover': {
-                      backgroundColor: 'transparent',
-                      color: context.showPerformanceDisplay ? '#00ff66' : '#999999',
+                      backgroundColor: miroirTheme.currentTheme.colors.hover,
+                      color: context.showPerformanceDisplay 
+                        ? miroirTheme.currentTheme.colors.success 
+                        : miroirTheme.currentTheme.colors.text,
                       textShadow: context.showPerformanceDisplay 
-                        ? '0 0 12px rgba(0, 255, 102, 1), 0 0 20px rgba(0, 255, 102, 0.8), 0 0 32px rgba(0, 255, 102, 0.6)' 
+                        ? `0 0 12px ${miroirTheme.currentTheme.colors.success}, 0 0 20px ${miroirTheme.currentTheme.colors.success}cc, 0 0 32px ${miroirTheme.currentTheme.colors.success}99` 
                         : 'none',
                     }
                   }}

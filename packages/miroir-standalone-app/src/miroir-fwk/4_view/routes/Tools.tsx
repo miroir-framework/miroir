@@ -631,7 +631,7 @@ export const ToolsPage: React.FC<any> = (
                   <div>no object definition found!</div>
                 ) : (
                   <>
-                    <JzodElementEditor
+                    {/* <JzodElementEditor
                       name={"ROOT"}
                       listKey={"ROOT"}
                       rootLessListKey={emptyString}
@@ -639,16 +639,17 @@ export const ToolsPage: React.FC<any> = (
                       labelElement={<>{pageLabel}</>}
                       currentDeploymentUuid={emptyString}
                       currentApplicationSection={dataSection}
-                      rawJzodSchema={rawSchema}
                       resolvedElementJzodSchema={resolvedJzodSchema}
-                      localRootLessListKeyMap={{}}
+                      // localRootLessListKeyMap={{}}
                       foreignKeyObjects={emptyObject}
                       indentLevel={0}
                       // handleChange={formik.handleChange as any}
                       // formik={formik}
                       // setFormState={setFormState}
                       // formState={formState}
-                    />
+                      // hasTypeError={typeError != undefined}
+                      // typeCheckKeyMap={resolvedTestResultsJzodSchema?.}
+                    /> */}
                     <button type="submit" name={pageLabel} form={"form." + pageLabel}>
                       submit form.{pageLabel}
                     </button>

@@ -11,6 +11,7 @@ import {
 } from '@mui/material';
 import { Palette, DarkMode, CompressOutlined, Style } from '@mui/icons-material';
 import { useTableTheme, TableThemeOption } from '../contexts/TableThemeContext.js';
+import { useMiroirTheme } from '../contexts/MiroirThemeContext.js';
 import { TableTheme } from 'miroir-core';
 
 interface TableThemeSelectorProps {
@@ -64,6 +65,8 @@ export const TableThemeSelector: React.FC<TableThemeSelectorProps> = ({
     selectTheme, 
     availableThemes 
   } = useTableTheme();
+  
+  const miroirTheme = useMiroirTheme();
 
   const handleThemeChange = (event: SelectChangeEvent<string>) => {
     selectTheme(event.target.value as TableTheme);
@@ -71,7 +74,31 @@ export const TableThemeSelector: React.FC<TableThemeSelectorProps> = ({
 
   return (
     <Box sx={{ minWidth: 200 }}>
-      <FormControl size={size} variant={variant} fullWidth>
+      <FormControl 
+        size={size} 
+        variant={variant} 
+        fullWidth
+        sx={{
+          '& .MuiInputLabel-root': {
+            color: miroirTheme.currentTheme.components.appBar.textColor,
+          },
+          '& .MuiOutlinedInput-root': {
+            color: miroirTheme.currentTheme.components.appBar.textColor,
+            '& fieldset': {
+              borderColor: miroirTheme.currentTheme.components.appBar.textColor,
+            },
+            '&:hover fieldset': {
+              borderColor: miroirTheme.currentTheme.components.appBar.textColor,
+            },
+            '&.Mui-focused fieldset': {
+              borderColor: miroirTheme.currentTheme.components.appBar.textColor,
+            },
+          },
+          '& .MuiSelect-icon': {
+            color: miroirTheme.currentTheme.components.appBar.textColor,
+          },
+        }}
+      >
         <InputLabel id="table-theme-selector-label">{label}</InputLabel>
         <Select
           labelId="table-theme-selector-label"
@@ -83,7 +110,16 @@ export const TableThemeSelector: React.FC<TableThemeSelectorProps> = ({
             '& .MuiSelect-select': {
               display: 'flex',
               alignItems: 'center',
+              color: miroirTheme.currentTheme.components.appBar.textColor,
             },
+          }}
+          MenuProps={{
+            PaperProps: {
+              sx: {
+                backgroundColor: miroirTheme.currentTheme.colors.surface,
+                color: miroirTheme.currentTheme.colors.text,
+              }
+            }
           }}
         >
           {availableThemes.map((themeOption) => (
@@ -95,13 +131,21 @@ export const TableThemeSelector: React.FC<TableThemeSelectorProps> = ({
                 alignItems: 'center',
                 justifyContent: 'space-between',
                 minHeight: 48,
+                color: miroirTheme.currentTheme.colors.text,
+                '&:hover': {
+                  backgroundColor: miroirTheme.currentTheme.colors.hover,
+                },
               }}
             >
               <Box sx={{ display: 'flex', alignItems: 'center', flex: 1 }}>
                 {getThemeColorIndicator(themeOption)}
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                   {getThemeIcon(themeOption.id)}
-                  <Typography variant="body2" component="span">
+                  <Typography 
+                    variant="body2" 
+                    component="span"
+                    sx={{ color: miroirTheme.currentTheme.colors.text }}
+                  >
                     {themeOption.name}
                   </Typography>
                 </Box>
@@ -123,12 +167,12 @@ export const TableThemeSelector: React.FC<TableThemeSelectorProps> = ({
       {showDescription && currentThemeOption && (
         <Typography 
           variant="caption" 
-          color="text.secondary" 
           sx={{ 
             display: 'block', 
             mt: 0.5,
             fontSize: '0.75rem',
             lineHeight: 1.2,
+            color: miroirTheme.currentTheme.components.appBar.textColor,
           }}
         >
           {currentThemeOption.description}

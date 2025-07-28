@@ -8,6 +8,7 @@ import {
   ThemedTooltip,
   ThemedSmallIconButton
 } from './ThemedComponents';
+import { useMiroirTheme } from '../contexts/MiroirThemeContext.js';
 
 export interface JzodElementEditorWithOutlineProps extends JzodElementEditorProps {
   showOutlineToggle?: boolean;
@@ -28,6 +29,7 @@ export const JzodElementEditorWithOutline: React.FC<JzodElementEditorWithOutline
   onExternalOutlineToggle,
   ...editorProps
 }) => {
+  const { currentTheme } = useMiroirTheme();
   const [internalOutlineOpen, setInternalOutlineOpen] = useState(false);
   
   // Use external control if provided, otherwise use internal state
@@ -73,8 +75,8 @@ export const JzodElementEditorWithOutline: React.FC<JzodElementEditorWithOutline
       const originalBorder = targetElement.style.border;
       const originalBorderRadius = targetElement.style.borderRadius;
       
-      targetElement.style.backgroundColor = '#fff3cd';
-      targetElement.style.border = '2px solid #ffc107';
+      targetElement.style.backgroundColor = currentTheme.colors.warningLight;
+      targetElement.style.border = `2px solid ${currentTheme.colors.warning}`;
       targetElement.style.borderRadius = '4px';
       targetElement.style.transition = 'all 0.3s ease';
       

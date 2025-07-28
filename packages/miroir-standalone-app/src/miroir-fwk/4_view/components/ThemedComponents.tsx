@@ -1276,31 +1276,23 @@ export const ThemedMenuItemOption: React.FC<ThemedComponentProps & {
 }) => {
   const { currentTheme } = useMiroirTheme();
   
-  const menuItemStyles = css({
-    display: 'block',
-    width: '100%',
-    padding: currentTheme.spacing.sm,
-    backgroundColor: 'transparent',
-    border: 'none',
-    textAlign: 'left',
-    cursor: 'pointer',
-    fontSize: currentTheme.typography.fontSize.sm,
+  const optionStyles = css({
+    backgroundColor: currentTheme.colors.surface,
     color: currentTheme.colors.text,
-    '&:hover': {
-      backgroundColor: currentTheme.colors.hover || currentTheme.colors.primaryLight,
-    },
+    fontSize: currentTheme.typography.fontSize.sm,
+    padding: currentTheme.spacing.sm,
   });
 
   return (
-    <button 
-      css={menuItemStyles} 
+    <option 
+      css={optionStyles} 
       className={className} 
       style={style}
-      onClick={onClick}
+      value={value}
       {...props}
     >
       {children}
-    </button>
+    </option>
   );
 };
 
@@ -1577,6 +1569,72 @@ export const ThemedInlineContainer: React.FC<ThemedComponentProps & {
 
   return (
     <div css={containerStyles} className={className} style={style}>
+      {children}
+    </div>
+  );
+};
+
+// Themed Grid Component - Material-UI Grid wrapper with theme support
+export const ThemedGrid: React.FC<ThemedComponentProps & {
+  container?: boolean;
+  item?: boolean;
+  direction?: 'row' | 'column' | 'row-reverse' | 'column-reverse';
+  spacing?: number;
+  xs?: number | boolean;
+  sm?: number | boolean;
+  md?: number | boolean;
+  lg?: number | boolean;
+  xl?: number | boolean;
+  justifyContent?: 'flex-start' | 'center' | 'flex-end' | 'space-between' | 'space-around' | 'space-evenly';
+  alignItems?: 'flex-start' | 'center' | 'flex-end' | 'stretch' | 'baseline';
+  wrap?: 'nowrap' | 'wrap' | 'wrap-reverse';
+}> = ({ 
+  children, 
+  className, 
+  style,
+  container = false,
+  item = false,
+  direction = 'row',
+  spacing = 0,
+  xs,
+  sm,
+  md,
+  lg,
+  xl,
+  justifyContent,
+  alignItems,
+  wrap = 'wrap',
+  ...props
+}) => {
+  const { currentTheme } = useMiroirTheme();
+  
+  const gridStyles = css({
+    display: container ? 'flex' : 'block',
+    flexDirection: direction,
+    flexWrap: container ? wrap : undefined,
+    justifyContent: container ? justifyContent : undefined,
+    alignItems: container ? alignItems : undefined,
+    margin: container && spacing > 0 ? `-${spacing * 4}px` : undefined,
+    width: container && spacing > 0 ? `calc(100% + ${spacing * 8}px)` : undefined,
+    
+    // Item styles
+    flexGrow: item ? 1 : undefined,
+    flexBasis: item ? 'auto' : undefined,
+    padding: item && spacing > 0 ? `${spacing * 4}px` : undefined,
+    
+    // Responsive breakpoints
+    ...(xs && {
+      flexBasis: typeof xs === 'number' ? `${(xs / 12) * 100}%` : 'auto',
+      maxWidth: typeof xs === 'number' ? `${(xs / 12) * 100}%` : 'none',
+    }),
+    
+    // Background and theming
+    backgroundColor: container ? currentTheme.colors.background : 'transparent',
+    color: currentTheme.colors.text,
+  });
+
+  return (
+    <div css={gridStyles} className={className} style={style} {...props}>
       {children}
     </div>
   );

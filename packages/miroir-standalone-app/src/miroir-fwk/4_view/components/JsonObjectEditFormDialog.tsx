@@ -80,16 +80,17 @@ export type JsonObjectEditFormDialogProps =
   | JsonObjectFormEditorWithButtonDialogProps
   | JsonObjectEditFormDialogWithoutButtonProps;
 
-const Item = styled(Paper)(({ theme }) => ({
-  backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
-  ...theme.typography.body2,
-  padding: theme.spacing(1),
-  textAlign: "left",
-  display: "flex",
-  maxHeight: "50vh",
-  // height: '80vh',
-  color: theme.palette.text.secondary,
-}));
+// ⚠️ DEPRECATED: Use ThemedComponents instead of hard-coded MUI styled components
+// const Item = styled(Paper)(({ theme }) => ({
+//   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
+//   ...theme.typography.body2,
+//   padding: theme.spacing(1),
+//   textAlign: "left",
+//   display: "flex",
+//   maxHeight: "50vh",
+//   // height: '80vh',
+//   color: theme.palette.text.secondary,
+// }));
 
 // ################################################################################################
 // not used
