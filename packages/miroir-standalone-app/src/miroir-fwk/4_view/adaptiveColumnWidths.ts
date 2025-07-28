@@ -58,7 +58,7 @@ export function calculateAdaptiveColumnWidths(
     let type: ColumnWidthSpec['type'] = 'text';
     if (field === '' || field === 'tools') {
       type = 'tools';
-    } else if (field === 'uuid') {
+    } else if (field === 'uuid' || fieldSchema?.type === 'uuid') {
       type = 'uuid';
     } else if (field === 'name') {
       type = 'name';
@@ -101,9 +101,16 @@ export function calculateAdaptiveColumnWidths(
           type
         };
       case 'uuid':
-        minWidth = 120;
-        maxWidth = 180;
-        baseWidth = 150;
+        // Fixed width based on UUID character count (36 chars + padding)
+        // Standard UUID format: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx (36 characters)
+        const uuidCharCount = 36;
+        const uuidContentWidth = uuidCharCount * CHAR_WIDTH + PADDING;
+        const headerWidth = headerName.length * CHAR_WIDTH + PADDING;
+        // Use the larger of UUID content width or header width to ensure both fit
+        const uuidFixedWidth = Math.max(uuidContentWidth, headerWidth);
+        minWidth = uuidFixedWidth;
+        maxWidth = uuidFixedWidth;
+        baseWidth = uuidFixedWidth;
         break;
       case 'name':
         minWidth = 100;
@@ -174,8 +181,14 @@ export function calculateAdaptiveColumnWidths(
     }
 
     // Calculate final width
-    const contentBasedWidth = Math.max(baseWidth, maxContentWidth);
-    const calculatedWidth = Math.min(Math.max(contentBasedWidth, minWidth), maxWidth);
+    let calculatedWidth: number;
+    if (type === 'uuid') {
+      // UUID columns always use fixed width, ignore content-based calculation
+      calculatedWidth = baseWidth;
+    } else {
+      const contentBasedWidth = Math.max(baseWidth, maxContentWidth);
+      calculatedWidth = Math.min(Math.max(contentBasedWidth, minWidth), maxWidth);
+    }
 
     return {
       field,
@@ -197,9 +210,9 @@ export function calculateAdaptiveColumnWidths(
   
   // Only scale if the ratio is reasonable and the difference is significant
   if (widthDifference > 20 && targetWidthRatio > 0.3 && targetWidthRatio < 3.0) {
-    // Apply proportional scaling to all columns except tools column
+    // Apply proportional scaling to all columns except tools and uuid columns
     columnSpecs.forEach(spec => {
-      if (spec.type !== 'tools') {
+      if (spec.type !== 'tools' && spec.type !== 'uuid') {
         const scaledWidth = spec.calculatedWidth * targetWidthRatio;
         // Ensure the scaled width stays within reasonable bounds
         spec.calculatedWidth = Math.max(Math.min(scaledWidth, spec.maxWidth), spec.minWidth);
@@ -213,8 +226,8 @@ export function calculateAdaptiveColumnWidths(
   
   // Only apply final adjustment if the difference is significant
   if (Math.abs(finalDifference) > 5) {
-    // Apply the remaining difference to the largest non-tools column
-    const flexibleColumns = columnSpecs.filter(spec => spec.type !== 'tools');
+    // Apply the remaining difference to the largest non-tools, non-uuid column
+    const flexibleColumns = columnSpecs.filter(spec => spec.type !== 'tools' && spec.type !== 'uuid');
     if (flexibleColumns.length > 0) {
       const largestColumn = flexibleColumns.reduce((largest, current) => 
         current.calculatedWidth > largest.calculatedWidth ? current : largest
@@ -224,9 +237,11 @@ export function calculateAdaptiveColumnWidths(
     }
   }
 
-  // Ensure no column is smaller than an absolute minimum
+  // Ensure no column is smaller than an absolute minimum, except for fixed-width columns like UUID
   columnSpecs.forEach(spec => {
-    spec.calculatedWidth = Math.max(spec.calculatedWidth, 50); // Absolute minimum for usability
+    if (spec.type !== 'uuid') {
+      spec.calculatedWidth = Math.max(spec.calculatedWidth, 50); // Absolute minimum for usability
+    }
   });
 
   return columnSpecs;

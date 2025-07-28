@@ -712,7 +712,10 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   return (
     <ThemedBox className="MiroirReport-global" display="block">
       {context.showPerformanceDisplay && (
-        <div> ReportSectionListDisplay renders: {navigationCount} (total: {totalCount}) times.</div>
+        <div>
+          {" "}
+          ReportSectionListDisplay renders: {navigationCount} (total: {totalCount}) times.
+        </div>
       )}
       {/* labelll:{props.select?.label?<span>{props.select?.label}</span>:<></>} */}
       {currentReportTargetEntity && currentReportTargetEntityDefinition ? (
@@ -720,21 +723,33 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
           // columnDefs?.length > 0
           // <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
           <div>
-            <div>{/* colonnes: {JSON.stringify(columnDefs)} */}</div>
-            <h3>
-              {props.defaultlabel ?? currentReportTargetEntityDefinition?.name??"No Entity Found!"}
+            <div style={{ display: "flex", alignItems: "baseline", gap: "10px", marginBottom: "10px" }}>
+              <h3 style={{ margin: 0 }}>
+                {props.defaultlabel ??
+                  currentReportTargetEntityDefinition?.name ??
+                  "No Entity Found!"}
+              </h3>
               <ThemedButton
-                style={{marginLeft: "10px"}}
+                style={{
+                  padding: "4px 8px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
                 variant="secondary"
                 onClick={() => {
-                  handleAddObjectDialogFormButtonClick(props.defaultlabel ?? currentReportTargetEntityDefinition?.name??"No Entity Found!", defaultFormValuesObject);
+                  handleAddObjectDialogFormButtonClick(
+                    props.defaultlabel ??
+                      currentReportTargetEntityDefinition?.name ??
+                      "No Entity Found!",
+                    defaultFormValuesObject
+                  );
                 }}
               >
-                <AddBox />
+                <AddBox style={{ fontSize: "1em", display: "block" }} />
               </ThemedButton>
-            </h3>
-            {
-              addObjectdialogFormIsOpen?
+            </div>
+            {addObjectdialogFormIsOpen ? (
               <JsonObjectEditFormDialog
                 showButton={false}
                 isOpen={addObjectdialogFormIsOpen}
@@ -742,7 +757,9 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
                 onCreateFormObject={onCreateFormObject}
                 isAttributes={true}
                 label={props.defaultlabel ?? currentReportTargetEntityDefinition?.name}
-                entityDefinitionJzodSchema={currentReportTargetEntityDefinition?.jzodSchema as JzodObject}
+                entityDefinitionJzodSchema={
+                  currentReportTargetEntityDefinition?.jzodSchema as JzodObject
+                }
                 foreignKeyObjects={foreignKeyObjects}
                 currentDeploymentUuid={props.displayedDeploymentDefinition?.uuid}
                 currentApplicationSection={props.chosenApplicationSection}
@@ -753,10 +770,10 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
                 setAddObjectdialogFormIsOpen={setAddObjectdialogFormIsOpen}
                 onSubmit={onSubmitOuterDialog}
               />
-              :
+            ) : (
               <></>
-            }
-            {props.displayedDeploymentDefinition? (
+            )}
+            {props.displayedDeploymentDefinition ? (
               <div>
                 {/* <div>instancesToDisplay: {JSON.stringify(instancesToDisplay)}</div> */}
                 <MTableComponent
@@ -786,7 +803,9 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
           <span>No elements in the report</span>
         )
       ) : (
-        <ThemedSpan style={{ color: "red" }}>ReportSectionListDisplay, no report to display: {JSON.stringify(props.section)}</ThemedSpan>
+        <ThemedSpan style={{ color: "red" }}>
+          ReportSectionListDisplay, no report to display: {JSON.stringify(props.section)}
+        </ThemedSpan>
       )}
     </ThemedBox>
   );

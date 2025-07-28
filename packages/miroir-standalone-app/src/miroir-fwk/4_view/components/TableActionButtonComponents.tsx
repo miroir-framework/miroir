@@ -31,6 +31,8 @@ export const EditActionButton: React.FC<BaseActionButtonProps> = ({
   size = 'small',
   onClick,
 }) => {
+  const { currentTheme } = useMiroirTheme();
+  
   const handleClick = (event?: any) => {
     event?.stopPropagation?.();
     log.info("EditActionButton clicked", { row });
@@ -53,7 +55,7 @@ export const EditActionButton: React.FC<BaseActionButtonProps> = ({
         }}
         title="Edit"
       >
-        <CreateIcon style={{ fontSize: '16px' }} />
+        <CreateIcon style={{ fontSize: '16px', color: currentTheme.colors.text }} />
       </button>
     );
   }
@@ -75,6 +77,8 @@ export const DuplicateActionButton: React.FC<BaseActionButtonProps> = ({
   size = 'small',
   onClick,
 }) => {
+  const { currentTheme } = useMiroirTheme();
+  
   const handleClick = (event?: any) => {
     event?.stopPropagation?.();
     log.info("DuplicateActionButton clicked", { row });
@@ -97,7 +101,7 @@ export const DuplicateActionButton: React.FC<BaseActionButtonProps> = ({
         }}
         title="Duplicate"
       >
-        <ContentCopyIcon style={{ fontSize: '16px' }} />
+        <ContentCopyIcon style={{ fontSize: '16px', color: currentTheme.colors.text }} />
       </button>
     );
   }
@@ -119,6 +123,8 @@ export const DeleteActionButton: React.FC<BaseActionButtonProps> = ({
   size = 'small',
   onClick,
 }) => {
+  const { currentTheme } = useMiroirTheme();
+  
   const handleClick = (event?: any) => {
     event?.stopPropagation?.();
     log.info("DeleteActionButton clicked", { row });
@@ -141,7 +147,7 @@ export const DeleteActionButton: React.FC<BaseActionButtonProps> = ({
         }}
         title="Delete"
       >
-        <DeleteIcon style={{ fontSize: '16px' }} />
+        <DeleteIcon style={{ fontSize: '16px', color: currentTheme.colors.text }} />
       </button>
     );
   }

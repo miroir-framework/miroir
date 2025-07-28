@@ -66,11 +66,14 @@ export const ThemedButton: React.FC<ThemedComponentProps & {
   const buttonStyles = css({
     padding: `${currentTheme.spacing.sm} ${currentTheme.spacing.md}`,
     backgroundColor: variant === 'primary' ? currentTheme.colors.primary : currentTheme.colors.secondary,
-    color: currentTheme.colors.text,
+    // Use surface color (white/light) for text on colored button backgrounds for proper contrast
+    color: currentTheme.colors.surface,
     border: 'none',
     borderRadius: currentTheme.borderRadius.md,
     cursor: 'pointer',
     fontFamily: currentTheme.typography.fontFamily,
+    fontSize: currentTheme.typography.fontSize,
+    fontWeight: currentTheme.typography.fontWeight,
     '&:hover': {
       backgroundColor: variant === 'primary' ? currentTheme.colors.primaryDark : currentTheme.colors.secondaryDark,
     },
@@ -557,12 +560,15 @@ export const ThemedAddIcon: React.FC<ThemedComponentProps> = ({
   const { currentTheme } = useMiroirTheme();
   
   const iconStyles = css({
-    height: '1em',
-    width: '1em',
+    height: '0.8em',
+    width: '0.8em',
     color: currentTheme.colors.text,
     display: 'inline-flex',
     alignItems: 'center',
     justifyContent: 'center',
+    fontSize: '0.9em',
+    lineHeight: '1',
+    verticalAlign: 'baseline',
   });
 
   return (
@@ -732,7 +738,10 @@ export const ThemedDrawer: React.FC<ThemedComponentProps & {
     left: 0,
     height: '100vh',
     zIndex: 1200,
+    // Prevent any overflow issues
     overflow: 'hidden',
+    // Ensure drawer doesn't affect main layout
+    maxWidth: open ? `${width}px` : '0px',
   });
 
   return (
@@ -1767,6 +1776,420 @@ export const ThemedGrid: React.FC<ThemedComponentProps & {
     <div css={gridStyles} className={className} style={style} {...props}>
       {children}
     </div>
+  );
+};
+
+// ################################################################################################
+// Sidebar List Themed Components
+// ################################################################################################
+
+export const ThemedList: React.FC<ThemedComponentProps & {
+  dense?: boolean;
+  disablePadding?: boolean;
+}> = ({ 
+  children, 
+  className, 
+  style,
+  dense = false,
+  disablePadding = false
+}) => {
+  const { currentTheme } = useMiroirTheme();
+  
+  const listStyles = css({
+    listStyle: 'none',
+    margin: 0,
+    padding: disablePadding ? 0 : currentTheme.spacing.xs,
+    backgroundColor: 'transparent',
+    color: currentTheme.colors.text,
+  });
+
+  return (
+    <ul css={listStyles} className={className} style={style}>
+      {children}
+    </ul>
+  );
+};
+
+export const ThemedListItem: React.FC<ThemedComponentProps & {
+  disablePadding?: boolean;
+}> = ({ 
+  children, 
+  className, 
+  style,
+  disablePadding = false
+}) => {
+  const { currentTheme } = useMiroirTheme();
+  
+  const itemStyles = css({
+    display: 'block',
+    padding: disablePadding ? 0 : `${currentTheme.spacing.xs} 0`,
+    color: currentTheme.colors.text,
+  });
+
+  return (
+    <li css={itemStyles} className={className} style={style}>
+      {children}
+    </li>
+  );
+};
+
+export const ThemedListItemButton: React.FC<ThemedComponentProps & {
+  component?: any;
+  to?: string;
+  sx?: any;
+}> = ({ 
+  children, 
+  className, 
+  style,
+  onClick,
+  component: Component = 'button',
+  to,
+  sx
+}) => {
+  const { currentTheme } = useMiroirTheme();
+  
+  const buttonStyles = css({
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'flex-start', // Explicitly set left alignment
+    width: '100%',
+    padding: sx?.padding !== undefined ? sx.padding : `${currentTheme.spacing.sm} ${currentTheme.spacing.md}`,
+    backgroundColor: 'transparent',
+    border: 'none',
+    color: currentTheme.colors.text,
+    textDecoration: 'none',
+    cursor: 'pointer',
+    borderRadius: currentTheme.borderRadius.sm,
+    transition: 'background-color 0.2s',
+    textAlign: 'left', // Ensure text alignment is left
+    '&:hover': {
+      backgroundColor: currentTheme.colors.hover || currentTheme.colors.primaryLight,
+    },
+    '&:active': {
+      backgroundColor: currentTheme.colors.active || currentTheme.colors.primary,
+    },
+    // Handle any additional sx styles (excluding padding since we handled it above)
+    ...(sx ? Object.fromEntries(Object.entries(sx).filter(([key]) => key !== 'padding')) : {})
+  });
+
+  const props = {
+    css: buttonStyles,
+    className,
+    style,
+    onClick,
+    ...(to ? { to } : {})
+  };
+
+  return (
+    <Component {...props}>
+      {children}
+    </Component>
+  );
+};
+
+export const ThemedListItemIcon: React.FC<ThemedComponentProps> = ({ 
+  children, 
+  className, 
+  style
+}) => {
+  const { currentTheme } = useMiroirTheme();
+  
+  const iconStyles = css({
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    minWidth: '40px',
+    width: '40px', // Fixed width to ensure consistent spacing
+    marginRight: currentTheme.spacing.sm,
+    color: currentTheme.colors.text,
+    fontSize: currentTheme.typography.fontSize.lg,
+    flexShrink: 0, // Prevent icon from shrinking
+  });
+
+  return (
+    <span css={iconStyles} className={className} style={style}>
+      {children}
+    </span>
+  );
+};
+
+export const ThemedListItemText: React.FC<ThemedComponentProps & {
+  primary?: React.ReactNode;
+  secondary?: React.ReactNode;
+}> = ({ 
+  children, 
+  className, 
+  style,
+  primary,
+  secondary
+}) => {
+  const { currentTheme } = useMiroirTheme();
+  
+  const textStyles = css({
+    flex: 1,
+    color: currentTheme.colors.text,
+    fontSize: currentTheme.typography.fontSize.md,
+    textAlign: 'left', // Explicitly left-align text
+    justifyContent: 'flex-start', // Ensure content starts from left
+    alignItems: 'flex-start', // Align items to start
+  });
+
+  const secondaryStyles = css({
+    color: currentTheme.colors.textSecondary || currentTheme.colors.text,
+    fontSize: currentTheme.typography.fontSize.sm,
+    marginTop: currentTheme.spacing.xs,
+  });
+
+  return (
+    <div css={textStyles} className={className} style={style}>
+      {primary || children}
+      {secondary && <div css={secondaryStyles}>{secondary}</div>}
+    </div>
+  );
+};
+
+export const ThemedIcon: React.FC<ThemedComponentProps> = ({ 
+  children, 
+  className, 
+  style
+}) => {
+  const { currentTheme } = useMiroirTheme();
+  
+  // Map common icon name variations to valid Material Icons names
+  const iconNameMap: Record<string, string> = {
+    'savedSearch': 'saved_search',
+    'SavedSearch': 'saved_search',
+    'autoStories': 'auto_stories',
+    'AutoStories': 'auto_stories',
+    // Add more mappings as needed
+  };
+  
+  // Get the mapped icon name or use the original if no mapping exists
+  const iconName = typeof children === 'string' ? (iconNameMap[children] || children) : children;
+  
+  const iconStyles = css({
+    fontFamily: 'Material Icons',
+    fontWeight: 'normal',
+    fontStyle: 'normal',
+    fontSize: currentTheme.typography.fontSize.lg,
+    lineHeight: 1,
+    letterSpacing: 'normal',
+    textTransform: 'none',
+    display: 'inline-block',
+    whiteSpace: 'nowrap',
+    wordWrap: 'normal',
+    direction: 'ltr',
+    color: currentTheme.colors.text,
+    // Support for ligatures
+    fontFeatureSettings: '"liga"',
+    WebkitFontFeatureSettings: '"liga"',
+    WebkitFontSmoothing: 'antialiased',
+    // Make sure icon is visible
+    minWidth: '24px',
+    textAlign: 'center',
+  });
+
+  return (
+    <span css={iconStyles} className={`material-icons ${className || ''}`} style={style}>
+      {iconName}
+    </span>
+  );
+};
+
+// ################################################################################################
+// Scrollable Content Wrapper
+// ################################################################################################
+
+export const ThemedScrollableContent: React.FC<ThemedComponentProps> = ({ 
+  children, 
+  className, 
+  style
+}) => {
+  const { currentTheme } = useMiroirTheme();
+  
+  const scrollableStyles = css({
+    flex: '1 1 auto',
+    // Only enable vertical scrolling when content exceeds container height
+    overflowY: 'auto',
+    overflowX: 'hidden',
+    // Remove flex display that was causing layout issues
+    display: 'block',
+    // Ensure content doesn't exceed container width
+    maxWidth: '100%',
+    boxSizing: 'border-box',
+    // Custom scrollbar styling
+    '&::-webkit-scrollbar': {
+      width: '8px',
+    },
+    '&::-webkit-scrollbar-track': {
+      backgroundColor: currentTheme.colors.surface,
+    },
+    '&::-webkit-scrollbar-thumb': {
+      backgroundColor: currentTheme.colors.border,
+      borderRadius: '4px',
+      '&:hover': {
+        backgroundColor: currentTheme.colors.hover || currentTheme.colors.primaryLight,
+      },
+    },
+  });
+
+  return (
+    <div css={scrollableStyles} className={className} style={style}>
+      {children}
+    </div>
+  );
+};
+
+// ################################################################################################
+// Themed Material-UI Components
+// Wrappers around Material-UI components that properly integrate with the Miroir theme system
+// ################################################################################################
+
+import { FormControl, InputLabel, MenuItem, Select } from '@mui/material';
+import type { FormControlProps, InputLabelProps, MenuItemProps, SelectProps } from '@mui/material';
+
+// Themed FormControl that applies Miroir theme colors
+export const ThemedFormControl: React.FC<FormControlProps & ThemedComponentProps> = ({ 
+  children, 
+  className, 
+  style,
+  ...props 
+}) => {
+  const { currentTheme } = useMiroirTheme();
+  
+  const formControlStyles = css({
+    '& .MuiInputLabel-root': {
+      color: currentTheme.colors.text,
+      '&.Mui-focused': {
+        color: currentTheme.colors.primary,
+      },
+    },
+    '& .MuiOutlinedInput-root': {
+      backgroundColor: currentTheme.colors.surface,
+      color: currentTheme.colors.text,
+      '& fieldset': {
+        borderColor: currentTheme.colors.border,
+      },
+      '&:hover fieldset': {
+        borderColor: currentTheme.colors.primary,
+      },
+      '&.Mui-focused fieldset': {
+        borderColor: currentTheme.colors.primary,
+      },
+    },
+    '& .MuiSelect-select': {
+      color: currentTheme.colors.text,
+      backgroundColor: currentTheme.colors.surface,
+    },
+    '& .MuiInputBase-root': {
+      color: currentTheme.colors.text,
+      backgroundColor: currentTheme.colors.surface,
+    },
+  });
+
+  return (
+    <FormControl css={formControlStyles} className={className} style={style} {...props}>
+      {children}
+    </FormControl>
+  );
+};
+
+// Themed InputLabel that applies Miroir theme colors
+export const ThemedInputLabel: React.FC<InputLabelProps & ThemedComponentProps> = ({ 
+  children, 
+  className, 
+  style,
+  ...props 
+}) => {
+  const { currentTheme } = useMiroirTheme();
+  
+  const inputLabelStyles = css({
+    color: `${currentTheme.colors.text} !important`,
+    fontFamily: currentTheme.typography.fontFamily,
+    fontSize: currentTheme.typography.fontSize,
+    '&.Mui-focused': {
+      color: `${currentTheme.colors.primary} !important`,
+    },
+    '&.MuiInputLabel-shrink': {
+      color: `${currentTheme.colors.textSecondary} !important`,
+    },
+  });
+
+  return (
+    <InputLabel css={inputLabelStyles} className={className} style={style} {...props}>
+      {children}
+    </InputLabel>
+  );
+};
+
+// Themed MenuItem that applies Miroir theme colors
+export const ThemedMenuItem: React.FC<MenuItemProps & ThemedComponentProps> = ({ 
+  children, 
+  className, 
+  style,
+  ...props 
+}) => {
+  const { currentTheme } = useMiroirTheme();
+  
+  const menuItemStyles = css({
+    color: `${currentTheme.colors.text} !important`,
+    backgroundColor: `${currentTheme.colors.surface} !important`,
+    fontFamily: currentTheme.typography.fontFamily,
+    fontSize: currentTheme.typography.fontSize,
+    '&:hover': {
+      backgroundColor: `${currentTheme.colors.hover} !important`,
+    },
+    '&.Mui-selected': {
+      backgroundColor: `${currentTheme.colors.selected} !important`,
+      '&:hover': {
+        backgroundColor: `${currentTheme.colors.primaryLight} !important`,
+      },
+    },
+  });
+
+  return (
+    <MenuItem css={menuItemStyles} className={className} style={style} {...props}>
+      {children}
+    </MenuItem>
+  );
+};
+
+// Enhanced ThemedSelect that wraps Material-UI Select with proper theming
+export const ThemedMUISelect: React.FC<SelectProps & ThemedComponentProps> = ({ 
+  children, 
+  className, 
+  style,
+  ...props 
+}) => {
+  const { currentTheme } = useMiroirTheme();
+  
+  const selectStyles = css({
+    color: `${currentTheme.colors.text} !important`,
+    backgroundColor: `${currentTheme.colors.surface} !important`,
+    fontFamily: currentTheme.typography.fontFamily,
+    fontSize: currentTheme.typography.fontSize,
+    '& .MuiSelect-select': {
+      color: `${currentTheme.colors.text} !important`,
+      backgroundColor: `${currentTheme.colors.surface} !important`,
+    },
+    '& .MuiOutlinedInput-notchedOutline': {
+      borderColor: `${currentTheme.colors.border} !important`,
+    },
+    '&:hover .MuiOutlinedInput-notchedOutline': {
+      borderColor: `${currentTheme.colors.primary} !important`,
+    },
+    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+      borderColor: `${currentTheme.colors.primary} !important`,
+    },
+    '& .MuiSelect-icon': {
+      color: `${currentTheme.colors.text} !important`,
+    },
+  });
+
+  return (
+    <Select css={selectStyles} className={className} style={style} {...props}>
+      {children}
+    </Select>
   );
 };
 

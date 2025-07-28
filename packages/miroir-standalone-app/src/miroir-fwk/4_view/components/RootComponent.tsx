@@ -34,12 +34,16 @@ import {
 } from 'react';
 import { Outlet } from 'react-router-dom';
 import type { SelectChangeEvent, AppBarProps as MuiAppBarProps } from '@mui/material';
-import { AppBar as MuiAppBar, styled, Toolbar, Box, Grid, FormControl, InputLabel, MenuItem, Snackbar, Alert } from '@mui/material';
+import { AppBar as MuiAppBar, styled, Toolbar, Box, Grid, Snackbar, Alert } from '@mui/material';
 import { 
   ThemedSelect,
   ThemedButton,
   ThemedBox,
-  ThemedGrid
+  ThemedGrid,
+  ThemedFormControl,
+  ThemedInputLabel,
+  ThemedMenuItem,
+  ThemedMUISelect
 } from './ThemedComponents';
 
 import { v4 as uuidv4 } from 'uuid';
@@ -172,9 +176,13 @@ styled(
   outlineWidth?: number;
 }>(
   ({ theme, open, width = SidebarWidth, outlineOpen, outlineWidth = 300 }) => ({
+    // Ensure main content never causes horizontal overflow
+    boxSizing: 'border-box',
+    overflowX: 'hidden',
+    minWidth: 0, // Allow flex item to shrink below content size
     ...(
       open && {
-        width: `calc(100% - ${width}px - ${outlineOpen ? outlineWidth : 0}px)`,
+        width: `calc(100vw - ${width}px - ${outlineOpen ? outlineWidth : 0}px)`,
         marginLeft: `${width}px`,
         marginRight: outlineOpen ? `${outlineWidth}px` : 0,
         transition: theme.transitions.create(
@@ -186,8 +194,19 @@ styled(
       }
     ),
     ...(!open && outlineOpen && {
-      width: `calc(100% - ${outlineWidth}px)`,
+      width: `calc(100vw - ${outlineWidth}px)`,
       marginRight: `${outlineWidth}px`,
+      transition: theme.transitions.create(
+        ["margin", "width"], {
+          easing: theme.transitions.easing.easeOut,
+          duration: theme.transitions.duration.enteringScreen,
+        }
+      ),
+    }),
+    ...(!open && !outlineOpen && {
+      width: '100vw',
+      marginLeft: 0,
+      marginRight: 0,
       transition: theme.transitions.create(
         ["margin", "width"], {
           easing: theme.transitions.easing.easeOut,
@@ -675,8 +694,24 @@ export const RootComponent = (props: RootComponentProps) => {
         currentThemeId={defaultViewParamsFromAdminStorage?.appTheme || "default"}
         onThemeChange={handleAppThemeChange}
       >
-        <div>
-            <ThemedBox display="flex" flexGrow={1} flexDirection="column">
+        <div style={{ 
+          width: '100vw', 
+          height: '100vh', 
+          overflow: 'hidden', 
+          position: 'relative',
+          boxSizing: 'border-box'
+        }}>
+            <div 
+              style={{
+                display: 'flex',
+                flexGrow: 1,
+                flexDirection: 'column',
+                width: '100%',
+                height: '100%',
+                position: 'relative',
+                overflow: 'hidden'
+              }}
+            >
               {/* Sidebar positioned as fixed overlay */}
               <Sidebar
                 open={drawerIsOpen}
@@ -720,11 +755,11 @@ export const RootComponent = (props: RootComponentProps) => {
                       )}
                       <p />
                       <div>
-                        <FormControl fullWidth>
-                          <InputLabel id="demo-simple-select-label">
+                        <ThemedFormControl fullWidth>
+                          <ThemedInputLabel id="demo-simple-select-label">
                             Chosen selfApplication Deployment
-                          </InputLabel>
-                          <ThemedSelect
+                          </ThemedInputLabel>
+                          <ThemedMUISelect
                             labelId="demo-simple-select-label"
                             id="demo-simple-select"
                             value={context.deploymentUuid}
@@ -733,13 +768,13 @@ export const RootComponent = (props: RootComponentProps) => {
                           >
                             {deployments.map((deployment) => {
                               return (
-                                <MenuItem key={deployment.name} value={deployment.uuid}>
+                                <ThemedMenuItem key={deployment.name} value={deployment.uuid}>
                                   {deployment.description}
-                                </MenuItem>
+                                </ThemedMenuItem>
                               );
                             })}
-                          </ThemedSelect>
-                        </FormControl>
+                          </ThemedMUISelect>
+                        </ThemedFormControl>
                       </div>
 
                       <span>
@@ -1059,7 +1094,7 @@ export const RootComponent = (props: RootComponentProps) => {
                   </ThemedGrid>
                 </ThemedGrid>
               </ThemedGrid>
-            </ThemedBox>
+            </div>
 
             {/* Document Outline - Full height on right side */}
             <InstanceEditorOutline

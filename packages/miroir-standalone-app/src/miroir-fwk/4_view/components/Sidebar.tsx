@@ -23,7 +23,8 @@ import {
   ThemedDrawerHeader, 
   ThemedResizeHandle, 
   ThemedDivider, 
-  ThemedIconButton 
+  ThemedIconButton,
+  ThemedScrollableContent 
 } from './ThemedComponents.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -120,35 +121,37 @@ export const Sidebar: FC<{
           count: {count}
         </span>
       </ThemedDrawerHeader>
-      <ThemedDivider />
-      <SidebarSection
-        deploymentUuid={adminConfigurationDeploymentAdmin.uuid}
-        menuUuid={menuDefaultAdmin.uuid}
-        open={props.open}
-        setOpen={props.setOpen}
-      />
-      <ThemedDivider />
-      <SidebarSection
-        deploymentUuid={adminConfigurationDeploymentMiroir.uuid}
-        menuUuid={menuDefaultMiroir.uuid}
-        open={props.open}
-        setOpen={props.setOpen}
-      />
-      <ThemedDivider />
-      <SidebarSection
-        deploymentUuid={adminConfigurationDeploymentParis.uuid}
-        menuUuid={defaultMenuParisUuid}
-        open={props.open}
-        setOpen={props.setOpen}
-      />
-      <ThemedDivider />
-      <SidebarSection
-        deploymentUuid={adminConfigurationDeploymentLibrary.uuid}
-        menuUuid={menuDefaultLibrary.uuid}
-        open={props.open}
-        setOpen={props.setOpen}
-      />
-      <ThemedDivider />
+      <ThemedScrollableContent>
+        <ThemedDivider />
+        <SidebarSection
+          deploymentUuid={adminConfigurationDeploymentAdmin.uuid}
+          menuUuid={menuDefaultAdmin.uuid}
+          open={props.open}
+          setOpen={props.setOpen}
+        />
+        <ThemedDivider />
+        <SidebarSection
+          deploymentUuid={adminConfigurationDeploymentMiroir.uuid}
+          menuUuid={menuDefaultMiroir.uuid}
+          open={props.open}
+          setOpen={props.setOpen}
+        />
+        <ThemedDivider />
+        <SidebarSection
+          deploymentUuid={adminConfigurationDeploymentParis.uuid}
+          menuUuid={defaultMenuParisUuid}
+          open={props.open}
+          setOpen={props.setOpen}
+        />
+        <ThemedDivider />
+        <SidebarSection
+          deploymentUuid={adminConfigurationDeploymentLibrary.uuid}
+          menuUuid={menuDefaultLibrary.uuid}
+          open={props.open}
+          setOpen={props.setOpen}
+        />
+        <ThemedDivider />
+      </ThemedScrollableContent>
       {/* Resize handle - only show when sidebar is open */}
       {props.open && (
         <ThemedResizeHandle

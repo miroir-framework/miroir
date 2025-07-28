@@ -1,14 +1,18 @@
 import { FC, useMemo } from 'react';
 import { cleanLevel } from "../constants.js";
 import { 
-  ThemedDivider
+  ThemedDivider,
+  ThemedList,
+  ThemedListItem,
+  ThemedListItemButton,
+  ThemedListItemIcon,
+  ThemedListItemText,
+  ThemedIcon
 } from "./ThemedComponents.js";
 import { useMiroirTheme } from '../contexts/MiroirThemeContext.js';
 import AutoStories from '@mui/icons-material/AutoStories';
 import { CSSObject, styled, Theme, useTheme } from '@mui/material/styles';
-import { Icon, Divider, List, ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
 import MuiDrawer from '@mui/material/Drawer';
-import SavedSearch from '@mui/icons-material/SavedSearch.js';
 import { Link } from 'react-router-dom';
 
 
@@ -31,13 +35,6 @@ import {
 import { getMemoizedDeploymentEntityStateSelectorMap } from 'miroir-localcache-redux';
 import { packageName } from '../../../constants.js';
 import { useCurrentModel, useDeploymentEntityStateQuerySelector } from '../ReduxHooks.js';
-
-const MatDivider: any = Divider;
-const MatList: any = List;
-const MatListItem: any = ListItem;
-const MatListItemButton: any = ListItemButton;
-const MatListItemIcon: any = ListItemIcon;
-const MatListItemText: any = ListItemText;
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -175,67 +172,63 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
   //   // miroirMenusDomainElementObject?.elementValue
   // );
   const drawerSx = useMemo(()=>({flexDirection:'column'}),[])
-  const styledDrawerSx = useMemo(()=>({alignItems: "end"}),[])
-
-
-
   return (
     <>
       {
         miroirMenusDomainElementObject.elementType == "failure"
         ?
-        <MatList disablePadding dense>
-          <MatListItem key={"failed"} disablePadding>
-            <MatListItemButton>
-              <MatListItemIcon>
+        <ThemedList disablePadding dense>
+          <ThemedListItem key={"failed"} disablePadding>
+            <ThemedListItemButton>
+              <ThemedListItemIcon>
                 {/* {index % 2 === 0 ? <InboxIcon /> : <MailIcon />} */}
-                <Icon>error</Icon>
-              </MatListItemIcon>
-              <MatListItemText primary="Failed to load menu" />
-            </MatListItemButton>
-          </MatListItem>
-        </MatList>
+                <ThemedIcon>error</ThemedIcon>
+              </ThemedListItemIcon>
+              <ThemedListItemText primary="Failed to load menu" />
+            </ThemedListItemButton>
+          </ThemedListItem>
+        </ThemedList>
         :
         <>
           {
           !((miroirMenusDomainElementObject as any)?.menus as any)?.definition?.menuType ||
           ((miroirMenusDomainElementObject as any)?.menus as any)?.definition?.menuType == "simpleMenu"?
-          <MatList disablePadding dense>
+          <ThemedList disablePadding dense>
             {(
               ((miroirMenusDomainElementObject as any)?.menus as any)?.definition?.definition ?? sideBarDefaultItems
               ).map((i: any, index: number) => (
-              <MatListItem key={i.label} disablePadding>
-                <MatListItemButton sx={{padding: 0}} component={Link} to={`/report/${i.selfApplication}/${i.section}/${i.reportUuid}/xxxxxx`}>
-                  <MatListItemIcon>
+              <ThemedListItem key={i.label} disablePadding>
+                <ThemedListItemButton sx={{padding: 0}} component={Link} to={`/report/${i.selfApplication}/${i.section}/${i.reportUuid}/xxxxxx`}>
+                  <ThemedListItemIcon>
                     {/* {index % 2 === 0 ? <InboxIcon /> : <MailIcon />} */}
-                    <Icon>{i.icon}</Icon>
-                  </MatListItemIcon>
-                  <MatListItemText primary={i.label} />
-                </MatListItemButton>
-              </MatListItem>
+                    <ThemedIcon>{i.icon}</ThemedIcon>
+                  </ThemedListItemIcon>
+                  <ThemedListItemText primary={i.label} />
+                </ThemedListItemButton>
+              </ThemedListItem>
             ))}
-          </MatList>
+          </ThemedList>
           :
-          <MatList disablePadding dense>
+          <ThemedList disablePadding dense>
             {(
               ((miroirMenusDomainElementObject as any)?.menus as any)?.definition?.definition ?? []
               ).flatMap((menuSection: any, index: number) => (
                 menuSection.items.map(
                   (curr:any, index: number) => (
-                    <MatListItem key={curr.label + index} disablePadding>
-                      <MatListItemButton component={Link} to={`/report/${curr.selfApplication}/${curr.section}/${curr.reportUuid}/xxxxxx`}>
-                        <MatListItemIcon>
+                    <ThemedListItem key={curr.label + index} disablePadding>
+                      <ThemedListItemButton component={Link} to={`/report/${curr.selfApplication}/${curr.section}/${curr.reportUuid}/xxxxxx`}>
+                        <ThemedListItemIcon>
                           {/* {index % 2 === 0 ? <InboxIcon /> : <MailIcon />} */}
-                          <Icon>{curr.icon}</Icon>
-                        </MatListItemIcon>
-                        <MatListItemText primary={curr.label} />
-                      </MatListItemButton>
-                    </MatListItem>
+                          <ThemedIcon>{curr.icon}</ThemedIcon>
+                        </ThemedListItemIcon>
+                        <ThemedListItemText primary={curr.label} />
+                      </ThemedListItemButton>
+                    </ThemedListItem>
                   ), 
-                ).concat([<MatDivider key={menuSection.label + "Divider"}/>])
+                ).concat([<ThemedDivider key={menuSection.label + "Divider"}/>])
               )
             )}
-          </MatList>
+          </ThemedList>
           }
         </>
       }
