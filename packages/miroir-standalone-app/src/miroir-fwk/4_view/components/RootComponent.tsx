@@ -701,31 +701,8 @@ export const RootComponent = (props: RootComponentProps) => {
         currentThemeId={defaultViewParamsFromAdminStorage?.appTheme || "default"}
         onThemeChange={handleAppThemeChange}
       >
-        <div
-          style={
-            {
-              // width: '100%',
-              // height: '100%',
-              // overflow: 'hidden',
-              // position: 'relative',
-              // boxSizing: 'border-box'
-            }
-          }
-        >
-          <div
-            style={
-              {
-                // display: 'flex',
-                // flexGrow: 1,
-                // flexDirection: 'column',
-                // width: '100%',
-                // height: '100%',
-                // position: 'relative',
-                // overflow: 'hidden',
-                // boxSizing: 'border-box'
-              }
-            }
-          >
+        <div>
+          {/* <div> */}
             {/* Sidebar positioned as fixed overlay */}
             <Sidebar
               open={drawerIsOpen}
@@ -733,7 +710,9 @@ export const RootComponent = (props: RootComponentProps) => {
               width={sidebarWidth}
               onWidthChange={handleSidebarWidthChange}
             />
-            <ThemedGrid container direction="column" 
+            <ThemedGrid
+              container
+              direction="column"
               // style={{ height: "100vh" }}
             >
               <ThemedGrid item>
@@ -1105,12 +1084,14 @@ export const RootComponent = (props: RootComponentProps) => {
                     </span>
                     {/* Wrap Outlet in a container that allows scrolling when needed */}
                     <div
-                      style={{
-                        // flex: 1,
-                        // overflow: "auto", // Allow scrolling when content overflows
-                        // height: "100%", // Use full available height
-                        // boxSizing: "border-box",
-                      }}
+                      style={
+                        {
+                          // flex: 1,
+                          // overflow: "auto", // Allow scrolling when content overflows
+                          // height: "100%", // Use full available height
+                          // boxSizing: "border-box",
+                        }
+                      }
                     >
                       <Outlet></Outlet>
                     </div>
@@ -1118,7 +1099,7 @@ export const RootComponent = (props: RootComponentProps) => {
                 </ThemedGrid>
               </ThemedGrid>
             </ThemedGrid>
-          </div>
+          {/* </div> */}
 
           {/* Document Outline - Full height on right side */}
           <InstanceEditorOutline

@@ -2013,10 +2013,13 @@ export const ThemedScrollableContent: React.FC<ThemedComponentProps> = ({
   const scrollableStyles = css({
     flex: '1 1 auto',
     // Completely prevent all scrollbars
-    overflow: 'hidden',
+    // overflow: 'hidden',
+    overflowX: 'hidden',
+    overflowY: 'auto',
     // Remove flex display that was causing layout issues
     display: 'block',
     // Ensure content doesn't exceed container width
+    height: '100%',
     maxWidth: '100%',
     boxSizing: 'border-box',
     // Custom scrollbar styling
