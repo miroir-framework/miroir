@@ -8,8 +8,7 @@ import { cleanLevel } from "../constants";
 import { JzodEnumEditorProps } from "./JzodElementEditorInterface";
 import { 
   ThemedLabeledEditor, 
-  ThemedSelect,
-  ThemedMenuItemOption 
+  ThemedSelect
 } from "./ThemedComponents";
 import { useFormikContext } from "formik";
 
@@ -56,15 +55,15 @@ export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
     const menuItems = useMemo(() => {
       if (isDiscriminator) {
         return (parentKeyMap?.discriminatorValues??[]).map((v, index) => (
-          <ThemedMenuItemOption key={v} value={v} aria-label={rootLessListKey + "." + index}>
+          <option key={v} value={v} aria-label={rootLessListKey + "." + index}>
             {v}
-          </ThemedMenuItemOption>
+          </option>
         ));
       } else {
         return (rawJzodSchema as JzodEnum).definition.map((v, index) => (
-          <ThemedMenuItemOption key={v} value={v} aria-label={rootLessListKey + "." + index}>
+          <option key={v} value={v} aria-label={rootLessListKey + "." + index}>
             {v}
-          </ThemedMenuItemOption>
+          </option>
         ));
       }
     }, [isDiscriminator, parentKeyMap, rawJzodSchema, rootLessListKey]);

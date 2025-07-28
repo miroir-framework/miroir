@@ -30,21 +30,14 @@
  */
 
 import {
-  FormControl,
-  Grid,
-  InputLabel,
-  MenuItem,
-  Select,
-  SelectChangeEvent,
-  Snackbar,
-  Alert,
-  Toolbar
-} from "@mui/material";
-import { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
-import { styled } from '@mui/material/styles';
-import { createContext, useContext, useCallback, useEffect, useMemo, useState, startTransition } from 'react';
+  createContext, useContext, useCallback, useEffect, useMemo, useState, startTransition 
+} from 'react';
 import { Outlet } from 'react-router-dom';
+import type { SelectChangeEvent, AppBarProps as MuiAppBarProps } from '@mui/material';
+import { AppBar as MuiAppBar, styled, Toolbar, Box, Grid, FormControl, InputLabel, MenuItem, Snackbar, Alert } from '@mui/material';
+import { 
+  ThemedSelect
+} from './ThemedComponents';
 
 import { v4 as uuidv4 } from 'uuid';
 
@@ -93,7 +86,7 @@ import {
   // useViewParams,
 } from "../MiroirContextReactProvider.js";
 import { TableThemeProvider } from '../contexts/TableThemeContext.js';
-import { MiroirThemeProvider } from '../contexts/MiroirThemeContext.js';
+import { MiroirThemeProvider, useMiroirTheme } from '../contexts/MiroirThemeContext.js';
 import { useRenderTracker } from "../tools/renderCountTracker.js";
 import AppBar from './AppBar.js';
 
@@ -246,6 +239,8 @@ export const RootComponent = (props: RootComponentProps) => {
   
   const domainController: DomainControllerInterface = useDomainControllerService();
   const context = useMiroirContextService();
+  // Get theme for theming the outline highlight colors
+  const theme = useMiroirTheme();
   // Optimize transactions selector to avoid unnecessary re-renders during bulk operations
   const transactions: ReduxStateChanges[] = useLocalCacheTransactions();
   const miroirConfig = context.miroirContext.getMiroirConfig();
@@ -453,8 +448,8 @@ export const RootComponent = (props: RootComponentProps) => {
       const originalBorder = targetElement.style.border;
       const originalBorderRadius = targetElement.style.borderRadius;
       
-      targetElement.style.backgroundColor = '#fff3cd';
-      targetElement.style.border = '2px solid #ffc107';
+      targetElement.style.backgroundColor = theme.currentTheme.colors.warningLight;
+      targetElement.style.border = `2px solid ${theme.currentTheme.colors.warning}`;
       targetElement.style.borderRadius = '4px';
       targetElement.style.transition = 'all 0.3s ease';
       
@@ -752,7 +747,7 @@ export const RootComponent = (props: RootComponentProps) => {
                 <div>
                   <FormControl fullWidth>
                     <InputLabel id="demo-simple-select-label">Chosen selfApplication Deployment</InputLabel>
-                    <Select
+                    <ThemedSelect
                       labelId="demo-simple-select-label"
                       id="demo-simple-select"
                       value={context.deploymentUuid}
@@ -766,7 +761,7 @@ export const RootComponent = (props: RootComponentProps) => {
                           </MenuItem>
                         );
                       })}
-                    </Select>
+                    </ThemedSelect>
                   </FormControl>
                 </div>
 

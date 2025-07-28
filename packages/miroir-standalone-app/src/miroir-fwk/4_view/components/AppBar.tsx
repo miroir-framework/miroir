@@ -1,18 +1,19 @@
 import { useState } from 'react';
-import { useTheme } from '@emotion/react';
 
 import { default as MuiAppBar, AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
-import { styled } from '@mui/material/styles';
-import Avatar from '@mui/material/Avatar';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import { Icon } from '@mui/material';
-import IconButton from '@mui/material/IconButton';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
-import Toolbar from '@mui/material/Toolbar';
-import Tooltip from '@mui/material/Tooltip';
-import Typography from '@mui/material/Typography';
+import { styled, useTheme } from '@mui/material/styles';
+import { 
+  Icon, 
+  Toolbar, 
+  Box, 
+  IconButton, 
+  Menu, 
+  MenuItem, 
+  Typography, 
+  Button, 
+  Tooltip, 
+  Avatar 
+} from '@mui/material';
 import AdbIcon from '@mui/icons-material/Adb';
 import MenuIcon from '@mui/icons-material/Menu';
 import TocIcon from '@mui/icons-material/Toc';
@@ -31,17 +32,6 @@ let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ResponsiveAppBar")
 ).then((logger: LoggerInterface) => {log = logger});
-
-
-const MyAvatar = Avatar as any; // TODO: correct typing error
-const MyBox = Box as any;
-const MyButton = Button as any;
-const MyIconButton = IconButton as any;
-const MyMenu = Menu as any;
-const MyMenuItem = MenuItem as any;
-const MyToolbar = Toolbar as any; // TODO: correct typing error
-const MyTooltip = Tooltip as any;
-const MyTypography = Typography as any;
 
 const pages: MiroirMenuItem[] = [
   {
@@ -177,9 +167,9 @@ export function AppBar(props:AppBarProps) {
       outlineWidth={props.outlineWidth}
     >
       <>
-        <MyToolbar disableGutters={false}>
+        <Toolbar disableGutters={false}>
             {/* <Box sx={{display:"flex"}}> */}
-              <MyIconButton
+              <IconButton
                   color="inherit"
                   aria-label="open drawer"
                   onClick={props.handleDrawerOpen}
@@ -187,7 +177,7 @@ export function AppBar(props:AppBarProps) {
                   sx={{ mr: 2, ...(props.open && { display: 'none' }), ...(!props.open && { display: 'flex' }) }}
                 >
                 <MenuIcon />
-              </MyIconButton>
+              </IconButton>
               {/* <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} /> */}
             {/* </Box> */}
               {/* <Typography
@@ -217,8 +207,8 @@ export function AppBar(props:AppBarProps) {
                 {/* open: {props.open?"true":"false"} */}
               {/* </Typography> */}
             
-            <MyBox sx={{ flexGrow: 0, display: { xs: 'flex', md: 'flex'} }}>
-              <MyIconButton
+            <Box sx={{ flexGrow: 0, display: { xs: 'flex', md: 'flex'} }}>
+              <IconButton
                 size="large"
                 aria-label="account of current user"
                 aria-controls="menu-appbar"
@@ -227,8 +217,8 @@ export function AppBar(props:AppBarProps) {
                 color="inherit"
               >
                 <MenuIcon />
-              </MyIconButton>
-              <MyMenu
+              </IconButton>
+              <Menu
                 id="menu-appbar"
                 anchorEl={anchorElNav}
                 anchorOrigin={{
@@ -247,14 +237,14 @@ export function AppBar(props:AppBarProps) {
                 }}
               >
                 {pages.map((page) => (
-                  <MyMenuItem key={page.label} onClick={(e:any)=>goToLabelPage(e,page.label)}>
-                      <MyTypography textAlign="center">{page.label}</MyTypography>
-                  </MyMenuItem>
+                  <MenuItem key={page.label} onClick={(e:any)=>goToLabelPage(e,page.label)}>
+                      <Typography textAlign="center">{page.label}</Typography>
+                  </MenuItem>
                 ))}
-              </MyMenu>
-            </MyBox>
+              </Menu>
+            </Box>
             <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
-            <MyTypography
+            <Typography
               variant="h5"
               noWrap
               component="a"
@@ -271,24 +261,24 @@ export function AppBar(props:AppBarProps) {
               }}
             >
               LOGO
-            </MyTypography>
-            <MyBox sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
+            </Typography>
+            <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
               {
                 pages.map(
                   (page) => (
-                    <MyButton
+                    <Button
                       key={page.label}
                       onClick={(e:any) =>goToLabelPage(e,page.label)}
                       sx={{ my: 2, color: 'white', display: 'block' }}
                     >
                       {page.label}
-                    </MyButton>
+                    </Button>
                   )
                 )
               }
-            </MyBox>
+            </Box>
 
-            <MyBox sx={{ flexGrow: 0, display: "flex" }}>
+            <Box sx={{ flexGrow: 0, display: "flex" }}>
               {/* App Theme Selector */}
               <MiroirThemeSelector showDescription={false} label="Theme" />
               
@@ -297,8 +287,8 @@ export function AppBar(props:AppBarProps) {
 
               {/* Grid Type Toggle Button */}
               {props.gridType && props.onGridTypeToggle && (
-                <MyTooltip title={`Switch to ${props.gridType === 'ag-grid' ? 'Glide Data Grid' : 'AG-Grid'}`}>
-                  <MyButton
+                <Tooltip title={`Switch to ${props.gridType === 'ag-grid' ? 'Glide Data Grid' : 'AG-Grid'}`}>
+                  <Button
                     onClick={props.onGridTypeToggle}
                     sx={{
                       mr: 2,
@@ -321,15 +311,15 @@ export function AppBar(props:AppBarProps) {
                     }}
                   >
                     Grid: {props.gridType === 'ag-grid' ? 'AG-Grid' : 'Glide Data Grid'}
-                  </MyButton>
-                </MyTooltip>
+                  </Button>
+                </Tooltip>
               )}
               
               
             {/* Performance Monitor Indicator */}
             {context.setShowPerformanceDisplay && (
-              <MyTooltip title={context.showPerformanceDisplay ? "Performance Monitor: ON (click to disable)" : "Performance Monitor: OFF (click to enable)"}>
-                <MyButton
+              <Tooltip title={context.showPerformanceDisplay ? "Performance Monitor: ON (click to disable)" : "Performance Monitor: OFF (click to enable)"}>
+                <Button
                   onClick={() => context.setShowPerformanceDisplay?.(!context.showPerformanceDisplay)}
                   sx={{
                     mr: 2,
@@ -357,27 +347,27 @@ export function AppBar(props:AppBarProps) {
                   }}
                 >
                   Performance Monitor
-                </MyButton>
-              </MyTooltip>
+                </Button>
+              </Tooltip>
             )}              {/* Document Outline Toggle Button */}
               {props.onOutlineToggle && (
-                <MyTooltip title={props.outlineOpen ? "Hide Document Outline" : "Show Document Outline"}>
-                  <MyIconButton 
+                <Tooltip title={props.outlineOpen ? "Hide Document Outline" : "Show Document Outline"}>
+                  <IconButton 
                     color="inherit"
                     onClick={props.onOutlineToggle}
                     sx={{ mr: 1 }}
                   >
                     <TocIcon />
-                  </MyIconButton>
-                </MyTooltip>
+                  </IconButton>
+                </Tooltip>
               )}
               
-              <MyTooltip title="Open settings">
-                <MyIconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <MyAvatar alt="AVATAR" src="/static/images/avatar/2.jpg" />
-                </MyIconButton>
-              </MyTooltip>
-              <MyMenu
+              <Tooltip title="Open settings">
+                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                  <Avatar alt="AVATAR" src="/static/images/avatar/2.jpg" />
+                </IconButton>
+              </Tooltip>
+              <Menu
                 sx={{ mt: '45px' }}
                 id="menu-appbar"
                 anchorEl={anchorElUser}
@@ -394,13 +384,13 @@ export function AppBar(props:AppBarProps) {
                 onClose={handleCloseUserMenu}
               >
                 {settings.map((setting) => (
-                  <MyMenuItem key={setting} onClick={handleCloseUserMenu}>
-                    <MyTypography textAlign="center">{setting}</MyTypography>
-                  </MyMenuItem>
+                  <MenuItem key={setting} onClick={handleCloseUserMenu}>
+                    <Typography textAlign="center">{setting}</Typography>
+                  </MenuItem>
                 ))}
-              </MyMenu>
-            </MyBox>
-        </MyToolbar>
+              </Menu>
+            </Box>
+        </Toolbar>
       </>
     </StyledAppBar>
   );

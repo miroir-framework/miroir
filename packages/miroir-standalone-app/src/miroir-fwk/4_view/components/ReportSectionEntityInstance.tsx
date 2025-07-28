@@ -35,7 +35,6 @@ import {
 
 import { javascript } from '@codemirror/lang-javascript';
 import { Toc } from '@mui/icons-material';
-import { IconButton, Switch, Tooltip } from '@mui/material';
 import { ErrorBoundary } from "react-error-boundary";
 import { packageName } from '../../../constants.js';
 import { JzodEnumSchemaToJzodElementResolver, getCurrentEnumJzodSchemaResolver } from '../../JzodTools.js';
@@ -64,7 +63,10 @@ import {
   ThemedCodeBlock, 
   ThemedPreformattedText, 
   ThemedLabel, 
-  ThemedText 
+  ThemedText,
+  ThemedIconButton,
+  ThemedSwitch,
+  ThemedTooltip
 } from "./ThemedComponents";
 // import { GlobalRenderPerformanceDisplay, RenderPerformanceDisplay, trackRenderPerformance } from '../tools/renderPerformanceMeasure.js';
 
@@ -342,11 +344,10 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
           )}
           <div>
             <label htmlFor="displayEditorSwitch">Display editor:</label>
-            <Switch
+            <ThemedSwitch
               checked={displayEditor}
               id="displayEditorSwitch"
               onChange={handleDisplayEditorSwitchChange}
-              inputProps={{ "aria-label": "Edit" }}
             />
           </div>
           <div>
@@ -361,23 +362,16 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
               {currentReportTargetEntity?.name} details: {instance.name}{" "}
             </ThemedTitle>
             {displayEditor && (
-              <Tooltip title={isOutlineOpen ? "Hide Document Outline" : "Show Document Outline"}>
-                <IconButton
-                  size="small"
+              <ThemedTooltip title={isOutlineOpen ? "Hide Document Outline" : "Show Document Outline"}>
+                <ThemedIconButton
                   onClick={handleToggleOutline}
-                  sx={{
-                    marginLeft: 2,
-                    backgroundColor: currentTheme.colors.surface,
-                    color: currentTheme.colors.text,
-                    boxShadow: currentTheme.elevation.low,
-                    "&:hover": {
-                      backgroundColor: currentTheme.colors.hover || currentTheme.colors.primaryLight,
-                    },
+                  style={{
+                    marginLeft: '16px',
                   }}
                 >
                   <Toc />
-                </IconButton>
-              </Tooltip>
+                </ThemedIconButton>
+              </ThemedTooltip>
             )}
           </ThemedHeaderSection>
           {currentReportTargetEntity &&

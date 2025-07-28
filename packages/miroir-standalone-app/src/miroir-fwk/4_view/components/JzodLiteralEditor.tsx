@@ -20,8 +20,7 @@ import { useCurrentModel } from "../ReduxHooks";
 import { JzodLiteralEditorProps } from "./JzodElementEditorInterface";
 import { 
   ThemedLabeledEditor, 
-  ThemedSelect,
-  ThemedMenuItemOption 
+  ThemedSelect
 } from "./ThemedComponents";
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -78,20 +77,20 @@ export const JzodLiteralEditor: FC<JzodLiteralEditorProps> =  (
 
     const currentAttributeName = rootLessListKeyArray[rootLessListKeyArray.length - 1];
 
-    log.info(
-      "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ handleSelectLiteralChange event",
-      event.target.value,
-      "rootLessListKey",
-      rootLessListKey,
-      "attribute",
-      currentAttributeName,
-      "name",
-      name,
-      "formik.values",
-      formik.values,
-      "currentKeyMap",
-      currentKeyMap
-    );
+    // log.info(
+    //   "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ handleSelectLiteralChange event",
+    //   event.target.value,
+    //   "rootLessListKey",
+    //   rootLessListKey,
+    //   "attribute",
+    //   currentAttributeName,
+    //   "name",
+    //   name,
+    //   "formik.values",
+    //   formik.values,
+    //   "currentKeyMap",
+    //   currentKeyMap
+    // );
     if (typeof parentKeyMap.discriminator !== "string") {
       throw new Error(
         "handleSelectLiteralChange called but current object does not have a string discriminator!"
@@ -120,14 +119,14 @@ export const JzodLiteralEditor: FC<JzodLiteralEditorProps> =  (
           JSON.stringify(parentKeyMap.resolvedSchema)
       );
     } else {
-      log.info(
-        "handleSelectLiteralChange found newJzodSchema",
-        newJzodSchema,
-        "for discriminator",
-        parentKeyMap.discriminator,
-        "value",
-        event.target.value
-      );
+      // log.info(
+      //   "handleSelectLiteralChange found newJzodSchema",
+      //   newJzodSchema,
+      //   "for discriminator",
+      //   parentKeyMap.discriminator,
+      //   "value",
+      //   event.target.value
+      // );
     }
     const newJzodSchemaWithOptional = parentKeyMap.rawSchema.optional
       ? {
@@ -135,7 +134,7 @@ export const JzodLiteralEditor: FC<JzodLiteralEditorProps> =  (
           optional: true,
         }
       : newJzodSchema;
-    log.info("handleSelectLiteralChange newJzodSchemaWithOptional", newJzodSchemaWithOptional);
+    // log.info("handleSelectLiteralChange newJzodSchemaWithOptional", newJzodSchemaWithOptional);
 
     const defaultValue = currentMiroirFundamentalJzodSchema
       ? getDefaultValueForJzodSchemaWithResolution(
@@ -146,12 +145,12 @@ export const JzodLiteralEditor: FC<JzodLiteralEditorProps> =  (
           miroirMetaModel
         )
       : undefined;
-    log.info(
-      "handleSelectLiteralChange defaultValue",
-      defaultValue,
-      "formik.values",
-      JSON.stringify(formik.values, null, 2)
-    );
+    // log.info(
+    //   "handleSelectLiteralChange defaultValue",
+    //   defaultValue,
+    //   "formik.values",
+    //   JSON.stringify(formik.values, null, 2)
+    // );
     formik.setFieldValue(
       // replacing parent value (the object containing the discriminator Literal)
       rootLessListKeyArray.slice(0, rootLessListKeyArray.length - 1).join("."),
@@ -168,21 +167,21 @@ export const JzodLiteralEditor: FC<JzodLiteralEditorProps> =  (
     miroirMetaModel
   ]);
 
-  log.info(
-    "JzodLiteralEditor render",
-    JzodLiteralEditorRenderCount,
-    "rootLessListKey",
-    rootLessListKey,
-    "currentKeyMap",
-    currentKeyMap,
-  );
+  // log.info(
+  //   "JzodLiteralEditor render",
+  //   JzodLiteralEditorRenderCount,
+  //   "rootLessListKey",
+  //   rootLessListKey,
+  //   "currentKeyMap",
+  //   currentKeyMap,
+  // );
   // Memoize discriminator values for better rendering performance
   const discriminatorMenuItems = useMemo(() => {
     if (isDiscriminator && parentKeyMap?.discriminatorValues) {
       return parentKeyMap.discriminatorValues.sort().map((v) => (
-        <ThemedMenuItemOption key={v} value={v}>
+        <option key={v} value={v}>
           {v}
-        </ThemedMenuItemOption>
+        </option>
       ));
     }
     return null;

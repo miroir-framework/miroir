@@ -1,16 +1,13 @@
 import { FC, useMemo } from 'react';
-// import ChevronLeft from '@mui/icons-material/ChevronLeft';
-// import ChevronRight from '@mui/icons-material/ChevronRight';
+import { cleanLevel } from "../constants.js";
+import { 
+  ThemedDivider
+} from "./ThemedComponents.js";
+import { useMiroirTheme } from '../contexts/MiroirThemeContext.js';
 import AutoStories from '@mui/icons-material/AutoStories';
 import { CSSObject, styled, Theme, useTheme } from '@mui/material/styles';
-import { Icon } from '@mui/material';
-import Divider from '@mui/material/Divider';
+import { Icon, Divider, List, ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
 import MuiDrawer from '@mui/material/Drawer';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
 import SavedSearch from '@mui/icons-material/SavedSearch.js';
 import { Link } from 'react-router-dom';
 
@@ -33,7 +30,6 @@ import {
 } from "miroir-core";
 import { getMemoizedDeploymentEntityStateSelectorMap } from 'miroir-localcache-redux';
 import { packageName } from '../../../constants.js';
-import { cleanLevel } from '../constants.js';
 import { useCurrentModel, useDeploymentEntityStateQuerySelector } from '../ReduxHooks.js';
 
 const MatDivider: any = Divider;
