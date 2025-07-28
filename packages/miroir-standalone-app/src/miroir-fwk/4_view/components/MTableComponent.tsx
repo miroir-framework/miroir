@@ -522,15 +522,24 @@ export const MTableComponent = (props: TableComponentProps & { theme?: DeepParti
 
   // Monitor container width changes for dynamic table width calculation
   useEffect(() => {
+    let updateTimer: NodeJS.Timeout;
+    
     const updateWidth = () => {
       if (containerRef.current) {
         const width = containerRef.current.clientWidth;
         // Ensure we have a meaningful width before setting it
-        if (width > 0) {
+        // Add hysteresis to prevent constant re-calculations on small changes
+        if (width > 0 && Math.abs(width - containerWidth) > 10) {
           setContainerWidth(width);
           log.debug("MTableComponent container width updated:", width);
         }
       }
+    };
+
+    // Debounced update function to prevent excessive calculations
+    const debouncedUpdateWidth = () => {
+      clearTimeout(updateTimer);
+      updateTimer = setTimeout(updateWidth, 150);
     };
 
     // Initial measurement with a slight delay to ensure layout is complete
@@ -543,9 +552,9 @@ export const MTableComponent = (props: TableComponentProps & { theme?: DeepParti
       resizeObserver = new ResizeObserver((entries) => {
         for (const entry of entries) {
           const width = entry.contentRect.width;
-          if (width > 0) {
-            setContainerWidth(width);
-            log.debug("MTableComponent container width changed (ResizeObserver):", width);
+          // Add hysteresis and debouncing to prevent feedback loops
+          if (width > 0 && Math.abs(width - containerWidth) > 10) {
+            debouncedUpdateWidth();
           }
         }
       });
@@ -553,18 +562,18 @@ export const MTableComponent = (props: TableComponentProps & { theme?: DeepParti
       resizeObserver.observe(containerRef.current);
     }
 
-    // Fallback to window resize listener
-    updateWidth();
-    window.addEventListener('resize', updateWidth);
+    // Fallback to window resize listener with debouncing
+    window.addEventListener('resize', debouncedUpdateWidth);
     
     return () => {
       clearTimeout(initialTimer);
+      clearTimeout(updateTimer);
       if (resizeObserver) {
         resizeObserver.disconnect();
       }
-      window.removeEventListener('resize', updateWidth);
+      window.removeEventListener('resize', debouncedUpdateWidth);
     };
-  }, []);
+  }, [containerWidth]);
   
   // ##############################################################################################
   const defaultColDef:ColDef | ColGroupDef = useMemo(()=>({
@@ -605,46 +614,47 @@ export const MTableComponent = (props: TableComponentProps & { theme?: DeepParti
 
   // Calculate adaptive column widths once and reuse for both AgGrid and GlideDataGrid
   const calculatedColumnWidths = useMemo(() => {
-    if (tableComponentRows.tableComponentRowUuidIndexSchema.length > 0) {
-      // Calculate available width dynamically based on container width
-      // Account for scrollbar and container borders like GlideDataGridComponent does
-      const rowCount = tableComponentRows.tableComponentRowUuidIndexSchema.length;
-      const needsVerticalScrollbar = rowCount > 15; // Estimate based on typical visible rows
-      const scrollbarWidth = needsVerticalScrollbar ? 17 : 0;
-      const borderWidth = 2; // Container border
-      const availableWidth = containerWidth - scrollbarWidth - borderWidth;
-      
-      const jzodSchema =
-        props.type === TableComponentTypeSchema.enum.EntityInstance &&
-        (props as any).currentEntityDefinition?.jzodSchema?.definition
-          ? (props as any).currentEntityDefinition.jzodSchema.definition
-          : undefined;
+    // Always calculate widths, even with empty data to ensure components receive proper specs
+    // Use a stable width calculation that doesn't create feedback loops
+    const rowCount = tableComponentRows.tableComponentRowUuidIndexSchema.length;
+    const needsVerticalScrollbar = rowCount > 15; // Estimate based on typical visible rows
+    const scrollbarWidth = needsVerticalScrollbar ? 17 : 0;
+    const borderWidth = 2; // Container border
+    
+    // Use the container width directly, but cap it at a reasonable maximum
+    // This prevents the calculation from being too dependent on container size changes
+    const stableWidth = Math.min(Math.max(containerWidth - scrollbarWidth - borderWidth, 300), 1800);
+    
+    const jzodSchema =
+      props.type === TableComponentTypeSchema.enum.EntityInstance &&
+      (props as any).currentEntityDefinition?.jzodSchema?.definition
+        ? (props as any).currentEntityDefinition.jzodSchema.definition
+        : undefined;
 
-      const widthSpecs = calculateAdaptiveColumnWidths(
-        props.columnDefs.columnDefs, // Pass the original column defs without tools column
-        tableComponentRows.tableComponentRowUuidIndexSchema,
-        availableWidth,
-        toolsColumnDefinition, // Pass the tools column definition
-        jzodSchema,
-      );
-      
-      // Log the calculated widths for debugging
-      log.info("MTableComponent calculated column widths", {
-        containerWidth,
-        availableWidth,
-        totalCalculatedWidth: widthSpecs.reduce((sum, spec) => sum + spec.calculatedWidth, 0),
-        columnWidths: widthSpecs.map(spec => ({
-          field: spec.field || 'tools',
-          type: spec.type,
-          minWidth: spec.minWidth,
-          maxWidth: spec.maxWidth,
-          calculatedWidth: spec.calculatedWidth
-        }))
-      });
-      
-      return widthSpecs;
-    }
-    return undefined;
+    const widthSpecs = calculateAdaptiveColumnWidths(
+      props.columnDefs.columnDefs, // Pass the original column defs without tools column
+      tableComponentRows.tableComponentRowUuidIndexSchema,
+      stableWidth,
+      toolsColumnDefinition, // Pass the tools column definition
+      jzodSchema,
+    );
+    
+    // Log the calculated widths for debugging
+    log.info("MTableComponent calculated column widths", {
+      containerWidth,
+      stableWidth,
+      rowCount,
+      totalCalculatedWidth: widthSpecs.reduce((sum, spec) => sum + spec.calculatedWidth, 0),
+      columnWidths: widthSpecs.map(spec => ({
+        field: spec.field || 'tools',
+        type: spec.type,
+        minWidth: spec.minWidth,
+        maxWidth: spec.maxWidth,
+        calculatedWidth: spec.calculatedWidth
+      }))
+    });
+    
+    return widthSpecs;
   }, [props.columnDefs, tableComponentRows, props.type, (props as any).currentEntityDefinition, toolsColumnDefinition, containerWidth]);
 
 
@@ -751,6 +761,7 @@ export const MTableComponent = (props: TableComponentProps & { theme?: DeepParti
             colDef.maxWidth = Math.round(toolsSpec.maxWidth);
             // Prevent AgGrid from auto-sizing this column
             colDef.suppressSizeToFit = true;
+            colDef.suppressAutoSize = true;
           }
         } else {
           // Data columns - find matching width spec
@@ -759,8 +770,9 @@ export const MTableComponent = (props: TableComponentProps & { theme?: DeepParti
             colDef.width = Math.round(widthSpec.calculatedWidth);
             colDef.minWidth = Math.round(widthSpec.minWidth);
             colDef.maxWidth = Math.round(widthSpec.maxWidth);
-            // Allow some flexibility for data columns but respect our calculations
-            colDef.suppressSizeToFit = false;
+            // Prevent AgGrid from auto-sizing these columns too
+            colDef.suppressSizeToFit = true;
+            colDef.suppressAutoSize = true;
             
             log.debug(`Applied width to column ${colDef.field}:`, {
               calculated: widthSpec.calculatedWidth,
@@ -1050,12 +1062,8 @@ export const MTableComponent = (props: TableComponentProps & { theme?: DeepParti
                         ...props.styles,
                         minHeight: tableTheme.components.table.minHeight
                       }),
-                  width: calculatedColumnWidths && calculatedColumnWidths.length > 0 
-                    ? `${calculatedColumnWidths.reduce((sum, spec) => sum + spec.calculatedWidth, 0)}px`
-                    : '100%',
-                  maxWidth: calculatedColumnWidths && calculatedColumnWidths.length > 0 
-                    ? `${calculatedColumnWidths.reduce((sum, spec) => sum + spec.calculatedWidth, 0)}px`
-                    : '100%',
+                  width: '100%',
+                  maxWidth: '100%',
                   overflow: 'hidden',
                   boxSizing: 'border-box',
                   borderRadius: tableTheme.components.table.borderRadius,
@@ -1085,6 +1093,8 @@ export const MTableComponent = (props: TableComponentProps & { theme?: DeepParti
                   enableCellTextSelection={true}
                   suppressRowClickSelection={true}
                   animateRows={true}
+                  skipHeaderOnAutoSize={true}
+                  suppressHorizontalScroll={false}
                 ></AgGridReact>
               </div>
             </>

@@ -238,8 +238,8 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
 
   // Monitor container width changes (only if containerWidth not provided from parent)
   React.useEffect(() => {
-    if (propContainerWidth) {
-      // Skip internal width measurement if parent provides width
+    if (propContainerWidth || (calculatedColumnWidths && calculatedColumnWidths.length > 0)) {
+      // Skip internal width measurement if parent provides width OR we have pre-calculated widths
       return;
     }
 
@@ -253,7 +253,7 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
     updateWidth();
     window.addEventListener('resize', updateWidth);
     return () => window.removeEventListener('resize', updateWidth);
-  }, [propContainerWidth]);
+  }, [propContainerWidth, calculatedColumnWidths]);
 
   // Handle header clicks for sorting
   const handleHeaderClick = useCallback((columnIndex: number) => {
@@ -441,28 +441,29 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
       // Use pre-calculated widths from MTableComponent
       widthSpecs = calculatedColumnWidths;
     } else {
-      // Fallback: calculate widths if not provided (shouldn't happen in normal flow)
-      const rowCount = tableComponentRows.tableComponentRowUuidIndexSchema.length;
-      const maxRowsWithoutScroll = Math.floor((height - 36) / 34); // 36px header, 34px per row
-      const needsVerticalScrollbar = rowCount > maxRowsWithoutScroll;
-
-      const scrollbarWidth = needsVerticalScrollbar ? 17 : 0;
-      const borderWidth = 2; // Container border
-      const availableWidth = containerWidth - scrollbarWidth - borderWidth;
-
-      const jzodSchema =
-        type === TableComponentTypeSchema.enum.EntityInstance &&
-        currentEntityDefinition?.jzodSchema?.definition
-          ? currentEntityDefinition.jzodSchema.definition
-          : undefined;
-
-      widthSpecs = calculateAdaptiveColumnWidths(
-        columnDefs.columnDefs,
-        tableComponentRows.tableComponentRowUuidIndexSchema,
-        availableWidth,
-        toolsColumnDefinition,
-        jzodSchema,
-      );
+      // Defensive fallback: This should now rarely happen since MTableComponent always calculates widths
+      console.warn("GlideDataGridComponent: No calculated column widths provided, using simple fallback");
+      
+      widthSpecs = [
+        // Tools column
+        {
+          field: toolsColumnDefinition.field || "",
+          headerName: toolsColumnDefinition.headerName,
+          minWidth: toolsColumnDefinition.width,
+          maxWidth: toolsColumnDefinition.width,
+          calculatedWidth: toolsColumnDefinition.width,
+          type: "tools" as const
+        },
+        // Data columns with equal distribution
+        ...columnDefs.columnDefs.map((colDef: any) => ({
+          field: colDef.field || "",
+          headerName: colDef.headerName || colDef.field,
+          minWidth: 100,
+          maxWidth: 300,
+          calculatedWidth: 150, // Simple fallback width
+          type: "text" as const
+        }))
+      ];
     }
 
     // Debug logging for width distribution
@@ -928,9 +929,13 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
       </Box>
       
       <div style={{ 
-        width: '100%', 
+        width: calculatedColumnWidths && calculatedColumnWidths.length > 0 
+          ? `${Math.max(Math.round(calculatedColumnWidths.reduce((sum, spec) => sum + spec.calculatedWidth, 0)), 300)}px`
+          : '100%',
         height: `${height - 2}px`, // Subtract 2px for borders
-        maxWidth: '100%', 
+        maxWidth: calculatedColumnWidths && calculatedColumnWidths.length > 0 
+          ? `${Math.max(Math.round(calculatedColumnWidths.reduce((sum, spec) => sum + spec.calculatedWidth, 0)), 300)}px`
+          : '100%',
         overflow: 'hidden',
         position: 'relative',
       }}>
@@ -949,7 +954,7 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
           columnSelect="none"
           rowSelect="none"
           width={calculatedColumnWidths && calculatedColumnWidths.length > 0 
-            ? calculatedColumnWidths.reduce((sum, spec) => sum + spec.calculatedWidth, 0)
+            ? Math.max(Math.round(calculatedColumnWidths.reduce((sum, spec) => sum + spec.calculatedWidth, 0)), 300)
             : Math.max(containerWidth - 2, 300)
           } // Use calculated total width when available, otherwise respect container
           height={Math.max(Math.min(sortedAndFilteredTableRows.length, maxRows || 50) * 34 + 36, 100)} // DataEditor height = visible rows + header only
