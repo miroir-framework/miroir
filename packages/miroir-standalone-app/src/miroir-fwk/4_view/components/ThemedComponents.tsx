@@ -399,24 +399,112 @@ export const ThemedSelect: React.FC<ThemedComponentProps & {
 }) => {
   const { currentTheme } = useMiroirTheme();
   
-  const selectStyles = css({
-    maxHeight: '1.5em',
-    backgroundColor: currentTheme.colors.surface,
-    color: currentTheme.colors.text,
-    border: `1px solid ${currentTheme.colors.border}`,
-    borderRadius: currentTheme.borderRadius.sm,
-    padding: currentTheme.spacing.sm,
-    fontFamily: currentTheme.typography.fontFamily,
-    fontSize: currentTheme.typography.fontSize.md,
-    minWidth,
-    maxWidth,
-    width,
-    '&:focus': {
-      borderColor: currentTheme.colors.primary,
-      outline: 'none',
-      boxShadow: `0 0 0 2px ${currentTheme.colors.primary}20`,
-    },
-  });
+  const selectStyles = css`
+    /* Basic sizing and layout - increased min-height for better text visibility */
+    min-height: 2.2em;
+    max-height: 2.5em;
+    height: auto;
+    min-width: ${minWidth || 'auto'};
+    max-width: ${maxWidth || 'auto'};
+    width: ${width || 'auto'};
+    
+    /* Force background and text colors */
+    background-color: ${currentTheme.colors.surface} !important;
+    background: ${currentTheme.colors.surface} !important;
+    color: ${currentTheme.colors.text} !important;
+    
+    /* Border and spacing */
+    border: 1px solid ${currentTheme.colors.border} !important;
+    border-radius: ${currentTheme.borderRadius.sm};
+    padding: ${currentTheme.spacing.sm};
+    
+    /* Typography */
+    font-family: ${currentTheme.typography.fontFamily};
+    font-size: ${currentTheme.typography.fontSize.md};
+    font-weight: normal;
+    line-height: 1.4;
+    
+    /* Ensure the select element behaves properly */
+    appearance: auto;
+    -webkit-appearance: menulist;
+    -moz-appearance: menulist;
+    
+    /* Force text visibility and contrast */
+    text-shadow: none !important;
+    text-decoration: none !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    
+    /* Ensure the selected value text is visible */
+    text-indent: 0 !important;
+    text-transform: none !important;
+    letter-spacing: normal !important;
+    word-spacing: normal !important;
+    line-height: normal !important;
+    
+    /* Override any inherited styles that might interfere */
+    box-shadow: none;
+    text-overflow: clip;
+    white-space: nowrap;
+    
+    /* Focus and interaction states */
+    &:focus {
+      border-color: ${currentTheme.colors.primary} !important;
+      outline: none !important;
+      box-shadow: 0 0 0 2px ${currentTheme.colors.primary}20 !important;
+      background-color: ${currentTheme.colors.surface} !important;
+      background: ${currentTheme.colors.surface} !important;
+      color: ${currentTheme.colors.text} !important;
+    }
+    
+    &:hover {
+      background-color: ${currentTheme.colors.hover || currentTheme.colors.surfaceVariant} !important;
+      background: ${currentTheme.colors.hover || currentTheme.colors.surfaceVariant} !important;
+      color: ${currentTheme.colors.text} !important;
+    }
+    
+    /* Explicit styling for the selected option display */
+    &:not([multiple]) {
+      background-color: ${currentTheme.colors.surface} !important;
+      color: ${currentTheme.colors.text} !important;
+    }
+    
+    /* Style the dropdown options */
+    & option {
+      background-color: ${currentTheme.colors.surface} !important;
+      background: ${currentTheme.colors.surface} !important;
+      color: ${currentTheme.colors.text} !important;
+      padding: ${currentTheme.spacing.sm};
+      border: none !important;
+      outline: none !important;
+    }
+    
+    & option:checked {
+      background-color: ${currentTheme.colors.selected || currentTheme.colors.primary} !important;
+      background: ${currentTheme.colors.selected || currentTheme.colors.primary} !important;
+      color: ${currentTheme.colors.background} !important;
+    }
+    
+    & option:hover {
+      background-color: ${currentTheme.colors.hover || currentTheme.colors.surfaceVariant} !important;
+      background: ${currentTheme.colors.hover || currentTheme.colors.surfaceVariant} !important;
+      color: ${currentTheme.colors.text} !important;
+    }
+    
+    /* Webkit specific fixes for better cross-browser support */
+    &::-webkit-scrollbar {
+      width: 8px;
+    }
+    
+    &::-webkit-scrollbar-track {
+      background: ${currentTheme.colors.surface};
+    }
+    
+    &::-webkit-scrollbar-thumb {
+      background: ${currentTheme.colors.border};
+      border-radius: 4px;
+    }
+  `;
 
   return (
     <select css={selectStyles} className={className} style={style} value={value} onChange={onChange} {...props}>
@@ -1276,12 +1364,54 @@ export const ThemedMenuItemOption: React.FC<ThemedComponentProps & {
 }) => {
   const { currentTheme } = useMiroirTheme();
   
-  const optionStyles = css({
-    backgroundColor: currentTheme.colors.surface,
-    color: currentTheme.colors.text,
-    fontSize: currentTheme.typography.fontSize.sm,
-    padding: currentTheme.spacing.sm,
-  });
+  const optionStyles = css`
+    /* Basic styling to match parent select */
+    background-color: ${currentTheme.colors.surface} !important;
+    background: ${currentTheme.colors.surface} !important;
+    color: ${currentTheme.colors.text} !important;
+    font-size: ${currentTheme.typography.fontSize.sm};
+    font-family: ${currentTheme.typography.fontFamily};
+    padding: ${currentTheme.spacing.sm};
+    
+    /* Ensure options are visible and properly styled */
+    border: none !important;
+    outline: none !important;
+    margin: 0;
+    
+    /* Force text visibility */
+    text-shadow: none !important;
+    text-decoration: none !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    
+    /* Typography consistency */
+    font-weight: normal;
+    text-transform: none;
+    letter-spacing: normal;
+    word-spacing: normal;
+    line-height: normal;
+    
+    /* States */
+    &:checked, &[selected] {
+      background-color: ${currentTheme.colors.selected || currentTheme.colors.primary} !important;
+      background: ${currentTheme.colors.selected || currentTheme.colors.primary} !important;
+      color: ${currentTheme.colors.background} !important;
+      font-weight: bold;
+    }
+    
+    &:hover {
+      background-color: ${currentTheme.colors.hover || currentTheme.colors.surfaceVariant} !important;
+      background: ${currentTheme.colors.hover || currentTheme.colors.surfaceVariant} !important;
+      color: ${currentTheme.colors.text} !important;
+    }
+    
+    &:focus {
+      background-color: ${currentTheme.colors.focused || currentTheme.colors.primaryLight} !important;
+      background: ${currentTheme.colors.focused || currentTheme.colors.primaryLight} !important;
+      color: ${currentTheme.colors.text} !important;
+      outline: none !important;
+    }
+  `;
 
   return (
     <option 

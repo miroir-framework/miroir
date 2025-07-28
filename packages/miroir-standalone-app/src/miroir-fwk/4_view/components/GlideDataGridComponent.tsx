@@ -85,6 +85,7 @@ interface GlideDataGridComponentProps {
   type: string;
   currentEntityDefinition?: EntityDefinition;
   calculatedColumnWidths?: ColumnWidthSpec[];
+  containerWidth?: number; // Container width from parent MTableComponent
   toolsColumnDefinition: ToolsColumnDefinition;
   maxRows?: number; // Maximum number of rows to show (controls table height)
   theme?: any; // Table theme for unified styling
@@ -103,6 +104,7 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
   type,
   currentEntityDefinition,
   calculatedColumnWidths,
+  containerWidth: propContainerWidth,
   toolsColumnDefinition,
   maxRows,
   theme,
@@ -114,7 +116,10 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
   onRowDuplicate,
 }) => {
   const containerRef = React.useRef<HTMLDivElement>(null);
-  const [containerWidth, setContainerWidth] = React.useState(1200);
+  const [internalContainerWidth, setInternalContainerWidth] = React.useState(1200);
+  
+  // Use provided containerWidth from parent or fall back to internal measurement
+  const containerWidth = propContainerWidth || internalContainerWidth;
   
   // Sorting state
   const [sortState, setSortState] = useState<SortState>({ columnId: '', direction: null });
@@ -231,19 +236,24 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
     }
   }, [selectedColumnId, addFilterCondition, filterState.columnGroups]);
 
-  // Monitor container width changes
+  // Monitor container width changes (only if containerWidth not provided from parent)
   React.useEffect(() => {
+    if (propContainerWidth) {
+      // Skip internal width measurement if parent provides width
+      return;
+    }
+
     const updateWidth = () => {
       if (containerRef.current) {
         const width = containerRef.current.clientWidth;
-        setContainerWidth(width);
+        setInternalContainerWidth(width);
       }
     };
 
     updateWidth();
     window.addEventListener('resize', updateWidth);
     return () => window.removeEventListener('resize', updateWidth);
-  }, []);
+  }, [propContainerWidth]);
 
   // Handle header clicks for sorting
   const handleHeaderClick = useCallback((columnIndex: number) => {
@@ -516,8 +526,11 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
     type,
     currentEntityDefinition,
     calculatedColumnWidths,
-    containerWidth,
-    height,
+    // Only depend on containerWidth and height when we need to calculate widths locally
+    ...(calculatedColumnWidths && calculatedColumnWidths.length > 0 
+      ? [] 
+      : [containerWidth, height]
+    ),
     toolsColumnDefinition,
     sortState,
     filterState,
@@ -935,7 +948,10 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
           rangeSelect="none"
           columnSelect="none"
           rowSelect="none"
-          width={Math.max(containerWidth - 2, 300)} // Ensure minimum width but respect container
+          width={calculatedColumnWidths && calculatedColumnWidths.length > 0 
+            ? calculatedColumnWidths.reduce((sum, spec) => sum + spec.calculatedWidth, 0)
+            : Math.max(containerWidth - 2, 300)
+          } // Use calculated total width when available, otherwise respect container
           height={Math.max(Math.min(sortedAndFilteredTableRows.length, maxRows || 50) * 34 + 36, 100)} // DataEditor height = visible rows + header only
           keybindings={{
             selectAll: false,

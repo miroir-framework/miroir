@@ -55,7 +55,7 @@ import {
   TableComponentTypeSchema,
 } from "./MTableComponentInterface.js";
 import { getMemoizedDeploymentEntityStateSelectorMap } from 'miroir-localcache-redux';
-import { useCurrentTableTheme } from '../contexts/TableThemeContext.js';
+import { useMiroirTableTheme } from '../contexts/MiroirThemeContext.js';
 import { TableTheme, DeepPartial, createTableTheme } from '../themes/TableTheme.js';
 import { generateAgGridStyles, generateGlideTheme, getFilterToolbarStyles } from '../themes/TableStyleGenerators.js';
 
@@ -121,7 +121,7 @@ export const MTableComponent = (props: TableComponentProps & { theme?: DeepParti
   log.info(":::::::::::::::::::::::::: MTableComponent refreshing with props",props);
   
   // Get theme from context first, then allow prop overrides
-  const contextTheme = useCurrentTableTheme();
+  const contextTheme = useMiroirTableTheme();
   
   // Use the unified table theme with optional overrides
   const tableTheme = useMemo(() => {
@@ -516,6 +516,56 @@ export const MTableComponent = (props: TableComponentProps & { theme?: DeepParti
     setEditDialogFormIsOpen(true);
   },[props.instancesToDisplay]);
   
+  // Container width tracking for adaptive column sizing
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [containerWidth, setContainerWidth] = useState<number>(1200);
+
+  // Monitor container width changes for dynamic table width calculation
+  useEffect(() => {
+    const updateWidth = () => {
+      if (containerRef.current) {
+        const width = containerRef.current.clientWidth;
+        // Ensure we have a meaningful width before setting it
+        if (width > 0) {
+          setContainerWidth(width);
+          log.debug("MTableComponent container width updated:", width);
+        }
+      }
+    };
+
+    // Initial measurement with a slight delay to ensure layout is complete
+    const initialTimer = setTimeout(updateWidth, 100);
+
+    // Set up ResizeObserver for more reliable width tracking
+    let resizeObserver: ResizeObserver | undefined;
+    
+    if (containerRef.current && 'ResizeObserver' in window) {
+      resizeObserver = new ResizeObserver((entries) => {
+        for (const entry of entries) {
+          const width = entry.contentRect.width;
+          if (width > 0) {
+            setContainerWidth(width);
+            log.debug("MTableComponent container width changed (ResizeObserver):", width);
+          }
+        }
+      });
+      
+      resizeObserver.observe(containerRef.current);
+    }
+
+    // Fallback to window resize listener
+    updateWidth();
+    window.addEventListener('resize', updateWidth);
+    
+    return () => {
+      clearTimeout(initialTimer);
+      if (resizeObserver) {
+        resizeObserver.disconnect();
+      }
+      window.removeEventListener('resize', updateWidth);
+    };
+  }, []);
+  
   // ##############################################################################################
   const defaultColDef:ColDef | ColGroupDef = useMemo(()=>({
     editable: true,
@@ -556,7 +606,14 @@ export const MTableComponent = (props: TableComponentProps & { theme?: DeepParti
   // Calculate adaptive column widths once and reuse for both AgGrid and GlideDataGrid
   const calculatedColumnWidths = useMemo(() => {
     if (tableComponentRows.tableComponentRowUuidIndexSchema.length > 0) {
-      const availableWidth = 1200; // Could be made dynamic based on container width
+      // Calculate available width dynamically based on container width
+      // Account for scrollbar and container borders like GlideDataGridComponent does
+      const rowCount = tableComponentRows.tableComponentRowUuidIndexSchema.length;
+      const needsVerticalScrollbar = rowCount > 15; // Estimate based on typical visible rows
+      const scrollbarWidth = needsVerticalScrollbar ? 17 : 0;
+      const borderWidth = 2; // Container border
+      const availableWidth = containerWidth - scrollbarWidth - borderWidth;
+      
       const jzodSchema =
         props.type === TableComponentTypeSchema.enum.EntityInstance &&
         (props as any).currentEntityDefinition?.jzodSchema?.definition
@@ -573,6 +630,7 @@ export const MTableComponent = (props: TableComponentProps & { theme?: DeepParti
       
       // Log the calculated widths for debugging
       log.info("MTableComponent calculated column widths", {
+        containerWidth,
         availableWidth,
         totalCalculatedWidth: widthSpecs.reduce((sum, spec) => sum + spec.calculatedWidth, 0),
         columnWidths: widthSpecs.map(spec => ({
@@ -587,7 +645,7 @@ export const MTableComponent = (props: TableComponentProps & { theme?: DeepParti
       return widthSpecs;
     }
     return undefined;
-  }, [props.columnDefs, tableComponentRows, props.type, (props as any).currentEntityDefinition, toolsColumnDefinition]);
+  }, [props.columnDefs, tableComponentRows, props.type, (props as any).currentEntityDefinition, toolsColumnDefinition, containerWidth]);
 
 
   const columnDefs: (ColDef | ColGroupDef)[] = useMemo(() => {
@@ -902,13 +960,18 @@ export const MTableComponent = (props: TableComponentProps & { theme?: DeepParti
   
   // const domLayout = tableComponentRows.tableComponentRowUuidIndexSchema.length > 10?"normal":"autoHeight";
   return (
-    <div style={{ 
-      width: '100%', 
-      maxWidth: '100%', 
-      overflow: 'hidden', 
-      boxSizing: 'border-box',
-      fontFamily: tableTheme.typography.fontFamily,
-    }}>
+    <div 
+      ref={containerRef}
+      style={{ 
+        width: '100%', 
+        maxWidth: '100%', 
+        overflow: 'hidden', 
+        boxSizing: 'border-box',
+        fontFamily: tableTheme.typography.fontFamily,
+        position: 'relative',
+        zIndex: 1, // Ensure proper layering for width measurement
+      }}
+    >
       {/* Apply unified table styles */}
       <style>{agGridStyles}</style>
       {/* <span>MtableComponent count {count}</span>
@@ -987,8 +1050,12 @@ export const MTableComponent = (props: TableComponentProps & { theme?: DeepParti
                         ...props.styles,
                         minHeight: tableTheme.components.table.minHeight
                       }),
-                  width: '100%',
-                  maxWidth: '100%',
+                  width: calculatedColumnWidths && calculatedColumnWidths.length > 0 
+                    ? `${calculatedColumnWidths.reduce((sum, spec) => sum + spec.calculatedWidth, 0)}px`
+                    : '100%',
+                  maxWidth: calculatedColumnWidths && calculatedColumnWidths.length > 0 
+                    ? `${calculatedColumnWidths.reduce((sum, spec) => sum + spec.calculatedWidth, 0)}px`
+                    : '100%',
                   overflow: 'hidden',
                   boxSizing: 'border-box',
                   borderRadius: tableTheme.components.table.borderRadius,
@@ -1035,6 +1102,7 @@ export const MTableComponent = (props: TableComponentProps & { theme?: DeepParti
               type={props.type}
               currentEntityDefinition={props.type === 'EntityInstance' ? (props as any).currentEntityDefinition : undefined}
               calculatedColumnWidths={calculatedColumnWidths}
+              containerWidth={containerWidth}
               toolsColumnDefinition={toolsColumnDefinition}
               maxRows={props.maxRows}
               theme={tableTheme}

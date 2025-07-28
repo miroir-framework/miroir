@@ -76,7 +76,6 @@ import {
   SyncBoxedExtractorOrQueryRunnerMap,
   SyncQueryRunner,
   SyncQueryRunnerParams,
-  TableTheme,
   AppTheme,
   ViewParamsData
 } from "miroir-core";
@@ -88,7 +87,6 @@ import {
   useMiroirContextService,
   // useViewParams,
 } from "../MiroirContextReactProvider.js";
-import { TableThemeProvider } from '../contexts/TableThemeContext.js';
 import { MiroirThemeProvider, useMiroirTheme } from '../contexts/MiroirThemeContext.js';
 import { useRenderTracker } from "../tools/renderCountTracker.js";
 import AppBar from './AppBar.js';
@@ -641,24 +639,6 @@ export const RootComponent = (props: RootComponentProps) => {
     [updateQueue, defaultViewParamsFromAdminStorage]
   );
 
-  // Table theme change handler
-  const handleTableThemeChange = useMemo(
-    () => (newThemeId: string) => {
-      if (defaultViewParamsFromAdminStorage && updateQueue) {
-        const currentTableTheme = defaultViewParamsFromAdminStorage.tableTheme || 'default';
-        
-        updateQueue.queueUpdate({
-          currentValue: defaultViewParamsFromAdminStorage,
-          updates: {
-            tableTheme: newThemeId as TableTheme,
-          }
-        }, true); // Force immediate processing for table theme changes
-        log.info("RootComponent: Queued table theme change (immediate)", { from: currentTableTheme, to: newThemeId });
-      }
-    },
-    [updateQueue, defaultViewParamsFromAdminStorage]
-  );
-
   // App theme change handler
   const handleAppThemeChange = useMemo(
     () => (newThemeId: string) => {
@@ -695,11 +675,7 @@ export const RootComponent = (props: RootComponentProps) => {
         currentThemeId={defaultViewParamsFromAdminStorage?.appTheme || "default"}
         onThemeChange={handleAppThemeChange}
       >
-        <TableThemeProvider
-          currentThemeId={defaultViewParamsFromAdminStorage?.tableTheme || "default"}
-          onThemeChange={handleTableThemeChange}
-        >
-          <div>
+        <div>
             <ThemedBox display="flex" flexGrow={1} flexDirection="column">
               {/* Sidebar positioned as fixed overlay */}
               <Sidebar
@@ -1111,7 +1087,6 @@ export const RootComponent = (props: RootComponentProps) => {
               </Alert>
             </Snackbar>
           </div>
-        </TableThemeProvider>
       </MiroirThemeProvider>
     </DocumentOutlineContext.Provider>
   );

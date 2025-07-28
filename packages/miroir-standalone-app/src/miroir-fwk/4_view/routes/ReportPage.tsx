@@ -28,7 +28,6 @@ import { RenderPerformanceMetrics } from '../tools/renderPerformanceMeasure.js';
 import { useDocumentOutlineContext } from '../components/RootComponent.js';
 import { useRenderTracker } from '../tools/renderCountTracker.js';
 import { PageContainer } from '../components/PageContainer.js';
-import { TableThemeSelector } from '../components/TableThemeSelector.js';
 import { ThemedBox, ThemedSpan } from '../components/ThemedComponents.js';
 import { useMiroirTheme } from '../contexts/MiroirThemeContext.js';
 
