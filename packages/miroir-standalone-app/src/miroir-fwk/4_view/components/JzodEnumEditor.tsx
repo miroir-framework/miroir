@@ -1,4 +1,3 @@
-import { MenuItem } from "@mui/material";
 import { LoggerInterface, MiroirLoggerFactory, resolvePathOnObject } from "miroir-core";
 import {
   JzodEnum
@@ -7,7 +6,11 @@ import React, { FC, useMemo } from "react";
 import { packageName } from "../../../constants";
 import { cleanLevel } from "../constants";
 import { JzodEnumEditorProps } from "./JzodElementEditorInterface";
-import { ThemedLabeledEditor, ThemedSelect } from "./ThemedComponents";
+import { 
+  ThemedLabeledEditor, 
+  ThemedSelect,
+  ThemedMenuItemOption 
+} from "./ThemedComponents";
 import { useFormikContext } from "formik";
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -53,15 +56,15 @@ export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
     const menuItems = useMemo(() => {
       if (isDiscriminator) {
         return (parentKeyMap?.discriminatorValues??[]).map((v, index) => (
-          <MenuItem key={v} value={v} aria-label={rootLessListKey + "." + index}>
+          <ThemedMenuItemOption key={v} value={v} aria-label={rootLessListKey + "." + index}>
             {v}
-          </MenuItem>
+          </ThemedMenuItemOption>
         ));
       } else {
         return (rawJzodSchema as JzodEnum).definition.map((v, index) => (
-          <MenuItem key={v} value={v} aria-label={rootLessListKey + "." + index}>
+          <ThemedMenuItemOption key={v} value={v} aria-label={rootLessListKey + "." + index}>
             {v}
-          </MenuItem>
+          </ThemedMenuItemOption>
         ));
       }
     }, [isDiscriminator, parentKeyMap, rawJzodSchema, rootLessListKey]);

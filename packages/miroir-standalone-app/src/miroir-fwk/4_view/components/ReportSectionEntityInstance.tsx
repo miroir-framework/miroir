@@ -597,14 +597,12 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                                 indentLevel={0}
                                 currentDeploymentUuid={props.deploymentUuid}
                                 currentApplicationSection={props.applicationSection}
-                                // rawJzodSchema={currentReportTargetEntityDefinition?.jzodSchema}
                                 resolvedElementJzodSchema={
                                   resolvedJzodSchema?.status == "ok"
                                     ? resolvedJzodSchema.resolvedSchema
                                     : undefined
                                 }
                                 hasTypeError={typeError != undefined}
-                                // localRootLessListKeyMap={dynamicLocalRootLessListKeyMap}
                                 typeCheckKeyMap={
                                   resolvedJzodSchema?.status == "ok"
                                     ? resolvedJzodSchema.keyMap

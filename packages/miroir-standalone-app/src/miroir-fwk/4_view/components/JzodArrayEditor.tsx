@@ -26,7 +26,11 @@ import { useCurrentModel } from "../ReduxHooks";
 import { FoldUnfoldObjectOrArray, FoldUnfoldAllObjectAttributesOrArrayItems, JzodElementEditor } from "./JzodElementEditor";
 import { JzodArrayEditorProps } from "./JzodElementEditorInterface";
 import { ErrorFallbackComponent } from "./ErrorFallbackComponent";
-import { ThemedSizedButton, ThemedAddIcon } from "./ThemedComponents";
+import { 
+  ThemedSizedButton, 
+  ThemedAddIcon,
+  ThemedStyledButton 
+} from "./ThemedComponents";
 import { useMiroirTheme } from '../contexts/MiroirThemeContext';
 // import { JzodUnion } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
@@ -65,7 +69,8 @@ export const JzodArrayEditorMoveButton: React.FC<JzodArrayMoveButtonProps> = ({
 }) => {
   const isDisabled = direction === "up" ? index === 0 : index === itemsOrder.length - 1;
 
-  const handleClick = (e: React.MouseEvent) => {
+  // const handleClick = (e: React.MouseEvent) => {
+  const handleClick = () => {
     const currentItemIndex: number = index;
 
     const newList: any[] = currentValue.slice();
@@ -88,15 +93,15 @@ export const JzodArrayEditorMoveButton: React.FC<JzodArrayMoveButtonProps> = ({
   };
 
   return (
-    <button
-      style={{ border: 0, backgroundColor: "transparent" }}
+    <ThemedStyledButton
+      variant="transparent"
       type="button"
       role={`${listKey}.button.${direction}`}
       disabled={isDisabled}
       onClick={handleClick}
     >
       {direction === "up" ? "^" : "v"}
-    </button>
+    </ThemedStyledButton>
   );
 };
 

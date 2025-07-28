@@ -1,4 +1,3 @@
-import { MenuItem } from "@mui/material";
 import { useFormikContext } from "formik";
 import React, { FC, useCallback, useMemo } from "react";
 
@@ -19,7 +18,11 @@ import { cleanLevel } from "../constants";
 import { useMiroirContextService } from "../MiroirContextReactProvider";
 import { useCurrentModel } from "../ReduxHooks";
 import { JzodLiteralEditorProps } from "./JzodElementEditorInterface";
-import { ThemedLabeledEditor, ThemedSelect } from "./ThemedComponents";
+import { 
+  ThemedLabeledEditor, 
+  ThemedSelect,
+  ThemedMenuItemOption 
+} from "./ThemedComponents";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -177,9 +180,9 @@ export const JzodLiteralEditor: FC<JzodLiteralEditorProps> =  (
   const discriminatorMenuItems = useMemo(() => {
     if (isDiscriminator && parentKeyMap?.discriminatorValues) {
       return parentKeyMap.discriminatorValues.sort().map((v) => (
-        <MenuItem key={v} value={v}>
+        <ThemedMenuItemOption key={v} value={v}>
           {v}
-        </MenuItem>
+        </ThemedMenuItemOption>
       ));
     }
     return null;

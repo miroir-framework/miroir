@@ -330,12 +330,17 @@ export const ThemedLineIconButton: React.FC<ThemedComponentProps> = ({
   );
 };
 
-export const ThemedSmallIconButton: React.FC<ThemedComponentProps> = ({ 
+export const ThemedSmallIconButton: React.FC<ThemedComponentProps & {
+  visible?: boolean;
+}> = ({ 
   children, 
   className, 
   style,
   onClick,
-  title 
+  title,
+  id,
+  'aria-label': ariaLabel,
+  visible = true
 }) => {
   const { currentTheme } = useMiroirTheme();
   
@@ -351,6 +356,7 @@ export const ThemedSmallIconButton: React.FC<ThemedComponentProps> = ({
     justifyContent: 'center',
     fontSize: currentTheme.typography.fontSize.sm,
     transition: `all ${currentTheme.transitions.duration.short} ${currentTheme.transitions.easing.easeInOut}`,
+    visibility: visible ? 'visible' : 'hidden',
     '&:hover': {
       backgroundColor: currentTheme.colors.hover,
       borderColor: currentTheme.colors.primary,
@@ -362,18 +368,34 @@ export const ThemedSmallIconButton: React.FC<ThemedComponentProps> = ({
   });
 
   return (
-    <button css={buttonStyles} className={className} style={style} onClick={onClick} title={title}>
+    <button 
+      css={buttonStyles} 
+      className={className} 
+      style={style} 
+      onClick={onClick} 
+      title={title}
+      id={id}
+      aria-label={ariaLabel}
+    >
       {children}
     </button>
   );
 };
 
-export const ThemedSelect: React.FC<ThemedComponentProps> = ({ 
+export const ThemedSelect: React.FC<ThemedComponentProps & {
+  minWidth?: string;
+  maxWidth?: string;
+  width?: string;
+}> = ({ 
   children, 
   className, 
   style,
   value,
-  onChange 
+  onChange,
+  minWidth,
+  maxWidth,
+  width,
+  ...props 
 }) => {
   const { currentTheme } = useMiroirTheme();
   
@@ -386,6 +408,9 @@ export const ThemedSelect: React.FC<ThemedComponentProps> = ({
     padding: currentTheme.spacing.sm,
     fontFamily: currentTheme.typography.fontFamily,
     fontSize: currentTheme.typography.fontSize.md,
+    minWidth,
+    maxWidth,
+    width,
     '&:focus': {
       borderColor: currentTheme.colors.primary,
       outline: 'none',
@@ -394,7 +419,7 @@ export const ThemedSelect: React.FC<ThemedComponentProps> = ({
   });
 
   return (
-    <select css={selectStyles} className={className} style={style} value={value} onChange={onChange}>
+    <select css={selectStyles} className={className} style={style} value={value} onChange={onChange} {...props}>
       {children}
     </select>
   );
@@ -586,5 +611,974 @@ export const ThemedFoldedValueDisplay: React.FC<ThemedComponentProps & {
   );
 };
 
-export default ThemedContainer;
+// ################################################################################################
+// Sidebar Themed Components
+// ################################################################################################
+
+export const ThemedDrawer: React.FC<ThemedComponentProps & { 
+  open?: boolean; 
+  width?: number; 
+  variant?: string;
+}> = ({ 
+  children, 
+  className, 
+  style, 
+  open, 
+  width = 200,
+  variant = "permanent" 
+}) => {
+  const { currentTheme } = useMiroirTheme();
+  
+  const drawerStyles = css({
+    width: open ? width : 0,
+    flexShrink: 0,
+    whiteSpace: 'nowrap',
+    boxSizing: 'border-box',
+    backgroundColor: currentTheme.colors.surface,
+    borderRight: `1px solid ${currentTheme.colors.border}`,
+    transition: 'width 0.2s ease',
+    display: open ? 'flex' : 'none',
+    flexDirection: 'column',
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    height: '100vh',
+    zIndex: 1200,
+    overflow: 'hidden',
+  });
+
+  return (
+    <div css={drawerStyles} className={className} style={style}>
+      {children}
+    </div>
+  );
+};
+
+export const ThemedDrawerHeader: React.FC<ThemedComponentProps> = ({ 
+  children, 
+  className, 
+  style 
+}) => {
+  const { currentTheme } = useMiroirTheme();
+  
+  const headerStyles = css({
+    display: 'flex',
+    alignItems: 'center',
+    padding: currentTheme.spacing.sm,
+    minHeight: 'auto',
+    justifyContent: 'flex-start',
+    fontSize: currentTheme.typography.fontSize.md,
+    backgroundColor: currentTheme.colors.surface,
+    borderBottom: `1px solid ${currentTheme.colors.border}`,
+  });
+
+  return (
+    <div css={headerStyles} className={className} style={style}>
+      {children}
+    </div>
+  );
+};
+
+export const ThemedResizeHandle: React.FC<ThemedComponentProps & {
+  onMouseDown?: (e: React.MouseEvent) => void;
+  isResizing?: boolean;
+}> = ({ 
+  className, 
+  style, 
+  onMouseDown,
+  isResizing 
+}) => {
+  const { currentTheme } = useMiroirTheme();
+  
+  const handleStyles = css({
+    position: 'absolute',
+    right: 0,
+    top: 0,
+    bottom: 0,
+    width: '6px',
+    backgroundColor: currentTheme.colors.border,
+    cursor: 'col-resize',
+    zIndex: 1000,
+    transition: 'background-color 0.2s',
+    borderLeft: `1px solid ${currentTheme.colors.borderLight || currentTheme.colors.border}`,
+    '&:hover': {
+      backgroundColor: currentTheme.colors.hover || currentTheme.colors.primaryLight,
+      borderLeft: `1px solid ${currentTheme.colors.border}`,
+    },
+    '&:active': {
+      backgroundColor: currentTheme.colors.active || currentTheme.colors.primary,
+      borderLeft: `1px solid ${currentTheme.colors.border}`,
+    },
+    '&::before': {
+      content: '""',
+      position: 'absolute',
+      right: '2px',
+      top: '50%',
+      transform: 'translateY(-50%)',
+      width: '2px',
+      height: '30px',
+      backgroundColor: currentTheme.colors.text,
+      opacity: 0.3,
+      borderRadius: '1px',
+    },
+  });
+
+  return (
+    <div 
+      css={handleStyles} 
+      className={className} 
+      style={style}
+      onMouseDown={onMouseDown}
+    />
+  );
+};
+
+export const ThemedDivider: React.FC<ThemedComponentProps> = ({ 
+  className, 
+  style 
+}) => {
+  const { currentTheme } = useMiroirTheme();
+  
+  const dividerStyles = css({
+    height: '1px',
+    backgroundColor: currentTheme.colors.border,
+    border: 'none',
+    margin: 0,
+  });
+
+  return (
+    <hr css={dividerStyles} className={className} style={style} />
+  );
+};
+
+export const ThemedIconButton: React.FC<ThemedComponentProps> = ({ 
+  children, 
+  className, 
+  style, 
+  onClick,
+  'aria-label': ariaLabel
+}) => {
+  const { currentTheme } = useMiroirTheme();
+  
+  const buttonStyles = css({
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: currentTheme.spacing.xs,
+    backgroundColor: 'transparent',
+    border: 'none',
+    borderRadius: currentTheme.borderRadius.sm,
+    color: currentTheme.colors.text,
+    cursor: 'pointer',
+    transition: 'background-color 0.2s',
+    '&:hover': {
+      backgroundColor: currentTheme.colors.hover || currentTheme.colors.primaryLight,
+    },
+    '&:active': {
+      backgroundColor: currentTheme.colors.active || currentTheme.colors.primary,
+    },
+  });
+
+  return (
+    <button 
+      css={buttonStyles} 
+      className={className} 
+      style={style}
+      onClick={onClick}
+      aria-label={ariaLabel}
+    >
+      {children}
+    </button>
+  );
+};
+
+// ################################################################################################
+// JzodObjectEditor Themed Components
+// ################################################################################################
+
+export const ThemedAttributeLabel: React.FC<ThemedComponentProps> = ({ 
+  children, 
+  className, 
+  style,
+  id,
+  'data-testid': dataTestId
+}) => {
+  const { currentTheme } = useMiroirTheme();
+  
+  const labelStyles = css({
+    minWidth: "120px",
+    flexShrink: 0,
+    textAlign: "left",
+    justifyContent: "flex-start",
+    display: "flex",
+    paddingRight: "1ex",
+    color: currentTheme.colors.text,
+    fontSize: currentTheme.typography.fontSize.sm,
+  });
+
+  return (
+    <span 
+      css={labelStyles} 
+      className={className} 
+      style={style}
+      id={id}
+      data-testid={dataTestId}
+    >
+      {children}
+    </span>
+  );
+};
+
+export const ThemedFlexRow: React.FC<ThemedComponentProps & {
+  justify?: 'start' | 'center' | 'end' | 'space-between';
+  align?: 'start' | 'center' | 'end' | 'stretch';
+  gap?: string;
+  wrap?: boolean;
+}> = ({ 
+  children, 
+  className, 
+  style,
+  justify = 'start',
+  align = 'center',
+  gap,
+  wrap = false
+}) => {
+  const { currentTheme } = useMiroirTheme();
+  
+  const flexStyles = css({
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: justify === 'start' ? 'flex-start' : justify === 'end' ? 'flex-end' : justify,
+    alignItems: align === 'start' ? 'flex-start' : align === 'end' ? 'flex-end' : align,
+    flexWrap: wrap ? 'wrap' : 'nowrap',
+    gap: gap || currentTheme.spacing.sm,
+  });
+
+  return (
+    <span css={flexStyles} className={className} style={style}>
+      {children}
+    </span>
+  );
+};
+
+export const ThemedFlexColumn: React.FC<ThemedComponentProps & {
+  justify?: 'start' | 'center' | 'end' | 'space-between';
+  align?: 'start' | 'center' | 'end' | 'stretch';
+  gap?: string;
+}> = ({ 
+  children, 
+  className, 
+  style,
+  justify = 'start',
+  align = 'start',
+  gap
+}) => {
+  const { currentTheme } = useMiroirTheme();
+  
+  const flexStyles = css({
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: justify === 'start' ? 'flex-start' : justify === 'end' ? 'flex-end' : justify,
+    alignItems: align === 'start' ? 'flex-start' : align === 'end' ? 'flex-end' : align,
+    gap: gap || currentTheme.spacing.sm,
+  });
+
+  return (
+    <span css={flexStyles} className={className} style={style}>
+      {children}
+    </span>
+  );
+};
+
+export const ThemedOptionalAttributeContainer: React.FC<ThemedComponentProps> = ({ 
+  children, 
+  className, 
+  style 
+}) => {
+  const { currentTheme } = useMiroirTheme();
+  
+  const containerStyles = css({
+    display: "flex",
+    flexFlow: "row wrap",
+    alignItems: "center",
+    gap: currentTheme.spacing.md,
+    marginLeft: currentTheme.spacing.md,
+  });
+
+  return (
+    <span css={containerStyles} className={className} style={style}>
+      {children}
+    </span>
+  );
+};
+
+export const ThemedOptionalAttributeItem: React.FC<ThemedComponentProps> = ({ 
+  children, 
+  className, 
+  style 
+}) => {
+  const { currentTheme } = useMiroirTheme();
+  
+  const itemStyles = css({
+    display: "inline-flex",
+    alignItems: "center",
+    gap: currentTheme.spacing.xs,
+  });
+
+  return (
+    <span css={itemStyles} className={className} style={style}>
+      {children}
+    </span>
+  );
+};
+
+export const ThemedAttributeName: React.FC<ThemedComponentProps> = ({ 
+  children, 
+  className, 
+  style 
+}) => {
+  const { currentTheme } = useMiroirTheme();
+  
+  const nameStyles = css({
+    fontSize: currentTheme.typography.fontSize.sm,
+    whiteSpace: "nowrap",
+    color: currentTheme.colors.textSecondary || currentTheme.colors.text,
+  });
+
+  return (
+    <span css={nameStyles} className={className} style={style}>
+      {children}
+    </span>
+  );
+};
+
+export const ThemedDeleteButtonContainer: React.FC<ThemedComponentProps> = ({ 
+  children, 
+  className, 
+  style 
+}) => {
+  const { currentTheme } = useMiroirTheme();
+  
+  const containerStyles = css({
+    position: "absolute",
+    top: "4px",
+    right: "4px",
+    zIndex: 2,
+    cursor: "pointer",
+    display: "flex",
+    alignItems: "center",
+  });
+
+  return (
+    <span css={containerStyles} className={className} style={style}>
+      {children}
+    </span>
+  );
+};
+
+export const ThemedIndentedContainer: React.FC<ThemedComponentProps & {
+  indentLevel?: number;
+  marginLeft?: string;
+  isVisible?: boolean;
+}> = ({ 
+  children, 
+  className, 
+  style,
+  id,
+  indentLevel = 0,
+  marginLeft,
+  isVisible = true
+}) => {
+  const { currentTheme } = useMiroirTheme();
+  
+  const containerStyles = css({
+    marginLeft: marginLeft || `calc(${indentLevel * 20}px)`,
+    display: isVisible ? "block" : "none",
+  });
+
+  return (
+    <span css={containerStyles} className={className} style={style} id={id}>
+      {children}
+    </span>
+  );
+};
+
+// ##############################################################################################
+// Additional JzodElementEditor Components
+// ##############################################################################################
+
+export const ThemedBox: React.FC<ThemedComponentProps & {
+  display?: 'flex' | 'inline-flex' | 'block' | 'inline-block';
+  position?: 'static' | 'relative' | 'absolute' | 'fixed';
+  width?: string;
+  height?: string;
+  flexGrow?: number;
+  flexDirection?: 'row' | 'column';
+  marginRight?: string | number;
+  transition?: string;
+  justifyContent?: string;
+  alignItems?: string;
+  marginBottom?: string;
+  border?: string;
+  borderRadius?: string;
+  padding?: string;
+  minWidth?: string;
+  background?: string;
+  backgroundColor?: string;
+  boxShadow?: string;
+}> = ({ 
+  children, 
+  className, 
+  style,
+  display = 'block',
+  position,
+  width,
+  height,
+  flexGrow,
+  flexDirection,
+  marginRight,
+  transition,
+  justifyContent,
+  alignItems,
+  marginBottom,
+  border,
+  borderRadius,
+  padding,
+  minWidth,
+  background,
+  backgroundColor,
+  boxShadow,
+  ...props
+}) => {
+  const { currentTheme } = useMiroirTheme();
+  
+  const boxStyles = css({
+    display,
+    position,
+    width,
+    height,
+    flexGrow,
+    flexDirection,
+    marginRight,
+    transition,
+    justifyContent,
+    alignItems,
+    marginBottom,
+    border,
+    borderRadius,
+    padding,
+    minWidth,
+    background,
+    backgroundColor,
+    boxShadow,
+  });
+
+  return (
+    <div css={boxStyles} className={className} style={style} {...props}>
+      {children}
+    </div>
+  );
+};
+
+export const ThemedTooltip: React.FC<ThemedComponentProps & {
+  title: string;
+}> = ({ children, title, className, style }) => {
+  const { currentTheme } = useMiroirTheme();
+  
+  const tooltipStyles = css({
+    position: 'relative',
+    display: 'inline-block',
+    '&:hover::after': {
+      content: `"${title}"`,
+      position: 'absolute',
+      bottom: '100%',
+      left: '50%',
+      transform: 'translateX(-50%)',
+      backgroundColor: currentTheme.colors.background,
+      color: currentTheme.colors.text,
+      padding: currentTheme.spacing.xs,
+      borderRadius: currentTheme.borderRadius.sm,
+      border: `1px solid ${currentTheme.colors.border}`,
+      fontSize: currentTheme.typography.fontSize.xs,
+      whiteSpace: 'nowrap',
+      zIndex: 1000,
+      boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+    }
+  });
+
+  return (
+    <span css={tooltipStyles} className={className} style={style} title={title}>
+      {children}
+    </span>
+  );
+};
+
+export const ThemedStyledButton: React.FC<ThemedComponentProps & {
+  type?: 'button' | 'submit' | 'reset';
+  onClick?: () => void;
+  disabled?: boolean;
+  ariaLabel?: string;
+  title?: string;
+  variant?: 'transparent' | 'outlined' | 'filled';
+  position?: 'static' | 'relative' | 'absolute' | 'fixed';
+  top?: string | number;
+  right?: string | number;
+  left?: string | number;
+  bottom?: string | number;
+  zIndex?: number;
+  cursor?: string;
+  fontWeight?: string;
+  color?: string;
+  border?: string;
+  borderRadius?: string;
+  padding?: string;
+  background?: string;
+  backgroundColor?: string;
+}> = ({ 
+  children, 
+  className, 
+  style,
+  type = 'button',
+  onClick,
+  disabled = false,
+  ariaLabel,
+  title,
+  variant = 'filled',
+  position,
+  top,
+  right,
+  left,
+  bottom,
+  zIndex,
+  cursor,
+  fontWeight,
+  color,
+  border,
+  borderRadius,
+  padding,
+  background,
+  backgroundColor,
+  ...props
+}) => {
+  const { currentTheme } = useMiroirTheme();
+  
+  const getVariantStyles = () => {
+    switch (variant) {
+      case 'transparent':
+        return {
+          border: '0',
+          backgroundColor: 'transparent',
+        };
+      case 'outlined':
+        return {
+          background: currentTheme.colors.background,
+          border: `1px solid ${currentTheme.colors.border}`,
+          color: currentTheme.colors.text,
+        };
+      default:
+        return {
+          background: currentTheme.colors.background,
+          border: `1px solid ${currentTheme.colors.border}`,
+          color: currentTheme.colors.text,
+        };
+    }
+  };
+  
+  const buttonStyles = css({
+    ...getVariantStyles(),
+    position,
+    top,
+    right,
+    left,
+    bottom,
+    zIndex,
+    cursor: disabled ? 'not-allowed' : cursor || 'pointer',
+    fontWeight,
+    color: color || currentTheme.colors.text,
+    border: border || `1px solid ${currentTheme.colors.border}`,
+    borderRadius: borderRadius || currentTheme.borderRadius.sm,
+    padding: padding || currentTheme.spacing.xs,
+    background,
+    backgroundColor,
+    opacity: disabled ? 0.5 : 1,
+    '&:hover': !disabled ? {
+      backgroundColor: currentTheme.colors.hover || currentTheme.colors.primaryLight,
+    } : {},
+  });
+
+  return (
+    <button 
+      css={buttonStyles} 
+      className={className} 
+      style={style}
+      type={type}
+      onClick={onClick}
+      disabled={disabled}
+      aria-label={ariaLabel}
+      title={title}
+      {...props}
+    >
+      {children}
+    </button>
+  );
+};
+
+export const ThemedSpan: React.FC<ThemedComponentProps & {
+  border?: string;
+  borderRadius?: string;
+  padding?: string;
+  minWidth?: string;
+  position?: 'static' | 'relative' | 'absolute' | 'fixed';
+  display?: string;
+  marginBottom?: string;
+}> = ({ 
+  children, 
+  className, 
+  style,
+  border,
+  borderRadius,
+  padding,
+  minWidth,
+  position,
+  display,
+  marginBottom,
+  ...props
+}) => {
+  const { currentTheme } = useMiroirTheme();
+  
+  const spanStyles = css({
+    border,
+    borderRadius,
+    padding,
+    minWidth,
+    position,
+    display,
+    marginBottom,
+  });
+
+  return (
+    <span css={spanStyles} className={className} style={style} {...props}>
+      {children}
+    </span>
+  );
+};
+
+export const ThemedMenuItemOption: React.FC<ThemedComponentProps & {
+  value: string;
+  onClick?: () => void;
+}> = ({ 
+  children, 
+  className, 
+  style,
+  value,
+  onClick,
+  ...props
+}) => {
+  const { currentTheme } = useMiroirTheme();
+  
+  const menuItemStyles = css({
+    display: 'block',
+    width: '100%',
+    padding: currentTheme.spacing.sm,
+    backgroundColor: 'transparent',
+    border: 'none',
+    textAlign: 'left',
+    cursor: 'pointer',
+    fontSize: currentTheme.typography.fontSize.sm,
+    color: currentTheme.colors.text,
+    '&:hover': {
+      backgroundColor: currentTheme.colors.hover || currentTheme.colors.primaryLight,
+    },
+  });
+
+  return (
+    <button 
+      css={menuItemStyles} 
+      className={className} 
+      style={style}
+      onClick={onClick}
+      {...props}
+    >
+      {children}
+    </button>
+  );
+};
+
+// ##############################################################################################
+// Missing Themed Components for JzodElementEditor
+// ##############################################################################################
+
+export const ThemedCard: React.FC<ThemedComponentProps & {
+  elevation?: number;
+}> = ({ 
+  children, 
+  className, 
+  style,
+  elevation = 1
+}) => {
+  const { currentTheme } = useMiroirTheme();
+  
+  const cardStyles = css({
+    backgroundColor: currentTheme.colors.surface,
+    color: currentTheme.colors.text,
+    border: `1px solid ${currentTheme.colors.border}`,
+    borderRadius: currentTheme.borderRadius.md,
+    boxShadow: elevation > 0 ? `0 ${elevation}px ${elevation * 2}px rgba(0,0,0,0.1)` : 'none',
+    overflow: 'hidden',
+  });
+
+  return (
+    <div css={cardStyles} className={className} style={style}>
+      {children}
+    </div>
+  );
+};
+
+export const ThemedCardContent: React.FC<ThemedComponentProps> = ({ 
+  children, 
+  className, 
+  style 
+}) => {
+  const { currentTheme } = useMiroirTheme();
+  
+  const contentStyles = css({
+    padding: currentTheme.spacing.md,
+    backgroundColor: currentTheme.colors.surface,
+    color: currentTheme.colors.text,
+  });
+
+  return (
+    <div css={contentStyles} className={className} style={style}>
+      {children}
+    </div>
+  );
+};
+
+export const ThemedSwitch: React.FC<ThemedComponentProps & {
+  checked?: boolean;
+  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  disabled?: boolean;
+}> = ({ 
+  checked = false,
+  onChange,
+  disabled = false,
+  className, 
+  style 
+}) => {
+  const { currentTheme } = useMiroirTheme();
+  
+  const switchStyles = css({
+    position: 'relative',
+    display: 'inline-block',
+    width: '44px',
+    height: '24px',
+  });
+
+  const inputStyles = css({
+    opacity: 0,
+    width: 0,
+    height: 0,
+  });
+
+  const sliderStyles = css({
+    position: 'absolute',
+    cursor: disabled ? 'not-allowed' : 'pointer',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: checked ? currentTheme.colors.primary : currentTheme.colors.border,
+    transition: '0.4s',
+    borderRadius: '24px',
+    opacity: disabled ? 0.5 : 1,
+    '&:before': {
+      position: 'absolute',
+      content: '""',
+      height: '18px',
+      width: '18px',
+      left: checked ? '23px' : '3px',
+      bottom: '3px',
+      backgroundColor: currentTheme.colors.background,
+      transition: '0.4s',
+      borderRadius: '50%',
+    },
+  });
+
+  return (
+    <label css={switchStyles} className={className} style={style}>
+      <input 
+        css={inputStyles}
+        type="checkbox" 
+        checked={checked} 
+        onChange={onChange} 
+        disabled={disabled}
+      />
+      <span css={sliderStyles}></span>
+    </label>
+  );
+};
+
+export const ThemedTextField: React.FC<ThemedComponentProps & {
+  value?: string;
+  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  placeholder?: string;
+  disabled?: boolean;
+  type?: string;
+  multiline?: boolean;
+  rows?: number;
+  fullWidth?: boolean;
+  width?: string;
+  minWidth?: string;
+  maxWidth?: string;
+}> = ({ 
+  value = '',
+  onChange,
+  placeholder,
+  disabled = false,
+  type = 'text',
+  multiline = false,
+  rows = 1,
+  fullWidth = false,
+  width,
+  minWidth,
+  maxWidth,
+  className, 
+  style,
+  name,
+  id,
+  ...props
+}) => {
+  const { currentTheme } = useMiroirTheme();
+  
+  const fieldStyles = css({
+    backgroundColor: currentTheme.colors.surface,
+    color: currentTheme.colors.text,
+    border: `1px solid ${currentTheme.colors.border}`,
+    borderRadius: currentTheme.borderRadius.sm,
+    padding: currentTheme.spacing.sm,
+    fontSize: currentTheme.typography.fontSize.md,
+    fontFamily: currentTheme.typography.fontFamily,
+    width: fullWidth ? '100%' : width,
+    minWidth,
+    maxWidth,
+    minHeight: multiline ? `${rows * 1.5}em` : 'auto',
+    resize: multiline ? 'vertical' : 'none',
+    boxSizing: 'border-box',
+    '&:focus': {
+      outline: 'none',
+      borderColor: currentTheme.colors.primary,
+      boxShadow: `0 0 0 2px ${currentTheme.colors.primary}20`,
+    },
+    '&:disabled': {
+      backgroundColor: currentTheme.colors.surface,
+      opacity: 0.6,
+      cursor: 'not-allowed',
+    },
+    '&::placeholder': {
+      color: currentTheme.colors.textSecondary || currentTheme.colors.text,
+      opacity: 0.6,
+    },
+  });
+
+  const Component = multiline ? 'textarea' : 'input';
+
+  return (
+    <Component
+      css={fieldStyles}
+      className={className}
+      style={style}
+      name={name}
+      id={id}
+      value={value}
+      onChange={onChange}
+      placeholder={placeholder}
+      disabled={disabled}
+      type={!multiline ? type : undefined}
+      rows={multiline ? rows : undefined}
+      {...props}
+    />
+  );
+};
+
+export const ThemedFlexContainer: React.FC<ThemedComponentProps & {
+  direction?: 'row' | 'column';
+  align?: 'start' | 'center' | 'end' | 'stretch';
+  justify?: 'start' | 'center' | 'end' | 'space-between' | 'space-around';
+  wrap?: boolean;
+  gap?: string;
+  width?: string;
+}> = ({ 
+  children, 
+  className, 
+  style,
+  direction = 'row',
+  align = 'center',
+  justify = 'start',
+  wrap = false,
+  gap,
+  width
+}) => {
+  const { currentTheme } = useMiroirTheme();
+  
+  const containerStyles = css({
+    display: 'flex',
+    flexDirection: direction,
+    alignItems: align === 'start' ? 'flex-start' : align === 'end' ? 'flex-end' : align,
+    justifyContent: justify === 'start' ? 'flex-start' : justify === 'end' ? 'flex-end' : justify,
+    flexWrap: wrap ? 'wrap' : 'nowrap',
+    gap: gap || currentTheme.spacing.sm,
+    width,
+  });
+
+  return (
+    <div css={containerStyles} className={className} style={style}>
+      {children}
+    </div>
+  );
+};
+
+export const ThemedInlineContainer: React.FC<ThemedComponentProps & {
+  marginLeft?: string;
+  marginRight?: string;
+  position?: 'relative' | 'absolute' | 'fixed' | 'static';
+  backgroundColor?: string;
+  border?: string;
+  borderRadius?: string;
+  padding?: string;
+  width?: string;
+  height?: string;
+}> = ({ 
+  children, 
+  className, 
+  style,
+  marginLeft,
+  marginRight,
+  position,
+  backgroundColor,
+  border,
+  borderRadius,
+  padding,
+  width,
+  height
+}) => {
+  const { currentTheme } = useMiroirTheme();
+  
+  const containerStyles = css({
+    marginLeft,
+    marginRight,
+    position,
+    backgroundColor: backgroundColor || currentTheme.colors.surface,
+    border,
+    borderRadius,
+    padding,
+    width,
+    height,
+  });
+
+  return (
+    <div css={containerStyles} className={className} style={style}>
+      {children}
+    </div>
+  );
+};
 

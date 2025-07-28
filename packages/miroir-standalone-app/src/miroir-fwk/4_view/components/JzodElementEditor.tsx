@@ -5,8 +5,6 @@ import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
 import UnfoldLess from "@mui/icons-material/UnfoldLess";
 import UnfoldMore from "@mui/icons-material/UnfoldMore";
-import { Card, CardContent, MenuItem, Switch } from "@mui/material";
-import TextField from '@mui/material/TextField';
 
 import {
   EntityAttribute,
@@ -33,7 +31,12 @@ import { JzodObjectEditor } from "./JzodObjectEditor.js";
 import { 
   ThemedLabeledEditor, 
   ThemedLineIconButton, 
-  ThemedSelect 
+  ThemedSelect,
+  ThemedCard,
+  ThemedCardContent,
+  ThemedSwitch,
+  ThemedTextField,
+  ThemedMenuItemOption
 } from "./ThemedComponents.js";
 import { useMiroirTheme } from '../contexts/MiroirThemeContext.js';
 import { ErrorFallbackComponent } from "./ErrorFallbackComponent.js";
@@ -107,10 +110,6 @@ export const FoldUnfoldObjectOrArray = (props: {
 
   return (
     <ThemedLineIconButton
-      style={{
-        border: 0,
-        backgroundColor: "transparent",
-      }}
       onClick={handleClick}
     >
       {isFolded ? (
@@ -170,10 +169,6 @@ export const FoldUnfoldAllObjectAttributesOrArrayItems = (props: {
 
   return (
     <ThemedLineIconButton
-      style={{
-        border: 0,
-        backgroundColor: "transparent",
-      }}
       onClick={handleClick}
       title={allChildrenFolded ? "Unfold all attributes" : "Fold all attributes"}
     >
@@ -313,12 +308,11 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
     () => (
       <>
         {objectOrArrayOrAny ? (
-          <Switch
+          <ThemedSwitch
             checked={displayAsStructuredElement}
             id={`displayAsStructuredElementSwitch-${props.rootLessListKey}`}
             name={`displayAsStructuredElementSwitch-${props.rootLessListKey}`}
             onChange={handleDisplayAsStructuredElementSwitchChange}
-            inputProps={{ "aria-label": `Display as structured element` }}
             disabled={!codeMirrorIsValidJson}
           />
         ) : (
@@ -523,14 +517,14 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
             <ThemedLabeledEditor
               labelElement={props.labelElement ?? <></>}
               editor={
-                <Switch
+                <ThemedSwitch
                   id={props.rootLessListKey}
                   key={props.rootLessListKey}
                   aria-label={props.rootLessListKey}
                   {...fieldProps}
                   name={props.rootLessListKey}
                   checked={fieldProps.value}
-                  onChange={(e) => {
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                     formik.setFieldValue(props.rootLessListKey, e.target.checked);
                   }}
                 />
@@ -543,14 +537,14 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
             <ThemedLabeledEditor
               labelElement={props.labelElement ?? <></>}
               editor={
-                <TextField
+                <ThemedTextField
                   variant="standard"
                   data-testid="miroirInput"
                   id={props.rootLessListKey}
                   key={props.rootLessListKey}
                   type="number"
                   role="textbox"
-                  style={{ width: "100%" }}
+                  fullWidth={true}
                   {...formik.getFieldProps(props.rootLessListKey)}
                   name={props.rootLessListKey}
                 />
@@ -563,17 +557,17 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
             <ThemedLabeledEditor
               labelElement={props.labelElement ?? <></>}
               editor={
-                <TextField
+                <ThemedTextField
                   variant="standard"
                   data-testid="miroirInput"
                   id={props.rootLessListKey}
                   key={props.rootLessListKey}
                   type="text"
                   role="textbox"
-                  style={{ width: "100%" }}
+                  fullWidth={true}
                   {...formik.getFieldProps(props.rootLessListKey)}
                   value={currentValue.toString()}
-                  onChange={(e) => {
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                     const value = e.target.value;
                     formik.setFieldValue(props.rootLessListKey, value ? BigInt(value) : BigInt(0));
                   }}
@@ -588,7 +582,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
             <ThemedLabeledEditor
               labelElement={props.labelElement ?? <></>}
               editor={
-                <TextField
+                <ThemedTextField
                   variant="standard"
                   data-testid="miroirInput"
                   id={props.rootLessListKey}
@@ -613,23 +607,21 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                     aria-label={props.rootLessListKey}
                     labelId="demo-simple-select-label"
                     variant="standard"
-                    style={{ 
-                      width: "auto",
-                      minWidth: "200px",
-                      maxWidth: "400px"
-                    }}
+                    width="auto"
+                    minWidth="200px"
+                    maxWidth="400px"
                     role="textbox"
                     {...formik.getFieldProps(props.rootLessListKey)}
                     name={props.rootLessListKey}
                   >
                     {stringSelectList.map((e: [string, EntityInstance], index: number) => (
-                      <MenuItem
+                      <ThemedMenuItemOption
                         id={props.rootLessListKey + "." + index}
                         key={e[1].uuid}
                         value={e[1].uuid}
                       >
                         {(e[1] as EntityInstanceWithName).name}
-                      </MenuItem>
+                      </ThemedMenuItemOption>
                     ))}
                   </ThemedSelect>
                 }
@@ -643,7 +635,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                 <ThemedLabeledEditor
                   labelElement={props.labelElement ?? <></>}
                   editor={
-                    <TextField
+                    <ThemedTextField
                       variant="standard"
                       data-testid="miroirInput"
                       id={props.rootLessListKey}
@@ -892,7 +884,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
         />
       )}
       {objectOrArrayOrAny ? (
-        <Card
+        <ThemedCard
           id={props.rootLessListKey}
           key={props.rootLessListKey}
           style={{
@@ -906,7 +898,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
             boxShadow: "none",
           }}
         >
-          <CardContent>
+          <ThemedCardContent>
             <div>
               <span
                 style={{
@@ -955,8 +947,8 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                 </span>
               </span>
             </div>
-          </CardContent>
-        </Card>
+          </ThemedCardContent>
+        </ThemedCard>
       ) : (
         // simple type value / attribute
         <span

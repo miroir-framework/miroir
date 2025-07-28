@@ -708,6 +708,13 @@ export const RootComponent = (props: RootComponentProps) => {
         >
           <div>
       <MuiBox sx={boxParams}>
+        {/* Sidebar positioned as fixed overlay */}
+        <Sidebar 
+          open={drawerIsOpen} 
+          setOpen={handleDrawerStateChange} 
+          width={sidebarWidth}
+          onWidthChange={handleSidebarWidthChange}
+        />
         <Grid container direction="column">
           <Grid item>
             <AppBar 
@@ -726,15 +733,6 @@ export const RootComponent = (props: RootComponentProps) => {
             <Toolbar />
           </Grid>
           <Grid item container>
-            <Grid item>
-              {/* <SidebarSection open={drawerIsOpen} setOpen={setDrawerIsOpen}></SidebarSection> */}
-              <Sidebar 
-                open={drawerIsOpen} 
-                setOpen={handleDrawerStateChange} 
-                width={sidebarWidth}
-                onWidthChange={handleSidebarWidthChange}
-              ></Sidebar>
-            </Grid>
             <Grid item>
               <StyledMain 
                 open={drawerIsOpen} 

@@ -1,9 +1,13 @@
 import React, { useState, useCallback, useMemo } from 'react';
-import { Box, IconButton, Tooltip } from '@mui/material';
 import { Toc } from '@mui/icons-material';
 import { InstanceEditorOutline } from './InstanceEditorOutline.js';
 import { JzodElementEditor } from './JzodElementEditor.js';
 import { JzodElementEditorProps } from './JzodElementEditorInterface.js';
+import { 
+  ThemedBox,
+  ThemedTooltip,
+  ThemedSmallIconButton
+} from './ThemedComponents';
 
 export interface JzodElementEditorWithOutlineProps extends JzodElementEditorProps {
   showOutlineToggle?: boolean;
@@ -92,14 +96,14 @@ export const JzodElementEditorWithOutline: React.FC<JzodElementEditorWithOutline
   }, []);
 
   return (
-    <Box sx={{ display: 'flex', position: 'relative', width: '100%' }}>
+    <ThemedBox display="flex" position="relative" width="100%">
       {/* Main Editor Content */}
-      <Box sx={{ 
-        flexGrow: 1, 
-        marginRight: isOutlineOpen ? 0 : 0, 
-        transition: 'margin-right 0.3s',
-        width: '100%'
-      }}>
+      <ThemedBox 
+        flexGrow={1}
+        marginRight={isOutlineOpen ? 0 : 0}
+        transition="margin-right 0.3s"
+        width="100%"
+      >
         {/* Use JzodElementEditorWithEnhancedHeader that includes outline button in the header */}
         <JzodElementEditorWithEnhancedHeader
           {...editorProps}
@@ -107,7 +111,7 @@ export const JzodElementEditorWithOutline: React.FC<JzodElementEditorWithOutline
           onToggleOutline={handleToggleOutline}
           showOutlineToggle={showOutlineToggle && editorProps.rootLessListKey === "" && !!data}
         />
-      </Box>
+      </ThemedBox>
       
       {/* Document Outline Sidebar - moved to the right */}
       {data && (
@@ -119,7 +123,7 @@ export const JzodElementEditorWithOutline: React.FC<JzodElementEditorWithOutline
           title={outlineTitle}
         />
       )}
-    </Box>
+    </ThemedBox>
   );
 };
 
@@ -136,22 +140,13 @@ const JzodElementEditorWithEnhancedHeader: React.FC<JzodElementEditorProps & {
     <JzodElementEditorWithCustomHeader
       {...editorProps}
       outlineButton={showOutlineToggle ? (
-        <Tooltip title={isOutlineOpen ? "Hide Document Outline" : "Show Document Outline"}>
-          <IconButton
-            size="small"
+        <ThemedTooltip title={isOutlineOpen ? "Hide Document Outline" : "Show Document Outline"}>
+          <ThemedSmallIconButton
             onClick={onToggleOutline}
-            sx={{
-              marginLeft: 1,
-              backgroundColor: 'white',
-              boxShadow: 1,
-              '&:hover': {
-                backgroundColor: 'grey.100',
-              },
-            }}
           >
             <Toc />
-          </IconButton>
-        </Tooltip>
+          </ThemedSmallIconButton>
+        </ThemedTooltip>
       ) : undefined}
     />
   );
@@ -167,9 +162,9 @@ const JzodElementEditorWithCustomHeader: React.FC<JzodElementEditorProps & {
   return (
     <div>
       {outlineButton && (
-        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8px' }}>
+        <ThemedBox display="flex" justifyContent="flex-end" marginBottom="8px">
           {outlineButton}
-        </div>
+        </ThemedBox>
       )}
       <JzodElementEditor {...props} />
     </div>

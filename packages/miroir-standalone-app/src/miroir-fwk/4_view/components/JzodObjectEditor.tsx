@@ -33,7 +33,15 @@ import {
   ThemedAddIcon,
   ThemedEditableInput,
   ThemedLoadingCard,
-  ThemedFoldedValueDisplay
+  ThemedFoldedValueDisplay,
+  ThemedAttributeLabel,
+  ThemedFlexRow,
+  ThemedFlexColumn,
+  ThemedOptionalAttributeContainer,
+  ThemedOptionalAttributeItem,
+  ThemedAttributeName,
+  ThemedDeleteButtonContainer,
+  ThemedIndentedContainer
 } from "./ThemedComponents";
 import { useMiroirTheme } from '../contexts/MiroirThemeContext';
 import { ErrorFallbackComponent } from "./ErrorFallbackComponent";
@@ -251,21 +259,13 @@ const ProgressiveAttribute: FC<{
       onCommit={(newValue) => handleAttributeNameChange(newValue, attributeRootLessListKeyArray)}
     />
   ) : (
-    <span
+    <ThemedAttributeLabel
       id={attributeRootLessListKey + ".label"}
       key={attributeRootLessListKey + ".label"}
       data-testid="miroirDisplayedValue"
-      style={{
-        minWidth: "120px",
-        flexShrink: 0,
-        textAlign: "left",
-        justifyContent: "flex-start",
-        display: "flex",
-        paddingRight: "1ex",
-      }}
     >
       {currentAttributeDefinition?.tag?.value?.defaultLabel || attribute[0]}
-    </span>
+    </ThemedAttributeLabel>
   );
 
   return (
@@ -318,10 +318,7 @@ const ProgressiveAttribute: FC<{
                   id={attributeRootLessListKey + "-removeOptionalAttributeOrRecordEntry"}
                   aria-label={attributeRootLessListKey + "-removeOptionalAttributeOrRecordEntry"}
                   onClick={deleteElement(attributeRootLessListKeyArray)}
-                  style={{
-                    padding: 0,
-                    visibility: isRecordType || definedOptionalAttributes.has(attribute[0]) ? "visible" : "hidden",
-                  }}
+                  visible={isRecordType || definedOptionalAttributes.has(attribute[0])}
                 >
                   <Clear />
                 </ThemedSmallIconButton>
@@ -763,26 +760,13 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
       {/* <span>JzodObjectEditor: {count}</span> */}
       <div>
         {/* Performance statistics */}
-        <span
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "start",
-            alignItems: "center",
-          }}
+        <ThemedFlexRow
+          justify="start"
+          align="center"
         >
-          {/* <span>
-            {deleteButton ?? <></>}
-          </span> */}
           <span>
-            {/* {parentType == "record" || (parentType == "object" && rawJzodSchema?.optional) ? ( */}
-            <span
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                alignContent: "start",
-                alignItems: "center",
-              }}
+            <ThemedFlexRow
+              align="center"
             >
               {labelElement}
               {/* Show folded display value when object is folded and a value is available */}
@@ -798,7 +782,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
                     />
                   ) : null;
                 })()}
-            </span>
+            </ThemedFlexRow>
           </span>
           <span id={rootLessListKey + "head"} key={rootLessListKey + "head"}>
             <FoldUnfoldObjectOrArray
@@ -828,10 +812,6 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
                 aria-label={rootLessListKey + ".addRecordAttribute"}
                 onClick={addExtraRecordEntry}
                 title="Add new record attribute"
-                style={{
-                  flexShrink: 0,
-                  marginLeft: "1em",
-                }}
               >
                 <ThemedAddIcon />
               </ThemedSizedButton>
@@ -844,76 +824,42 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
             {currentTypeCheckKeyMap?.rawSchema.type != "record" &&
             undefinedOptionalAttributes.length > 0 &&
             (!foldedObjectAttributeOrArrayItems || !foldedObjectAttributeOrArrayItems[listKey]) ? (
-              <span
-                style={{
-                  display: "flex",
-                  flexFlow: "row wrap",
-                  alignItems: "center",
-                  gap: "1em",
-                  marginLeft: "1em",
-                }}
-              >
+              <ThemedOptionalAttributeContainer>
                 {undefinedOptionalAttributes.map((attributeName) => (
-                  <span
-                    key={attributeName}
-                    style={{
-                      display: "inline-flex",
-                      alignItems: "center",
-                      gap: "8px",
-                    }}
-                  >
+                  <ThemedOptionalAttributeItem key={attributeName}>
                     <ThemedSizedButton
                       aria-label={rootLessListKey + ".addObjectOptionalAttribute." + attributeName}
                       onClick={() => addObjectOptionalAttribute(attributeName)}
                       title={`Add optional attribute: ${attributeName}`}
-                      style={{ flexShrink: 0 }}
                     >
                       <ThemedAddIcon />
                     </ThemedSizedButton>
-                    <span
-                      style={{
-                        fontSize: "0.8em",
-                        whiteSpace: "nowrap",
-                      }}
-                    >
+                    <ThemedAttributeName>
                       {attributeName}
-                    </span>
-                  </span>
+                    </ThemedAttributeName>
+                  </ThemedOptionalAttributeItem>
                 ))}
-              </span>
+              </ThemedOptionalAttributeContainer>
             ) : (
               <></>
             )}
           </span>
-          <span
-            style={{
-              position: "absolute",
-              top: 4,
-              right: 4,
-              zIndex: 2,
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-            }}
-          >
+          <ThemedDeleteButtonContainer>
             {deleteButtonElement ?? <></>}
             {displayAsStructuredElementSwitch ?? <></>}
             {/* {jzodSchemaTooltip ?? <></>} */}
-          </span>
-        </span>
-        <span
+          </ThemedDeleteButtonContainer>
+        </ThemedFlexRow>
+        <ThemedIndentedContainer
           id={listKey + ".inner"}
-          style={{
-            marginLeft: `calc(${indentShift})`,
-            display:
-              foldedObjectAttributeOrArrayItems && foldedObjectAttributeOrArrayItems[listKey]
-                ? "none"
-                : "block",
-          }}
+          marginLeft={`calc(${indentShift})`}
+          isVisible={
+            !foldedObjectAttributeOrArrayItems || !foldedObjectAttributeOrArrayItems[listKey]
+          }
           key={`${rootLessListKey}|body`}
         >
           <div>{attributeElements}</div>
-        </span>
+        </ThemedIndentedContainer>
       </div>
     </div>
   );

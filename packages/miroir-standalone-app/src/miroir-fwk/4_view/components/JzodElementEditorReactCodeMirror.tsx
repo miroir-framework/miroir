@@ -8,6 +8,11 @@ import React, { useCallback, useEffect } from "react";
 import { packageName } from "../../../constants";
 import { cleanLevel } from "../constants";
 import { JzodElementEditorReactCodeMirrorProps } from "./JzodElementEditorInterface";
+import { 
+  ThemedBox,
+  ThemedStyledButton,
+  ThemedSpan
+} from "./ThemedComponents";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -39,9 +44,9 @@ export const JzodElementEditorReactCodeMirror: React.FC<JzodElementEditorReactCo
   if (props.isUnderTest) {
     // For testing purposes, return a simple div with the value
     return (
-      <div style={{ border: "1px solid red", padding: "10px" }}>
+      <ThemedBox border="1px solid red" padding="10px">
         <pre>{codeMirrorValue}</pre>
-      </div>
+      </ThemedBox>
     );
   }
    useEffect(() => {
@@ -111,68 +116,62 @@ export const JzodElementEditorReactCodeMirror: React.FC<JzodElementEditorReactCo
       <span>
       {jzodSchemaTooltip??<></>}
       </span>
-      <span
-        style={{
-          border: `2px solid ${codeMirrorIsValidJson ? "green" : "red"}`,
-          borderRadius: "4px",
-          padding: "2px",
-          minWidth: "40ch",
-          position: "relative",
-          display: !hidden && !insideAny ? "inline-block" : "none", // control visibility
-        }}
+      <ThemedSpan
+        border={`2px solid ${codeMirrorIsValidJson ? "green" : "red"}`}
+        borderRadius="4px"
+        padding="2px"
+        minWidth="40ch"
+        position="relative"
+        display={!hidden && !insideAny ? "inline-block" : "none"} // control visibility
       >
         {props.displayAsStructuredElementSwitch && (
-          <span style={{ marginBottom: "10px" }}>{displayAsStructuredElementSwitch}</span>
+          <ThemedSpan marginBottom="10px">{displayAsStructuredElementSwitch}</ThemedSpan>
         )}
-        <button
+        <ThemedStyledButton
           type="button"
-          aria-label="Format JSON"
-          style={{
-            position: "absolute",
-            top: 4,
-            right: 36,
-            zIndex: 2,
-            background: "#eee",
-            border: "1px solid #ccc",
-            borderRadius: "3px",
-            padding: "2px 6px",
-            cursor: "pointer",
-            fontWeight: "bold",
-          }}
+          ariaLabel="Format JSON"
+          position="absolute"
+          top="4px"
+          right="36px"
+          zIndex={2}
+          background="#eee"
+          border="1px solid #ccc"
+          borderRadius="3px"
+          padding="2px 6px"
+          cursor="pointer"
+          fontWeight="bold"
           onClick={handleFormat}
           title="Format JSON"
         >
           {"{}"}
-        </button>
-        <button
+        </ThemedStyledButton>
+        <ThemedStyledButton
           type="button"
-          aria-label="Check and Apply JSON"
-          style={{
-            position: "absolute",
-            top: 4,
-            right: 4,
-            zIndex: 2,
-            background: "#eee",
-            border: "1px solid #ccc",
-            borderRadius: "3px",
-            padding: "2px 6px",
-            cursor: codeMirrorIsValidJson ? "pointer" : "not-allowed",
-            fontWeight: "bold",
-            color: codeMirrorIsValidJson ? "green" : "gray",
-          }}
+          ariaLabel="Check and Apply JSON"
+          position="absolute"
+          top="4px"
+          right="4px"
+          zIndex={2}
+          background="#eee"
+          border="1px solid #ccc"
+          borderRadius="3px"
+          padding="2px 6px"
+          cursor={codeMirrorIsValidJson ? "pointer" : "not-allowed"}
+          fontWeight="bold"
+          color={codeMirrorIsValidJson ? "green" : "gray"}
           onClick={handleCheck}
           title="Check and Apply JSON"
           disabled={!codeMirrorIsValidJson}
         >
           ✓
-        </button>
+        </ThemedStyledButton>
         <ReactCodeMirror
           height={editorHeight}
           value={codeMirrorValue}
           extensions={extensions}
           onChange={handleChange}
         />
-      </span>
+      </ThemedSpan>
     </span>
   );
 }

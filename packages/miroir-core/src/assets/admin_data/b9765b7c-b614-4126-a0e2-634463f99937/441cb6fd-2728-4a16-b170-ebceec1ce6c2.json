@@ -5,7 +5,7 @@
   "name": "Default ViewParams",
   "defaultLabel": "Default ViewParams",
   "description": "Default ViewParams for any application / local deployment",
-  "sidebarWidth": 299,
+  "sidebarWidth": 255,
   "gridType": "glide-data-grid",
   "tableTheme": "dark",
   "appTheme": "dark"
