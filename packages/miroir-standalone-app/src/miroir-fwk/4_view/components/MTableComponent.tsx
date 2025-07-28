@@ -1064,7 +1064,7 @@ export const MTableComponent = (props: TableComponentProps & { theme?: DeepParti
                       }),
                   width: '100%',
                   maxWidth: '100%',
-                  overflow: 'hidden',
+                  overflow: 'auto', // Allow table to scroll when needed
                   boxSizing: 'border-box',
                   borderRadius: tableTheme.components.table.borderRadius,
                   border: tableTheme.components.table.border,
@@ -1094,9 +1094,7 @@ export const MTableComponent = (props: TableComponentProps & { theme?: DeepParti
                   suppressRowClickSelection={true}
                   animateRows={true}
                   skipHeaderOnAutoSize={true}
-                  suppressHorizontalScroll={true}
-                  suppressScrollOnNewData={true}
-                  suppressDragLeaveHidesColumns={true}
+                  suppressHorizontalScroll={false}
                 ></AgGridReact>
               </div>
             </>
@@ -1167,9 +1165,6 @@ export const MTableComponent = (props: TableComponentProps & { theme?: DeepParti
             }}
             defaultColDef={defaultColDef}
             onCellClicked={onCellClicked}
-            suppressHorizontalScroll={true}
-            suppressScrollOnNewData={true}
-            suppressDragLeaveHidesColumns={true}
           ></AgGridReact>
         </div>
       )}

@@ -178,7 +178,7 @@ styled(
   ({ theme, open, width = SidebarWidth, outlineOpen, outlineWidth = 300 }) => ({
     // Ensure main content never causes horizontal overflow
     boxSizing: 'border-box',
-    overflow: 'hidden', // Completely prevent scrollbars
+    overflow: 'auto', // Allow scrolling when content overflows
     minWidth: 0, // Allow flex item to shrink below content size
     ...(
       open && {
@@ -1090,10 +1090,11 @@ export const RootComponent = (props: RootComponentProps) => {
                       </span>
                       <p />
                       <span></span>
-                      {/* Wrap Outlet in a container that prevents scrollbars */}
+                      {/* Wrap Outlet in a container that allows scrolling when needed */}
                       <div style={{
                         flex: 1,
-                        overflow: 'hidden', // Completely prevent scrollbars for now
+                        // overflow: 'auto', // Allow scrolling when content overflows
+                        overflow: 'hidden', // no scrolling when content overflows
                         maxHeight: 'calc(100vh - 120px)', // Account for app bar and spacing
                         boxSizing: 'border-box'
                       }}>

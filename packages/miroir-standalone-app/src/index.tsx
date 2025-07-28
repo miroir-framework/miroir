@@ -232,7 +232,7 @@ export const themeParams = {
     content: {
       flexGrow: 1,
       height: '100vh',
-      overflow: 'hidden', // Completely prevent scrollbars
+      overflow: 'auto', // Allow scrolling when content overflows
     },
     MuiList: {
       defaultProps:{
