@@ -1,38 +1,23 @@
-/* Smart scrollbar management - hide visual scrollbars but preserve functionality */
+/* Smart scrollbar management - show functional scrollbars when needed */
 
 /* Reset and base styling */
 * {
   box-sizing: border-box;
 }
 
-/* Root elements - allow scrolling but hide scrollbars */
+/* Root elements - allow scrolling and show scrollbars when needed */
 html, body {
   margin: 0;
   padding: 0;
   width: 100vw;
   height: 100vh;
   overflow: auto; /* Allow scrolling when content overflows */
-  /* Hide scrollbars visually */
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE and Edge */
-}
-
-html::-webkit-scrollbar,
-body::-webkit-scrollbar {
-  display: none; /* Chrome, Safari, Opera */
 }
 
 #root {
   width: 100%;
-  height: 100%;
+  height: 100vh;
   overflow: auto; /* Allow scrolling when content overflows */
-  /* Hide scrollbars visually */
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE and Edge */
-}
-
-#root::-webkit-scrollbar {
-  display: none; /* Chrome, Safari, Opera */
 }
 
 /* Preserve functionality for form inputs */
@@ -60,55 +45,28 @@ input[type="search"],
 .ag-theme-alpine {
   /* Allow the grid to determine its own overflow needs */
   overflow: auto;
-  /* Hide scrollbars but keep functionality */
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE and Edge */
-}
-
-.ag-theme-alpine::-webkit-scrollbar {
-  display: none; /* Chrome, Safari, Opera */
-}
-
-/* Hide specific AG-Grid scrollbar elements that create ugly visual scrollbars */
-.ag-theme-alpine .ag-body-horizontal-scroll,
-.ag-theme-alpine .ag-body-vertical-scroll {
-  /* Hide the visual scrollbar containers but keep scroll functionality */
-  opacity: 0;
-  pointer-events: none;
-}
-
-/* Ensure AG-Grid containers can scroll when needed */
-.ag-theme-alpine .ag-body-viewport,
-.ag-theme-alpine .ag-center-cols-viewport {
-  overflow: auto;
-  /* Hide scrollbars visually */
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE and Edge */
-}
-
-.ag-theme-alpine .ag-body-viewport::-webkit-scrollbar,
-.ag-theme-alpine .ag-center-cols-viewport::-webkit-scrollbar {
-  display: none; /* Chrome, Safari, Opera */
-}
-
-/* Ensure table components have proper width constraints */
-.ag-theme-alpine {
   width: 100% !important;
   max-width: 100% !important;
   box-sizing: border-box !important;
+}
+
+/* Only hide AG-Grid's redundant scrollbar decorations, not functional scrollbars */
+.ag-theme-alpine .ag-body-horizontal-scroll,
+.ag-theme-alpine .ag-body-vertical-scroll {
+  /* These are decorative scrollbar elements that AG-Grid adds - hide them */
+  display: none !important;
+}
+
+/* Keep the functional viewport scrolling */
+.ag-theme-alpine .ag-body-viewport,
+.ag-theme-alpine .ag-center-cols-viewport {
+  overflow: auto; /* Keep functional scrolling */
 }
 
 /* Prevent unwanted scrollbars in dialog components */
 .MuiDialog-paper {
   overflow: auto;
   max-height: 90vh !important;
-  /* Hide scrollbars visually */
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE and Edge */
-}
-
-.MuiDialog-paper::-webkit-scrollbar {
-  display: none; /* Chrome, Safari, Opera */
 }
 
 /* Ensure MUI containers work properly */
@@ -119,16 +77,30 @@ input[type="search"],
   overflow: visible; /* Let content flow naturally */
 }
 
-/* Global scrollbar hiding for all elements while preserving functionality */
-*::-webkit-scrollbar {
-  width: 0px;
-  height: 0px;
-  background: transparent;
+/* Custom scrollbar styling for better appearance */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
 }
 
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* Firefox scrollbar styling */
 * {
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: thin;
+  scrollbar-color: #c1c1c1 #f1f1f1;
 }
 
 /* Smooth scrolling */

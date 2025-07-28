@@ -32,34 +32,9 @@ MiroirLoggerFactory.registerLoggerToStart(
   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "Sidebar")
 ).then((logger: LoggerInterface) => {log = logger});
 
-
-
 export const SidebarWidth = 200;
 
-
-const sideBarDefaultItems = [
-  {
-    label: "A Menu will be displayed here!",
-    section: "model",
-    selfApplication: adminConfigurationDeploymentMiroir.uuid,
-    reportUuid: "",
-    "icon": "south",
-  },
-];
-
 let count = 0;
-const muiIcons = {
-  "AutoStories": AutoStories
-}
-// interface IconProps {
-//   icon?: keyof typeof MUIcon;
-// }
-// const IconComp: React.FC<IconProps> = ({
-//  icon,
-// }) => {
-//    const Icon = icon && MUIcon[icon];
-//    return ({Icon && <Icon />})
-// }
 export const Sidebar: FC<{
   open: boolean;
   setOpen: (v: boolean) => void;

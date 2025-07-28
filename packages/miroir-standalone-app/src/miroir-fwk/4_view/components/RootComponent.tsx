@@ -176,10 +176,14 @@ styled(
   outlineWidth?: number;
 }>(
   ({ theme, open, width = SidebarWidth, outlineOpen, outlineWidth = 300 }) => ({
-    // Ensure main content never causes horizontal overflow
     boxSizing: 'border-box',
-    overflow: 'auto', // Allow scrolling when content overflows
-    minWidth: 0, // Allow flex item to shrink below content size
+    overflow: 'auto',
+    minWidth: 0,
+    height: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+    marginTop: 0, // Fix wide gap below the appbar
+    paddingTop: theme.spacing(3),
     ...(
       open && {
         width: `calc(100% - ${width}px - ${outlineOpen ? outlineWidth : 0}px)`,
@@ -416,40 +420,43 @@ export const RootComponent = (props: RootComponentProps) => {
     
     // Strategy 6: Fuzzy search through all IDs
     if (!targetElement) {
-      console.log('Trying fuzzy search...');
-      const allElementsWithIds = document.querySelectorAll('[id]');
-      const ids = Array.from(allElementsWithIds).map(el => ({
-        element: el as HTMLElement,
-        id: el.id
-      })).filter(item => item.id);
-      
+      console.log("Trying fuzzy search...");
+      const allElementsWithIds = document.querySelectorAll("[id]");
+      const ids = Array.from(allElementsWithIds)
+        .map((el) => ({
+          element: el as HTMLElement,
+          id: el.id,
+        }))
+        .filter((item) => item.id);
+
       // Look for elements that contain most of the path parts
-      const pathWords = path.join(' ').toLowerCase().split(/\s+/);
+      const pathWords = path.join(" ").toLowerCase().split(/\s+/);
       let bestMatch: { element: HTMLElement; score: number } | null = null;
-      
-      for (const {element, id} of ids) {
-        const idWords = id.toLowerCase().replace(/[._-]/g, ' ').split(/\s+/);
+
+      for (const { element, id } of ids) {
+        const idWords = id.toLowerCase().replace(/[._-]/g, " ").split(/\s+/);
         let score = 0;
-        
+
         for (const pathWord of pathWords) {
-          if (pathWord.length > 2) { // Only consider meaningful words
+          if (pathWord.length > 2) {
+            // Only consider meaningful words
             for (const idWord of idWords) {
               if (idWord.includes(pathWord) || pathWord.includes(idWord)) {
                 score++;
               }
             }
           }
+
+          if (score > 0 && (!bestMatch || score > bestMatch.score)) {
+            bestMatch = { element, score };
+          }
         }
-        
-        if (score > 0 && (!bestMatch || score > bestMatch.score)) {
-          bestMatch = { element, score };
-        }
+
+        if (bestMatch && bestMatch.score >= 2)
+          // Require at least 2 word matches
+          targetElement = bestMatch.element;
       }
-      
-      if (bestMatch && bestMatch.score >= 2) // Require at least 2 word matches
-        targetElement = bestMatch.element;
     }
-    
     if (targetElement) {
       // Scroll the element into view with smooth behavior
       targetElement.scrollIntoView({
@@ -694,444 +701,447 @@ export const RootComponent = (props: RootComponentProps) => {
         currentThemeId={defaultViewParamsFromAdminStorage?.appTheme || "default"}
         onThemeChange={handleAppThemeChange}
       >
-        <div style={{ 
-          width: '100%', 
-          height: '100%', 
-          overflow: 'hidden', 
-          position: 'relative',
-          boxSizing: 'border-box'
-        }}>
-            <div 
-              style={{
-                display: 'flex',
-                flexGrow: 1,
-                flexDirection: 'column',
-                width: '100%',
-                height: '100%',
-                position: 'relative',
-                overflow: 'hidden',
-                boxSizing: 'border-box'
-              }}
+        <div
+          style={
+            {
+              // width: '100%',
+              // height: '100%',
+              // overflow: 'hidden',
+              // position: 'relative',
+              // boxSizing: 'border-box'
+            }
+          }
+        >
+          <div
+            style={
+              {
+                // display: 'flex',
+                // flexGrow: 1,
+                // flexDirection: 'column',
+                // width: '100%',
+                // height: '100%',
+                // position: 'relative',
+                // overflow: 'hidden',
+                // boxSizing: 'border-box'
+              }
+            }
+          >
+            {/* Sidebar positioned as fixed overlay */}
+            <Sidebar
+              open={drawerIsOpen}
+              setOpen={handleDrawerStateChange}
+              width={sidebarWidth}
+              onWidthChange={handleSidebarWidthChange}
+            />
+            <ThemedGrid container direction="column" 
+              // style={{ height: "100vh" }}
             >
-              {/* Sidebar positioned as fixed overlay */}
-              <Sidebar
-                open={drawerIsOpen}
-                setOpen={handleDrawerStateChange}
-                width={sidebarWidth}
-                onWidthChange={handleSidebarWidthChange}
-              />
-              <ThemedGrid container direction="column">
+              <ThemedGrid item>
+                <AppBar
+                  handleDrawerOpen={handleDrawerOpen}
+                  open={drawerIsOpen}
+                  width={sidebarWidth}
+                  onWidthChange={handleSidebarWidthChange}
+                  outlineOpen={isOutlineOpen}
+                  outlineWidth={outlineWidth}
+                  onOutlineToggle={handleToggleOutline}
+                  gridType={defaultViewParamsFromAdminStorage?.gridType || "ag-grid"}
+                  onGridTypeToggle={handleGridTypeToggle}
+                >
+                  Bar!
+                </AppBar>
+              </ThemedGrid>
+              <ThemedGrid item container style={{ flex: 1, overflow: "hidden" }}>
                 <ThemedGrid item>
-                  <AppBar
-                    handleDrawerOpen={handleDrawerOpen}
+                  <StyledMain
                     open={drawerIsOpen}
                     width={sidebarWidth}
-                    onWidthChange={handleSidebarWidthChange}
                     outlineOpen={isOutlineOpen}
                     outlineWidth={outlineWidth}
-                    onOutlineToggle={handleToggleOutline}
-                    gridType={defaultViewParamsFromAdminStorage?.gridType || "ag-grid"}
-                    onGridTypeToggle={handleGridTypeToggle}
                   >
-                    Bar!
-                  </AppBar>
-                </ThemedGrid>
-                <ThemedGrid item container>
-                  <ThemedGrid item>
-                    <StyledMain
-                      open={drawerIsOpen}
-                      width={sidebarWidth}
-                      outlineOpen={isOutlineOpen}
-                      outlineWidth={outlineWidth}
-                    >
-                      <p />
-                      {context.showPerformanceDisplay && (
-                        <>
-                          <div>uuid: {uuidv4()}</div>
-                          <div>transactions: {JSON.stringify(transactions)}</div>
-                          <div>
-                            RootComponent renders: {navigationCount} (total: {totalCount})
-                          </div>
-                        </>
-                      )}
-                      <p />
-                      <div>
-                        <ThemedFormControl fullWidth>
-                          <ThemedInputLabel id="demo-simple-select-label">
-                            Chosen selfApplication Deployment
-                          </ThemedInputLabel>
-                          <ThemedMUISelect
-                            labelId="demo-simple-select-label"
-                            id="demo-simple-select"
-                            value={context.deploymentUuid}
-                            label="displayedDeploymentUuid"
-                            onChange={handleChangeDisplayedDeployment}
-                          >
-                            {deployments.map((deployment) => {
-                              return (
-                                <ThemedMenuItem key={deployment.name} value={deployment.uuid}>
-                                  {deployment.description}
-                                </ThemedMenuItem>
-                              );
-                            })}
-                          </ThemedMUISelect>
-                        </ThemedFormControl>
-                      </div>
+                    <p />
+                    {context.showPerformanceDisplay && (
+                      <>
+                        <div>uuid: {uuidv4()}</div>
+                        <div>transactions: {JSON.stringify(transactions)}</div>
+                        <div>
+                          RootComponent renders: {navigationCount} (total: {totalCount})
+                        </div>
+                      </>
+                    )}
+                    <p />
+                    <div>
+                      <ThemedFormControl fullWidth>
+                        <ThemedInputLabel id="demo-simple-select-label">
+                          Chosen selfApplication Deployment
+                        </ThemedInputLabel>
+                        <ThemedMUISelect
+                          labelId="demo-simple-select-label"
+                          id="demo-simple-select"
+                          value={context.deploymentUuid}
+                          label="displayedDeploymentUuid"
+                          onChange={handleChangeDisplayedDeployment}
+                        >
+                          {deployments.map((deployment) => {
+                            return (
+                              <ThemedMenuItem key={deployment.name} value={deployment.uuid}>
+                                {deployment.description}
+                              </ThemedMenuItem>
+                            );
+                          })}
+                        </ThemedMUISelect>
+                      </ThemedFormControl>
+                    </div>
 
+                    <span>
+                      <ThemedButton
+                        onClick={() =>
+                          handleAsyncAction(
+                            async () => {
+                              log.info(
+                                "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ OPENSTORE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+                              );
+                              if (!miroirConfig) {
+                                throw new Error(
+                                  "no miroirConfig given, it has to be given on the command line starting the server!"
+                                );
+                              }
+                              const configurations = miroirConfig.client.emulateServer
+                                ? miroirConfig.client.deploymentStorageConfig
+                                : miroirConfig.client.serverConfig.storeSectionConfiguration;
+
+                              // Batch all store open operations to reduce re-renders
+                              const openStoreActions = Object.entries(configurations).map(
+                                ([deploymentUuid, config]) => ({
+                                  actionType: "storeManagementAction_openStore" as const,
+                                  endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f" as const,
+                                  configuration: {
+                                    [deploymentUuid]: config as StoreUnitConfiguration,
+                                  },
+                                  deploymentUuid,
+                                })
+                              );
+
+                              await Promise.all(
+                                openStoreActions.map((action) =>
+                                  domainController.handleAction(action)
+                                )
+                              );
+
+                              log.info(
+                                "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ OPENSTORE DONE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+                              );
+                            },
+                            "Database opened successfully",
+                            "open database"
+                          )
+                        }
+                      >
+                        Open database
+                      </ThemedButton>
+                      <ThemedButton
+                        onClick={() =>
+                          handleAsyncAction(
+                            async () => {
+                              log.info(
+                                "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ FETCH CONFIGURATIONS START @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+                              );
+                              if (!miroirConfig) {
+                                throw new Error(
+                                  "no miroirConfig given, it has to be given on the command line starting the server!"
+                                );
+                              }
+                              const configurations = miroirConfig.client.emulateServer
+                                ? miroirConfig.client.deploymentStorageConfig
+                                : miroirConfig.client.serverConfig.storeSectionConfiguration;
+
+                              if (!configurations[adminConfigurationDeploymentAdmin.uuid]) {
+                                throw new Error(
+                                  "no configuration for Admin selfApplication Deployment given, can not fetch data. Admin deployment uuid=" +
+                                    adminConfigurationDeploymentAdmin.uuid +
+                                    " configurations=" +
+                                    JSON.stringify(configurations, null, 2)
+                                );
+                              }
+
+                              // Use React 18's flushSync for batching to minimize re-renders
+                              // First, perform the rollback and query to get deployments
+                              await domainController.handleAction(
+                                {
+                                  actionType: "rollback",
+                                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                                  deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
+                                },
+                                defaultMiroirMetaModel
+                              );
+
+                              const subQueryName = "deployments";
+                              const adminDeploymentsQuery: BoxedQueryTemplateWithExtractorCombinerTransformer =
+                                {
+                                  queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
+                                  deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
+                                  pageParams: {},
+                                  queryParams: {},
+                                  contextResults: {},
+                                  extractorTemplates: {
+                                    [subQueryName]: {
+                                      extractorTemplateType:
+                                        "extractorTemplateForObjectListByEntity",
+                                      applicationSection: "data",
+                                      parentName: "Deployment",
+                                      parentUuid: {
+                                        transformerType: "constantUuid",
+                                        interpolation: "build",
+                                        value: entityDeployment.uuid,
+                                      },
+                                    },
+                                  },
+                                };
+                              const adminDeployments: Action2ReturnType =
+                                await domainController.handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(
+                                  {
+                                    actionType:
+                                      "runBoxedQueryTemplateOrBoxedExtractorTemplateAction",
+                                    actionName: "runQuery",
+                                    deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
+                                    endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                                    payload: {
+                                      applicationSection: "data",
+                                      query: adminDeploymentsQuery,
+                                    },
+                                  }
+                                );
+                              if (adminDeployments instanceof Action2Error) {
+                                throw new Error(
+                                  "found adminDeployments with error " + adminDeployments
+                                );
+                              }
+
+                              if (
+                                adminDeployments.returnedDomainElement instanceof
+                                Domain2ElementFailed
+                              ) {
+                                throw new Error(
+                                  "found adminDeployments failed " +
+                                    adminDeployments.returnedDomainElement
+                                );
+                              }
+                              if (typeof adminDeployments.returnedDomainElement != "object") {
+                                throw new Error(
+                                  "found adminDeployments query result not an object as expected " +
+                                    adminDeployments.returnedDomainElement
+                                );
+                              }
+
+                              if (!adminDeployments.returnedDomainElement[subQueryName]) {
+                                throw new Error(
+                                  "found adminDeployments query result object does not have attribute " +
+                                    subQueryName +
+                                    " as expected " +
+                                    adminDeployments.returnedDomainElement
+                                );
+                              }
+
+                              const foundDeployments =
+                                adminDeployments.returnedDomainElement[subQueryName];
+                              log.info("found adminDeployments", adminDeployments);
+
+                              // Batch all deployment operations to reduce re-renders
+                              // Create arrays of all actions first
+                              const openStoreActions: StoreOrBundleAction[] = [];
+                              const rollbackActions: Array<{
+                                actionType: "rollback";
+                                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e";
+                                deploymentUuid: string;
+                              }> = [];
+
+                              for (const c of Object.values(foundDeployments)) {
+                                openStoreActions.push({
+                                  actionType: "storeManagementAction_openStore",
+                                  endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f" as const,
+                                  configuration: {
+                                    [(c as any).uuid]: (c as any) /** Deployment */
+                                      .configuration as StoreUnitConfiguration,
+                                  },
+                                  deploymentUuid: (c as any).uuid,
+                                });
+
+                                rollbackActions.push({
+                                  actionType: "rollback",
+                                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e" as const,
+                                  deploymentUuid: (c as any).uuid,
+                                });
+                              }
+
+                              // Execute all open store actions first
+                              await Promise.all(
+                                openStoreActions.map((action) =>
+                                  domainController.handleAction(action)
+                                )
+                              );
+
+                              // Then execute all rollback actions
+                              await Promise.all(
+                                rollbackActions.map((action) =>
+                                  domainController.handleAction(action, defaultMiroirMetaModel)
+                                )
+                              );
+
+                              log.info(
+                                "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ FETCH CONFIGURATIONS DONE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+                              );
+                            },
+                            "Miroir & App configurations fetched successfully",
+                            "fetch configurations"
+                          )
+                        }
+                      >
+                        fetch Miroir & App configurations from database
+                      </ThemedButton>
+                      <ThemedButton
+                        onClick={() =>
+                          handleAsyncAction(
+                            async () => {
+                              log.info(
+                                "fetching instances from datastore for deployment",
+                                adminConfigurationDeploymentMiroir
+                              );
+                              await domainController.handleAction(
+                                {
+                                  // actionType: "modelAction",
+                                  actionType: "rollback",
+                                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                                  deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
+                                },
+                                defaultMiroirMetaModel
+                              );
+                            },
+                            "Admin configuration fetched successfully",
+                            "fetch admin configuration"
+                          )
+                        }
+                      >
+                        fetch Admin configuration from database
+                      </ThemedButton>
+                      <ThemedButton
+                        onClick={() =>
+                          handleAsyncAction(
+                            async () => {
+                              // await uploadBooksAndReports(domainController, defaultMiroirMetaModel);
+                              await domainController.handleAction(
+                                {
+                                  // actionType: "modelAction",
+                                  actionType: "remoteLocalCacheRollback",
+                                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                                  deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+                                },
+                                defaultMiroirMetaModel
+                              );
+                              await domainController.handleAction(
+                                {
+                                  // actionType: "modelAction",
+                                  actionType: "remoteLocalCacheRollback",
+                                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                                  deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                                },
+                                defaultMiroirMetaModel
+                              );
+                            },
+                            "Server local cache loaded successfully",
+                            "load server local cache"
+                          )
+                        }
+                      >
+                        Load server local cache
+                      </ThemedButton>
+                      {/* commit miroir */}
                       <span>
                         <ThemedButton
                           onClick={() =>
                             handleAsyncAction(
                               async () => {
-                                log.info(
-                                  "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ OPENSTORE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
-                                );
-                                if (!miroirConfig) {
-                                  throw new Error(
-                                    "no miroirConfig given, it has to be given on the command line starting the server!"
-                                  );
-                                }
-                                const configurations = miroirConfig.client.emulateServer
-                                  ? miroirConfig.client.deploymentStorageConfig
-                                  : miroirConfig.client.serverConfig.storeSectionConfiguration;
-
-                                // Batch all store open operations to reduce re-renders
-                                const openStoreActions = Object.entries(configurations).map(
-                                  ([deploymentUuid, config]) => ({
-                                    actionType: "storeManagementAction_openStore" as const,
-                                    endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f" as const,
-                                    configuration: {
-                                      [deploymentUuid]: config as StoreUnitConfiguration,
-                                    },
-                                    deploymentUuid,
-                                  })
-                                );
-
-                                await Promise.all(
-                                  openStoreActions.map((action) =>
-                                    domainController.handleAction(action)
-                                  )
-                                );
-
-                                log.info(
-                                  "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ OPENSTORE DONE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
-                                );
-                              },
-                              "Database opened successfully",
-                              "open database"
-                            )
-                          }
-                        >
-                          Open database
-                        </ThemedButton>
-                        <ThemedButton
-                          onClick={() =>
-                            handleAsyncAction(
-                              async () => {
-                                log.info(
-                                  "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ FETCH CONFIGURATIONS START @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
-                                );
-                                if (!miroirConfig) {
-                                  throw new Error(
-                                    "no miroirConfig given, it has to be given on the command line starting the server!"
-                                  );
-                                }
-                                const configurations = miroirConfig.client.emulateServer
-                                  ? miroirConfig.client.deploymentStorageConfig
-                                  : miroirConfig.client.serverConfig.storeSectionConfiguration;
-
-                                if (!configurations[adminConfigurationDeploymentAdmin.uuid]) {
-                                  throw new Error(
-                                    "no configuration for Admin selfApplication Deployment given, can not fetch data. Admin deployment uuid=" +
-                                      adminConfigurationDeploymentAdmin.uuid +
-                                      " configurations=" +
-                                      JSON.stringify(configurations, null, 2)
-                                  );
-                                }
-
-                                // Use React 18's flushSync for batching to minimize re-renders
-                                // First, perform the rollback and query to get deployments
-                                await domainController.handleAction(
-                                  {
-                                    actionType: "rollback",
-                                    endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                                    deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
-                                  },
-                                  defaultMiroirMetaModel
-                                );
-
-                                const subQueryName = "deployments";
-                                const adminDeploymentsQuery: BoxedQueryTemplateWithExtractorCombinerTransformer =
-                                  {
-                                    queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
-                                    deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
-                                    pageParams: {},
-                                    queryParams: {},
-                                    contextResults: {},
-                                    extractorTemplates: {
-                                      [subQueryName]: {
-                                        extractorTemplateType:
-                                          "extractorTemplateForObjectListByEntity",
-                                        applicationSection: "data",
-                                        parentName: "Deployment",
-                                        parentUuid: {
-                                          transformerType: "constantUuid",
-                                          interpolation: "build",
-                                          value: entityDeployment.uuid,
-                                        },
-                                      },
-                                    },
-                                  };
-                                const adminDeployments: Action2ReturnType =
-                                  await domainController.handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(
-                                    {
-                                      actionType:
-                                        "runBoxedQueryTemplateOrBoxedExtractorTemplateAction",
-                                      actionName: "runQuery",
-                                      deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
-                                      endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-                                      payload: {
-                                        applicationSection: "data",
-                                        query: adminDeploymentsQuery,
-                                      },
-                                    }
-                                  );
-                                if (adminDeployments instanceof Action2Error) {
-                                  throw new Error(
-                                    "found adminDeployments with error " + adminDeployments
-                                  );
-                                }
-
-                                if (
-                                  adminDeployments.returnedDomainElement instanceof
-                                  Domain2ElementFailed
-                                ) {
-                                  throw new Error(
-                                    "found adminDeployments failed " +
-                                      adminDeployments.returnedDomainElement
-                                  );
-                                }
-                                if (typeof adminDeployments.returnedDomainElement != "object") {
-                                  throw new Error(
-                                    "found adminDeployments query result not an object as expected " +
-                                      adminDeployments.returnedDomainElement
-                                  );
-                                }
-
-                                if (!adminDeployments.returnedDomainElement[subQueryName]) {
-                                  throw new Error(
-                                    "found adminDeployments query result object does not have attribute " +
-                                      subQueryName +
-                                      " as expected " +
-                                      adminDeployments.returnedDomainElement
-                                  );
-                                }
-
-                                const foundDeployments =
-                                  adminDeployments.returnedDomainElement[subQueryName];
-                                log.info("found adminDeployments", adminDeployments);
-
-                                // Batch all deployment operations to reduce re-renders
-                                // Create arrays of all actions first
-                                const openStoreActions: StoreOrBundleAction[] = [];
-                                const rollbackActions: Array<{
-                                  actionType: "rollback";
-                                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e";
-                                  deploymentUuid: string;
-                                }> = [];
-
-                                for (const c of Object.values(foundDeployments)) {
-                                  openStoreActions.push({
-                                    actionType: "storeManagementAction_openStore",
-                                    endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f" as const,
-                                    configuration: {
-                                      [(c as any).uuid]: (c as any) /** Deployment */
-                                        .configuration as StoreUnitConfiguration,
-                                    },
-                                    deploymentUuid: (c as any).uuid,
-                                  });
-
-                                  rollbackActions.push({
-                                    actionType: "rollback",
-                                    endpoint: "7947ae40-eb34-4149-887b-15a9021e714e" as const,
-                                    deploymentUuid: (c as any).uuid,
-                                  });
-                                }
-
-                                // Execute all open store actions first
-                                await Promise.all(
-                                  openStoreActions.map((action) =>
-                                    domainController.handleAction(action)
-                                  )
-                                );
-
-                                // Then execute all rollback actions
-                                await Promise.all(
-                                  rollbackActions.map((action) =>
-                                    domainController.handleAction(action, defaultMiroirMetaModel)
-                                  )
-                                );
-
-                                log.info(
-                                  "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ FETCH CONFIGURATIONS DONE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
-                                );
-                              },
-                              "Miroir & App configurations fetched successfully",
-                              "fetch configurations"
-                            )
-                          }
-                        >
-                          fetch Miroir & App configurations from database
-                        </ThemedButton>
-                        <ThemedButton
-                          onClick={() =>
-                            handleAsyncAction(
-                              async () => {
-                                log.info(
-                                  "fetching instances from datastore for deployment",
-                                  adminConfigurationDeploymentMiroir
-                                );
                                 await domainController.handleAction(
                                   {
                                     // actionType: "modelAction",
-                                    actionType: "rollback",
-                                    endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                                    deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
-                                  },
-                                  defaultMiroirMetaModel
-                                );
-                              },
-                              "Admin configuration fetched successfully",
-                              "fetch admin configuration"
-                            )
-                          }
-                        >
-                          fetch Admin configuration from database
-                        </ThemedButton>
-                        <ThemedButton
-                          onClick={() =>
-                            handleAsyncAction(
-                              async () => {
-                                // await uploadBooksAndReports(domainController, defaultMiroirMetaModel);
-                                await domainController.handleAction(
-                                  {
-                                    // actionType: "modelAction",
-                                    actionType: "remoteLocalCacheRollback",
+                                    actionType: "commit",
                                     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                                     deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
                                   },
                                   defaultMiroirMetaModel
                                 );
+                              },
+                              "Miroir committed successfully",
+                              "commit miroir"
+                            )
+                          }
+                        >
+                          Commit Miroir
+                        </ThemedButton>
+                      </span>
+                      {/* Commit Library app */}
+                      <span>
+                        <ThemedButton
+                          onClick={() =>
+                            handleAsyncAction(
+                              async () => {
                                 await domainController.handleAction(
                                   {
                                     // actionType: "modelAction",
-                                    actionType: "remoteLocalCacheRollback",
+                                    actionType: "commit",
                                     endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                                     deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                                   },
                                   defaultMiroirMetaModel
                                 );
                               },
-                              "Server local cache loaded successfully",
-                              "load server local cache"
+                              "Library app committed successfully",
+                              "commit library app"
                             )
                           }
                         >
-                          Load server local cache
+                          Commit Library app
                         </ThemedButton>
-                        {/* commit miroir */}
-                        <span>
-                          <ThemedButton
-                            onClick={() =>
-                              handleAsyncAction(
-                                async () => {
-                                  await domainController.handleAction(
-                                    {
-                                      // actionType: "modelAction",
-                                      actionType: "commit",
-                                      endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                                      deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
-                                    },
-                                    defaultMiroirMetaModel
-                                  );
-                                },
-                                "Miroir committed successfully",
-                                "commit miroir"
-                              )
-                            }
-                          >
-                            Commit Miroir
-                          </ThemedButton>
-                        </span>
-                        {/* Commit Library app */}
-                        <span>
-                          <ThemedButton
-                            onClick={() =>
-                              handleAsyncAction(
-                                async () => {
-                                  await domainController.handleAction(
-                                    {
-                                      // actionType: "modelAction",
-                                      actionType: "commit",
-                                      endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                                      deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-                                    },
-                                    defaultMiroirMetaModel
-                                  );
-                                },
-                                "Library app committed successfully",
-                                "commit library app"
-                              )
-                            }
-                          >
-                            Commit Library app
-                          </ThemedButton>
-                        </span>
                       </span>
-                      <p />
-                      <span></span>
-                      {/* Wrap Outlet in a container that allows scrolling when needed */}
-                      <div style={{
-                        flex: 1,
-                        // overflow: 'auto', // Allow scrolling when content overflows
-                        overflow: 'hidden', // no scrolling when content overflows
-                        maxHeight: 'calc(100vh - 120px)', // Account for app bar and spacing
-                        boxSizing: 'border-box'
-                      }}>
-                        <Outlet></Outlet>
-                      </div>
-                    </StyledMain>
-                  </ThemedGrid>
+                    </span>
+                    {/* Wrap Outlet in a container that allows scrolling when needed */}
+                    <div
+                      style={{
+                        // flex: 1,
+                        // overflow: "auto", // Allow scrolling when content overflows
+                        // height: "100%", // Use full available height
+                        // boxSizing: "border-box",
+                      }}
+                    >
+                      <Outlet></Outlet>
+                    </div>
+                  </StyledMain>
                 </ThemedGrid>
               </ThemedGrid>
-            </div>
-
-            {/* Document Outline - Full height on right side */}
-            <InstanceEditorOutline
-              isOpen={isOutlineOpen}
-              onToggle={handleToggleOutline}
-              data={outlineData}
-              onNavigate={handleNavigateToPath}
-              title={outlineTitle}
-              width={outlineWidth}
-              onWidthChange={setOutlineWidth}
-            />
-
-            <Snackbar
-              open={snackbarOpen}
-              autoHideDuration={6000}
-              onClose={handleSnackbarClose}
-              anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-            >
-              <Alert
-                onClose={handleSnackbarClose}
-                severity={snackbarSeverity}
-                sx={{ width: "100%" }}
-              >
-                {snackbarMessage}
-              </Alert>
-            </Snackbar>
+            </ThemedGrid>
           </div>
+
+          {/* Document Outline - Full height on right side */}
+          <InstanceEditorOutline
+            isOpen={isOutlineOpen}
+            onToggle={handleToggleOutline}
+            data={outlineData}
+            onNavigate={handleNavigateToPath}
+            title={outlineTitle}
+            width={outlineWidth}
+            onWidthChange={setOutlineWidth}
+          />
+
+          <Snackbar
+            open={snackbarOpen}
+            autoHideDuration={6000}
+            onClose={handleSnackbarClose}
+            anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+          >
+            <Alert onClose={handleSnackbarClose} severity={snackbarSeverity} sx={{ width: "100%" }}>
+              {snackbarMessage}
+            </Alert>
+          </Snackbar>
+        </div>
       </MiroirThemeProvider>
     </DocumentOutlineContext.Provider>
   );

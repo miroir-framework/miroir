@@ -740,7 +740,9 @@ export const ThemedDrawer: React.FC<ThemedComponentProps & {
     height: '100vh',
     zIndex: 1200,
     // Prevent any overflow issues
-    overflow: 'hidden',
+    // overflow: 'hidden',
+    // overflow: 'auto',
+    overflow: 'scroll',
     // Ensure drawer doesn't affect main layout
     maxWidth: open ? `${width}px` : '0px',
   });
