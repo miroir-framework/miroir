@@ -61,16 +61,15 @@ export const PageContainer: React.FC<PageContainerProps> = ({
         width,
         minWidth: '320px', // Minimum width for mobile
         maxWidth: '100%', // Constrain to parent container
-        minHeight: '100vh', // Minimum height to fill viewport, but allow expansion
+        minHeight: '100%', // Use 100% instead of 100vh to prevent overflow
         // Removed fixed height to prevent double scrollbar
         
         // Positioning - let RootComponent handle margins
         marginLeft,
         marginRight,
         
-        // Overflow handling - let the main window handle vertical scrolling
-        overflow: 'visible', // Changed from 'hidden' to 'visible'
-        overflowX: 'hidden', // Still prevent horizontal overflow
+        // Overflow handling - completely prevent all scrollbars
+        overflow: 'hidden',
         
         // Box model
         boxSizing: 'border-box',

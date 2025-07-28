@@ -1094,7 +1094,9 @@ export const MTableComponent = (props: TableComponentProps & { theme?: DeepParti
                   suppressRowClickSelection={true}
                   animateRows={true}
                   skipHeaderOnAutoSize={true}
-                  suppressHorizontalScroll={false}
+                  suppressHorizontalScroll={true}
+                  suppressScrollOnNewData={true}
+                  suppressDragLeaveHidesColumns={true}
                 ></AgGridReact>
               </div>
             </>
@@ -1165,6 +1167,9 @@ export const MTableComponent = (props: TableComponentProps & { theme?: DeepParti
             }}
             defaultColDef={defaultColDef}
             onCellClicked={onCellClicked}
+            suppressHorizontalScroll={true}
+            suppressScrollOnNewData={true}
+            suppressDragLeaveHidesColumns={true}
           ></AgGridReact>
         </div>
       )}

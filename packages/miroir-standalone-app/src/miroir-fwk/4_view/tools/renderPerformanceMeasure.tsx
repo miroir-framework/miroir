@@ -211,7 +211,7 @@ export class RenderPerformanceMetrics {
           zIndex: 9999,
           maxWidth: "500px",
           maxHeight: "80vh",
-          overflow: "auto",
+          overflow: "hidden",
           boxShadow: "0 4px 8px rgba(0,0,0,0.2)",
           cursor: isDragging ? 'grabbing' : 'grab',
           userSelect: 'none',

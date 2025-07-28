@@ -485,7 +485,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                               },
                               ".cm-scroller": {
                                 width: "100%",
-                                overflowX: "auto", // Enable horizontal scrolling if needed
+                                overflow: "hidden", // Completely prevent scrollbars
                               },
                               ".cm-content": {
                                 minWidth: `${fixedWidth}px`,

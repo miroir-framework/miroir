@@ -178,11 +178,11 @@ styled(
   ({ theme, open, width = SidebarWidth, outlineOpen, outlineWidth = 300 }) => ({
     // Ensure main content never causes horizontal overflow
     boxSizing: 'border-box',
-    overflowX: 'hidden',
+    overflow: 'hidden', // Completely prevent scrollbars
     minWidth: 0, // Allow flex item to shrink below content size
     ...(
       open && {
-        width: `calc(100vw - ${width}px - ${outlineOpen ? outlineWidth : 0}px)`,
+        width: `calc(100% - ${width}px - ${outlineOpen ? outlineWidth : 0}px)`,
         marginLeft: `${width}px`,
         marginRight: outlineOpen ? `${outlineWidth}px` : 0,
         transition: theme.transitions.create(
@@ -194,7 +194,7 @@ styled(
       }
     ),
     ...(!open && outlineOpen && {
-      width: `calc(100vw - ${outlineWidth}px)`,
+      width: `calc(100% - ${outlineWidth}px)`,
       marginRight: `${outlineWidth}px`,
       transition: theme.transitions.create(
         ["margin", "width"], {
@@ -204,7 +204,7 @@ styled(
       ),
     }),
     ...(!open && !outlineOpen && {
-      width: '100vw',
+      width: '100%',
       marginLeft: 0,
       marginRight: 0,
       transition: theme.transitions.create(
@@ -315,10 +315,10 @@ export const RootComponent = (props: RootComponentProps) => {
     }
   }, [handleDrawerOpen, handleDrawerClose]);
 
-  const handleChangeDisplayedDeployment = useMemo(() => (event: SelectChangeEvent) => {
+  const handleChangeDisplayedDeployment = useMemo(() => (event: SelectChangeEvent<unknown>) => {
     event.stopPropagation();
     log.info('handleChangeDisplayedDeployment',event);
-    setDisplayedDeploymentUuid(event.target.value);
+    setDisplayedDeploymentUuid(event.target.value as string);
     log.info('handleChangeDisplayedDeployment',displayedDeploymentUuid);
     setDisplayedApplicationSection('data');
     // setDisplayedReportUuid("");
@@ -695,8 +695,8 @@ export const RootComponent = (props: RootComponentProps) => {
         onThemeChange={handleAppThemeChange}
       >
         <div style={{ 
-          width: '100vw', 
-          height: '100vh', 
+          width: '100%', 
+          height: '100%', 
           overflow: 'hidden', 
           position: 'relative',
           boxSizing: 'border-box'
@@ -709,7 +709,8 @@ export const RootComponent = (props: RootComponentProps) => {
                 width: '100%',
                 height: '100%',
                 position: 'relative',
-                overflow: 'hidden'
+                overflow: 'hidden',
+                boxSizing: 'border-box'
               }}
             >
               {/* Sidebar positioned as fixed overlay */}
@@ -1089,7 +1090,15 @@ export const RootComponent = (props: RootComponentProps) => {
                       </span>
                       <p />
                       <span></span>
-                      <Outlet></Outlet>
+                      {/* Wrap Outlet in a container that prevents scrollbars */}
+                      <div style={{
+                        flex: 1,
+                        overflow: 'hidden', // Completely prevent scrollbars for now
+                        maxHeight: 'calc(100vh - 120px)', // Account for app bar and spacing
+                        boxSizing: 'border-box'
+                      }}>
+                        <Outlet></Outlet>
+                      </div>
                     </StyledMain>
                   </ThemedGrid>
                 </ThemedGrid>

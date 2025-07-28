@@ -1,6 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import React from 'react';
 import { css } from '@emotion/react';
+import { FormControl, FormControlProps, InputLabel, InputLabelProps, MenuItem, MenuItemProps, Select, SelectProps } from '@mui/material';
 import { useMiroirTheme } from '../contexts/MiroirThemeContext';
 
 // ################################################################################################
@@ -72,8 +73,8 @@ export const ThemedButton: React.FC<ThemedComponentProps & {
     borderRadius: currentTheme.borderRadius.md,
     cursor: 'pointer',
     fontFamily: currentTheme.typography.fontFamily,
-    fontSize: currentTheme.typography.fontSize,
-    fontWeight: currentTheme.typography.fontWeight,
+    fontSize: currentTheme.typography.fontSize.md,
+    fontWeight: currentTheme.typography.fontWeight.normal,
     '&:hover': {
       backgroundColor: variant === 'primary' ? currentTheme.colors.primaryDark : currentTheme.colors.secondaryDark,
     },
@@ -197,7 +198,7 @@ export const ThemedCodeBlock: React.FC<ThemedComponentProps> = ({
     fontFamily: 'monospace',
     fontSize: currentTheme.typography.fontSize.sm,
     whiteSpace: 'pre-wrap',
-    overflow: 'auto',
+    overflow: 'hidden',
     maxHeight: '400px',
   });
 
@@ -2009,9 +2010,8 @@ export const ThemedScrollableContent: React.FC<ThemedComponentProps> = ({
   
   const scrollableStyles = css({
     flex: '1 1 auto',
-    // Only enable vertical scrolling when content exceeds container height
-    overflowY: 'auto',
-    overflowX: 'hidden',
+    // Completely prevent all scrollbars
+    overflow: 'hidden',
     // Remove flex display that was causing layout issues
     display: 'block',
     // Ensure content doesn't exceed container width
@@ -2044,9 +2044,6 @@ export const ThemedScrollableContent: React.FC<ThemedComponentProps> = ({
 // Themed Material-UI Components
 // Wrappers around Material-UI components that properly integrate with the Miroir theme system
 // ################################################################################################
-
-import { FormControl, InputLabel, MenuItem, Select } from '@mui/material';
-import type { FormControlProps, InputLabelProps, MenuItemProps, SelectProps } from '@mui/material';
 
 // Themed FormControl that applies Miroir theme colors
 export const ThemedFormControl: React.FC<FormControlProps & ThemedComponentProps> = ({ 
@@ -2106,7 +2103,7 @@ export const ThemedInputLabel: React.FC<InputLabelProps & ThemedComponentProps> 
   const inputLabelStyles = css({
     color: `${currentTheme.colors.text} !important`,
     fontFamily: currentTheme.typography.fontFamily,
-    fontSize: currentTheme.typography.fontSize,
+    fontSize: currentTheme.typography.fontSize.md,
     '&.Mui-focused': {
       color: `${currentTheme.colors.primary} !important`,
     },
@@ -2135,7 +2132,7 @@ export const ThemedMenuItem: React.FC<MenuItemProps & ThemedComponentProps> = ({
     color: `${currentTheme.colors.text} !important`,
     backgroundColor: `${currentTheme.colors.surface} !important`,
     fontFamily: currentTheme.typography.fontFamily,
-    fontSize: currentTheme.typography.fontSize,
+    fontSize: currentTheme.typography.fontSize.md,
     '&:hover': {
       backgroundColor: `${currentTheme.colors.hover} !important`,
     },
@@ -2167,7 +2164,7 @@ export const ThemedMUISelect: React.FC<SelectProps & ThemedComponentProps> = ({
     color: `${currentTheme.colors.text} !important`,
     backgroundColor: `${currentTheme.colors.surface} !important`,
     fontFamily: currentTheme.typography.fontFamily,
-    fontSize: currentTheme.typography.fontSize,
+    fontSize: currentTheme.typography.fontSize.md,
     '& .MuiSelect-select': {
       color: `${currentTheme.colors.text} !important`,
       backgroundColor: `${currentTheme.colors.surface} !important`,

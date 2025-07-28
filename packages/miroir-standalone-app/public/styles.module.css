@@ -1,20 +1,118 @@
 /* Global reset to prevent overflow issues */
 * {
   box-sizing: border-box;
+  overflow: hidden !important; /* Aggressively prevent all scrollbars */
 }
 
-html, body {
-  margin: 0;
-  padding: 0;
-  overflow-x: hidden; /* Prevent horizontal scroll on page */
-  width: 100%;
-  height: 100%;
+/* Ultra-aggressive scrollbar elimination for all possible browser scenarios */
+*::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  background: transparent !important;
+}
+
+* {
+  scrollbar-width: none !important; /* Firefox */
+  -ms-overflow-style: none !important; /* IE/Edge */
+}
+
+/* Prevent any possible scroll behavior */
+html, body, #root, * {
+  overscroll-behavior: none !important;
+  scroll-behavior: auto !important;
+}
+
+/* Lock browser window to prevent any scrolling */
+html {
+  position: fixed !important;
+  overflow: hidden !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+body {
+  position: fixed !important;
+  overflow: hidden !important;
+  width: 100% !important;
+  height: 100% !important;
+  top: 0 !important;
+  left: 0 !important;
+}
+
+/* Special allowances for form controls that need to function properly */
+textarea, 
+input[type="text"], 
+input[type="email"], 
+input[type="password"],
+input[type="number"],
+input[type="search"],
+.MuiInputBase-input,
+.MuiOutlinedInput-input {
+  overflow: visible !important; /* Allow text inputs to work normally */
+}
+
+/* Ultra-aggressive browser scrollbar elimination */
+html {
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important; /* Critical: prevent browser scrollbars */
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+  scrollbar-width: none !important; /* Firefox */
+  -ms-overflow-style: none !important; /* IE/Edge */
+}
+
+html::-webkit-scrollbar {
+  display: none !important; /* Chrome/Safari */
+  width: 0 !important;
+  height: 0 !important;
+}
+
+body {
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important; /* Critical: prevent browser scrollbars */
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+  scrollbar-width: none !important; /* Firefox */
+  -ms-overflow-style: none !important; /* IE/Edge */
+  position: fixed !important; /* Lock body in place */
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+}
+
+body::-webkit-scrollbar {
+  display: none !important; /* Chrome/Safari */
+  width: 0 !important;
+  height: 0 !important;
 }
 
 #root {
-  width: 100%;
-  height: 100%;
-  overflow-x: hidden;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+  overflow: hidden !important; /* Completely prevent scrollbars */
+  position: absolute !important; /* Position absolutely within body */
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  scrollbar-width: none !important; /* Firefox */
+  -ms-overflow-style: none !important; /* IE/Edge */
+}
+
+#root::-webkit-scrollbar {
+  display: none !important; /* Chrome/Safari */
+  width: 0 !important;
+  height: 0 !important;
 }
 
 .MuiDialog-container {
@@ -54,8 +152,7 @@ html, body {
 .ag-theme-alpine .ag-body-viewport {
   width: 100% !important;
   max-width: 100% !important;
-  overflow-x: auto !important;
-  overflow-y: auto !important;
+  overflow: hidden !important; /* Completely prevent table scrollbars for now */
 }
 
 /* Ensure Glide Data Grid also respects container width */
@@ -64,4 +161,193 @@ html, body {
   max-width: 100% !important;
   overflow: hidden !important;
   box-sizing: border-box !important;
+}
+
+/* Smooth scrolling for all scrollable areas */
+* {
+  scroll-behavior: smooth;
+}
+
+/* Customize scrollbars - make them completely invisible by default */
+::-webkit-scrollbar {
+  width: 0px;
+  height: 0px;
+  background: transparent;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: transparent;
+}
+
+/* Auto-hide scrollbars when not hovering */
+::-webkit-scrollbar-thumb {
+  background: transparent;
+}
+
+:hover::-webkit-scrollbar-thumb {
+  background: transparent;
+}
+
+:hover::-webkit-scrollbar-thumb:hover {
+  background: transparent;
+}
+
+/* Hide scrollbars for Firefox completely */
+* {
+  scrollbar-width: none;
+}
+
+/* Override any scrollbar colors */
+*:hover {
+  scrollbar-width: none;
+}
+
+/* Ensure MUI components don't create unnecessary overflow */
+.MuiContainer-root {
+  overflow: hidden !important;
+}
+
+.MuiGrid-container {
+  overflow: hidden !important;
+}
+
+.MuiGrid-item {
+  overflow: hidden !important;
+}
+
+.MuiBox-root {
+  overflow: hidden !important;
+}
+
+/* Prevent unwanted scrollbars in dialog and modal components */
+.MuiDialog-paper {
+  overflow: hidden !important;
+  max-height: 90vh !important;
+}
+
+/* Additional targeted scrollbar elimination */
+.ag-theme-alpine .ag-body-horizontal-scroll-viewport,
+.ag-theme-alpine .ag-body-vertical-scroll-viewport,
+.ag-theme-alpine .ag-floating-bottom-viewport,
+.ag-theme-alpine .ag-floating-top-viewport,
+.ag-theme-alpine .ag-pinned-left-cols-viewport,
+.ag-theme-alpine .ag-pinned-right-cols-viewport {
+  overflow: hidden !important;
+  scrollbar-width: none !important;
+}
+
+.ag-theme-alpine .ag-body-horizontal-scroll-viewport::-webkit-scrollbar,
+.ag-theme-alpine .ag-body-vertical-scroll-viewport::-webkit-scrollbar,
+.ag-theme-alpine .ag-floating-bottom-viewport::-webkit-scrollbar,
+.ag-theme-alpine .ag-floating-top-viewport::-webkit-scrollbar,
+.ag-theme-alpine .ag-pinned-left-cols-viewport::-webkit-scrollbar,
+.ag-theme-alpine .ag-pinned-right-cols-viewport::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+/* Ensure container elements don't create scrollbars */
+.ag-theme-alpine .ag-root,
+.ag-theme-alpine .ag-root-wrapper,
+.ag-theme-alpine .ag-header,
+.ag-theme-alpine .ag-body {
+  overflow: hidden !important;
+  max-width: 100% !important;
+}
+
+/* Target browser scrollbars more aggressively */
+::-webkit-scrollbar {
+  width: 0px !important;
+  height: 0px !important;
+  background: transparent !important;
+  display: none !important;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent !important;
+  display: none !important;
+}
+
+::-webkit-scrollbar-thumb {
+  background: transparent !important;
+  display: none !important;
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent !important;
+  display: none !important;
+}
+
+/* Force scrollbar-width to none for all browsers */
+* {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+/* Final nuclear option - ensure absolutely no element can create scrollbars */
+div, section, main, article, aside, nav, header, footer, 
+.MuiContainer-root, .MuiGrid-root, .MuiBox-root,
+.ag-theme-alpine div, .ag-theme-alpine section {
+  overflow: hidden !important;
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+div::-webkit-scrollbar,
+section::-webkit-scrollbar,
+main::-webkit-scrollbar,
+.MuiContainer-root::-webkit-scrollbar,
+.MuiGrid-root::-webkit-scrollbar,
+.MuiBox-root::-webkit-scrollbar,
+.ag-theme-alpine div::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+/* Final ultimate scrollbar prevention */
+html, body {
+  overflow: hidden !important;
+  position: fixed !important;
+  width: 100% !important;
+  height: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+#root {
+  overflow: hidden !important;
+  width: 100% !important;
+  height: 100% !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+}
+
+/* Force remove ALL scrollbars in every possible browser */
+::-webkit-scrollbar,
+::-webkit-scrollbar-thumb,
+::-webkit-scrollbar-track,
+::-webkit-scrollbar-corner {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  background: transparent !important;
+}
+
+html {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+  overflow: -moz-scrollbars-none !important;
 }
