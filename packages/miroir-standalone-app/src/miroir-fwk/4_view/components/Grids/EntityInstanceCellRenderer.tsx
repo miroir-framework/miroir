@@ -1,8 +1,8 @@
 import { ICellRendererParams } from "ag-grid-community";
 import { LoggerInterface, MiroirLoggerFactory } from "miroir-core";
 import { memo } from "react";
-import { packageName } from "../../../constants.js";
-import { cleanLevel } from "../constants.js";
+import { packageName } from "../../../../constants.js";
+import { cleanLevel } from "../../constants.js";
 import { TableComponentRow } from "./MTableComponentInterface.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;

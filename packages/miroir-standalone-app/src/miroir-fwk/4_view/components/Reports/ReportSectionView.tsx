@@ -16,13 +16,13 @@ import {
 
 
 
-import { deployments, packageName } from '../../../constants.js';
-import { useMiroirContextService } from '../MiroirContextReactProvider.js';
-import { cleanLevel } from '../constants.js';
+import { deployments, packageName } from '../../../../constants.js';
+import { useMiroirContextService } from '../../MiroirContextReactProvider.js';
+import { cleanLevel } from '../../constants.js';
 import { ReportSectionEntityInstance } from './ReportSectionEntityInstance.js';
 import { ReportSectionListDisplay } from './ReportSectionListDisplay.js';
-import { useRenderTracker } from '../tools/renderCountTracker.js';
-import { ThemedBox } from './ThemedComponents.js';
+import { useRenderTracker } from '../../tools/renderCountTracker.js';
+import { ThemedBox } from '../Themes/ThemedComponents.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

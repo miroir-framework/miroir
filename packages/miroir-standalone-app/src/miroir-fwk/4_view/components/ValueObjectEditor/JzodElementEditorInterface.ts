@@ -89,6 +89,12 @@ export interface JzodLiteralEditorProps extends JzodEditorPropsRoot {
 // #################################################################################################
 export interface JzodAnyEditorProps extends JzodEditorPropsRoot {
   // visible?: boolean;
+  foldedObjectAttributeOrArrayItems: { [k: string]: boolean };  
+  setFoldedObjectAttributeOrArrayItems: React.Dispatch<
+    React.SetStateAction<{
+      [k: string]: boolean;
+    }>
+  >;
 }
 
 // #################################################################################################

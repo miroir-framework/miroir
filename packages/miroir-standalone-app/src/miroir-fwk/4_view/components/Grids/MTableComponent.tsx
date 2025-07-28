@@ -32,32 +32,32 @@ import {
   defaultViewParamsFromAdminStorageFetchQueryParams
 } from "miroir-core";
 
-import { packageName } from '../../../constants.js';
-import EntityEditor from '../EntityEditor.js';
+import { packageName } from '../../../../constants.js';
+import EntityEditor from '../../EntityEditor.js';
 import {
   useMiroirContextInnerFormOutput,
   useMiroirContextService,
   // useViewParams
-} from '../MiroirContextReactProvider.js';
-import { useCurrentModel, useDeploymentEntityStateQuerySelectorForCleanedResult } from '../ReduxHooks.js';
-import { cleanLevel } from '../constants.js';
-import { calculateAdaptiveColumnWidths, ToolsColumnDefinition } from '../adaptiveColumnWidths.js';
+} from '../../MiroirContextReactProvider.js';
+import { useCurrentModel, useDeploymentEntityStateQuerySelectorForCleanedResult } from '../../ReduxHooks.js';
+import { cleanLevel } from '../../constants.js';
+import { calculateAdaptiveColumnWidths, ToolsColumnDefinition } from '../../adaptiveColumnWidths.js';
 import { ToolsCellRenderer } from './GenderCellRenderer.js';
 import { GlideDataGridComponent } from './GlideDataGridComponent.js';
-import { JsonObjectDeleteFormDialog } from './JsonObjectDeleteFormDialog.js';
+import { JsonObjectDeleteFormDialog } from '../JsonObjectDeleteFormDialog.js';
 import {
   JsonObjectEditFormDialog,
   JsonObjectEditFormDialogInputs,
-} from "./JsonObjectEditFormDialog.js";
+} from "../JsonObjectEditFormDialog.js";
 import {
   TableComponentProps,
   TableComponentRow,
   TableComponentTypeSchema,
 } from "./MTableComponentInterface.js";
 import { getMemoizedDeploymentEntityStateSelectorMap } from 'miroir-localcache-redux';
-import { useMiroirTableTheme } from '../contexts/MiroirThemeContext.js';
-import { TableTheme, DeepPartial, createTableTheme } from '../themes/TableTheme.js';
-import { generateAgGridStyles, generateGlideTheme, getFilterToolbarStyles } from '../themes/TableStyleGenerators.js';
+import { useMiroirTableTheme } from '../../contexts/MiroirThemeContext.js';
+import { TableTheme, DeepPartial, createTableTheme } from '../../themes/TableTheme.js';
+import { generateAgGridStyles, generateGlideTheme, getFilterToolbarStyles } from '../../themes/TableStyleGenerators.js';
 
 // ################################################################################################
 // Unified Table Styling Configuration

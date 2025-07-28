@@ -29,7 +29,7 @@ import {
   useMiroirContextService
 } from "../MiroirContextReactProvider.js";
 import { useDomainControllerService } from "../MiroirContextReactProvider.js";
-import { JzodElementEditor } from "./JzodElementEditor.js";
+import { JzodElementEditor } from "./ValueObjectEditor/JzodElementEditor.js";
 import { ErrorFallbackComponent } from "./ErrorFallbackComponent.js";
 import {
   measuredJzodTypeCheck,

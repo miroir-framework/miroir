@@ -44,7 +44,7 @@ import {
   ThemedInputLabel,
   ThemedMenuItem,
   ThemedMUISelect
-} from './ThemedComponents';
+} from '../Themes/ThemedComponents';
 
 import { v4 as uuidv4 } from 'uuid';
 
@@ -90,18 +90,18 @@ import {
   useLocalCacheTransactions,
   useMiroirContextService,
   // useViewParams,
-} from "../MiroirContextReactProvider.js";
-import { MiroirThemeProvider, useMiroirTheme } from '../contexts/MiroirThemeContext.js';
-import { useRenderTracker } from "../tools/renderCountTracker.js";
+} from "../../MiroirContextReactProvider.js";
+import { MiroirThemeProvider, useMiroirTheme } from '../../contexts/MiroirThemeContext.js';
+import { useRenderTracker } from "../../tools/renderCountTracker.js";
 import AppBar from './AppBar.js';
 
-import { deployments, packageName } from '../../../constants.js';
-import { cleanLevel } from '../constants.js';
+import { deployments, packageName } from '../../../../constants.js';
+import { cleanLevel } from '../../constants.js';
 import { Sidebar } from "./Sidebar.js";
 import { SidebarWidth } from "./SidebarSection.js";
-import { InstanceEditorOutline } from './InstanceEditorOutline.js';
-import { useCurrentModel, useDeploymentEntityStateQuerySelectorForCleanedResult } from "../ReduxHooks.js";
-import { ViewParamsUpdateQueue, ViewParamsUpdateQueueConfig } from './ViewParamsUpdateQueue.js';
+import { InstanceEditorOutline } from '../InstanceEditorOutline.js';
+import { useCurrentModel, useDeploymentEntityStateQuerySelectorForCleanedResult } from "../../ReduxHooks.js";
+import { ViewParamsUpdateQueue, ViewParamsUpdateQueueConfig } from '../ViewParamsUpdateQueue.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

@@ -8,14 +8,14 @@ import {
   resolvePathOnObject
 } from "miroir-core";
 
-import { packageName } from "../../../constants";
-import { cleanLevel } from "../constants";
+import { packageName } from "../../../../constants";
+import { cleanLevel } from "../../constants";
 import { JzodElementEditor } from "./JzodElementEditor";
 import { useJzodElementEditorHooks } from "./JzodElementEditorHooks";
 import { JzodAnyEditorProps } from "./JzodElementEditorInterface";
-import { ChangeValueTypeSelect } from "./ChangeValueTypeSelect";
+import { ChangeValueTypeSelect } from "../ChangeValueTypeSelect";
 import { JzodElement, JzodSchema } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import { measuredUseJzodElementEditorHooks } from "../tools/hookPerformanceMeasure";
+import { measuredUseJzodElementEditorHooks } from "../../tools/hookPerformanceMeasure";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -34,11 +34,13 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
     listKey,
     rootLessListKey,
     rootLessListKeyArray,
-    rawJzodSchema,
+    // rawJzodSchema,
     currentDeploymentUuid,
     currentApplicationSection,
     foreignKeyObjects,
     resolvedElementJzodSchema, // handleSelectLiteralChange,
+    foldedObjectAttributeOrArrayItems,
+    setFoldedObjectAttributeOrArrayItems,
     // localRootLessListKeyMap,
     labelElement,
     insideAny,
@@ -84,11 +86,13 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
           listKey={listKey}
           rootLessListKey={rootLessListKey}
           rootLessListKeyArray={rootLessListKeyArray}
-          rawJzodSchema={rawJzodSchema}
+          // rawJzodSchema={rawJzodSchema}
           currentDeploymentUuid={currentDeploymentUuid}
           currentApplicationSection={currentApplicationSection}
           resolvedElementJzodSchema={resolvedElementJzodSchema}
           typeCheckKeyMap={typeCheckKeyMap}
+          foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
+          setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
           // localRootLessListKeyMap={localRootLessListKeyMap}
           labelElement={<></>}
           foreignKeyObjects={foreignKeyObjects}

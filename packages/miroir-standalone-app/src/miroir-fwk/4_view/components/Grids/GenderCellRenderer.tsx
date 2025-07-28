@@ -3,8 +3,8 @@ import { LoggerInterface, MiroirLoggerFactory } from "miroir-core";
 
 import { Icon } from '@mui/material';
 import React, { memo, useMemo } from 'react';
-import { packageName } from '../../../constants';
-import { cleanLevel } from '../constants';
+import { packageName } from '../../../../constants';
+import { cleanLevel } from '../../constants';
 import { TableActionButtons } from './TableActionButtons.js';
 import { TableComponentRow } from './MTableComponentInterface.js';
 

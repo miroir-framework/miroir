@@ -1,7 +1,7 @@
 import React from 'react';
 import { CustomCell, CustomRenderer, GridCellKind, getMiddleCenterBias } from '@glideapps/glide-data-grid';
 import { TableComponentRow } from './MTableComponentInterface.js';
-import { renderMaterialIconToCanvas } from './MaterialIconCanvasRenderer.js';
+import { renderMaterialIconToCanvas } from '../MaterialIconCanvasRenderer.js';
 
 export interface ToolsCellData {
   kind: 'tools-cell';

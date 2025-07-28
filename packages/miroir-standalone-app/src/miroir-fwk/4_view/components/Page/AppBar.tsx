@@ -21,12 +21,12 @@ import TocIcon from '@mui/icons-material/Toc';
 import { LoggerInterface, MiroirLoggerFactory, MiroirMenuItem } from 'miroir-core';
 
 import { Link, useNavigate } from 'react-router-dom';
-import { packageName } from '../../../constants.js';
-import { cleanLevel } from '../constants.js';
-import { useMiroirTheme } from '../contexts/MiroirThemeContext.js';
+import { packageName } from '../../../../constants.js';
+import { cleanLevel } from '../../constants.js';
+import { useMiroirTheme } from '../../contexts/MiroirThemeContext.js';
 import { SidebarWidth } from './SidebarSection.js';
-import { useMiroirContextService } from '../MiroirContextReactProvider.js';
-import { MiroirThemeSelector } from '../components/MiroirThemeSelector';
+import { useMiroirContextService } from '../../MiroirContextReactProvider.js';
+import { MiroirThemeSelector } from '../MiroirThemeSelector.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

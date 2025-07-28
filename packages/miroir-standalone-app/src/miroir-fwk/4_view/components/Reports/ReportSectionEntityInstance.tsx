@@ -31,29 +31,29 @@ import { getMemoizedDeploymentEntityStateSelectorMap } from 'miroir-localcache-r
 import {
   useDomainControllerService,
   useErrorLogService, useMiroirContextService
-} from "../MiroirContextReactProvider.js";
+} from "../../MiroirContextReactProvider.js";
 
 import { javascript } from '@codemirror/lang-javascript';
 import { Toc } from '@mui/icons-material';
 import { ErrorBoundary } from "react-error-boundary";
-import { packageName } from '../../../constants.js';
-import { JzodEnumSchemaToJzodElementResolver, getCurrentEnumJzodSchemaResolver } from '../../JzodTools.js';
-import { cleanLevel } from '../constants.js';
+import { packageName } from '../../../../constants.js';
+import { JzodEnumSchemaToJzodElementResolver, getCurrentEnumJzodSchemaResolver } from '../../../JzodTools.js';
+import { cleanLevel } from '../../constants.js';
 import {
   useCurrentModel,
   useDeploymentEntityStateQuerySelectorForCleanedResult
-} from "../ReduxHooks.js";
+} from "../../ReduxHooks.js";
 import {
   measuredGetApplicationSection,
   measuredGetQueryRunnerParamsForDeploymentEntityState,
   measuredJzodTypeCheck
-} from "../tools/hookPerformanceMeasure.js";
-import { RenderPerformanceMetrics } from '../tools/renderPerformanceMeasure.js';
-import { ErrorFallbackComponent } from './ErrorFallbackComponent.js';
-import { JzodElementEditor } from './JzodElementEditor.js';
-import { useDocumentOutlineContext } from './RootComponent.js';
-import { useRenderTracker } from '../tools/renderCountTracker.js';
-import { useMiroirTheme } from '../contexts/MiroirThemeContext.js';
+} from "../../tools/hookPerformanceMeasure.js";
+import { RenderPerformanceMetrics } from '../../tools/renderPerformanceMeasure.js';
+import { ErrorFallbackComponent } from '../ErrorFallbackComponent.js';
+import { JzodElementEditor } from '../ValueObjectEditor/JzodElementEditor.js';
+import { useDocumentOutlineContext } from '../Page/RootComponent.js';
+import { useRenderTracker } from '../../tools/renderCountTracker.js';
+import { useMiroirTheme } from '../../contexts/MiroirThemeContext.js';
 import { 
   ThemedContainer, 
   ThemedButton, 
@@ -67,7 +67,7 @@ import {
   ThemedIconButton,
   ThemedSwitch,
   ThemedTooltip
-} from "./ThemedComponents";
+} from "../Themes/ThemedComponents.js";
 // import { GlobalRenderPerformanceDisplay, RenderPerformanceDisplay, trackRenderPerformance } from '../tools/renderPerformanceMeasure.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -145,13 +145,11 @@ const codeMirrorExtensions = [javascript()];
 export const ReportSectionEntityInstance = (props: ReportSectionEntityInstanceProps) => {
   const renderStartTime = performance.now();
   
-  const errorLog = useErrorLogService();
+  // const errorLog = useErrorLogService();
   const context = useMiroirContextService();
   const showPerformanceDisplay = context.showPerformanceDisplay;
-  const { currentTheme } = useMiroirTheme();
+  // const { currentTheme } = useMiroirTheme();
 
-  // Track render counts with centralized tracker
-  // Use deployment-level key to maintain consistency across all entity instance navigation
   const navigationKey = `${props.deploymentUuid}-${props.applicationSection}`;
   const { navigationCount, totalCount } = useRenderTracker("ReportSectionEntityInstance", navigationKey);
 

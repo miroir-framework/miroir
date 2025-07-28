@@ -26,7 +26,7 @@ import { indentShift } from "./JzodArrayEditor";
 import { FoldUnfoldObjectOrArray, FoldUnfoldAllObjectAttributesOrArrayItems, JzodElementEditor } from "./JzodElementEditor";
 import { useJzodElementEditorHooks } from "./JzodElementEditorHooks";
 import { JzodObjectEditorProps } from "./JzodElementEditorInterface";
-import { getItemsOrder } from "./Style";
+import { getItemsOrder } from "../Themes/Style";
 import { 
   ThemedSmallIconButton,
   ThemedSizedButton, 
@@ -42,16 +42,16 @@ import {
   ThemedAttributeName,
   ThemedDeleteButtonContainer,
   ThemedIndentedContainer
-} from "./ThemedComponents";
-import { useMiroirTheme } from '../contexts/MiroirThemeContext';
-import { ErrorFallbackComponent } from "./ErrorFallbackComponent";
-import { packageName } from "../../../constants";
-import { cleanLevel } from "../constants";
+} from "../Themes/ThemedComponents";
+import { useMiroirTheme } from '../../contexts/MiroirThemeContext';
+import { ErrorFallbackComponent } from "../ErrorFallbackComponent";
+import { packageName } from "../../../../constants";
+import { cleanLevel } from "../../constants";
 import {
   measuredGetDefaultValueForJzodSchemaWithResolution,
   measuredUnfoldJzodSchemaOnce,
   measuredUseJzodElementEditorHooks,
-} from "../tools/hookPerformanceMeasure";
+} from "../../tools/hookPerformanceMeasure";
 import { keymap } from "@uiw/react-codemirror";
 
 let log: LoggerInterface = console as any as LoggerInterface;

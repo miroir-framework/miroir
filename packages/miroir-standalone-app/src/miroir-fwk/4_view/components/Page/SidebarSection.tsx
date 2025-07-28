@@ -1,5 +1,5 @@
 import { FC, useMemo } from 'react';
-import { cleanLevel } from "../constants.js";
+import { cleanLevel } from "../../constants.js";
 import { 
   ThemedDivider,
   ThemedList,
@@ -8,8 +8,8 @@ import {
   ThemedListItemIcon,
   ThemedListItemText,
   ThemedIcon
-} from "./ThemedComponents.js";
-import { useMiroirTheme } from '../contexts/MiroirThemeContext.js';
+} from "../Themes/ThemedComponents.js";
+import { useMiroirTheme } from '../../contexts/MiroirThemeContext.js';
 import AutoStories from '@mui/icons-material/AutoStories';
 import { CSSObject, styled, Theme, useTheme } from '@mui/material/styles';
 import MuiDrawer from '@mui/material/Drawer';
@@ -33,8 +33,8 @@ import {
   Uuid
 } from "miroir-core";
 import { getMemoizedDeploymentEntityStateSelectorMap } from 'miroir-localcache-redux';
-import { packageName } from '../../../constants.js';
-import { useCurrentModel, useDeploymentEntityStateQuerySelector } from '../ReduxHooks.js';
+import { packageName } from '../../../../constants.js';
+import { useCurrentModel, useDeploymentEntityStateQuerySelector } from '../../ReduxHooks.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

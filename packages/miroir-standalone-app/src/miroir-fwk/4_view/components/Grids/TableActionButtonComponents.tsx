@@ -6,11 +6,11 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { LoggerInterface, MiroirLoggerFactory } from "miroir-core";
 
-import { packageName } from '../../../constants.js';
-import { cleanLevel } from '../constants.js';
+import { packageName } from '../../../../constants.js';
+import { cleanLevel } from '../../constants.js';
 import { TableComponentRow } from './MTableComponentInterface.js';
-import { useMiroirTheme } from '../contexts/MiroirThemeContext.js';
-import { ThemedSmallIconButton } from './ThemedComponents.js';
+import { useMiroirTheme } from '../../contexts/MiroirThemeContext.js';
+import { ThemedSmallIconButton } from '../Themes/ThemedComponents.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

@@ -39,23 +39,23 @@ import {
 
 import AddBox from "@mui/icons-material/AddBox";
 import { getMemoizedDeploymentEntityStateSelectorForTemplateMap } from "miroir-localcache-redux";
-import { packageName } from "../../../constants.js";
-import { deleteCascade } from "../scripts.js";
+import { packageName } from "../../../../constants.js";
+import { deleteCascade } from "../../scripts.js";
 import {
   useDomainControllerService,
   useMiroirContextInnerFormOutput,
   useMiroirContextService,
-} from "../MiroirContextReactProvider.js";
-import { useCurrentModel, useDeploymentEntityStateQuerySelectorForCleanedResult } from "../ReduxHooks.js";
-import { cleanLevel } from "../constants.js";
-import { getColumnDefinitionsFromEntityDefinitionJzodObjectSchema } from "../getColumnDefinitionsFromEntityAttributes.js";
-import { analyzeForeignKeyAttributes, convertToLegacyFormat } from "../utils/foreignKeyAttributeAnalyzer.js";
-import { JsonObjectEditFormDialog, JsonObjectEditFormDialogInputs } from "./JsonObjectEditFormDialog.js";
-import { noValue } from "./JzodElementEditorInterface.js";
-import { MTableComponent } from "./MTableComponent.js";
-import { TableComponentType, TableComponentTypeSchema } from "./MTableComponentInterface.js";
-import { useRenderTracker } from "../tools/renderCountTracker.js";
-import { ThemedBox, ThemedButton, ThemedSpan } from "./ThemedComponents.js";
+} from "../../MiroirContextReactProvider.js";
+import { useCurrentModel, useDeploymentEntityStateQuerySelectorForCleanedResult } from "../../ReduxHooks.js";
+import { cleanLevel } from "../../constants.js";
+import { getColumnDefinitionsFromEntityDefinitionJzodObjectSchema } from "../../getColumnDefinitionsFromEntityAttributes.js";
+import { analyzeForeignKeyAttributes, convertToLegacyFormat } from "../../utils/foreignKeyAttributeAnalyzer.js";
+import { JsonObjectEditFormDialog, JsonObjectEditFormDialogInputs } from "../JsonObjectEditFormDialog.js";
+import { noValue } from "../ValueObjectEditor/JzodElementEditorInterface.js";
+import { MTableComponent } from "../Grids/MTableComponent.js";
+import { TableComponentType, TableComponentTypeSchema } from "../Grids/MTableComponentInterface.js";
+import { useRenderTracker } from "../../tools/renderCountTracker.js";
+import { ThemedBox, ThemedButton, ThemedSpan } from "../Themes/ThemedComponents.js";
 
 
 let log: LoggerInterface = console as any as LoggerInterface;

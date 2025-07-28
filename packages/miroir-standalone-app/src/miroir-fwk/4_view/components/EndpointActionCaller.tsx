@@ -29,7 +29,7 @@ import {
 import { deployments, packageName } from '../../../constants.js';
 import { useDomainControllerService, useMiroirContextService } from '../MiroirContextReactProvider.js';
 import { cleanLevel } from '../constants.js';
-import { JzodElementEditor } from './JzodElementEditor.js';
+import { JzodElementEditor } from './ValueObjectEditor/JzodElementEditor.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

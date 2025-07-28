@@ -14,10 +14,10 @@ import {
   menuDefaultMiroir,
   MiroirLoggerFactory
 } from "miroir-core";
-import { adminConfigurationDeploymentParis, defaultMenuParisUuid, packageName } from '../../../constants.js';
-import { cleanLevel } from '../constants.js';
+import { adminConfigurationDeploymentParis, defaultMenuParisUuid, packageName } from '../../../../constants.js';
+import { cleanLevel } from '../../constants.js';
 import { SidebarSection } from './SidebarSection.js';
-import { useMiroirTheme } from '../contexts/MiroirThemeContext.js';
+import { useMiroirTheme } from '../../contexts/MiroirThemeContext.js';
 import { 
   ThemedDrawer, 
   ThemedDrawerHeader, 
@@ -25,7 +25,7 @@ import {
   ThemedDivider, 
   ThemedIconButton,
   ThemedScrollableContent 
-} from './ThemedComponents.js';
+} from '../Themes/ThemedComponents.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

@@ -17,21 +17,21 @@ import {
   // UnfoldJzodSchemaOnceReturnTypeOK
 } from "miroir-core";
 import React, { useCallback, useMemo, useState, useEffect } from "react";
-import { packageName } from "../../../constants";
-import { cleanLevel } from "../constants";
+import { packageName } from "../../../../constants";
+import { cleanLevel } from "../../constants";
 import {
   useMiroirContextService
-} from "../MiroirContextReactProvider";
-import { useCurrentModel } from "../ReduxHooks";
+} from "../../MiroirContextReactProvider";
+import { useCurrentModel } from "../../ReduxHooks";
 import { FoldUnfoldObjectOrArray, FoldUnfoldAllObjectAttributesOrArrayItems, JzodElementEditor } from "./JzodElementEditor";
 import { JzodArrayEditorProps } from "./JzodElementEditorInterface";
-import { ErrorFallbackComponent } from "./ErrorFallbackComponent";
+import { ErrorFallbackComponent } from "../ErrorFallbackComponent";
 import { 
   ThemedSizedButton, 
   ThemedAddIcon,
   ThemedStyledButton 
-} from "./ThemedComponents";
-import { useMiroirTheme } from '../contexts/MiroirThemeContext';
+} from "../Themes/ThemedComponents";
+import { useMiroirTheme } from '../../contexts/MiroirThemeContext';
 // import { JzodUnion } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 let log: LoggerInterface = console as any as LoggerInterface;

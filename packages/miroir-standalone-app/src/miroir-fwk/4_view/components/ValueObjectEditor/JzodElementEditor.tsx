@@ -18,8 +18,8 @@ import {
   mStringify
 } from "miroir-core";
 
-import { packageName } from "../../../constants.js";
-import { cleanLevel } from "../constants.js";
+import { packageName } from "../../../../constants.js";
+import { cleanLevel } from "../../constants.js";
 import { JzodAnyEditor } from "./JzodAnyEditor.js";
 import { JzodArrayEditor } from "./JzodArrayEditor.js";
 import { useJzodElementEditorHooks } from "./JzodElementEditorHooks.js";
@@ -37,10 +37,10 @@ import {
   ThemedSwitch,
   ThemedTextField,
   ThemedMenuItemOption
-} from "./ThemedComponents.js";
-import { useMiroirTheme } from '../contexts/MiroirThemeContext.js';
-import { ErrorFallbackComponent } from "./ErrorFallbackComponent.js";
-import { RenderPerformanceMetrics } from "../tools/renderPerformanceMeasure.js";
+} from "../Themes/ThemedComponents.js";
+import { useMiroirTheme } from '../../contexts/MiroirThemeContext.js';
+import { ErrorFallbackComponent } from "../ErrorFallbackComponent.js";
+import { RenderPerformanceMetrics } from "../../tools/renderPerformanceMeasure.js";
 
 
 

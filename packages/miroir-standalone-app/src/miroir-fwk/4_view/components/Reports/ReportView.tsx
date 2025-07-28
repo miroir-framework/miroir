@@ -23,19 +23,19 @@ import {
 
 
 
-import { useDeploymentEntityStateJzodSchemaSelector, useDeploymentEntityStateQuerySelector } from '../ReduxHooks.js';
+import { useDeploymentEntityStateJzodSchemaSelector, useDeploymentEntityStateQuerySelector } from '../../ReduxHooks.js';
 import { ReportSectionView } from './ReportSectionView.js';
-import { useDocumentOutlineContext } from './RootComponent.js';
-import { useMiroirContextService } from "../MiroirContextReactProvider.js";
-import { ThemedSpan } from './ThemedComponents.js';
+import { useDocumentOutlineContext } from '../Page/RootComponent.js';
+import { useMiroirContextService } from "../../MiroirContextReactProvider.js";
+import { ThemedSpan } from '../Themes/ThemedComponents.js';
 
 import {
   getMemoizedDeploymentEntityStateJzodSchemaSelectorMap,
   getMemoizedDeploymentEntityStateSelectorMap,
 } from "miroir-localcache-redux";
-import { packageName, ReportUrlParamKeys } from '../../../constants.js';
-import { cleanLevel } from '../constants.js';
-import { useRenderTracker } from '../tools/renderCountTracker.js';
+import { packageName, ReportUrlParamKeys } from '../../../../constants.js';
+import { cleanLevel } from '../../constants.js';
+import { useRenderTracker } from '../../tools/renderCountTracker.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

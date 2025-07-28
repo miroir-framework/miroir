@@ -1,14 +1,14 @@
 import React, { useState, useCallback, useMemo } from 'react';
 import { Toc } from '@mui/icons-material';
-import { InstanceEditorOutline } from './InstanceEditorOutline.js';
+import { InstanceEditorOutline } from '../InstanceEditorOutline.js';
 import { JzodElementEditor } from './JzodElementEditor.js';
 import { JzodElementEditorProps } from './JzodElementEditorInterface.js';
 import { 
   ThemedBox,
   ThemedTooltip,
   ThemedSmallIconButton
-} from './ThemedComponents';
-import { useMiroirTheme } from '../contexts/MiroirThemeContext.js';
+} from '../Themes/ThemedComponents.js';
+import { useMiroirTheme } from '../../contexts/MiroirThemeContext.js';
 
 export interface JzodElementEditorWithOutlineProps extends JzodElementEditorProps {
   showOutlineToggle?: boolean;

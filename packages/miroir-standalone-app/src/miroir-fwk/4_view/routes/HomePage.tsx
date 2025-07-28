@@ -44,7 +44,7 @@ import {
   useMiroirContextService
 } from "../MiroirContextReactProvider.js";
 import { useCurrentModel } from "../ReduxHooks.js";
-import { PageContainer } from "../components/PageContainer.js";
+import { PageContainer } from "../components/Page/PageContainer.js";
 
 
 // import entityPublisher from "../../assets/library_model/";
@@ -55,7 +55,7 @@ import {
   ReportUrlParamKeys,
   selfApplicationParis,
 } from "../../../constants.js";
-import { ReportView } from "../components/ReportView.js";
+import { ReportView } from "../components/Reports/ReportView.js";
 import { cleanLevel } from "../constants.js";
 import { EndpointActionCaller } from "../components/EndpointActionCaller.js";
 

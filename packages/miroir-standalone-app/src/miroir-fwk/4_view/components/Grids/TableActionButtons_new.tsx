@@ -2,8 +2,8 @@ import React, { memo } from 'react';
 import { styled } from '@mui/material/styles';
 import { LoggerInterface, MiroirLoggerFactory } from "miroir-core";
 
-import { packageName } from '../../../constants.js';
-import { cleanLevel } from '../constants.js';
+import { packageName } from '../../../../constants.js';
+import { cleanLevel } from '../../constants.js';
 import { TableComponentRow } from './MTableComponentInterface.js';
 import { 
   EditActionButton, 

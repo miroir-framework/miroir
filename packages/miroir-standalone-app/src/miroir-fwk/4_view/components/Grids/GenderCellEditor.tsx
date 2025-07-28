@@ -16,8 +16,8 @@ import ReactDOM from 'react-dom';
 
 import { LoggerInterface, MiroirLoggerFactory } from 'miroir-core';
 
-import { packageName } from '../../../constants.js';
-import { cleanLevel } from '../constants.js';
+import { packageName } from '../../../../constants.js';
+import { cleanLevel } from '../../constants.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

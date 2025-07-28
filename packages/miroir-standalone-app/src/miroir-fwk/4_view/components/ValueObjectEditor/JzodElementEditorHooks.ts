@@ -24,12 +24,12 @@ import {
 } from "miroir-core";
 import { JzodObject } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { getMemoizedDeploymentEntityStateSelectorMap } from "miroir-localcache-redux";
-import { packageName } from "../../../constants";
-import { cleanLevel } from "../constants";
-import { MiroirReactContext, useMiroirContextService } from "../MiroirContextReactProvider";
-import { useCurrentModel, useDeploymentEntityStateQuerySelectorForCleanedResult } from "../ReduxHooks";
+import { packageName } from "../../../../constants";
+import { cleanLevel } from "../../constants";
+import { MiroirReactContext, useMiroirContextService } from "../../MiroirContextReactProvider";
+import { useCurrentModel, useDeploymentEntityStateQuerySelectorForCleanedResult } from "../../ReduxHooks";
 import { JzodEditorPropsRoot, noValue } from "./JzodElementEditorInterface";
-import { getItemsOrder } from "./Style";
+import { getItemsOrder } from "../Themes/Style";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

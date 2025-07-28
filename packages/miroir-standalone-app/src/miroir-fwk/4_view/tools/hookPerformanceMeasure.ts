@@ -7,7 +7,7 @@ import {
   rootLessListKeyMap,
   unfoldJzodSchemaOnce,
 } from "miroir-core";
-import { useJzodElementEditorHooks } from "../components/JzodElementEditorHooks";
+import { useJzodElementEditorHooks } from "../components/ValueObjectEditor/JzodElementEditorHooks";
 
 // Create measured versions of key functions used in this component
 export const measuredJzodTypeCheck = measurePerformance("jzodTypeCheck", jzodTypeCheck, 100);

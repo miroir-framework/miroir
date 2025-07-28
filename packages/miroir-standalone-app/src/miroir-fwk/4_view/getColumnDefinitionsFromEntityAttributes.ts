@@ -9,15 +9,15 @@ import {
 } from "miroir-core";
 
 import { packageName } from "../../constants.js";
-import { EntityInstanceCellRenderer } from "./components/EntityInstanceCellRenderer.js";
-import { GenderCellEditor } from "./components/GenderCellEditor.js";
-import GenderCellRenderer from "./components/GenderCellRenderer.js";
+import { EntityInstanceCellRenderer } from "./components/Grids/EntityInstanceCellRenderer.js";
+import { GenderCellEditor } from "./components/Grids/GenderCellEditor.js";
+import GenderCellRenderer from "./components/Grids/GenderCellRenderer.js";
 import {
   DefaultCellRenderer,
 } from "./components/SelectEntityInstanceEditor.js";
 import { cleanLevel } from "./constants.js";
 import { calculateAdaptiveColumnWidths, ColumnWidthSpec } from "./adaptiveColumnWidths.js";
-import { TableComponentRow } from "./components/MTableComponentInterface.js";
+import { TableComponentRow } from "./components/Grids/MTableComponentInterface.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

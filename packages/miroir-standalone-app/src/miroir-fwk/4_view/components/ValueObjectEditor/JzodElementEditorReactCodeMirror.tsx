@@ -5,14 +5,14 @@ import { javascript } from "@codemirror/lang-javascript";
 import ReactCodeMirror from '@uiw/react-codemirror';
 import { LoggerInterface, MiroirLoggerFactory } from "miroir-core";
 import React, { useCallback, useEffect } from "react";
-import { packageName } from "../../../constants";
-import { cleanLevel } from "../constants";
+import { packageName } from "../../../../constants";
+import { cleanLevel } from "../../constants";
 import { JzodElementEditorReactCodeMirrorProps } from "./JzodElementEditorInterface";
 import { 
   ThemedBox,
   ThemedStyledButton,
   ThemedSpan
-} from "./ThemedComponents";
+} from "../Themes/ThemedComponents";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

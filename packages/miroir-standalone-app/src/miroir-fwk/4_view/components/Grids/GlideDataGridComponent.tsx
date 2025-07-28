@@ -36,13 +36,13 @@ import {
   MiroirLoggerFactory 
 } from "miroir-core";
 
-import { packageName } from '../../../constants.js';
-import { cleanLevel } from '../constants.js';
+import { packageName } from '../../../../constants.js';
+import { cleanLevel } from '../../constants.js';
 import {
   TableComponentRow,
   TableComponentTypeSchema,
 } from "./MTableComponentInterface.js";
-import { calculateAdaptiveColumnWidths, ColumnWidthSpec, ToolsColumnDefinition } from '../adaptiveColumnWidths.js';
+import { calculateAdaptiveColumnWidths, ColumnWidthSpec, ToolsColumnDefinition } from '../../adaptiveColumnWidths.js';
 import glideToolsCellRenderer, { ToolsCell, ToolsCellData } from './GlideToolsCellRenderer.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;

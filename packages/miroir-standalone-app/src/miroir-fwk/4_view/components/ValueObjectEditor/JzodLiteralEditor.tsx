@@ -13,15 +13,15 @@ import {
   MiroirLoggerFactory,
 } from "miroir-core";
 
-import { packageName } from "../../../constants";
-import { cleanLevel } from "../constants";
-import { useMiroirContextService } from "../MiroirContextReactProvider";
-import { useCurrentModel } from "../ReduxHooks";
+import { packageName } from "../../../../constants";
+import { cleanLevel } from "../../constants";
+import { useMiroirContextService } from "../../MiroirContextReactProvider";
+import { useCurrentModel } from "../../ReduxHooks";
 import { JzodLiteralEditorProps } from "./JzodElementEditorInterface";
 import { 
   ThemedLabeledEditor, 
   ThemedSelect
-} from "./ThemedComponents";
+} from "../Themes/ThemedComponents";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

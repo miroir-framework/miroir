@@ -3,13 +3,13 @@ import {
   JzodEnum
 } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import React, { FC, useMemo } from "react";
-import { packageName } from "../../../constants";
-import { cleanLevel } from "../constants";
+import { packageName } from "../../../../constants";
+import { cleanLevel } from "../../constants";
 import { JzodEnumEditorProps } from "./JzodElementEditorInterface";
 import { 
   ThemedLabeledEditor, 
   ThemedSelect
-} from "./ThemedComponents";
+} from "../Themes/ThemedComponents";
 import { useFormikContext } from "formik";
 
 let log: LoggerInterface = console as any as LoggerInterface;
