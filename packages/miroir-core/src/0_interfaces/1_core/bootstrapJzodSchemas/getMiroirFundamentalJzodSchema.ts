@@ -3673,7 +3673,8 @@ export function getMiroirFundamentalJzodSchema(
           },
         ...entityDefinitionEndpointDefinition.jzodSchema.definition.definition.definition.actions
           .context,
-        endpointDefinition: entityDefinitionEndpointDefinition.jzodSchema.definition.definition,
+        // endpointDefinition: entityDefinitionEndpointDefinition.jzodSchema.definition.definition,
+        endpointDefinition: entityDefinitionEndpointDefinition.jzodSchema,
       },
       definition: {
         absolutePath: miroirFundamentalJzodSchemaUuid,

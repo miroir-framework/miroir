@@ -40,12 +40,7 @@ export const Sidebar: FC<{
   setOpen: (v: boolean) => void;
   width?: number;
   onWidthChange?: (width: number) => void;
-}> = (props: {
-  open: boolean;
-  setOpen: (v: boolean) => void;
-  width?: number;
-  onWidthChange?: (width: number) => void;
-}) => {
+}> = (props) => {
   count++;
   const { currentTheme } = useMiroirTheme();
   const [isResizing, setIsResizing] = useState(false);
@@ -86,6 +81,38 @@ export const Sidebar: FC<{
     };
   }, [isResizing, handleMouseMove, handleMouseUp]);
 
+  const memoizedSidebarSections = useMemo(() => (
+    [
+      {
+        deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
+        menuUuid: menuDefaultAdmin.uuid
+      },
+      {
+        deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+        menuUuid: menuDefaultMiroir.uuid
+      },
+      {
+        deploymentUuid: adminConfigurationDeploymentParis.uuid,
+        menuUuid: defaultMenuParisUuid
+      },
+      {
+        deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+        menuUuid: menuDefaultLibrary.uuid
+      }
+    ].map((section, index) => (
+      <>
+        {index > 0 && <ThemedDivider />}
+        <SidebarSection
+          key={section.menuUuid}
+          deploymentUuid={section.deploymentUuid}
+          menuUuid={section.menuUuid}
+          open={props.open}
+          setOpen={props.setOpen}
+        />
+      </>
+    ))
+  ), [props.open, props.setOpen]);
+
   return (
     <ThemedDrawer open={props.open} width={props.width}>
       <ThemedDrawerHeader>
@@ -97,35 +124,7 @@ export const Sidebar: FC<{
         </span>
       </ThemedDrawerHeader>
       <ThemedScrollableContent>
-        <ThemedDivider />
-        <SidebarSection
-          deploymentUuid={adminConfigurationDeploymentAdmin.uuid}
-          menuUuid={menuDefaultAdmin.uuid}
-          open={props.open}
-          setOpen={props.setOpen}
-        />
-        <ThemedDivider />
-        <SidebarSection
-          deploymentUuid={adminConfigurationDeploymentMiroir.uuid}
-          menuUuid={menuDefaultMiroir.uuid}
-          open={props.open}
-          setOpen={props.setOpen}
-        />
-        <ThemedDivider />
-        <SidebarSection
-          deploymentUuid={adminConfigurationDeploymentParis.uuid}
-          menuUuid={defaultMenuParisUuid}
-          open={props.open}
-          setOpen={props.setOpen}
-        />
-        <ThemedDivider />
-        <SidebarSection
-          deploymentUuid={adminConfigurationDeploymentLibrary.uuid}
-          menuUuid={menuDefaultLibrary.uuid}
-          open={props.open}
-          setOpen={props.setOpen}
-        />
-        <ThemedDivider />
+        {memoizedSidebarSections}
       </ThemedScrollableContent>
       {/* Resize handle - only show when sidebar is open */}
       {props.open && (
