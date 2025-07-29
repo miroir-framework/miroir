@@ -1477,7 +1477,8 @@ export const ThemedCardContent: React.FC<ThemedComponentProps> = ({
   
   const contentStyles = css({
     padding: currentTheme.spacing.md,
-    backgroundColor: currentTheme.colors.surface,
+    // Use custom background color from style if provided, otherwise use theme default
+    backgroundColor: style?.backgroundColor || currentTheme.colors.surface,
     color: currentTheme.colors.text,
   });
 
