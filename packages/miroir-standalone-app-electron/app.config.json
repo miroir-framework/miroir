@@ -3,16 +3,16 @@
     "webAppUrl": "http://localhost:5173",
     "enableDevTools": true,
     "windowSize": {
-      "width": 1400,
-      "height": 1000
+      "width": 1200,
+      "height": 900
     }
   },
   "production": {
     "appPath": "../miroir-standalone-app/dist/index.html",
     "enableDevTools": false,
     "windowSize": {
-      "width": 1400,
-      "height": 1000
+      "width": 1200,
+      "height": 900
     }
   }
 }
