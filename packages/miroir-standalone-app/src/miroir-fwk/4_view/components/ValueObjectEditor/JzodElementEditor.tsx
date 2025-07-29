@@ -393,8 +393,9 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
   // Get appropriate background and border colors for nested containers
   // This creates a Prettier-like visual effect where nested structures have alternating shades
   // The colors cycle through 3 levels: A -> B -> C -> A -> B -> C...
-  const bgColor = useMiroirNestingColor(isNestableType ? (props.indentLevel || 0) : 0);
+  const backgroundColor = useMiroirNestingColor(isNestableType ? props.indentLevel || 0 : 0);
   const borderColor = useMiroirNestingBorderColor(props.indentLevel || 0);
+  const leftBorderColor = useMiroirNestingBorderColor((props.indentLevel || 0) + 1);
 
 
   // Create the main element based on the schema type
@@ -904,16 +905,22 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
             margin: "5px 10px 5px 0",
             position: "relative",
             // Apply nesting background colors for visual hierarchy (Prettier-like effect)
-            backgroundColor: bgColor,
+            backgroundColor: backgroundColor,
             border: `1px solid ${borderColor}`,
             // Enhanced left border for nested containers to show depth
-            borderLeft: isNestableType ? `3px solid ${useMiroirNestingBorderColor((props.indentLevel || 0) + 1)}` : `1px solid ${borderColor}`,
+            borderLeft: isNestableType ? `3px solid ${leftBorderColor}` : `1px solid ${borderColor}`,
             justifyContent: "space-between",
             boxShadow: "none",
           }}
         >
-          <ThemedCardContent>
+          <ThemedCardContent
+            style={{
+              // Pass the background color to the content component to ensure it's visible
+              backgroundColor: backgroundColor,
+            }}
+          >
             <div>
+              {/* indentLevel: {props.indentLevel} backgroundColor: {backgroundColor} */}
               <span
                 style={{
                   display: "flex",
