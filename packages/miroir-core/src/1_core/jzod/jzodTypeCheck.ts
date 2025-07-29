@@ -419,7 +419,7 @@ export function selectUnionBranchFromDiscriminator(
   }
 
   // Extract successful results
-  const flattenedUnionChoices = flatteningResults.map(r => (r as any).result) as JzodObject[];
+  const flattenedUnionChoices:JzodObject[] = flatteningResults.map(r => (r as any).result) as JzodObject[];
   // log.info(
   //   "selectUnionBranchFromDiscriminator called for union-type value object with discriminator(s)=",
   //   discriminators,
@@ -441,13 +441,13 @@ export function selectUnionBranchFromDiscriminator(
   let possibleDiscriminators: (string | undefined)[][] = [];
   if (!discriminators || discriminators.length == 0) {
     // no discriminator, proceed by eliminating all choices that do not match the valueObject
-    filteredFlattenedUnionChoices = flattenedUnionChoices.filter((objectChoice) => {
+    filteredFlattenedUnionChoices = flattenedUnionChoices.filter((objectChoice: JzodObject) => {
       const objectChoiceKeys = Object.keys(objectChoice.definition);
       return Object.keys(valueObject).every(
         (valueObjectKey) =>
-          objectChoiceKeys.includes(valueObjectKey) &&
-          (objectChoice.definition[valueObjectKey]?.type != "literal" ||
-            objectChoice.definition[valueObjectKey]?.definition == valueObject[valueObjectKey])
+          objectChoiceKeys.includes(valueObjectKey) && // TODO: is there a problem? objectChoice as any smells bad! are all the cases covered?
+          ((objectChoice as any).definition[valueObjectKey]?.type != "literal" ||
+            (objectChoice as any).definition[valueObjectKey]?.definition == valueObject[valueObjectKey])
       );
     });
   } else {
@@ -455,7 +455,7 @@ export function selectUnionBranchFromDiscriminator(
 
     if (!hasDiscriminatorValues) {
       const choiceWithNoDiscriminator: JzodObject[] = flattenedUnionChoices.filter(
-        (objectChoice) =>
+        (objectChoice: any) => // TODO: typing!
           Object.keys(objectChoice.definition).every(
             (key) => objectChoice.definition[key]?.type != "literal" ||
               objectChoice.definition[key]?.definition == valueObject[key]
@@ -485,10 +485,10 @@ export function selectUnionBranchFromDiscriminator(
       const objectChoiceKeys = Object.keys(objectChoice.definition);
       return discriminators.map((discriminator) =>
         objectChoiceKeys.includes(discriminator) &&
-        objectChoice.definition[discriminator]?.type == "literal"
+        (objectChoice as any).definition[discriminator]?.type == "literal"
           ? // ||
             // objectChoice.definition[discriminator]?.type == "enum"
-            objectChoice.definition[discriminator]?.definition
+            (objectChoice as any).definition[discriminator]?.definition
           : undefined
           // : "NO VALUE FOR DISCRIMINATOR " + discriminator
       );
@@ -658,13 +658,13 @@ export function jzodUnionResolvedTypeForObject(
 ): JzodUnionResolvedTypeForObjectReturnTypeOK
   | JzodUnionResolvedTypeReturnTypeError
  {
-  const objectUnionChoices = unionObjectChoices(
+  const objectUnionChoices: JzodObject[] = unionObjectChoices(
     concreteUnrolledJzodSchemas,
     miroirFundamentalJzodSchema,
     currentModel,
     miroirMetaModel,
     relativeReferenceJzodContext
-  );
+  ) as any;
   if (objectUnionChoices.length == 1) {
     return {
       status: "ok",
@@ -1543,10 +1543,11 @@ export function jzodTypeCheck(
           valuePath: currentValuePath,
           typePath: currentTypePath,
           innerError: Object.fromEntries(
-            foundErrors.map((e: ResolvedJzodSchemaReturnTypeError) => [
-              e.valuePath && e.valuePath.length > 0 ? e.valuePath.join(".") : "",
-              e,
-            ])
+            // foundErrors.map((e: ResolvedJzodSchemaReturnTypeError) => [
+            foundErrors.map((e: any) => [
+              e.valuePath && e.valuePath.length > 0 ? e.valuePath.join(".") : "" ,
+              e as any,
+            ] as any) as any // TODO: CHECK TYPES
           ),
           value: valueObject,
           rawSchema: jzodSchema,
@@ -1624,7 +1625,7 @@ export function jzodTypeCheck(
       );
       const foundErrors: ResolvedJzodSchemaReturnTypeError[] = subSchemas.filter(
         (e: ResolvedJzodSchemaReturnType) => e.status == "error"
-      );
+      ) as any;
 
       if (foundErrors.length > 0) {
         return {

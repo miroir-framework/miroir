@@ -114,6 +114,59 @@ export const useMiroirTableTheme = () => {
   return currentTheme.table;
 };
 
+/**
+ * Hook to get the appropriate nesting background color for JzodElement editors.
+ * Provides alternating background shades for nested structures (objects, arrays, tuples, records).
+ * Colors cycle through 3 levels: A -> B -> C -> A -> B -> C...
+ * 
+ * @param indentLevel - The nesting level (0-based). Defaults to 0.
+ * @returns The appropriate background color for the given nesting level.
+ */
+export const useMiroirNestingColor = (indentLevel: number = 0): string => {
+  const { currentTheme } = useMiroirTheme();
+  
+  // Ensure indentLevel is valid and within bounds
+  const safeIndentLevel = Math.max(0, Math.floor(indentLevel));
+  
+  const nestingLevels = [
+    currentTheme.colors.nesting.level0,
+    currentTheme.colors.nesting.level1,
+    currentTheme.colors.nesting.level2
+  ];
+  
+  return nestingLevels[safeIndentLevel % 3];
+};
+
+/**
+ * Hook to get the appropriate border color for nested JzodElement editors.
+ * Provides complementary border colors that work with the nesting background colors.
+ * 
+ * @param indentLevel - The nesting level (0-based). Defaults to 0.
+ * @returns The appropriate border color for the given nesting level.
+ */
+export const useMiroirNestingBorderColor = (indentLevel: number = 0): string => {
+  const { currentTheme } = useMiroirTheme();
+  
+  // Ensure indentLevel is valid and within bounds
+  const safeIndentLevel = Math.max(0, Math.floor(indentLevel));
+  
+  // Use a slightly darker variant of the nesting color for borders
+  const baseColor = useMiroirNestingColor(safeIndentLevel);
+  
+  // For light themes, darken the color; for dark themes, lighten it
+  const isDarkTheme = currentTheme.id === 'dark';
+  
+  if (isDarkTheme) {
+    // In dark theme, make borders lighter
+    const nestingBorderLevels = ['#404040', '#484848', '#505050'];
+    return nestingBorderLevels[safeIndentLevel % 3];
+  } else {
+    // In light theme, make borders darker
+    const nestingBorderLevels = ['#e0e0e0', '#d8d8d8', '#d0d0d0'];
+    return nestingBorderLevels[safeIndentLevel % 3];
+  }
+};
+
 // Export the context for advanced usage
 export { MiroirThemeContext };
 export type { MiroirThemeContextType, MiroirThemeProviderProps };

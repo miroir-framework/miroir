@@ -39,7 +39,7 @@ export const jzodUnion_recursivelyUnfold = (
     // treating references
     const referencesToBeExplored: JzodReference[] = jzodUnion.definition
     .filter((a: JzodElement) => a.type == "schemaReference")
-    .filter((a => !expandedReferences.has(a.definition.relativePath as any)))
+    .filter(((a: any) => !expandedReferences.has(a.definition.relativePath as any))) as any[]
     ;
     const resolvedReferences: JzodElement[] = referencesToBeExplored.map((a: JzodReference) =>
       resolveJzodSchemaReferenceInContext(
