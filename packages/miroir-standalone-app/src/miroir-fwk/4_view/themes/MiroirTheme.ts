@@ -19,7 +19,13 @@
 // 
 // ################################################################################################
 
-import { TableTheme, defaultTableTheme, darkTableTheme, compactTableTheme, materialTableTheme } from './TableTheme.js';
+import {
+  TableTheme,
+  defaultTableTheme,
+  darkTableTheme,
+  compactTableTheme,
+  materialTableTheme,
+} from "./TableTheme.js";
 import { TableTheme as TableThemeId } from 'miroir-core';
 
 // Deep partial type for theme overrides

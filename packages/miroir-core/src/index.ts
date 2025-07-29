@@ -583,7 +583,13 @@ export {
 } from "./0_interfaces/3_controllers/ErrorLogServiceInterface.js";
 export { MiroirContextInterface } from "./0_interfaces/3_controllers/MiroirContextInterface.js";
 export { LocalCacheInterface } from "./0_interfaces/4-services/LocalCacheInterface.js";
-export { ViewParams, ViewParamsData, GridType, TableTheme, AppTheme, viewParams } from "./0_interfaces/4-views/ViewParams";
+export {
+  ViewParams,
+  ViewParamsData,
+  GridType,
+  AppTheme,
+  viewParams,
+} from "./0_interfaces/4-views/ViewParams";
 export {
   defaultLevels,
   LoggerFactoryAsyncInterface,

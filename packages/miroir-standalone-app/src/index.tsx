@@ -27,7 +27,7 @@ import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
 import { loglevelnext } from './loglevelnextImporter.js';
 import { ErrorPage } from "./miroir-fwk/4_view/ErrorPage.js";
 import { MiroirContextReactProvider } from "./miroir-fwk/4_view/MiroirContextReactProvider.js";
-import { RootComponent } from "./miroir-fwk/4_view/components/RootComponent.js";
+import { RootComponent } from "./miroir-fwk/4_view/components/Page/RootComponent.js";
 import { HomePage } from "./miroir-fwk/4_view/routes/HomePage.js";
 import { ReportPage } from "./miroir-fwk/4_view/routes/ReportPage.js";
 import { miroirAppStartup } from "./startup.js";
@@ -232,7 +232,7 @@ export const themeParams = {
     content: {
       flexGrow: 1,
       height: '100vh',
-      overflow: 'auto',
+      overflow: 'auto', // Allow scrolling when content overflows
     },
     MuiList: {
       defaultProps:{

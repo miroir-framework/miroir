@@ -526,7 +526,7 @@ export const InstanceEditorOutline = React.memo<DocumentOutlineProps>(({
         <Divider sx={{ backgroundColor: miroirTheme.currentTheme.colors.divider }} />
       </Box>
       
-      <List dense sx={{ flexGrow: 1, overflow: 'auto', backgroundColor: miroirTheme.currentTheme.colors.surface }}>
+      <List dense sx={{ flexGrow: 1, overflow: 'hidden', backgroundColor: miroirTheme.currentTheme.colors.surface }}>
         {treeNodes.map((node) => (
           <TreeNodeComponent
             key={node.id}

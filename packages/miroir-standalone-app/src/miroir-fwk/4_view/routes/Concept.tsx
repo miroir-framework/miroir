@@ -40,8 +40,8 @@ import {
   useMiroirContextformHelperState,
 } from "../MiroirContextReactProvider.js";
 import { useCurrentModel } from "../ReduxHooks.js";
-import { JzodElementEditor } from "../components/JzodElementEditor.js";
-import { PageContainer } from "../components/PageContainer.js";
+import { JzodElementEditor } from "../components/ValueObjectEditor/JzodElementEditor.js";
+import { PageContainer } from "../components/Page/PageContainer.js";
 import { cleanLevel } from "../constants.js";
 
 

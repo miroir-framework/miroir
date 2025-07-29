@@ -39,8 +39,7 @@ export const generateAgGridStyles = (theme: TableTheme): string => `
   }
 
   .ag-theme-alpine .ag-body-viewport {
-    overflow-x: auto !important;
-    overflow-y: auto !important;
+    overflow: hidden !important;
   }
 
   /* Header Styles */

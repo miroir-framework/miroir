@@ -8,7 +8,7 @@ import {
 } from "miroir-core";
 import { useState } from "react";
 import { z } from "zod";
-import { PageContainer } from "../components/PageContainer.js";
+import { PageContainer } from "../components/Page/PageContainer.js";
 
 let count = 0;
 

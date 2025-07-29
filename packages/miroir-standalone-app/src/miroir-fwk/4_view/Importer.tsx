@@ -32,7 +32,7 @@ import {
 } from "miroir-core";
 import * as XLSX from 'xlsx';
 import { adminConfigurationDeploymentParis, applicationParis, packageName } from "../../constants.js";
-import { JzodElementEditor } from "./components/JzodElementEditor.js";
+import { JzodElementEditor } from "./components/ValueObjectEditor/JzodElementEditor.js";
 import { cleanLevel } from "./constants.js";
 import { useDomainControllerService, useErrorLogService, useMiroirContextService } from "./MiroirContextReactProvider.js";
 import { useCurrentModel } from "./ReduxHooks.js";

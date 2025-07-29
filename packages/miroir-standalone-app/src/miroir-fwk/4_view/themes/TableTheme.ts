@@ -81,6 +81,9 @@ export interface TableTheme {
       minHeight: string;
       maxHeight: string;
       backgroundColor: string;
+      width: string;
+      maxWidth: string;
+      adaptiveColumnWidths: boolean;
     };
     header: {
       background: string;
@@ -183,6 +186,9 @@ export const defaultTableTheme: TableTheme = {
       minHeight: '200px',
       maxHeight: '600px',
       backgroundColor: '#ffffff',
+      width: '100%',
+      maxWidth: '100%',
+      adaptiveColumnWidths: true,
     },
     header: {
       background: '#fafafa',

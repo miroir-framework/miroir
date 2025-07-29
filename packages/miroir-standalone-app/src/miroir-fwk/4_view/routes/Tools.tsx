@@ -4,7 +4,7 @@ import _ from "lodash";
 import { javascript } from "@codemirror/lang-javascript";
 import ReactCodeMirror from "@uiw/react-codemirror";
 import { ChangeEvent, useCallback, useMemo, useState } from "react";
-import { PageContainer } from "../components/PageContainer";
+import { PageContainer } from "../components/Page/PageContainer";
 
 // const MyReactCodeMirror: React.Component = ReactCodeMirror
 const MyReactCodeMirror: any = ReactCodeMirror // TODO: solve the mystery: it was once well-typed, now the linter raises an error upon direct (default-typed) use!
@@ -53,7 +53,7 @@ import {
 } from "../MiroirContextReactProvider.js";
 import { useCurrentModel } from "../ReduxHooks.js";
 import { JzodElementDisplay } from "../components/JzodElementDisplay.js";
-import { JzodElementEditor } from "../components/JzodElementEditor.js";
+import { JzodElementEditor } from "../components/ValueObjectEditor/JzodElementEditor.js";
 import { cleanLevel } from "../constants.js";
 
 
@@ -350,13 +350,13 @@ export const ToolsPage: React.FC<any> = (
     rawSchema
   );
 
-  const currentEnumJzodSchemaResolver: JzodEnumSchemaToJzodElementResolver | undefined = useMemo(
-    () =>
-      context.miroirFundamentalJzodSchema
-        ? getCurrentEnumJzodSchemaResolver(currentMiroirModel, context.miroirFundamentalJzodSchema)
-        : undefined,
-    [context.miroirFundamentalJzodSchema, currentMiroirModel]
-  );
+  // const currentEnumJzodSchemaResolver: JzodEnumSchemaToJzodElementResolver | undefined = useMemo(
+  //   () =>
+  //     context.miroirFundamentalJzodSchema
+  //       ? getCurrentEnumJzodSchemaResolver(currentMiroirModel, context.miroirFundamentalJzodSchema)
+  //       : undefined,
+  //   [context.miroirFundamentalJzodSchema, currentMiroirModel]
+  // );
   
 
   // ##############################################################################################
@@ -551,7 +551,7 @@ export const ToolsPage: React.FC<any> = (
 
   log.info(
     "Tools.tsx render",
-    currentEnumJzodSchemaResolver,
+    // currentEnumJzodSchemaResolver,
     "testResults",
     testResults,
     "testSuitesResultsSchema",
@@ -567,7 +567,8 @@ export const ToolsPage: React.FC<any> = (
       <div>Hello World!</div>
       {/* test results */}
       <div>
-        {currentEnumJzodSchemaResolver != undefined &&
+        {
+        // currentEnumJzodSchemaResolver != undefined &&
         testResults &&
         testSuitesResultsSchema != undefined &&
         testSuitesResultsSchema.context != undefined &&

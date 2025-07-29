@@ -1,3 +1,38 @@
+/* Smart scrollbar management - show functional scrollbars when needed */
+
+/* Reset and base styling */
+* {
+  box-sizing: border-box;
+}
+
+/* Root elements - allow scrolling and show scrollbars when needed */
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: auto; /* Allow scrolling when content overflows */
+}
+
+#root {
+  width: 100%;
+  height: 100vh;
+  overflow: auto; /* Allow scrolling when content overflows */
+}
+
+/* Preserve functionality for form inputs */
+textarea, 
+input[type="text"], 
+input[type="email"], 
+input[type="password"],
+input[type="number"],
+input[type="search"],
+.MuiInputBase-input,
+.MuiOutlinedInput-input {
+  overflow: visible; /* Allow text inputs to work normally */
+}
+
+/* MUI component styling */
 .MuiDialog-container {
   display: inline-flex!important;
 }
@@ -6,43 +41,69 @@
   height: 0px!important;
 }
 
-/* Prevent table components from overflowing their containers */
+/* AG-Grid smart scrollbar management */
 .ag-theme-alpine {
+  /* Allow the grid to determine its own overflow needs */
+  overflow: auto;
   width: 100% !important;
   max-width: 100% !important;
-  overflow: hidden !important;
   box-sizing: border-box !important;
 }
 
-.ag-theme-alpine .ag-root-wrapper {
-  width: 100% !important;
-  max-width: 100% !important;
-  overflow: hidden !important;
+/* Only hide AG-Grid's redundant scrollbar decorations, not functional scrollbars */
+.ag-theme-alpine .ag-body-horizontal-scroll,
+.ag-theme-alpine .ag-body-vertical-scroll {
+  /* These are decorative scrollbar elements that AG-Grid adds - hide them */
+  display: none !important;
 }
 
-.ag-theme-alpine .ag-root {
-  width: 100% !important;
-  max-width: 100% !important;
-  overflow: hidden !important;
+/* Keep the functional viewport scrolling */
+.ag-theme-alpine .ag-body-viewport,
+.ag-theme-alpine .ag-center-cols-viewport {
+  overflow: auto; /* Keep functional scrolling */
 }
 
-.ag-theme-alpine .ag-header {
-  width: 100% !important;
-  max-width: 100% !important;
-  overflow: hidden !important;
+/* Prevent unwanted scrollbars in dialog components */
+.MuiDialog-paper {
+  overflow: auto;
+  max-height: 90vh !important;
 }
 
-.ag-theme-alpine .ag-body-viewport {
-  width: 100% !important;
-  max-width: 100% !important;
-  overflow-x: auto !important;
-  overflow-y: auto !important;
+/* Ensure MUI containers work properly */
+.MuiContainer-root,
+.MuiGrid-container,
+.MuiGrid-item,
+.MuiBox-root {
+  overflow: visible; /* Let content flow naturally */
 }
 
-/* Ensure Glide Data Grid also respects container width */
-.gdg-data-editor-container {
-  width: 100% !important;
-  max-width: 100% !important;
-  overflow: hidden !important;
-  box-sizing: border-box !important;
+/* Custom scrollbar styling for better appearance */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* Firefox scrollbar styling */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #c1c1c1 #f1f1f1;
+}
+
+/* Smooth scrolling */
+* {
+  scroll-behavior: smooth;
 }

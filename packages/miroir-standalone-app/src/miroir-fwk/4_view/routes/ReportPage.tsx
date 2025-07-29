@@ -21,15 +21,14 @@ import {
 
 import { adminConfigurationDeploymentParis, deployments, packageName, ReportUrlParamKeys } from "../../../constants.js";
 import { useCurrentModel } from '../ReduxHooks.js';
-import { ReportView } from '../components/ReportView.js';
+import { ReportView } from '../components/Reports/ReportView.js';
 import { PerformanceDisplayContainer } from '../components/PerformanceDisplayContainer.js';
 import { cleanLevel } from '../constants.js';
 import { RenderPerformanceMetrics } from '../tools/renderPerformanceMeasure.js';
-import { useDocumentOutlineContext } from '../components/RootComponent.js';
+import { useDocumentOutlineContext } from '../components/Page/RootComponent.js';
 import { useRenderTracker } from '../tools/renderCountTracker.js';
-import { PageContainer } from '../components/PageContainer.js';
-import { TableThemeSelector } from '../components/TableThemeSelector.js';
-import { ThemedBox, ThemedSpan } from '../components/ThemedComponents.js';
+import { PageContainer } from '../components/Page/PageContainer.js';
+import { ThemedBox, ThemedSpan } from '../components/Themes/ThemedComponents.js';
 import { useMiroirTheme } from '../contexts/MiroirThemeContext.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;

@@ -1,5 +1,5 @@
 import { JzodElement } from "miroir-core";
-import { TableComponentRow } from "./components/MTableComponentInterface.js";
+import { TableComponentRow } from "./components/Grids/MTableComponentInterface.js";
 
 export interface ColumnWidthSpec {
   field: string;
@@ -32,6 +32,9 @@ export function calculateAdaptiveColumnWidths(
   const MAX_COLUMN_WIDTH = 400;
   const PADDING = 16; // Column padding
   
+  // Ensure we have a minimum reasonable available width
+  const safeAvailableWidth = Math.max(availableWidth, 300);
+  
   // // Use provided tools column definition or default
   // const defaultToolsColumnDef: ToolsColumnDefinition = {
   //   field: '',
@@ -55,7 +58,7 @@ export function calculateAdaptiveColumnWidths(
     let type: ColumnWidthSpec['type'] = 'text';
     if (field === '' || field === 'tools') {
       type = 'tools';
-    } else if (field === 'uuid') {
+    } else if (field === 'uuid' || fieldSchema?.type === 'uuid') {
       type = 'uuid';
     } else if (field === 'name') {
       type = 'name';
@@ -98,9 +101,16 @@ export function calculateAdaptiveColumnWidths(
           type
         };
       case 'uuid':
-        minWidth = 120;
-        maxWidth = 180;
-        baseWidth = 150;
+        // Fixed width based on UUID character count (36 chars + padding)
+        // Standard UUID format: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx (36 characters)
+        const uuidCharCount = 36;
+        const uuidContentWidth = uuidCharCount * CHAR_WIDTH + PADDING;
+        const headerWidth = headerName.length * CHAR_WIDTH + PADDING;
+        // Use the larger of UUID content width or header width to ensure both fit
+        const uuidFixedWidth = Math.max(uuidContentWidth, headerWidth);
+        minWidth = uuidFixedWidth;
+        maxWidth = uuidFixedWidth;
+        baseWidth = uuidFixedWidth;
         break;
       case 'name':
         minWidth = 100;
@@ -171,8 +181,14 @@ export function calculateAdaptiveColumnWidths(
     }
 
     // Calculate final width
-    const contentBasedWidth = Math.max(baseWidth, maxContentWidth);
-    const calculatedWidth = Math.min(Math.max(contentBasedWidth, minWidth), maxWidth);
+    let calculatedWidth: number;
+    if (type === 'uuid') {
+      // UUID columns always use fixed width, ignore content-based calculation
+      calculatedWidth = baseWidth;
+    } else {
+      const contentBasedWidth = Math.max(baseWidth, maxContentWidth);
+      calculatedWidth = Math.min(Math.max(contentBasedWidth, minWidth), maxWidth);
+    }
 
     return {
       field,
@@ -186,29 +202,47 @@ export function calculateAdaptiveColumnWidths(
 
   // Adjust widths to fit available space exactly
   const totalCalculatedWidth = columnSpecs.reduce((sum, spec) => sum + spec.calculatedWidth, 0);
-  const availableSpace = availableWidth; // Use the space already adjusted for scrollbars by caller
+  const availableSpace = safeAvailableWidth; // Use the safe available width
 
-  // Always force exact width matching by proportional distribution
+  // Only apply scaling if the difference is significant to avoid micro-adjustments
+  const widthDifference = Math.abs(totalCalculatedWidth - availableSpace);
   const targetWidthRatio = availableSpace / totalCalculatedWidth;
   
-  if (Math.abs(totalCalculatedWidth - availableSpace) > 0.1) {
-    // Apply proportional scaling to all columns
+  // Only scale if the ratio is reasonable and the difference is significant
+  if (widthDifference > 20 && targetWidthRatio > 0.3 && targetWidthRatio < 3.0) {
+    // Apply proportional scaling to all columns except tools and uuid columns
     columnSpecs.forEach(spec => {
-      spec.calculatedWidth = spec.calculatedWidth * targetWidthRatio;
+      if (spec.type !== 'tools' && spec.type !== 'uuid') {
+        const scaledWidth = spec.calculatedWidth * targetWidthRatio;
+        // Ensure the scaled width stays within reasonable bounds
+        spec.calculatedWidth = Math.max(Math.min(scaledWidth, spec.maxWidth), spec.minWidth);
+      }
     });
   }
 
-  // Final verification and adjustment to ensure perfect width match
+  // Final verification and adjustment to ensure reasonable width distribution
   const finalTotalWidth = columnSpecs.reduce((sum, spec) => sum + spec.calculatedWidth, 0);
   const finalDifference = availableSpace - finalTotalWidth;
   
-  if (Math.abs(finalDifference) > 0.01) {
-    // Apply the remaining difference to the largest column
-    const largestColumn = columnSpecs.reduce((largest, current) => 
-      current.calculatedWidth > largest.calculatedWidth ? current : largest
-    );
-    largestColumn.calculatedWidth += finalDifference;
+  // Only apply final adjustment if the difference is significant
+  if (Math.abs(finalDifference) > 5) {
+    // Apply the remaining difference to the largest non-tools, non-uuid column
+    const flexibleColumns = columnSpecs.filter(spec => spec.type !== 'tools' && spec.type !== 'uuid');
+    if (flexibleColumns.length > 0) {
+      const largestColumn = flexibleColumns.reduce((largest, current) => 
+        current.calculatedWidth > largest.calculatedWidth ? current : largest
+      );
+      const adjustedWidth = largestColumn.calculatedWidth + finalDifference;
+      largestColumn.calculatedWidth = Math.max(Math.min(adjustedWidth, largestColumn.maxWidth), largestColumn.minWidth);
+    }
   }
+
+  // Ensure no column is smaller than an absolute minimum, except for fixed-width columns like UUID
+  columnSpecs.forEach(spec => {
+    if (spec.type !== 'uuid') {
+      spec.calculatedWidth = Math.max(spec.calculatedWidth, 50); // Absolute minimum for usability
+    }
+  });
 
   return columnSpecs;
 }

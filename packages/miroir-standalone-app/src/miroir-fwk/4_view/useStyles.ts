@@ -1,5 +1,5 @@
 import { makeStyles } from "@mui/material";
-import { SidebarWidth } from "./components/SidebarSection";
+import { SidebarWidth } from "./components/Page/SidebarSection";
 
 export const useStyles = makeStyles((theme:any) => ({
   root: {
@@ -63,7 +63,7 @@ export const useStyles = makeStyles((theme:any) => ({
   content: {
     flexGrow: 1,
     height: '100vh',
-    overflow: 'auto',
+    overflow: 'hidden',
   },
   container: {
     paddingTop: theme.spacing(4),
@@ -72,7 +72,7 @@ export const useStyles = makeStyles((theme:any) => ({
   paper: {
     padding: theme.spacing(2),
     display: 'flex',
-    overflow: 'auto',
+    overflow: 'hidden',
     flexDirection: 'column',
   },
   fixedHeight: {
