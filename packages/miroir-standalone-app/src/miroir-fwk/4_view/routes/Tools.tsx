@@ -55,6 +55,7 @@ import { useCurrentModel } from "../ReduxHooks.js";
 import { JzodElementDisplay } from "../components/JzodElementDisplay.js";
 import { JzodElementEditor } from "../components/ValueObjectEditor/JzodElementEditor.js";
 import { cleanLevel } from "../constants.js";
+import { EndpointActionCaller } from "../components/EndpointActionCaller";
 
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -564,6 +565,14 @@ export const ToolsPage: React.FC<any> = (
   );
   return (
     <PageContainer>
+      <div>
+        <EndpointActionCaller
+          key={"aaaa"}
+            // currentDeploymentUuid={displayedDeploymentUuid}
+            // currentApplicationSection={displayedApplicationSection}
+            // currentReportUuid={displayedReportUuid}
+          />
+        
       <div>Hello World!</div>
       {/* test results */}
       <div>
@@ -661,6 +670,8 @@ export const ToolsPage: React.FC<any> = (
           )}
         </Formik>
       </div>
+      </div>
+
     </PageContainer>
   );
 }

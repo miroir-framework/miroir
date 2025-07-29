@@ -535,16 +535,6 @@ export const HomePage = (props: RootComponentProps) => {
           </Select>
         </FormControl>
       </div>
-      <p />
-      <p />
-      <EndpointActionCaller
-        key={"aaaa"}
-          // currentDeploymentUuid={displayedDeploymentUuid}
-          // currentApplicationSection={displayedApplicationSection}
-          // currentReportUuid={displayedReportUuid}
-        />
-        {/* </EndpointActionCaller> */}
-
       {/* <Box sx={{ minWidth: 50 }}> */}
       <div>
         <FormControl fullWidth>

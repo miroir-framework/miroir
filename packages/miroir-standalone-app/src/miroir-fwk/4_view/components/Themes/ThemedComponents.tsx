@@ -1,7 +1,17 @@
 /** @jsxImportSource @emotion/react */
-import React from 'react';
 import { css } from '@emotion/react';
-import { FormControl, FormControlProps, InputLabel, InputLabelProps, MenuItem, MenuItemProps, Select, SelectProps } from '@mui/material';
+import {
+  FormControl,
+  FormControlProps,
+  InputLabel,
+  InputLabelProps,
+  MenuItem,
+  MenuItemProps,
+  Paper, PaperProps,
+  Select,
+  SelectProps,
+} from "@mui/material";
+import React from 'react';
 import { useMiroirTheme } from '../../contexts/MiroirThemeContext';
 
 // ################################################################################################
@@ -87,29 +97,29 @@ export const ThemedButton: React.FC<ThemedComponentProps & {
   );
 };
 
-// Demo component to show theme usage
-export const ThemeDemo: React.FC = () => {
-  const { currentTheme, selectTheme, availableThemes } = useMiroirTheme();
+// // Demo component to show theme usage
+// export const ThemeDemo: React.FC = () => {
+//   const { currentTheme, selectTheme, availableThemes } = useMiroirTheme();
 
-  return (
-    <ThemedContainer>
-      <h3>Current Theme: {currentTheme.name}</h3>
-      <p>This demonstrates the themed components in action.</p>
+//   return (
+//     <ThemedContainer>
+//       <h3>Current Theme: {currentTheme.name}</h3>
+//       <p>This demonstrates the themed components in action.</p>
       
-      <div css={css({ display: 'flex', gap: currentTheme.spacing.sm, marginTop: currentTheme.spacing.md })}>
-        {availableThemes.map((theme) => (
-          <ThemedButton 
-            key={theme.id}
-            onClick={() => selectTheme(theme.id)}
-            variant={theme.id === currentTheme.id ? 'primary' : 'secondary'}
-          >
-            {theme.name}
-          </ThemedButton>
-        ))}
-      </div>
-    </ThemedContainer>
-  );
-};
+//       <div css={css({ display: 'flex', gap: currentTheme.spacing.sm, marginTop: currentTheme.spacing.md })}>
+//         {availableThemes.map((theme) => (
+//           <ThemedButton 
+//             key={theme.id}
+//             onClick={() => selectTheme(theme.id)}
+//             variant={theme.id === currentTheme.id ? 'primary' : 'secondary'}
+//           >
+//             {theme.name}
+//           </ThemedButton>
+//         ))}
+//       </div>
+//     </ThemedContainer>
+//   );
+// };
 
 // Additional themed components for common UI patterns
 export const ThemedHeaderSection: React.FC<ThemedComponentProps> = ({ 
@@ -2158,7 +2168,7 @@ export const ThemedMenuItem: React.FC<MenuItemProps & ThemedComponentProps> = ({
 };
 
 // Enhanced ThemedSelect that wraps Material-UI Select with proper theming
-export const ThemedMUISelect: React.FC<SelectProps & ThemedComponentProps> = ({ 
+export const ThemedMUISelect: React.FC<SelectProps<any> & ThemedComponentProps> = ({ 
   children, 
   className, 
   style,
@@ -2196,3 +2206,34 @@ export const ThemedMUISelect: React.FC<SelectProps & ThemedComponentProps> = ({
   );
 };
 
+export const ThemedPaper: React.FC<PaperProps & ThemedComponentProps> = ({
+  children,
+  className,
+  style,
+  elevation = 1,
+  ...props
+}) => {
+  const { currentTheme } = useMiroirTheme();
+
+  const paperStyles = css({
+    backgroundColor: currentTheme.colors.surface,
+    color: currentTheme.colors.text,
+    border: `1px solid ${currentTheme.colors.border}`,
+    borderRadius: currentTheme.borderRadius.md,
+    boxShadow: elevation > 0 ? `0 ${elevation}px ${elevation * 2}px rgba(0,0,0,0.1)` : 'none',
+    overflow: 'hidden',
+    fontFamily: currentTheme.typography.fontFamily,
+  });
+
+  return (
+    <Paper
+      css={paperStyles}
+      className={className}
+      style={style}
+      elevation={elevation}
+      {...props}
+    >
+      {children}
+    </Paper>
+  );
+};

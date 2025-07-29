@@ -434,6 +434,8 @@ export {
   zodParseErrorIssue,
   CompositeRunTestAssertion,
   compositeRunTestAssertion,
+  EndpointDefinition,
+  endpointDefinition,
 } from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 export {

@@ -24,12 +24,16 @@ import {
   adminConfigurationDeploymentMiroir,
   LoggerInterface,
   MiroirLoggerFactory,
-  defaultMiroirMetaModel
+  defaultMiroirMetaModel,
+  EndpointDefinition,
+  queryEndpointVersionV1
 } from 'miroir-core';
 import { deployments, packageName } from '../../../constants.js';
 import { useDomainControllerService, useMiroirContextService } from '../MiroirContextReactProvider.js';
 import { cleanLevel } from '../constants.js';
 import { JzodElementEditor } from './ValueObjectEditor/JzodElementEditor.js';
+import { ThemedFormControl, ThemedInputLabel, ThemedMUISelect, ThemedPaper } from './Themes/ThemedComponents.js';
+import { Action } from 'miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -38,42 +42,44 @@ MiroirLoggerFactory.registerLoggerToStart(
 
 export interface EndpointActionCallerProps {}
 
-interface Endpoint {
-  uuid: string;
-  name: string;
-  definition: {
-    actions: Array<{
-      actionParameters: JzodObject;
-    }>;
-  };
-}
+// interface Endpoint {
+//   uuid: string;
+//   name: string;
+//   definition: {
+//     actions: Array<{
+//       actionParameters: JzodObject;
+//     }>;
+//   };
+// }
 
-interface Action {
-  actionParameters: JzodObject;
-}
+// interface Action {
+//   actionParameters: JzodObject;
+// }
 
 // Predefined endpoints from Miroir core
-const miroirEndpoints: Endpoint[] = [
-  {
-    uuid: modelEndpointV1.uuid,
-    name: "Model Endpoint",
-    definition: modelEndpointV1.definition
-  },
-  {
-    uuid: instanceEndpointVersionV1.uuid, 
-    name: "Instance Endpoint",
-    definition: instanceEndpointVersionV1.definition
-  },
-  {
-    uuid: storeManagementEndpoint.uuid,
-    name: "Store Management Endpoint", 
-    definition: storeManagementEndpoint.definition
-  },
-  {
-    uuid: undoRedoEndpointVersionV1.uuid,
-    name: "Undo/Redo Endpoint",
-    definition: undoRedoEndpointVersionV1.definition
-  }
+const miroirEndpoints: EndpointDefinition[] = [
+  instanceEndpointVersionV1,
+  queryEndpointVersionV1,
+  // {
+  //   uuid: modelEndpointV1.uuid,
+  //   name: "Model Endpoint",
+  //   definition: modelEndpointV1.definition
+  // },
+  // {
+  //   uuid: instanceEndpointVersionV1.uuid, 
+  //   name: "Instance Endpoint",
+  //   definition: instanceEndpointVersionV1.definition
+  // },
+  // {
+  //   uuid: storeManagementEndpoint.uuid,
+  //   name: "Store Management Endpoint", 
+  //   definition: storeManagementEndpoint.definition
+  // },
+  // {
+  //   uuid: undoRedoEndpointVersionV1.uuid,
+  //   name: "Undo/Redo Endpoint",
+  //   definition: undoRedoEndpointVersionV1.definition
+  // }
 ];
 
 export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
@@ -114,17 +120,22 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
 
   // Create a schema for the form parameters (excluding actionType, endpoint, deploymentUuid)
   const actionParametersSchema = useMemo(() => {
-    if (!currentAction?.actionParameters?.definition) return null;
+    // if (!currentAction?.actionParameters?.definition) return null;
+    if (!currentAction?.actionParameters) return null;
     
-    const filteredDefinition = Object.fromEntries(
-      Object.entries(currentAction.actionParameters.definition).filter(
-        ([key]) => !['actionType', 'endpoint', 'deploymentUuid'].includes(key)
-      )
-    );
+    // const filteredDefinition = Object.fromEntries(
+    //   Object.entries(currentAction.actionParameters.definition).filter(
+    //     ([key]) => !['actionType', 'endpoint', 'deploymentUuid'].includes(key)
+    //   )
+    // );
     
     return {
-      type: 'object',
-      definition: filteredDefinition
+      // type: 'object',
+      // // definition: filteredDefinition
+      // definition: {
+        type: "object",
+        definition: currentAction.actionParameters || {}
+      // }
     } as JzodObject;
   }, [currentAction]);
 
@@ -159,7 +170,7 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
     setFoldedObjectAttributeOrArrayItems({});
   };
 
-  const handleEndpointChange = (event: SelectChangeEvent) => {
+  const handleEndpointChange = (event: SelectChangeEvent<string>) => {
     setSelectedEndpointUuid(event.target.value);
     setSelectedActionIndex(-1);
     setFoldedObjectAttributeOrArrayItems({});
@@ -178,7 +189,8 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
 
     try {
       // Extract action type from the current action parameters
-      const actionTypeElement = currentAction.actionParameters?.definition?.actionType as any;
+      // const actionTypeElement = currentAction.actionParameters?.definition?.actionType as any;
+      const actionTypeElement = currentAction.actionParameters?.actionType as any;
       const actionType = actionTypeElement?.definition;
       if (!actionType) {
         log.error('EndpointActionCaller: Could not determine action type from action parameters');
@@ -217,7 +229,9 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
 
   const getActionLabel = (action: Action, index: number): string => {
     // Try to extract action type from the action parameters
-    const actionTypeElement = action.actionParameters?.definition?.actionType as any;
+    // const actionTypeElement = action.actionParameters?.definition?.actionType as any;
+    log.info('getActionLabel', action, index);
+    const actionTypeElement = action.actionParameters?.actionType?.definition as any;
     const actionType = actionTypeElement?.definition;
     if (actionType) {
       return actionType; // Just return the action type without index
@@ -226,7 +240,7 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
   };
 
   return (
-    <Paper elevation={3} sx={{ p: 3, m: 2 }}>
+    <ThemedPaper elevation={3} sx={{ p: 3, m: 2 }}>
       <Typography variant="h5" gutterBottom>
         Endpoint Action Caller
       </Typography>
@@ -236,9 +250,9 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
       
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
         {/* Deployment Selection */}
-        <FormControl fullWidth>
-          <InputLabel id="deployment-select-label">Choose a Deployment</InputLabel>
-          <Select
+        <ThemedFormControl fullWidth>
+          <ThemedInputLabel id="deployment-select-label">Choose a Deployment</ThemedInputLabel>
+          <ThemedMUISelect
             labelId="deployment-select-label"
             id="deployment-select"
             value={selectedDeploymentUuid}
@@ -250,14 +264,14 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
                 {deployment.description || deployment.name}
               </MenuItem>
             ))}
-          </Select>
-        </FormControl>
+          </ThemedMUISelect>
+        </ThemedFormControl>
 
         {/* Endpoint Selection */}
         {selectedDeploymentUuid && (
-          <FormControl fullWidth>
-            <InputLabel id="endpoint-select-label">Choose an Endpoint</InputLabel>
-            <Select
+          <ThemedFormControl fullWidth>
+            <ThemedInputLabel id="endpoint-select-label">Choose an Endpoint</ThemedInputLabel>
+            <ThemedMUISelect
               labelId="endpoint-select-label"
               id="endpoint-select"
               value={selectedEndpointUuid}
@@ -265,19 +279,21 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
               onChange={handleEndpointChange}
             >
               {availableEndpoints.map((endpoint) => (
+                // <MenuItem key={endpoint.uuid} value={endpoint.uuid}>
                 <MenuItem key={endpoint.uuid} value={endpoint.uuid}>
-                  {endpoint.name}
+                  {/* {endpoint.name} */}
+                  {endpoint.description || endpoint.name}
                 </MenuItem>
               ))}
-            </Select>
-          </FormControl>
+            </ThemedMUISelect>
+          </ThemedFormControl>
         )}
 
         {/* Action Selection */}
         {selectedEndpointUuid && availableActions.length > 0 && (
-          <FormControl fullWidth>
-            <InputLabel id="action-select-label">Choose an Action</InputLabel>
-            <Select
+          <ThemedFormControl fullWidth>
+            <ThemedInputLabel id="action-select-label">Choose an Action</ThemedInputLabel>
+            <ThemedMUISelect
               labelId="action-select-label"
               id="action-select"
               value={selectedActionIndex === -1 ? '' : selectedActionIndex.toString()}
@@ -285,12 +301,13 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
               onChange={handleActionChange}
             >
               {availableActions.map((action, index) => (
-                <MenuItem key={index} value={index.toString()}>
-                  {getActionLabel(action, index)}
+                <MenuItem key={action.actionParameters.actionType.definition} value={index.toString()}>
+                  {/* {getActionLabel(action, index)} */}
+                  {action.actionParameters.actionType.definition}
                 </MenuItem>
               ))}
-            </Select>
-          </FormControl>
+            </ThemedMUISelect>
+          </ThemedFormControl>
         )}
 
         {/* Dynamic Form with JzodElementEditor */}
@@ -355,9 +372,11 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
                 Selected Endpoint: {availableEndpoints.find(e => e.uuid === selectedEndpointUuid)?.name}
               </Typography>
             )}
+            currentAction{JSON.stringify(currentAction, null, 2)}
             {currentAction && (
               <Typography variant="caption" display="block">
-                Selected Action: {getActionLabel(currentAction, selectedActionIndex)}
+                {/* Selected Action: {getActionLabel(currentAction, selectedActionIndex)} */}
+                Selected Action: {currentAction.actionParameters.actionType.definition}
               </Typography>
             )}
             {actionParametersSchema && (
@@ -368,6 +387,6 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
           </Box>
         )}
       </Box>
-    </Paper>
+    </ThemedPaper>
   );
 };

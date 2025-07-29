@@ -17180,169 +17180,227 @@ export const miroirFundamentalJzodSchema = {
       },
       "endpointDefinition": {
         "type": "object",
-        "tag": {
-          "value": {
-            "id": 10,
-            "defaultLabel": "Definition",
-            "editable": true
-          }
-        },
         "definition": {
-          "actions": {
-            "type": "schemaReference",
-            "context": {
-              "action": {
-                "type": "object",
-                "definition": {
-                  "actionParameters": {
+          "uuid": {
+            "type": "uuid",
+            "tag": {
+              "value": {
+                "id": 1,
+                "defaultLabel": "Uuid",
+                "editable": false
+              }
+            }
+          },
+          "parentName": {
+            "type": "string",
+            "tag": {
+              "value": {
+                "id": 2,
+                "defaultLabel": "Entity Name",
+                "editable": false
+              }
+            }
+          },
+          "parentUuid": {
+            "type": "uuid",
+            "tag": {
+              "value": {
+                "id": 3,
+                "defaultLabel": "Entity Uuid",
+                "editable": false
+              }
+            }
+          },
+          "parentDefinitionVersionUuid": {
+            "type": "uuid",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 4,
+                "defaultLabel": "Entity Definition Version Uuid",
+                "editable": false
+              }
+            }
+          },
+          "name": {
+            "type": "string",
+            "tag": {
+              "value": {
+                "id": 6,
+                "defaultLabel": "Name",
+                "editable": false
+              }
+            }
+          },
+          "version": {
+            "type": "string",
+            "tag": {
+              "value": {
+                "id": 7,
+                "defaultLabel": "Version",
+                "editable": false
+              }
+            }
+          },
+          "description": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 8,
+                "defaultLabel": "Description",
+                "editable": true
+              }
+            }
+          },
+          "transactionalEndpoint": {
+            "type": "boolean",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 9,
+                "defaultLabel": "Transactional Endpoint",
+                "editable": true
+              }
+            }
+          },
+          "definition": {
+            "type": "object",
+            "tag": {
+              "value": {
+                "id": 10,
+                "defaultLabel": "Definition",
+                "editable": true
+              }
+            },
+            "definition": {
+              "actions": {
+                "type": "schemaReference",
+                "context": {
+                  "action": {
                     "type": "object",
                     "definition": {
-                      "actionType": {
-                        "type": "schemaReference",
-                        "definition": {
-                          "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                          "relativePath": "jzodLiteral"
-                        }
-                      },
-                      "actionName": {
-                        "type": "schemaReference",
-                        "optional": true,
-                        "definition": {
-                          "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                          "relativePath": "jzodLiteral"
-                        }
-                      },
-                      "actionLabel": {
-                        "type": "schemaReference",
-                        "optional": true,
-                        "definition": {
-                          "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                          "relativePath": "jzodAttributePlainStringWithValidations"
-                        }
-                      },
-                      "endpoint": {
-                        "type": "schemaReference",
-                        "definition": {
-                          "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                          "relativePath": "jzodLiteral"
-                        }
-                      },
-                      "configuration": {
-                        "type": "schemaReference",
-                        "optional": true,
-                        "definition": {
-                          "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                          "relativePath": "jzodElement"
-                        }
-                      },
-                      "deploymentUuid": {
-                        "type": "schemaReference",
-                        "definition": {
-                          "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                          "relativePath": "jzodPlainAttribute"
-                        }
-                      },
-                      "payload": {
-                        "type": "schemaReference",
-                        "optional": true,
-                        "definition": {
-                          "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                          "relativePath": "jzodObject"
-                        }
-                      }
-                    }
-                  },
-                  "actionImplementation": {
-                    "type": "union",
-                    "optional": true,
-                    "discriminator": "actionImplementationType",
-                    "definition": [
-                      {
+                      "actionParameters": {
                         "type": "object",
                         "definition": {
-                          "actionImplementationType": {
-                            "type": "literal",
-                            "definition": "libraryImplementation"
-                          },
-                          "inMemoryImplementationFunctionName": {
-                            "type": "string"
-                          },
-                          "sqlImplementationFunctionName": {
-                            "type": "string",
-                            "optional": true
-                          }
-                        }
-                      },
-                      {
-                        "type": "object",
-                        "definition": {
-                          "actionImplementationType": {
-                            "type": "literal",
-                            "definition": "compositeAction"
-                          },
-                          "definition": {
+                          "actionType": {
                             "type": "schemaReference",
                             "definition": {
-                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                              "relativePath": "compositeAction"
+                              "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                              "relativePath": "jzodLiteral"
+                            }
+                          },
+                          "actionName": {
+                            "type": "schemaReference",
+                            "optional": true,
+                            "definition": {
+                              "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                              "relativePath": "jzodLiteral"
+                            }
+                          },
+                          "actionLabel": {
+                            "type": "schemaReference",
+                            "optional": true,
+                            "definition": {
+                              "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                              "relativePath": "jzodAttributePlainStringWithValidations"
+                            }
+                          },
+                          "endpoint": {
+                            "type": "schemaReference",
+                            "definition": {
+                              "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                              "relativePath": "jzodLiteral"
+                            }
+                          },
+                          "configuration": {
+                            "type": "schemaReference",
+                            "optional": true,
+                            "definition": {
+                              "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                              "relativePath": "jzodElement"
+                            }
+                          },
+                          "deploymentUuid": {
+                            "type": "schemaReference",
+                            "definition": {
+                              "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                              "relativePath": "jzodPlainAttribute"
+                            }
+                          },
+                          "payload": {
+                            "type": "schemaReference",
+                            "optional": true,
+                            "definition": {
+                              "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                              "relativePath": "jzodObject"
                             }
                           }
                         }
-                      }
-                    ]
-                  },
-                  "actionErrors": {
-                    "type": "union",
-                    "discriminator": "type",
-                    "optional": true,
-                    "definition": [
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                          "relativePath": "jzodEnum"
-                        }
                       },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                          "relativePath": "jzodLiteral"
-                        }
+                      "actionImplementation": {
+                        "type": "union",
+                        "optional": true,
+                        "discriminator": "actionImplementationType",
+                        "definition": [
+                          {
+                            "type": "object",
+                            "definition": {
+                              "actionImplementationType": {
+                                "type": "literal",
+                                "definition": "libraryImplementation"
+                              },
+                              "inMemoryImplementationFunctionName": {
+                                "type": "string"
+                              },
+                              "sqlImplementationFunctionName": {
+                                "type": "string",
+                                "optional": true
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "definition": {
+                              "actionImplementationType": {
+                                "type": "literal",
+                                "definition": "compositeAction"
+                              },
+                              "definition": {
+                                "type": "schemaReference",
+                                "definition": {
+                                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                  "relativePath": "compositeAction"
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "actionErrors": {
+                        "type": "union",
+                        "discriminator": "type",
+                        "optional": true,
+                        "definition": [
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "jzodEnum"
+                            }
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "jzodLiteral"
+                            }
+                          }
+                        ]
                       }
-                    ]
-                  }
-                }
-              },
-              "actionsArray": {
-                "type": "array",
-                "definition": {
-                  "type": "schemaReference",
-                  "definition": {
-                    "relativePath": "action"
-                  }
-                }
-              },
-              "actionsUnion": {
-                "type": "object",
-                "extend": {
-                  "type": "schemaReference",
-                  "definition": {
-                    "eager": true,
-                    "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                    "relativePath": "jzodBaseObject"
-                  }
-                },
-                "definition": {
-                  "type": {
-                    "type": "literal",
-                    "definition": "union"
+                    }
                   },
-                  "discriminator": {
-                    "type": "string",
-                    "optional": true
-                  },
-                  "definition": {
+                  "actionsArray": {
                     "type": "array",
                     "definition": {
                       "type": "schemaReference",
@@ -17350,43 +17408,73 @@ export const miroirFundamentalJzodSchema = {
                         "relativePath": "action"
                       }
                     }
+                  },
+                  "actionsUnion": {
+                    "type": "object",
+                    "extend": {
+                      "type": "schemaReference",
+                      "definition": {
+                        "eager": true,
+                        "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                        "relativePath": "jzodBaseObject"
+                      }
+                    },
+                    "definition": {
+                      "type": {
+                        "type": "literal",
+                        "definition": "union"
+                      },
+                      "discriminator": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "definition": {
+                        "type": "array",
+                        "definition": {
+                          "type": "schemaReference",
+                          "definition": {
+                            "relativePath": "action"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "definition": {
+                  "relativePath": "actionsArray"
+                },
+                "tag": {
+                  "value": {
+                    "id": 10,
+                    "defaultLabel": "Endpoint Parameter",
+                    "editable": true
                   }
                 }
-              }
-            },
-            "definition": {
-              "relativePath": "actionsArray"
-            },
-            "tag": {
-              "value": {
-                "id": 10,
-                "defaultLabel": "Endpoint Parameter",
-                "editable": true
-              }
-            }
-          },
-          "actionDefinition": {
-            "type": "schemaReference",
-            "optional": true,
-            "definition": {
-              "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-              "relativePath": "jzodObject"
-            },
-            "tag": {
-              "value": {
-                "id": 11,
-                "defaultLabel": "Endpoint Definition",
-                "editable": true
+              },
+              "actionDefinition": {
+                "type": "schemaReference",
+                "optional": true,
+                "definition": {
+                  "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                  "relativePath": "jzodObject"
+                },
+                "tag": {
+                  "value": {
+                    "id": 11,
+                    "defaultLabel": "Endpoint Definition",
+                    "editable": true
+                  }
+                }
+              },
+              "actionTransformer": {
+                "type": "any",
+                "optional": true
+              },
+              "actionMigrations": {
+                "type": "any",
+                "optional": true
               }
             }
-          },
-          "actionTransformer": {
-            "type": "any",
-            "optional": true
-          },
-          "actionMigrations": {
-            "type": "any",
-            "optional": true
           }
         }
       },
