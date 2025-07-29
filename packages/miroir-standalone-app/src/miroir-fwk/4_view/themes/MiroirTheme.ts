@@ -83,6 +83,13 @@ export interface MiroirTheme {
     accentLight: string;
     shadow: string;
     overlay: string;
+    
+    // Nesting colors for nested editors (Prettier-like)
+    nesting: {
+      level0: string;  // Base level (lightest)
+      level1: string;  // First nesting level
+      level2: string;  // Second nesting level
+    };
   };
   
   // Global spacing system
@@ -319,6 +326,13 @@ export const defaultMiroirTheme: MiroirTheme = {
     accentLight: 'rgba(25, 118, 210, 0.1)',
     shadow: 'rgba(0, 0, 0, 0.2)',
     overlay: 'rgba(0, 0, 0, 0.5)',
+    
+    // Nesting colors for nested editors (Prettier-like)
+    nesting: {
+      level0: '#f8f8f8',  // Light gray (base level)
+      level1: '#f0f0f0',  // Slightly darker gray
+      level2: '#e8e8e8',  // Even darker gray
+    },
   },
   
   spacing: {
@@ -545,6 +559,13 @@ export const darkMiroirTheme: MiroirTheme = {
     accentLight: 'rgba(144, 202, 249, 0.1)',
     shadow: 'rgba(0, 0, 0, 0.3)',
     overlay: 'rgba(0, 0, 0, 0.7)',
+    
+    // Nesting colors for nested editors (Prettier-like, dark theme)
+    nesting: {
+      level0: '#2a2a2a',  // Dark gray (base level)
+      level1: '#323232',  // Slightly lighter dark gray
+      level2: '#3a3a3a',  // Even lighter dark gray
+    },
   },
   
   components: {
@@ -729,6 +750,13 @@ export const materialMiroirTheme: MiroirTheme = {
     background: '#fafafa',
     surface: '#ffffff',
     surfaceVariant: '#f5f5f5',
+    
+    // Material Design specific nesting colors
+    nesting: {
+      level0: '#fafafa',  // Material background
+      level1: '#f5f5f5',  // Material surface variant
+      level2: '#eeeeee',  // Slightly darker
+    },
   },
   
   borderRadius: {
@@ -808,6 +836,10 @@ export const createMiroirTheme = (overrides: DeepPartial<MiroirTheme> = {}): Mir
     colors: {
       ...baseTheme.colors,
       ...overrides.colors,
+      nesting: {
+        ...baseTheme.colors.nesting,
+        ...overrides.colors?.nesting,
+      },
     },
     spacing: {
       ...baseTheme.spacing,

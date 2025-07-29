@@ -38,7 +38,7 @@ import {
   ThemedTextField,
   ThemedMenuItemOption
 } from "./ThemedComponents.js";
-import { useMiroirTheme } from '../contexts/MiroirThemeContext.js';
+import { useMiroirTheme, useMiroirNestingColor, useMiroirNestingBorderColor } from '../contexts/MiroirThemeContext.js';
 import { ErrorFallbackComponent } from "./ErrorFallbackComponent.js";
 import { RenderPerformanceMetrics } from "../tools/renderPerformanceMeasure.js";
 
@@ -376,18 +376,21 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
     ]
   );
 
-  // Define Prettier-like colors for nested structures
-  const prettierColors = useMemo(() => [
-    "#f8f8f8", // Light gray
-    "#f0f0f0", // Slightly darker gray
-    "#e8e8e8"  // Even darker gray
-  ], []);
+  // Check if this element type supports nesting (should have alternating background)
+  // These are the container types that can hold other JzodElements
+  const isNestableType = useMemo(() => {
+    const elementType = localResolvedElementJzodSchemaBasedOnValue?.type;
+    return elementType === "object" || 
+           elementType === "record" || 
+           elementType === "array" || 
+           elementType === "tuple";
+  }, [localResolvedElementJzodSchemaBasedOnValue?.type]);
 
-  // Get appropriate background color based on indent level
-  const bgColor = useMemo(() => 
-    prettierColors[(props.indentLevel || 0) % 3],
-    [prettierColors, props.indentLevel]
-  );
+  // Get appropriate background and border colors for nested containers
+  // This creates a Prettier-like visual effect where nested structures have alternating shades
+  // The colors cycle through 3 levels: A -> B -> C -> A -> B -> C...
+  const bgColor = useMiroirNestingColor(isNestableType ? (props.indentLevel || 0) : 0);
+  const borderColor = useMiroirNestingBorderColor(props.indentLevel || 0);
 
 
   // Create the main element based on the schema type
@@ -892,8 +895,11 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
             width: "calc(100% - 10px)",
             margin: "5px 10px 5px 0",
             position: "relative",
+            // Apply nesting background colors for visual hierarchy (Prettier-like effect)
             backgroundColor: bgColor,
-            border: "1px solid #ddd",
+            border: `1px solid ${borderColor}`,
+            // Enhanced left border for nested containers to show depth
+            borderLeft: isNestableType ? `3px solid ${useMiroirNestingBorderColor((props.indentLevel || 0) + 1)}` : `1px solid ${borderColor}`,
             justifyContent: "space-between",
             boxShadow: "none",
           }}
