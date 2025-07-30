@@ -3,7 +3,6 @@ import { ErrorBoundary } from "react-error-boundary";
 import {
   adminConfigurationDeploymentMiroir,
   foldableElementTypes,
-  getDefaultValueForJzodSchema,
   getDefaultValueForJzodSchemaWithResolution,
   JzodArray,
   JzodElement,

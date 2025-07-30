@@ -126,26 +126,18 @@ export function useJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
   // ################################################################################################
   // value schema
   // const localResolvedElementJzodSchemaBasedOnValue: JzodElement | undefined = useMemo(() => {
-  const localResolvedElementJzodSchemaBasedOnValue: JzodElement | undefined =
+    const localResolvedElementJzodSchemaBasedOnValue: JzodElement | undefined =
     props.typeCheckKeyMap && props.typeCheckKeyMap[props.rootLessListKey]
-      ? props.typeCheckKeyMap[props.rootLessListKey]?.resolvedSchema
-      : undefined;
-
+    ? props.typeCheckKeyMap[props.rootLessListKey]?.resolvedSchema
+    : undefined;
+    // for objects, records
+    const itemsOrder: any[] = useMemo(
+      () => getItemsOrder(currentValue, localResolvedElementJzodSchemaBasedOnValue),
+      [localResolvedElementJzodSchemaBasedOnValue, currentValue]
+    );
+    
   const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<DeploymentEntityState> =
     useMemo(() => getMemoizedDeploymentEntityStateSelectorMap(), []);
-
-  // ##############################################################################################
-  // ##############################################################################################
-  // ##############################################################################################
-  // ##############################################################################################
-  // ##############################################################################################
-  // ########################## unionInformation #########################
-
-  // hiddenFormItems state moved to parent component
-  const itemsOrder: any[] = useMemo(
-    () => getItemsOrder(currentValue, localResolvedElementJzodSchemaBasedOnValue),
-    [localResolvedElementJzodSchemaBasedOnValue, currentValue]
-  );
 
   // ######################### foreignKeyObjects #########################
   const foreignKeyObjectsFetchQueryParams: SyncQueryRunnerParams<DeploymentEntityState> = useMemo(

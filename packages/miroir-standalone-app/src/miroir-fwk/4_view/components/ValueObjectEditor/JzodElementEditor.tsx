@@ -1,5 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { ErrorBoundary, withErrorBoundary } from "react-error-boundary";
+import React, { useCallback, useMemo, useState } from "react";
 
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
@@ -10,16 +9,29 @@ import {
   EntityAttribute,
   EntityInstance,
   EntityInstanceWithName,
-  JzodElement,
-  JzodLiteral,
   LoggerInterface,
-  measurePerformance,
   MiroirLoggerFactory,
   mStringify
 } from "miroir-core";
 
 import { packageName } from "../../../../constants.js";
 import { cleanLevel } from "../../constants.js";
+import {
+  useMiroirNestingBorderColor,
+  useMiroirNestingColor
+} from "../../contexts/MiroirThemeContext.js";
+import { RenderPerformanceMetrics } from "../../tools/renderPerformanceMeasure.js";
+import { ErrorFallbackComponent } from "../ErrorFallbackComponent.js";
+import {
+  ThemedCard,
+  ThemedCardContent,
+  ThemedLabeledEditor,
+  ThemedLineIconButton,
+  ThemedMenuItemOption,
+  ThemedSelect,
+  ThemedSwitch,
+  ThemedTextField
+} from "../Themes/ThemedComponents.js";
 import { JzodAnyEditor } from "./JzodAnyEditor.js";
 import { JzodArrayEditor } from "./JzodArrayEditor.js";
 import { useJzodElementEditorHooks } from "./JzodElementEditorHooks.js";
@@ -28,23 +40,6 @@ import { JzodElementEditorReactCodeMirror } from "./JzodElementEditorReactCodeMi
 import { JzodEnumEditor } from "./JzodEnumEditor.js";
 import { JzodLiteralEditor } from "./JzodLiteralEditor.js";
 import { JzodObjectEditor } from "./JzodObjectEditor.js";
-import { 
-  ThemedLabeledEditor, 
-  ThemedLineIconButton, 
-  ThemedSelect,
-  ThemedCard,
-  ThemedCardContent,
-  ThemedSwitch,
-  ThemedTextField,
-  ThemedMenuItemOption
-} from "../Themes/ThemedComponents.js";
-import {
-  useMiroirTheme,
-  useMiroirNestingColor,
-  useMiroirNestingBorderColor,
-} from "../../contexts/MiroirThemeContext.js";
-import { ErrorFallbackComponent } from "../ErrorFallbackComponent.js";
-import { RenderPerformanceMetrics } from "../../tools/renderPerformanceMeasure.js";
 
 
 
@@ -228,35 +223,14 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
     setDisplayAsStructuredElement,
     currentValue,
     localResolvedElementJzodSchemaBasedOnValue,
-    // unfoldedRawSchema,
-    // recursivelyUnfoldedRawSchema,
     foreignKeyObjects,
-    // Array / Object fold / unfold state
-    // hiddenFormItems,  // Now comes from props
-    // setHiddenFormItems,  // Now comes from props
     itemsOrder,
     stringSelectList,
-    // object
-    definedOptionalAttributes,
   } = useJzodElementEditorHooks(props, count, "JzodElementEditor");
-  // } = measuredUseJzodElementEditorHooks(props, count, "JzodElementEditor");
-  // } = measurePerformance("useJzodElementEditorHooks", useJzodElementEditorHooks)(props, count, "JzodElementEditor");
   
   // Extract hiddenFormItems and setHiddenFormItems from props
   const { foldedObjectAttributeOrArrayItems, setFoldedObjectAttributeOrArrayItems } = props;
   
-  // const localResolvedElementJzodSchemaBasedOnValue: JzodElement | undefined = 
-  // // useMemo(() => {
-  //   props.typeCheckKeyMap && props.typeCheckKeyMap[props.rootLessListKey]
-  //     ? props.typeCheckKeyMap[props.rootLessListKey]?.resolvedSchema
-  //     : undefined;
-  //     // return result;
-  // // }, [
-  // //   props.typeCheckKeyMap,
-  // //   props.rootLessListKey,
-  // // ])
-  // ;
-
   // Handle switch for structured element display
   const handleDisplayAsStructuredElementSwitchChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -438,10 +412,8 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
             listKey={props.listKey}
             rootLessListKey={props.rootLessListKey}
             rootLessListKeyArray={props.rootLessListKeyArray}
-            // localRootLessListKeyMap={props.localRootLessListKeyMap}
-            // rawJzodSchema={props.rawJzodSchema}
-            foldedObjectAttributeOrArrayItems={props.foldedObjectAttributeOrArrayItems}
-            setFoldedObjectAttributeOrArrayItems={props.setFoldedObjectAttributeOrArrayItems}
+            foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
+            setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
             currentDeploymentUuid={props.currentDeploymentUuid}
             currentApplicationSection={props.currentApplicationSection}
             resolvedElementJzodSchema={localResolvedElementJzodSchemaBasedOnValue}
@@ -450,19 +422,6 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
           />
         );
       }
-      // log.info(
-      //   "JzodElementEditor",
-      //   count,
-      //   "Rendering main element for listKey",
-      //   props.listKey,
-      //   "with value",
-      //   currentValue,
-      //   "and resolved schema",
-      //   localResolvedElementJzodSchemaBasedOnValue,
-      //   // JSON.stringify(localResolvedElementJzodSchemaBasedOnValue, null, 2),
-      //   // "and props.localRootLessListKeyMap",
-      //   // JSON.stringify(props.localRootLessListKeyMap, null, 2)
-      // );
       // Generate element based on schema type
       switch (localResolvedElementJzodSchemaBasedOnValue.type) {
         case "object": {
@@ -474,7 +433,6 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               indentLevel={props.indentLevel + 1}
               rootLessListKey={props.rootLessListKey}
               rootLessListKeyArray={props.rootLessListKeyArray}
-              // rawJzodSchema={props.rawJzodSchema}
               resolvedElementJzodSchema={localResolvedElementJzodSchemaBasedOnValue}
               typeCheckKeyMap={ props.typeCheckKeyMap }
               currentDeploymentUuid={props.currentDeploymentUuid}
@@ -484,7 +442,6 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               displayAsStructuredElementSwitch={displayAsStructuredElementSwitch}
               foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
               setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
-              // parentType={props.parentType} // used to control the parent type of the element, used for record elements
               deleteButtonElement={props.deleteButtonElement}
             />
           );
@@ -493,16 +450,12 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
         case "array": {
           return (
             <JzodArrayEditor
-              // {...props}
               listKey={props.listKey}
               name={props.name}
               labelElement={props.labelElement}
               key={props.rootLessListKey}
               rootLessListKeyArray={props.rootLessListKeyArray}
               rootLessListKey={props.rootLessListKey}
-              // localRootLessListKeyMap={props.localRootLessListKeyMap}
-              // rawJzodSchema={props.rawJzodSchema}
-              // unfoldedRawSchema={unfoldedRawSchema as any}
               resolvedElementJzodSchema={localResolvedElementJzodSchemaBasedOnValue}
               typeCheckKeyMap={ props.typeCheckKeyMap }
               indentLevel={props.indentLevel + 1}
@@ -515,7 +468,6 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               insideAny={props.insideAny}
               hidden={hideSubJzodEditor}
               displayAsStructuredElementSwitch={displayAsStructuredElementSwitch}
-              // parentType={props.parentType} // used to control the parent type of the element, used for record elements
               deleteButtonElement={props.deleteButtonElement}
             />
           );
@@ -605,6 +557,16 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
           );
         }
         case "uuid": {
+          log.info(
+            "JzodElementEditor: Rendering UUID input for listKey",
+            props.listKey,
+            "with value",
+            currentValue,
+            "MMLS tag",
+            localResolvedElementJzodSchemaBasedOnValue.tag,
+            "foreignKeyObjects",
+            foreignKeyObjects
+          );
           if (localResolvedElementJzodSchemaBasedOnValue.tag?.value?.targetEntity) {
             return (
               <ThemedLabeledEditor
@@ -731,10 +693,8 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               currentDeploymentUuid={props.currentDeploymentUuid}
               foldedObjectAttributeOrArrayItems={props.foldedObjectAttributeOrArrayItems}
               setFoldedObjectAttributeOrArrayItems={props.setFoldedObjectAttributeOrArrayItems}
-              // rawJzodSchema={props.rawJzodSchema as JzodLiteral}
               resolvedElementJzodSchema={localResolvedElementJzodSchemaBasedOnValue}
               typeCheckKeyMap={ props.typeCheckKeyMap }
-              // parentType={props.parentType}
             />
           );
         }
@@ -992,7 +952,6 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
             {/* {props.labelElement} */}
             {shouldShowCodeEditor && (
               <JzodElementEditorReactCodeMirror
-                // initialValue={safeStringify(currentValue)}
                 initialValue={JSON.stringify(currentValue, null, 2)}
                 codeMirrorValue={codeMirrorValue}
                 setCodeMirrorValue={setCodeMirrorValue}

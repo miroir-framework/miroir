@@ -1,39 +1,34 @@
-import React, { useState, useMemo, FC } from 'react';
-import { Formik, FormikProps } from 'formik';
 import {
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-  SelectChangeEvent,
-  Button,
   Box,
-  Typography,
-  Paper,
-  Divider
+  Divider,
+  MenuItem,
+  SelectChangeEvent,
+  Typography
 } from '@mui/material';
 import {
-  SelfApplicationDeploymentConfiguration,
-  JzodElement,
-  JzodObject,
-  DomainControllerInterface,
-  modelEndpointV1,
-  instanceEndpointVersionV1,
-  storeManagementEndpoint,
-  undoRedoEndpointVersionV1,
+  adminConfigurationDeploymentAdmin,
+  adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
-  LoggerInterface,
-  MiroirLoggerFactory,
   defaultMiroirMetaModel,
+  DomainControllerInterface,
   EndpointDefinition,
-  queryEndpointVersionV1
+  getDefaultValueForJzodSchemaWithResolution,
+  instanceEndpointVersionV1,
+  JzodObject,
+  LoggerInterface,
+  MetaModel,
+  MiroirLoggerFactory,
+  queryEndpointVersionV1,
+  SelfApplicationDeploymentConfiguration
 } from 'miroir-core';
+import { Action } from 'miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js';
+import { FC, useMemo, useState } from 'react';
 import { deployments, packageName } from '../../../constants.js';
 import { useDomainControllerService, useMiroirContextService } from '../MiroirContextReactProvider.js';
 import { cleanLevel } from '../constants.js';
-import { JzodElementEditor } from './ValueObjectEditor/JzodElementEditor.js';
+import { TypedValueObjectEditor } from './Reports/TypedValueObjectEditor.js';
 import { ThemedFormControl, ThemedInputLabel, ThemedMUISelect, ThemedPaper } from './Themes/ThemedComponents.js';
-import { Action } from 'miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js';
+import { useCurrentModel } from '../ReduxHooks.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -90,6 +85,13 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
   
   const domainController: DomainControllerInterface = useDomainControllerService();
   const context = useMiroirContextService();
+  const currentModel: MetaModel = useCurrentModel(
+    context.applicationSection == "data" ? context.deploymentUuid : adminConfigurationDeploymentMiroir.uuid
+  );
+  const adminAppModel: MetaModel = useCurrentModel(adminConfigurationDeploymentAdmin.uuid);
+  const miroirMetaModel: MetaModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
+
+  const libraryAppModel: MetaModel = useCurrentModel(adminConfigurationDeploymentLibrary.uuid);
 
   // Get available endpoints for selected deployment
   const availableEndpoints = useMemo(() => {
@@ -118,50 +120,39 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
     return availableActions[selectedActionIndex];
   }, [selectedActionIndex, availableActions]);
 
-  // Create a schema for the form parameters (excluding actionType, endpoint, deploymentUuid)
-  const actionParametersSchema = useMemo(() => {
-    // if (!currentAction?.actionParameters?.definition) return null;
-    if (!currentAction?.actionParameters) return null;
-    
-    // const filteredDefinition = Object.fromEntries(
-    //   Object.entries(currentAction.actionParameters.definition).filter(
-    //     ([key]) => !['actionType', 'endpoint', 'deploymentUuid'].includes(key)
-    //   )
-    // );
-    
+  const currentActionParametersMMLSchema:JzodObject | undefined = useMemo(() => {
+    if (!currentAction?.actionParameters) return undefined;
+
     return {
-      // type: 'object',
-      // // definition: filteredDefinition
-      // definition: {
-        type: "object",
-        definition: currentAction.actionParameters || {}
-      // }
+      type: 'object',
+      definition: currentAction.actionParameters || {}
     } as JzodObject;
   }, [currentAction]);
 
+
   // Initial form state for Formik
   const initialFormState = useMemo(() => {
-    if (!actionParametersSchema?.definition) return {};
+    if (!currentActionParametersMMLSchema?.definition || !context.miroirFundamentalJzodSchema) return {};
     
-    const initialState: Record<string, any> = {};
-    Object.entries(actionParametersSchema.definition).forEach(([key, schema]) => {
-      const field = schema as JzodElement;
-      // Set default values based on field type
-      if (field.type === 'object') {
-        initialState[key] = {};
-      } else if (field.type === 'array') {
-        initialState[key] = [];
-      } else if (field.type === 'string' || field.type === 'uuid') {
-        initialState[key] = '';
-      } else if (field.type === 'number') {
-        initialState[key] = 0;
-      } else {
-        initialState[key] = '';
-      }
-    });
+    const initialState: Record<string, any> = getDefaultValueForJzodSchemaWithResolution(currentActionParametersMMLSchema, false, context.miroirFundamentalJzodSchema);
+    // Object.entries(currentActionParametersMMLSchema.definition).forEach(([key, schema]) => {
+    //   const field = schema as JzodElement;
+    //   // Set default values based on field type
+    //   if (field.type === 'object') {
+    //     initialState[key] = {};
+    //   } else if (field.type === 'array') {
+    //     initialState[key] = [];
+    //   } else if (field.type === 'string' || field.type === 'uuid') {
+    //     initialState[key] = '';
+    //   } else if (field.type === 'number') {
+    //     initialState[key] = 0;
+    //   } else {
+    //     initialState[key] = '';
+    //   }
+    // });
     
     return initialState;
-  }, [actionParametersSchema]);
+  }, [currentActionParametersMMLSchema]);
 
   const handleDeploymentChange = (event: SelectChangeEvent) => {
     setSelectedDeploymentUuid(event.target.value);
@@ -239,6 +230,7 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
     return `Action ${index + 1}`;
   };
 
+
   return (
     <ThemedPaper elevation={3} sx={{ p: 3, m: 2 }}>
       <Typography variant="h5" gutterBottom>
@@ -311,14 +303,27 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
         )}
 
         {/* Dynamic Form with JzodElementEditor */}
-        {currentAction && actionParametersSchema && (
+        {currentAction && currentActionParametersMMLSchema && (
           <Box>
             <Divider sx={{ my: 2 }} />
             <Typography variant="h6" gutterBottom>
               Action Parameters
             </Typography>
-            
-            <Formik
+            <TypedValueObjectEditor
+              labelElement={<ThemedInputLabel>Action Parameters</ThemedInputLabel>}
+              valueObject={initialFormState}
+              valueObjectMMLSchema={currentActionParametersMMLSchema}
+              deploymentUuid={selectedDeploymentUuid}
+              // applicationSection={applicationSection}
+              applicationSection="data"
+              // 
+              formLabel={"formLabel"}
+              onSubmit={handleSubmit}
+              foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
+              setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
+            />
+
+            {/* <Formik
               enableReinitialize={true}
               initialValues={initialFormState}
               onSubmit={handleSubmit}
@@ -357,7 +362,7 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
                   </Box>
                 </form>
               )}
-            </Formik>
+            </Formik> */}
           </Box>
         )}
 
@@ -379,9 +384,9 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
                 Selected Action: {currentAction.actionParameters.actionType.definition}
               </Typography>
             )}
-            {actionParametersSchema && (
+            {currentActionParametersMMLSchema && (
               <Typography variant="caption" display="block">
-                Form Schema: {Object.keys(actionParametersSchema.definition || {}).join(', ') || 'No parameters'}
+                Form Schema: {Object.keys(currentActionParametersMMLSchema.definition || {}).join(', ') || 'No parameters'}
               </Typography>
             )}
           </Box>

@@ -3,7 +3,7 @@ import {
   JzodElement
 } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
-import { getDefaultValueForJzodSchema } from "../../src/1_core/jzod/getDefaultValueForJzodSchema";
+import { getDefaultValueForJzodSchemaDEFUNCT } from "../../src/1_core/jzod/getDefaultValueForJzodSchemaDEFUNCT";
 
 
 
@@ -15,7 +15,7 @@ function testResolve(
   expectedResult: JzodElement,
 ){
   console.log("######################################### running test", testId, "...")
-  const testResult = getDefaultValueForJzodSchema(
+  const testResult = getDefaultValueForJzodSchemaDEFUNCT(
     testSchema,
   )
     expect(testResult).toEqual(expectedResult);

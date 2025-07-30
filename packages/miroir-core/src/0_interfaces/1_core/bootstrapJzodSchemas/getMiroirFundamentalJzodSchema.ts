@@ -1124,29 +1124,19 @@ export function getMiroirFundamentalJzodSchema(
           },
         },
         applicationSection: {
-          type: "union",
+          type: "enum",
+          tag: { value: { defaultLabel: "Application Section", initializeTo: "data" } },
           definition: [
-            {
-              type: "literal",
-              definition: "model",
-            },
-            {
-              type: "literal",
-              definition: "data",
-            },
+            "model",
+            "data",
           ],
         },
         dataStoreApplicationType: {
-          type: "union",
+          type: "enum",
+          tag: { value: { defaultLabel: "DataStore Appication Type", initializeTo: "app" } },
           definition: [
-            {
-              type: "literal",
-              definition: "miroir",
-            },
-            {
-              type: "literal",
-              definition: "app",
-            },
+            "miroir",
+            "app",
           ],
         },
         storeBasedConfiguration: {
