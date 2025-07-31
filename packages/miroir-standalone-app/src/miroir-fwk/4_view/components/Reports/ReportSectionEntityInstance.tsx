@@ -181,23 +181,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
     return formLabel ? <ThemedLabel id={"label." + formLabel}>{formLabel}</ThemedLabel> : undefined;
   }, [formLabel]);
 
-  const currentMiroirModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
-
-  // const currentEnumJzodSchemaResolver: JzodEnumSchemaToJzodElementResolver | undefined = useMemo(
-  //   () =>
-  //     context.miroirFundamentalJzodSchema
-  //       ? getCurrentEnumJzodSchemaResolver(currentMiroirModel, context.miroirFundamentalJzodSchema)
-  //       : undefined,
-  //   [context.miroirFundamentalJzodSchema, currentMiroirModel]
-  // );
-
-  // log.info("ReportSectionEntityInstance instance", instance);
-  // log.info("ReportSectionEntityInstance entityJzodSchema", entityJzodSchemaDefinition);
-  // log.info("ReportSectionEntityInstance miroirFundamentalJzodSchema", context.miroirFundamentalJzodSchema);
-  // log.info("ReportSectionEntityInstance currentReportTargetEntityDefinition", currentReportTargetEntityDefinition);
-  // log.info("ReportSectionEntityInstance currentModel", currentModel);
-  // log.info("ReportSectionEntityInstance currentMiroirModel", currentMiroirModel);
-
+  // const currentMiroirModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
 
   // log performance metrics at the end of render
   useEffect(() => {

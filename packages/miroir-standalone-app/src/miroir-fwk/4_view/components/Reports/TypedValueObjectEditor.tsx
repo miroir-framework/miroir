@@ -20,7 +20,8 @@ import {
   Uuid,
   adminConfigurationDeploymentMiroir,
   dummyDomainManyQueryWithDeploymentUuid,
-  getQueryRunnerParamsForDeploymentEntityState
+  getQueryRunnerParamsForDeploymentEntityState,
+  jzodTypeCheck
 } from "miroir-core";
 import { getMemoizedDeploymentEntityStateSelectorMap } from 'miroir-localcache-redux';
 
@@ -37,8 +38,7 @@ import {
   useDeploymentEntityStateQuerySelectorForCleanedResult
 } from "../../ReduxHooks.js";
 import {
-  measuredGetApplicationSection,
-  measuredJzodTypeCheck
+  measuredGetApplicationSection
 } from "../../tools/hookPerformanceMeasure.js";
 import { useRenderTracker } from '../../tools/renderCountTracker.js';
 import { ErrorFallbackComponent } from '../ErrorFallbackComponent.js';
@@ -106,7 +106,7 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
   );
   const currentMiroirModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
   log.info(
-    "ReportSectionEntityInstanceEditor render",
+    "TypedValueObjectEditor render",
     "navigationCount",
     navigationCount,
     "instance",
@@ -142,7 +142,8 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
                 valueObjectMMLSchema &&
                 formik.values &&
                 currentModel
-                  ? measuredJzodTypeCheck(
+                  // ? measuredJzodTypeCheck(
+                  ? jzodTypeCheck(
                       valueObjectMMLSchema,
                       formik.values,
                       [],
@@ -155,7 +156,7 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
                   : undefined;
             } catch (e) {
               log.error(
-                "ReportSectionEntityInstance useMemo error",
+                "TypedValueObjectEditor useMemo error",
                 e,
                 context
               );
@@ -169,14 +170,14 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
             return result;
           }, [valueObjectMMLSchema, valueObject, context]);
         log.info(
-          "ReportSectionEntityInstance jzodTypeCheck done for render",
+          "TypedValueObjectEditor jzodTypeCheck done for render",
           navigationCount,
           "resolvedJzodSchema",
           resolvedJzodSchema
         );
         if (!resolvedJzodSchema || resolvedJzodSchema.status != "ok") {
           log.error(
-            "ReportSectionEntityInstance could not resolve jzod schema",
+            "TypedValueObjectEditor could not resolve jzod schema",
             resolvedJzodSchema
           );
           const jsonString = JSON.stringify(resolvedJzodSchema, null, 2);
@@ -274,7 +275,7 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
                       error={error}
                       resetErrorBoundary={resetErrorBoundary}
                       context={{
-                        origin: "ReportSectionEntityInstance",
+                        origin: "TypedValueObjectEditor",
                         objectType: "root_editor",
                         rootLessListKey: "ROOT",
                         currentValue: valueObject,

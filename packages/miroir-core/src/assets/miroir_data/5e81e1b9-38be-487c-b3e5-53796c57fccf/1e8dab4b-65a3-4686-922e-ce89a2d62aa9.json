@@ -80,6 +80,20 @@
                   "type": "boolean",
                   "optional": true
                 },
+                "runtimeType": {
+                  "type": "object",
+                  "optional": true,
+                  "definition": {
+                    "parentUuid": {
+                      "type": "union",
+                      "optional": true,
+                      "definition": [
+                        { "type": "string" },
+                        { "type": "object", "definition": { "path": { "type": "string" } } }
+                      ]
+                    }
+                  }
+                },
                 "display": {
                   "type": "object",
                   "optional": true,
@@ -147,6 +161,20 @@
                   "canBeTemplate": {
                     "type": "boolean",
                     "optional": true
+                  },
+                  "runtimeType": {
+                    "type": "object",
+                    "optional": true,
+                    "definition": {
+                      "parentUuid": { 
+                        "type": "union",
+                        "optional": true,
+                        "definition": [
+                          { "type": "string" },
+                          { "type": "object", "definition": { "path": { "type": "string"}} }
+                        ]
+                      }
+                    }
                   },
                   "display": {
                     "type": "object",

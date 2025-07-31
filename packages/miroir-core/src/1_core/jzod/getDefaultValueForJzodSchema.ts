@@ -14,150 +14,150 @@ import { resolveObjectExtendClauseAndDefinition } from "./jzodTypeCheck";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "getDefaultValueForJzodSchemaDEFUNCT")
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "getDefaultValueForJzodSchema")
 ).then((logger: LoggerInterface) => {log = logger});
 
 
-// @deprecated
-export function getDefaultValueForJzodSchemaDEFUNCT(
-  jzodSchema:JzodElement
-): any {
-  // log.info("getDefaultValueForJzodSchemaDEFUNCT called with jzodSchema", jzodSchema)
-  if (jzodSchema.optional) {
-    return undefined
-  }
-  // let result
-  switch (jzodSchema.type) {
-    case "object": {
-      const result = Object.fromEntries(
-        Object.entries(jzodSchema.definition)
-        .filter(
-          a => !a[1].optional
-        )
-        .map(
-          a => [a[0], getDefaultValueForJzodSchemaDEFUNCT(a[1])]
-      ));
-      return result;
-    }
-    // case "simpleType": {
-    //   if (jzodSchema.nullable) {
-    //     return undefined;
-    //   }
-    //   switch (jzodSchema.definition) {
-    //     case "string": {
-    //       return "";
-    //     }
-    //     case "number":
-    //     case "bigint": {
-    //       return 0;
-    //     }
-    //     case "boolean": {
-    //       return false;
-    //     }
-    //     case "date": {
-    //       return new Date();
-    //     }
-    //     case "any": 
-    //     case "undefined":
-    //     case "null": {
-    //       return undefined;
-    //     }
-    //     case "uuid":
-    //     case "unknown":
-    //     case "never":
-    //     case "void": {
-    //       throw new Error("getDefaultValueForJzodSchemaDEFUNCT can not generate value for schema type " + jzodSchema.type +  " definition " + jzodSchema.definition);
-    //       break;
-    //     }
-    //     default:{
-    //       throw new Error("getDefaultValueForJzodSchemaDEFUNCT default case, can not generate value for schema type " + JSON.stringify(jzodSchema, null, 2));
-    //       break;
-    //     }
-    //   }
-    // }
-    case "string": {
-      return "";
-    }
-    case "number":
-    case "bigint": {
-      return 0;
-    }
-    case "boolean": {
-      return false;
-    }
-    case "date": {
-      return new Date();
-    }
-    case "any": 
-    case "undefined":
-    case "null": {
-      return undefined;
-    }
-    case "uuid":
-    case "unknown":
-    case "never":
-    case "void": {
-      throw new Error(
-        "getDefaultValueForJzodSchemaDEFUNCT can not generate value for schema type " +
-          jzodSchema.type
-      );
-      break;
-    }
-    case "literal": {
-      return jzodSchema.definition
-    }
-    case "array": {
-      return []
-    }
-    case "map": {
-      return new Map();
-    }
-    case "set": {
-      return new Set();
-    }
-    case "record": {
-      return {}
-    }
-    case "schemaReference": {
-      throw new Error(
-        "getDefaultValueForJzodSchemaDEFUNCT does not support schema references, please resolve schema in advance: " +
-          JSON.stringify(jzodSchema, null, 2)
-      );
-    }
-    case "union": {
-      // throw new Error("getDefaultValueForJzodSchemaDEFUNCT does not handle type: " + jzodSchema.type + " for jzodSchema="  + JSON.stringify(jzodSchema, null, 2));
-      // just take the first choice for default value
-      if (jzodSchema.definition.length == 0) {
-        throw new Error(
-          "getDefaultValueForJzodSchemaDEFUNCT union definition is empty for jzodSchema=" + JSON.stringify(jzodSchema, null, 2)
-        );
-      }
-      return getDefaultValueForJzodSchemaDEFUNCT(jzodSchema.definition[0])
-      break;
-    }
-    case "function":
-    case "enum":
-    case "lazy":
-    case "intersection":
-    case "promise":
-    case "tuple": {
-      throw new Error(
-        "getDefaultValueForJzodSchemaDEFUNCT does not handle type: " +
-          jzodSchema.type +
-          " for jzodSchema=" +
-          JSON.stringify(jzodSchema, null, 2)
-      );
-      break;
-    }
-    default: {
-      throw new Error(
-        "getDefaultValueForJzodSchemaDEFUNCT reached default case for type, this is a bug: " +
-          JSON.stringify(jzodSchema, null, 2)
-      );
-      break;
-    }
-  }
-}
+// // @deprecated
+// export function getDefaultValueForJzodSchemaDEFUNCT(
+//   jzodSchema:JzodElement
+// ): any {
+//   // log.info("getDefaultValueForJzodSchemaDEFUNCT called with jzodSchema", jzodSchema)
+//   if (jzodSchema.optional) {
+//     return undefined
+//   }
+//   // let result
+//   switch (jzodSchema.type) {
+//     case "object": {
+//       const result = Object.fromEntries(
+//         Object.entries(jzodSchema.definition)
+//         .filter(
+//           a => !a[1].optional
+//         )
+//         .map(
+//           a => [a[0], getDefaultValueForJzodSchemaDEFUNCT(a[1])]
+//       ));
+//       return result;
+//     }
+//     // case "simpleType": {
+//     //   if (jzodSchema.nullable) {
+//     //     return undefined;
+//     //   }
+//     //   switch (jzodSchema.definition) {
+//     //     case "string": {
+//     //       return "";
+//     //     }
+//     //     case "number":
+//     //     case "bigint": {
+//     //       return 0;
+//     //     }
+//     //     case "boolean": {
+//     //       return false;
+//     //     }
+//     //     case "date": {
+//     //       return new Date();
+//     //     }
+//     //     case "any": 
+//     //     case "undefined":
+//     //     case "null": {
+//     //       return undefined;
+//     //     }
+//     //     case "uuid":
+//     //     case "unknown":
+//     //     case "never":
+//     //     case "void": {
+//     //       throw new Error("getDefaultValueForJzodSchemaDEFUNCT can not generate value for schema type " + jzodSchema.type +  " definition " + jzodSchema.definition);
+//     //       break;
+//     //     }
+//     //     default:{
+//     //       throw new Error("getDefaultValueForJzodSchemaDEFUNCT default case, can not generate value for schema type " + JSON.stringify(jzodSchema, null, 2));
+//     //       break;
+//     //     }
+//     //   }
+//     // }
+//     case "string": {
+//       return "";
+//     }
+//     case "number":
+//     case "bigint": {
+//       return 0;
+//     }
+//     case "boolean": {
+//       return false;
+//     }
+//     case "date": {
+//       return new Date();
+//     }
+//     case "any": 
+//     case "undefined":
+//     case "null": {
+//       return undefined;
+//     }
+//     case "uuid":
+//     case "unknown":
+//     case "never":
+//     case "void": {
+//       throw new Error(
+//         "getDefaultValueForJzodSchemaDEFUNCT can not generate value for schema type " +
+//           jzodSchema.type
+//       );
+//       break;
+//     }
+//     case "literal": {
+//       return jzodSchema.definition
+//     }
+//     case "array": {
+//       return []
+//     }
+//     case "map": {
+//       return new Map();
+//     }
+//     case "set": {
+//       return new Set();
+//     }
+//     case "record": {
+//       return {}
+//     }
+//     case "schemaReference": {
+//       throw new Error(
+//         "getDefaultValueForJzodSchemaDEFUNCT does not support schema references, please resolve schema in advance: " +
+//           JSON.stringify(jzodSchema, null, 2)
+//       );
+//     }
+//     case "union": {
+//       // throw new Error("getDefaultValueForJzodSchemaDEFUNCT does not handle type: " + jzodSchema.type + " for jzodSchema="  + JSON.stringify(jzodSchema, null, 2));
+//       // just take the first choice for default value
+//       if (jzodSchema.definition.length == 0) {
+//         throw new Error(
+//           "getDefaultValueForJzodSchemaDEFUNCT union definition is empty for jzodSchema=" + JSON.stringify(jzodSchema, null, 2)
+//         );
+//       }
+//       return getDefaultValueForJzodSchemaDEFUNCT(jzodSchema.definition[0])
+//       break;
+//     }
+//     case "function":
+//     case "enum":
+//     case "lazy":
+//     case "intersection":
+//     case "promise":
+//     case "tuple": {
+//       throw new Error(
+//         "getDefaultValueForJzodSchemaDEFUNCT does not handle type: " +
+//           jzodSchema.type +
+//           " for jzodSchema=" +
+//           JSON.stringify(jzodSchema, null, 2)
+//       );
+//       break;
+//     }
+//     default: {
+//       throw new Error(
+//         "getDefaultValueForJzodSchemaDEFUNCT reached default case for type, this is a bug: " +
+//           JSON.stringify(jzodSchema, null, 2)
+//       );
+//       break;
+//     }
+//   }
+// }
 
 // ################################################################################################
 export function getDefaultValueForJzodSchemaWithResolution(

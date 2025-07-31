@@ -84,6 +84,29 @@ export const miroirFundamentalJzodSchema = {
                   "type": "boolean",
                   "optional": true
                 },
+                "runtimeType": {
+                  "type": "object",
+                  "optional": true,
+                  "definition": {
+                    "parentUuid": {
+                      "type": "union",
+                      "optional": true,
+                      "definition": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "object",
+                          "definition": {
+                            "path": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                },
                 "display": {
                   "type": "object",
                   "optional": true,
@@ -155,6 +178,29 @@ export const miroirFundamentalJzodSchema = {
                   "canBeTemplate": {
                     "type": "boolean",
                     "optional": true
+                  },
+                  "runtimeType": {
+                    "type": "object",
+                    "optional": true,
+                    "definition": {
+                      "parentUuid": {
+                        "type": "union",
+                        "optional": true,
+                        "definition": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "object",
+                            "definition": {
+                              "path": {
+                                "type": "string"
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
                   },
                   "display": {
                     "type": "object",
@@ -14335,11 +14381,59 @@ export const miroirFundamentalJzodSchema = {
                       }
                     },
                     "definition": {
-                      "type": "schemaReference",
-                      "optional": false,
+                      "type": "object",
                       "definition": {
-                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "relativePath": "entityInstanceCollection"
+                        "parentName": {
+                          "type": "string",
+                          "optional": true,
+                          "tag": {
+                            "value": {
+                              "id": 1,
+                              "defaultLabel": "Parent Name",
+                              "editable": false,
+                              "canBeTemplate": true
+                            }
+                          }
+                        },
+                        "parentUuid": {
+                          "type": "string",
+                          "tag": {
+                            "value": {
+                              "id": 2,
+                              "defaultLabel": "Parent Name",
+                              "editable": false,
+                              "canBeTemplate": true
+                            }
+                          }
+                        },
+                        "applicationSection": {
+                          "type": "schemaReference",
+                          "optional": false,
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "applicationSection"
+                          }
+                        },
+                        "instances": {
+                          "type": "array",
+                          "definition": {
+                            "type": "schemaReference",
+                            "tag": {
+                              "value": {
+                                "canBeTemplate": true,
+                                "runtimeType": {
+                                  "parentUuid": {
+                                    "path": "payload.parentUuid"
+                                  }
+                                }
+                              }
+                            },
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "entityInstance"
+                            }
+                          }
+                        }
                       }
                     }
                   }
@@ -14542,11 +14636,59 @@ export const miroirFundamentalJzodSchema = {
                       }
                     },
                     "definition": {
-                      "type": "schemaReference",
-                      "optional": false,
+                      "type": "object",
                       "definition": {
-                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "relativePath": "entityInstanceCollection"
+                        "parentName": {
+                          "type": "string",
+                          "optional": true,
+                          "tag": {
+                            "value": {
+                              "id": 1,
+                              "defaultLabel": "Parent Name",
+                              "editable": false,
+                              "canBeTemplate": true
+                            }
+                          }
+                        },
+                        "parentUuid": {
+                          "type": "string",
+                          "tag": {
+                            "value": {
+                              "id": 2,
+                              "defaultLabel": "Parent Name",
+                              "editable": false,
+                              "canBeTemplate": true
+                            }
+                          }
+                        },
+                        "applicationSection": {
+                          "type": "schemaReference",
+                          "optional": false,
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "applicationSection"
+                          }
+                        },
+                        "instances": {
+                          "type": "array",
+                          "definition": {
+                            "type": "schemaReference",
+                            "tag": {
+                              "value": {
+                                "canBeTemplate": true,
+                                "runtimeType": {
+                                  "parentUuid": {
+                                    "path": "payload.parentUuid"
+                                  }
+                                }
+                              }
+                            },
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "entityInstance"
+                            }
+                          }
+                        }
                       }
                     }
                   }
@@ -17691,6 +17833,57 @@ export const miroirFundamentalJzodSchema = {
                     }
                   ]
                 },
+                "runtimeType": {
+                  "optional": true,
+                  "type": "union",
+                  "definition": [
+                    {
+                      "type": "schemaReference",
+                      "definition": {
+                        "relativePath": "transformerForBuildCarryOnObject"
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "definition": {
+                        "parentUuid": {
+                          "type": "union",
+                          "optional": true,
+                          "definition": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": "object",
+                              "definition": {
+                                "path": {
+                                  "type": "union",
+                                  "definition": [
+                                    {
+                                      "type": "string"
+                                    },
+                                    {
+                                      "type": "schemaReference",
+                                      "definition": {
+                                        "relativePath": "transformerForBuildCarryOnObject"
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            },
+                            {
+                              "type": "schemaReference",
+                              "definition": {
+                                "relativePath": "transformerForBuildCarryOnObject"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                },
                 "display": {
                   "optional": true,
                   "type": "union",
@@ -17932,6 +18125,57 @@ export const miroirFundamentalJzodSchema = {
                                 "type": "schemaReference",
                                 "definition": {
                                   "relativePath": "transformerForBuildCarryOnObject"
+                                }
+                              }
+                            ]
+                          },
+                          "runtimeType": {
+                            "optional": true,
+                            "type": "union",
+                            "definition": [
+                              {
+                                "type": "schemaReference",
+                                "definition": {
+                                  "relativePath": "transformerForBuildCarryOnObject"
+                                }
+                              },
+                              {
+                                "type": "object",
+                                "definition": {
+                                  "parentUuid": {
+                                    "type": "union",
+                                    "optional": true,
+                                    "definition": [
+                                      {
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "object",
+                                        "definition": {
+                                          "path": {
+                                            "type": "union",
+                                            "definition": [
+                                              {
+                                                "type": "string"
+                                              },
+                                              {
+                                                "type": "schemaReference",
+                                                "definition": {
+                                                  "relativePath": "transformerForBuildCarryOnObject"
+                                                }
+                                              }
+                                            ]
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "type": "schemaReference",
+                                        "definition": {
+                                          "relativePath": "transformerForBuildCarryOnObject"
+                                        }
+                                      }
+                                    ]
+                                  }
                                 }
                               }
                             ]
@@ -24186,17 +24430,148 @@ export const miroirFundamentalJzodSchema = {
                               "definition": [
                                 {
                                   "type": "schemaReference",
-                                  "optional": false,
-                                  "definition": {
-                                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                    "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
-                                  },
-                                  "context": {}
-                                },
-                                {
-                                  "type": "schemaReference",
                                   "definition": {
                                     "relativePath": "transformerForBuildCarryOnObject"
+                                  }
+                                },
+                                {
+                                  "type": "object",
+                                  "definition": {
+                                    "parentName": {
+                                      "type": "union",
+                                      "optional": true,
+                                      "tag": {
+                                        "value": {
+                                          "id": 1,
+                                          "defaultLabel": "Parent Name",
+                                          "editable": false,
+                                          "canBeTemplate": true
+                                        }
+                                      },
+                                      "definition": [
+                                        {
+                                          "type": "string",
+                                          "optional": true,
+                                          "tag": {
+                                            "value": {
+                                              "id": 1,
+                                              "defaultLabel": "Parent Name",
+                                              "editable": false,
+                                              "canBeTemplate": true
+                                            }
+                                          }
+                                        },
+                                        {
+                                          "type": "schemaReference",
+                                          "definition": {
+                                            "relativePath": "transformerForBuildCarryOnObject"
+                                          }
+                                        }
+                                      ]
+                                    },
+                                    "parentUuid": {
+                                      "type": "union",
+                                      "tag": {
+                                        "value": {
+                                          "id": 2,
+                                          "defaultLabel": "Parent Name",
+                                          "editable": false,
+                                          "canBeTemplate": true
+                                        }
+                                      },
+                                      "definition": [
+                                        {
+                                          "type": "string",
+                                          "tag": {
+                                            "value": {
+                                              "id": 2,
+                                              "defaultLabel": "Parent Name",
+                                              "editable": false,
+                                              "canBeTemplate": true
+                                            }
+                                          }
+                                        },
+                                        {
+                                          "type": "schemaReference",
+                                          "definition": {
+                                            "relativePath": "transformerForBuildCarryOnObject"
+                                          }
+                                        }
+                                      ]
+                                    },
+                                    "applicationSection": {
+                                      "type": "union",
+                                      "definition": [
+                                        {
+                                          "type": "schemaReference",
+                                          "optional": false,
+                                          "definition": {
+                                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                            "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
+                                          },
+                                          "context": {}
+                                        },
+                                        {
+                                          "type": "schemaReference",
+                                          "definition": {
+                                            "relativePath": "transformerForBuildCarryOnObject"
+                                          }
+                                        }
+                                      ]
+                                    },
+                                    "instances": {
+                                      "type": "union",
+                                      "definition": [
+                                        {
+                                          "type": "array",
+                                          "definition": {
+                                            "type": "union",
+                                            "tag": {
+                                              "value": {
+                                                "canBeTemplate": true,
+                                                "runtimeType": {
+                                                  "parentUuid": {
+                                                    "path": "payload.parentUuid"
+                                                  }
+                                                }
+                                              }
+                                            },
+                                            "definition": [
+                                              {
+                                                "type": "schemaReference",
+                                                "tag": {
+                                                  "value": {
+                                                    "canBeTemplate": true,
+                                                    "runtimeType": {
+                                                      "parentUuid": {
+                                                        "path": "payload.parentUuid"
+                                                      }
+                                                    }
+                                                  }
+                                                },
+                                                "definition": {
+                                                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                  "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance"
+                                                },
+                                                "context": {}
+                                              },
+                                              {
+                                                "type": "schemaReference",
+                                                "definition": {
+                                                  "relativePath": "transformerForBuildCarryOnObject"
+                                                }
+                                              }
+                                            ]
+                                          }
+                                        },
+                                        {
+                                          "type": "schemaReference",
+                                          "definition": {
+                                            "relativePath": "transformerForBuildCarryOnObject"
+                                          }
+                                        }
+                                      ]
+                                    }
                                   }
                                 }
                               ]
@@ -25409,17 +25784,148 @@ export const miroirFundamentalJzodSchema = {
                               "definition": [
                                 {
                                   "type": "schemaReference",
-                                  "optional": false,
-                                  "definition": {
-                                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                    "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
-                                  },
-                                  "context": {}
-                                },
-                                {
-                                  "type": "schemaReference",
                                   "definition": {
                                     "relativePath": "transformerForBuildCarryOnObject"
+                                  }
+                                },
+                                {
+                                  "type": "object",
+                                  "definition": {
+                                    "parentName": {
+                                      "type": "union",
+                                      "optional": true,
+                                      "tag": {
+                                        "value": {
+                                          "id": 1,
+                                          "defaultLabel": "Parent Name",
+                                          "editable": false,
+                                          "canBeTemplate": true
+                                        }
+                                      },
+                                      "definition": [
+                                        {
+                                          "type": "string",
+                                          "optional": true,
+                                          "tag": {
+                                            "value": {
+                                              "id": 1,
+                                              "defaultLabel": "Parent Name",
+                                              "editable": false,
+                                              "canBeTemplate": true
+                                            }
+                                          }
+                                        },
+                                        {
+                                          "type": "schemaReference",
+                                          "definition": {
+                                            "relativePath": "transformerForBuildCarryOnObject"
+                                          }
+                                        }
+                                      ]
+                                    },
+                                    "parentUuid": {
+                                      "type": "union",
+                                      "tag": {
+                                        "value": {
+                                          "id": 2,
+                                          "defaultLabel": "Parent Name",
+                                          "editable": false,
+                                          "canBeTemplate": true
+                                        }
+                                      },
+                                      "definition": [
+                                        {
+                                          "type": "string",
+                                          "tag": {
+                                            "value": {
+                                              "id": 2,
+                                              "defaultLabel": "Parent Name",
+                                              "editable": false,
+                                              "canBeTemplate": true
+                                            }
+                                          }
+                                        },
+                                        {
+                                          "type": "schemaReference",
+                                          "definition": {
+                                            "relativePath": "transformerForBuildCarryOnObject"
+                                          }
+                                        }
+                                      ]
+                                    },
+                                    "applicationSection": {
+                                      "type": "union",
+                                      "definition": [
+                                        {
+                                          "type": "schemaReference",
+                                          "optional": false,
+                                          "definition": {
+                                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                            "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
+                                          },
+                                          "context": {}
+                                        },
+                                        {
+                                          "type": "schemaReference",
+                                          "definition": {
+                                            "relativePath": "transformerForBuildCarryOnObject"
+                                          }
+                                        }
+                                      ]
+                                    },
+                                    "instances": {
+                                      "type": "union",
+                                      "definition": [
+                                        {
+                                          "type": "array",
+                                          "definition": {
+                                            "type": "union",
+                                            "tag": {
+                                              "value": {
+                                                "canBeTemplate": true,
+                                                "runtimeType": {
+                                                  "parentUuid": {
+                                                    "path": "payload.parentUuid"
+                                                  }
+                                                }
+                                              }
+                                            },
+                                            "definition": [
+                                              {
+                                                "type": "schemaReference",
+                                                "tag": {
+                                                  "value": {
+                                                    "canBeTemplate": true,
+                                                    "runtimeType": {
+                                                      "parentUuid": {
+                                                        "path": "payload.parentUuid"
+                                                      }
+                                                    }
+                                                  }
+                                                },
+                                                "definition": {
+                                                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                  "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance"
+                                                },
+                                                "context": {}
+                                              },
+                                              {
+                                                "type": "schemaReference",
+                                                "definition": {
+                                                  "relativePath": "transformerForBuildCarryOnObject"
+                                                }
+                                              }
+                                            ]
+                                          }
+                                        },
+                                        {
+                                          "type": "schemaReference",
+                                          "definition": {
+                                            "relativePath": "transformerForBuildCarryOnObject"
+                                          }
+                                        }
+                                      ]
+                                    }
                                   }
                                 }
                               ]
@@ -38903,6 +39409,57 @@ export const miroirFundamentalJzodSchema = {
                     }
                   ]
                 },
+                "runtimeType": {
+                  "optional": true,
+                  "type": "union",
+                  "definition": [
+                    {
+                      "type": "schemaReference",
+                      "definition": {
+                        "relativePath": "transformerForBuildCarryOnObject"
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "definition": {
+                        "parentUuid": {
+                          "type": "union",
+                          "optional": true,
+                          "definition": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": "object",
+                              "definition": {
+                                "path": {
+                                  "type": "union",
+                                  "definition": [
+                                    {
+                                      "type": "string"
+                                    },
+                                    {
+                                      "type": "schemaReference",
+                                      "definition": {
+                                        "relativePath": "transformerForBuildCarryOnObject"
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            },
+                            {
+                              "type": "schemaReference",
+                              "definition": {
+                                "relativePath": "transformerForBuildCarryOnObject"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                },
                 "display": {
                   "optional": true,
                   "type": "union",
@@ -39129,6 +39686,57 @@ export const miroirFundamentalJzodSchema = {
                           "type": "schemaReference",
                           "definition": {
                             "relativePath": "transformerForBuildCarryOnObject"
+                          }
+                        }
+                      ]
+                    },
+                    "runtimeType": {
+                      "optional": true,
+                      "type": "union",
+                      "definition": [
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "relativePath": "transformerForBuildCarryOnObject"
+                          }
+                        },
+                        {
+                          "type": "object",
+                          "definition": {
+                            "parentUuid": {
+                              "type": "union",
+                              "optional": true,
+                              "definition": [
+                                {
+                                  "type": "string"
+                                },
+                                {
+                                  "type": "object",
+                                  "definition": {
+                                    "path": {
+                                      "type": "union",
+                                      "definition": [
+                                        {
+                                          "type": "string"
+                                        },
+                                        {
+                                          "type": "schemaReference",
+                                          "definition": {
+                                            "relativePath": "transformerForBuildCarryOnObject"
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  }
+                                },
+                                {
+                                  "type": "schemaReference",
+                                  "definition": {
+                                    "relativePath": "transformerForBuildCarryOnObject"
+                                  }
+                                }
+                              ]
+                            }
                           }
                         }
                       ]
@@ -39374,6 +39982,57 @@ export const miroirFundamentalJzodSchema = {
                                     "type": "schemaReference",
                                     "definition": {
                                       "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  }
+                                ]
+                              },
+                              "runtimeType": {
+                                "optional": true,
+                                "type": "union",
+                                "definition": [
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  },
+                                  {
+                                    "type": "object",
+                                    "definition": {
+                                      "parentUuid": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "definition": [
+                                          {
+                                            "type": "string"
+                                          },
+                                          {
+                                            "type": "object",
+                                            "definition": {
+                                              "path": {
+                                                "type": "union",
+                                                "definition": [
+                                                  {
+                                                    "type": "string"
+                                                  },
+                                                  {
+                                                    "type": "schemaReference",
+                                                    "definition": {
+                                                      "relativePath": "transformerForBuildCarryOnObject"
+                                                    }
+                                                  }
+                                                ]
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      }
                                     }
                                   }
                                 ]
@@ -46186,6 +46845,29 @@ export const miroirFundamentalJzodSchema = {
                   "type": "boolean",
                   "optional": true
                 },
+                "runtimeType": {
+                  "type": "object",
+                  "optional": true,
+                  "definition": {
+                    "parentUuid": {
+                      "type": "union",
+                      "optional": true,
+                      "definition": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "object",
+                          "definition": {
+                            "path": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                },
                 "display": {
                   "type": "object",
                   "optional": true,
@@ -46257,6 +46939,29 @@ export const miroirFundamentalJzodSchema = {
                   "canBeTemplate": {
                     "type": "boolean",
                     "optional": true
+                  },
+                  "runtimeType": {
+                    "type": "object",
+                    "optional": true,
+                    "definition": {
+                      "parentUuid": {
+                        "type": "union",
+                        "optional": true,
+                        "definition": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "object",
+                            "definition": {
+                              "path": {
+                                "type": "string"
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
                   },
                   "display": {
                     "type": "object",
@@ -48807,11 +49512,135 @@ export const miroirFundamentalJzodSchema = {
                       }
                     },
                     "definition": {
-                      "type": "schemaReference",
-                      "optional": false,
+                      "type": "object",
                       "definition": {
-                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "relativePath": "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
+                        "parentName": {
+                          "type": "union",
+                          "optional": true,
+                          "tag": {
+                            "value": {
+                              "id": 1,
+                              "defaultLabel": "Parent Name",
+                              "editable": false,
+                              "canBeTemplate": true
+                            }
+                          },
+                          "discriminator": [
+                            "transformerType",
+                            "interpolation"
+                          ],
+                          "definition": [
+                            {
+                              "type": "string",
+                              "optional": true,
+                              "tag": {
+                                "value": {
+                                  "id": 1,
+                                  "defaultLabel": "Parent Name",
+                                  "editable": false,
+                                  "canBeTemplate": true
+                                }
+                              }
+                            },
+                            {
+                              "type": "schemaReference",
+                              "definition": {
+                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                "relativePath": "transformerForRuntime"
+                              }
+                            }
+                          ]
+                        },
+                        "parentUuid": {
+                          "type": "union",
+                          "tag": {
+                            "value": {
+                              "id": 2,
+                              "defaultLabel": "Parent Name",
+                              "editable": false,
+                              "canBeTemplate": true
+                            }
+                          },
+                          "discriminator": [
+                            "transformerType",
+                            "interpolation"
+                          ],
+                          "definition": [
+                            {
+                              "type": "string",
+                              "tag": {
+                                "value": {
+                                  "id": 2,
+                                  "defaultLabel": "Parent Name",
+                                  "editable": false,
+                                  "canBeTemplate": true
+                                }
+                              }
+                            },
+                            {
+                              "type": "schemaReference",
+                              "definition": {
+                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                "relativePath": "transformerForRuntime"
+                              }
+                            }
+                          ]
+                        },
+                        "applicationSection": {
+                          "type": "schemaReference",
+                          "optional": false,
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
+                          }
+                        },
+                        "instances": {
+                          "type": "array",
+                          "definition": {
+                            "type": "union",
+                            "tag": {
+                              "value": {
+                                "canBeTemplate": true,
+                                "runtimeType": {
+                                  "parentUuid": {
+                                    "path": "payload.parentUuid"
+                                  }
+                                }
+                              }
+                            },
+                            "discriminator": [
+                              "transformerType",
+                              "interpolation"
+                            ],
+                            "definition": [
+                              {
+                                "type": "schemaReference",
+                                "tag": {
+                                  "value": {
+                                    "canBeTemplate": true,
+                                    "runtimeType": {
+                                      "parentUuid": {
+                                        "path": "payload.parentUuid"
+                                      }
+                                    }
+                                  }
+                                },
+                                "definition": {
+                                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                  "relativePath": "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance"
+                                },
+                                "context": {}
+                              },
+                              {
+                                "type": "schemaReference",
+                                "definition": {
+                                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                  "relativePath": "transformerForRuntime"
+                                }
+                              }
+                            ]
+                          }
+                        }
                       }
                     }
                   }
@@ -49427,11 +50256,135 @@ export const miroirFundamentalJzodSchema = {
                       }
                     },
                     "definition": {
-                      "type": "schemaReference",
-                      "optional": false,
+                      "type": "object",
                       "definition": {
-                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "relativePath": "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
+                        "parentName": {
+                          "type": "union",
+                          "optional": true,
+                          "tag": {
+                            "value": {
+                              "id": 1,
+                              "defaultLabel": "Parent Name",
+                              "editable": false,
+                              "canBeTemplate": true
+                            }
+                          },
+                          "discriminator": [
+                            "transformerType",
+                            "interpolation"
+                          ],
+                          "definition": [
+                            {
+                              "type": "string",
+                              "optional": true,
+                              "tag": {
+                                "value": {
+                                  "id": 1,
+                                  "defaultLabel": "Parent Name",
+                                  "editable": false,
+                                  "canBeTemplate": true
+                                }
+                              }
+                            },
+                            {
+                              "type": "schemaReference",
+                              "definition": {
+                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                "relativePath": "transformerForRuntime"
+                              }
+                            }
+                          ]
+                        },
+                        "parentUuid": {
+                          "type": "union",
+                          "tag": {
+                            "value": {
+                              "id": 2,
+                              "defaultLabel": "Parent Name",
+                              "editable": false,
+                              "canBeTemplate": true
+                            }
+                          },
+                          "discriminator": [
+                            "transformerType",
+                            "interpolation"
+                          ],
+                          "definition": [
+                            {
+                              "type": "string",
+                              "tag": {
+                                "value": {
+                                  "id": 2,
+                                  "defaultLabel": "Parent Name",
+                                  "editable": false,
+                                  "canBeTemplate": true
+                                }
+                              }
+                            },
+                            {
+                              "type": "schemaReference",
+                              "definition": {
+                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                "relativePath": "transformerForRuntime"
+                              }
+                            }
+                          ]
+                        },
+                        "applicationSection": {
+                          "type": "schemaReference",
+                          "optional": false,
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
+                          }
+                        },
+                        "instances": {
+                          "type": "array",
+                          "definition": {
+                            "type": "union",
+                            "tag": {
+                              "value": {
+                                "canBeTemplate": true,
+                                "runtimeType": {
+                                  "parentUuid": {
+                                    "path": "payload.parentUuid"
+                                  }
+                                }
+                              }
+                            },
+                            "discriminator": [
+                              "transformerType",
+                              "interpolation"
+                            ],
+                            "definition": [
+                              {
+                                "type": "schemaReference",
+                                "tag": {
+                                  "value": {
+                                    "canBeTemplate": true,
+                                    "runtimeType": {
+                                      "parentUuid": {
+                                        "path": "payload.parentUuid"
+                                      }
+                                    }
+                                  }
+                                },
+                                "definition": {
+                                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                  "relativePath": "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance"
+                                },
+                                "context": {}
+                              },
+                              {
+                                "type": "schemaReference",
+                                "definition": {
+                                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                  "relativePath": "transformerForRuntime"
+                                }
+                              }
+                            ]
+                          }
+                        }
                       }
                     }
                   }
@@ -53057,6 +54010,29 @@ export const miroirFundamentalJzodSchema = {
                   "type": "boolean",
                   "optional": true
                 },
+                "runtimeType": {
+                  "type": "object",
+                  "optional": true,
+                  "definition": {
+                    "parentUuid": {
+                      "type": "union",
+                      "optional": true,
+                      "definition": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "object",
+                          "definition": {
+                            "path": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                },
                 "display": {
                   "type": "object",
                   "optional": true,
@@ -53128,6 +54104,29 @@ export const miroirFundamentalJzodSchema = {
                   "canBeTemplate": {
                     "type": "boolean",
                     "optional": true
+                  },
+                  "runtimeType": {
+                    "type": "object",
+                    "optional": true,
+                    "definition": {
+                      "parentUuid": {
+                        "type": "union",
+                        "optional": true,
+                        "definition": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "object",
+                            "definition": {
+                              "path": {
+                                "type": "string"
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
                   },
                   "display": {
                     "type": "object",
@@ -55662,11 +56661,132 @@ export const miroirFundamentalJzodSchema = {
                       }
                     },
                     "definition": {
-                      "type": "schemaReference",
-                      "optional": false,
+                      "type": "object",
                       "definition": {
-                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
+                        "parentName": {
+                          "type": "union",
+                          "optional": true,
+                          "tag": {
+                            "value": {
+                              "id": 1,
+                              "defaultLabel": "Parent Name",
+                              "editable": false,
+                              "canBeTemplate": true
+                            }
+                          },
+                          "discriminator": [
+                            "transformerType",
+                            "interpolation"
+                          ],
+                          "definition": [
+                            {
+                              "type": "string",
+                              "optional": true,
+                              "tag": {
+                                "value": {
+                                  "id": 1,
+                                  "defaultLabel": "Parent Name",
+                                  "editable": false,
+                                  "canBeTemplate": true
+                                }
+                              }
+                            },
+                            {
+                              "type": "schemaReference",
+                              "definition": {
+                                "relativePath": "transformerForBuildCarryOnObject"
+                              }
+                            }
+                          ]
+                        },
+                        "parentUuid": {
+                          "type": "union",
+                          "tag": {
+                            "value": {
+                              "id": 2,
+                              "defaultLabel": "Parent Name",
+                              "editable": false,
+                              "canBeTemplate": true
+                            }
+                          },
+                          "discriminator": [
+                            "transformerType",
+                            "interpolation"
+                          ],
+                          "definition": [
+                            {
+                              "type": "string",
+                              "tag": {
+                                "value": {
+                                  "id": 2,
+                                  "defaultLabel": "Parent Name",
+                                  "editable": false,
+                                  "canBeTemplate": true
+                                }
+                              }
+                            },
+                            {
+                              "type": "schemaReference",
+                              "definition": {
+                                "relativePath": "transformerForBuildCarryOnObject"
+                              }
+                            }
+                          ]
+                        },
+                        "applicationSection": {
+                          "type": "schemaReference",
+                          "optional": false,
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
+                          }
+                        },
+                        "instances": {
+                          "type": "array",
+                          "definition": {
+                            "type": "union",
+                            "tag": {
+                              "value": {
+                                "canBeTemplate": true,
+                                "runtimeType": {
+                                  "parentUuid": {
+                                    "path": "payload.parentUuid"
+                                  }
+                                }
+                              }
+                            },
+                            "discriminator": [
+                              "transformerType",
+                              "interpolation"
+                            ],
+                            "definition": [
+                              {
+                                "type": "schemaReference",
+                                "tag": {
+                                  "value": {
+                                    "canBeTemplate": true,
+                                    "runtimeType": {
+                                      "parentUuid": {
+                                        "path": "payload.parentUuid"
+                                      }
+                                    }
+                                  }
+                                },
+                                "definition": {
+                                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                  "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance"
+                                },
+                                "context": {}
+                              },
+                              {
+                                "type": "schemaReference",
+                                "definition": {
+                                  "relativePath": "transformerForBuildCarryOnObject"
+                                }
+                              }
+                            ]
+                          }
+                        }
                       }
                     }
                   }
@@ -56274,11 +57394,132 @@ export const miroirFundamentalJzodSchema = {
                       }
                     },
                     "definition": {
-                      "type": "schemaReference",
-                      "optional": false,
+                      "type": "object",
                       "definition": {
-                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
+                        "parentName": {
+                          "type": "union",
+                          "optional": true,
+                          "tag": {
+                            "value": {
+                              "id": 1,
+                              "defaultLabel": "Parent Name",
+                              "editable": false,
+                              "canBeTemplate": true
+                            }
+                          },
+                          "discriminator": [
+                            "transformerType",
+                            "interpolation"
+                          ],
+                          "definition": [
+                            {
+                              "type": "string",
+                              "optional": true,
+                              "tag": {
+                                "value": {
+                                  "id": 1,
+                                  "defaultLabel": "Parent Name",
+                                  "editable": false,
+                                  "canBeTemplate": true
+                                }
+                              }
+                            },
+                            {
+                              "type": "schemaReference",
+                              "definition": {
+                                "relativePath": "transformerForBuildCarryOnObject"
+                              }
+                            }
+                          ]
+                        },
+                        "parentUuid": {
+                          "type": "union",
+                          "tag": {
+                            "value": {
+                              "id": 2,
+                              "defaultLabel": "Parent Name",
+                              "editable": false,
+                              "canBeTemplate": true
+                            }
+                          },
+                          "discriminator": [
+                            "transformerType",
+                            "interpolation"
+                          ],
+                          "definition": [
+                            {
+                              "type": "string",
+                              "tag": {
+                                "value": {
+                                  "id": 2,
+                                  "defaultLabel": "Parent Name",
+                                  "editable": false,
+                                  "canBeTemplate": true
+                                }
+                              }
+                            },
+                            {
+                              "type": "schemaReference",
+                              "definition": {
+                                "relativePath": "transformerForBuildCarryOnObject"
+                              }
+                            }
+                          ]
+                        },
+                        "applicationSection": {
+                          "type": "schemaReference",
+                          "optional": false,
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
+                          }
+                        },
+                        "instances": {
+                          "type": "array",
+                          "definition": {
+                            "type": "union",
+                            "tag": {
+                              "value": {
+                                "canBeTemplate": true,
+                                "runtimeType": {
+                                  "parentUuid": {
+                                    "path": "payload.parentUuid"
+                                  }
+                                }
+                              }
+                            },
+                            "discriminator": [
+                              "transformerType",
+                              "interpolation"
+                            ],
+                            "definition": [
+                              {
+                                "type": "schemaReference",
+                                "tag": {
+                                  "value": {
+                                    "canBeTemplate": true,
+                                    "runtimeType": {
+                                      "parentUuid": {
+                                        "path": "payload.parentUuid"
+                                      }
+                                    }
+                                  }
+                                },
+                                "definition": {
+                                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                  "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance"
+                                },
+                                "context": {}
+                              },
+                              {
+                                "type": "schemaReference",
+                                "definition": {
+                                  "relativePath": "transformerForBuildCarryOnObject"
+                                }
+                              }
+                            ]
+                          }
+                        }
                       }
                     }
                   }
@@ -59888,6 +61129,29 @@ export const miroirFundamentalJzodSchema = {
                   "type": "boolean",
                   "optional": true
                 },
+                "runtimeType": {
+                  "type": "object",
+                  "optional": true,
+                  "definition": {
+                    "parentUuid": {
+                      "type": "union",
+                      "optional": true,
+                      "definition": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "object",
+                          "definition": {
+                            "path": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                },
                 "display": {
                   "type": "object",
                   "optional": true,
@@ -59959,6 +61223,29 @@ export const miroirFundamentalJzodSchema = {
                   "canBeTemplate": {
                     "type": "boolean",
                     "optional": true
+                  },
+                  "runtimeType": {
+                    "type": "object",
+                    "optional": true,
+                    "definition": {
+                      "parentUuid": {
+                        "type": "union",
+                        "optional": true,
+                        "definition": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "object",
+                            "definition": {
+                              "path": {
+                                "type": "string"
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
                   },
                   "display": {
                     "type": "object",
@@ -62509,11 +63796,135 @@ export const miroirFundamentalJzodSchema = {
                       }
                     },
                     "definition": {
-                      "type": "schemaReference",
-                      "optional": false,
+                      "type": "object",
                       "definition": {
-                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
+                        "parentName": {
+                          "type": "union",
+                          "optional": true,
+                          "tag": {
+                            "value": {
+                              "id": 1,
+                              "defaultLabel": "Parent Name",
+                              "editable": false,
+                              "canBeTemplate": true
+                            }
+                          },
+                          "discriminator": [
+                            "transformerType",
+                            "interpolation"
+                          ],
+                          "definition": [
+                            {
+                              "type": "string",
+                              "optional": true,
+                              "tag": {
+                                "value": {
+                                  "id": 1,
+                                  "defaultLabel": "Parent Name",
+                                  "editable": false,
+                                  "canBeTemplate": true
+                                }
+                              }
+                            },
+                            {
+                              "type": "schemaReference",
+                              "definition": {
+                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                "relativePath": "transformerForBuildPlusRuntimeCarryOnObject"
+                              }
+                            }
+                          ]
+                        },
+                        "parentUuid": {
+                          "type": "union",
+                          "tag": {
+                            "value": {
+                              "id": 2,
+                              "defaultLabel": "Parent Name",
+                              "editable": false,
+                              "canBeTemplate": true
+                            }
+                          },
+                          "discriminator": [
+                            "transformerType",
+                            "interpolation"
+                          ],
+                          "definition": [
+                            {
+                              "type": "string",
+                              "tag": {
+                                "value": {
+                                  "id": 2,
+                                  "defaultLabel": "Parent Name",
+                                  "editable": false,
+                                  "canBeTemplate": true
+                                }
+                              }
+                            },
+                            {
+                              "type": "schemaReference",
+                              "definition": {
+                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                "relativePath": "transformerForBuildPlusRuntimeCarryOnObject"
+                              }
+                            }
+                          ]
+                        },
+                        "applicationSection": {
+                          "type": "schemaReference",
+                          "optional": false,
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
+                          }
+                        },
+                        "instances": {
+                          "type": "array",
+                          "definition": {
+                            "type": "union",
+                            "tag": {
+                              "value": {
+                                "canBeTemplate": true,
+                                "runtimeType": {
+                                  "parentUuid": {
+                                    "path": "payload.parentUuid"
+                                  }
+                                }
+                              }
+                            },
+                            "discriminator": [
+                              "transformerType",
+                              "interpolation"
+                            ],
+                            "definition": [
+                              {
+                                "type": "schemaReference",
+                                "tag": {
+                                  "value": {
+                                    "canBeTemplate": true,
+                                    "runtimeType": {
+                                      "parentUuid": {
+                                        "path": "payload.parentUuid"
+                                      }
+                                    }
+                                  }
+                                },
+                                "definition": {
+                                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                  "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance"
+                                },
+                                "context": {}
+                              },
+                              {
+                                "type": "schemaReference",
+                                "definition": {
+                                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                  "relativePath": "transformerForBuildPlusRuntimeCarryOnObject"
+                                }
+                              }
+                            ]
+                          }
+                        }
                       }
                     }
                   }
@@ -63129,11 +64540,135 @@ export const miroirFundamentalJzodSchema = {
                       }
                     },
                     "definition": {
-                      "type": "schemaReference",
-                      "optional": false,
+                      "type": "object",
                       "definition": {
-                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstanceCollection"
+                        "parentName": {
+                          "type": "union",
+                          "optional": true,
+                          "tag": {
+                            "value": {
+                              "id": 1,
+                              "defaultLabel": "Parent Name",
+                              "editable": false,
+                              "canBeTemplate": true
+                            }
+                          },
+                          "discriminator": [
+                            "transformerType",
+                            "interpolation"
+                          ],
+                          "definition": [
+                            {
+                              "type": "string",
+                              "optional": true,
+                              "tag": {
+                                "value": {
+                                  "id": 1,
+                                  "defaultLabel": "Parent Name",
+                                  "editable": false,
+                                  "canBeTemplate": true
+                                }
+                              }
+                            },
+                            {
+                              "type": "schemaReference",
+                              "definition": {
+                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                "relativePath": "transformerForBuildPlusRuntimeCarryOnObject"
+                              }
+                            }
+                          ]
+                        },
+                        "parentUuid": {
+                          "type": "union",
+                          "tag": {
+                            "value": {
+                              "id": 2,
+                              "defaultLabel": "Parent Name",
+                              "editable": false,
+                              "canBeTemplate": true
+                            }
+                          },
+                          "discriminator": [
+                            "transformerType",
+                            "interpolation"
+                          ],
+                          "definition": [
+                            {
+                              "type": "string",
+                              "tag": {
+                                "value": {
+                                  "id": 2,
+                                  "defaultLabel": "Parent Name",
+                                  "editable": false,
+                                  "canBeTemplate": true
+                                }
+                              }
+                            },
+                            {
+                              "type": "schemaReference",
+                              "definition": {
+                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                "relativePath": "transformerForBuildPlusRuntimeCarryOnObject"
+                              }
+                            }
+                          ]
+                        },
+                        "applicationSection": {
+                          "type": "schemaReference",
+                          "optional": false,
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
+                          }
+                        },
+                        "instances": {
+                          "type": "array",
+                          "definition": {
+                            "type": "union",
+                            "tag": {
+                              "value": {
+                                "canBeTemplate": true,
+                                "runtimeType": {
+                                  "parentUuid": {
+                                    "path": "payload.parentUuid"
+                                  }
+                                }
+                              }
+                            },
+                            "discriminator": [
+                              "transformerType",
+                              "interpolation"
+                            ],
+                            "definition": [
+                              {
+                                "type": "schemaReference",
+                                "tag": {
+                                  "value": {
+                                    "canBeTemplate": true,
+                                    "runtimeType": {
+                                      "parentUuid": {
+                                        "path": "payload.parentUuid"
+                                      }
+                                    }
+                                  }
+                                },
+                                "definition": {
+                                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                  "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance"
+                                },
+                                "context": {}
+                              },
+                              {
+                                "type": "schemaReference",
+                                "definition": {
+                                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                  "relativePath": "transformerForBuildPlusRuntimeCarryOnObject"
+                                }
+                              }
+                            ]
+                          }
+                        }
                       }
                     }
                   }

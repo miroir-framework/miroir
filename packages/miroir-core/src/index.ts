@@ -639,9 +639,9 @@ export { ACTION_OK } from "./1_core/constants.js";
 export { DomainInstanceUuidIndexToArray } from "./1_core/DomainState.js";
 export { rootLessListKeyMap } from "./1_core/jzod/rootLessListKeyMap";
 export {
-  getDefaultValueForJzodSchemaDEFUNCT,
+  // getDefaultValueForJzodSchemaDEFUNCT,
   getDefaultValueForJzodSchemaWithResolution,
-} from "./1_core/jzod/getDefaultValueForJzodSchemaDEFUNCT.js";
+} from "./1_core/jzod/getDefaultValueForJzodSchema.js";
 export {
   KeyMapEntry,
   ResolvedJzodSchemaReturnType,
