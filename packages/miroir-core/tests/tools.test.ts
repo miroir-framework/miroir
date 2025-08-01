@@ -6,7 +6,8 @@ circularReplacer,
 domainStateToDeploymentEntityState,
 safeResolvePathOnObject,
 resolvePathOnObject,
-ResultAccessPath,
+AbsolutePath,
+resolveRelativePath,
 } from '../src/tools';
 import { mergeIfUnique, pushIfUnique } from '../src/1_core/tools';
 import { ZodParseErrorIssue } from '../dist';
@@ -68,12 +69,12 @@ describe("safeResolvePathOnObject", () => {
   };
 
   it("resolves a valid path", () => {
-    const path: ResultAccessPath = ["a", "b", 1, "c"];
+    const path: AbsolutePath = ["a", "b", 1, "c"];
     expect(safeResolvePathOnObject(obj, path)).toBe(2);
   });
 
   it("returns undefined for invalid path", () => {
-    const path: ResultAccessPath = ["a", "x", "y"];
+    const path: AbsolutePath = ["a", "x", "y"];
     expect(safeResolvePathOnObject(obj, path)).toBeUndefined();
   });
 
@@ -83,7 +84,7 @@ describe("safeResolvePathOnObject", () => {
 
   it("handles map type in path", () => {
     const arr = [{ foo: 1 }, { foo: 2 }];
-    const path: ResultAccessPath = [{ type: "map", key: "foo" }];
+    const path: AbsolutePath = [{ type: "map", key: "foo" }];
     expect(safeResolvePathOnObject(arr, path)).toEqual([1, 2]);
   });
 });
@@ -97,23 +98,23 @@ describe("resolvePathOnObject", () => {
   };
 
   it("resolves a valid path", () => {
-    const path: ResultAccessPath = ["a", "b", 0, "c"];
+    const path: AbsolutePath = ["a", "b", 0, "c"];
     expect(resolvePathOnObject(obj, path)).toBe(1);
   });
 
   it("resolves a valid path when value is undefined", () => {
-    const path: ResultAccessPath = ["a", "b", 2, "c"];
+    const path: AbsolutePath = ["a", "b", 2, "c"];
     expect(resolvePathOnObject(obj, path)).toBe(undefined);
   });
 
   it("throws on invalid path", () => {
-    const path: ResultAccessPath = ["a", "x", "y"];
+    const path: AbsolutePath = ["a", "x", "y"];
     expect(() => resolvePathOnObject(obj, path)).toThrow();
   });
 
   it("handles map type in path", () => {
     const arr = [{ foo: 1 }, { foo: 2 }];
-    const path: ResultAccessPath = [{ type: "map", key: "foo" }];
+    const path: AbsolutePath = [{ type: "map", key: "foo" }];
     expect(resolvePathOnObject(arr, path)).toEqual([1, 2]);
   });
 });
@@ -199,6 +200,7 @@ describe("pushIfUnique", () => {
     ]);
   });
 });
+
 describe("mergeIfUnique", () => {
   it("adds all items to an empty array", () => {
     const array: number[] = [];
@@ -289,5 +291,80 @@ describe("mergeIfUnique", () => {
       },
     ]);
   });
+});
 
+describe("resolveRelativePath", () => {
+  const obj = {
+    a: {
+      b: [
+        { c: 1, d: { e: 10 } },
+        { c: 2, d: { e: 20 } }
+      ],
+      x: 99
+    },
+    z: 42
+  };
+
+  it("resolves path without parent reference", () => {
+    const initialPath: AbsolutePath = ["a", "b", 0, "d"];
+    const path: AbsolutePath = ["e"];
+    expect(resolveRelativePath(obj, initialPath, path)).toBe(10);
+  });
+
+  it("resolves path with parent reference (#)", () => {
+    const initialPath: AbsolutePath = ["a", "b", 1, "d"];
+    const path: AbsolutePath = ["#", "d", "e"];
+    expect(resolveRelativePath(obj, initialPath, path)).toBe(20);
+  });
+
+  it("handles multiple parent references", () => {
+    const initialPath: AbsolutePath = ["a", "b", 1, "d"];
+    const path: AbsolutePath = ["#", "#", "#", "x"];
+    expect(resolveRelativePath(obj, initialPath, path)).toBe(99);
+  });
+
+  it("throws if parent reference goes above root", () => {
+    const initialPath: AbsolutePath = ["a", "b", 0];
+    const path: AbsolutePath = ["#", "#", "#", "#"];
+    expect(() => resolveRelativePath(obj, initialPath, path)).toThrow("No parent to go up to with '#'");
+  });
+
+  it("throws if initialPath traverses non-array with map segment", () => {
+    const badObj = { foo: { bar: 1 } };
+    const initialPath: AbsolutePath = ["foo", { type: "map", key: "bar" }];
+    const path: AbsolutePath = [];
+    expect(() => resolveRelativePath(badObj, initialPath, path)).toThrow("Initial path traverses non-array with map segment");
+  });
+
+  it("throws if initialPath segment not found", () => {
+    const initialPath: AbsolutePath = ["a", "y"];
+    const path: AbsolutePath = [];
+    expect(() => resolveRelativePath(obj, initialPath, path)).toThrow('path segment \'y\' not found in object {"b":[{"c":1,"d":{"e":10}},{"c":2,"d":{"e":20}}],"x":99}');
+  });
+
+  it("throws if map segment on non-array in path", () => {
+    const initialPath: AbsolutePath = ["a"];
+    const path: AbsolutePath = [{ type: "map", key: "x" }];
+    expect(() => resolveRelativePath(obj, initialPath, path)).toThrow("resolveRelativePath: map segment on non-array");
+  });
+
+  it("throws if segment not found in path", () => {
+    const initialPath: AbsolutePath = ["a", "b", 0];
+    const path: AbsolutePath = ["y"];
+    expect(() => resolveRelativePath(obj, initialPath, path)).toThrow('path segment \'y\' not found in object {"c":1,"d":{"e":10}}');
+  });
+
+  it("works with array map segment in initialPath", () => {
+    const arrObj = { arr: [{ foo: 1 }, { foo: 2 }] };
+    const initialPath: AbsolutePath = ["arr", { type: "map", key: "foo" }];
+    const path: AbsolutePath = [];
+    expect(resolveRelativePath(arrObj, initialPath, path)).toEqual([1, 2]);
+  });
+
+  it("works with array map segment in path", () => {
+    const arrObj = { arr: [{ foo: { bar: 1 } }, { foo: { bar: 2 } }] };
+    const initialPath: AbsolutePath = ["arr"];
+    const path: AbsolutePath = [{ type: "map", key: "foo" }, { type: "map", key: "bar" }];
+    expect(resolveRelativePath(arrObj, initialPath, path)).toEqual([1, 2]);
+  });
 });

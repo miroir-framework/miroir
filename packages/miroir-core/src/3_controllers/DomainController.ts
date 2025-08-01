@@ -1130,6 +1130,7 @@ export class DomainController implements DomainControllerInterface {
                     deploymentUuid: modelAction.deploymentUuid,
                     payload: {
                       applicationSection: "model",
+                      parentUuid: newModelVersion.parentUuid,
                       objects: [
                         {
                           parentUuid: newModelVersion.parentUuid,

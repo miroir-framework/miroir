@@ -351,7 +351,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
         );
       }
       const newItem = getDefaultValueForJzodSchemaWithResolution(
-        currentTypeCheckKeyMap?.rawSchema.definition,
+        currentTypeCheckKeyMap?.rawSchema.definition, // TODO: not correct with runtimeTypes
         false,
         context.miroirFundamentalJzodSchema,
         currentModel,
@@ -399,8 +399,24 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
         .map((attributeParam: [number, JzodElement]) => {
           const index: number = attributeParam[0];
           const attributeRootLessListKey: string = rootLessListKey.length > 0? rootLessListKey + "." + index : "" + index;
+          log.info(
+            "JzodArrayEditor arrayItems map",
+            "index",
+            index,
+            "attributeRootLessListKey",
+            attributeRootLessListKey,
+            "attributeValue",
+            attributeParam[1],
+            // JSON.stringify(attributeParam[1], null, 2),
+            "typeCheckKeyMap",
+            typeCheckKeyMap,
+          );
           const currentArrayElementRawDefinition: JzodElement | undefined =
-            typeCheckKeyMap && typeCheckKeyMap[rootLessListKey].rawSchema.type !== "any"
+            typeCheckKeyMap &&
+            typeCheckKeyMap[rootLessListKey].rawSchema &&
+            typeCheckKeyMap[rootLessListKey].rawSchema.type !== "any" &&
+            typeCheckKeyMap[attributeRootLessListKey] &&
+            typeCheckKeyMap[attributeRootLessListKey].rawSchema
               ? typeCheckKeyMap[attributeRootLessListKey].rawSchema
               : { type: "any" };
           // const attributeTypeCheckKeyMap = typeCheckKeyMap? typeCheckKeyMap[attributeRootLessListKey]: undefined;
@@ -432,17 +448,14 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
               listKey={listKey}
               rootLessListKey={rootLessListKey}
               rootLessListKeyArray={rootLessListKeyArray}
-              // currentArrayElementRawDefinition={currentArrayElementRawDefinition}
               currentArrayElementRawDefinition={currentArrayElementRawDefinition}
               resolvedElementJzodSchema={resolvedElementJzodSchema}
               typeCheckKeyMap={typeCheckKeyMap}
               usedIndentLevel={usedIndentLevel}
               currentDeploymentUuid={currentDeploymentUuid}
               currentApplicationSection={currentApplicationSection}
-              // localRootLessListKeyMap={localRootLessListKeyMap}
               foreignKeyObjects={foreignKeyObjects}
               insideAny={insideAny}
-              // parentUnfoldedRawSchema={parentUnfoldedRawSchema}
               itemsOrder={itemsOrder}
               formik={formik}
               currentValue={currentValue}

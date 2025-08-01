@@ -609,7 +609,9 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
       );
       const newItemsOrder = getItemsOrder(
         newObjectValue,
-        currentTypeCheckKeyMap?.chosenUnionBranchRawSchema ?? currentTypeCheckKeyMap?.jzodObjectFlattenedSchema ?? currentTypeCheckKeyMap?.rawSchema
+        currentTypeCheckKeyMap?.chosenUnionBranchRawSchema ??
+          currentTypeCheckKeyMap?.jzodObjectFlattenedSchema ??
+          currentTypeCheckKeyMap?.rawSchema
       );
 
       // log.info(

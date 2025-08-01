@@ -10,16 +10,26 @@ import {
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
   defaultMiroirMetaModel,
+  DeploymentEntityState,
+  Domain2QueryReturnType,
   DomainControllerInterface,
+  DomainElementSuccess,
   EndpointDefinition,
+  EntityInstancesUuidIndex,
+  getApplicationSection,
   getDefaultValueForJzodSchemaWithResolution,
+  getQueryRunnerParamsForDeploymentEntityState,
   instanceEndpointVersionV1,
   JzodObject,
   LoggerInterface,
   MetaModel,
   MiroirLoggerFactory,
   queryEndpointVersionV1,
-  SelfApplicationDeploymentConfiguration
+  SelfApplicationDeploymentConfiguration,
+  SyncBoxedExtractorOrQueryRunnerMap,
+  SyncQueryRunner,
+  SyncQueryRunnerParams,
+  Uuid
 } from 'miroir-core';
 import { Action } from 'miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js';
 import { FC, useMemo, useState } from 'react';
@@ -28,7 +38,8 @@ import { useDomainControllerService, useMiroirContextService } from '../MiroirCo
 import { cleanLevel } from '../constants.js';
 import { TypedValueObjectEditor } from './Reports/TypedValueObjectEditor.js';
 import { ThemedFormControl, ThemedInputLabel, ThemedMUISelect, ThemedPaper } from './Themes/ThemedComponents.js';
-import { useCurrentModel } from '../ReduxHooks.js';
+import { useCurrentModel, useDeploymentEntityStateQuerySelectorForCleanedResult } from '../ReduxHooks.js';
+import { getMemoizedDeploymentEntityStateSelectorMap } from 'miroir-localcache-redux';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -82,7 +93,8 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
   const [selectedEndpointUuid, setSelectedEndpointUuid] = useState<string>('');
   const [selectedActionIndex, setSelectedActionIndex] = useState<number>(-1);
   const [foldedObjectAttributeOrArrayItems, setFoldedObjectAttributeOrArrayItems] = useState<{[k: string]: boolean}>({});
-  
+  const [actionFormInitialValues, setActionFormInitialValues] = useState<Record<string, any>>({});
+
   const domainController: DomainControllerInterface = useDomainControllerService();
   const context = useMiroirContextService();
   const currentModel: MetaModel = useCurrentModel(
@@ -128,31 +140,63 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
       definition: currentAction.actionParameters || {}
     } as JzodObject;
   }, [currentAction]);
+  log.info('EndpointActionCaller: currentActionParametersMMLSchema', currentActionParametersMMLSchema);
 
+  function getEntityInstancesUuidIndex(
+    deploymentUuid: Uuid,
+    entityUuid: Uuid,
+    sortBy?: string
+  ): EntityInstancesUuidIndex {
+    const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<DeploymentEntityState> =
+      getMemoizedDeploymentEntityStateSelectorMap();
+    const foreignKeyObjectsFetchQueryParams: SyncQueryRunnerParams<DeploymentEntityState> =
+      getQueryRunnerParamsForDeploymentEntityState(
+        {
+          queryType: "boxedQueryWithExtractorCombinerTransformer",
+          deploymentUuid,
+          pageParams: {},
+          queryParams: {},
+          contextResults: {},
+          extractors: {
+            [entityUuid]: {
+              extractorOrCombinerType: "extractorByEntityReturningObjectList",
+              applicationSection: getApplicationSection(deploymentUuid, entityUuid),
+              parentName: "",
+              parentUuid: entityUuid,
+              orderBy: {
+                attributeName: sortBy ?? "name",
+              },
+            },
+          },
+        },
+        deploymentEntityStateSelectorMap
+      );
+    
+      const foreignKeyObjects: Record<string, EntityInstancesUuidIndex> =
+        useDeploymentEntityStateQuerySelectorForCleanedResult(
+          deploymentEntityStateSelectorMap.runQuery as SyncQueryRunner<
+            DeploymentEntityState,
+            Domain2QueryReturnType<DomainElementSuccess>
+          >,
+          foreignKeyObjectsFetchQueryParams
+      );
+      // return foreignKeyObjects[entityUuid]?.entities || {};
+      return foreignKeyObjects[entityUuid] || {};
+  }
 
+  
   // Initial form state for Formik
-  const initialFormState = useMemo(() => {
-    if (!currentActionParametersMMLSchema?.definition || !context.miroirFundamentalJzodSchema) return {};
+  // const initialFormState = useMemo(() => {
+  //   if (!currentActionParametersMMLSchema?.definition || !context.miroirFundamentalJzodSchema) return {};
     
-    const initialState: Record<string, any> = getDefaultValueForJzodSchemaWithResolution(currentActionParametersMMLSchema, false, context.miroirFundamentalJzodSchema);
-    // Object.entries(currentActionParametersMMLSchema.definition).forEach(([key, schema]) => {
-    //   const field = schema as JzodElement;
-    //   // Set default values based on field type
-    //   if (field.type === 'object') {
-    //     initialState[key] = {};
-    //   } else if (field.type === 'array') {
-    //     initialState[key] = [];
-    //   } else if (field.type === 'string' || field.type === 'uuid') {
-    //     initialState[key] = '';
-    //   } else if (field.type === 'number') {
-    //     initialState[key] = 0;
-    //   } else {
-    //     initialState[key] = '';
-    //   }
-    // });
+  //   const initialState: Record<string, any> = getDefaultValueForJzodSchemaWithResolution(
+  //     currentActionParametersMMLSchema,
+  //     false,
+  //     context.miroirFundamentalJzodSchema
+  //   );
     
-    return initialState;
-  }, [currentActionParametersMMLSchema]);
+  //   return initialState;
+  // }, [currentActionParametersMMLSchema]);
 
   const handleDeploymentChange = (event: SelectChangeEvent) => {
     setSelectedDeploymentUuid(event.target.value);
@@ -168,8 +212,37 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
   };
 
   const handleActionChange = (event: SelectChangeEvent) => {
+    log.info('EndpointActionCaller: handleActionChange', event.target.value);
     setSelectedActionIndex(parseInt(event.target.value));
     setFoldedObjectAttributeOrArrayItems({});
+    
+    const selectedActionIndex = parseInt(event.target.value);
+    const currentAction =
+      selectedActionIndex === -1 || !availableActions[selectedActionIndex]
+        ? null
+        : availableActions[selectedActionIndex];
+
+    const initialFormState: Record<string, any> =
+      !currentAction?.actionParameters || !context.miroirFundamentalJzodSchema
+        ? {}
+        : getDefaultValueForJzodSchemaWithResolution(
+            {
+              type: "object",
+              definition: currentAction.actionParameters || {},
+            },
+            undefined, // No need to pass currentDefaultValue here
+            getEntityInstancesUuidIndex,
+            false, // forceOptional
+            context.deploymentUuid,
+            context.miroirFundamentalJzodSchema
+          );
+    log.info(
+      "EndpointActionCaller: handleActionChange Initial form state",
+      initialFormState,
+      "currentAction",
+      currentAction
+    );
+    setActionFormInitialValues(initialFormState);
   };
 
   const handleSubmit = async (values: any) => {
@@ -311,7 +384,7 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
             </Typography>
             <TypedValueObjectEditor
               labelElement={<ThemedInputLabel>Action Parameters</ThemedInputLabel>}
-              valueObject={initialFormState}
+              valueObject={actionFormInitialValues}
               valueObjectMMLSchema={currentActionParametersMMLSchema}
               deploymentUuid={selectedDeploymentUuid}
               // applicationSection={applicationSection}
@@ -322,47 +395,6 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
               foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
               setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
             />
-
-            {/* <Formik
-              enableReinitialize={true}
-              initialValues={initialFormState}
-              onSubmit={handleSubmit}
-            >
-              {(formik: FormikProps<any>) => (
-                <form onSubmit={formik.handleSubmit}>
-                  <JzodElementEditor
-                    name="actionParameters"
-                    listKey="ROOT"
-                    rootLessListKey=""
-                    rootLessListKeyArray={[]}
-                    currentDeploymentUuid={context.deploymentUuid}
-                    currentApplicationSection="data"
-                    foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
-                    setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
-                    resolvedElementJzodSchema={actionParametersSchema}
-                    typeCheckKeyMap={{}}
-                    foreignKeyObjects={{}}
-                    indentLevel={0}
-                  />
-                  
-                  <Box sx={{ mt: 3 }}>
-                    <Button
-                      type="submit"
-                      variant="contained"
-                      color="primary"
-                      disabled={
-                        !selectedDeploymentUuid ||
-                        !selectedEndpointUuid ||
-                        selectedActionIndex === -1
-                      }
-                      size="large"
-                    >
-                      Submit Action
-                    </Button>
-                  </Box>
-                </form>
-              )}
-            </Formik> */}
           </Box>
         )}
 

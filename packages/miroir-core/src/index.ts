@@ -881,7 +881,7 @@ export {
   circularReplacer,
   domainStateToDeploymentEntityState,
   resolvePathOnObject,
-  ResultAccessPath,
+  AbsolutePath as ResultAccessPath,
   safeResolvePathOnObject,
   stringTuple,
   mStringify,
