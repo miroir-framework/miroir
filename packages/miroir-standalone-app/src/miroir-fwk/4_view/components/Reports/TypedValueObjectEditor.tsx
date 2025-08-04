@@ -2,6 +2,7 @@ import { EditorView } from '@codemirror/view';
 import ReactCodeMirror from '@uiw/react-codemirror';
 import { Formik, FormikProps } from 'formik';
 import { useMemo } from 'react';
+import { useSelector } from 'react-redux';
 
 import {
   ApplicationSection,
@@ -9,6 +10,7 @@ import {
   Domain2QueryReturnType,
   DomainElementSuccess,
   EntityInstancesUuidIndex,
+  getEntityInstancesUuidIndexNonHook,
   JzodElement,
   LoggerInterface,
   MetaModel,
@@ -23,7 +25,7 @@ import {
   getQueryRunnerParamsForDeploymentEntityState,
   jzodTypeCheck
 } from "miroir-core";
-import { getMemoizedDeploymentEntityStateSelectorMap } from 'miroir-localcache-redux';
+import { getMemoizedDeploymentEntityStateSelectorMap, ReduxStateWithUndoRedo, selectCurrentDeploymentEntityStateFromReduxState } from 'miroir-localcache-redux';
 
 import {
   useMiroirContextService
@@ -105,6 +107,29 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
     context.applicationSection == "data" ? context.deploymentUuid : adminConfigurationDeploymentMiroir.uuid
   );
   const currentMiroirModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
+
+  // Get the deployment entity state from Redux store for conditional schema resolution
+  const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<DeploymentEntityState> =
+    getMemoizedDeploymentEntityStateSelectorMap();
+  
+  // const deploymentEntityState: DeploymentEntityState = useSelector(selectCurrentDeploymentEntityStateFromReduxState);
+  const deploymentEntityState: DeploymentEntityState = useSelector(
+    (state: ReduxStateWithUndoRedo) =>
+      deploymentEntityStateSelectorMap.extractState(state.presentModelSnapshot.current, () => ({}))
+  );
+
+  // Create a function to get entity instances for conditional schema resolution
+  const getEntityInstancesUuidIndex = useMemo(() => {
+    return (targetDeploymentUuid: Uuid, entityUuid: Uuid, sortBy?: string): EntityInstancesUuidIndex => {
+      return getEntityInstancesUuidIndexNonHook(
+        deploymentEntityState,
+        targetDeploymentUuid,
+        entityUuid,
+        sortBy
+      );
+    };
+  }, [deploymentEntityState]);
+
   log.info(
     "TypedValueObjectEditor render",
     "navigationCount",
@@ -151,7 +176,11 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
                       context.miroirFundamentalJzodSchema,
                       currentModel,
                       currentMiroirModel,
-                      {}
+                      {}, // relativeReferenceJzodContext
+                      formik.values, // currentDefaultValue
+                      getEntityInstancesUuidIndex, // Now passing the actual function
+                      deploymentUuid, // Now passing the actual deploymentUuid
+                      formik.values // rootObject - for resolving conditional schemas
                     )
                   : undefined;
             } catch (e) {

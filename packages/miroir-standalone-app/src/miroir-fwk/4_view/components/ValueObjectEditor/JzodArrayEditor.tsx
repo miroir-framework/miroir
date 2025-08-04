@@ -373,8 +373,8 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
       
       let newItemSchema: JzodElement | undefined = currentTypeCheckKeyMap?.rawSchema.definition;
 
-      if ((currentTypeCheckKeyMap?.rawSchema as any).definition?.tag?.value?.conditionalMMLS?.parentUuid?.path) {
-        const entityPath = (currentTypeCheckKeyMap?.rawSchema as any).definition?.tag?.value?.conditionalMMLS?.parentUuid?.path;
+      if ((currentTypeCheckKeyMap?.rawSchema as any).definition?.tag?.value?.conditionalMMLS?.parentUuid?.defaultValuePath) {
+        const entityPath = (currentTypeCheckKeyMap?.rawSchema as any).definition?.tag?.value?.conditionalMMLS?.parentUuid?.defaultValuePath;
         const goUp =
           typeof  entityPath=== "string"
             ? (entityPath as string).split("#").length - 1
@@ -465,7 +465,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
         // "",
       ];
       log.info(
-        "JzodArrayEditor addNewArrayItem",
+        "JzodArrayEditor addNewArrayItem setting value for",
         "rootLessListKey",
         rootLessListKey,
         "newItem",

@@ -118,7 +118,8 @@
                             "canBeTemplate": true,
                             "conditionalMMLS": {
                               "parentUuid": {
-                                "path": "#.parentUuid"
+                                "defaultValuePath": "#.parentUuid",
+                                "typeCheckPath": "#.#.parentUuid"
                               }
                             }
                           }

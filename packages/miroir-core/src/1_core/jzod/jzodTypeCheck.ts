@@ -774,7 +774,8 @@ export function jzodTypeCheck(
     entityUuid: Uuid,
     sortBy?: string
   ) => EntityInstancesUuidIndex,
-  deploymentUuid?: string
+  deploymentUuid?: string,
+  rootObject?: any // Optional parameter for backward compatibility
 ): ResolvedJzodSchemaReturnType {
   // log.info(
   //   "jzodTypeCheck called for valuePath=." + 
@@ -821,10 +822,11 @@ export function jzodTypeCheck(
     deploymentUuid ?
       resolveConditionalSchema(
         jzodSchema,
-        currentDefaultValue,
+        rootObject || currentDefaultValue, // Use rootObject if provided, fallback to currentDefaultValue
         currentValuePath as string[],
         getEntityInstancesUuidIndex,
-        deploymentUuid
+        deploymentUuid,
+        'typeCheck' // Specify this is for type checking
       ): jzodSchema;
   
   switch (effectiveSchema?.type) {
@@ -851,7 +853,11 @@ export function jzodTypeCheck(
         miroirFundamentalJzodSchema,
         currentModel,
         miroirMetaModel,
-        newContext
+        newContext,
+        currentDefaultValue,
+        getEntityInstancesUuidIndex,
+        deploymentUuid,
+        rootObject
       );
       if (typeCheck.status == "error") {
         return {
@@ -931,7 +937,11 @@ export function jzodTypeCheck(
             miroirFundamentalJzodSchema,
             currentModel,
             miroirMetaModel,
-            relativeReferenceJzodContext
+            relativeReferenceJzodContext,
+            currentDefaultValue,
+            getEntityInstancesUuidIndex,
+            deploymentUuid,
+            rootObject
           );
           return [e[0], resultSchemaTmp];
         } else {
@@ -1215,7 +1225,11 @@ export function jzodTypeCheck(
               miroirFundamentalJzodSchema,
               currentModel,
               miroirMetaModel,
-              relativeReferenceJzodContext
+              relativeReferenceJzodContext,
+              currentDefaultValue,
+              getEntityInstancesUuidIndex,
+              deploymentUuid,
+              rootObject
             );
             if (arrayItemSchema.status === "error") {
               return {
@@ -1288,7 +1302,11 @@ export function jzodTypeCheck(
             miroirFundamentalJzodSchema,
             currentModel,
             miroirMetaModel,
-            relativeReferenceJzodContext
+            relativeReferenceJzodContext,
+            currentDefaultValue,
+            getEntityInstancesUuidIndex,
+            deploymentUuid,
+            rootObject
           );
           if (subResolvedSchemas.status !== "ok") {
             return {
@@ -1388,7 +1406,11 @@ export function jzodTypeCheck(
               miroirFundamentalJzodSchema,
               currentModel,
               miroirMetaModel,
-              relativeReferenceJzodContext
+              relativeReferenceJzodContext,
+              currentDefaultValue,
+              getEntityInstancesUuidIndex,
+              deploymentUuid,
+              rootObject
             );
             return [e[0], resultSchemaTmp];
           }) as [string, ResolvedJzodSchemaReturnType][]
@@ -1553,7 +1575,11 @@ export function jzodTypeCheck(
             miroirFundamentalJzodSchema,
             currentModel,
             miroirMetaModel,
-            relativeReferenceJzodContext
+            relativeReferenceJzodContext,
+            currentDefaultValue,
+            getEntityInstancesUuidIndex,
+            deploymentUuid,
+            rootObject
           );
           return resultSchemaTmp;
         }
@@ -1644,7 +1670,11 @@ export function jzodTypeCheck(
             miroirFundamentalJzodSchema,
             currentModel,
             miroirMetaModel,
-            relativeReferenceJzodContext
+            relativeReferenceJzodContext,
+            currentDefaultValue,
+            getEntityInstancesUuidIndex,
+            deploymentUuid,
+            rootObject
           );
           return subSchema;
         }

@@ -47,6 +47,7 @@ export function getDefaultValueForJzodSchemaWithResolution(
   currentModel?: MetaModel,
   miroirMetaModel?: MetaModel,
   relativeReferenceJzodContext?: { [k: string]: JzodElement },
+  rootObject?: any, // Optional parameter for backward compatibility
 ): any {
 
   log.info(
@@ -65,10 +66,11 @@ export function getDefaultValueForJzodSchemaWithResolution(
 
   let effectiveSchema: JzodElement = resolveConditionalSchema(
     jzodSchema,
-    currentDefaultValue,
+    rootObject || currentDefaultValue, // Use rootObject if provided, fallback to currentDefaultValue
     currentValuePath,
     getEntityInstancesUuidIndex,
-    deploymentUuid
+    deploymentUuid,
+    'defaultValue' // Specify this is for default value generation
   );
 
   //  = jzodSchema.tag && jzodSchema.tag.value?.conditionalMMLS? jzodSchema:jzodSchema as JzodElement;
@@ -107,7 +109,8 @@ export function getDefaultValueForJzodSchemaWithResolution(
             miroirFundamentalJzodSchema,
             currentModel,
             miroirMetaModel,
-            relativeReferenceJzodContext
+            relativeReferenceJzodContext,
+            rootObject
           );
           result[attributeName] = attributeValue;
         });
@@ -257,7 +260,8 @@ export function getDefaultValueForJzodSchemaWithResolution(
         miroirFundamentalJzodSchema,
         currentModel,
         miroirMetaModel,
-        relativeReferenceJzodContext
+        relativeReferenceJzodContext,
+        rootObject
       );
       // throw new Error(
       //   "getDefaultValueForJzodSchemaWithResolution does not support schema references, please resolve schema in advance: " +
@@ -288,7 +292,8 @@ export function getDefaultValueForJzodSchemaWithResolution(
           miroirFundamentalJzodSchema,
           currentModel,
           miroirMetaModel,
-          relativeReferenceJzodContext
+          relativeReferenceJzodContext,
+          rootObject
         );
       }
       break;
@@ -401,7 +406,8 @@ export function getDefaultValueForJzodSchemaWithResolutionNonHook(
     miroirFundamentalJzodSchema,
     currentModel,
     miroirMetaModel,
-    relativeReferenceJzodContext
+    relativeReferenceJzodContext,
+    undefined // rootObject not available in non-hook version
   );
 }
 

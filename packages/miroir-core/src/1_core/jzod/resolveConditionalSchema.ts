@@ -21,48 +21,78 @@ MiroirLoggerFactory.registerLoggerToStart(
 // ################################################################################################
 export function resolveConditionalSchema(
   jzodSchema: JzodElement,
-  currentDefaultValue: any,
+  rootObject: any, // Changed from currentDefaultValue to rootObject
   currentValuePath: string[],
   getEntityInstancesUuidIndex: (
     deploymentUuid: Uuid,
     entityUuid: Uuid,
     sortBy?: string
   ) => EntityInstancesUuidIndex,
-  deploymentUuid: string
+  deploymentUuid: string,
+  context: 'defaultValue' | 'typeCheck' = 'typeCheck' // New parameter for context
 ) {
   let effectiveSchema: JzodElement = jzodSchema;
   if (jzodSchema.tag && jzodSchema.tag.value && jzodSchema.tag.value.conditionalMMLS) {
     // If the schema has a conditionalMMLS, we use it as the effective schema
-    if (
-      !jzodSchema.tag.value.conditionalMMLS.parentUuid ||
-      typeof jzodSchema.tag.value.conditionalMMLS.parentUuid !== "object"
-    ) {
-      throw new Error(
-        "getDefaultValueForJzodSchemaWithResolution called with jzodSchema.tag.value.conditionalMMLS.parentUuid that is not an object or is null: " +
-          JSON.stringify(jzodSchema.tag.value.conditionalMMLS.parentUuid, null, 2)
+    const conditionalConfig = jzodSchema.tag.value.conditionalMMLS;
+    
+    // Check for dual path configuration (Solution 2)
+    if (conditionalConfig.parentUuid && typeof conditionalConfig.parentUuid === "object") {
+      // Support both legacy single path and new dual path configurations
+      let pathToUse: string;
+      
+      // Type assertion to handle dual path configuration extensions
+      const extendedParentUuid = conditionalConfig.parentUuid as any;
+      
+      if (extendedParentUuid.defaultValuePath && extendedParentUuid.typeCheckPath) {
+        // New dual path configuration
+        pathToUse = context === 'defaultValue' 
+          ? extendedParentUuid.defaultValuePath 
+          : extendedParentUuid.typeCheckPath;
+      } else if (extendedParentUuid.path) {
+        // Legacy single path configuration (backward compatibility)
+        pathToUse = extendedParentUuid.path;
+      } else {
+        throw new Error(
+          "resolveConditionalSchema called with conditionalMMLS.parentUuid that has neither path nor defaultValuePath/typeCheckPath: " +
+            JSON.stringify(conditionalConfig.parentUuid, null, 2)
+        );
+      }
+      log.info(
+        "resolveConditionalSchema using pathToUse",
+        pathToUse,
+        "currentValuePath",
+        currentValuePath,
+        "on rootObject",
+        rootObject, 
       );
+      const parentUuid = resolveRelativePath(
+        rootObject,
+        currentValuePath,
+        pathToUse.split(".") as RelativePath
+      );
+      
+      log.info("getDefaultValueForJzodSchemaWithResolution resolved parentUuid", parentUuid);
+      // const parentEntityMMLSchema = getEntityInstancesUuidIndex(
+      const currentDeploymentEntityDefinitions: EntityDefinition[] =
+        getEntityInstancesUuidIndex(deploymentUuid, entityEntityDefinition.uuid) as any;
+      log.info(
+        "getDefaultValueForJzodSchemaWithResolution currentDeploymentEntityDefinitions",
+        currentDeploymentEntityDefinitions
+      );
+      const parentEntityDefinition = (
+        currentDeploymentEntityDefinitions.find(e => e.entityUuid === parentUuid) as EntityDefinition
+      ).jzodSchema;
+      log.info(
+        "getDefaultValueForJzodSchemaWithResolution parentEntityDefinition",
+        parentEntityDefinition
+      );
+      effectiveSchema = parentEntityDefinition;
     }
-    const parentUuid = resolveRelativePath(
-      currentDefaultValue,
-      currentValuePath,
-      jzodSchema.tag.value.conditionalMMLS.parentUuid.path.split(".") as RelativePath
-    );
-    log.info("getDefaultValueForJzodSchemaWithResolution resolved parentUuid", parentUuid);
-    // const parentEntityMMLSchema = getEntityInstancesUuidIndex(
-    const currentDeploymentEntityDefinitions: EntityInstancesUuidIndex =
-      getEntityInstancesUuidIndex(deploymentUuid, entityEntityDefinition.uuid);
     log.info(
-      "getDefaultValueForJzodSchemaWithResolution currentDeploymentEntityDefinitions",
-      currentDeploymentEntityDefinitions
+      "resolveConditionalSchema return effectiveSchema",
+      effectiveSchema,
     );
-    const parentEntityDefinition = (
-      currentDeploymentEntityDefinitions[parentUuid] as EntityDefinition
-    ).jzodSchema;
-    log.info(
-      "getDefaultValueForJzodSchemaWithResolution parentEntityDefinition",
-      parentEntityDefinition
-    );
-    effectiveSchema = parentEntityDefinition;
   }
   return effectiveSchema;
 }
