@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import {
   ApplicationSection,
   DomainElementSuccess,
+  EntityDefinition,
   EntityInstancesUuidIndex,
   JzodElement,
   JzodSchema,
@@ -20,158 +21,21 @@ import { getQueryRunnerParamsForDeploymentEntityState } from '../../2_domain/Dep
 import { Uuid } from '../../0_interfaces/1_core/EntityDefinition';
 import { getApplicationSection } from '../AdminApplication';
 import { Domain2QueryReturnType } from '../../0_interfaces/2_domain/DomainElement';
+import { getEntityInstancesUuidIndexNonHook } from '../../2_domain/DeploymentEntityStateQueryExecutor';
+import { RelativePath, resolvePathOnObject, resolveRelativePath } from '../../tools';
+import { entityEntity, entityEntityDefinition, transformer_extended_apply_wrapper } from '../..';
+import { resolveConditionalSchema } from './resolveConditionalSchema';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "getDefaultValueForJzodSchema")
 ).then((logger: LoggerInterface) => {log = logger});
 
-
-// // @deprecated
-// export function getDefaultValueForJzodSchemaDEFUNCT(
-//   jzodSchema:JzodElement
-// ): any {
-//   // log.info("getDefaultValueForJzodSchemaDEFUNCT called with jzodSchema", jzodSchema)
-//   if (jzodSchema.optional) {
-//     return undefined
-//   }
-//   // let result
-//   switch (jzodSchema.type) {
-//     case "object": {
-//       const result = Object.fromEntries(
-//         Object.entries(jzodSchema.definition)
-//         .filter(
-//           a => !a[1].optional
-//         )
-//         .map(
-//           a => [a[0], getDefaultValueForJzodSchemaDEFUNCT(a[1])]
-//       ));
-//       return result;
-//     }
-//     // case "simpleType": {
-//     //   if (jzodSchema.nullable) {
-//     //     return undefined;
-//     //   }
-//     //   switch (jzodSchema.definition) {
-//     //     case "string": {
-//     //       return "";
-//     //     }
-//     //     case "number":
-//     //     case "bigint": {
-//     //       return 0;
-//     //     }
-//     //     case "boolean": {
-//     //       return false;
-//     //     }
-//     //     case "date": {
-//     //       return new Date();
-//     //     }
-//     //     case "any": 
-//     //     case "undefined":
-//     //     case "null": {
-//     //       return undefined;
-//     //     }
-//     //     case "uuid":
-//     //     case "unknown":
-//     //     case "never":
-//     //     case "void": {
-//     //       throw new Error("getDefaultValueForJzodSchemaDEFUNCT can not generate value for schema type " + jzodSchema.type +  " definition " + jzodSchema.definition);
-//     //       break;
-//     //     }
-//     //     default:{
-//     //       throw new Error("getDefaultValueForJzodSchemaDEFUNCT default case, can not generate value for schema type " + JSON.stringify(jzodSchema, null, 2));
-//     //       break;
-//     //     }
-//     //   }
-//     // }
-//     case "string": {
-//       return "";
-//     }
-//     case "number":
-//     case "bigint": {
-//       return 0;
-//     }
-//     case "boolean": {
-//       return false;
-//     }
-//     case "date": {
-//       return new Date();
-//     }
-//     case "any": 
-//     case "undefined":
-//     case "null": {
-//       return undefined;
-//     }
-//     case "uuid":
-//     case "unknown":
-//     case "never":
-//     case "void": {
-//       throw new Error(
-//         "getDefaultValueForJzodSchemaDEFUNCT can not generate value for schema type " +
-//           jzodSchema.type
-//       );
-//       break;
-//     }
-//     case "literal": {
-//       return jzodSchema.definition
-//     }
-//     case "array": {
-//       return []
-//     }
-//     case "map": {
-//       return new Map();
-//     }
-//     case "set": {
-//       return new Set();
-//     }
-//     case "record": {
-//       return {}
-//     }
-//     case "schemaReference": {
-//       throw new Error(
-//         "getDefaultValueForJzodSchemaDEFUNCT does not support schema references, please resolve schema in advance: " +
-//           JSON.stringify(jzodSchema, null, 2)
-//       );
-//     }
-//     case "union": {
-//       // throw new Error("getDefaultValueForJzodSchemaDEFUNCT does not handle type: " + jzodSchema.type + " for jzodSchema="  + JSON.stringify(jzodSchema, null, 2));
-//       // just take the first choice for default value
-//       if (jzodSchema.definition.length == 0) {
-//         throw new Error(
-//           "getDefaultValueForJzodSchemaDEFUNCT union definition is empty for jzodSchema=" + JSON.stringify(jzodSchema, null, 2)
-//         );
-//       }
-//       return getDefaultValueForJzodSchemaDEFUNCT(jzodSchema.definition[0])
-//       break;
-//     }
-//     case "function":
-//     case "enum":
-//     case "lazy":
-//     case "intersection":
-//     case "promise":
-//     case "tuple": {
-//       throw new Error(
-//         "getDefaultValueForJzodSchemaDEFUNCT does not handle type: " +
-//           jzodSchema.type +
-//           " for jzodSchema=" +
-//           JSON.stringify(jzodSchema, null, 2)
-//       );
-//       break;
-//     }
-//     default: {
-//       throw new Error(
-//         "getDefaultValueForJzodSchemaDEFUNCT reached default case for type, this is a bug: " +
-//           JSON.stringify(jzodSchema, null, 2)
-//       );
-//       break;
-//     }
-//   }
-// }
-
 // ################################################################################################
 export function getDefaultValueForJzodSchemaWithResolution(
   jzodSchema: JzodElement,
   currentDefaultValue: any = undefined,
+  currentValuePath: string[] = [],
   getEntityInstancesUuidIndex:(
     deploymentUuid: Uuid,
     entityUuid: Uuid,
@@ -179,27 +43,43 @@ export function getDefaultValueForJzodSchemaWithResolution(
   ) => EntityInstancesUuidIndex,
   forceOptional: boolean = false,
   deploymentUuid: Uuid,
-  // applicationSection: ApplicationSection,
-  // deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<DeploymentEntityState>,
   miroirFundamentalJzodSchema: JzodSchema,
   currentModel?: MetaModel,
   miroirMetaModel?: MetaModel,
   relativeReferenceJzodContext?: { [k: string]: JzodElement },
 ): any {
+
   log.info(
-    "getDefaultValueForJzodSchemaWithResolution called with jzodSchema",
+    "getDefaultValueForJzodSchemaWithResolution called with",
+    "currentValuePath",
+    currentValuePath,
+    "jzodSchema",
     jzodSchema,
+    "currentDefaultValue",
+    currentDefaultValue,
     "forceOptional",
     forceOptional,
+    "deploymentUuid",
+    deploymentUuid,
   );
-  if (jzodSchema.optional && !forceOptional) {
+
+  let effectiveSchema: JzodElement = resolveConditionalSchema(
+    jzodSchema,
+    currentDefaultValue,
+    currentValuePath,
+    getEntityInstancesUuidIndex,
+    deploymentUuid
+  );
+
+  //  = jzodSchema.tag && jzodSchema.tag.value?.conditionalMMLS? jzodSchema:jzodSchema as JzodElement;
+  if (effectiveSchema.optional && !forceOptional) {
     return undefined;
   }
   // let result
-  switch (jzodSchema.type) {
+  switch (effectiveSchema.type) {
     case "object": {
       const resolvedObjectType = resolveObjectExtendClauseAndDefinition(
-        jzodSchema,
+        effectiveSchema,
         miroirFundamentalJzodSchema,
         currentModel,
         miroirMetaModel,
@@ -209,26 +89,29 @@ export function getDefaultValueForJzodSchemaWithResolution(
       //   "getDefaultValueForJzodSchemaWithResolution called with resolvedObjectType",
       //   resolvedObjectType
       // );
-      const result = Object.fromEntries(
-        // Object.entries(jzodSchema.definition)
-        Object.entries(resolvedObjectType.definition)
-          .filter((a) => !a[1].optional)
-          .map((a) => [
-            a[0],
-            getDefaultValueForJzodSchemaWithResolution(
-              a[1],
-              currentDefaultValue,
-              getEntityInstancesUuidIndex,
-              forceOptional,
-              deploymentUuid,
-              // deploymentEntityStateSelectorMap,
-              miroirFundamentalJzodSchema,
-              currentModel,
-              miroirMetaModel,
-              relativeReferenceJzodContext
-            ),
-          ])
-      );
+      let result: Record<string, any> = {};
+
+      // Object.fromEntries(
+      Object.entries(resolvedObjectType.definition)
+        .filter((a) => !a[1].optional)
+        .forEach((a) => {
+          const attributeName = a[0];
+          const attributeValue = getDefaultValueForJzodSchemaWithResolution(
+            a[1],
+            result,
+            currentValuePath.concat([a[0]]),
+            getEntityInstancesUuidIndex,
+            forceOptional,
+            deploymentUuid,
+            // deploymentEntityStateSelectorMap,
+            miroirFundamentalJzodSchema,
+            currentModel,
+            miroirMetaModel,
+            relativeReferenceJzodContext
+          );
+          result[attributeName] = attributeValue;
+        });
+      // );
       // log.info(
       //   "getDefaultValueForJzodSchemaWithResolution result",
       //   result
@@ -258,18 +141,77 @@ export function getDefaultValueForJzodSchemaWithResolution(
       // return "00000000-0000-0000-0000-000000000000"; // default UUID value
       // TODO: handle case where UUID is optional (?)
       // TODO: handle case whet UUID is a foreign key reference
-      if (jzodSchema.tag && jzodSchema.tag.value && jzodSchema.tag.value.initializeTo) {
-        return jzodSchema.tag.value.initializeTo;
+      log.info(
+        "getDefaultValueForJzodSchemaWithResolutionWithResolution called for UUID",
+        "deploymentUuid", deploymentUuid,
+        "effectiveSchema", effectiveSchema,
+      );
+      if (
+        effectiveSchema.tag &&
+        effectiveSchema.tag.value &&
+        effectiveSchema.tag.value.initializeTo?.initializeToType == "value" &&
+        effectiveSchema.tag.value.initializeTo.value
+      ) {
+        const result = effectiveSchema.tag.value.initializeTo.value;
+        log.info(
+          "getDefaultValueForJzodSchemaWithResolutionWithResolution returning UUID from tag.value.initializeTo.value",
+          "currentValuePath", currentValuePath,
+          "result", result
+        );
+        return result;
       }
-      if (jzodSchema.tag && jzodSchema.tag.value && jzodSchema.tag.value.targetEntity) {
+      if (
+        effectiveSchema.tag &&
+        effectiveSchema.tag.value &&
+        effectiveSchema.tag.value.initializeTo?.initializeToType == "transformer" &&
+        effectiveSchema.tag.value.initializeTo.transformer
+      ) {
+        log.info(
+          "getDefaultValueForJzodSchemaWithResolution calling transformer_extended_apply_wrapper for UUID",
+          "deploymentUuid", deploymentUuid,
+          "jzodSchema.tag.value.initializeTo.transformer",
+          effectiveSchema.tag.value.initializeTo.transformer
+        );
+        const result = transformer_extended_apply_wrapper(
+          "build",
+          undefined,
+          effectiveSchema.tag.value.initializeTo.transformer,
+          {
+            deploymentUuid
+          }, // parameters
+          {}, // runtimeContext
+          "value"
+        );
+        log.info(
+          "getDefaultValueForJzodSchemaWithResolutionWithResolution returning UUID from transformer",
+          "currentValuePath", currentValuePath,
+          "result", result
+        );
+        return result;
+      }
+      if (effectiveSchema.tag && effectiveSchema.tag.value && effectiveSchema.tag.value.targetEntity) {
         const foreignKeyObjects: EntityInstancesUuidIndex = getEntityInstancesUuidIndex(
           deploymentUuid,
-          jzodSchema.tag.value.targetEntity,
-          jzodSchema.tag.value.targetEntityOrderInstancesBy
+          effectiveSchema.tag.value.targetEntity,
+          effectiveSchema.tag.value.targetEntityOrderInstancesBy
         )
-        return Object.values(foreignKeyObjects)[0]?.uuid;
+        const result = Object.values(foreignKeyObjects)[0]?.uuid;
+        log.info(
+          "getDefaultValueForJzodSchemaWithResolution returning default UUID value from foreign key",
+          "currentValuePath",
+          currentValuePath,
+          "result",
+          result
+        );
+        return result;
       }
-      return uuidv4(); // default UUID value
+      const result = uuidv4();
+      log.info(
+        "getDefaultValueForJzodSchemaWithResolution returning random UUID value",
+        "currentValuePath", currentValuePath,
+        "result", result,
+      );
+      return result;
     }
     case "unknown":
     case "never":
@@ -281,7 +223,7 @@ export function getDefaultValueForJzodSchemaWithResolution(
       break;
     }
     case "literal": {
-      return jzodSchema.definition;
+      return effectiveSchema.definition;
     }
     case "array": {
       return [];
@@ -298,7 +240,7 @@ export function getDefaultValueForJzodSchemaWithResolution(
     case "schemaReference": {
       const resolvedReference = resolveJzodSchemaReferenceInContext(
         miroirFundamentalJzodSchema,
-        jzodSchema,
+        effectiveSchema,
         currentModel,
         miroirMetaModel,
         relativeReferenceJzodContext
@@ -306,6 +248,7 @@ export function getDefaultValueForJzodSchemaWithResolution(
       return getDefaultValueForJzodSchemaWithResolution(
         resolvedReference,
         currentDefaultValue,
+        currentValuePath,
         getEntityInstancesUuidIndex,
         forceOptional,
         deploymentUuid,
@@ -316,26 +259,27 @@ export function getDefaultValueForJzodSchemaWithResolution(
         miroirMetaModel,
         relativeReferenceJzodContext
       );
-      throw new Error(
-        "getDefaultValueForJzodSchemaWithResolution does not support schema references, please resolve schema in advance: " +
-          JSON.stringify(jzodSchema, null, 2)
-      );
+      // throw new Error(
+      //   "getDefaultValueForJzodSchemaWithResolution does not support schema references, please resolve schema in advance: " +
+      //     JSON.stringify(jzodSchema, null, 2)
+      // );
     }
     case "union": {
-      // throw new Error("getDefaultValueForJzodSchemaWithResolution does not handle type: " + jzodSchema.type + " for jzodSchema="  + JSON.stringify(jzodSchema, null, 2));
+      // throw new Error("getDefaultValueForJzodSchemaWithResolution does not handle type: " + effectiveSchema.type + " for effectiveSchema="  + JSON.stringify(effectiveSchema, null, 2));
       // just take the first choice for default value
-      if (jzodSchema.definition.length == 0) {
+      if (effectiveSchema.definition.length == 0) {
         throw new Error(
-          "getDefaultValueForJzodSchemaWithResolution union definition is empty for jzodSchema=" +
-            JSON.stringify(jzodSchema, null, 2)
+          "getDefaultValueForJzodSchemaWithResolution union definition is empty for effectiveSchema=" +
+            JSON.stringify(effectiveSchema, null, 2)
         );
       }
-      if (jzodSchema.tag?.value?.initializeTo) {
-        return jzodSchema.tag?.value?.initializeTo;
+      if (jzodSchema.tag?.value?.initializeTo?.initializeToType == "value") {
+        return jzodSchema.tag?.value?.initializeTo.value;
       } else {
         return getDefaultValueForJzodSchemaWithResolution(
-          jzodSchema.definition[0],
+          effectiveSchema.definition[0],
           currentDefaultValue,
+          currentValuePath,
           getEntityInstancesUuidIndex,
           forceOptional,
           deploymentUuid,
@@ -350,14 +294,14 @@ export function getDefaultValueForJzodSchemaWithResolution(
       break;
     }
     case "enum": {
-      if (jzodSchema.tag?.value?.initializeTo) {
-        return jzodSchema.tag?.value?.initializeTo;
-      // } else if (jzodSchema.definition.length > 0) {
-      //   return jzodSchema.definition[0];
+      if (effectiveSchema.tag?.value?.initializeTo?.initializeToType == "value") {
+        return effectiveSchema.tag?.value?.initializeTo.value;
+      // } else if (effectiveSchema.definition.length > 0) {
+      //   return effectiveSchema.definition[0];
       } else {
         throw new Error(
-          "getDefaultValueForJzodSchemaWithResolution enum definition does not have 'tag.value.initalizeTo' for jzodSchema=" +
-            JSON.stringify(jzodSchema, null, 2)
+          "getDefaultValueForJzodSchemaWithResolution enum definition does not have 'tag.value.initalizeTo' for effectiveSchema=" +
+            JSON.stringify(effectiveSchema, null, 2)
         );
       }
       break;
@@ -369,20 +313,96 @@ export function getDefaultValueForJzodSchemaWithResolution(
     case "tuple": {
       throw new Error(
         "getDefaultValueForJzodSchemaWithResolution does not handle type: " +
-          jzodSchema.type +
-          " for jzodSchema=" +
-          JSON.stringify(jzodSchema, null, 2)
+          effectiveSchema.type +
+          " for effectiveSchema=" +
+          JSON.stringify(effectiveSchema, null, 2)
       );
       break;
     }
     default: {
       throw new Error(
         "getDefaultValueForJzodSchemaWithResolution reached default case for type, this is a bug: " +
-          JSON.stringify(jzodSchema, null, 2)
+          JSON.stringify(effectiveSchema, null, 2)
       );
       break;
     }
   }
+}
+
+
+// ################################################################################################
+/**
+ * Non-hook version of getDefaultValueForJzodSchemaWithResolution that uses DeploymentEntityState directly
+ * instead of relying on React hooks for data fetching
+ */
+export function getDefaultValueForJzodSchemaWithResolutionNonHook(
+  jzodSchema: JzodElement,
+  currentDefaultValue: any = undefined,
+  currentValuePath: string[] = [],
+  deploymentEntityState: DeploymentEntityState | undefined = undefined,
+  forceOptional: boolean = false,
+  deploymentUuid: Uuid | undefined,
+  miroirFundamentalJzodSchema: JzodSchema,
+  currentModel?: MetaModel,
+  miroirMetaModel?: MetaModel,
+  relativeReferenceJzodContext?: { [k: string]: JzodElement },
+): any {
+  log.info(
+    "getDefaultValueForJzodSchemaWithResolutionNonHook called with",
+    "deploymentUuid",
+    deploymentUuid,
+    "jzodSchema",
+    jzodSchema,
+    "forceOptional",
+    forceOptional,
+    "currentDefaultValue",
+    currentDefaultValue,
+    "currentValuePath",
+    currentValuePath,
+    "deploymentEntityState", deploymentEntityState,
+  );
+  // Create a function that uses the deployment entity state directly
+  if (deploymentUuid == undefined || deploymentUuid.length < 8 || !deploymentEntityState) {
+    return undefined;
+    // throw new Error(
+    //   "getDefaultValueForJzodSchemaWithResolutionNonHook called with invalid deploymentUuid or deploymentEntityState"
+    // );
+  }
+  const getEntityInstancesUuidIndex = (
+    deploymentUuid: Uuid,
+    entityUuid: Uuid,
+    sortBy?: string
+  ): EntityInstancesUuidIndex => {
+    log.info(
+      "getEntityInstancesUuidIndex called with",
+      "deploymentUuid",
+      deploymentUuid,
+      "entityUuid",
+      entityUuid,
+      "sortBy",
+      sortBy
+    );
+    return getEntityInstancesUuidIndexNonHook(
+      deploymentEntityState,
+      deploymentUuid,
+      entityUuid,
+      sortBy
+    );
+  };
+
+  // Call the original function with our new getter
+  return getDefaultValueForJzodSchemaWithResolution(
+    jzodSchema,
+    currentDefaultValue,
+    currentValuePath,
+    getEntityInstancesUuidIndex,
+    forceOptional,
+    deploymentUuid,
+    miroirFundamentalJzodSchema,
+    currentModel,
+    miroirMetaModel,
+    relativeReferenceJzodContext
+  );
 }
 
 

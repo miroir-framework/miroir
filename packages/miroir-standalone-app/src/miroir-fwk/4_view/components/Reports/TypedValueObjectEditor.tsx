@@ -168,10 +168,12 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
               };
             }
             return result;
-          }, [valueObjectMMLSchema, valueObject, context]);
+          }, [valueObjectMMLSchema, valueObject, formik.values, context]);
         log.info(
           "TypedValueObjectEditor jzodTypeCheck done for render",
           navigationCount,
+          "formik.values",
+          formik.values,
           "resolvedJzodSchema",
           resolvedJzodSchema
         );
@@ -181,16 +183,18 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
             resolvedJzodSchema
           );
           const jsonString = JSON.stringify(resolvedJzodSchema, null, 2);
+          // const jsonString = JSON.stringify(resolvedJzodSchema);
           const lines = jsonString?.split("\n");
           const maxLineLength = lines?Math.max(...lines.map((line) => line.length)): 0;
           const fixedWidth = Math.min(Math.max(maxLineLength * 0.6, 1200), 1800);
           typeError = (
             <ReactCodeMirror
               editable={false}
-              height="100ex"
+              height="400px"
               style={{
                 width: `${fixedWidth}px`,
                 maxWidth: "90vw",
+                maxHeight: "100px",
               }}
               value={jsonString}
               extensions={[
@@ -199,10 +203,12 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
                 EditorView.theme({
                   ".cm-editor": {
                     width: `${fixedWidth}px`,
+                    maxHeight: "100px",
                   },
                   ".cm-scroller": {
                     width: "100%",
-                    overflow: "hidden",
+                    overflow: "auto",
+                    maxHeight: "100px",
                   },
                   ".cm-content": {
                     minWidth: `${fixedWidth}px`,

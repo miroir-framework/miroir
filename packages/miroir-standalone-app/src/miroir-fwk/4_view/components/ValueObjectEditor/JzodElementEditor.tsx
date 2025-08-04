@@ -305,17 +305,20 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
       codeMirrorIsValidJson,
     ]
   );
-  const displayCodeEditor =
-    props.hasTypeError ||
-    !localResolvedElementJzodSchemaBasedOnValue || // same as props.hasTypeError?
-    !displayAsStructuredElement ||
-    currentKeyMap?.rawSchema?.type == "any" ||
-    ["undefined", "any"].includes(localResolvedElementJzodSchemaBasedOnValue.type);
+  const displayCodeEditor = true;
+  // const displayCodeEditor =
+  //   !props.typeCheckKeyMap ||
+  //   !currentKeyMap ||
+  //   !localResolvedElementJzodSchemaBasedOnValue || // same as props.hasTypeError?
+  //   !displayAsStructuredElement ||
+  //   currentKeyMap?.rawSchema?.type == "any" ||
+  //   ["undefined", "any"].includes(localResolvedElementJzodSchemaBasedOnValue.type);
 
-  const hideSubJzodEditor = useMemo(() => 
-    props.hidden || props.insideAny || displayCodeEditor, 
-    [props.hidden, props.insideAny, props.hasTypeError]
-  );
+  const hideSubJzodEditor = false; 
+  // const hideSubJzodEditor = useMemo(() => 
+  //   props.hidden || props.insideAny || displayCodeEditor, 
+  //   [props.hidden, props.insideAny, props.hasTypeError]
+  // );
 
 
   // log.info("JzodElementEditor",
@@ -341,16 +344,17 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
     !isUnderTest &&
     displayCodeEditor &&
     (
-      props.resolvedElementJzodSchema?.type == "object" ||
-      props.resolvedElementJzodSchema?.type == "record" ||
-      props.resolvedElementJzodSchema?.type == "array" ||
-      props.resolvedElementJzodSchema?.type == "tuple" ||
-      props.resolvedElementJzodSchema?.type == "any"
+      currentKeyMap?.resolvedSchema?.type == "object" ||
+      currentKeyMap?.resolvedSchema?.type == "record" ||
+      currentKeyMap?.resolvedSchema?.type == "array" ||
+      currentKeyMap?.resolvedSchema?.type == "tuple" ||
+      currentKeyMap?.resolvedSchema?.type == "any"
     ),
     [
       isUnderTest,
       displayCodeEditor,
-      props.resolvedElementJzodSchema?.type
+      currentKeyMap?.resolvedSchema?.type,
+      // props.resolvedElementJzodSchema?.type
     ]
   );
 
@@ -897,7 +901,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                       display: !displayCodeEditor ? "none" : "inline-block",
                     }}
                   >
-                    code editor:
+                    code editor: {shouldShowCodeEditor ? "yes" : "no"}{" hideSubJzodEditor "}{hideSubJzodEditor ? "hidden" : "visible"}{" "}
                     {shouldShowCodeEditor && (
                       <JzodElementEditorReactCodeMirror
                         // initialValue={safeStringify(currentValue)}

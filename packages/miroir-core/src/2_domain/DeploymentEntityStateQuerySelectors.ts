@@ -383,6 +383,7 @@ export const extractEntityJzodSchemaFromDeploymentEntityState = (
 export function getDeploymentEntityStateSelectorMap(): SyncBoxedExtractorOrQueryRunnerMap<DeploymentEntityState> {
   return {
     extractorType: "sync",
+    extractState: (deploymentEntityState: DeploymentEntityState, params: any) => deploymentEntityState,
     extractEntityInstanceUuidIndex: selectEntityInstanceUuidIndexFromDeploymentEntityState,
     extractEntityInstanceList: selectEntityInstanceListFromDeploymentEntityState,
     extractEntityInstance: selectEntityInstanceFromDeploymentEntityState,

@@ -23,6 +23,10 @@ const deploymentEntityStateSelectorParams = (domainState: DeploymentEntityState,
 export function getMemoizedDeploymentEntityStateSelectorForTemplateMap(): SyncBoxedExtractorOrQueryRunnerMap<DeploymentEntityState> {
   return {
     extractorType: "sync",
+    extractState: createSelector(
+      [deploymentEntityStateSelector, deploymentEntityStateSelectorParams],
+      (deploymentEntityState, params) => deploymentEntityState
+    ),
     extractEntityInstance: createSelector(
       [deploymentEntityStateSelector, deploymentEntityStateSelectorParams],
       selectEntityInstanceFromDeploymentEntityState

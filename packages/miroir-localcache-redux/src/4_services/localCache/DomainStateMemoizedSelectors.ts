@@ -17,12 +17,17 @@ import {
   selectEntityInstanceUuidIndexFromDeploymentEntityState
 } from "miroir-core";
 
-const deploymentEntityStateSelector = (deploymentEntityState: DeploymentEntityState, params: any) => deploymentEntityState;
+const deploymentEntityStateSelector = (deploymentEntityState: DeploymentEntityState, params: any) =>
+  deploymentEntityState;
 const deploymentEntityStateSelectorParams = (deploymentEntityState: DeploymentEntityState, params: any) => params;
 
 export function getMemoizedDeploymentEntityStateSelectorMap(): SyncBoxedExtractorOrQueryRunnerMap<DeploymentEntityState> {
   return {
     extractorType: "sync",
+    extractState: createSelector(
+      [deploymentEntityStateSelector, deploymentEntityStateSelectorParams],
+      (deploymentEntityState, params) => deploymentEntityState
+    ),
     extractEntityInstance: createSelector(
       [deploymentEntityStateSelector, deploymentEntityStateSelectorParams],
       selectEntityInstanceFromDeploymentEntityState
@@ -56,7 +61,6 @@ export function getMemoizedDeploymentEntityStateSelectorMap(): SyncBoxedExtracto
       [deploymentEntityStateSelector, deploymentEntityStateSelectorParams],
       runQueryTemplateWithExtractorCombinerTransformer
     ),
-
   };
 }
 

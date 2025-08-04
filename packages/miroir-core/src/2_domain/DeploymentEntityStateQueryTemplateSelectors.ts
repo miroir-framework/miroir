@@ -56,6 +56,7 @@ export const runQueryTemplateFromDeploymentEntityState: SyncQueryTemplateRunner<
 export function getDeploymentEntityStateSelectorTemplateMap(): SyncBoxedExtractorOrQueryRunnerMap<DeploymentEntityState> {
   return {
     extractorType: "sync",
+    extractState: (deploymentEntityState: DeploymentEntityState, params: any) => deploymentEntityState,
     extractEntityInstanceUuidIndex: selectEntityInstanceUuidIndexFromDeploymentEntityState,
     extractEntityInstanceList: selectEntityInstanceListFromDeploymentEntityState,
     extractEntityInstance: selectEntityInstanceFromDeploymentEntityState,

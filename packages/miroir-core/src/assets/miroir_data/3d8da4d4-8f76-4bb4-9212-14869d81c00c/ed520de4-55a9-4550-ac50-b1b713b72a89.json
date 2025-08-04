@@ -28,7 +28,15 @@
                 "id": 1,
                 "canBeTemplate": true,
                 "defaultLabel": "deployment Uuid",
-                "editable": false
+                "editable": false,
+                "initializeTo": {
+                  "initializeToType": "transformer",
+                  "transformer": {
+                    "transformerType": "parameterReference",
+                    "interpolation": "build",
+                    "referenceName": "deploymentUuid"
+                  }
+                }
               }
             }
           },
@@ -60,7 +68,7 @@
                 "tag": {
                   "value": {
                     "id": 2,
-                    "defaultLabel": "Entity Instances to create",
+                    "defaultLabel": "Entity Instances (objects) to create",
                     "editable": true
                   }
                 },
@@ -84,7 +92,7 @@
                       "tag": {
                         "value": {
                           "id": 2,
-                          "defaultLabel": "Parent Name",
+                          "defaultLabel": "Parent Uuid",
                           "editable": false,
                           "canBeTemplate": true,
                           "targetEntityApplicationSection": "model",
@@ -108,7 +116,7 @@
                         "tag": {
                           "value": {
                             "canBeTemplate": true,
-                            "runtimeType": {
+                            "conditionalMMLS": {
                               "parentUuid": {
                                 "path": "#.parentUuid"
                               }

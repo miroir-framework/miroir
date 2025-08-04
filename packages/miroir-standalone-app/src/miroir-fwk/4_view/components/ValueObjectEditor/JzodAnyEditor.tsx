@@ -1,11 +1,14 @@
 
 
 import {
+  DeploymentEntityState,
   getDefaultValueForJzodSchemaWithResolution,
+  getDefaultValueForJzodSchemaWithResolutionNonHook,
   LoggerInterface,
   miroirFundamentalJzodSchema,
   MiroirLoggerFactory,
-  resolvePathOnObject
+  resolvePathOnObject,
+  SyncBoxedExtractorOrQueryRunnerMap
 } from "miroir-core";
 
 import { packageName } from "../../../../constants";
@@ -16,6 +19,8 @@ import { JzodAnyEditorProps } from "./JzodElementEditorInterface";
 import { ChangeValueTypeSelect } from "../ChangeValueTypeSelect";
 import { JzodElement, JzodSchema } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { measuredUseJzodElementEditorHooks } from "../../tools/hookPerformanceMeasure";
+import { getMemoizedDeploymentEntityStateSelectorMap, ReduxStateWithUndoRedo } from "miroir-localcache-redux";
+import { useSelector } from "react-redux";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -56,6 +61,13 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
     );
   
   const currentValue = resolvePathOnObject(formik.values, rootLessListKeyArray);
+  const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<DeploymentEntityState> =
+      getMemoizedDeploymentEntityStateSelectorMap();
+
+  const deploymentEntityState: DeploymentEntityState = useSelector(
+    (state: ReduxStateWithUndoRedo) =>
+      deploymentEntityStateSelectorMap.extractState(state.presentModelSnapshot.current, () => ({}))
+  );
 
 
   return (
@@ -66,9 +78,13 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
             log.info(
               `JzodAnyEditor: Change value type to ${type} for ${rootLessListKey}`
             );
-            const defaultValue = getDefaultValueForJzodSchemaWithResolution(
+            const defaultValue = getDefaultValueForJzodSchemaWithResolutionNonHook(
               type,
+              undefined, // currentDefaultValue is not known yet, this is what this call will determine
+              [], // currentPath on value is root
+              deploymentEntityState,
               true, // force optional attributes to receive a default value
+              currentDeploymentUuid,
               miroirFundamentalJzodSchema as JzodSchema, // context.miroirFundamentalJzodSchema,
               currentModel,
               miroirMetaModel

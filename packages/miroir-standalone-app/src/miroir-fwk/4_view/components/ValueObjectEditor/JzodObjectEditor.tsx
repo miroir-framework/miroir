@@ -20,6 +20,9 @@ import {
   UnfoldJzodSchemaOnceReturnType,
   KeyMapEntry,
   foldableElementTypes,
+  getDefaultValueForJzodSchemaWithResolutionNonHook,
+  DeploymentEntityState,
+  SyncBoxedExtractorOrQueryRunnerMap,
 } from "miroir-core";
 
 import { indentShift } from "./JzodArrayEditor";
@@ -53,6 +56,8 @@ import {
   measuredUseJzodElementEditorHooks,
 } from "../../tools/hookPerformanceMeasure";
 import { keymap } from "@uiw/react-codemirror";
+import { getMemoizedDeploymentEntityStateSelectorMap, ReduxStateWithUndoRedo } from "miroir-localcache-redux";
+import { useSelector } from "react-redux";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -374,7 +379,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
   //   rootLessListKey,
   //   "rawJzodSchema",
   //   JSON.stringify(rawJzodSchema, null, 2),
-  //   "rootLessListKeyMap",
+  //   "rootLessListKeyMapDEFUNCT",
   //   JSON.stringify(localRootLessListKeyMap, null, 2),
   // );
   const {
@@ -413,6 +418,14 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
   const currentValue = useMemo(
     () => resolvePathOnObject(formik.values, rootLessListKeyArray),
     [formik.values, rootLessListKeyArray]
+  );
+
+  const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<DeploymentEntityState> =
+      getMemoizedDeploymentEntityStateSelectorMap();
+
+  const deploymentEntityState: DeploymentEntityState = useSelector(
+    (state: ReduxStateWithUndoRedo) =>
+      deploymentEntityStateSelectorMap.extractState(state.presentModelSnapshot.current, () => ({}))
   );
 
   const foldableItemsCount = useMemo(() => {
@@ -523,9 +536,13 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
     const newAttributeType: JzodElement = (currentTypeCheckKeyMap.rawSchema as JzodRecord)?.definition;
     // log.info("addExtraRecordEntry newAttributeType", JSON.stringify(newAttributeType, null, 2));
     const newAttributeValue = currentMiroirFundamentalJzodSchema
-      ? measuredGetDefaultValueForJzodSchemaWithResolution(
+      ? getDefaultValueForJzodSchemaWithResolutionNonHook(
           currentTypeCheckKeyMap?.rawSchema.definition,
+          undefined, // currentDefaultValue is not known yet, this is what this call will determine
+          [], // currentPath on value is root
+          deploymentEntityState,
           true, // force optional attributes to receive a default value
+          currentDeploymentUuid,
           currentMiroirFundamentalJzodSchema,
           currentModel,
           miroirMetaModel
@@ -585,9 +602,13 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
         ["definition", attributeName]
       );
       const newAttributeValue = !!currentMiroirFundamentalJzodSchema
-        ? getDefaultValueForJzodSchemaWithResolution(
+        ? getDefaultValueForJzodSchemaWithResolutionNonHook(
             newAttributeType,
+            undefined, // currentDefaultValue is not known yet, this is what this call will determine
+            [], // currentPath on value is root
+            deploymentEntityState,
             true, // force optional attributes to receive a default value
+            currentDeploymentUuid,
             currentMiroirFundamentalJzodSchema,
             currentModel,
             miroirMetaModel,

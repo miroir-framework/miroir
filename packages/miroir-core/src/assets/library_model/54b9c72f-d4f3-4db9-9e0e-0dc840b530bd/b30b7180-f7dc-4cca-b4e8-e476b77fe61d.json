@@ -44,7 +44,11 @@
           "value": {
             "id": 3,
             "defaultLabel": "Entity Uuid",
-            "editable": false
+            "editable": false,
+            "initializeTo": {
+              "initializeToType": "value",
+              "value": "d7a144ff-d1b9-4135-800c-a7cfc1f38733"
+            }
           }
         }
       },

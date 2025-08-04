@@ -232,6 +232,7 @@ export type AsyncBoxedExtractorOrQueryRunnerMap = {
 
 export type SyncBoxedExtractorOrQueryRunnerMap<StateType> = {
   extractorType: "sync";
+  extractState: (state: StateType, params: any) => StateType;
   extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList: SyncExtractWithBoxedExtractorOrCombinerReturningObjectOrObjectList<StateType>;
   runQuery: SyncQueryRunner<StateType, Domain2QueryReturnType<any>>;
   extractEntityInstance: SyncBoxedExtractorRunner<

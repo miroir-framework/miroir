@@ -1,4 +1,5 @@
 
+import { FormikProps } from "formik";
 import {
   ApplicationSection,
   EntityInstance,
@@ -29,8 +30,7 @@ export interface JzodEditorPropsRoot {
   currentDeploymentUuid?: Uuid,
   currentApplicationSection?: ApplicationSection;
   initialFormState?: any;
-  // rawJzodSchema: JzodElement | undefined;
-  resolvedElementJzodSchema: JzodElement | undefined;
+  resolvedElementJzodSchema: JzodElement | undefined; // TODO: remove (?) this is included in typeCheckKeyMap
   typeCheckKeyMap: Record<string, KeyMapEntry> | undefined;
   // objects
   foreignKeyObjects: Record<string, EntityInstancesUuidIndex>; // prop drilling: for uuid / objects only

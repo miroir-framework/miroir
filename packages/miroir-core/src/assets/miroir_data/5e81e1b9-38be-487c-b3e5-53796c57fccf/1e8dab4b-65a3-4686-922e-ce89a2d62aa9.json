@@ -56,8 +56,49 @@
                   "optional": true
                 },
                 "initializeTo": {
-                  "type": "any",
-                  "optional": true
+                  "type": "union",
+                  "discriminator": "initializeToType",
+                  "optional": true,
+                  "definition": [
+                    {
+                      "type": "object",
+                      "optional": true,
+                      "definition": {
+                        "initializeToType": {
+                          "type": "literal",
+                          "definition": "value"
+                        },
+                        "value": {
+                          "type": "any",
+                          "optional": true
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "optional": true,
+                      "definition": {
+                        "initializeToType": {
+                          "type": "literal",
+                          "definition": "transformer"
+                        },
+                        "transformer": {
+                          "type": "any",
+                          "tag": {
+                            "value": {
+                              "conditionalMMLS": {
+                                "mmlsReference": {
+                                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                  "relativePath": "transformerForBuild"
+                                }
+                              }
+                            }
+                          },
+                          "optional": true
+                        }
+                      }
+                    }
+                  ]
                 },
                 "targetEntity": {
                   "type": "string",
@@ -80,7 +121,7 @@
                   "type": "boolean",
                   "optional": true
                 },
-                "runtimeType": {
+                "conditionalMMLS": {
                   "type": "object",
                   "optional": true,
                   "definition": {
@@ -91,6 +132,18 @@
                         { "type": "string" },
                         { "type": "object", "definition": { "path": { "type": "string" } } }
                       ]
+                    },
+                    "mmlsReference": {
+                      "type": "object",
+                      "definition": {
+                        "absolutePath": {
+                          "type": "string",
+                          "optional": true
+                        },
+                        "relativePath": {
+                          "type": "string"
+                        }
+                      }
                     }
                   }
                 },
@@ -138,8 +191,49 @@
                     "optional": true
                   },
                   "initializeTo": {
-                    "type": "any",
-                    "optional": true
+                    "type": "union",
+                    "discriminator": "initializeToType",
+                    "optional": true,
+                    "definition": [
+                      {
+                        "type": "object",
+                        "optional": true,
+                        "definition": {
+                          "initializeToType": {
+                            "type": "literal",
+                            "definition": "value"
+                          },
+                          "value": {
+                            "type": "any",
+                            "optional": true
+                          }
+                        }
+                      },
+                      {
+                        "type": "object",
+                        "optional": true,
+                        "definition": {
+                          "initializeToType": {
+                            "type": "literal",
+                            "definition": "transformer"
+                          },
+                          "transformer": {
+                            "type": "any",
+                            "tag": {
+                              "value": {
+                                "conditionalMMLS": {
+                                  "mmlsReference": {
+                                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                    "relativePath": "transformerForBuild"
+                                  }
+                                }
+                              }
+                            },
+                            "optional": true
+                          }
+                        }
+                      }
+                    ]
                   },
                   "targetEntity": {
                     "type": "string",
@@ -162,17 +256,29 @@
                     "type": "boolean",
                     "optional": true
                   },
-                  "runtimeType": {
+                  "conditionalMMLS": {
                     "type": "object",
                     "optional": true,
                     "definition": {
-                      "parentUuid": { 
+                      "parentUuid": {
                         "type": "union",
                         "optional": true,
                         "definition": [
                           { "type": "string" },
-                          { "type": "object", "definition": { "path": { "type": "string"}} }
+                          { "type": "object", "definition": { "path": { "type": "string" } } }
                         ]
+                      },
+                      "mmlsReference": {
+                        "type": "object",
+                        "definition": {
+                          "absolutePath": {
+                            "type": "string",
+                            "optional": true
+                          },
+                          "relativePath": {
+                            "type": "string"
+                          }
+                        }
                       }
                     }
                   },

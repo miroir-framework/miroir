@@ -5,6 +5,7 @@ import React, { FC, useCallback, useMemo } from "react";
 import {
   adminConfigurationDeploymentMiroir,
   getDefaultValueForJzodSchemaWithResolution,
+  getDefaultValueForJzodSchemaWithResolutionNonHook,
   JzodElement,
   JzodLiteral,
   JzodObject,
@@ -137,9 +138,13 @@ export const JzodLiteralEditor: FC<JzodLiteralEditorProps> =  (
     // log.info("handleSelectLiteralChange newJzodSchemaWithOptional", newJzodSchemaWithOptional);
 
     const defaultValue = currentMiroirFundamentalJzodSchema
-      ? getDefaultValueForJzodSchemaWithResolution(
+      ? getDefaultValueForJzodSchemaWithResolutionNonHook(
           newJzodSchemaWithOptional,
+          undefined, // currentDefaultValue is not known yet, this is what this call will determine
+          [], // currentPath on value is root
+          undefined, // deploymentEntityState is not needed here
           true, // force optional attributes to receive a default value
+          currentDeploymentUuid,
           currentMiroirFundamentalJzodSchema, // context.miroirFundamentalJzodSchema,
           currentModel,
           miroirMetaModel

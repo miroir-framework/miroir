@@ -12,7 +12,7 @@ import { jzodTypeCheck, ResolvedJzodSchemaReturnType } from "./jzodTypeCheck";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "rootLessListKeyMap")
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "rootLessListKeyMapDEFUNCT")
 ).then((logger: LoggerInterface) => {
   log = logger;
 });
@@ -151,7 +151,7 @@ function mapResolveJzodSchemaToValueKeys(
  * @param currentValue - The current value of the Jzod element.
  * @returns A map with the root-less list key and its resolved Jzod schema.
  */
-export function rootLessListKeyMap(
+export function rootLessListKeyMapDEFUNCT(
   rootLessListKey: string,
   rawJzodSchema: JzodElement | undefined,
   resolvedElementJzodSchemaBasedOnValue: JzodElement | undefined,
@@ -183,7 +183,7 @@ export function rootLessListKeyMap(
       returnedLocalResolvedElementJzodSchemaBasedOnValue.status == "error"
     ) {
       throw new Error(
-        "rootLessListKeyMap " +
+        "rootLessListKeyMapDEFUNCT " +
           "path '" +
           rootLessListKey +
           "' could not jzodTypeCheck for " +
@@ -203,7 +203,7 @@ export function rootLessListKeyMap(
   }
 
   // log.info(
-  //   "rootLessListKeyMap found localResolvedElementJzodSchemaBasedOnValue",
+  //   "rootLessListKeyMapDEFUNCT found localResolvedElementJzodSchemaBasedOnValue",
   //   localResolvedElementJzodSchemaBasedOnValue,
   //   "for rootLessListKey",
   //   rootLessListKey,
@@ -218,7 +218,7 @@ export function rootLessListKeyMap(
   );
 
   // log.info(
-  //   "rootLessListKeyMap result",
+  //   "rootLessListKeyMapDEFUNCT result",
   //   result,
   //   "for rootLessListKey",
   //   rootLessListKey,

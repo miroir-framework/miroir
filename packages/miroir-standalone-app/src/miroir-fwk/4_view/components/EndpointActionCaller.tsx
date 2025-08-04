@@ -5,6 +5,10 @@ import {
   SelectChangeEvent,
   Typography
 } from '@mui/material';
+
+import { useSelector } from "react-redux";
+
+
 import {
   adminConfigurationDeploymentAdmin,
   adminConfigurationDeploymentLibrary,
@@ -18,6 +22,7 @@ import {
   EntityInstancesUuidIndex,
   getApplicationSection,
   getDefaultValueForJzodSchemaWithResolution,
+  getDefaultValueForJzodSchemaWithResolutionNonHook,
   getQueryRunnerParamsForDeploymentEntityState,
   instanceEndpointVersionV1,
   JzodObject,
@@ -39,7 +44,7 @@ import { cleanLevel } from '../constants.js';
 import { TypedValueObjectEditor } from './Reports/TypedValueObjectEditor.js';
 import { ThemedFormControl, ThemedInputLabel, ThemedMUISelect, ThemedPaper } from './Themes/ThemedComponents.js';
 import { useCurrentModel, useDeploymentEntityStateQuerySelectorForCleanedResult } from '../ReduxHooks.js';
-import { getMemoizedDeploymentEntityStateSelectorMap } from 'miroir-localcache-redux';
+import { getMemoizedDeploymentEntityStateSelectorMap, ReduxStateWithUndoRedo } from 'miroir-localcache-redux';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -88,6 +93,7 @@ const miroirEndpoints: EndpointDefinition[] = [
   // }
 ];
 
+// #################################################################################################
 export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
   const [selectedDeploymentUuid, setSelectedDeploymentUuid] = useState<string>('');
   const [selectedEndpointUuid, setSelectedEndpointUuid] = useState<string>('');
@@ -97,13 +103,13 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
 
   const domainController: DomainControllerInterface = useDomainControllerService();
   const context = useMiroirContextService();
-  const currentModel: MetaModel = useCurrentModel(
-    context.applicationSection == "data" ? context.deploymentUuid : adminConfigurationDeploymentMiroir.uuid
-  );
-  const adminAppModel: MetaModel = useCurrentModel(adminConfigurationDeploymentAdmin.uuid);
-  const miroirMetaModel: MetaModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
+  // const currentModel: MetaModel = useCurrentModel(
+  //   context.applicationSection == "data" ? context.deploymentUuid : adminConfigurationDeploymentMiroir.uuid
+  // );
+  // const adminAppModel: MetaModel = useCurrentModel(adminConfigurationDeploymentAdmin.uuid);
+  // const miroirMetaModel: MetaModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
 
-  const libraryAppModel: MetaModel = useCurrentModel(adminConfigurationDeploymentLibrary.uuid);
+  // const libraryAppModel: MetaModel = useCurrentModel(adminConfigurationDeploymentLibrary.uuid);
 
   // Get available endpoints for selected deployment
   const availableEndpoints = useMemo(() => {
@@ -142,47 +148,13 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
   }, [currentAction]);
   log.info('EndpointActionCaller: currentActionParametersMMLSchema', currentActionParametersMMLSchema);
 
-  function getEntityInstancesUuidIndex(
-    deploymentUuid: Uuid,
-    entityUuid: Uuid,
-    sortBy?: string
-  ): EntityInstancesUuidIndex {
-    const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<DeploymentEntityState> =
+  const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<DeploymentEntityState> =
       getMemoizedDeploymentEntityStateSelectorMap();
-    const foreignKeyObjectsFetchQueryParams: SyncQueryRunnerParams<DeploymentEntityState> =
-      getQueryRunnerParamsForDeploymentEntityState(
-        {
-          queryType: "boxedQueryWithExtractorCombinerTransformer",
-          deploymentUuid,
-          pageParams: {},
-          queryParams: {},
-          contextResults: {},
-          extractors: {
-            [entityUuid]: {
-              extractorOrCombinerType: "extractorByEntityReturningObjectList",
-              applicationSection: getApplicationSection(deploymentUuid, entityUuid),
-              parentName: "",
-              parentUuid: entityUuid,
-              orderBy: {
-                attributeName: sortBy ?? "name",
-              },
-            },
-          },
-        },
-        deploymentEntityStateSelectorMap
-      );
-    
-      const foreignKeyObjects: Record<string, EntityInstancesUuidIndex> =
-        useDeploymentEntityStateQuerySelectorForCleanedResult(
-          deploymentEntityStateSelectorMap.runQuery as SyncQueryRunner<
-            DeploymentEntityState,
-            Domain2QueryReturnType<DomainElementSuccess>
-          >,
-          foreignKeyObjectsFetchQueryParams
-      );
-      // return foreignKeyObjects[entityUuid]?.entities || {};
-      return foreignKeyObjects[entityUuid] || {};
-  }
+
+  const deploymentEntityState: DeploymentEntityState = useSelector(
+    (state: ReduxStateWithUndoRedo) =>
+      deploymentEntityStateSelectorMap.extractState(state.presentModelSnapshot.current, () => ({}))
+  );
 
   
   // Initial form state for Formik
@@ -223,17 +195,20 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
         : availableActions[selectedActionIndex];
 
     const initialFormState: Record<string, any> =
-      !currentAction?.actionParameters || !context.miroirFundamentalJzodSchema
+      !currentAction?.actionParameters ||
+      !context.miroirFundamentalJzodSchema ||
+      !selectedDeploymentUuid
         ? {}
-        : getDefaultValueForJzodSchemaWithResolution(
+        : getDefaultValueForJzodSchemaWithResolutionNonHook(
             {
               type: "object",
               definition: currentAction.actionParameters || {},
             },
             undefined, // No need to pass currentDefaultValue here
-            getEntityInstancesUuidIndex,
+            [], // currentPath on value is root
+            deploymentEntityState,
             false, // forceOptional
-            context.deploymentUuid,
+            selectedDeploymentUuid,
             context.miroirFundamentalJzodSchema
           );
     log.info(
@@ -282,7 +257,7 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
       if (result.status === 'error') {
         alert(`Action failed: ${result.errorMessage || 'Unknown error'}`);
       } else {
-        alert('Action submitted successfully! Check console for details.');
+        log.info('Action submitted successfully! Check console for details.');
       }
       
     } catch (error) {

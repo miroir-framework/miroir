@@ -2,8 +2,16 @@
 import { ErrorBoundary } from "react-error-boundary";
 import {
   adminConfigurationDeploymentMiroir,
+  DeploymentEntityState,
+  entity,
+  entityDefinition,
+  EntityDefinition,
+  entityEntityDefinition,
+  EntityInstance,
   foldableElementTypes,
   getDefaultValueForJzodSchemaWithResolution,
+  getDefaultValueForJzodSchemaWithResolutionNonHook,
+  getEntityInstancesUuidIndexNonHook,
   JzodArray,
   JzodElement,
   JzodTuple,
@@ -11,6 +19,7 @@ import {
   MetaModel,
   MiroirLoggerFactory,
   resolvePathOnObject,
+  SyncBoxedExtractorOrQueryRunnerMap,
   // unfoldJzodSchemaOnce,
   // UnfoldJzodSchemaOnceReturnType,
   // UnfoldJzodSchemaOnceReturnTypeOK
@@ -31,6 +40,8 @@ import {
   ThemedStyledButton 
 } from "../Themes/ThemedComponents";
 import { useMiroirTheme } from '../../contexts/MiroirThemeContext';
+import { getMemoizedDeploymentEntityStateSelectorMap, ReduxStateWithUndoRedo } from "miroir-localcache-redux";
+import { useSelector } from "react-redux";
 // import { JzodUnion } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -326,6 +337,13 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
   //   ? rootLessListKey.substring(0, rootLessListKey.lastIndexOf("."))
   //   : "";
   // const parentKeyMap = typeCheckKeyMap ? typeCheckKeyMap[parentKey] : undefined;
+  const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<DeploymentEntityState> =
+      getMemoizedDeploymentEntityStateSelectorMap();
+
+  const deploymentEntityState: DeploymentEntityState = useSelector(
+    (state: ReduxStateWithUndoRedo) =>
+      deploymentEntityStateSelectorMap.extractState(state.presentModelSnapshot.current, () => ({}))
+  );
 
   const foldableItemsCount = useMemo(() => {
     return currentTypeCheckKeyMap?.resolvedSchema.type === "tuple" // for array type, the resolvedSchema is a JzodTuple
@@ -336,7 +354,9 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
 
   // ##############################################################################################
   const addNewArrayItem = useCallback(
-    async () => {
+    async (e:any) => {
+      e.stopPropagation();
+      e.preventDefault();
       if (!currentTypeCheckKeyMap?.rawSchema || currentTypeCheckKeyMap.rawSchema.type !== "array") {
         throw new Error(
           "JzodArrayEditor addNewArrayItem called with a non-array schema: " +
@@ -350,9 +370,89 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
             JSON.stringify(context.miroirFundamentalJzodSchema, null, 2)
         );
       }
-      const newItem = getDefaultValueForJzodSchemaWithResolution(
-        currentTypeCheckKeyMap?.rawSchema.definition, // TODO: not correct with runtimeTypes
+      
+      let newItemSchema: JzodElement | undefined = currentTypeCheckKeyMap?.rawSchema.definition;
+
+      if ((currentTypeCheckKeyMap?.rawSchema as any).definition?.tag?.value?.conditionalMMLS?.parentUuid?.path) {
+        const entityPath = (currentTypeCheckKeyMap?.rawSchema as any).definition?.tag?.value?.conditionalMMLS?.parentUuid?.path;
+        const goUp =
+          typeof  entityPath=== "string"
+            ? (entityPath as string).split("#").length - 1
+            : 0
+        ;
+        const valueObjectReferencePath = rootLessListKeyArray.slice(0, rootLessListKeyArray.length - goUp);
+        const newItemEntityUuid = resolvePathOnObject(
+          formik.values,
+          valueObjectReferencePath
+        )?.parentUuid;
+  
+        if (!newItemEntityUuid) {
+          throw new Error(
+            "JzodArrayEditor addNewArrayItem called without a newItemEntityUuid: " +
+              JSON.stringify(newItemEntityUuid, null, 2)
+          );
+        }
+        if (!currentDeploymentUuid) {
+          throw new Error(
+            "JzodArrayEditor addNewArrayItem called without a currentDeploymentUuid: " +
+              JSON.stringify(currentDeploymentUuid, null, 2)
+          );
+        }
+        const entityDefinitions  =  getEntityInstancesUuidIndexNonHook(
+          deploymentEntityState,
+          currentDeploymentUuid,
+          entityEntityDefinition.uuid,
+          "name",
+        ) as any as Array<EntityDefinition>;
+        const newItemEntity  =  entityDefinitions.find(
+          (entityDef: EntityDefinition) => entityDef.entityUuid === newItemEntityUuid
+        );
+
+        log.info(
+          "JzodArrayEditor addNewArrayItem",
+          "rootLessListKey",
+          rootLessListKey,
+          "path",
+          entityPath,
+          "goUp",
+          goUp,
+          "currentTypeCheckKeyMap",
+          currentTypeCheckKeyMap,
+          "currentValueForNewItem",
+          newItemEntityUuid,
+          "formik.values",
+          formik.values,
+          "valueObjectReferencePath",
+          valueObjectReferencePath,
+          "currentValue",
+          currentValue,
+          "newItemEntityUuid",
+          newItemEntityUuid,
+          "entityDefinitions",
+          entityDefinitions,
+          "newItemEntity",
+          newItemEntity,
+        );
+        if (!newItemEntity) {
+          throw new Error(
+            "JzodArrayEditor addNewArrayItem could not find entity for newItemEntityUuid: " +
+              JSON.stringify(newItemEntityUuid, null, 2)
+          );
+        }
+        newItemSchema = newItemEntity.jzodSchema;
+      }
+
+      // const newItemEntity:EntityDefinition  =  entityDefinitions[newItemEntityUuid];
+      
+
+      const newItem = getDefaultValueForJzodSchemaWithResolutionNonHook(
+        // (newItemEntity as any)?.jzodSchema, // TODO: not correct with runtimeTypes
+        newItemSchema, // TODO: not correct with runtimeTypes
+        undefined, // currentDefaultValue is not known yet, this is what this call will determine
+        [], // currentPath on value is root
+        deploymentEntityState, // deploymentEntityState is not needed here
         false,
+        currentDeploymentUuid,
         context.miroirFundamentalJzodSchema,
         currentModel,
         miroirMetaModel
@@ -369,13 +469,17 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
         "rootLessListKey",
         rootLessListKey,
         "newItem",
-        JSON.stringify(newItem, null, 2),
+        newItem,
+        // JSON.stringify(newItem, null, 2),
         "rawJzodSchema",
-        JSON.stringify(currentTypeCheckKeyMap.rawSchema, null, 2),
+        currentTypeCheckKeyMap?.rawSchema,
+        // JSON.stringify(currentTypeCheckKeyMap.rawSchema, null, 2),
         "formik.values",
-        JSON.stringify(formik.values, null, 2),
+        formik.values,
+        // JSON.stringify(formik.values, null, 2),
         "newArrayValue",
-        JSON.stringify(newArrayValue, null, 2),
+        newArrayValue,
+        // JSON.stringify(newArrayValue, null, 2),
       );
 
       // Update the specific field in Formik state

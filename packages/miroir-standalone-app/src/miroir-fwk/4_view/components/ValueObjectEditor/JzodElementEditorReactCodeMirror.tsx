@@ -170,6 +170,7 @@ export const JzodElementEditorReactCodeMirror: React.FC<JzodElementEditorReactCo
           value={codeMirrorValue}
           extensions={extensions}
           onChange={handleChange}
+          style={{ overflowY: 'auto', maxHeight: editorHeight }}
         />
       </ThemedSpan>
     </span>

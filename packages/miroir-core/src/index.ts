@@ -637,10 +637,11 @@ export { getApplicationSection } from "./1_core/AdminApplication.js";
 export { alterObjectAtPath, deleteObjectAtPath } from "./1_core/alterObjectAtPath.js";
 export { ACTION_OK } from "./1_core/constants.js";
 export { DomainInstanceUuidIndexToArray } from "./1_core/DomainState.js";
-export { rootLessListKeyMap } from "./1_core/jzod/rootLessListKeyMap";
+export { rootLessListKeyMapDEFUNCT } from "./1_core/jzod/rootLessListKeyMapDEFUNCT";
 export {
   // getDefaultValueForJzodSchemaDEFUNCT,
   getDefaultValueForJzodSchemaWithResolution,
+  getDefaultValueForJzodSchemaWithResolutionNonHook,
 } from "./1_core/jzod/getDefaultValueForJzodSchema.js";
 export {
   KeyMapEntry,
@@ -718,6 +719,12 @@ export {
   selectEntityInstanceListFromDeploymentEntityState,
   selectEntityInstanceUuidIndexFromDeploymentEntityState,
 } from "./2_domain/DeploymentEntityStateQuerySelectors.js";
+export {
+  createDeploymentEntityStateSelectorMap,
+  executeDeploymentEntityStateQuery,
+  getEntityInstancesUuidIndexNonHook,
+  getMultipleEntityInstancesUuidIndexNonHook,
+} from "./2_domain/DeploymentEntityStateQueryExecutor.js";
 export {
   getDeploymentEntityStateJzodSchemaSelectorTemplateMap,
   getDeploymentEntityStateSelectorTemplateMap,

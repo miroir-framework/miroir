@@ -1,6 +1,7 @@
 import { valueToJzod } from "@miroir-framework/jzod";
 
 import {
+  EntityInstancesUuidIndex,
   JzodArray,
   JzodElement,
   JzodEnum,
@@ -25,6 +26,8 @@ import { packageName } from "../../constants";
 import { cleanLevel } from "../constants";
 import { jzodObjectFlatten } from "./jzodObjectFlatten";
 import { getObjectUniondiscriminatorValuesFromResolvedSchema } from "./getObjectUniondiscriminatorValuesFromResolvedSchema";
+import { resolveConditionalSchema } from "./resolveConditionalSchema";
+import { Uuid } from "../../0_interfaces/1_core/EntityDefinition";
 
 // export const miroirFundamentalJzodSchema2 = miroirFundamentalJzodSchema;
 // import { miroirFundamentalJzodSchema } from "../tmp/src/0_interfaces/1_core/bootstrapJzodSchemas/miroirFundamentalJzodSchema";
@@ -744,7 +747,7 @@ export function jzodUnionResolvedTypeForObject(
  * getting a node-for-node representation of the schema,
  * and checks if the valueObject matches the schema.
  * 
- * @param jzodSchema - The JzodElement schema to check against.
+ * @param effectiveSchema - The JzodElement schema to check against.
  * @param valueObject - The value object to check.
  * @param currentValuePath - The current path in the value object.
  * @param currentTypePath - The current path in the type schema.
@@ -762,6 +765,16 @@ export function jzodTypeCheck(
   currentModel: MetaModel,
   miroirMetaModel: MetaModel,
   relativeReferenceJzodContext: {[k:string]: JzodElement},
+  // 
+  // 
+  currentDefaultValue?: any,
+  // currentValuePath: string[],
+  getEntityInstancesUuidIndex?: (
+    deploymentUuid: Uuid,
+    entityUuid: Uuid,
+    sortBy?: string
+  ) => EntityInstancesUuidIndex,
+  deploymentUuid?: string
 ): ResolvedJzodSchemaReturnType {
   // log.info(
   //   "jzodTypeCheck called for valuePath=." + 
@@ -801,12 +814,25 @@ export function jzodTypeCheck(
     };
   }
 
-  switch (jzodSchema?.type) {
+  const effectiveSchema: JzodElement = 
+    currentDefaultValue &&
+    currentValuePath &&
+    getEntityInstancesUuidIndex &&
+    deploymentUuid ?
+      resolveConditionalSchema(
+        jzodSchema,
+        currentDefaultValue,
+        currentValuePath as string[],
+        getEntityInstancesUuidIndex,
+        deploymentUuid
+      ): jzodSchema;
+  
+  switch (effectiveSchema?.type) {
     case "schemaReference": {
-      const newContext = { ...relativeReferenceJzodContext, ...jzodSchema.context };
+      const newContext = { ...relativeReferenceJzodContext, ...effectiveSchema.context };
       const resolvedJzodSchema = resolveJzodSchemaReferenceInContext(
         miroirFundamentalJzodSchema,
-        jzodSchema,
+        effectiveSchema,
         currentModel,
         miroirMetaModel,
         newContext
@@ -821,7 +847,7 @@ export function jzodTypeCheck(
         resolvedJzodSchema,
         valueObject,
         currentValuePath,
-        [...currentTypePath, "ref:" + (jzodSchema.definition.relativePath ?? "NO_RELATIVE_PATH")],
+        [...currentTypePath, "ref:" + (effectiveSchema.definition.relativePath ?? "NO_RELATIVE_PATH")],
         miroirFundamentalJzodSchema,
         currentModel,
         miroirMetaModel,
@@ -831,29 +857,29 @@ export function jzodTypeCheck(
         return {
           status: "error",
           error: "jzodTypeCheck failed to resolve schemaReference",
-          rawJzodSchemaType: jzodSchema.type,
+          rawJzodSchemaType: effectiveSchema.type,
           valuePath: currentValuePath,
           typePath: currentTypePath,
           innerError: typeCheck,
           value: valueObject,
-          rawSchema: jzodSchema,
+          rawSchema: effectiveSchema,
         };
       }
       return {
         status: "ok",
         valuePath: typeCheck.valuePath,
         typePath: typeCheck.typePath,
-        rawSchema: jzodSchema,
+        rawSchema: effectiveSchema,
         resolvedSchema: typeCheck.resolvedSchema,
         subSchemas: typeCheck.subSchemas, // for unions, this is the list of sub-schemas that were resolved
         keyMap: {
           ...(typeCheck.keyMap ?? {}), // for unions, this is the map of keys to sub-schemas
           [currentValuePath.join(".")]: (typeCheck.keyMap??{})[currentValuePath.join(".")]?{
             ...(typeCheck.keyMap??{})[currentValuePath.join(".")], // useful for unions, where the keyMap is a map of value paths to sub-schemas
-            rawSchema: jzodSchema,
+            rawSchema: effectiveSchema,
             resolvedSchema: typeCheck.resolvedSchema,
           }:{
-            rawSchema: jzodSchema,
+            rawSchema: effectiveSchema,
             resolvedSchema: typeCheck.resolvedSchema,
           }, // map the current value path to the resolved schema
         },
@@ -861,12 +887,12 @@ export function jzodTypeCheck(
         // : {
         //     status: "error",
         //     error: typeCheck.error,
-        //     rawJzodSchemaType: jzodSchema.type,
+        //     rawJzodSchemaType: effectiveSchema.type,
         //     valuePath: currentValuePath,
         //     typePath: currentTypePath,
         //     innerError: typeCheck,
         //     value: valueObject,
-        //     rawSchema: jzodSchema,
+        //     rawSchema: effectiveSchema,
         //   };
       break;
     }
@@ -875,16 +901,16 @@ export function jzodTypeCheck(
         return {
           status: "error",
           error: "jzodTypeCheck failed for object schema to match non-object value",
-          rawJzodSchemaType: jzodSchema.type,
+          rawJzodSchemaType: effectiveSchema.type,
           valuePath: currentValuePath,
           typePath: currentTypePath,
           value: valueObject,
-          rawSchema: jzodSchema,
+          rawSchema: effectiveSchema,
         };
       }
 
       const jzodObjectFlattenedSchema: JzodObject = jzodObjectFlatten(
-        jzodSchema,
+        effectiveSchema,
         miroirFundamentalJzodSchema,
         currentModel,
         miroirMetaModel,
@@ -914,11 +940,11 @@ export function jzodTypeCheck(
             {
               status: "error",
               error: "jzodTypeCheck value attribute '" + e[0] + "' not found in schema definition",
-              rawJzodSchemaType: jzodSchema.type,
+              rawJzodSchemaType: effectiveSchema.type,
               valuePath: [...currentValuePath, e[0]],
               typePath: currentTypePath,
               value: valueObject,
-              rawSchema: jzodSchema,
+              rawSchema: effectiveSchema,
             },
           ];
         }
@@ -932,7 +958,7 @@ export function jzodTypeCheck(
           status: "error",
           error:
             "jzodTypeCheck failed to match some object value attribute(s) with the schema of that attribute(s)",
-          rawJzodSchemaType: jzodSchema.type,
+          rawJzodSchemaType: effectiveSchema.type,
           valuePath: currentValuePath,
           typePath: currentTypePath,
           errorOnValueAttributes: foundErrors.map((e) => e[0]),
@@ -943,7 +969,7 @@ export function jzodTypeCheck(
             ])
           ),
           value: valueObject,
-          rawSchema: jzodSchema,
+          rawSchema: effectiveSchema,
         };
       }
       // checks that all mandatory attributes of the schema definition are present in the valueObject
@@ -960,12 +986,12 @@ export function jzodTypeCheck(
           status: "error",
           error:
             "jzodTypeCheck failed to match some mandatory object value attribute(s) with the schema of that attribute(s)",
-          rawJzodSchemaType: jzodSchema.type,
+          rawJzodSchemaType: effectiveSchema.type,
           valuePath: currentValuePath,
           typePath: currentTypePath,
           errorOnSchemaAttributes: missingMandatoryAttributes.map((e) => e[0]),
           value: valueObject,
-          rawSchema: jzodSchema,
+          rawSchema: effectiveSchema,
         };
       }
       const resultResolvedJzodSchema: JzodObject = {
@@ -994,13 +1020,13 @@ export function jzodTypeCheck(
         status: "ok",
         valuePath: currentValuePath,
         typePath: currentTypePath,
-        rawSchema: jzodSchema,
+        rawSchema: effectiveSchema,
         resolvedSchema: resultResolvedJzodSchema,
         subSchemas: Object.fromEntries(resolvedObjectEntries),
         keyMap: {
           ...objecAttributeskeyMap,
           [currentValuePath.join(".")]: {
-            rawSchema: jzodSchema,
+            rawSchema: effectiveSchema,
             resolvedSchema: resultResolvedJzodSchema,
             jzodObjectFlattenedSchema: jzodObjectFlattenedSchema,
           }, // map the current value path to the resolved schema
@@ -1010,7 +1036,7 @@ export function jzodTypeCheck(
     }
     case "union": {
       const recursivelyUnfoldedUnionSchema = jzodUnion_recursivelyUnfold(
-        jzodSchema as JzodUnion,
+        effectiveSchema as JzodUnion,
         new Set(),
         miroirFundamentalJzodSchema,
         currentModel,
@@ -1021,26 +1047,26 @@ export function jzodTypeCheck(
       if (recursivelyUnfoldedUnionSchema.status == "error") {
         // log.error(
         //   "jzodTypeCheck union schema",
-        //   JSON.stringify(jzodSchema, null, 2),
+        //   JSON.stringify(effectiveSchema, null, 2),
         //   "could not be unfolded, error:",
         //   unfoldedJzodSchema.error
         // );
         return {
           status: "error",
           error: "jzodTypeCheck failed to recursively unfold schema",
-          rawJzodSchemaType: jzodSchema.type,
+          rawJzodSchemaType: effectiveSchema.type,
           valuePath: currentValuePath,
           typePath: currentTypePath,
           innerError: recursivelyUnfoldedUnionSchema,
           value: valueObject,
-          rawSchema: jzodSchema,
+          rawSchema: effectiveSchema,
         };
       }
       const concreteUnfoldedJzodSchemas: JzodElement[] = recursivelyUnfoldedUnionSchema.result;
 
       // log.info(
       //   "jzodTypeCheck called for union",
-      //   jzodSchema,
+      //   effectiveSchema,
       //   "concreteUnrolledJzodSchemas resolved type:",
       //   // JSON.stringify(concreteUnfoldedJzodSchemas, null, 2)
       //   concreteUnfoldedJzodSchemas
@@ -1070,11 +1096,11 @@ export function jzodTypeCheck(
               status: "ok",
               valuePath: currentValuePath,
               typePath: currentTypePath,
-              rawSchema: jzodSchema,
+              rawSchema: effectiveSchema,
               resolvedSchema: resultJzodSchema,
               keyMap: {
                 [currentValuePath.join(".")]: {
-                  rawSchema: jzodSchema,
+                  rawSchema: effectiveSchema,
                   recursivelyUnfoldedUnionSchema: recursivelyUnfoldedUnionSchema,
                   resolvedSchema: resultJzodSchema,
                   chosenUnionBranchRawSchema: resultJzodSchema,
@@ -1085,11 +1111,11 @@ export function jzodTypeCheck(
             return {
               status: "error",
               error: "jzodTypeCheck could not find type for value in resolved union",
-              rawJzodSchemaType: jzodSchema.type,
+              rawJzodSchemaType: effectiveSchema.type,
               valuePath: currentValuePath,
               typePath: currentTypePath,
               value: valueObject,
-              rawSchema: jzodSchema,
+              rawSchema: effectiveSchema,
             };
           }
           break;
@@ -1112,11 +1138,11 @@ export function jzodTypeCheck(
               status: "ok",
               valuePath: currentValuePath,
               typePath: currentTypePath,
-              rawSchema: jzodSchema,
+              rawSchema: effectiveSchema,
               resolvedSchema: resultJzodSchema,
               keyMap: {
                 [currentValuePath.join(".")]: {
-                  rawSchema: jzodSchema,
+                  rawSchema: effectiveSchema,
                   recursivelyUnfoldedUnionSchema: recursivelyUnfoldedUnionSchema,
                   resolvedSchema: resultJzodSchema,
                   chosenUnionBranchRawSchema: resultJzodSchema,
@@ -1127,11 +1153,11 @@ export function jzodTypeCheck(
             return {
               status: "error",
               error: "jzodTypeCheck could not find type for value in resolved union",
-              rawJzodSchemaType: jzodSchema.type,
+              rawJzodSchemaType: effectiveSchema.type,
               valuePath: currentValuePath,
               typePath: currentTypePath,
               value: valueObject,
-              rawSchema: jzodSchema,
+              rawSchema: effectiveSchema,
             };
           }
           break;
@@ -1142,13 +1168,13 @@ export function jzodTypeCheck(
             //   "jzodTypeCheck union for array at",
             //   currentValuePath.join("."),
             //   "type:",
-            //   JSON.stringify(jzodSchema, null, 2),
+            //   JSON.stringify(effectiveSchema, null, 2),
             //   "validates",
             //   JSON.stringify(valueObject, null, 2)
             // );
             const resolveUnionResult = jzodUnionResolvedTypeForArray(
               concreteUnfoldedJzodSchemas,
-              jzodSchema.discriminator,
+              effectiveSchema.discriminator,
               valueObject,
               currentValuePath,
               currentTypePath,
@@ -1161,23 +1187,23 @@ export function jzodTypeCheck(
               return {
                 status: "error",
                 error: "jzodTypeCheck failed to resolve union for array",
-                rawJzodSchemaType: jzodSchema.type,
+                rawJzodSchemaType: effectiveSchema.type,
                 valuePath: currentValuePath,
                 typePath: currentTypePath,
                 innerError: resolveUnionResult,
                 value: valueObject,
-                rawSchema: jzodSchema,
+                rawSchema: effectiveSchema,
               };
             }
             if (resolveUnionResult.resolvedJzodObjectSchema.type != "array") {
               return {
                 status: "error",
                 error: "jzodTypeCheck resolved union for array did not yield an array schema",
-                rawJzodSchemaType: jzodSchema.type,
+                rawJzodSchemaType: effectiveSchema.type,
                 valuePath: currentValuePath,
                 typePath: currentTypePath,
                 value: valueObject,
-                rawSchema: jzodSchema,
+                rawSchema: effectiveSchema,
               };
             }
             // TODO: schema of different items may vary!
@@ -1195,16 +1221,16 @@ export function jzodTypeCheck(
               return {
                 status: "error",
                 error: "jzodTypeCheck failed to match array item with schema",
-                rawJzodSchemaType: jzodSchema.type,
+                rawJzodSchemaType: effectiveSchema.type,
                 valuePath: currentValuePath,
                 typePath: currentTypePath,
                 innerError: arrayItemSchema,
                 value: valueObject,
-                rawSchema: jzodSchema,
+                rawSchema: effectiveSchema,
               };
             }
             const resolvedSchema: JzodElement = {
-              ...jzodSchema,
+              ...effectiveSchema,
               type: "array",
               definition: arrayItemSchema.resolvedSchema,
             };
@@ -1213,12 +1239,12 @@ export function jzodTypeCheck(
               status: "ok",
               valuePath: currentValuePath,
               typePath: currentTypePath,
-              rawSchema: jzodSchema,
+              rawSchema: effectiveSchema,
               resolvedSchema,
               keyMap: {
                 ...arrayItemSchema.keyMap??{},
                 [currentValuePath.join(".")]: {
-                  rawSchema: jzodSchema,
+                  rawSchema: effectiveSchema,
                   recursivelyUnfoldedUnionSchema: recursivelyUnfoldedUnionSchema,
                   chosenUnionBranchRawSchema: resolveUnionResult.resolvedJzodObjectSchema,
                   resolvedSchema,
@@ -1229,7 +1255,7 @@ export function jzodTypeCheck(
 
           const resolveUnionResult = jzodUnionResolvedTypeForObject(
             concreteUnfoldedJzodSchemas,
-            jzodSchema.discriminator,
+            effectiveSchema.discriminator,
             valueObject,
             currentValuePath,
             currentTypePath,
@@ -1243,12 +1269,12 @@ export function jzodTypeCheck(
             return {
               status: "error",
               error: "jzodTypeCheck failed to resolve union for object",
-              rawJzodSchemaType: jzodSchema.type,
+              rawJzodSchemaType: effectiveSchema.type,
               valuePath: currentValuePath,
               typePath: currentTypePath,
               innerError: resolveUnionResult,
               value: valueObject,
-              rawSchema: jzodSchema,
+              rawSchema: effectiveSchema,
             };
           }
 
@@ -1269,12 +1295,12 @@ export function jzodTypeCheck(
               status: "error",
               error:
                 "jzodTypeCheck union failed to match object attribute value with schema attribute",
-              rawJzodSchemaType: jzodSchema.type,
+              rawJzodSchemaType: effectiveSchema.type,
               valuePath: currentValuePath,
               typePath: currentTypePath,
               innerError: subResolvedSchemas,
               value: valueObject,
-              rawSchema: jzodSchema,
+              rawSchema: effectiveSchema,
             };
           }
           // log.info(
@@ -1287,7 +1313,7 @@ export function jzodTypeCheck(
           // );
           const objectUniondiscriminatorValues = getObjectUniondiscriminatorValuesFromResolvedSchema(
             subResolvedSchemas.resolvedSchema,
-            jzodSchema,
+            effectiveSchema,
             recursivelyUnfoldedUnionSchema?.result ?? [],
             // recursivelyUnfoldedUnionSchema?.discriminator
           );
@@ -1296,14 +1322,14 @@ export function jzodTypeCheck(
             status: "ok",
             valuePath: subResolvedSchemas.valuePath,
             typePath: subResolvedSchemas.typePath,
-            rawSchema: jzodSchema,
+            rawSchema: effectiveSchema,
             resolvedSchema: subResolvedSchemas.resolvedSchema,
             subSchemas: subResolvedSchemas.subSchemas,
             keyMap: {
               ...(subResolvedSchemas.keyMap ?? {}),
               [currentValuePath.join(".")]: {
                 ...((subResolvedSchemas.keyMap ?? {})[currentValuePath.join(".")] ?? {}), // useful for unions, where the keyMap is a map of value paths to sub-schemas
-                rawSchema: jzodSchema,
+                rawSchema: effectiveSchema,
                 recursivelyUnfoldedUnionSchema: recursivelyUnfoldedUnionSchema,
                 chosenUnionBranchRawSchema: discriminatedSchemaForObject,
                 resolvedSchema: subResolvedSchemas.resolvedSchema,
@@ -1322,11 +1348,11 @@ export function jzodTypeCheck(
           return {
             status: "error",
             error: "jzodTypeCheck value type not supported for union schema: " + typeof valueObject,
-            rawJzodSchemaType: jzodSchema.type,
+            rawJzodSchemaType: effectiveSchema.type,
             valuePath: currentValuePath,
             typePath: currentTypePath,
             value: valueObject,
-            rawSchema: jzodSchema,
+            rawSchema: effectiveSchema,
           };
           break;
         }
@@ -1337,25 +1363,25 @@ export function jzodTypeCheck(
       if (typeof valueObject != "object") {
         // throw new Error(
         //   "jzodTypeCheck record schema " +
-        //     JSON.stringify(jzodSchema) +
+        //     JSON.stringify(effectiveSchema) +
         //     " for value " +
         //     JSON.stringify(valueObject)
         // );
         return {
           status: "error",
           error: "jzodTypeCheck record schema for value is not an object",
-          rawJzodSchemaType: jzodSchema.type,
+          rawJzodSchemaType: effectiveSchema.type,
           valuePath: currentValuePath,
           typePath: currentTypePath,
           value: valueObject,
-          rawSchema: jzodSchema,
+          rawSchema: effectiveSchema,
         };
       }
       const resolvedRecordEntries: { [k: string]: ResolvedJzodSchemaReturnType } =
         Object.fromEntries(
           Object.entries(valueObject).map((e: [string, any]) => {
             const resultSchemaTmp: ResolvedJzodSchemaReturnType = jzodTypeCheck(
-              jzodSchema.definition,
+              effectiveSchema.definition,
               e[1],
               [...currentValuePath, e[0]],
               [...currentTypePath, e[0]],
@@ -1373,8 +1399,8 @@ export function jzodTypeCheck(
       if (foundErrors.length > 0) {
         return {
           status: "error",
-          error: `jzodTypeCheck failed to match value with ${jzodSchema.type} schema`,
-          rawJzodSchemaType: jzodSchema.type,
+          error: `jzodTypeCheck failed to match value with ${effectiveSchema.type} schema`,
+          rawJzodSchemaType: effectiveSchema.type,
           valuePath: currentValuePath,
           typePath: currentTypePath,
           innerError: Object.fromEntries(
@@ -1384,11 +1410,11 @@ export function jzodTypeCheck(
             ])
           ),
           value: valueObject,
-          rawSchema: jzodSchema,
+          rawSchema: effectiveSchema,
         };
       }
       const resolvedSchema: JzodElement = {
-        ...jzodSchema,
+        ...effectiveSchema,
         type: "object",
         definition: Object.fromEntries(
           Object.entries(resolvedRecordEntries).map((e) => [
@@ -1424,25 +1450,25 @@ export function jzodTypeCheck(
         status: "ok",
         valuePath: currentValuePath,
         typePath: currentTypePath,
-        rawSchema: jzodSchema,
+        rawSchema: effectiveSchema,
         resolvedSchema,
         subSchemas: resolvedRecordEntries,
         keyMap: {
           ...recordEntrieskeyMap,
           [currentValuePath.join(".")]: {
-            rawSchema: jzodSchema,
+            rawSchema: effectiveSchema,
             resolvedSchema,
           }, // map the current value path to the resolved schema
         },
       };
     }
     case "literal": {
-      if (valueObject == jzodSchema.definition) {
+      if (valueObject == effectiveSchema.definition) {
         // log.info(
         //   "jzodTypeCheck literal at path=valueObject." +
         //   currentValuePath.join("."),
         //   ", type:",
-        //   JSON.stringify(jzodSchema, null, 2),
+        //   JSON.stringify(effectiveSchema, null, 2),
         //   "validates",
         //   JSON.stringify(valueObject, null, 2)
         // );
@@ -1451,24 +1477,24 @@ export function jzodTypeCheck(
           status: "ok",
           valuePath: currentValuePath,
           typePath: currentTypePath,
-          rawSchema: jzodSchema,
-          resolvedSchema: jzodSchema,
+          rawSchema: effectiveSchema,
+          resolvedSchema: effectiveSchema,
           keyMap: {
             [currentValuePath.join(".")]: {
-              rawSchema: jzodSchema,
-              resolvedSchema: jzodSchema,
+              rawSchema: effectiveSchema,
+              resolvedSchema: effectiveSchema,
             }, // map the current value path to the resolved schema
           },
         };
       } else {
         return {
           status: "error",
-          error: `jzodTypeCheck failed to match value with ${jzodSchema.type} schema`,
-          rawJzodSchemaType: jzodSchema.type,
+          error: `jzodTypeCheck failed to match value with ${effectiveSchema.type} schema`,
+          rawJzodSchemaType: effectiveSchema.type,
           valuePath: currentValuePath,
           typePath: currentTypePath,
           value: valueObject,
-          rawSchema: jzodSchema,
+          rawSchema: effectiveSchema,
         };
       }
       break;
@@ -1478,7 +1504,7 @@ export function jzodTypeCheck(
       //   "jzodTypeCheck enum at path=valueObject." +
       //   currentValuePath.join("."),
       //   ", type:",
-      //   JSON.stringify(jzodSchema, null, 2),
+      //   JSON.stringify(effectiveSchema, null, 2),
       //   "validates",
       //   JSON.stringify(valueObject, null, 2)
       // );
@@ -1486,12 +1512,12 @@ export function jzodTypeCheck(
         status: "ok",
         valuePath: currentValuePath,
         typePath: currentTypePath,
-        rawSchema: jzodSchema,
-        resolvedSchema: jzodSchema,
+        rawSchema: effectiveSchema,
+        resolvedSchema: effectiveSchema,
         keyMap: {
           [currentValuePath.join(".")]: {
-            rawSchema: jzodSchema,
-            resolvedSchema: jzodSchema,
+            rawSchema: effectiveSchema,
+            resolvedSchema: effectiveSchema,
           }, // map the current value path to the resolved schema
         },
       };
@@ -1500,12 +1526,12 @@ export function jzodTypeCheck(
       if (!Array.isArray(valueObject)) {
         return {
           status: "error",
-          error: `jzodTypeCheck failed to match value with ${jzodSchema.type} schema`,
-          rawJzodSchemaType: jzodSchema.type,
+          error: `jzodTypeCheck failed to match value with ${effectiveSchema.type} schema`,
+          rawJzodSchemaType: effectiveSchema.type,
           valuePath: currentValuePath,
           typePath: currentTypePath,
           value: valueObject,
-          rawSchema: jzodSchema,
+          rawSchema: effectiveSchema,
         };
       }
       // return {
@@ -1513,11 +1539,11 @@ export function jzodTypeCheck(
       //   valuePath: currentValuePath,
       //   typePath: currentTypePath,
       //   error: "jzodTypeCheck can not handle tuple schema " +
-      //   JSON.stringify(jzodSchema) +
+      //   JSON.stringify(effectiveSchema) +
       //   " for value " +
       //   JSON.stringify(valueObject)
       // }
-      const resolvedInnerSchemas: ResolvedJzodSchemaReturnType[] = jzodSchema.definition.map(
+      const resolvedInnerSchemas: ResolvedJzodSchemaReturnType[] = effectiveSchema.definition.map(
         (e: JzodElement, index: number) => {
           const resultSchemaTmp = jzodTypeCheck(
             e,
@@ -1538,8 +1564,8 @@ export function jzodTypeCheck(
       if (foundErrors.length > 0) {
         return {
           status: "error",
-          error: `jzodTypeCheck failed to match value with ${jzodSchema.type} schema`,
-          rawJzodSchemaType: jzodSchema.type,
+          error: `jzodTypeCheck failed to match value with ${effectiveSchema.type} schema`,
+          rawJzodSchemaType: effectiveSchema.type,
           valuePath: currentValuePath,
           typePath: currentTypePath,
           innerError: Object.fromEntries(
@@ -1550,11 +1576,11 @@ export function jzodTypeCheck(
             ] as any) as any // TODO: CHECK TYPES
           ),
           value: valueObject,
-          rawSchema: jzodSchema,
+          rawSchema: effectiveSchema,
         };
       }
       const resolvedSchema: JzodElement = {
-        ...jzodSchema,
+        ...effectiveSchema,
         type: "tuple",
         definition: resolvedInnerSchemas.map(
           (e) => (e as ResolvedJzodSchemaReturnTypeOK).resolvedSchema
@@ -1564,7 +1590,7 @@ export function jzodTypeCheck(
         status: "ok",
         valuePath: currentValuePath,
         typePath: currentTypePath,
-        rawSchema: jzodSchema,
+        rawSchema: effectiveSchema,
         resolvedSchema,
         subSchemas: resolvedInnerSchemas,
         keyMap: {
@@ -1583,7 +1609,7 @@ export function jzodTypeCheck(
             // ...((resolvedInnerSchemas.length > 0 && resolvedInnerSchemas[0].status == "ok"
             //   ? resolvedInnerSchemas[0].keyMap ?? {}
             //   : {})[currentValuePath.join(".")] ?? {}), // useful for unions, where the keyMap is a map of value paths to sub-schemas
-            rawSchema: jzodSchema,
+            rawSchema: effectiveSchema,
             resolvedSchema,
           }, // map the current value path to the resolved schema
         },
@@ -1594,12 +1620,12 @@ export function jzodTypeCheck(
       if (!Array.isArray(valueObject)) {
         return {
           status: "error",
-          error: `jzodTypeCheck failed to match value with ${jzodSchema.type} schema`,
-          rawJzodSchemaType: jzodSchema.type,
+          error: `jzodTypeCheck failed to match value with ${effectiveSchema.type} schema`,
+          rawJzodSchemaType: effectiveSchema.type,
           valuePath: currentValuePath,
           typePath: currentTypePath,
           value: valueObject,
-          rawSchema: jzodSchema,
+          rawSchema: effectiveSchema,
         };
       }
 
@@ -1611,7 +1637,7 @@ export function jzodTypeCheck(
       const subSchemas: ResolvedJzodSchemaReturnType[] = valueObject.map(
         (e: any, index: number) => {
           const subSchema = jzodTypeCheck(
-            jzodSchema.definition,
+            effectiveSchema.definition,
             e,
             [...currentValuePath, index],
             [...currentTypePath, index],
@@ -1630,8 +1656,8 @@ export function jzodTypeCheck(
       if (foundErrors.length > 0) {
         return {
           status: "error",
-          error: `jzodTypeCheck failed to match value with ${jzodSchema.type} schema`,
-          rawJzodSchemaType: jzodSchema.type,
+          error: `jzodTypeCheck failed to match value with ${effectiveSchema.type} schema`,
+          rawJzodSchemaType: effectiveSchema.type,
           valuePath: currentValuePath,
           typePath: currentTypePath,
           innerError: Object.fromEntries(
@@ -1641,11 +1667,11 @@ export function jzodTypeCheck(
             ])
           ),
           value: valueObject,
-          rawSchema: jzodSchema,
+          rawSchema: effectiveSchema,
         };
       }
       const resolvedSchema: JzodElement = {
-        ...jzodSchema,
+        ...effectiveSchema,
         type: "tuple",
         definition: subSchemas.map((s) => (s as ResolvedJzodSchemaReturnTypeOK).resolvedSchema), // TODO: this is a shortcut assuming that all items in the array are of the same type, which is not always true
       };
@@ -1657,7 +1683,7 @@ export function jzodTypeCheck(
         status: "ok",
         valuePath: currentValuePath,
         typePath: currentTypePath,
-        rawSchema: jzodSchema,
+        rawSchema: effectiveSchema,
         resolvedSchema,
         subSchemas,
         keyMap: {
@@ -1674,7 +1700,7 @@ export function jzodTypeCheck(
             ...((subSchemas.length > 0 && subSchemas[0].status == "ok"
               ? subSchemas[0].keyMap ?? {}
               : {})[currentValuePath.join(".")] ?? {}), // useful for unions, where the keyMap is a map of value paths to sub-schemas
-            rawSchema: jzodSchema,
+            rawSchema: effectiveSchema,
             resolvedSchema,
           },
         },
@@ -1687,12 +1713,12 @@ export function jzodTypeCheck(
         status: "ok",
         valuePath: currentValuePath,
         typePath: currentTypePath,
-        rawSchema: jzodSchema,
+        rawSchema: effectiveSchema,
         resolvedSchema: valueToJzod(valueObject) as JzodElement,
         keyMap: {
           [currentValuePath.join(".")]: {
-            rawSchema: jzodSchema,
-            // resolvedSchema: jzodSchema
+            rawSchema: effectiveSchema,
+            // resolvedSchema: effectiveSchema
             resolvedSchema: valueToJzod(valueObject) as JzodElement,
           }, // map the current value path to the resolved schema
         },
@@ -1703,27 +1729,27 @@ export function jzodTypeCheck(
       if (typeof valueObject != "string" || !isValidUUID(valueObject)) {
         return {
           status: "error",
-          error: `jzodTypeCheck failed to match value with ${jzodSchema.type} schema`,
-          rawJzodSchemaType: jzodSchema.type,
+          error: `jzodTypeCheck failed to match value with ${effectiveSchema.type} schema`,
+          rawJzodSchemaType: effectiveSchema.type,
           valuePath: currentValuePath,
           typePath: currentTypePath,
           value: valueObject,
-          rawSchema: jzodSchema,
+          rawSchema: effectiveSchema,
         };
       }
       return {
         status: "ok",
         valuePath: currentValuePath,
         typePath: currentTypePath,
-        rawSchema: jzodSchema,
-        resolvedSchema: jzodSchema,
+        rawSchema: effectiveSchema,
+        resolvedSchema: effectiveSchema,
         keyMap: {
           [currentValuePath.join(".")]: {
-            rawSchema: jzodSchema,
-            resolvedSchema: jzodSchema,
+            rawSchema: effectiveSchema,
+            resolvedSchema: effectiveSchema,
           }, // map the current value path to the resolved schema
         },
-        // resolvedSchema: { ...jzodSchema, type: "string" }, // TODO: this is a shortcut assuming that all items in the array are of the same type, which is not always true
+        // resolvedSchema: { ...effectiveSchema, type: "string" }, // TODO: this is a shortcut assuming that all items in the array are of the same type, which is not always true
       };
       break;
     }
@@ -1731,24 +1757,24 @@ export function jzodTypeCheck(
       if (typeof valueObject != "string") {
         return {
           status: "error",
-          error: `jzodTypeCheck failed to match value with ${jzodSchema.type} schema`,
-          rawJzodSchemaType: jzodSchema.type,
+          error: `jzodTypeCheck failed to match value with ${effectiveSchema.type} schema`,
+          rawJzodSchemaType: effectiveSchema.type,
           valuePath: currentValuePath,
           typePath: currentTypePath,
           value: valueObject,
-          rawSchema: jzodSchema,
+          rawSchema: effectiveSchema,
         };
       }
       return {
         status: "ok",
         valuePath: currentValuePath,
         typePath: currentTypePath,
-        rawSchema: jzodSchema,
-        resolvedSchema: jzodSchema,
+        rawSchema: effectiveSchema,
+        resolvedSchema: effectiveSchema,
         keyMap: {
           [currentValuePath.join(".")]: {
-            rawSchema: jzodSchema,
-            resolvedSchema: jzodSchema,
+            rawSchema: effectiveSchema,
+            resolvedSchema: effectiveSchema,
           }, // map the current value path to the resolved schema
         },
       };
@@ -1757,24 +1783,24 @@ export function jzodTypeCheck(
       if (typeof valueObject != "number") {
         return {
           status: "error",
-          error: `jzodTypeCheck failed to match value with ${jzodSchema.type} schema`,
-          rawJzodSchemaType: jzodSchema.type,
+          error: `jzodTypeCheck failed to match value with ${effectiveSchema.type} schema`,
+          rawJzodSchemaType: effectiveSchema.type,
           valuePath: currentValuePath,
           typePath: currentTypePath,
           value: valueObject,
-          rawSchema: jzodSchema,
+          rawSchema: effectiveSchema,
         };
       }
       return {
         status: "ok",
         valuePath: currentValuePath,
         typePath: currentTypePath,
-        rawSchema: jzodSchema,
-        resolvedSchema: jzodSchema,
+        rawSchema: effectiveSchema,
+        resolvedSchema: effectiveSchema,
         keyMap: {
           [currentValuePath.join(".")]: {
-            rawSchema: jzodSchema,
-            resolvedSchema: jzodSchema,
+            rawSchema: effectiveSchema,
+            resolvedSchema: effectiveSchema,
           }, // map the current value path to the resolved schema
         },
       };
@@ -1783,24 +1809,24 @@ export function jzodTypeCheck(
       if (typeof valueObject != "bigint") {
         return {
           status: "error",
-          error: `jzodTypeCheck failed to match value with ${jzodSchema.type} schema`,
-          rawJzodSchemaType: jzodSchema.type,
+          error: `jzodTypeCheck failed to match value with ${effectiveSchema.type} schema`,
+          rawJzodSchemaType: effectiveSchema.type,
           valuePath: currentValuePath,
           typePath: currentTypePath,
           value: valueObject,
-          rawSchema: jzodSchema,
+          rawSchema: effectiveSchema,
         };
       }
       return {
         status: "ok",
         valuePath: currentValuePath,
         typePath: currentTypePath,
-        rawSchema: jzodSchema,
-        resolvedSchema: jzodSchema,
+        rawSchema: effectiveSchema,
+        resolvedSchema: effectiveSchema,
         keyMap: {
           [currentValuePath.join(".")]: {
-            rawSchema: jzodSchema,
-            resolvedSchema: jzodSchema,
+            rawSchema: effectiveSchema,
+            resolvedSchema: effectiveSchema,
           }, // map the current value path to the resolved schema
         },
       };
@@ -1809,24 +1835,24 @@ export function jzodTypeCheck(
       if (typeof valueObject != "boolean") {
         return {
           status: "error",
-          error: `jzodTypeCheck failed to match value with ${jzodSchema.type} schema`,
-          rawJzodSchemaType: jzodSchema.type,
+          error: `jzodTypeCheck failed to match value with ${effectiveSchema.type} schema`,
+          rawJzodSchemaType: effectiveSchema.type,
           valuePath: currentValuePath,
           typePath: currentTypePath,
           value: valueObject,
-          rawSchema: jzodSchema,
+          rawSchema: effectiveSchema,
         };
       }
       return {
         status: "ok",
         valuePath: currentValuePath,
         typePath: currentTypePath,
-        rawSchema: jzodSchema,
-        resolvedSchema: jzodSchema,
+        rawSchema: effectiveSchema,
+        resolvedSchema: effectiveSchema,
         keyMap: {
           [currentValuePath.join(".")]: {
-            rawSchema: jzodSchema,
-            resolvedSchema: jzodSchema,
+            rawSchema: effectiveSchema,
+            resolvedSchema: effectiveSchema,
           }, // map the current value path to the resolved schema
         },
       };
@@ -1838,35 +1864,35 @@ export function jzodTypeCheck(
             status: "ok",
             valuePath: currentValuePath,
             typePath: currentTypePath,
-            rawSchema: jzodSchema,
-            resolvedSchema: jzodSchema,
+            rawSchema: effectiveSchema,
+            resolvedSchema: effectiveSchema,
             keyMap: {
               [currentValuePath.join(".")]: {
-                rawSchema: jzodSchema,
-                resolvedSchema: jzodSchema,
+                rawSchema: effectiveSchema,
+                resolvedSchema: effectiveSchema,
               }, // map the current value path to the resolved schema
             },
           };
         } else {
           return {
             status: "error",
-            error: `jzodTypeCheck failed to match value with ${jzodSchema.type} schema`,
-            rawJzodSchemaType: jzodSchema.type,
+            error: `jzodTypeCheck failed to match value with ${effectiveSchema.type} schema`,
+            rawJzodSchemaType: effectiveSchema.type,
             valuePath: currentValuePath,
             typePath: currentTypePath,
             value: valueObject,
-            rawSchema: jzodSchema,
+            rawSchema: effectiveSchema,
           };
         }
       } catch (e) {
         return {
           status: "error",
-          error: `jzodTypeCheck failed to match value with ${jzodSchema.type} schema: ` + e,
-          rawJzodSchemaType: jzodSchema.type,
+          error: `jzodTypeCheck failed to match value with ${effectiveSchema.type} schema: ` + e,
+          rawJzodSchemaType: effectiveSchema.type,
           valuePath: currentValuePath,
           typePath: currentTypePath,
           value: valueObject,
-          rawSchema: jzodSchema,
+          rawSchema: effectiveSchema,
         };
       }
     }
@@ -1887,12 +1913,12 @@ export function jzodTypeCheck(
         status: "ok",
         valuePath: currentValuePath,
         typePath: [],
-        rawSchema: jzodSchema,
-        resolvedSchema: jzodSchema,
+        rawSchema: effectiveSchema,
+        resolvedSchema: effectiveSchema,
         keyMap: {
           [currentValuePath.join(".")]: {
-            rawSchema: jzodSchema,
-            resolvedSchema: jzodSchema,
+            rawSchema: effectiveSchema,
+            resolvedSchema: effectiveSchema,
             // resolvedSchema: valueToJzod(valueObject) as JzodElement
           }, // map the current value path to the resolved schema
         },
@@ -1903,7 +1929,7 @@ export function jzodTypeCheck(
       //   "jzodTypeCheck could not resolve schemaReferences for valueObject " +
       //     JSON.stringify(valueObject, undefined, 2) +
       //     " and schema " +
-      //     JSON.stringify(jzodSchema)
+      //     JSON.stringify(effectiveSchema)
       // );
       return {
         status: "error",
@@ -1912,7 +1938,7 @@ export function jzodTypeCheck(
         valuePath: currentValuePath,
         typePath: currentTypePath,
         value: valueObject,
-        rawSchema: jzodSchema,
+        rawSchema: effectiveSchema,
       };
       break;
     }
