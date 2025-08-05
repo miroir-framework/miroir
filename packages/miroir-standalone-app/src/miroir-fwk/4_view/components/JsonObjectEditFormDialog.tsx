@@ -297,7 +297,7 @@ const JsonElementEditorDialog: React.FC<JsonElementEditorDialogProps> = ({
               entityDefinitionJzodSchema &&
               formik.values &&
               currentAppModel
-                ? measuredJzodTypeCheck(
+                ? jzodTypeCheck(
                     entityDefinitionJzodSchema,
                     formik.values,
                     [], // currentValuePath
@@ -329,11 +329,8 @@ const JsonElementEditorDialog: React.FC<JsonElementEditorDialogProps> = ({
             <span>
               form: {"form." + label}, JsonObjectEditFormDialog count {count}
             </span>
-            <form
-              id={"form." + label}
-              onSubmit={formik.handleSubmit}
-            >
-              <span style={{paddingTop: 0, paddingBottom: 0}}>
+            <form id={"form." + label} onSubmit={formik.handleSubmit}>
+              <span style={{ paddingTop: 0, paddingBottom: 0 }}>
                 <ErrorBoundary
                   FallbackComponent={({ error, resetErrorBoundary }) => (
                     <ErrorFallbackComponent
@@ -354,33 +351,47 @@ const JsonElementEditorDialog: React.FC<JsonElementEditorDialogProps> = ({
                     />
                   )}
                 >
-                  <JzodElementEditor
-                    name={"ROOT"}
-                    listKey={"ROOT"}
-                    rootLessListKey=""
-                    rootLessListKeyArray={[]}
-                    labelElement={labelElement}
-                    currentDeploymentUuid={currentDeploymentUuid}
-                    currentApplicationSection={currentApplicationSection}
-                    // rawJzodSchema={entityDefinitionJzodSchema}
-                    // localRootLessListKeyMap={{}}
-                    resolvedElementJzodSchema={resolvedJzodSchemaForFormik?.status == "ok" ? (resolvedJzodSchemaForFormik as any).resolvedSchema : undefined}
-                    hasTypeError={resolvedJzodSchemaForFormik?.status !== "ok"}
-                    typeCheckKeyMap={
-                      resolvedJzodSchemaForFormik?.status == "ok"
-                        ? (resolvedJzodSchemaForFormik as any).keyMap
-                        : {}
-                    }
-                    foreignKeyObjects={foreignKeyObjects}
-                    foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
-                    setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
-                    indentLevel={0}
-                    submitButton={
-                      <button type="submit" name={label} form={"form." + label}>
-                        submit form.{label}
-                      </button>
-                    }
-                  />
+                  {resolvedJzodSchemaForFormik?.status == "ok" ? (
+                    <JzodElementEditor
+                      name={"ROOT"}
+                      listKey={"ROOT"}
+                      rootLessListKey=""
+                      rootLessListKeyArray={[]}
+                      labelElement={labelElement}
+                      currentDeploymentUuid={currentDeploymentUuid}
+                      currentApplicationSection={currentApplicationSection}
+                      // rawJzodSchema={entityDefinitionJzodSchema}
+                      // localRootLessListKeyMap={{}}
+                      resolvedElementJzodSchema={
+                        resolvedJzodSchemaForFormik?.status == "ok"
+                          ? (resolvedJzodSchemaForFormik as any).resolvedSchema
+                          : undefined
+                      }
+                      hasTypeError={resolvedJzodSchemaForFormik?.status !== "ok"}
+                      typeCheckKeyMap={
+                        resolvedJzodSchemaForFormik?.status == "ok"
+                          ? (resolvedJzodSchemaForFormik as any).keyMap
+                          : {}
+                      }
+                      foreignKeyObjects={foreignKeyObjects}
+                      foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
+                      setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
+                      indentLevel={0}
+                      submitButton={
+                        <button type="submit" name={label} form={"form." + label}>
+                          submit form.{label}
+                        </button>
+                      }
+                    />
+                  ) : (
+                    <div>
+                      <span style={{ color: "red" }}>
+                        Error in Jzod schema resolution:{" "}
+                        {/* {resolvedJzodSchemaForFormik?.error || "Unknown error"} */}
+                        <pre>{JSON.stringify(resolvedJzodSchemaForFormik, null, 2)}</pre>
+                      </span>
+                    </div>
+                  )}
                 </ErrorBoundary>
               </span>
             </form>

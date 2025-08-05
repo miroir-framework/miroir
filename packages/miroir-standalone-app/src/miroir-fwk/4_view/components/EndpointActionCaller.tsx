@@ -156,20 +156,6 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
       deploymentEntityStateSelectorMap.extractState(state.presentModelSnapshot.current, () => ({}))
   );
 
-  
-  // Initial form state for Formik
-  // const initialFormState = useMemo(() => {
-  //   if (!currentActionParametersMMLSchema?.definition || !context.miroirFundamentalJzodSchema) return {};
-    
-  //   const initialState: Record<string, any> = getDefaultValueForJzodSchemaWithResolution(
-  //     currentActionParametersMMLSchema,
-  //     false,
-  //     context.miroirFundamentalJzodSchema
-  //   );
-    
-  //   return initialState;
-  // }, [currentActionParametersMMLSchema]);
-
   const handleDeploymentChange = (event: SelectChangeEvent) => {
     setSelectedDeploymentUuid(event.target.value);
     setSelectedEndpointUuid('');

@@ -21,6 +21,7 @@ import {
   ExtendedTransformerForRuntime,
   ExtractorOrCombinerRecord,
   getApplicationSection,
+  getDefaultValueForJzodSchemaWithResolutionNonHook,
   getQueryRunnerParamsForDeploymentEntityState,
   InstanceAction,
   JzodElement,
@@ -38,7 +39,7 @@ import {
 } from "miroir-core";
 
 import AddBox from "@mui/icons-material/AddBox";
-import { getMemoizedDeploymentEntityStateSelectorForTemplateMap } from "miroir-localcache-redux";
+import { getMemoizedDeploymentEntityStateSelectorForTemplateMap, getMemoizedDeploymentEntityStateSelectorMap, ReduxStateWithUndoRedo } from "miroir-localcache-redux";
 import { packageName } from "../../../../constants.js";
 import { deleteCascade } from "../../scripts.js";
 import {
@@ -56,6 +57,7 @@ import { MTableComponent } from "../Grids/MTableComponent.js";
 import { TableComponentType, TableComponentTypeSchema } from "../Grids/MTableComponentInterface.js";
 import { useRenderTracker } from "../../tools/renderCountTracker.js";
 import { ThemedBox, ThemedButton, ThemedSpan } from "../Themes/ThemedComponents.js";
+import { useSelector } from "react-redux";
 
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -202,8 +204,15 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   const { navigationCount, totalCount } = useRenderTracker("ReportSectionListDisplay", currentNavigationKey);
   
   // log.info('@@@@@@@@@@@@@@@@@@@@@@@ ReportSectionListDisplay',count,props === prevProps, equal(props,prevProps));
-  log.info('@@@@@@@@@@@@@@@@@@@@@@@ ReportSectionListDisplay', 'navigationCount', navigationCount, 'totalCount', totalCount, 'props === prevProps', props === prevProps);
-  const context = useMiroirContextService();
+  log.info(
+    "@@@@@@@@@@@@@@@@@@@@@@@ ReportSectionListDisplay",
+    "navigationCount",
+    navigationCount,
+    "totalCount",
+    totalCount,
+    "props === prevProps",
+    props === prevProps
+  );
   
   // log.info('ReportSectionListDisplay props.domainElement',props.domainElement);
   // log.info('ReportSectionListDisplay props',props);
@@ -212,17 +221,21 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   const [addObjectdialogFormIsOpen, setAddObjectdialogFormIsOpen] = useState(false);
   const [dialogOuterFormObject, setdialogOuterFormObject] = useMiroirContextInnerFormOutput();
 
-  const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<DeploymentEntityState> = useMemo(
-    () => getMemoizedDeploymentEntityStateSelectorForTemplateMap(),
-    []
-  )
-
   const miroirMetaModel: MetaModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
   const currentModel: MetaModel = useCurrentModel(props.deploymentUuid)
+  const context = useMiroirContextService();
 
   // log.info("ReportSectionListDisplay props.deploymentUuid", props.deploymentUuid);
 
   const domainController: DomainControllerInterface = useDomainControllerService();
+
+  const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<DeploymentEntityState> =
+      getMemoizedDeploymentEntityStateSelectorMap();
+
+  const deploymentEntityState: DeploymentEntityState = useSelector(
+    (state: ReduxStateWithUndoRedo) =>
+      deploymentEntityStateSelectorMap.extractState(state.presentModelSnapshot.current, () => ({}))
+  );
 
   const { availableReports, entities, entityDefinitions } = useMemo(() => {
     // return displayedDeploymentDefinition &&
@@ -285,25 +298,6 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
     }),
     [props.deploymentUuid, instancesToDisplayJzodSchema, instancesToDisplayViewAttributes, currentReportTargetEntityDefinition]
   );
-  // log.info(
-  //   "ReportSectionListDisplay rendering",
-  //   count,
-  //   "instancesToDisplayViewAttributes",
-  //   instancesToDisplayViewAttributes,
-  //   "props.fetchedDataJzodSchema",
-  //   props.fetchedDataJzodSchema,
-  //   "props.section.definition.fetchedDataReference",
-  //   props.section.definition.fetchedDataReference,
-  //   "props.currentMiroirEntityDefinition?.jzodSchema",
-  //   currentReportTargetEntityDefinition?.jzodSchema,
-  //   "instancesToDisplayJzodSchema",
-  //   instancesToDisplayJzodSchema,
-  //   "tableColumnDefs",
-  //   tableColumnDefs,
-  //   prevColumnDefs === tableColumnDefs,
-  //   equal(prevColumnDefs, tableColumnDefs)
-  // );
-
   const foreignKeyObjectsAttributeDefinition:[string, JzodElement][] = useMemo(
     ()=> {
       if (props.tableComponentReportType !== TableComponentTypeSchema.enum.EntityInstance) {
@@ -326,11 +320,6 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
     ]
   );
 
-  // log.info(
-  //   "ReportSectionListDisplay foreignKeyObjectsAttributeDefinition",
-  //   foreignKeyObjectsAttributeDefinition,
-  //   foreignKeyObjectsAttributeDefinition.map((e) => e[1].tag?.value?.defaultLabel)
-  // );
   const foreignKeyObjectsFetchQueryParams: SyncQueryRunnerParams<
     DeploymentEntityState
   > = useMemo(
@@ -392,10 +381,6 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
       deploymentEntityStateSelectorMap,
     ]
   );
-  // log.info(
-  //   "ReportSectionListDisplay foreignKeyObjectsFetchQueryParams",
-  //   JSON.stringify(foreignKeyObjectsFetchQueryParams, null, 2)
-  // );
 
   const foreignKeyObjects: Record<string, EntityInstancesUuidIndex> =
   useDeploymentEntityStateQuerySelectorForCleanedResult(
@@ -405,14 +390,6 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
     >,
     foreignKeyObjectsFetchQueryParams
   );
-
-  // log.info("ReportSectionListDisplay foreignKeyObjects", Object.keys(foreignKeyObjects), foreignKeyObjects);
-
-  // log.info(
-  //   "foreignKeyObjectsAttributeDefinition",
-  //   foreignKeyObjectsAttributeDefinition,
-    
-  // )
 
   // // ##############################################################################################
   // const onSubmitInnerFormDialog: SubmitHandler<JsonObjectEditFormDialogInputs> = useCallback(
@@ -651,49 +628,86 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   );
 
   const defaultFormValuesObject = useMemo(
-    () => currentReportTargetEntity && currentReportTargetEntityDefinition? defaultFormValues(
-      props.tableComponentReportType,
-      currentReportTargetEntityDefinition?.jzodSchema as JzodObject,
-      [],
+    () =>
+      currentReportTargetEntity && currentReportTargetEntityDefinition && context.miroirFundamentalJzodSchema
+        // ? defaultFormValues(
+        //     props.tableComponentReportType,
+        //     currentReportTargetEntityDefinition?.jzodSchema as JzodObject,
+        //     [],
+        //     currentReportTargetEntity,
+        //     props.displayedDeploymentDefinition
+        //   )
+        ? getDefaultValueForJzodSchemaWithResolutionNonHook(
+          "", // rootLessListKey,
+          // {
+          //   type: "object",
+          //   definition: currentAction.actionParameters || {},
+          // },
+          currentReportTargetEntityDefinition?.jzodSchema as JzodObject,
+          undefined, // No need to pass currentDefaultValue here
+          [], // currentPath on value is root
+          deploymentEntityState,
+          false, // forceOptional
+          props.deploymentUuid,
+          context.miroirFundamentalJzodSchema,
+          currentModel,
+          miroirMetaModel,
+          {}, // relativeReferenceJzodContext
+          undefined, // rootObject
+        )
+        : undefined,
+    [
       currentReportTargetEntity,
-      props.displayedDeploymentDefinition
-    ):undefined, [currentReportTargetEntity, currentReportTargetEntityDefinition, props.tableComponentReportType, props.displayedDeploymentDefinition]
-  )
+      currentReportTargetEntityDefinition,
+      props.tableComponentReportType,
+      props.displayedDeploymentDefinition,
+    ]
+  );
   // log.info("calling JsonObjectEditFormDialog with defaultFormValuesObject", defaultFormValuesObject)
 
   // ##############################################################################################
   const onSubmitOuterDialog: (data: JsonObjectEditFormDialogInputs)=>void = useCallback(
     async (data) => {
       log.info('ReportComponent onSubmitOuterDialog','data',data);
-      setAddObjectdialogFormIsOpen(false);
+      
+    // if (props.type == 'EntityInstance' && props?.onRowEdit) {
+      // await onCreateFormObject(data);
+      await onEditFormObject(data);
+    // } else {
+    //   log.error('onEditDialogFormSubmit called for not EntityInstance');
+    // }
+      log.info('ReportComponent onSubmitOuterDialog done for','data',data);
 
-      // log.info('ReportComponent onSubmitOuterDialog','buttonType',buttonType,'data',data,'dialogFormObject',dialogOuterFormObject,buttonType,);
-      // const buttonType:string=(event?.nativeEvent as any)['submitter']['name'];
-      // log.info('ReportComponent onSubmitOuterDialog','buttonType',buttonType,'data',data,buttonType,);
-      // if (buttonType == 'OuterDialog') {
-      //   await onCreateFormObject(data);
-      // } else {
-      //   log.info('ReportComponent onSubmitOuterDialog ignoring event for',buttonType);
-        
-      // }
+      // The form already calls onCreateFormObject, so we just need to close the dialog
+      setAddObjectdialogFormIsOpen(false);
     },
     [setAddObjectdialogFormIsOpen]
   )
 
   // ##############################################################################################
-  const handleAddObjectDialogFormButtonClick = useCallback((label: string  | undefined, a: any) => {
+  const handleAddObjectDialogFormOpen = useCallback((label: string  | undefined, a: any) => {
     log.info(
       "handleAddObjectDialogFormOpen",
       label,
       "called, props.formObject",
       defaultFormValuesObject,
+      "currentReportTargetEntityDefinition",
+      currentReportTargetEntityDefinition,
       "passed value",
       a
     );
 
     setAddObjectdialogFormIsOpen(true);
-    // reset(props.defaultFormValuesObject);
-    setdialogOuterFormObject(a);
+    
+    // Set dialogOuterFormObject like duplicate button does
+    if (a) {
+      setdialogOuterFormObject(a);
+      log.info('handleAddObjectDialogFormOpen parameter is defined, using provided default values', a);
+    } else {
+      // Fallback to defaultFormValuesObject if no value passed
+      setdialogOuterFormObject(defaultFormValuesObject);
+      log.info('handleAddObjectDialogFormOpen parameter is undefined, using defaultFormValuesObject', defaultFormValuesObject);
+    }
   },[defaultFormValuesObject, setAddObjectdialogFormIsOpen, setdialogOuterFormObject]);
 
   // ##############################################################################################
@@ -740,7 +754,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
                 }}
                 variant="secondary"
                 onClick={() => {
-                  handleAddObjectDialogFormButtonClick(
+                  handleAddObjectDialogFormOpen(
                     props.defaultlabel ??
                       currentReportTargetEntityDefinition?.name ??
                       "No Entity Found!",
@@ -755,22 +769,22 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
               <JsonObjectEditFormDialog
                 showButton={false}
                 isOpen={addObjectdialogFormIsOpen}
-                onClose={handleAddObjectDialogTableRowFormClose}
-                onCreateFormObject={onCreateFormObject}
                 isAttributes={true}
                 label={props.defaultlabel ?? currentReportTargetEntityDefinition?.name}
+                defaultFormValuesObject={defaultFormValuesObject}
                 entityDefinitionJzodSchema={
                   currentReportTargetEntityDefinition?.jzodSchema as JzodObject
                 }
                 foreignKeyObjects={foreignKeyObjects}
                 currentDeploymentUuid={props.displayedDeploymentDefinition?.uuid}
                 currentApplicationSection={props.chosenApplicationSection}
-                defaultFormValuesObject={defaultFormValuesObject}
                 currentAppModel={currentModel}
                 currentMiroirModel={miroirMetaModel}
                 addObjectdialogFormIsOpen={addObjectdialogFormIsOpen}
                 setAddObjectdialogFormIsOpen={setAddObjectdialogFormIsOpen}
                 onSubmit={onSubmitOuterDialog}
+                onClose={handleAddObjectDialogTableRowFormClose}
+                onCreateFormObject={onCreateFormObject}
               />
             ) : (
               <></>

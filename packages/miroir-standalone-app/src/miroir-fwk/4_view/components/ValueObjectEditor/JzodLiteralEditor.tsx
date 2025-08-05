@@ -149,7 +149,7 @@ export const JzodLiteralEditor: FC<JzodLiteralEditorProps> =  (
           currentMiroirFundamentalJzodSchema, // context.miroirFundamentalJzodSchema,
           currentModel,
           miroirMetaModel,
-          for_mik.values, // rootObject
+          formik.values, // rootObject
         )
       : undefined;
     // log.info(
