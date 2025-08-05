@@ -1,63 +1,51 @@
-import { ErrorBoundary } from "react-error-boundary";
-import React, { FC, useCallback, useMemo, useState, useRef, useEffect } from "react";
 import Clear from "@mui/icons-material/Clear";
-import InfoOutlined from "@mui/icons-material/InfoOutlined";
+import React, { FC, useCallback, useEffect, useMemo, useState } from "react";
+import { ErrorBoundary } from "react-error-boundary";
 
 import {
-  JzodElement,
-  JzodObject,
-  JzodLiteral,
-  JzodEnum,
-  unfoldJzodSchemaOnce,
-  LoggerInterface,
-  MiroirLoggerFactory,
-  getDefaultValueForJzodSchemaWithResolution,
-  JzodRecord,
-  resolvePathOnObject,
-  deleteObjectAtPath,
   alterObjectAtPath,
-  ResolvedJzodSchemaReturnType,
-  UnfoldJzodSchemaOnceReturnType,
-  KeyMapEntry,
+  deleteObjectAtPath,
+  DeploymentEntityState,
   foldableElementTypes,
   getDefaultValueForJzodSchemaWithResolutionNonHook,
-  DeploymentEntityState,
-  SyncBoxedExtractorOrQueryRunnerMap,
+  JzodElement,
+  JzodObject,
+  JzodRecord,
+  KeyMapEntry,
+  LoggerInterface,
+  MiroirLoggerFactory,
+  resolvePathOnObject,
+  SyncBoxedExtractorOrQueryRunnerMap
 } from "miroir-core";
 
-import { indentShift } from "./JzodArrayEditor";
-import { FoldUnfoldObjectOrArray, FoldUnfoldAllObjectAttributesOrArrayItems, JzodElementEditor } from "./JzodElementEditor";
-import { useJzodElementEditorHooks } from "./JzodElementEditorHooks";
-import { JzodObjectEditorProps } from "./JzodElementEditorInterface";
-import { getItemsOrder } from "../Themes/Style";
-import { 
-  ThemedSmallIconButton,
-  ThemedSizedButton, 
-  ThemedAddIcon,
-  ThemedEditableInput,
-  ThemedLoadingCard,
-  ThemedFoldedValueDisplay,
-  ThemedAttributeLabel,
-  ThemedFlexRow,
-  ThemedFlexColumn,
-  ThemedOptionalAttributeContainer,
-  ThemedOptionalAttributeItem,
-  ThemedAttributeName,
-  ThemedDeleteButtonContainer,
-  ThemedIndentedContainer
-} from "../Themes/ThemedComponents";
-import { useMiroirTheme } from '../../contexts/MiroirThemeContext';
-import { ErrorFallbackComponent } from "../ErrorFallbackComponent";
+import { getMemoizedDeploymentEntityStateSelectorMap, ReduxStateWithUndoRedo } from "miroir-localcache-redux";
+import { useSelector } from "react-redux";
 import { packageName } from "../../../../constants";
 import { cleanLevel } from "../../constants";
 import {
-  measuredGetDefaultValueForJzodSchemaWithResolution,
-  measuredUnfoldJzodSchemaOnce,
-  measuredUseJzodElementEditorHooks,
+  measuredUnfoldJzodSchemaOnce
 } from "../../tools/hookPerformanceMeasure";
-import { keymap } from "@uiw/react-codemirror";
-import { getMemoizedDeploymentEntityStateSelectorMap, ReduxStateWithUndoRedo } from "miroir-localcache-redux";
-import { useSelector } from "react-redux";
+import { ErrorFallbackComponent } from "../ErrorFallbackComponent";
+import { getItemsOrder } from "../Themes/Style";
+import {
+  ThemedAddIcon,
+  ThemedAttributeLabel,
+  ThemedAttributeName,
+  ThemedDeleteButtonContainer,
+  ThemedEditableInput,
+  ThemedFlexRow,
+  ThemedFoldedValueDisplay,
+  ThemedIndentedContainer,
+  ThemedLoadingCard,
+  ThemedOptionalAttributeContainer,
+  ThemedOptionalAttributeItem,
+  ThemedSizedButton,
+  ThemedSmallIconButton
+} from "../Themes/ThemedComponents";
+import { indentShift } from "./JzodArrayEditor";
+import { FoldUnfoldAllObjectAttributesOrArrayItems, FoldUnfoldObjectOrArray, JzodElementEditor } from "./JzodElementEditor";
+import { useJzodElementEditorHooks } from "./JzodElementEditorHooks";
+import { JzodObjectEditorProps } from "./JzodElementEditorInterface";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -537,6 +525,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
     // log.info("addExtraRecordEntry newAttributeType", JSON.stringify(newAttributeType, null, 2));
     const newAttributeValue = currentMiroirFundamentalJzodSchema
       ? getDefaultValueForJzodSchemaWithResolutionNonHook(
+          rootLessListKey,
           currentTypeCheckKeyMap?.rawSchema.definition,
           undefined, // currentDefaultValue is not known yet, this is what this call will determine
           [], // currentPath on value is root
@@ -545,7 +534,10 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
           currentDeploymentUuid,
           currentMiroirFundamentalJzodSchema,
           currentModel,
-          miroirMetaModel
+          miroirMetaModel,
+          {},
+          // Object.hasOwn(formik.values,"")?formik.values[""]:{}, // rootObject
+          formik.values // rootObject
         )
       : undefined;
 
@@ -603,6 +595,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
       );
       const newAttributeValue = !!currentMiroirFundamentalJzodSchema
         ? getDefaultValueForJzodSchemaWithResolutionNonHook(
+            rootLessListKey,
             newAttributeType,
             undefined, // currentDefaultValue is not known yet, this is what this call will determine
             [], // currentPath on value is root
@@ -612,6 +605,8 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
             currentMiroirFundamentalJzodSchema,
             currentModel,
             miroirMetaModel,
+            {}, // relativeReferenceJzodContext
+            formik.values
           )
         : undefined;
 

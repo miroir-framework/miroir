@@ -953,9 +953,9 @@ export function transformer_InnerReference_resolve(
 
   let result: Domain2QueryReturnType<any> = undefined;
   switch (transformerInnerReference.transformerType) {
-    case "constant": 
-    case "constantUuid": 
-    case "constantObject": 
+    case "constant":
+    case "constantUuid":
+    case "constantObject":
     case "constantString": {
       result = transformerInnerReference.value;
       break;
@@ -1027,8 +1027,12 @@ export function transformer_InnerReference_resolve(
       return new Domain2ElementFailed({
         queryFailure: "QueryNotExecutable",
         failureOrigin: ["transformer_InnerReference_resolve"],
-        failureMessage: "transformer_InnerReference_resolve failed, unknown transformerType for transformer=" + transformerInnerReference,
-        queryContext: "transformer_InnerReference_resolve failed, unknown transformerType for transformer=" + transformerInnerReference,
+        failureMessage:
+          "transformer_InnerReference_resolve failed, unknown transformerType for transformer=" +
+          transformerInnerReference,
+        queryContext:
+          "transformer_InnerReference_resolve failed, unknown transformerType for transformer=" +
+          transformerInnerReference,
         queryParameters: transformerInnerReference as any,
       });
       break;

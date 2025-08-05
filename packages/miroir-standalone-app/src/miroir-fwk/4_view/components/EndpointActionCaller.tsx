@@ -103,11 +103,11 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
 
   const domainController: DomainControllerInterface = useDomainControllerService();
   const context = useMiroirContextService();
-  // const currentModel: MetaModel = useCurrentModel(
-  //   context.applicationSection == "data" ? context.deploymentUuid : adminConfigurationDeploymentMiroir.uuid
-  // );
-  // const adminAppModel: MetaModel = useCurrentModel(adminConfigurationDeploymentAdmin.uuid);
-  // const miroirMetaModel: MetaModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
+  const currentModel: MetaModel = useCurrentModel(
+    context.applicationSection == "data" ? context.deploymentUuid : adminConfigurationDeploymentMiroir.uuid
+  );
+  const adminAppModel: MetaModel = useCurrentModel(adminConfigurationDeploymentAdmin.uuid);
+  const miroirMetaModel: MetaModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
 
   // const libraryAppModel: MetaModel = useCurrentModel(adminConfigurationDeploymentLibrary.uuid);
 
@@ -200,6 +200,7 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
       !selectedDeploymentUuid
         ? {}
         : getDefaultValueForJzodSchemaWithResolutionNonHook(
+            "", // rootLessListKey,
             {
               type: "object",
               definition: currentAction.actionParameters || {},
@@ -209,7 +210,11 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
             deploymentEntityState,
             false, // forceOptional
             selectedDeploymentUuid,
-            context.miroirFundamentalJzodSchema
+            context.miroirFundamentalJzodSchema,
+            currentModel,
+            miroirMetaModel,
+            {}, // relativeReferenceJzodContext
+            undefined, // rootObject
           );
     log.info(
       "EndpointActionCaller: handleActionChange Initial form state",

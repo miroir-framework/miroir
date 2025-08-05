@@ -62,9 +62,7 @@ const codeMirrorExtensions = [javascript()];
 interface TypedValueObjectEditorProps {
   labelElement: React.ReactElement | undefined;
   // 
-  // instance?: EntityInstance,
   valueObject?: any,
-  // valueObjectMMLSchema: EntityDefinition | undefined;
   valueObjectMMLSchema: JzodElement | undefined;
   // 
   applicationSection: ApplicationSection,

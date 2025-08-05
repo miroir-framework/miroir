@@ -396,7 +396,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
             <br />
             {/* value {formik.values[props.rootLessListKey]} */}
             {/* value <pre>{safeStringify(currentValue, 500)}</pre> */}
-            value <pre>{JSON.stringify(currentValue)}</pre>
+            {/* value <pre>{JSON.stringify(currentValue)}</pre> */}
             <br />
             {/* raw Jzod schema: {safeStringify(currentKeyMap?.rawSchema, 500)} */}
             raw Jzod schema: {JSON.stringify(currentKeyMap?.rawSchema, undefined, 2)}
@@ -596,7 +596,9 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                         key={e[1].uuid}
                         value={e[1].uuid}
                       >
-                        {(e[1] as EntityInstanceWithName).name}
+                        {/* {(e[1] as EntityInstanceWithName).name} */}
+                        {/* {(e[1] as any).defaultLabel || (e[1] as EntityInstanceWithName).name} */}
+                        {(e[1] as any).description || (e[1] as any).defaultLabel || (e[1] as EntityInstanceWithName).name}
                       </ThemedMenuItemOption>
                     ))}
                   </ThemedSelect>

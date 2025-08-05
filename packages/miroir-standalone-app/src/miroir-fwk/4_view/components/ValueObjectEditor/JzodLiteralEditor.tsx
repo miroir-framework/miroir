@@ -139,6 +139,7 @@ export const JzodLiteralEditor: FC<JzodLiteralEditorProps> =  (
 
     const defaultValue = currentMiroirFundamentalJzodSchema
       ? getDefaultValueForJzodSchemaWithResolutionNonHook(
+          rootLessListKey,
           newJzodSchemaWithOptional,
           undefined, // currentDefaultValue is not known yet, this is what this call will determine
           [], // currentPath on value is root
@@ -147,7 +148,8 @@ export const JzodLiteralEditor: FC<JzodLiteralEditorProps> =  (
           currentDeploymentUuid,
           currentMiroirFundamentalJzodSchema, // context.miroirFundamentalJzodSchema,
           currentModel,
-          miroirMetaModel
+          miroirMetaModel,
+          for_mik.values, // rootObject
         )
       : undefined;
     // log.info(

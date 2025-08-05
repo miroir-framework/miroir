@@ -1050,7 +1050,7 @@ export class DomainController implements DomainControllerInterface {
                       endpoint: "a93598b3-19b6-42e8-828c-f02042d212d4",
                       deploymentUuid,
                       // payload: {
-                        section: replayAction.instanceAction.payload.applicationSection,
+                        section: replayAction.instanceAction.payload.applicationSection??"data",
                         parentName: replayAction.instanceAction.payload.objects[0].parentName,
                         parentUuid: replayAction.instanceAction.payload.objects[0].parentUuid,
                         objects: replayAction.instanceAction.payload.objects[0].instances,

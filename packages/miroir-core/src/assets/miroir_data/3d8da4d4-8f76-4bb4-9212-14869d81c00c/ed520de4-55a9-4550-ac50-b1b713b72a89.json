@@ -29,6 +29,11 @@
                 "canBeTemplate": true,
                 "defaultLabel": "deployment Uuid",
                 "editable": false,
+                "selectorParams": {
+                  "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                  "targetEntity": "7959d814-400c-4e80-988f-a00fe582ab98",
+                  "targetEntityOrderInstancesBy": "name"
+                },
                 "initializeTo": {
                   "initializeToType": "transformer",
                   "transformer": {
@@ -45,6 +50,7 @@
             "definition": {
               "applicationSection": {
                 "type": "schemaReference",
+                "optional": true,
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                   "relativePath": "applicationSection"
@@ -61,10 +67,7 @@
                       "targetEntityApplicationSection": "model",
                       "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                       "targetEntityOrderInstancesBy": "name"
-                    },
-                    "targetEntityApplicationSection": "model",
-                    "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                    "targetEntityOrderInstancesBy": "name"
+                    }
                   }
                 }
               },
@@ -105,9 +108,14 @@
                             "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                             "targetEntityOrderInstancesBy": "name"
                           },
-                          "targetEntityApplicationSection": "model",
-                          "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                          "targetEntityOrderInstancesBy": "name"
+                          "initializeTo": {
+                            "initializeToType": "transformer",
+                            "transformer": {
+                              "transformerType": "parameterReference",
+                              "interpolation": "build",
+                              "referencePath": [ "rootObject", "payload", "parentUuid" ]
+                            }
+                          }
                         }
                       }
                     },

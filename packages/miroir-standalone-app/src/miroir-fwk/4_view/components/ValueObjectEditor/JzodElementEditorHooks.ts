@@ -150,7 +150,7 @@ export function useJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
         currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetEntity
           ? {
               queryType: "boxedQueryWithExtractorCombinerTransformer",
-              deploymentUuid: props.currentDeploymentUuid,
+              deploymentUuid: currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetDeploymentUuid??props.currentDeploymentUuid,
               pageParams: {},
               queryParams: {},
               contextResults: {},
@@ -158,7 +158,7 @@ export function useJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
                 [currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetEntity]: {
                   extractorOrCombinerType: "extractorByEntityReturningObjectList",
                   applicationSection: getApplicationSection(
-                    props.currentDeploymentUuid,
+                    currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetDeploymentUuid??props.currentDeploymentUuid,
                     currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetEntity
                   ),
                   parentName: "",

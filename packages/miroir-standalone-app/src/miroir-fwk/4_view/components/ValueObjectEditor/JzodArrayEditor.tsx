@@ -370,7 +370,19 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
             JSON.stringify(context.miroirFundamentalJzodSchema, null, 2)
         );
       }
-      
+
+      log.info(
+        "JzodArrayEditor addNewArrayItem",
+        "rootLessListKey",
+        rootLessListKey,
+        "currentTypeCheckKeyMap",
+        currentTypeCheckKeyMap,
+        "formik.values",
+        formik.values,
+        "currentValue",
+        currentValue,
+      );
+
       let newItemSchema: JzodElement | undefined = currentTypeCheckKeyMap?.rawSchema.definition;
 
       if ((currentTypeCheckKeyMap?.rawSchema as any).definition?.tag?.value?.conditionalMMLS?.parentUuid?.defaultValuePath) {
@@ -446,7 +458,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
       
 
       const newItem = getDefaultValueForJzodSchemaWithResolutionNonHook(
-        // (newItemEntity as any)?.jzodSchema, // TODO: not correct with runtimeTypes
+        rootLessListKey,
         newItemSchema, // TODO: not correct with runtimeTypes
         undefined, // currentDefaultValue is not known yet, this is what this call will determine
         [], // currentPath on value is root
@@ -455,7 +467,9 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
         currentDeploymentUuid,
         context.miroirFundamentalJzodSchema,
         currentModel,
-        miroirMetaModel
+        miroirMetaModel,
+        {}, // relativeReferenceJzodContext
+        formik.values,
       );
       // Create the new array value
       const newArrayValue = [

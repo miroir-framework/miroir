@@ -45,7 +45,7 @@ export const JzodElementEditorReactCodeMirror: React.FC<JzodElementEditorReactCo
     // For testing purposes, return a simple div with the value
     return (
       <ThemedBox border="1px solid red" padding="10px">
-        <pre>{codeMirrorValue}</pre>
+        codeMirrorValue: <pre>{codeMirrorValue}</pre>
       </ThemedBox>
     );
   }

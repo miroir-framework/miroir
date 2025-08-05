@@ -33,6 +33,7 @@ MiroirLoggerFactory.registerLoggerToStart(
 
 // ################################################################################################
 export function getDefaultValueForJzodSchemaWithResolution(
+  rootLessListKey: string,
   jzodSchema: JzodElement,
   currentDefaultValue: any = undefined,
   currentValuePath: string[] = [],
@@ -78,6 +79,59 @@ export function getDefaultValueForJzodSchemaWithResolution(
     return undefined;
   }
   // let result
+
+  if (
+    effectiveSchema.tag &&
+    effectiveSchema.tag.value &&
+    effectiveSchema.tag.value.initializeTo?.initializeToType == "value" &&
+    effectiveSchema.tag.value.initializeTo.value
+  ) {
+    const result = effectiveSchema.tag.value.initializeTo.value;
+    log.info(
+      "getDefaultValueForJzodSchemaWithResolutionWithResolution returning UUID from tag.value.initializeTo.value",
+      "currentValuePath",
+      currentValuePath,
+      "result",
+      result
+    );
+    return result;
+  }
+  if (
+    effectiveSchema.tag &&
+    effectiveSchema.tag.value &&
+    effectiveSchema.tag.value.initializeTo?.initializeToType == "transformer" &&
+    effectiveSchema.tag.value.initializeTo.transformer
+  ) {
+    log.info(
+      "getDefaultValueForJzodSchemaWithResolution calling transformer_extended_apply_wrapper",
+      "deploymentUuid",
+      deploymentUuid,
+      "rootObject",
+      rootObject,
+      "jzodSchema.tag.value.initializeTo.transformer",
+      effectiveSchema.tag.value.initializeTo.transformer
+    );
+    const result = transformer_extended_apply_wrapper(
+      "build",
+      undefined,
+      effectiveSchema.tag.value.initializeTo.transformer,
+      {
+        deploymentUuid,
+        rootObject
+      }, // parameters
+      {}, // runtimeContext
+      "value"
+    );
+    log.info(
+      "getDefaultValueForJzodSchemaWithResolutionWithResolution returning",
+      "currentValuePath",
+      currentValuePath,
+      "result",
+      result
+    );
+    return result;
+  }
+
   switch (effectiveSchema.type) {
     case "object": {
       const resolvedObjectType = resolveObjectExtendClauseAndDefinition(
@@ -99,6 +153,7 @@ export function getDefaultValueForJzodSchemaWithResolution(
         .forEach((a) => {
           const attributeName = a[0];
           const attributeValue = getDefaultValueForJzodSchemaWithResolution(
+            rootLessListKey,
             a[1],
             result,
             currentValuePath.concat([a[0]]),
@@ -193,12 +248,17 @@ export function getDefaultValueForJzodSchemaWithResolution(
         return result;
       }
       // if (effectiveSchema.tag && effectiveSchema.tag.value && effectiveSchema.tag.value.targetEntity) {
-      if (effectiveSchema.tag && effectiveSchema.tag.value && effectiveSchema.tag.value.selectorParams && effectiveSchema.tag.value.selectorParams.targetEntity) {
+      if (
+        effectiveSchema.tag &&
+        effectiveSchema.tag.value &&
+        effectiveSchema.tag.value.selectorParams &&
+        effectiveSchema.tag.value.selectorParams.targetEntity
+      ) {
         const foreignKeyObjects: EntityInstancesUuidIndex = getEntityInstancesUuidIndex(
           deploymentUuid,
           effectiveSchema.tag.value.selectorParams.targetEntity,
           effectiveSchema.tag.value.selectorParams.targetEntityOrderInstancesBy
-        )
+        );
         const result = Object.values(foreignKeyObjects)[0]?.uuid;
         log.info(
           "getDefaultValueForJzodSchemaWithResolution returning default UUID value from foreign key",
@@ -250,6 +310,7 @@ export function getDefaultValueForJzodSchemaWithResolution(
         relativeReferenceJzodContext
       );
       return getDefaultValueForJzodSchemaWithResolution(
+        rootLessListKey,
         resolvedReference,
         currentDefaultValue,
         currentValuePath,
@@ -282,6 +343,7 @@ export function getDefaultValueForJzodSchemaWithResolution(
         return jzodSchema.tag?.value?.initializeTo.value;
       } else {
         return getDefaultValueForJzodSchemaWithResolution(
+          rootLessListKey,
           effectiveSchema.definition[0],
           currentDefaultValue,
           currentValuePath,
@@ -342,6 +404,7 @@ export function getDefaultValueForJzodSchemaWithResolution(
  * instead of relying on React hooks for data fetching
  */
 export function getDefaultValueForJzodSchemaWithResolutionNonHook(
+  rootLessListKey: string,
   jzodSchema: JzodElement,
   currentDefaultValue: any = undefined,
   currentValuePath: string[] = [],
@@ -352,11 +415,16 @@ export function getDefaultValueForJzodSchemaWithResolutionNonHook(
   currentModel?: MetaModel,
   miroirMetaModel?: MetaModel,
   relativeReferenceJzodContext?: { [k: string]: JzodElement },
+  rootObject?: any,
 ): any {
   log.info(
     "getDefaultValueForJzodSchemaWithResolutionNonHook called with",
+    "rootLessListKey",
+    rootLessListKey,
     "deploymentUuid",
     deploymentUuid,
+    "rootObject",
+    rootObject,
     "jzodSchema",
     jzodSchema,
     "forceOptional",
@@ -398,6 +466,7 @@ export function getDefaultValueForJzodSchemaWithResolutionNonHook(
 
   // Call the original function with our new getter
   return getDefaultValueForJzodSchemaWithResolution(
+    rootLessListKey,
     jzodSchema,
     currentDefaultValue,
     currentValuePath,
@@ -408,7 +477,7 @@ export function getDefaultValueForJzodSchemaWithResolutionNonHook(
     currentModel,
     miroirMetaModel,
     relativeReferenceJzodContext,
-    undefined // rootObject not available in non-hook version
+    rootObject,
   );
 }
 

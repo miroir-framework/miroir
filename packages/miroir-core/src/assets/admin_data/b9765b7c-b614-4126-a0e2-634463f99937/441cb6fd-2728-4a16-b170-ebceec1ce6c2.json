@@ -8,5 +8,5 @@
   "sidebarWidth": 336,
   "gridType": "ag-grid",
   "tableTheme": "default",
-  "appTheme": "default"
+  "appTheme": "dark"
 }

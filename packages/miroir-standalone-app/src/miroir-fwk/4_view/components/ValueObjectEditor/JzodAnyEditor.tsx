@@ -79,6 +79,7 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
               `JzodAnyEditor: Change value type to ${type} for ${rootLessListKey}`
             );
             const defaultValue = getDefaultValueForJzodSchemaWithResolutionNonHook(
+              rootLessListKey,
               type,
               undefined, // currentDefaultValue is not known yet, this is what this call will determine
               [], // currentPath on value is root
@@ -87,7 +88,8 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
               currentDeploymentUuid,
               miroirFundamentalJzodSchema as JzodSchema, // context.miroirFundamentalJzodSchema,
               currentModel,
-              miroirMetaModel
+              miroirMetaModel,
+              formik.values,
             )
             formik.setFieldValue(rootLessListKey, defaultValue, false);
           }}

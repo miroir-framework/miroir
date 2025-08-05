@@ -434,7 +434,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                 testLabel: "checkEntityBooks",
                 definition: {
                   resultAccessPath: ["libraryEntityList", "entities"],
-                  ignoreAttributes: ["author"],
+                  ignoreAttributes: ["author", "storageAccess"],
                   expectedValue: [entityAuthor, entityPublisher],
                 },
               },
@@ -698,7 +698,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                 testLabel: "checkEntitiesAreAuthorAndPublisher",
                 definition: {
                   resultAccessPath: ["libraryEntityListFromLocalCache", "entities"],
-                  ignoreAttributes: ["author"],
+                  ignoreAttributes: ["author", "storageAccess"],
                   expectedValue: [entityAuthor, entityPublisher],
                 },
               },
@@ -737,7 +737,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                 testLabel: "checkEntityFromPersistentStore",
                 definition: {
                   resultAccessPath: ["libraryEntityListFromPersistentStore", "entities"],
-                  ignoreAttributes: ["author"],
+                  ignoreAttributes: ["author", "storageAccess"],
                   expectedValue: [entityPublisher],
                 },
               },
@@ -992,7 +992,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                 testLabel: "checkEntityBooks",
                 definition: {
                   resultAccessPath: ["libraryEntityList", "entities"],
-                  ignoreAttributes: ["author"],
+                  ignoreAttributes: ["author", "storageAccess"],
                   expectedValue: [{ ...entityPublisher, name: "Publishers" }],
                 },
               },
@@ -1183,7 +1183,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
             //     testLabel: "checkEntityBooks",
             //     definition: {
             //       resultAccessPath: ["libraryEntityDefinitionListFromLocalCache", "entityDefinitions"],
-            //       ignoreAttributes: ["author"],
+            //       ignoreAttributes: ["author", "storageAccess"],
             //       expectedValue: [
             //         {
             //           ...entityDefinitionPublisher,
@@ -1208,7 +1208,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
             //     testLabel: "checkEntityBooks",
             //     definition: {
             //       resultAccessPath: ["libraryEntityDefinitionListFromPersistentStore", "entityDefinitions"],
-            //       ignoreAttributes: ["author"],
+            //       ignoreAttributes: ["author", "storageAccess"],
             //       expectedValue: [
             //         {
             //           ...entityDefinitionPublisher,

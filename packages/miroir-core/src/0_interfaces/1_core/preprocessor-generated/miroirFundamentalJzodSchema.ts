@@ -14558,6 +14558,11 @@ export const miroirFundamentalJzodSchema = {
                     "canBeTemplate": true,
                     "defaultLabel": "deployment Uuid",
                     "editable": false,
+                    "selectorParams": {
+                      "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                      "targetEntity": "7959d814-400c-4e80-988f-a00fe582ab98",
+                      "targetEntityOrderInstancesBy": "name"
+                    },
                     "initializeTo": {
                       "initializeToType": "transformer",
                       "transformer": {
@@ -14574,6 +14579,7 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "applicationSection": {
                     "type": "schemaReference",
+                    "optional": true,
                     "definition": {
                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                       "relativePath": "applicationSection"
@@ -14590,10 +14596,7 @@ export const miroirFundamentalJzodSchema = {
                           "targetEntityApplicationSection": "model",
                           "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                           "targetEntityOrderInstancesBy": "name"
-                        },
-                        "targetEntityApplicationSection": "model",
-                        "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                        "targetEntityOrderInstancesBy": "name"
+                        }
                       }
                     }
                   },
@@ -14634,9 +14637,18 @@ export const miroirFundamentalJzodSchema = {
                                 "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                                 "targetEntityOrderInstancesBy": "name"
                               },
-                              "targetEntityApplicationSection": "model",
-                              "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                              "targetEntityOrderInstancesBy": "name"
+                              "initializeTo": {
+                                "initializeToType": "transformer",
+                                "transformer": {
+                                  "transformerType": "parameterReference",
+                                  "interpolation": "build",
+                                  "referencePath": [
+                                    "rootObject",
+                                    "payload",
+                                    "parentUuid"
+                                  ]
+                                }
+                              }
                             }
                           }
                         },
@@ -14834,6 +14846,11 @@ export const miroirFundamentalJzodSchema = {
                     "canBeTemplate": true,
                     "defaultLabel": "deployment Uuid",
                     "editable": false,
+                    "selectorParams": {
+                      "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                      "targetEntity": "7959d814-400c-4e80-988f-a00fe582ab98",
+                      "targetEntityOrderInstancesBy": "name"
+                    },
                     "initializeTo": {
                       "initializeToType": "transformer",
                       "transformer": {
@@ -14850,6 +14867,7 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "applicationSection": {
                     "type": "schemaReference",
+                    "optional": true,
                     "definition": {
                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                       "relativePath": "applicationSection"
@@ -14866,10 +14884,7 @@ export const miroirFundamentalJzodSchema = {
                           "targetEntityApplicationSection": "model",
                           "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                           "targetEntityOrderInstancesBy": "name"
-                        },
-                        "targetEntityApplicationSection": "model",
-                        "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                        "targetEntityOrderInstancesBy": "name"
+                        }
                       }
                     }
                   },
@@ -14910,9 +14925,18 @@ export const miroirFundamentalJzodSchema = {
                                 "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                                 "targetEntityOrderInstancesBy": "name"
                               },
-                              "targetEntityApplicationSection": "model",
-                              "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                              "targetEntityOrderInstancesBy": "name"
+                              "initializeTo": {
+                                "initializeToType": "transformer",
+                                "transformer": {
+                                  "transformerType": "parameterReference",
+                                  "interpolation": "build",
+                                  "referencePath": [
+                                    "rootObject",
+                                    "payload",
+                                    "parentUuid"
+                                  ]
+                                }
+                              }
                             }
                           }
                         },
@@ -25058,6 +25082,11 @@ export const miroirFundamentalJzodSchema = {
                     "canBeTemplate": true,
                     "defaultLabel": "deployment Uuid",
                     "editable": false,
+                    "selectorParams": {
+                      "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                      "targetEntity": "7959d814-400c-4e80-988f-a00fe582ab98",
+                      "targetEntityOrderInstancesBy": "name"
+                    },
                     "initializeTo": {
                       "initializeToType": "transformer",
                       "transformer": {
@@ -25077,6 +25106,11 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": true,
                         "defaultLabel": "deployment Uuid",
                         "editable": false,
+                        "selectorParams": {
+                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetEntity": "7959d814-400c-4e80-988f-a00fe582ab98",
+                          "targetEntityOrderInstancesBy": "name"
+                        },
                         "initializeTo": {
                           "initializeToType": "transformer",
                           "transformer": {
@@ -25113,6 +25147,7 @@ export const miroirFundamentalJzodSchema = {
                         "definition": [
                           {
                             "type": "schemaReference",
+                            "optional": true,
                             "definition": {
                               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                               "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
@@ -25138,10 +25173,7 @@ export const miroirFundamentalJzodSchema = {
                               "targetEntityApplicationSection": "model",
                               "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                               "targetEntityOrderInstancesBy": "name"
-                            },
-                            "targetEntityApplicationSection": "model",
-                            "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                            "targetEntityOrderInstancesBy": "name"
+                            }
                           }
                         },
                         "definition": [
@@ -25156,10 +25188,7 @@ export const miroirFundamentalJzodSchema = {
                                   "targetEntityApplicationSection": "model",
                                   "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                                   "targetEntityOrderInstancesBy": "name"
-                                },
-                                "targetEntityApplicationSection": "model",
-                                "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                                "targetEntityOrderInstancesBy": "name"
+                                }
                               }
                             }
                           },
@@ -25247,9 +25276,18 @@ export const miroirFundamentalJzodSchema = {
                                             "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                                             "targetEntityOrderInstancesBy": "name"
                                           },
-                                          "targetEntityApplicationSection": "model",
-                                          "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                                          "targetEntityOrderInstancesBy": "name"
+                                          "initializeTo": {
+                                            "initializeToType": "transformer",
+                                            "transformer": {
+                                              "transformerType": "parameterReference",
+                                              "interpolation": "build",
+                                              "referencePath": [
+                                                "rootObject",
+                                                "payload",
+                                                "parentUuid"
+                                              ]
+                                            }
+                                          }
                                         }
                                       },
                                       "definition": [
@@ -25266,9 +25304,18 @@ export const miroirFundamentalJzodSchema = {
                                                 "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                                                 "targetEntityOrderInstancesBy": "name"
                                               },
-                                              "targetEntityApplicationSection": "model",
-                                              "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                                              "targetEntityOrderInstancesBy": "name"
+                                              "initializeTo": {
+                                                "initializeToType": "transformer",
+                                                "transformer": {
+                                                  "transformerType": "parameterReference",
+                                                  "interpolation": "build",
+                                                  "referencePath": [
+                                                    "rootObject",
+                                                    "payload",
+                                                    "parentUuid"
+                                                  ]
+                                                }
+                                              }
                                             }
                                           }
                                         },
@@ -26454,6 +26501,11 @@ export const miroirFundamentalJzodSchema = {
                     "canBeTemplate": true,
                     "defaultLabel": "deployment Uuid",
                     "editable": false,
+                    "selectorParams": {
+                      "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                      "targetEntity": "7959d814-400c-4e80-988f-a00fe582ab98",
+                      "targetEntityOrderInstancesBy": "name"
+                    },
                     "initializeTo": {
                       "initializeToType": "transformer",
                       "transformer": {
@@ -26473,6 +26525,11 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": true,
                         "defaultLabel": "deployment Uuid",
                         "editable": false,
+                        "selectorParams": {
+                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetEntity": "7959d814-400c-4e80-988f-a00fe582ab98",
+                          "targetEntityOrderInstancesBy": "name"
+                        },
                         "initializeTo": {
                           "initializeToType": "transformer",
                           "transformer": {
@@ -26509,6 +26566,7 @@ export const miroirFundamentalJzodSchema = {
                         "definition": [
                           {
                             "type": "schemaReference",
+                            "optional": true,
                             "definition": {
                               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                               "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
@@ -26534,10 +26592,7 @@ export const miroirFundamentalJzodSchema = {
                               "targetEntityApplicationSection": "model",
                               "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                               "targetEntityOrderInstancesBy": "name"
-                            },
-                            "targetEntityApplicationSection": "model",
-                            "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                            "targetEntityOrderInstancesBy": "name"
+                            }
                           }
                         },
                         "definition": [
@@ -26552,10 +26607,7 @@ export const miroirFundamentalJzodSchema = {
                                   "targetEntityApplicationSection": "model",
                                   "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                                   "targetEntityOrderInstancesBy": "name"
-                                },
-                                "targetEntityApplicationSection": "model",
-                                "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                                "targetEntityOrderInstancesBy": "name"
+                                }
                               }
                             }
                           },
@@ -26643,9 +26695,18 @@ export const miroirFundamentalJzodSchema = {
                                             "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                                             "targetEntityOrderInstancesBy": "name"
                                           },
-                                          "targetEntityApplicationSection": "model",
-                                          "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                                          "targetEntityOrderInstancesBy": "name"
+                                          "initializeTo": {
+                                            "initializeToType": "transformer",
+                                            "transformer": {
+                                              "transformerType": "parameterReference",
+                                              "interpolation": "build",
+                                              "referencePath": [
+                                                "rootObject",
+                                                "payload",
+                                                "parentUuid"
+                                              ]
+                                            }
+                                          }
                                         }
                                       },
                                       "definition": [
@@ -26662,9 +26723,18 @@ export const miroirFundamentalJzodSchema = {
                                                 "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                                                 "targetEntityOrderInstancesBy": "name"
                                               },
-                                              "targetEntityApplicationSection": "model",
-                                              "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                                              "targetEntityOrderInstancesBy": "name"
+                                              "initializeTo": {
+                                                "initializeToType": "transformer",
+                                                "transformer": {
+                                                  "transformerType": "parameterReference",
+                                                  "interpolation": "build",
+                                                  "referencePath": [
+                                                    "rootObject",
+                                                    "payload",
+                                                    "parentUuid"
+                                                  ]
+                                                }
+                                              }
                                             }
                                           }
                                         },
@@ -51237,6 +51307,11 @@ export const miroirFundamentalJzodSchema = {
                     "canBeTemplate": true,
                     "defaultLabel": "deployment Uuid",
                     "editable": false,
+                    "selectorParams": {
+                      "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                      "targetEntity": "7959d814-400c-4e80-988f-a00fe582ab98",
+                      "targetEntityOrderInstancesBy": "name"
+                    },
                     "initializeTo": {
                       "initializeToType": "transformer",
                       "transformer": {
@@ -51260,6 +51335,11 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": true,
                         "defaultLabel": "deployment Uuid",
                         "editable": false,
+                        "selectorParams": {
+                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetEntity": "7959d814-400c-4e80-988f-a00fe582ab98",
+                          "targetEntityOrderInstancesBy": "name"
+                        },
                         "initializeTo": {
                           "initializeToType": "transformer",
                           "transformer": {
@@ -51285,6 +51365,7 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "applicationSection": {
                     "type": "schemaReference",
+                    "optional": true,
                     "definition": {
                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                       "relativePath": "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
@@ -51301,10 +51382,7 @@ export const miroirFundamentalJzodSchema = {
                           "targetEntityApplicationSection": "model",
                           "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                           "targetEntityOrderInstancesBy": "name"
-                        },
-                        "targetEntityApplicationSection": "model",
-                        "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                        "targetEntityOrderInstancesBy": "name"
+                        }
                       }
                     }
                   },
@@ -51370,9 +51448,18 @@ export const miroirFundamentalJzodSchema = {
                                 "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                                 "targetEntityOrderInstancesBy": "name"
                               },
-                              "targetEntityApplicationSection": "model",
-                              "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                              "targetEntityOrderInstancesBy": "name"
+                              "initializeTo": {
+                                "initializeToType": "transformer",
+                                "transformer": {
+                                  "transformerType": "parameterReference",
+                                  "interpolation": "build",
+                                  "referencePath": [
+                                    "rootObject",
+                                    "payload",
+                                    "parentUuid"
+                                  ]
+                                }
+                              }
                             }
                           },
                           "discriminator": [
@@ -51393,9 +51480,18 @@ export const miroirFundamentalJzodSchema = {
                                     "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                                     "targetEntityOrderInstancesBy": "name"
                                   },
-                                  "targetEntityApplicationSection": "model",
-                                  "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                                  "targetEntityOrderInstancesBy": "name"
+                                  "initializeTo": {
+                                    "initializeToType": "transformer",
+                                    "transformer": {
+                                      "transformerType": "parameterReference",
+                                      "interpolation": "build",
+                                      "referencePath": [
+                                        "rootObject",
+                                        "payload",
+                                        "parentUuid"
+                                      ]
+                                    }
+                                  }
                                 }
                               }
                             },
@@ -52019,6 +52115,11 @@ export const miroirFundamentalJzodSchema = {
                     "canBeTemplate": true,
                     "defaultLabel": "deployment Uuid",
                     "editable": false,
+                    "selectorParams": {
+                      "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                      "targetEntity": "7959d814-400c-4e80-988f-a00fe582ab98",
+                      "targetEntityOrderInstancesBy": "name"
+                    },
                     "initializeTo": {
                       "initializeToType": "transformer",
                       "transformer": {
@@ -52042,6 +52143,11 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": true,
                         "defaultLabel": "deployment Uuid",
                         "editable": false,
+                        "selectorParams": {
+                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetEntity": "7959d814-400c-4e80-988f-a00fe582ab98",
+                          "targetEntityOrderInstancesBy": "name"
+                        },
                         "initializeTo": {
                           "initializeToType": "transformer",
                           "transformer": {
@@ -52067,6 +52173,7 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "applicationSection": {
                     "type": "schemaReference",
+                    "optional": true,
                     "definition": {
                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                       "relativePath": "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
@@ -52083,10 +52190,7 @@ export const miroirFundamentalJzodSchema = {
                           "targetEntityApplicationSection": "model",
                           "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                           "targetEntityOrderInstancesBy": "name"
-                        },
-                        "targetEntityApplicationSection": "model",
-                        "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                        "targetEntityOrderInstancesBy": "name"
+                        }
                       }
                     }
                   },
@@ -52152,9 +52256,18 @@ export const miroirFundamentalJzodSchema = {
                                 "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                                 "targetEntityOrderInstancesBy": "name"
                               },
-                              "targetEntityApplicationSection": "model",
-                              "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                              "targetEntityOrderInstancesBy": "name"
+                              "initializeTo": {
+                                "initializeToType": "transformer",
+                                "transformer": {
+                                  "transformerType": "parameterReference",
+                                  "interpolation": "build",
+                                  "referencePath": [
+                                    "rootObject",
+                                    "payload",
+                                    "parentUuid"
+                                  ]
+                                }
+                              }
                             }
                           },
                           "discriminator": [
@@ -52175,9 +52288,18 @@ export const miroirFundamentalJzodSchema = {
                                     "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                                     "targetEntityOrderInstancesBy": "name"
                                   },
-                                  "targetEntityApplicationSection": "model",
-                                  "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                                  "targetEntityOrderInstancesBy": "name"
+                                  "initializeTo": {
+                                    "initializeToType": "transformer",
+                                    "transformer": {
+                                      "transformerType": "parameterReference",
+                                      "interpolation": "build",
+                                      "referencePath": [
+                                        "rootObject",
+                                        "payload",
+                                        "parentUuid"
+                                      ]
+                                    }
+                                  }
                                 }
                               }
                             },
@@ -58653,6 +58775,11 @@ export const miroirFundamentalJzodSchema = {
                     "canBeTemplate": true,
                     "defaultLabel": "deployment Uuid",
                     "editable": false,
+                    "selectorParams": {
+                      "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                      "targetEntity": "7959d814-400c-4e80-988f-a00fe582ab98",
+                      "targetEntityOrderInstancesBy": "name"
+                    },
                     "initializeTo": {
                       "initializeToType": "transformer",
                       "transformer": {
@@ -58676,6 +58803,11 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": true,
                         "defaultLabel": "deployment Uuid",
                         "editable": false,
+                        "selectorParams": {
+                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetEntity": "7959d814-400c-4e80-988f-a00fe582ab98",
+                          "targetEntityOrderInstancesBy": "name"
+                        },
                         "initializeTo": {
                           "initializeToType": "transformer",
                           "transformer": {
@@ -58700,6 +58832,7 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "applicationSection": {
                     "type": "schemaReference",
+                    "optional": true,
                     "definition": {
                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                       "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
@@ -58716,10 +58849,7 @@ export const miroirFundamentalJzodSchema = {
                           "targetEntityApplicationSection": "model",
                           "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                           "targetEntityOrderInstancesBy": "name"
-                        },
-                        "targetEntityApplicationSection": "model",
-                        "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                        "targetEntityOrderInstancesBy": "name"
+                        }
                       }
                     }
                   },
@@ -58784,9 +58914,18 @@ export const miroirFundamentalJzodSchema = {
                                 "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                                 "targetEntityOrderInstancesBy": "name"
                               },
-                              "targetEntityApplicationSection": "model",
-                              "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                              "targetEntityOrderInstancesBy": "name"
+                              "initializeTo": {
+                                "initializeToType": "transformer",
+                                "transformer": {
+                                  "transformerType": "parameterReference",
+                                  "interpolation": "build",
+                                  "referencePath": [
+                                    "rootObject",
+                                    "payload",
+                                    "parentUuid"
+                                  ]
+                                }
+                              }
                             }
                           },
                           "discriminator": [
@@ -58807,9 +58946,18 @@ export const miroirFundamentalJzodSchema = {
                                     "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                                     "targetEntityOrderInstancesBy": "name"
                                   },
-                                  "targetEntityApplicationSection": "model",
-                                  "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                                  "targetEntityOrderInstancesBy": "name"
+                                  "initializeTo": {
+                                    "initializeToType": "transformer",
+                                    "transformer": {
+                                      "transformerType": "parameterReference",
+                                      "interpolation": "build",
+                                      "referencePath": [
+                                        "rootObject",
+                                        "payload",
+                                        "parentUuid"
+                                      ]
+                                    }
+                                  }
                                 }
                               }
                             },
@@ -59424,6 +59572,11 @@ export const miroirFundamentalJzodSchema = {
                     "canBeTemplate": true,
                     "defaultLabel": "deployment Uuid",
                     "editable": false,
+                    "selectorParams": {
+                      "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                      "targetEntity": "7959d814-400c-4e80-988f-a00fe582ab98",
+                      "targetEntityOrderInstancesBy": "name"
+                    },
                     "initializeTo": {
                       "initializeToType": "transformer",
                       "transformer": {
@@ -59447,6 +59600,11 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": true,
                         "defaultLabel": "deployment Uuid",
                         "editable": false,
+                        "selectorParams": {
+                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetEntity": "7959d814-400c-4e80-988f-a00fe582ab98",
+                          "targetEntityOrderInstancesBy": "name"
+                        },
                         "initializeTo": {
                           "initializeToType": "transformer",
                           "transformer": {
@@ -59471,6 +59629,7 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "applicationSection": {
                     "type": "schemaReference",
+                    "optional": true,
                     "definition": {
                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                       "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
@@ -59487,10 +59646,7 @@ export const miroirFundamentalJzodSchema = {
                           "targetEntityApplicationSection": "model",
                           "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                           "targetEntityOrderInstancesBy": "name"
-                        },
-                        "targetEntityApplicationSection": "model",
-                        "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                        "targetEntityOrderInstancesBy": "name"
+                        }
                       }
                     }
                   },
@@ -59555,9 +59711,18 @@ export const miroirFundamentalJzodSchema = {
                                 "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                                 "targetEntityOrderInstancesBy": "name"
                               },
-                              "targetEntityApplicationSection": "model",
-                              "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                              "targetEntityOrderInstancesBy": "name"
+                              "initializeTo": {
+                                "initializeToType": "transformer",
+                                "transformer": {
+                                  "transformerType": "parameterReference",
+                                  "interpolation": "build",
+                                  "referencePath": [
+                                    "rootObject",
+                                    "payload",
+                                    "parentUuid"
+                                  ]
+                                }
+                              }
                             }
                           },
                           "discriminator": [
@@ -59578,9 +59743,18 @@ export const miroirFundamentalJzodSchema = {
                                     "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                                     "targetEntityOrderInstancesBy": "name"
                                   },
-                                  "targetEntityApplicationSection": "model",
-                                  "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                                  "targetEntityOrderInstancesBy": "name"
+                                  "initializeTo": {
+                                    "initializeToType": "transformer",
+                                    "transformer": {
+                                      "transformerType": "parameterReference",
+                                      "interpolation": "build",
+                                      "referencePath": [
+                                        "rootObject",
+                                        "payload",
+                                        "parentUuid"
+                                      ]
+                                    }
+                                  }
                                 }
                               }
                             },
@@ -66053,6 +66227,11 @@ export const miroirFundamentalJzodSchema = {
                     "canBeTemplate": true,
                     "defaultLabel": "deployment Uuid",
                     "editable": false,
+                    "selectorParams": {
+                      "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                      "targetEntity": "7959d814-400c-4e80-988f-a00fe582ab98",
+                      "targetEntityOrderInstancesBy": "name"
+                    },
                     "initializeTo": {
                       "initializeToType": "transformer",
                       "transformer": {
@@ -66076,6 +66255,11 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": true,
                         "defaultLabel": "deployment Uuid",
                         "editable": false,
+                        "selectorParams": {
+                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetEntity": "7959d814-400c-4e80-988f-a00fe582ab98",
+                          "targetEntityOrderInstancesBy": "name"
+                        },
                         "initializeTo": {
                           "initializeToType": "transformer",
                           "transformer": {
@@ -66101,6 +66285,7 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "applicationSection": {
                     "type": "schemaReference",
+                    "optional": true,
                     "definition": {
                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                       "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
@@ -66117,10 +66302,7 @@ export const miroirFundamentalJzodSchema = {
                           "targetEntityApplicationSection": "model",
                           "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                           "targetEntityOrderInstancesBy": "name"
-                        },
-                        "targetEntityApplicationSection": "model",
-                        "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                        "targetEntityOrderInstancesBy": "name"
+                        }
                       }
                     }
                   },
@@ -66186,9 +66368,18 @@ export const miroirFundamentalJzodSchema = {
                                 "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                                 "targetEntityOrderInstancesBy": "name"
                               },
-                              "targetEntityApplicationSection": "model",
-                              "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                              "targetEntityOrderInstancesBy": "name"
+                              "initializeTo": {
+                                "initializeToType": "transformer",
+                                "transformer": {
+                                  "transformerType": "parameterReference",
+                                  "interpolation": "build",
+                                  "referencePath": [
+                                    "rootObject",
+                                    "payload",
+                                    "parentUuid"
+                                  ]
+                                }
+                              }
                             }
                           },
                           "discriminator": [
@@ -66209,9 +66400,18 @@ export const miroirFundamentalJzodSchema = {
                                     "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                                     "targetEntityOrderInstancesBy": "name"
                                   },
-                                  "targetEntityApplicationSection": "model",
-                                  "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                                  "targetEntityOrderInstancesBy": "name"
+                                  "initializeTo": {
+                                    "initializeToType": "transformer",
+                                    "transformer": {
+                                      "transformerType": "parameterReference",
+                                      "interpolation": "build",
+                                      "referencePath": [
+                                        "rootObject",
+                                        "payload",
+                                        "parentUuid"
+                                      ]
+                                    }
+                                  }
                                 }
                               }
                             },
@@ -66835,6 +67035,11 @@ export const miroirFundamentalJzodSchema = {
                     "canBeTemplate": true,
                     "defaultLabel": "deployment Uuid",
                     "editable": false,
+                    "selectorParams": {
+                      "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                      "targetEntity": "7959d814-400c-4e80-988f-a00fe582ab98",
+                      "targetEntityOrderInstancesBy": "name"
+                    },
                     "initializeTo": {
                       "initializeToType": "transformer",
                       "transformer": {
@@ -66858,6 +67063,11 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": true,
                         "defaultLabel": "deployment Uuid",
                         "editable": false,
+                        "selectorParams": {
+                          "targetDeploymentUuid": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                          "targetEntity": "7959d814-400c-4e80-988f-a00fe582ab98",
+                          "targetEntityOrderInstancesBy": "name"
+                        },
                         "initializeTo": {
                           "initializeToType": "transformer",
                           "transformer": {
@@ -66883,6 +67093,7 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "applicationSection": {
                     "type": "schemaReference",
+                    "optional": true,
                     "definition": {
                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                       "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_applicationSection"
@@ -66899,10 +67110,7 @@ export const miroirFundamentalJzodSchema = {
                           "targetEntityApplicationSection": "model",
                           "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                           "targetEntityOrderInstancesBy": "name"
-                        },
-                        "targetEntityApplicationSection": "model",
-                        "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                        "targetEntityOrderInstancesBy": "name"
+                        }
                       }
                     }
                   },
@@ -66968,9 +67176,18 @@ export const miroirFundamentalJzodSchema = {
                                 "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                                 "targetEntityOrderInstancesBy": "name"
                               },
-                              "targetEntityApplicationSection": "model",
-                              "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                              "targetEntityOrderInstancesBy": "name"
+                              "initializeTo": {
+                                "initializeToType": "transformer",
+                                "transformer": {
+                                  "transformerType": "parameterReference",
+                                  "interpolation": "build",
+                                  "referencePath": [
+                                    "rootObject",
+                                    "payload",
+                                    "parentUuid"
+                                  ]
+                                }
+                              }
                             }
                           },
                           "discriminator": [
@@ -66991,9 +67208,18 @@ export const miroirFundamentalJzodSchema = {
                                     "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                                     "targetEntityOrderInstancesBy": "name"
                                   },
-                                  "targetEntityApplicationSection": "model",
-                                  "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                                  "targetEntityOrderInstancesBy": "name"
+                                  "initializeTo": {
+                                    "initializeToType": "transformer",
+                                    "transformer": {
+                                      "transformerType": "parameterReference",
+                                      "interpolation": "build",
+                                      "referencePath": [
+                                        "rootObject",
+                                        "payload",
+                                        "parentUuid"
+                                      ]
+                                    }
+                                  }
                                 }
                               }
                             },

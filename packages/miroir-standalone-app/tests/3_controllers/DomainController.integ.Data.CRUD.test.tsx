@@ -369,6 +369,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                 deploymentUuid: testApplicationDeploymentUuid,
                 payload: {
                   applicationSection: "data",
+                  parentUuid: entityBook.uuid,
                   objects: [
                     {
                       parentName: book3.parentName,
@@ -489,6 +490,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                 deploymentUuid: testApplicationDeploymentUuid,
                 payload: {
                   applicationSection: "data",
+                  parentUuid: entityBook.uuid,
                   objects: [
                     {
                       parentName: book3.parentName,
