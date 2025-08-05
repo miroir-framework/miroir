@@ -100,6 +100,32 @@
                     }
                   ]
                 },
+                "selectorParams": {
+                  "type": "object",
+                  "optional": true,
+                  "definition": {
+                    "targetApplicationUuid": {
+                      "type": "uuid",
+                      "optional": true
+                    },
+                    "targetDeploymentUuid": {
+                      "type": "uuid",
+                      "optional": true
+                    },
+                    "targetEntityApplicationSection": {
+                      "type": "enum",
+                      "optional": true,
+                      "definition": ["model", "data", "metaModel"]
+                    },
+                    "targetEntity": {
+                      "type": "uuid"
+                    },
+                    "targetEntityOrderInstancesBy": {
+                      "type": "string",
+                      "optional": true
+                    }
+                  }
+                },
                 "targetEntity": {
                   "type": "string",
                   "optional": true
@@ -234,6 +260,33 @@
                         }
                       }
                     ]
+                  },
+                  "selectorParams": {
+                    "type": "object",
+                    "optional": true,
+                    "definition": {
+                      "targetApplicationUuid": {
+                        "type": "uuid",
+                        "optional": true
+                      },
+                      "targetDeploymentUuid": {
+                        "type": "uuid",
+                        "optional": true
+                      },
+                      "targetEntityApplicationSection": {
+                        "type": "enum",
+                        "optional": true,
+                        "definition": ["model", "data", "metaModel"]
+                      },
+                      "targetEntity": {
+                        "type": "uuid",
+                        "optional": true
+                      },
+                      "targetEntityOrderInstancesBy": {
+                        "type": "string",
+                        "optional": true
+                      }
+                    }
                   },
                   "targetEntity": {
                     "type": "string",

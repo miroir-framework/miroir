@@ -305,20 +305,20 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
       codeMirrorIsValidJson,
     ]
   );
-  const displayCodeEditor = true;
-  // const displayCodeEditor =
-  //   !props.typeCheckKeyMap ||
-  //   !currentKeyMap ||
-  //   !localResolvedElementJzodSchemaBasedOnValue || // same as props.hasTypeError?
-  //   !displayAsStructuredElement ||
-  //   currentKeyMap?.rawSchema?.type == "any" ||
-  //   ["undefined", "any"].includes(localResolvedElementJzodSchemaBasedOnValue.type);
+  // const displayCodeEditor = true;
+  const displayCodeEditor =
+    !props.typeCheckKeyMap ||
+    !currentKeyMap ||
+    !localResolvedElementJzodSchemaBasedOnValue || // same as props.hasTypeError?
+    !displayAsStructuredElement ||
+    currentKeyMap?.rawSchema?.type == "any" ||
+    ["undefined", "any"].includes(localResolvedElementJzodSchemaBasedOnValue.type);
 
-  const hideSubJzodEditor = false; 
-  // const hideSubJzodEditor = useMemo(() => 
-  //   props.hidden || props.insideAny || displayCodeEditor, 
-  //   [props.hidden, props.insideAny, props.hasTypeError]
-  // );
+  // const hideSubJzodEditor = false; 
+  const hideSubJzodEditor = useMemo(() => 
+    props.hidden || props.insideAny || displayCodeEditor, 
+    [props.hidden, props.insideAny, props.hasTypeError]
+  );
 
 
   // log.info("JzodElementEditor",
@@ -571,7 +571,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
             "foreignKeyObjects",
             foreignKeyObjects
           );
-          if (localResolvedElementJzodSchemaBasedOnValue.tag?.value?.targetEntity) {
+          if (localResolvedElementJzodSchemaBasedOnValue.tag?.value?.selectorParams?.targetEntity) {
             return (
               <ThemedLabeledEditor
                 labelElement={props.labelElement ?? <></>}

@@ -35,7 +35,7 @@ export function getColumnDefinitionsFromEntityDefinitionAttribute(
   width?: number,
 ): ColDef<any> {
 
-  if (jzodSchema?.tag?.value?.targetEntity) {
+  if (jzodSchema?.tag?.value?.selectorParams?.targetEntity) {
     const result =  {
       // field: "publisher",
       field: name,
@@ -50,7 +50,7 @@ export function getColumnDefinitionsFromEntityDefinitionAttribute(
       cellRendererParams: {
         deploymentUuid,
         isFK: true,
-        entityUuid: jzodSchema?.tag?.value?.targetEntity,
+        entityUuid: jzodSchema?.tag?.value?.selectorParams?.targetEntity,
         entityDefinition
       },
       width: width,

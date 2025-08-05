@@ -572,9 +572,13 @@ describe("domainStateToDeploymentEntityState.unit.test", () => {
                     tag: {
                       id: 3,
                       defaultLabel: "Entity Uuid",
+                      editable: false,
+                      selectorParams: {
+                        targetEntityApplicationSection: "model",
+                        targetEntity: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                      },
                       targetEntityApplicationSection: "model",
                       targetEntity: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                      editable: false,
                     },
                   },
                   conceptLevel: {

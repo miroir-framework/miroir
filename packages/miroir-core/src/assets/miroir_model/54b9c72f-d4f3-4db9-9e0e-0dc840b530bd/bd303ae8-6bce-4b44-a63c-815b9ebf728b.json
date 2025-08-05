@@ -88,10 +88,14 @@
         "tag": {
           "value": {
             "id": 8,
+            "editable": false,
             "defaultLabel": "SelfApplication",
             "description": "The SelfApplication of the Branch.",
             "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
-            "editable": false
+            "selectorParams": {
+              "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
+              "targetEntityOrderInstancesBy": "name"
+            }
           }
         }
       }

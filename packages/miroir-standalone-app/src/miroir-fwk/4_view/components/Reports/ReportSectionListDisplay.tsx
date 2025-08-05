@@ -128,7 +128,7 @@ export function defaultFormValues(
       
       const currentEditorAttributes = Object.entries(currentEntityJzodSchema?.definition??{}).reduce((acc,attributeJzodSchema)=>{
         let result
-        if (attributeJzodSchema[1].tag?.value?.targetEntity) {
+        if (attributeJzodSchema[1].tag?.value?.selectorParams?.targetEntity) {
           result = Object.assign({},acc,{[attributeJzodSchema[0]]:noValue})
         } else {
           if (Object.keys(attributeDefaultValue).includes(attributeJzodSchema[0])) {
@@ -337,16 +337,16 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
     () => {
       const extractors: ExtractorOrCombinerRecord = Object.fromEntries(
         foreignKeyObjectsAttributeDefinition.map((e) => [
-          e[1].tag?.value?.targetEntity + "_extractor",
+          e[1].tag?.value?.selectorParams?.targetEntity + "_extractor",
           {
             extractorOrCombinerType: "extractorByEntityReturningObjectList",
             label: "extractorForForeignKey_" + e[0],
             applicationSection: getApplicationSection(
               props.deploymentUuid,
-              e[1].tag?.value?.targetEntity ?? "undefined"
+              e[1].tag?.value?.selectorParams?.targetEntity ?? "undefined"
             ),
             parentName: "",
-            parentUuid: e[1].tag?.value?.targetEntity??"ERROR NO TARGET ENTITY FOR ATTRIBUTE " + e[0], // does not happen because of filter in foreignKeyObjectsAttributeDefinition
+            parentUuid: e[1].tag?.value?.selectorParams?.targetEntity??"ERROR NO TARGET ENTITY FOR ATTRIBUTE " + e[0], // does not happen because of filter in foreignKeyObjectsAttributeDefinition
           },
         ])
       );
@@ -355,7 +355,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
       } = {
         ...Object.fromEntries(
           foreignKeyObjectsAttributeDefinition.map((e) => [
-            e[1].tag?.value?.targetEntity,
+            e[1].tag?.value?.selectorParams?.targetEntity,
             {
               transformerType: "listReducerToIndexObject",
               interpolation: "runtime",
@@ -364,7 +364,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
                 reference: {
                   transformerType: "contextReference",
                   interpolation: "runtime",
-                  referenceName: e[1].tag?.value?.targetEntity + "_extractor",
+                  referenceName: e[1].tag?.value?.selectorParams?.targetEntity + "_extractor",
                 },
               },
               indexAttribute: "uuid",
@@ -451,6 +451,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
                 endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
                 payload: {
                   applicationSection: currentApplicationSection,
+                  parentUuid: data.parentUuid,
                   objects: [
                     {
                       parentName: data.name,
@@ -474,6 +475,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
             endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
             payload: {
               applicationSection: currentApplicationSection,
+              parentUuid: data.parentUuid,
               objects: [
                 {
                   parentName: data.name,

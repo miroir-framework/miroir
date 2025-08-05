@@ -16,11 +16,11 @@ export const measuredRootLessListKeyMap = measurePerformance(
   rootLessListKeyMapDEFUNCT,
   100
 );
-export const measuredGetApplicationSection = measurePerformance(
-  "getApplicationSection",
-  getApplicationSection,
-  100
-);
+// export const measuredGetApplicationSection = measurePerformance(
+//   "getApplicationSection",
+//   getApplicationSection,
+//   100
+// );
 export const measuredGetQueryRunnerParamsForDeploymentEntityState = measurePerformance(
   "getQueryRunnerParamsForDeploymentEntityState",
   getQueryRunnerParamsForDeploymentEntityState,

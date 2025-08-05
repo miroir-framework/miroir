@@ -192,11 +192,12 @@ export function getDefaultValueForJzodSchemaWithResolution(
         );
         return result;
       }
-      if (effectiveSchema.tag && effectiveSchema.tag.value && effectiveSchema.tag.value.targetEntity) {
+      // if (effectiveSchema.tag && effectiveSchema.tag.value && effectiveSchema.tag.value.targetEntity) {
+      if (effectiveSchema.tag && effectiveSchema.tag.value && effectiveSchema.tag.value.selectorParams && effectiveSchema.tag.value.selectorParams.targetEntity) {
         const foreignKeyObjects: EntityInstancesUuidIndex = getEntityInstancesUuidIndex(
           deploymentUuid,
-          effectiveSchema.tag.value.targetEntity,
-          effectiveSchema.tag.value.targetEntityOrderInstancesBy
+          effectiveSchema.tag.value.selectorParams.targetEntity,
+          effectiveSchema.tag.value.selectorParams.targetEntityOrderInstancesBy
         )
         const result = Object.values(foreignKeyObjects)[0]?.uuid;
         log.info(

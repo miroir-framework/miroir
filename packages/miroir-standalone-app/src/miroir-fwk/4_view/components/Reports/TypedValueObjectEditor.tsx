@@ -23,7 +23,8 @@ import {
   adminConfigurationDeploymentMiroir,
   dummyDomainManyQueryWithDeploymentUuid,
   getQueryRunnerParamsForDeploymentEntityState,
-  jzodTypeCheck
+  jzodTypeCheck,
+  getApplicationSection
 } from "miroir-core";
 import { getMemoizedDeploymentEntityStateSelectorMap, ReduxStateWithUndoRedo, selectCurrentDeploymentEntityStateFromReduxState } from 'miroir-localcache-redux';
 
@@ -39,9 +40,6 @@ import {
   useCurrentModel,
   useDeploymentEntityStateQuerySelectorForCleanedResult
 } from "../../ReduxHooks.js";
-import {
-  measuredGetApplicationSection
-} from "../../tools/hookPerformanceMeasure.js";
 import { useRenderTracker } from '../../tools/renderCountTracker.js';
 import { ErrorFallbackComponent } from '../ErrorFallbackComponent.js';
 import {
@@ -158,7 +156,7 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
     >
       {(formik: FormikProps<Record<string, any>>) => {
         let typeError: JSX.Element | undefined = undefined;
-        const resolvedJzodSchema: ResolvedJzodSchemaReturnType | undefined =
+        const typeCheckKeyMap: ResolvedJzodSchemaReturnType | undefined =
           useMemo(() => {
             let result: ResolvedJzodSchemaReturnType | undefined = undefined;
             try {
@@ -204,14 +202,14 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
           "formik.values",
           formik.values,
           "resolvedJzodSchema",
-          resolvedJzodSchema
+          typeCheckKeyMap
         );
-        if (!resolvedJzodSchema || resolvedJzodSchema.status != "ok") {
+        if (!typeCheckKeyMap || typeCheckKeyMap.status != "ok") {
           log.error(
             "TypedValueObjectEditor could not resolve jzod schema",
-            resolvedJzodSchema
+            typeCheckKeyMap
           );
-          const jsonString = JSON.stringify(resolvedJzodSchema, null, 2);
+          const jsonString = JSON.stringify(typeCheckKeyMap, null, 2);
           // const jsonString = JSON.stringify(resolvedJzodSchema);
           const lines = jsonString?.split("\n");
           const maxLineLength = lines?Math.max(...lines.map((line) => line.length)): 0;
@@ -259,10 +257,10 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
             () =>
               getQueryRunnerParamsForDeploymentEntityState(
                 deploymentUuid &&
-                  resolvedJzodSchema &&
-                  resolvedJzodSchema.status == "ok" &&
-                  resolvedJzodSchema.resolvedSchema.type == "uuid" &&
-                  resolvedJzodSchema.resolvedSchema.tag?.value?.targetEntity
+                  typeCheckKeyMap &&
+                  typeCheckKeyMap.status == "ok" &&
+                  typeCheckKeyMap.resolvedSchema.type == "uuid" &&
+                  typeCheckKeyMap.resolvedSchema.tag?.value?.selectorParams?.targetEntity
                   ? {
                       queryType: "boxedQueryWithExtractorCombinerTransformer",
                       deploymentUuid: deploymentUuid,
@@ -270,21 +268,21 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
                       queryParams: {},
                       contextResults: {},
                       extractors: {
-                        [resolvedJzodSchema.resolvedSchema.tag?.value?.targetEntity]: {
+                        [typeCheckKeyMap.resolvedSchema.tag?.value?.selectorParams?.targetEntity]: {
                           extractorOrCombinerType: "extractorByEntityReturningObjectList",
-                          applicationSection: measuredGetApplicationSection(
+                          applicationSection: getApplicationSection(
                             deploymentUuid,
-                            resolvedJzodSchema.resolvedSchema.tag?.value?.targetEntity
+                            typeCheckKeyMap.resolvedSchema.tag?.value?.selectorParams?.targetEntity
                           ),
                           parentName: "",
-                          parentUuid: resolvedJzodSchema.resolvedSchema.tag?.value?.targetEntity,
+                          parentUuid: typeCheckKeyMap.resolvedSchema.tag?.value?.selectorParams?.targetEntity,
                         },
                       },
                     }
                   : dummyDomainManyQueryWithDeploymentUuid,
                 deploymentEntityStateSelectorMap
               ),
-            [deploymentEntityStateSelectorMap, deploymentUuid, resolvedJzodSchema]
+            [deploymentEntityStateSelectorMap, deploymentUuid, typeCheckKeyMap]
           );
 
         const foreignKeyObjects: Record<string, EntityInstancesUuidIndex> =
@@ -317,8 +315,8 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
                         formikValues: undefined,
                         rawJzodSchema: valueObjectMMLSchema,
                         localResolvedElementJzodSchemaBasedOnValue:
-                          resolvedJzodSchema?.status == "ok"
-                            ? resolvedJzodSchema.resolvedSchema
+                          typeCheckKeyMap?.status == "ok"
+                            ? typeCheckKeyMap.resolvedSchema
                             : undefined,
                       }}
                     />
@@ -334,14 +332,14 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
                     currentDeploymentUuid={deploymentUuid}
                     currentApplicationSection={applicationSection}
                     resolvedElementJzodSchema={
-                      resolvedJzodSchema?.status == "ok"
-                        ? resolvedJzodSchema.resolvedSchema
+                      typeCheckKeyMap?.status == "ok"
+                        ? typeCheckKeyMap.resolvedSchema
                         : undefined
                     }
                     hasTypeError={typeError != undefined}
                     typeCheckKeyMap={
-                      resolvedJzodSchema?.status == "ok"
-                        ? resolvedJzodSchema.keyMap
+                      typeCheckKeyMap?.status == "ok"
+                        ? typeCheckKeyMap.keyMap
                         : {}
                     }
                     foreignKeyObjects={foreignKeyObjects}

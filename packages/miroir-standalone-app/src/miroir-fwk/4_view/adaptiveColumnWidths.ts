@@ -62,7 +62,7 @@ export function calculateAdaptiveColumnWidths(
       type = 'uuid';
     } else if (field === 'name') {
       type = 'name';
-    } else if (colDef.cellRendererParams?.isFK || fieldSchema?.tag?.value?.targetEntity) {
+    } else if (colDef.cellRendererParams?.isFK || fieldSchema?.tag?.value?.selectorParams?.targetEntity) {
       type = 'foreignKey';
     } else if (fieldSchema) {
       switch (fieldSchema.type) {

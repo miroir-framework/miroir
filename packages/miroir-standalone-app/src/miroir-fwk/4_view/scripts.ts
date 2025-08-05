@@ -58,7 +58,7 @@ export const deleteCascade = async (p: {
     Object.entries(p.entityDefinitions)
       .map((e: [string, EntityDefinition]) => {
         const fkAttributes = Object.entries(e[1].jzodSchema.definition).find(
-          (a) => a[1].tag?.value?.targetEntity == p.entityDefinition.entityUuid
+          (a) => a[1].tag?.value?.selectorParams?.targetEntity == p.entityDefinition.entityUuid
         );
         return [e[1].entityUuid, fkAttributes ? fkAttributes[0] : undefined];
       })
@@ -76,20 +76,20 @@ export const deleteCascade = async (p: {
     // actionName: "deleteInstance",
     deploymentUuid: p.deploymentUuid,
     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-    // payload: {
-    applicationSection: p.applicationSection,
-    objects:
-      p.entityInstances.length > 0
-        ? [
-            {
-              parentName: (p.entityInstances[0] as any)["name"] ?? "undefined name",
-              parentUuid: p.entityInstances[0].parentUuid,
-              applicationSection: p.applicationSection,
-              instances: p.entityInstances,
-            },
-          ]
-        : [],
-    // }
+    payload: {
+      applicationSection: p.applicationSection,
+      objects:
+        p.entityInstances.length > 0
+          ? [
+              {
+                parentName: (p.entityInstances[0] as any)["name"] ?? "undefined name",
+                parentUuid: p.entityInstances[0].parentUuid,
+                applicationSection: p.applicationSection,
+                instances: p.entityInstances,
+              },
+            ]
+          : [],
+    },
   };
 
   log.info(

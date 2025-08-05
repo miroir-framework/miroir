@@ -861,7 +861,7 @@ export const MTableComponent = (props: TableComponentProps & { theme?: DeepParti
           if (
             columnDefinitionAttribute &&
             (columnDefinitionAttribute as any).type === "uuid" &&
-            (columnDefinitionAttribute as any).tag?.value?.targetEntity
+            (columnDefinitionAttribute as any).tag?.value?.selectorParams?.targetEntity
           ) {
             // Find the column definition to get the target entity UUID
             const columnDef = props.columnDefs.columnDefs.find((cd: any) => cd.field === fieldName);
@@ -873,7 +873,8 @@ export const MTableComponent = (props: TableComponentProps & { theme?: DeepParti
               );
 
             const targetApplicationSection =
-              (columnDefinitionAttribute as any)?.tag?.value?.targetEntityApplicationSection ||
+              // (columnDefinitionAttribute as any)?.tag?.value?.targetEntityApplicationSection ||
+              (columnDefinitionAttribute as any)?.tag?.value?.selectorParams?.targetEntityApplicationSection ||
               context.applicationSection;
 
             navigate(
@@ -936,7 +937,7 @@ export const MTableComponent = (props: TableComponentProps & { theme?: DeepParti
           if (
             columnDefinitionAttribute &&
             (columnDefinitionAttribute as any).type === "uuid" &&
-            (columnDefinitionAttribute as any).tag?.value?.targetEntity
+            (columnDefinitionAttribute as any).tag?.value?.selectorParams?.targetEntity
           ) {
             const targetEntityDefinition: EntityDefinition | undefined =
               currentModel.entityDefinitions.find(

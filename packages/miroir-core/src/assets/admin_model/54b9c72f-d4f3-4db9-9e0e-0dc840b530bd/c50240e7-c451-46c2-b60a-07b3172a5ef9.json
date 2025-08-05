@@ -53,10 +53,14 @@
         "type": "uuid",
         "tag": { "value": { 
           "id": 8,
+          "editable": false,
           "defaultLabel": "AdminApplication",
           "description": "The AdminApplication of the Branch.",
           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
-          "editable": false
+          "selectorParams": {
+            "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+            "targetEntityOrderInstancesBy": "name"
+          }
         }}
       },
       "bundle": {

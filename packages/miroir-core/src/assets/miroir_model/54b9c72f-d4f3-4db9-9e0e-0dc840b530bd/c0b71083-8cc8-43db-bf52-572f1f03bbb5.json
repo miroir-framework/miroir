@@ -1,11 +1,11 @@
 {
   "uuid": "c0b71083-8cc8-43db-bf52-572f1f03bbb5",
-  "parentName":"EntityDefinition",
-  "parentUuid":"54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+  "parentName": "EntityDefinition",
+  "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
   "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
   "entityUuid": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
-  "conceptLevel":"Model",
-  "name":"ApplicationVersionCrossEntityDefinition",
+  "conceptLevel": "Model",
+  "name": "ApplicationVersionCrossEntityDefinition",
   "description": "The mapping among SelfApplication Versions and Entity Definitions",
   "icon": "Interests",
   "jzodSchema": {
@@ -13,46 +13,96 @@
     "definition": {
       "uuid": {
         "type": "uuid",
-        "tag": { "value": {  "id":1, "defaultLabel": "Uuid", "editable": false }}
+        "tag": { "value": { "id": 1, "defaultLabel": "Uuid", "editable": false } }
       },
       "parentName": {
         "type": "string",
         "optional": true,
-        "tag": { "value": {  "id":2, "defaultLabel": "Entity Name", "editable": false }}
+        "tag": { "value": { "id": 2, "defaultLabel": "Entity Name", "editable": false } }
       },
       "parentUuid": {
         "type": "uuid",
-        "tag": { "value": {  "id":3, "defaultLabel": "Entity Uuid", "description": "The Parent Entity of this Instance", "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad", "editable": false }}
+        "tag": {
+          "value": {
+            "id": 3,
+            "editable": false,
+            "defaultLabel": "Entity Uuid",
+            "description": "The Parent Entity of this Instance",
+            "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+            "selectorParams": {
+              "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+              "targetEntityOrderInstancesBy": "name"
+            }
+          }
+        }
       },
       "parentDefinitionVersionUuid": {
         "type": "uuid",
         "optional": true,
-        "tag": { "value": {  "id": 4, "defaultLabel": "Entity Definition Version Uuid", "editable": false }}
+        "tag": {
+          "value": { "id": 4, "defaultLabel": "Entity Definition Version Uuid", "editable": false }
+        }
       },
       "name": {
         "type": "string",
-        "tag": { "value": {  "id":5, "defaultLabel": "Name", "editable": true }}
+        "tag": { "value": { "id": 5, "defaultLabel": "Name", "editable": true } }
       },
       "defaultLabel": {
         "type": "string",
-        "tag": { "value": {  "id":6, "defaultLabel": "Default Label", "editable": true }}
+        "tag": { "value": { "id": 6, "defaultLabel": "Default Label", "editable": true } }
       },
       "description": {
         "type": "string",
         "optional": true,
-        "tag": { "value": {  "id":7, "defaultLabel": "Description", "editable": true }}
+        "tag": { "value": { "id": 7, "defaultLabel": "Description", "editable": true } }
       },
       "selfApplication": {
         "type": "uuid",
-        "tag": { "value": {  "id":8, "defaultLabel": "SelfApplication", "description": "The SelfApplication of the Branch.", "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc", "editable": false }}
+        "tag": {
+          "value": {
+            "id": 8,
+            "editable": false,
+            "defaultLabel": "SelfApplication",
+            "description": "The SelfApplication of the Branch.",
+            "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
+            "selectorParams": {
+              "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
+              "targetEntityOrderInstancesBy": "name"
+            }
+          }
+        }
       },
       "applicationVersion": {
         "type": "uuid",
-        "tag": { "value": {  "id":9, "defaultLabel": "SelfApplication Version", "description": "The SelfApplication Version of this mapping.", "targetEntity": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24", "editable": false }}
+        "tag": {
+          "value": {
+            "id": 9,
+            "editable": false,
+            "defaultLabel": "SelfApplication Version",
+            "description": "The SelfApplication Version of this mapping.",
+            "targetEntity": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
+            "selectorParams": {
+              "targetEntity": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
+              "targetEntityOrderInstancesBy": "name"
+            }
+          }
+        }
       },
       "entity": {
         "type": "uuid",
-        "tag": { "value": {  "id":10, "defaultLabel": "Entity", "description": "The Entity definition of this mapping.", "targetEntity": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd", "editable": false }}
+        "tag": {
+          "value": {
+            "id": 10,
+            "editable": false,
+            "defaultLabel": "Entity",
+            "description": "The Entity definition of this mapping.",
+            "targetEntity": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+            "selectorParams": {
+              "targetEntity": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+              "targetEntityOrderInstancesBy": "name"
+            }
+          }
+        }
       }
     }
   }

@@ -147,7 +147,7 @@ export function useJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
         currentTypecheckKeyMap &&
         currentTypecheckKeyMap.rawSchema &&
         currentTypecheckKeyMap.rawSchema.type == "uuid" &&
-        currentTypecheckKeyMap.rawSchema.tag?.value?.targetEntity
+        currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetEntity
           ? {
               queryType: "boxedQueryWithExtractorCombinerTransformer",
               deploymentUuid: props.currentDeploymentUuid,
@@ -155,17 +155,17 @@ export function useJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
               queryParams: {},
               contextResults: {},
               extractors: {
-                [currentTypecheckKeyMap.rawSchema.tag?.value?.targetEntity]: {
+                [currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetEntity]: {
                   extractorOrCombinerType: "extractorByEntityReturningObjectList",
                   applicationSection: getApplicationSection(
                     props.currentDeploymentUuid,
-                    currentTypecheckKeyMap.rawSchema.tag?.value?.targetEntity
+                    currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetEntity
                   ),
                   parentName: "",
-                  parentUuid: currentTypecheckKeyMap.rawSchema.tag?.value?.targetEntity,
+                  parentUuid: currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetEntity,
                   orderBy: {
                     attributeName:
-                      currentTypecheckKeyMap.rawSchema.tag?.value?.targetEntityOrderInstancesBy ?? "name",
+                      currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetEntityOrderInstancesBy ?? "name",
                   },
                 },
               },
@@ -251,12 +251,12 @@ export function useJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
   const stringSelectList = useMemo(() => {
     if (
       localResolvedElementJzodSchemaBasedOnValue?.type == "uuid" &&
-      localResolvedElementJzodSchemaBasedOnValue.tag?.value?.targetEntity
+      localResolvedElementJzodSchemaBasedOnValue.tag?.value?.selectorParams?.targetEntity
     ) {
       return [
         [noValue.uuid, noValue] as [string, EntityInstance],
         ...Object.entries(
-          foreignKeyObjects[localResolvedElementJzodSchemaBasedOnValue.tag.value?.targetEntity] ??
+          foreignKeyObjects[localResolvedElementJzodSchemaBasedOnValue.tag.value?.selectorParams?.targetEntity] ??
             {}
         ),
       ];

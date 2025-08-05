@@ -117,9 +117,13 @@
         "tag": {
           "value": {
             "id": 9,
+            "editable": true,
             "defaultLabel": "SelfApplication",
             "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
-            "editable": true
+            "selectorParams": {
+              "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
+              "targetEntityOrderInstancesBy": "name"
+            }
           }
         }
       },
@@ -255,9 +259,13 @@
                     "tag": {
                       "value": {
                         "id": 2,
+                        "editable": false,
                         "defaultLabel": "Entity Uuid",
                         "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                        "editable": false
+                        "selectorParams": {
+                          "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                          "targetEntityOrderInstancesBy": "name"
+                        }
                       }
                     }
                   },

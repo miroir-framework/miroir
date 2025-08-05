@@ -57,6 +57,11 @@
                     "id": 3,
                     "defaultLabel": "Entity Uuid",
                     "editable": true,
+                    "selectorParams": {
+                      "targetEntityApplicationSection": "model",
+                      "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                      "targetEntityOrderInstancesBy": "name"
+                    },
                     "targetEntityApplicationSection": "model",
                     "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                     "targetEntityOrderInstancesBy": "name"
@@ -88,13 +93,18 @@
                       }
                     },
                     "parentUuid": {
-                      "type": "string",
+                      "type": "uuid",
                       "tag": {
                         "value": {
                           "id": 2,
                           "defaultLabel": "Parent Uuid",
                           "editable": false,
                           "canBeTemplate": true,
+                          "selectorParams": {
+                            "targetEntityApplicationSection": "model",
+                            "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                            "targetEntityOrderInstancesBy": "name"
+                          },
                           "targetEntityApplicationSection": "model",
                           "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                           "targetEntityOrderInstancesBy": "name"

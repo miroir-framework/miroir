@@ -685,10 +685,13 @@
                 "tag": {
                   "value": {
                     "id": 4,
+                    "editable": false,
                     "canBeTemplate": true,
-                    "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                     "defaultLabel": "Parent Uuid",
-                    "editable": false
+                    "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                    "selectorParams": {
+                      "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad"
+                    }
                   }
                 }
               }
