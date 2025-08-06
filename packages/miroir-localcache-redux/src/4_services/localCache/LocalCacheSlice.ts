@@ -391,6 +391,12 @@ function handleInstanceAction(
           // JSON.stringify(state)
         );
 
+        if (!instanceAction.payload.applicationSection) {
+          throw new Error(
+            "createInstance action called without applicationSection in payload: " +
+              JSON.stringify(instanceAction.payload)
+          );
+        }
         const sliceEntityAdapter:EntityAdapter<EntityInstance, string> = initializeLocalCacheSliceStateWithEntityAdapter(
           instanceAction.deploymentUuid,
           instanceAction.payload.applicationSection,
@@ -409,14 +415,21 @@ function handleInstanceAction(
           // TODO: does it work? How?
           // log.info('localCacheSliceObject handleInstanceAction creating entityAdapter for Entities',instanceCollection.instances.map((i:EntityInstanceWithName)=>i['name']));
 
-          instanceCollection.instances.forEach((i: EntityInstance) =>
-            initializeLocalCacheSliceStateWithEntityAdapter(
+          instanceCollection.instances.forEach((i: EntityInstance) => {
+            if (!instanceAction.payload.applicationSection) {
+              throw new Error(
+                "createInstance action called without applicationSection in payload: " +
+                  JSON.stringify(instanceAction.payload)
+              );
+            }
+            return initializeLocalCacheSliceStateWithEntityAdapter(
               instanceAction.deploymentUuid,
               instanceAction.payload.applicationSection,
               i["uuid"],
               "current",
               state
             )
+          }
           );
         }
         log.info('create done',JSON.stringify(state.current[instanceCollectionEntityIndex], null, 2));

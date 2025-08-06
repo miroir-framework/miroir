@@ -7,6 +7,8 @@ import { z } from "zod";
 
 
 import {
+  Action2Error,
+  Action2VoidReturnType,
   adminConfigurationDeploymentMiroir,
   ApplicationSection,
   applicationSection,
@@ -46,6 +48,7 @@ import {
   useDomainControllerService,
   useMiroirContextInnerFormOutput,
   useMiroirContextService,
+  useSnackbar,
 } from "../../MiroirContextReactProvider.js";
 import { useCurrentModel, useDeploymentEntityStateQuerySelectorForCleanedResult } from "../../ReduxHooks.js";
 import { cleanLevel } from "../../constants.js";
@@ -224,6 +227,17 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   const miroirMetaModel: MetaModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
   const currentModel: MetaModel = useCurrentModel(props.deploymentUuid)
   const context = useMiroirContextService();
+  
+  // Get snackbar functionality from context
+  const { showSnackbar, handleAsyncAction } = useSnackbar();
+  
+  // Example usage:
+  // showSnackbar("Operation completed successfully!", "success");
+  // handleAsyncAction(
+  //   async () => { /* your async operation */ },
+  //   "Operation completed successfully!",
+  //   "MyAsyncOperation"
+  // );
 
   // log.info("ReportSectionListDisplay props.deploymentUuid", props.deploymentUuid);
 
@@ -476,13 +490,14 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
 
   // ##############################################################################################
   const onEditFormObject = useCallback(
-    async (data:any) => {
+    async (data: any): Promise<Action2VoidReturnType> => {
       // const newEntity:EntityInstance = Object.assign({...data as EntityInstance},{attributes:dialogFormObject?dialogFormObject['attributes']:[]});
-      log.info('ReportComponent onEditFormObject called with new object value',data);
-      
+      log.info("ReportComponent onEditFormObject called with new object value", data);
+
       if (props.displayedDeploymentDefinition) {
-        if (props.chosenApplicationSection == 'model') {
-          await domainController.handleAction(
+        let result: Action2VoidReturnType;
+        if (props.chosenApplicationSection == "model") {
+          result = await domainController.handleAction(
             {
               actionType: "transactionalInstanceAction",
               instanceAction: {
@@ -496,15 +511,14 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
                     {
                       parentName: data.name,
                       parentUuid: data.parentUuid,
-                      applicationSection:props.chosenApplicationSection,
-                      instances: [
-                        data 
-                      ]
-                    }
+                      applicationSection: props.chosenApplicationSection,
+                      instances: [data],
+                    },
                   ],
-                }
-              }
-            },props.tableComponentReportType == "EntityInstance"?currentModel:undefined
+                },
+              },
+            },
+            props.tableComponentReportType == "EntityInstance" ? currentModel : undefined
           );
         } else {
           const updateAction: InstanceAction = {
@@ -513,27 +527,38 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
             deploymentUuid: props.displayedDeploymentDefinition?.uuid,
             endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
             payload: {
-              applicationSection: props.chosenApplicationSection?props.chosenApplicationSection:"data",
+              applicationSection: props.chosenApplicationSection
+                ? props.chosenApplicationSection
+                : "data",
               objects: [
                 {
                   parentName: data.name,
                   parentUuid: data.parentUuid,
-                  applicationSection:props.chosenApplicationSection?props.chosenApplicationSection:"data",
-                  instances: [
-                    data 
-                  ],
+                  applicationSection: props.chosenApplicationSection
+                    ? props.chosenApplicationSection
+                    : "data",
+                  instances: [data],
                 },
               ],
-            }
+            },
           };
-          await domainController.handleAction(updateAction);
+          result = await domainController.handleAction(updateAction);
         }
+        return result;
       } else {
-        throw new Error('ReportComponent onSubmitOuterDialog props.displayedDeploymentDefinition is undefined.')
+        throw new Error(
+          "ReportComponent onSubmitOuterDialog props.displayedDeploymentDefinition is undefined."
+        );
       }
     },
-    [domainController, props.displayedDeploymentDefinition, props.chosenApplicationSection, props.tableComponentReportType, currentModel]
-  )
+    [
+      domainController,
+      props.displayedDeploymentDefinition,
+      props.chosenApplicationSection,
+      props.tableComponentReportType,
+      currentModel,
+    ]
+  );
 
 
   // ##############################################################################################
@@ -669,17 +694,33 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   const onSubmitOuterDialog: (data: JsonObjectEditFormDialogInputs)=>void = useCallback(
     async (data) => {
       log.info('ReportComponent onSubmitOuterDialog','data',data);
-      
-    // if (props.type == 'EntityInstance' && props?.onRowEdit) {
-      // await onCreateFormObject(data);
-      await onEditFormObject(data);
-    // } else {
-    //   log.error('onEditDialogFormSubmit called for not EntityInstance');
-    // }
-      log.info('ReportComponent onSubmitOuterDialog done for','data',data);
+    
+      // showSnackbar("Operation completed successfully!", "success");
+      await handleAsyncAction(
+        async () => { 
+            const editResult = await onEditFormObject(data);
 
-      // The form already calls onCreateFormObject, so we just need to close the dialog
-      setAddObjectdialogFormIsOpen(false);
+            log.info('ReportComponent onSubmitOuterDialog done for','data',data, "editResult",editResult);
+
+            if (editResult && editResult instanceof Action2Error) {
+              log.error('ReportComponent onSubmitOuterDialog error',editResult);
+            } else {
+              // The form already calls onCreateFormObject, so we just need to close the dialog
+              setAddObjectdialogFormIsOpen(false);
+            }
+         },
+        "Operation completed successfully!",
+        "onEditFormObject"
+      );
+
+    // const editResult = await onEditFormObject(data);
+
+    // log.info('ReportComponent onSubmitOuterDialog done for','data',data, "editResult",editResult);
+
+    // if (editResult && editResult instanceof Action2Error) {
+    //   log.error('ReportComponent onSubmitOuterDialog error',editResult);
+    // }
+
     },
     [setAddObjectdialogFormIsOpen]
   )

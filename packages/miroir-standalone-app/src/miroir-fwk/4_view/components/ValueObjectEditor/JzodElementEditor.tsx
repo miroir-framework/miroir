@@ -321,25 +321,25 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
   );
 
 
-  log.info("JzodElementEditor",
-    count,
-    "Rendering JzodElementEditor for listKey",
-    props.listKey,
-    "objectOrArrayOrAny",
-    objectOrArrayOrAny,
-    "displayAsStructuredElement",
-    displayAsStructuredElement,
-    "hideSubJzodEditor",
-    hideSubJzodEditor,
-    "displayCodeEditor",
-    displayCodeEditor,
-    "currentValue",
-    currentValue,
-    "props.typeCheckKeyMap",
-    props.typeCheckKeyMap, 
-    "localResolvedElementJzodSchemaBasedOnValue",
-    localResolvedElementJzodSchemaBasedOnValue,
-  )
+  // log.info("JzodElementEditor",
+  //   count,
+  //   "Rendering JzodElementEditor for listKey",
+  //   props.listKey,
+  //   "objectOrArrayOrAny",
+  //   objectOrArrayOrAny,
+  //   "displayAsStructuredElement",
+  //   displayAsStructuredElement,
+  //   "hideSubJzodEditor",
+  //   hideSubJzodEditor,
+  //   "displayCodeEditor",
+  //   displayCodeEditor,
+  //   "currentValue",
+  //   currentValue,
+  //   "props.typeCheckKeyMap",
+  //   props.typeCheckKeyMap, 
+  //   "localResolvedElementJzodSchemaBasedOnValue",
+  //   localResolvedElementJzodSchemaBasedOnValue,
+  // )
 
   // Check if we should show code editor
   const shouldShowCodeEditor = useMemo(() => 
@@ -563,16 +563,16 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
           );
         }
         case "uuid": {
-          log.info(
-            "JzodElementEditor: Rendering UUID input for listKey",
-            props.listKey,
-            "with value",
-            currentValue,
-            "MMLS tag",
-            localResolvedElementJzodSchemaBasedOnValue.tag,
-            "foreignKeyObjects",
-            foreignKeyObjects
-          );
+          // log.info(
+          //   "JzodElementEditor: Rendering UUID input for listKey",
+          //   props.listKey,
+          //   "with value",
+          //   currentValue,
+          //   "MMLS tag",
+          //   localResolvedElementJzodSchemaBasedOnValue.tag,
+          //   "foreignKeyObjects",
+          //   foreignKeyObjects
+          // );
           if (localResolvedElementJzodSchemaBasedOnValue.tag?.value?.selectorParams?.targetEntity) {
             return (
               <ThemedLabeledEditor

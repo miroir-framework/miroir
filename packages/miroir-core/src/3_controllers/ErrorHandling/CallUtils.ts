@@ -38,7 +38,7 @@ export class CallUtils {
     },
     action: LocalCacheAction
   ): Promise<Record<string, any>> {
-    // asynchronous although it is not necessary, only to keep the same signature as callRemotePersistenceAction
+    // asynchronous although it is not necessary, only to keep the same signature as callPersistenceAction
     const result: Action2ReturnType = this.persistenceStoreLocalOrRemote.handleLocalCacheAction(action);
     
     // log.info("callLocalCacheAction received result", result);
@@ -66,7 +66,7 @@ export class CallUtils {
    * convert errors to exceptions for controllers using store controllers,
    * allowing them to interrupt their control flow without testing systematically for errors
    */
-  async callRemotePersistenceAction(
+  async callPersistenceAction(
     context: { [k: string]: any },
     continuation: {
       resultTransformation?: (action: Action2ReturnType, context: { [k: string]: any }) => any;
@@ -77,20 +77,20 @@ export class CallUtils {
     action: PersistenceAction
   ): Promise<Record<string, any> | Action2Error> {
     // if (action.actionType !== "initModel") {
-    //   log.info("CallUtils callRemotePersistenceAction called with",
+    //   log.info("CallUtils callPersistenceAction called with",
     //     "action",
     //     JSON.stringify(action, null, 2)
     //   );
     // } 
     // // else {
-    // //   log.info("CallUtils callRemotePersistenceAction called with",
+    // //   log.info("CallUtils callPersistenceAction called with",
     // //     "action",
     // //     action.actionType,
     // //     action.actionName
     // //   );
     // // }
     const result: Action2ReturnType = await this.persistenceStoreLocalOrRemote.handlePersistenceAction(action);
-    // log.info("CallUtils callRemotePersistenceAction received result", result);
+    log.info("CallUtils callPersistenceAction received result", JSON.stringify(result, null, 2));
     if (result["status"] == "error") {
       //ensure the proper persistence of errors in the local storage, for it to be accessible by view components.
       // Problem: what if the local storage is not accessible? => store it in a in-memory effect.
@@ -99,8 +99,8 @@ export class CallUtils {
       // throw error;
       return result;
     } else {
-      // log.info("CallUtils callRemotePersistenceAction ok", result);
-      // log.info("CallUtils callRemotePersistenceAction continuation", continuation);
+      // log.info("CallUtils callPersistenceAction ok", result);
+      // log.info("CallUtils callPersistenceAction continuation", continuation);
       const transformedResult = continuation.resultTransformation
         ? continuation.resultTransformation(result, context)
         : result;

@@ -1,4 +1,4 @@
-import { ReactNode, createContext, useContext, useMemo, useState } from "react";
+import { ReactNode, createContext, useContext, useMemo, useState, startTransition } from "react";
 
 import { useSelector } from "react-redux";
 
@@ -53,6 +53,13 @@ export interface MiroirReactContext {
   viewParams: ViewParams,
   showPerformanceDisplay: boolean,
   setShowPerformanceDisplay: React.Dispatch<React.SetStateAction<boolean>>,
+  // Snackbar functionality
+  snackbarOpen: boolean,
+  snackbarMessage: string,
+  snackbarSeverity: "success" | "error" | "info",
+  showSnackbar: (message: string, severity?: "success" | "error" | "info") => void,
+  handleSnackbarClose: () => void,
+  handleAsyncAction: (action: () => Promise<any>, successMessage: string, actionName: string) => Promise<void>,
 }
 
 const miroirReactContext = createContext<MiroirReactContext>({
@@ -90,6 +97,11 @@ export function MiroirContextReactProvider(props: {
     return saved ? JSON.parse(saved) : false;
   });
   
+  // Snackbar state
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error" | "info">("info");
+  
   const viewParams = useMemo(() => {
     const params = new ViewParams(sidebarWidth, gridType);
     // Override setters to use React state
@@ -97,6 +109,32 @@ export function MiroirContextReactProvider(props: {
     params.setGridType = (type: GridType) => setGridType(type);
     return params;
   }, [sidebarWidth, gridType]);
+
+  // Snackbar handlers
+  const showSnackbar = useMemo(() => (message: string, severity: "success" | "error" | "info" = "info") => {
+    setSnackbarMessage(message);
+    setSnackbarSeverity(severity);
+    setSnackbarOpen(true);
+  }, []);
+
+  const handleSnackbarClose = useMemo(() => () => {
+    setSnackbarOpen(false);
+  }, []);
+
+  const handleAsyncAction = useMemo(() => async (action: () => Promise<any>, successMessage: string, actionName: string) => {
+    try {
+      await action();
+      // Use startTransition for non-urgent UI updates to allow React 18 batching
+      startTransition(() => {
+        showSnackbar(successMessage, "success");
+      });
+    } catch (error) {
+      log.error(`Error in ${actionName}:`, error);
+      startTransition(() => {
+        showSnackbar(`Error in ${actionName}: ${error}`, "error");
+      });
+    }
+  }, [showSnackbar]);
 
   // const value = useMemo<MiroirReactContext>(()=>({
   const value = useMemo<MiroirReactContext>(
@@ -130,6 +168,13 @@ export function MiroirContextReactProvider(props: {
         setShowPerformanceDisplay(newValue);
         sessionStorage.setItem('showPerformanceDisplay', JSON.stringify(newValue));
       },
+      // Snackbar functionality
+      snackbarOpen,
+      snackbarMessage,
+      snackbarSeverity,
+      showSnackbar,
+      handleSnackbarClose,
+      handleAsyncAction,
     }),
     [
       deploymentUuid,
@@ -144,6 +189,9 @@ export function MiroirContextReactProvider(props: {
       sidebarWidth,
       gridType,
       showPerformanceDisplay,
+      snackbarOpen,
+      snackbarMessage,
+      snackbarSeverity,
     ]
   );
   return <miroirReactContext.Provider value={value}>{props.children}</miroirReactContext.Provider>;
@@ -189,5 +237,21 @@ export function useLocalCacheTransactions(): ReduxStateChanges[] {
   // const result:EntityState<ReduxStateChanges[]> = useSelector(selectCurrentTransaction());
   const result: ReduxStateChanges[] = useSelector(selectCurrentTransaction());
   return result ? result : [];
+}
+
+// #############################################################################################
+export function useSnackbar() {
+  const context = useContext(miroirReactContext);
+  if (!context) {
+    throw new Error('useSnackbar must be used within a MiroirContextReactProvider');
+  }
+  return {
+    snackbarOpen: context.snackbarOpen,
+    snackbarMessage: context.snackbarMessage,
+    snackbarSeverity: context.snackbarSeverity,
+    showSnackbar: context.showSnackbar,
+    handleSnackbarClose: context.handleSnackbarClose,
+    handleAsyncAction: context.handleAsyncAction,
+  };
 }
 

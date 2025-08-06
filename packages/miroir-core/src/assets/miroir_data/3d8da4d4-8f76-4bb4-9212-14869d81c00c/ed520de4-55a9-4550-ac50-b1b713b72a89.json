@@ -58,6 +58,7 @@
               },
               "parentUuid": {
                 "type": "uuid",
+                "optional": true,
                 "tag": {
                   "value": {
                     "id": 3,

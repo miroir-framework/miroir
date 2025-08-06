@@ -68,7 +68,7 @@ console.log("@@@@@@@@@@@@@@@@@@ env", env);
 
 const myConsoleLog = (...args: any[]) => console.log(fileName, ...args);
 // const {miroirConfig, logConfig:loggerOptions} = await loadTestConfigFiles(env);
-const fileName = "PersistenceStoreController.integ..test";
+const fileName = "PersistenceStoreController.integ.test";
 myConsoleLog(fileName, "received env", JSON.stringify(env, null, 2));
 
 let miroirConfig:any;
@@ -263,7 +263,7 @@ const chainVitestSteps = async (
   }
 }
 
-describe.sequential("PersistenceStoreController.unit.test", () => {
+describe.sequential("PersistenceStoreController.integ.test", () => {
 
   // ################################################################################################
   // // TODO: rephrase as deployment of a module that is not yet deployed, neither miroir nor library
@@ -809,8 +809,8 @@ describe.sequential("PersistenceStoreController.unit.test", () => {
     const instanceAdded = (await localAppPersistenceStoreController?.upsertInstance('data', book1 as EntityInstance)) as ActionError;
     console.log("instanceAdded", instanceAdded)
     expect({errorType: instanceAdded.errorType, errorMessage: instanceAdded.errorMessage}, "failed to add Book instance").toEqual({
-      errorType: "FailedToUpdateInstance",
-      errorMessage: "failed to upsert instance caef8a59-39eb-48b5-ad59-a7642d3a1e8f of entity e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+      errorType: "FailedToUpsertInstance",
+      errorMessage: "upsertInstance failed for section: data, entityUuid e8ba151b-d68e-4cc3-9a83-3459d309ccf5, error: Entity not found in data section.",
     });
   });
 

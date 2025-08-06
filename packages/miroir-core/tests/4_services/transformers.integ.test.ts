@@ -195,6 +195,7 @@ const beforeAll = async () => {
       deploymentUuid: paramAdminConfigurationDeploymentUuid,
       payload: {
         applicationSection: "data",
+        // parentUuid: libraryEntitesAndInstances[].entity.uuid,
         objects: libraryEntitesAndInstances.map((e) => {
           return {
             parentName: e.entity.name,

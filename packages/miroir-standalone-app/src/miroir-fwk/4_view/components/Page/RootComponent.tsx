@@ -89,6 +89,7 @@ import {
   useDomainControllerService,
   useLocalCacheTransactions,
   useMiroirContextService,
+  useSnackbar,
   // useViewParams,
 } from "../../MiroirContextReactProvider.js";
 import { MiroirThemeProvider, useMiroirTheme } from '../../contexts/MiroirThemeContext.js';
@@ -244,9 +245,8 @@ export const RootComponent = (props: RootComponentProps) => {
   // const viewParams = useViewParams();
   // const [sidebarWidth, setSidebarWidth] = useState(viewParams?.sidebarWidth ?? SidebarWidth);
   
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState("");
-  const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error" | "info">("info");
+  // Use snackbar from context
+  const { snackbarOpen, snackbarMessage, snackbarSeverity, showSnackbar, handleSnackbarClose, handleAsyncAction } = useSnackbar();
   
   // InstanceEditorOutline state
   const [isOutlineOpen, setIsOutlineOpen] = useState(false);
@@ -518,32 +518,6 @@ export const RootComponent = (props: RootComponentProps) => {
     }),
     [isOutlineOpen, outlineWidth, outlineData, outlineTitle, handleToggleOutline, handleNavigateToPath]
   );
-
-  const showSnackbar = useMemo(() => (message: string, severity: "success" | "error" | "info" = "info") => {
-    setSnackbarMessage(message);
-    setSnackbarSeverity(severity);
-    setSnackbarOpen(true);
-  }, []);
-
-  const handleSnackbarClose = useMemo(() => () => {
-    setSnackbarOpen(false);
-  }, []);
-
-  const handleAsyncAction = useMemo(() => async (action: () => Promise<any>, successMessage: string, actionName: string) => {
-    try {
-      await action();
-      // Use startTransition for non-urgent UI updates to allow React 18 batching
-      startTransition(() => {
-        showSnackbar(successMessage, "success");
-      });
-    } catch (error) {
-      log.error(`Error in ${actionName}:`, error);
-      startTransition(() => {
-        showSnackbar(`Error in ${actionName}: ${error}`, "error");
-      });
-    }
-  }, [showSnackbar]);
-
 
   const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<DeploymentEntityState> =
   useMemo(() => getMemoizedDeploymentEntityStateSelectorMap(), []);

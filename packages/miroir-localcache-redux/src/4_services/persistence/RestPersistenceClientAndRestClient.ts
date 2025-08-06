@@ -211,7 +211,7 @@ export class RestPersistenceClientAndRestClient implements RestPersistenceClient
           callParams.args
         );
         log.info("handleNetworkPersistenceAction", action, "result", result);
-        return result;
+        return Promise.resolve(result);
         break;
       }
       case "LocalPersistenceAction": {

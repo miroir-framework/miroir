@@ -215,11 +215,11 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
         switch (persistenceStoreControllerAction.actionType) {
           case "dropEntity": {
             // await targetProxy.dropEntity(update.modelEntityUpdate.entityUuid);
-            await this.dropEntity(persistenceStoreControllerAction.payload.entityUuid);
+            return this.dropEntity(persistenceStoreControllerAction.payload.entityUuid);
             break;
           }
           case "renameEntity": {
-            await this.renameEntityClean(persistenceStoreControllerAction);
+            return this.renameEntityClean(persistenceStoreControllerAction);
             break;
           }
           case "resetModel": {
@@ -230,7 +230,7 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
             break;
           }
           case "alterEntityAttribute": {
-            await this.alterEntityAttribute(persistenceStoreControllerAction);
+            return this.alterEntityAttribute(persistenceStoreControllerAction);
             break;
           }
           case "resetData": {
@@ -258,14 +258,13 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
           case "createEntity": {
             log.debug("handleAction applyModelEntityUpdates createEntity inserting", persistenceStoreControllerAction.payload.entities);
             // await targetProxy.createEntity(update.entity, update.entityDefinition);
-            await this.createEntities(persistenceStoreControllerAction.payload.entities);
+            return this.createEntities(persistenceStoreControllerAction.payload.entities);
             break;
           }
           default:
             log.warn("handleAction could not handle action", persistenceStoreControllerAction);
             break;
         }
-    
         break;
       }
       // case "instanceAction": {
@@ -273,14 +272,38 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
       case "updateInstance": {
         for (const instanceCollection of persistenceStoreControllerAction.payload.objects) {
           for (const instance of instanceCollection.instances) {
-            await this.upsertInstance(instanceCollection.applicationSection,instance)
+            const result = await this.upsertInstance(instanceCollection.applicationSection,instance)
+            if (result instanceof Action2Error || result.returnedDomainElement instanceof Domain2ElementFailed) {
+              log.error(
+                this.logHeader,
+                "handleAction upsertInstance failed for section: ",
+                instanceCollection.applicationSection,
+                "instance",
+                instance,
+                "error:",
+                result
+              );
+              return result;
+            }
           }
         }
         break;
       }
       case "deleteInstance": {
         for (const instanceCollection of persistenceStoreControllerAction.payload.objects) {
-          await this.deleteInstances(instanceCollection.applicationSection,instanceCollection.instances)
+          const result = await this.deleteInstances(instanceCollection.applicationSection,instanceCollection.instances)
+          if (result instanceof Action2Error || result.returnedDomainElement instanceof Domain2ElementFailed) {
+            log.error(
+              this.logHeader,
+              "handleAction deleteInstances failed for section: ",
+              instanceCollection.applicationSection,
+              "instances",
+              instanceCollection.instances,
+              "error:",
+              result
+            );
+            return result;
+          }
         }
         break;
       }
@@ -303,46 +326,6 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
           persistenceStoreControllerAction.payload.parentUuid
         );
         break;
-        // TODO: check await calls for errors!
-        // switch (persistenceStoreControllerAction.actionName) {
-        //   case "updateInstance": 
-        //   case "createInstance": {
-        //     for (const instanceCollection of persistenceStoreControllerAction.objects) {
-        //       for (const instance of instanceCollection.instances) {
-        //         await this.upsertInstance(instanceCollection.applicationSection,instance)
-        //       }
-        //     }
-        //     break;
-        //   }
-        //   case "deleteInstance": {
-        //     for (const instanceCollection of persistenceStoreControllerAction.objects) {
-        //       await this.deleteInstances(instanceCollection.applicationSection,instanceCollection.instances)
-        //     }
-        //     break;
-        //   }
-        //   case "loadNewInstancesInLocalCache": {
-        //     throw new Error("PersistenceStoreController handleAction can not handle loadNewInstancesInLocalCache action!");
-        //     break;
-        //   }
-        //   case "getInstance": {
-        //     return this.getInstance(
-        //       persistenceStoreControllerAction.applicationSection,
-        //       persistenceStoreControllerAction.parentUuid,
-        //       persistenceStoreControllerAction.uuid
-        //     );
-        //     break;
-        //   }
-        //   case "getInstances": {
-        //     return this.getInstances(
-        //       persistenceStoreControllerAction.applicationSection,
-        //       persistenceStoreControllerAction.parentUuid
-        //     );
-        //     break;
-        //   }
-        //   default:
-        //     break;
-        // }
-        // break;
       }
       default: {
         throw new Error("PersistenceStoreController handleAction could not handleAction " + persistenceStoreControllerAction);
@@ -658,6 +641,8 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
       "upsertInstance",
       "section",
       section,
+      "storeName",
+      "'" + this.modelStoreSection.getStoreName() + "'",
       "instance",
       instance,
       "model entities",
@@ -667,8 +652,22 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     );
     
     if (section == 'data') {
+      if (this.getEntityUuids().indexOf(instance.parentUuid) == -1) {
+        log.error(this.logHeader, "upsertInstance failed for section: ", section, "entityUuid", instance.parentUuid, "error: Entity not found in data section.");
+        return new Action2Error(
+          "FailedToUpsertInstance",
+          `upsertInstance failed for section: ${section}, entityUuid ${instance.parentUuid}, error: Entity not found in data section.`
+        );
+      }
       return this.dataStoreSection.upsertInstance(instance.parentUuid,instance);
     } else {
+      if (this.getModelEntities().indexOf(instance.parentUuid) == -1) {
+        log.error(this.logHeader, "upsertInstance failed for section: ", section, "entityUuid", instance.parentUuid, "error: Entity not found in model section.");
+        return new Action2Error(
+          "FailedToUpsertInstance",
+          `upsertInstance failed for section: ${section}, entityUuid ${instance.parentUuid}, error: Entity not found in model section.`
+        );
+      }
       return this.modelStoreSection.upsertInstance(instance.parentUuid,instance);
     }
   }

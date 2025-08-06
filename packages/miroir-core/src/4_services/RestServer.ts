@@ -251,23 +251,27 @@ export async function restActionHandler(
   body: HttpRequestBodyFormat,
   params: any,
 ):Promise<void> {
-  console.log("restActionHandler called with method", method);
-  console.log("restActionHandler called with effectiveUrl", effectiveUrl);
+  log.info("restActionHandler called with method", method);
+  log.info("restActionHandler called with effectiveUrl", effectiveUrl);
   // console.log("restActionHandler called with params", JSON.stringify(params,undefined,2));
-  console.log("restActionHandler called with params", params);
+  log.info("restActionHandler called with params", params);
 
-  if (body && ((body as any).actionType !== "initModel")) {
-    console.log("restActionHandler called with","body", JSON.stringify(body, undefined, 2));
+  if (body && (body as any).actionType !== "initModel") {
+    log.info("restActionHandler called with", "body", JSON.stringify(body, undefined, 2));
   }
   // else {
   //   console.log("restActionHandler called");
   // }
   // const actionName: string = typeof params["actionName"] == "string" ? params["actionName"] : params["actionName"][0];
-  const actionType: string = typeof params["actionType"] == "string" ? params["actionType"] : params["actionType"][0];
+  const actionType: string =
+    typeof params["actionType"] == "string" ? params["actionType"] : params["actionType"][0];
 
   // log.debug("restActionRunner params", params, "body", body);
 
-  const action: StoreOrBundleAction | InstanceAction | ModelAction = body as StoreOrBundleAction | InstanceAction | ModelAction ;
+  const action: StoreOrBundleAction | InstanceAction | ModelAction = body as
+    | StoreOrBundleAction
+    | InstanceAction
+    | ModelAction;
   switch (action.actionType) {
     // case "storeManagementAction":
     case "storeManagementAction_createStore":
@@ -275,18 +279,18 @@ export async function restActionHandler(
     case "storeManagementAction_resetAndInitApplicationDeployment":
     case "storeManagementAction_openStore":
     case "storeManagementAction_closeStore":
-    // 
+    //
     case "bundleAction": {
       const result = await storeActionOrBundleActionStoreRunner(
         // actionName,
         actionType,
         body as StoreOrBundleAction,
-        persistenceStoreControllerManager,
+        persistenceStoreControllerManager
       );
-      return continuationFunction(response)(result)
+      return continuationFunction(response)(result);
       break;
     }
-    // case "modelAction": 
+    // case "modelAction":
     case "initModel":
     case "commit":
     case "rollback":
@@ -326,6 +330,12 @@ export async function restActionHandler(
           return continuationFunction(response)(result);
         } else {
           const result = await domainController.handleAction(action);
+          log.info(
+            "restActionHandler handled action",
+            action.actionType,
+            "result",
+            JSON.stringify(result, undefined, 2)
+          );
           return continuationFunction(response)(result);
         }
       } else {
@@ -333,8 +343,9 @@ export async function restActionHandler(
          * we are on the client:
          * - the RestMswServerStub emulates the client,
          * - the client has direct access to the persistence store (which is emulated, too)
-         *  */ 
-        const localPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(action.deploymentUuid);
+         *  */
+        const localPersistenceStoreController =
+          persistenceStoreControllerManager.getPersistenceStoreController(action.deploymentUuid);
         if (!localPersistenceStoreController) {
           throw new Error(
             "could not find controller for deployment: " +
@@ -343,16 +354,19 @@ export async function restActionHandler(
               JSON.stringify(action, undefined, 2)
           );
         }
-          const result = await localPersistenceStoreController.handleAction(action)
-        return continuationFunction(response)(result)
+        const result = await localPersistenceStoreController.handleAction(action);
+        return continuationFunction(response)(result);
       }
       break;
     }
     default:
-      throw new Error("RestServer restActionStoreRunner could not handle action " + JSON.stringify(action,undefined,2));
+      throw new Error(
+        "RestServer restActionStoreRunner could not handle action " +
+          JSON.stringify(action, undefined, 2)
+      );
       break;
-    }
   }
+}
 
 // ################################################################################################
 // USES LocalCache memoized reducers, shall go to miroir-server instead?
@@ -505,17 +519,17 @@ export const restServerDefaultHandlers: RestServiceHandler[] = [
     handler: restMethodGetHandler
   },
   {
-    method: "put",
+    method: "put", // still used?
     url: "/CRUD/:deploymentUuid/:section/entity",
     handler: restMethodsPostPutDeleteHandler
   },
   {
-    method: "post",
+    method: "post", // still used?
     url: "/CRUD/:deploymentUuid/:section/entity",
     handler: restMethodsPostPutDeleteHandler
   },
   {
-    method: "delete",
+    method: "delete", // still used?
     url: "/CRUD/:deploymentUuid/:section/entity",
     handler: restMethodsPostPutDeleteHandler
   },

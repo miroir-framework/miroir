@@ -14587,6 +14587,7 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "parentUuid": {
                     "type": "uuid",
+                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 3,
@@ -14875,6 +14876,7 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "parentUuid": {
                     "type": "uuid",
+                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 3,
@@ -25164,6 +25166,7 @@ export const miroirFundamentalJzodSchema = {
                       },
                       "parentUuid": {
                         "type": "union",
+                        "optional": true,
                         "tag": {
                           "value": {
                             "id": 3,
@@ -25179,6 +25182,7 @@ export const miroirFundamentalJzodSchema = {
                         "definition": [
                           {
                             "type": "uuid",
+                            "optional": true,
                             "tag": {
                               "value": {
                                 "id": 3,
@@ -26583,6 +26587,7 @@ export const miroirFundamentalJzodSchema = {
                       },
                       "parentUuid": {
                         "type": "union",
+                        "optional": true,
                         "tag": {
                           "value": {
                             "id": 3,
@@ -26598,6 +26603,7 @@ export const miroirFundamentalJzodSchema = {
                         "definition": [
                           {
                             "type": "uuid",
+                            "optional": true,
                             "tag": {
                               "value": {
                                 "id": 3,
@@ -51373,6 +51379,7 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "parentUuid": {
                     "type": "uuid",
+                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 3,
@@ -52181,6 +52188,7 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "parentUuid": {
                     "type": "uuid",
+                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 3,
@@ -58840,6 +58848,7 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "parentUuid": {
                     "type": "uuid",
+                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 3,
@@ -59637,6 +59646,7 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "parentUuid": {
                     "type": "uuid",
+                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 3,
@@ -66293,6 +66303,7 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "parentUuid": {
                     "type": "uuid",
+                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 3,
@@ -67101,6 +67112,7 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "parentUuid": {
                     "type": "uuid",
+                    "optional": true,
                     "tag": {
                       "value": {
                         "id": 3,

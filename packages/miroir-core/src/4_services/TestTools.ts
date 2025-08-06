@@ -282,34 +282,36 @@ export function runTransformerIntegrationTest(
       actionName: "runQuery",
       deploymentUuid: "",
       endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-      applicationSection: "data",
-      query: {
-        queryType: "boxedQueryWithExtractorCombinerTransformer",
-        runAsSql,
-        pageParams: {},
-        queryParams: {
-          ...transformerTest.transformerParams,
-          ...transformerTest.transformerRuntimeContext,
-        },
-        contextResults: runAsSql
-          ? Object.fromEntries(
-              // there's a trick for runAsSql in order to be able to test transformers taking context parameters
-              Object.entries(transformerTest.transformerRuntimeContext ?? {}).map(
-                (e: [string, any]) => [
-                  e[0],
-                  {
-                    type: isJsonArray(e[1]) ? "json_array" :isJson(e[1]) ? "json" : typeof e[1],
-                  },
-                ]
+      payload: {
+        applicationSection: "data",
+        query: {
+          queryType: "boxedQueryWithExtractorCombinerTransformer",
+          runAsSql,
+          pageParams: {},
+          queryParams: {
+            ...transformerTest.transformerParams,
+            ...transformerTest.transformerRuntimeContext,
+          },
+          contextResults: runAsSql
+            ? Object.fromEntries(
+                // there's a trick for runAsSql in order to be able to test transformers taking context parameters
+                Object.entries(transformerTest.transformerRuntimeContext ?? {}).map(
+                  (e: [string, any]) => [
+                    e[0],
+                    {
+                      type: isJsonArray(e[1]) ? "json_array" :isJson(e[1]) ? "json" : typeof e[1],
+                    },
+                  ]
+                )
               )
-            )
-          : transformerTest.transformerRuntimeContext ?? {},
-        deploymentUuid: "",
-        runtimeTransformers: {
-          // transformer: (transformerTest as any).transformer,
-          transformer: resolvedTransformer,
+            : transformerTest.transformerRuntimeContext ?? {},
+          deploymentUuid: "",
+          runtimeTransformers: {
+            // transformer: (transformerTest as any).transformer,
+            transformer: resolvedTransformer,
+          },
         },
-      },
+      }
     });
   }
 

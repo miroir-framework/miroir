@@ -110,6 +110,7 @@ export type ActionErrorType =
 | "FailedToResolveTemplate"
 | "FailedToResolveAction"
 | "FailedToRunBoxedExtractorOrQueryAction"
+| "FailedToUpsertInstance"
 | "FailedToUpdateInstance"
 | "FailedToSetupTest"
 | "FailedToTeardownTest"
