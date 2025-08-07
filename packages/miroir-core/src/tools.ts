@@ -143,11 +143,24 @@ export function resolvePathOnObject(valueObject:any, path: AbsolutePath) {
 }
 
 // ################################################################################################
+export type ResolveRelativePathError =
+  | { error: 'INITIAL_PATH_NON_ARRAY_MAP_SEGMENT', segment: any, current: any }
+  | { error: 'INITIAL_PATH_NOT_OBJECT', segment: any, current: any }
+  | { error: 'INITIAL_PATH_ARRAY_INDEX_OUT_OF_BOUNDS', segment: any, current: any }
+  | { error: 'INITIAL_PATH_SEGMENT_NOT_FOUND', segment: any, current: any }
+  | { error: 'NO_PARENT_TO_GO_UP', parentIndex: number, stack: any[] }
+  | { error: 'MAP_SEGMENT_ON_NON_ARRAY', segment: any, acc: any }
+  | { error: 'PATH_NOT_OBJECT', segment: any, acc: any }
+  | { error: 'PATH_ARRAY_INDEX_OUT_OF_BOUNDS', segment: any, acc: any }
+  | { error: 'PATH_SEGMENT_NOT_FOUND', segment: any, acc: any };
+
+export type ResolveRelativePathResult = any | ResolveRelativePathError;
+
 export function resolveRelativePath(
   valueObject: any,
   initialPath: AbsolutePath,
   path: RelativePath
-) {
+): ResolveRelativePathResult {
   // Stack to keep track of parent objects at each step of initialPath
   const stack: any[] = [];
   let current = valueObject;
@@ -157,18 +170,18 @@ export function resolveRelativePath(
     stack.push(current);
     if (typeof segment === "object") {
       if (!Array.isArray(current)) {
-        throw new Error("Initial path traverses non-array with map segment");
+        return { error: 'INITIAL_PATH_NON_ARRAY_MAP_SEGMENT', segment, current };
       }
       current = current.map((item: any) => item[segment.key]);
     } else {
       if (typeof current !== "object") {
-        throw new Error("Initial path path segment is: " + segment + " but current level is not an object: " + JSON.stringify(current));
+        return { error: 'INITIAL_PATH_NOT_OBJECT', segment, current };
       }
       if (Array.isArray(current) && (Number(segment) >= current.length || Number(segment) < 0)) {
-        throw new Error(`path segment is an array index out of bounds: ${segment} in ${JSON.stringify(current)}`);
+        return { error: 'INITIAL_PATH_ARRAY_INDEX_OUT_OF_BOUNDS', segment, current };
       }
       if (!Array.isArray(current) && !Object.hasOwn(current, segment)) {
-        throw new Error(`path segment '${segment}' not found in object ${JSON.stringify(current)}`);
+        return { error: 'INITIAL_PATH_SEGMENT_NOT_FOUND', segment, current };
       }
       current = current[segment];
     }
@@ -178,30 +191,30 @@ export function resolveRelativePath(
   let acc = current;
   let parentIndex = stack.length - 1;
   for (const segment of path) {
-    console.log("resolveRelativePath: segment", segment, "acc", acc, "stack", stack);
+    // console.log("resolveRelativePath: segment", segment, "acc", acc, "stack", stack);
     if (segment === "#") {
       if (parentIndex < 0) {
-        throw new Error("No parent to go up to with '#'");
+        return { error: 'NO_PARENT_TO_GO_UP', parentIndex, stack };
       }
-      console.log("resolveRelativePath: going up to parent", parentIndex, "of stack", stack, "resulting in", stack[parentIndex]);
+      // console.log("resolveRelativePath: going up to parent", parentIndex, "of stack", stack, "resulting in", stack[parentIndex]);
       acc = stack[parentIndex];
       parentIndex--;
       continue;
     } else {
       if (typeof segment === "object") {
         if (!Array.isArray(acc)) {
-          throw new Error("resolveRelativePath: map segment on non-array");
+          return { error: 'MAP_SEGMENT_ON_NON_ARRAY', segment, acc };
         }
         acc = acc.map((item: any) => item[segment.key]);
       } else {
         if (typeof acc !== "object") {
-          throw new Error("current level is not an object but path segment is: " + segment + ", acc=" + JSON.stringify(acc));
+          return { error: 'PATH_NOT_OBJECT', segment, acc };
         }
         if (Array.isArray(acc) && (Number(segment) >= acc.length || Number(segment) < 0)) {
-          throw new Error(`path segment is an array index out of bounds: ${segment} in ${JSON.stringify(acc)}`);
+          return { error: 'PATH_ARRAY_INDEX_OUT_OF_BOUNDS', segment, acc };
         }
         if (!Array.isArray(acc) && !Object.hasOwn(acc, segment)) {
-          throw new Error(`path segment '${segment}' not found in object ${JSON.stringify(acc)}`);
+          return { error: 'PATH_SEGMENT_NOT_FOUND', segment, acc };
         }
         acc = acc[segment];
       }

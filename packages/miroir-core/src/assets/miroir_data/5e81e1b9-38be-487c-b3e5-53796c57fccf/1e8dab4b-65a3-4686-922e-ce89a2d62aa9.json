@@ -156,11 +156,35 @@
                       "optional": true,
                       "definition": [
                         { "type": "string" },
-                        { "type": "object", "definition": { "path": { "type": "string" } } }
+                        {
+                          "type": "object",
+                          "definition": {
+                            "path": {
+                              "type": "union",
+                              "definition": [
+                                {
+                                  "type": "string"
+                                },
+                                {
+                                  "type": "object",
+                                  "definition": {
+                                    "defaultValuePath": {
+                                      "type": "string"
+                                    },
+                                    "typeCheckPath": {
+                                      "type": "string"
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
                       ]
                     },
                     "mmlsReference": {
                       "type": "object",
+                      "optional": true,
                       "definition": {
                         "absolutePath": {
                           "type": "string",
@@ -318,11 +342,35 @@
                         "optional": true,
                         "definition": [
                           { "type": "string" },
-                          { "type": "object", "definition": { "path": { "type": "string" } } }
+                          {
+                            "type": "object",
+                            "definition": {
+                              "path": {
+                                "type": "union",
+                                "definition": [
+                                  {
+                                    "type": "string"
+                                  },
+                                  {
+                                    "type": "object",
+                                    "definition": {
+                                      "defaultValuePath": {
+                                        "type": "string"
+                                      },
+                                      "typeCheckPath": {
+                                        "type": "string"
+                                      }
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          }
                         ]
                       },
                       "mmlsReference": {
                         "type": "object",
+                        "optional": true,
                         "definition": {
                           "absolutePath": {
                             "type": "string",

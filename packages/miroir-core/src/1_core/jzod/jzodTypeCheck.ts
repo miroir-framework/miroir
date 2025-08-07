@@ -28,6 +28,7 @@ import { jzodObjectFlatten } from "./jzodObjectFlatten";
 import { getObjectUniondiscriminatorValuesFromResolvedSchema } from "./getObjectUniondiscriminatorValuesFromResolvedSchema";
 import { resolveConditionalSchema } from "./resolveConditionalSchema";
 import { Uuid } from "../../0_interfaces/1_core/EntityDefinition";
+import { ReduxDeploymentsState } from "../../0_interfaces/2_domain/ReduxDeploymentsStateInterface";
 
 // export const miroirFundamentalJzodSchema2 = miroirFundamentalJzodSchema;
 // import { miroirFundamentalJzodSchema } from "../tmp/src/0_interfaces/1_core/bootstrapJzodSchemas/miroirFundamentalJzodSchema";
@@ -769,11 +770,12 @@ export function jzodTypeCheck(
   // 
   currentDefaultValue?: any,
   // currentValuePath: string[],
-  getEntityInstancesUuidIndex?: (
-    deploymentUuid: Uuid,
-    entityUuid: Uuid,
-    sortBy?: string
-  ) => EntityInstancesUuidIndex,
+  reduxDeploymentsState: ReduxDeploymentsState | undefined = undefined,
+  // getEntityInstancesUuidIndex?: (
+  //   deploymentUuid: Uuid,
+  //   entityUuid: Uuid,
+  //   sortBy?: string
+  // ) => EntityInstancesUuidIndex,
   deploymentUuid?: string,
   rootObject?: any // Optional parameter for backward compatibility
 ): ResolvedJzodSchemaReturnType {
@@ -815,19 +817,41 @@ export function jzodTypeCheck(
     };
   }
 
-  const effectiveSchema: JzodElement = 
+
+  let effectiveSchemaOrError: JzodElement | import("./resolveConditionalSchema").ResolveConditionalSchemaError =
     currentDefaultValue &&
     currentValuePath &&
-    getEntityInstancesUuidIndex &&
+    reduxDeploymentsState &&
     deploymentUuid ?
       resolveConditionalSchema(
         jzodSchema,
         rootObject || currentDefaultValue, // Use rootObject if provided, fallback to currentDefaultValue
         currentValuePath as string[],
-        getEntityInstancesUuidIndex,
+        reduxDeploymentsState,
         deploymentUuid,
         'typeCheck' // Specify this is for type checking
-      ): jzodSchema;
+      ) : jzodSchema;
+
+  if ('error' in effectiveSchemaOrError) {
+    return {
+      status: "error",
+      error: `jzodTypeCheck: resolveConditionalSchema returned error: ${effectiveSchemaOrError.error}`,
+      rawJzodSchemaType: jzodSchema.type,
+      valuePath: currentValuePath,
+      typePath: currentTypePath,
+      value: valueObject,
+      rawSchema: jzodSchema,
+      innerError: {
+        status: "error",
+        error: `resolveConditionalSchema error: ${effectiveSchemaOrError.error}` + ("details" in effectiveSchemaOrError ? `: ${effectiveSchemaOrError.details}` : ""),
+        valuePath: currentValuePath,
+        typePath: currentTypePath,
+        value: effectiveSchemaOrError, // embed the original error object for debugging
+        rawSchema: jzodSchema,
+      },
+    };
+  }
+  const effectiveSchema: JzodElement = effectiveSchemaOrError;
   
   switch (effectiveSchema?.type) {
     case "schemaReference": {
@@ -855,7 +879,8 @@ export function jzodTypeCheck(
         miroirMetaModel,
         newContext,
         currentDefaultValue,
-        getEntityInstancesUuidIndex,
+        reduxDeploymentsState,
+        // getEntityInstancesUuidIndex,
         deploymentUuid,
         rootObject
       );
@@ -939,7 +964,8 @@ export function jzodTypeCheck(
             miroirMetaModel,
             relativeReferenceJzodContext,
             currentDefaultValue,
-            getEntityInstancesUuidIndex,
+            reduxDeploymentsState,
+            // getEntityInstancesUuidIndex,
             deploymentUuid,
             rootObject
           );
@@ -1227,7 +1253,8 @@ export function jzodTypeCheck(
               miroirMetaModel,
               relativeReferenceJzodContext,
               currentDefaultValue,
-              getEntityInstancesUuidIndex,
+              reduxDeploymentsState,
+              // getEntityInstancesUuidIndex,
               deploymentUuid,
               rootObject
             );
@@ -1304,7 +1331,8 @@ export function jzodTypeCheck(
             miroirMetaModel,
             relativeReferenceJzodContext,
             currentDefaultValue,
-            getEntityInstancesUuidIndex,
+            reduxDeploymentsState,
+            // getEntityInstancesUuidIndex,
             deploymentUuid,
             rootObject
           );
@@ -1408,7 +1436,8 @@ export function jzodTypeCheck(
               miroirMetaModel,
               relativeReferenceJzodContext,
               currentDefaultValue,
-              getEntityInstancesUuidIndex,
+              reduxDeploymentsState,
+              // getEntityInstancesUuidIndex,
               deploymentUuid,
               rootObject
             );
@@ -1577,7 +1606,8 @@ export function jzodTypeCheck(
             miroirMetaModel,
             relativeReferenceJzodContext,
             currentDefaultValue,
-            getEntityInstancesUuidIndex,
+            reduxDeploymentsState,
+            // getEntityInstancesUuidIndex,
             deploymentUuid,
             rootObject
           );
@@ -1672,7 +1702,8 @@ export function jzodTypeCheck(
             miroirMetaModel,
             relativeReferenceJzodContext,
             currentDefaultValue,
-            getEntityInstancesUuidIndex,
+            reduxDeploymentsState,
+            // getEntityInstancesUuidIndex,
             deploymentUuid,
             rootObject
           );
@@ -1936,6 +1967,7 @@ export function jzodTypeCheck(
     case "promise":
     case "set":
     case "function":
+   
     case "map":
     // case "simpleType":
     case "lazy": {

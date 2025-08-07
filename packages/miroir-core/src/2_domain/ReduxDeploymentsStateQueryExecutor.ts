@@ -5,6 +5,7 @@ import {
 } from "../0_interfaces/2_domain/ExtractorRunnerInterface";
 
 import {
+  EntityInstance,
   EntityInstancesUuidIndex
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
@@ -99,7 +100,8 @@ export function getEntityInstancesUuidIndexNonHook(
   currentDeploymentUuid: Uuid,
   targetEntity: Uuid,
   orderBy?: string
-): EntityInstancesUuidIndex {
+// ): EntityInstancesUuidIndex {
+): EntityInstance[] {
   log.info(
     "getEntityInstancesUuidIndexNonHook called with",
     "deploymentEntityState",
@@ -138,7 +140,8 @@ export function getEntityInstancesUuidIndexNonHook(
   );
   
   // Execute query
-  const result = executeReduxDeploymentsStateQuery<Record<string, EntityInstancesUuidIndex>>(
+  // const result = executeReduxDeploymentsStateQuery<Record<string, EntityInstancesUuidIndex>>(
+  const result = executeReduxDeploymentsStateQuery<Record<string, EntityInstance[]>>(
     deploymentEntityState,
     queryParams,
     selectorMap

@@ -109,22 +109,22 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
     getMemoizedReduxDeploymentsStateSelectorMap();
   
   // const deploymentEntityState: ReduxDeploymentsState = useSelector(selectCurrentReduxDeploymentsStateFromReduxState);
-  const deploymentEntityState: ReduxDeploymentsState = useSelector(
+  const reduxDeploymentsState: ReduxDeploymentsState = useSelector(
     (state: ReduxStateWithUndoRedo) =>
       deploymentEntityStateSelectorMap.extractState(state.presentModelSnapshot.current, () => ({}))
   );
 
   // Create a function to get entity instances for conditional schema resolution
-  const getEntityInstancesUuidIndex = useMemo(() => {
-    return (targetDeploymentUuid: Uuid, entityUuid: Uuid, sortBy?: string): EntityInstancesUuidIndex => {
-      return getEntityInstancesUuidIndexNonHook(
-        deploymentEntityState,
-        targetDeploymentUuid,
-        entityUuid,
-        sortBy
-      );
-    };
-  }, [deploymentEntityState]);
+  // const getEntityInstancesUuidIndex = useMemo(() => {
+  //   return (targetDeploymentUuid: Uuid, entityUuid: Uuid, sortBy?: string): EntityInstancesUuidIndex => {
+  //     return getEntityInstancesUuidIndexNonHook(
+  //       reduxDeploymentsState,
+  //       targetDeploymentUuid,
+  //       entityUuid,
+  //       sortBy
+  //     );
+  //   };
+  // }, [reduxDeploymentsState]);
 
   log.info(
     "TypedValueObjectEditor render",
@@ -163,8 +163,8 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
                 valueObjectMMLSchema &&
                 formik.values &&
                 currentModel
-                  // ? measuredJzodTypeCheck(
-                  ? jzodTypeCheck(
+                  ? // ? measuredJzodTypeCheck(
+                    jzodTypeCheck(
                       valueObjectMMLSchema,
                       formik.values,
                       [],
@@ -174,7 +174,8 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
                       currentMiroirModel,
                       {}, // relativeReferenceJzodContext
                       formik.values, // currentDefaultValue
-                      getEntityInstancesUuidIndex, // Now passing the actual function
+                      reduxDeploymentsState,
+                      // getEntityInstancesUuidIndex, // Now passing the actual function
                       deploymentUuid, // Now passing the actual deploymentUuid
                       formik.values // rootObject - for resolving conditional schemas
                     )

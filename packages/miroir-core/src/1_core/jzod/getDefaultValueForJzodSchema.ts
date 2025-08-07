@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { DomainState } from '../../0_interfaces/2_domain/DomainControllerInterface';
 import { Uuid } from '../../0_interfaces/1_core/EntityDefinition';
 import {
+  EntityInstance,
   EntityInstancesUuidIndex,
   JzodElement,
   JzodSchema,
@@ -31,12 +32,7 @@ export function getDefaultValueForJzodSchemaWithResolution(
   jzodSchema: JzodElement,
   currentDefaultValue: any = undefined,
   currentValuePath: string[] = [],
-  getEntityInstancesUuidIndex:((
-    deploymentUuid: Uuid,
-    entityUuid: Uuid,
-    sortBy?: string
-  ) => EntityInstancesUuidIndex) | undefined = undefined,
-  // domainState: DomainState | undefined = undefined,
+  reduxDeploymentsState: ReduxDeploymentsState | undefined = undefined,
   forceOptional: boolean = false,
   deploymentUuid: Uuid | undefined,
   miroirFundamentalJzodSchema: JzodSchema,
@@ -60,16 +56,25 @@ export function getDefaultValueForJzodSchemaWithResolution(
     deploymentUuid,
   );
 
-  let effectiveSchema: JzodElement = resolveConditionalSchema(
+  let effectiveSchemaOrError = resolveConditionalSchema(
     jzodSchema,
     rootObject || currentDefaultValue, // Use rootObject if provided, fallback to currentDefaultValue
     currentValuePath,
-    getEntityInstancesUuidIndex,
+    reduxDeploymentsState,
+    // getEntityInstancesUuidIndex,
     deploymentUuid,
     'defaultValue' // Specify this is for default value generation
   );
 
-  //  = jzodSchema.tag && jzodSchema.tag.value?.conditionalMMLS? jzodSchema:jzodSchema as JzodElement;
+  if ('error' in effectiveSchemaOrError) {
+    log.error(
+      "getDefaultValueForJzodSchemaWithResolution: resolveConditionalSchema returned error",
+      effectiveSchemaOrError
+    );
+    return undefined; // or propagate error as needed
+  }
+  let effectiveSchema: JzodElement = effectiveSchemaOrError;
+
   if (effectiveSchema.optional && !forceOptional) {
     return undefined;
   }
@@ -152,7 +157,7 @@ export function getDefaultValueForJzodSchemaWithResolution(
             a[1],
             result,
             currentValuePath.concat([a[0]]),
-            getEntityInstancesUuidIndex,
+            reduxDeploymentsState,
             forceOptional,
             deploymentUuid,
             // deploymentEntityStateSelectorMap,
@@ -249,9 +254,9 @@ export function getDefaultValueForJzodSchemaWithResolution(
         effectiveSchema.tag.value.selectorParams &&
         effectiveSchema.tag.value.selectorParams.targetEntity
       ) {
-        if (!getEntityInstancesUuidIndex) {
+        if (!reduxDeploymentsState) {
           throw new Error(
-            "getDefaultValueForJzodSchemaWithResolution called with UUID foreign key but no getEntityInstancesUuidIndex function provided"
+            "getDefaultValueForJzodSchemaWithResolution called with UUID foreign key but no reduxDeploymentsState provided"
           );
         }
         if (!deploymentUuid) {
@@ -259,11 +264,19 @@ export function getDefaultValueForJzodSchemaWithResolution(
             "getDefaultValueForJzodSchemaWithResolution called with UUID foreign key but no deploymentUuid provided"
           );
         }
-        const foreignKeyObjects: EntityInstancesUuidIndex = getEntityInstancesUuidIndex(
+        const foreignKeyObjects: EntityInstance[] = getEntityInstancesUuidIndexNonHook(
+          reduxDeploymentsState,
           deploymentUuid,
           effectiveSchema.tag.value.selectorParams.targetEntity,
           effectiveSchema.tag.value.selectorParams.targetEntityOrderInstancesBy
+          // sortBy
         );
+
+        // const foreignKeyObjects: EntityInstancesUuidIndex = getEntityInstancesUuidIndex(
+        //   deploymentUuid,
+        //   effectiveSchema.tag.value.selectorParams.targetEntity,
+        //   effectiveSchema.tag.value.selectorParams.targetEntityOrderInstancesBy
+        // );
         const result = Object.values(foreignKeyObjects)[0]?.uuid;
         log.info(
           "getDefaultValueForJzodSchemaWithResolution returning default UUID value from foreign key",
@@ -319,7 +332,7 @@ export function getDefaultValueForJzodSchemaWithResolution(
         resolvedReference,
         currentDefaultValue,
         currentValuePath,
-        getEntityInstancesUuidIndex,
+        reduxDeploymentsState,
         forceOptional,
         deploymentUuid,
         // applicationSection,
@@ -352,7 +365,7 @@ export function getDefaultValueForJzodSchemaWithResolution(
           effectiveSchema.definition[0],
           currentDefaultValue,
           currentValuePath,
-          getEntityInstancesUuidIndex,
+          reduxDeploymentsState,
           forceOptional,
           deploymentUuid,
           miroirFundamentalJzodSchema,
@@ -411,7 +424,7 @@ export function getDefaultValueForJzodSchemaWithResolutionNonHook(
   jzodSchema: JzodElement,
   currentDefaultValue: any = undefined,
   currentValuePath: string[] = [],
-  deploymentEntityState: ReduxDeploymentsState | undefined = undefined,
+  reduxDeploymentsState: ReduxDeploymentsState | undefined = undefined,
   forceOptional: boolean = false,
   deploymentUuid: Uuid | undefined,
   miroirFundamentalJzodSchema: JzodSchema,
@@ -436,11 +449,11 @@ export function getDefaultValueForJzodSchemaWithResolutionNonHook(
     currentDefaultValue,
     "currentValuePath",
     currentValuePath,
-    "deploymentEntityState", deploymentEntityState,
+    "reduxDeploymentsState", reduxDeploymentsState,
   );
 
   // Create a function that uses the deployment entity state directly
-  if (deploymentUuid == undefined || deploymentUuid.length < 8 || !deploymentEntityState) {
+  if (deploymentUuid == undefined || deploymentUuid.length < 8 || !reduxDeploymentsState) {
     // return undefined;
     return getDefaultValueForJzodSchemaWithResolution(
       rootLessListKey,
@@ -457,27 +470,27 @@ export function getDefaultValueForJzodSchemaWithResolutionNonHook(
       rootObject
     );
   }
-  const getEntityInstancesUuidIndex = (
-    deploymentUuid: Uuid,
-    entityUuid: Uuid,
-    sortBy?: string
-  ): EntityInstancesUuidIndex => {
-    log.info(
-      "getEntityInstancesUuidIndex called with",
-      "deploymentUuid",
-      deploymentUuid,
-      "entityUuid",
-      entityUuid,
-      "sortBy",
-      sortBy
-    );
-    return getEntityInstancesUuidIndexNonHook(
-      deploymentEntityState,
-      deploymentUuid,
-      entityUuid,
-      sortBy
-    );
-  };
+  // const getEntityInstancesUuidIndex = (
+  //   deploymentUuid: Uuid,
+  //   entityUuid: Uuid,
+  //   sortBy?: string
+  // ): EntityInstancesUuidIndex => {
+  //   log.info(
+  //     "getEntityInstancesUuidIndex called with",
+  //     "deploymentUuid",
+  //     deploymentUuid,
+  //     "entityUuid",
+  //     entityUuid,
+  //     "sortBy",
+  //     sortBy
+  //   );
+  //   return getEntityInstancesUuidIndexNonHook(
+  //     deploymentEntityState,
+  //     deploymentUuid,
+  //     entityUuid,
+  //     sortBy
+  //   );
+  // };
 
   // Call the original function with our new getter
   return getDefaultValueForJzodSchemaWithResolution(
@@ -485,7 +498,7 @@ export function getDefaultValueForJzodSchemaWithResolutionNonHook(
     jzodSchema,
     currentDefaultValue,
     currentValuePath,
-    getEntityInstancesUuidIndex,
+    reduxDeploymentsState,
     forceOptional,
     deploymentUuid,
     miroirFundamentalJzodSchema,

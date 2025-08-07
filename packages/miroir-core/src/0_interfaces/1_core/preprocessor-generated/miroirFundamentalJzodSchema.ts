@@ -170,7 +170,23 @@ export const miroirFundamentalJzodSchema = {
                           "type": "object",
                           "definition": {
                             "path": {
-                              "type": "string"
+                              "type": "union",
+                              "definition": [
+                                {
+                                  "type": "string"
+                                },
+                                {
+                                  "type": "object",
+                                  "definition": {
+                                    "defaultValuePath": {
+                                      "type": "string"
+                                    },
+                                    "typeCheckPath": {
+                                      "type": "string"
+                                    }
+                                  }
+                                }
+                              ]
                             }
                           }
                         }
@@ -178,6 +194,7 @@ export const miroirFundamentalJzodSchema = {
                     },
                     "mmlsReference": {
                       "type": "object",
+                      "optional": true,
                       "definition": {
                         "absolutePath": {
                           "type": "string",
@@ -349,7 +366,23 @@ export const miroirFundamentalJzodSchema = {
                             "type": "object",
                             "definition": {
                               "path": {
-                                "type": "string"
+                                "type": "union",
+                                "definition": [
+                                  {
+                                    "type": "string"
+                                  },
+                                  {
+                                    "type": "object",
+                                    "definition": {
+                                      "defaultValuePath": {
+                                        "type": "string"
+                                      },
+                                      "typeCheckPath": {
+                                        "type": "string"
+                                      }
+                                    }
+                                  }
+                                ]
                               }
                             }
                           }
@@ -357,6 +390,7 @@ export const miroirFundamentalJzodSchema = {
                       },
                       "mmlsReference": {
                         "type": "object",
+                        "optional": true,
                         "definition": {
                           "absolutePath": {
                             "type": "string",
@@ -18336,6 +18370,39 @@ export const miroirFundamentalJzodSchema = {
                                       "type": "string"
                                     },
                                     {
+                                      "type": "object",
+                                      "definition": {
+                                        "defaultValuePath": {
+                                          "type": "union",
+                                          "definition": [
+                                            {
+                                              "type": "string"
+                                            },
+                                            {
+                                              "type": "schemaReference",
+                                              "definition": {
+                                                "relativePath": "transformerForBuildCarryOnObject"
+                                              }
+                                            }
+                                          ]
+                                        },
+                                        "typeCheckPath": {
+                                          "type": "union",
+                                          "definition": [
+                                            {
+                                              "type": "string"
+                                            },
+                                            {
+                                              "type": "schemaReference",
+                                              "definition": {
+                                                "relativePath": "transformerForBuildCarryOnObject"
+                                              }
+                                            }
+                                          ]
+                                        }
+                                      }
+                                    },
+                                    {
                                       "type": "schemaReference",
                                       "definition": {
                                         "relativePath": "transformerForBuildCarryOnObject"
@@ -18354,6 +18421,7 @@ export const miroirFundamentalJzodSchema = {
                           ]
                         },
                         "mmlsReference": {
+                          "optional": true,
                           "type": "union",
                           "definition": [
                             {
@@ -18871,6 +18939,39 @@ export const miroirFundamentalJzodSchema = {
                                                 "type": "string"
                                               },
                                               {
+                                                "type": "object",
+                                                "definition": {
+                                                  "defaultValuePath": {
+                                                    "type": "union",
+                                                    "definition": [
+                                                      {
+                                                        "type": "string"
+                                                      },
+                                                      {
+                                                        "type": "schemaReference",
+                                                        "definition": {
+                                                          "relativePath": "transformerForBuildCarryOnObject"
+                                                        }
+                                                      }
+                                                    ]
+                                                  },
+                                                  "typeCheckPath": {
+                                                    "type": "union",
+                                                    "definition": [
+                                                      {
+                                                        "type": "string"
+                                                      },
+                                                      {
+                                                        "type": "schemaReference",
+                                                        "definition": {
+                                                          "relativePath": "transformerForBuildCarryOnObject"
+                                                        }
+                                                      }
+                                                    ]
+                                                  }
+                                                }
+                                              },
+                                              {
                                                 "type": "schemaReference",
                                                 "definition": {
                                                   "relativePath": "transformerForBuildCarryOnObject"
@@ -18889,6 +18990,7 @@ export const miroirFundamentalJzodSchema = {
                                     ]
                                   },
                                   "mmlsReference": {
+                                    "optional": true,
                                     "type": "union",
                                     "definition": [
                                       {
@@ -40589,6 +40691,39 @@ export const miroirFundamentalJzodSchema = {
                                       "type": "string"
                                     },
                                     {
+                                      "type": "object",
+                                      "definition": {
+                                        "defaultValuePath": {
+                                          "type": "union",
+                                          "definition": [
+                                            {
+                                              "type": "string"
+                                            },
+                                            {
+                                              "type": "schemaReference",
+                                              "definition": {
+                                                "relativePath": "transformerForBuildCarryOnObject"
+                                              }
+                                            }
+                                          ]
+                                        },
+                                        "typeCheckPath": {
+                                          "type": "union",
+                                          "definition": [
+                                            {
+                                              "type": "string"
+                                            },
+                                            {
+                                              "type": "schemaReference",
+                                              "definition": {
+                                                "relativePath": "transformerForBuildCarryOnObject"
+                                              }
+                                            }
+                                          ]
+                                        }
+                                      }
+                                    },
+                                    {
                                       "type": "schemaReference",
                                       "definition": {
                                         "relativePath": "transformerForBuildCarryOnObject"
@@ -40607,6 +40742,7 @@ export const miroirFundamentalJzodSchema = {
                           ]
                         },
                         "mmlsReference": {
+                          "optional": true,
                           "type": "union",
                           "definition": [
                             {
@@ -41107,6 +41243,39 @@ export const miroirFundamentalJzodSchema = {
                                           "type": "string"
                                         },
                                         {
+                                          "type": "object",
+                                          "definition": {
+                                            "defaultValuePath": {
+                                              "type": "union",
+                                              "definition": [
+                                                {
+                                                  "type": "string"
+                                                },
+                                                {
+                                                  "type": "schemaReference",
+                                                  "definition": {
+                                                    "relativePath": "transformerForBuildCarryOnObject"
+                                                  }
+                                                }
+                                              ]
+                                            },
+                                            "typeCheckPath": {
+                                              "type": "union",
+                                              "definition": [
+                                                {
+                                                  "type": "string"
+                                                },
+                                                {
+                                                  "type": "schemaReference",
+                                                  "definition": {
+                                                    "relativePath": "transformerForBuildCarryOnObject"
+                                                  }
+                                                }
+                                              ]
+                                            }
+                                          }
+                                        },
+                                        {
                                           "type": "schemaReference",
                                           "definition": {
                                             "relativePath": "transformerForBuildCarryOnObject"
@@ -41125,6 +41294,7 @@ export const miroirFundamentalJzodSchema = {
                               ]
                             },
                             "mmlsReference": {
+                              "optional": true,
                               "type": "union",
                               "definition": [
                                 {
@@ -41642,6 +41812,39 @@ export const miroirFundamentalJzodSchema = {
                                                     "type": "string"
                                                   },
                                                   {
+                                                    "type": "object",
+                                                    "definition": {
+                                                      "defaultValuePath": {
+                                                        "type": "union",
+                                                        "definition": [
+                                                          {
+                                                            "type": "string"
+                                                          },
+                                                          {
+                                                            "type": "schemaReference",
+                                                            "definition": {
+                                                              "relativePath": "transformerForBuildCarryOnObject"
+                                                            }
+                                                          }
+                                                        ]
+                                                      },
+                                                      "typeCheckPath": {
+                                                        "type": "union",
+                                                        "definition": [
+                                                          {
+                                                            "type": "string"
+                                                          },
+                                                          {
+                                                            "type": "schemaReference",
+                                                            "definition": {
+                                                              "relativePath": "transformerForBuildCarryOnObject"
+                                                            }
+                                                          }
+                                                        ]
+                                                      }
+                                                    }
+                                                  },
+                                                  {
                                                     "type": "schemaReference",
                                                     "definition": {
                                                       "relativePath": "transformerForBuildCarryOnObject"
@@ -41660,6 +41863,7 @@ export const miroirFundamentalJzodSchema = {
                                         ]
                                       },
                                       "mmlsReference": {
+                                        "optional": true,
                                         "type": "union",
                                         "definition": [
                                           {
@@ -48617,7 +48821,23 @@ export const miroirFundamentalJzodSchema = {
                           "type": "object",
                           "definition": {
                             "path": {
-                              "type": "string"
+                              "type": "union",
+                              "definition": [
+                                {
+                                  "type": "string"
+                                },
+                                {
+                                  "type": "object",
+                                  "definition": {
+                                    "defaultValuePath": {
+                                      "type": "string"
+                                    },
+                                    "typeCheckPath": {
+                                      "type": "string"
+                                    }
+                                  }
+                                }
+                              ]
                             }
                           }
                         }
@@ -48625,6 +48845,7 @@ export const miroirFundamentalJzodSchema = {
                     },
                     "mmlsReference": {
                       "type": "object",
+                      "optional": true,
                       "definition": {
                         "absolutePath": {
                           "type": "string",
@@ -48796,7 +49017,23 @@ export const miroirFundamentalJzodSchema = {
                             "type": "object",
                             "definition": {
                               "path": {
-                                "type": "string"
+                                "type": "union",
+                                "definition": [
+                                  {
+                                    "type": "string"
+                                  },
+                                  {
+                                    "type": "object",
+                                    "definition": {
+                                      "defaultValuePath": {
+                                        "type": "string"
+                                      },
+                                      "typeCheckPath": {
+                                        "type": "string"
+                                      }
+                                    }
+                                  }
+                                ]
                               }
                             }
                           }
@@ -48804,6 +49041,7 @@ export const miroirFundamentalJzodSchema = {
                       },
                       "mmlsReference": {
                         "type": "object",
+                        "optional": true,
                         "definition": {
                           "absolutePath": {
                             "type": "string",
@@ -56102,7 +56340,23 @@ export const miroirFundamentalJzodSchema = {
                           "type": "object",
                           "definition": {
                             "path": {
-                              "type": "string"
+                              "type": "union",
+                              "definition": [
+                                {
+                                  "type": "string"
+                                },
+                                {
+                                  "type": "object",
+                                  "definition": {
+                                    "defaultValuePath": {
+                                      "type": "string"
+                                    },
+                                    "typeCheckPath": {
+                                      "type": "string"
+                                    }
+                                  }
+                                }
+                              ]
                             }
                           }
                         }
@@ -56110,6 +56364,7 @@ export const miroirFundamentalJzodSchema = {
                     },
                     "mmlsReference": {
                       "type": "object",
+                      "optional": true,
                       "definition": {
                         "absolutePath": {
                           "type": "string",
@@ -56281,7 +56536,23 @@ export const miroirFundamentalJzodSchema = {
                             "type": "object",
                             "definition": {
                               "path": {
-                                "type": "string"
+                                "type": "union",
+                                "definition": [
+                                  {
+                                    "type": "string"
+                                  },
+                                  {
+                                    "type": "object",
+                                    "definition": {
+                                      "defaultValuePath": {
+                                        "type": "string"
+                                      },
+                                      "typeCheckPath": {
+                                        "type": "string"
+                                      }
+                                    }
+                                  }
+                                ]
                               }
                             }
                           }
@@ -56289,6 +56560,7 @@ export const miroirFundamentalJzodSchema = {
                       },
                       "mmlsReference": {
                         "type": "object",
+                        "optional": true,
                         "definition": {
                           "absolutePath": {
                             "type": "string",
@@ -63541,7 +63813,23 @@ export const miroirFundamentalJzodSchema = {
                           "type": "object",
                           "definition": {
                             "path": {
-                              "type": "string"
+                              "type": "union",
+                              "definition": [
+                                {
+                                  "type": "string"
+                                },
+                                {
+                                  "type": "object",
+                                  "definition": {
+                                    "defaultValuePath": {
+                                      "type": "string"
+                                    },
+                                    "typeCheckPath": {
+                                      "type": "string"
+                                    }
+                                  }
+                                }
+                              ]
                             }
                           }
                         }
@@ -63549,6 +63837,7 @@ export const miroirFundamentalJzodSchema = {
                     },
                     "mmlsReference": {
                       "type": "object",
+                      "optional": true,
                       "definition": {
                         "absolutePath": {
                           "type": "string",
@@ -63720,7 +64009,23 @@ export const miroirFundamentalJzodSchema = {
                             "type": "object",
                             "definition": {
                               "path": {
-                                "type": "string"
+                                "type": "union",
+                                "definition": [
+                                  {
+                                    "type": "string"
+                                  },
+                                  {
+                                    "type": "object",
+                                    "definition": {
+                                      "defaultValuePath": {
+                                        "type": "string"
+                                      },
+                                      "typeCheckPath": {
+                                        "type": "string"
+                                      }
+                                    }
+                                  }
+                                ]
                               }
                             }
                           }
@@ -63728,6 +64033,7 @@ export const miroirFundamentalJzodSchema = {
                       },
                       "mmlsReference": {
                         "type": "object",
+                        "optional": true,
                         "definition": {
                           "absolutePath": {
                             "type": "string",

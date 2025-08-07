@@ -323,35 +323,40 @@ describe("resolveRelativePath", () => {
     expect(resolveRelativePath(obj, initialPath, path)).toBe(99);
   });
 
-  it("throws if parent reference goes above root", () => {
+  it("returns error if parent reference goes above root", () => {
     const initialPath: AbsolutePath = ["a", "b", 0];
     const path: AbsolutePath = ["#", "#", "#", "#"];
-    expect(() => resolveRelativePath(obj, initialPath, path)).toThrow("No parent to go up to with '#'");
+    const result = resolveRelativePath(obj, initialPath, path);
+    expect(result).toMatchObject({ error: 'NO_PARENT_TO_GO_UP' });
   });
 
-  it("throws if initialPath traverses non-array with map segment", () => {
+  it("returns error if initialPath traverses non-array with map segment", () => {
     const badObj = { foo: { bar: 1 } };
     const initialPath: AbsolutePath = ["foo", { type: "map", key: "bar" }];
     const path: AbsolutePath = [];
-    expect(() => resolveRelativePath(badObj, initialPath, path)).toThrow("Initial path traverses non-array with map segment");
+    const result = resolveRelativePath(badObj, initialPath, path);
+    expect(result).toMatchObject({ error: 'INITIAL_PATH_NON_ARRAY_MAP_SEGMENT' });
   });
 
-  it("throws if initialPath segment not found", () => {
+  it("returns error if initialPath segment not found", () => {
     const initialPath: AbsolutePath = ["a", "y"];
     const path: AbsolutePath = [];
-    expect(() => resolveRelativePath(obj, initialPath, path)).toThrow('path segment \'y\' not found in object {"b":[{"c":1,"d":{"e":10}},{"c":2,"d":{"e":20}}],"x":99}');
+    const result = resolveRelativePath(obj, initialPath, path);
+    expect(result).toMatchObject({ error: 'INITIAL_PATH_SEGMENT_NOT_FOUND' });
   });
 
-  it("throws if map segment on non-array in path", () => {
+  it("returns error if map segment on non-array in path", () => {
     const initialPath: AbsolutePath = ["a"];
     const path: AbsolutePath = [{ type: "map", key: "x" }];
-    expect(() => resolveRelativePath(obj, initialPath, path)).toThrow("resolveRelativePath: map segment on non-array");
+    const result = resolveRelativePath(obj, initialPath, path);
+    expect(result).toMatchObject({ error: 'MAP_SEGMENT_ON_NON_ARRAY' });
   });
 
-  it("throws if segment not found in path", () => {
+  it("returns error if segment not found in path", () => {
     const initialPath: AbsolutePath = ["a", "b", 0];
     const path: AbsolutePath = ["y"];
-    expect(() => resolveRelativePath(obj, initialPath, path)).toThrow('path segment \'y\' not found in object {"c":1,"d":{"e":10}}');
+    const result = resolveRelativePath(obj, initialPath, path);
+    expect(result).toMatchObject({ error: 'PATH_SEGMENT_NOT_FOUND' });
   });
 
   it("works with array map segment in initialPath", () => {

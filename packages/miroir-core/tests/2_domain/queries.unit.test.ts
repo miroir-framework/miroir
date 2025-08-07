@@ -30,7 +30,7 @@ import { DomainState } from "../../src/0_interfaces/2_domain/DomainControllerInt
 import domainStateImport from "./domainState.json";
 // import adminConfigurationDeploymentLibrary from "../../src/assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/f714bb2f-a12d-4e71-a03b-74dcedea6eb4.json" with { type: "json" };
 import adminConfigurationDeploymentLibrary from "../../src/assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/f714bb2f-a12d-4e71-a03b-74dcedea6eb4.json";
-import { ReduxDeploymentsState } from '../../src/0_interfaces/2_domain/DeploymentStateInterface.js';
+import { ReduxDeploymentsState } from '../../src/0_interfaces/2_domain/ReduxDeploymentsStateInterface';
 import { domainStateToReduxDeploymentsState, resolvePathOnObject } from '../../src/tools.js';
 import {
   getQueryTemplateRunnerParamsForDomainState,
