@@ -8,7 +8,7 @@ import {
   JzodSchema,
   MetaModel
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import { ReduxDeploymentsState } from '../../0_interfaces/2_domain/DeploymentStateInterface';
+import { ReduxDeploymentsState } from '../../0_interfaces/2_domain/ReduxDeploymentsStateInterface';
 import { LoggerInterface } from "../../0_interfaces/4-services/LoggerInterface";
 import { getEntityInstancesUuidIndexNonHook } from '../../2_domain/ReduxDeploymentsStateQueryExecutor';
 import { MiroirLoggerFactory } from "../../4_services/LoggerFactory";

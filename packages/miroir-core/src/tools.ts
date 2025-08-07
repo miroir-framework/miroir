@@ -1,6 +1,6 @@
 import { ZodTypeAny } from "zod";
 import { DomainState } from "./0_interfaces/2_domain/DomainControllerInterface";
-import { ReduxDeploymentsState } from "./0_interfaces/2_domain/DeploymentStateInterface";
+import { ReduxDeploymentsState } from "./0_interfaces/2_domain/ReduxDeploymentsStateInterface";
 import { getReduxDeploymentsStateIndex } from "./2_domain/ReduxDeploymentsState";
 import { ApplicationSection } from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 

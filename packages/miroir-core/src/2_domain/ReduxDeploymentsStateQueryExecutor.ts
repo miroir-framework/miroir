@@ -14,7 +14,7 @@ import {
 
 import {
   ReduxDeploymentsState,
-} from "../0_interfaces/2_domain/DeploymentStateInterface";
+} from "../0_interfaces/2_domain/ReduxDeploymentsStateInterface";
 
 import {
   Domain2QueryReturnType,

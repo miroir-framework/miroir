@@ -502,7 +502,7 @@ export {
   ReduxDeploymentsState,
   ZEntityState,
   ZEntityStateSchema,
-} from "./0_interfaces/2_domain/DeploymentStateInterface.js";
+} from "./0_interfaces/2_domain/ReduxDeploymentsStateInterface.js";
 export {
   CRUDActionName,
   CRUDActionNamesArray,

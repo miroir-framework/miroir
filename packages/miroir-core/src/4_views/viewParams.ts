@@ -3,7 +3,7 @@ import {
   EntityInstancesUuidIndex,
   DomainElementSuccess,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import { ReduxDeploymentsState } from "../0_interfaces/2_domain/DeploymentStateInterface";
+import { ReduxDeploymentsState } from "../0_interfaces/2_domain/ReduxDeploymentsStateInterface";
 import { Domain2QueryReturnType } from "../0_interfaces/2_domain/DomainElement";
 import {
   SyncQueryRunnerParams,
