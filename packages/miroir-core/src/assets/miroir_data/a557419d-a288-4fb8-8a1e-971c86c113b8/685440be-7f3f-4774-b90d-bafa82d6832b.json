@@ -5,6 +5,7 @@
   "name":"transformer_menu_addItem",
   "defaultLabel": "The Transformer adding an Item to a Menu.",
   "description": "This Transformer adds an Item to an existing Menu.",
+  "classification": "basic",
   "transformerInterface": {
     "transformerParameterSchema": {
       "transformerType": {

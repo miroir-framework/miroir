@@ -14,30 +14,12 @@ const domainState: DomainState = domainStateImport as DomainState;
 const reduxDeploymentsState: ReduxDeploymentsState = domainStateToReduxDeploymentsState(domainState);
 
 describe("resolveConditionalSchema", () => {
-  // const dummySchema: JzodElement = { type: "string" };
-  // const dummyRootObject = { foo: { bar: "baz" } };
   const testObject = { a: { b: "test" }, c: { d: "book", e: entityBook.uuid } };
-  // const dummyCurrentValuePath = ["foo", "bar"];
-  // const dummyReduxDeploymentsState = {} as ReduxDeploymentsState;
   const libraryDeploymentUuid = adminConfigurationDeploymentLibrary.uuid;
   const bookEntityUuid = entityBook.uuid;
-  // const dummyEntityDefinition: EntityDefinition = {
-  //   entityUuid: bookEntityUuid,
-  //   jzodSchema: { type: "number" } as JzodElement,
-  // } as EntityDefinition;
 
-  // let getEntityInstancesUuidIndexNonHookSpy: ReturnType<typeof vi.spyOn>;
-  // let loggerSpy: any;
-
-  beforeEach(() => {
-    // Mock logger
-    // loggerSpy = { info: vi.fn() };
-    // vi.spyOn(LoggerFactory.MiroirLoggerFactory, "registerLoggerToStart").mockResolvedValue(loggerSpy);
-
-    // Mock getEntityInstancesUuidIndexNonHook
-  //   getEntityInstancesUuidIndexNonHookSpy = vi.spyOn(QueryExecutor, "getEntityInstancesUuidIndexNonHook")
-  //     .mockReturnValue([dummyEntityDefinition]);
-  });
+  // beforeEach(() => {
+  // });
 
   it("returns the original schema if no conditionalMMLS tag is present", async () => {
     const schema: JzodElement = { type: "string" };
@@ -45,24 +27,14 @@ describe("resolveConditionalSchema", () => {
     expect(result).toBe(schema);
   });
 
-  // it("returns the original schema if conditionalMMLS tag is present but no parentUuid", async () => {
-  //   const schema: JzodElement = {
-  //     type: "string",
-  //     tag: { value: { conditionalMMLS: {} } }
-  //   };
-  //   const result = resolveConditionalSchema(schema, {}, [], undefined, undefined);
-  //   expect(result).toBe(schema);
-  // });
-
-  // it("throws if parentUuid is object but missing path/defaultValuePath/typeCheckPath", async () => {
-  //   const schema: JzodElement = {
-  //     type: "string",
-  //     tag: { value: { conditionalMMLS: { parentUuid: {} } } }
-  //   };
-  //   expect(() =>
-  //     resolveConditionalSchema(schema, {}, [], dummyReduxDeploymentsState, dummyDeploymentUuid)
-  //   ).toThrow(/neither path nor defaultValuePath\/typeCheckPath/);
-  // });
+  it("returns the original schema if conditionalMMLS tag is present but no parentUuid", async () => {
+    const schema: JzodElement = {
+      type: "string",
+      tag: { value: { conditionalMMLS: {} } }
+    };
+    const result = resolveConditionalSchema(schema, {}, [], undefined, undefined);
+    expect(result).toBe(schema);
+  });
 
   it("throws if reduxDeploymentsState is missing when parentUuid is present", async () => {
     const testSchema: JzodElement = {
