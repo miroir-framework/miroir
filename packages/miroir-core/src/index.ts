@@ -499,7 +499,7 @@ export {
   entityDefinitionEntityDefinitionSchema,
 } from "./0_interfaces/1_core/writtenByHandSchema.js";
 export {
-  DeploymentEntityState,
+  ReduxDeploymentsState,
   ZEntityState,
   ZEntityStateSchema,
 } from "./0_interfaces/2_domain/DeploymentStateInterface.js";
@@ -701,39 +701,39 @@ export {
   getBasicStoreUnitConfiguration,
 } from "./2_domain/Deployment.js";
 export {
-  getDeploymentEntityStateIndex,
+  getReduxDeploymentsStateIndex,
   getLocalCacheIndexDeploymentSection,
   getLocalCacheIndexDeploymentUuid,
   getLocalCacheIndexEntityUuid,
-} from "./2_domain/DeploymentEntityState.js";
+} from "./2_domain/ReduxDeploymentsState.js";
 export {
-  extractEntityJzodSchemaFromDeploymentEntityState,
-  getDeploymentEntityStateJzodSchemaSelectorMap,
-  getDeploymentEntityStateSelectorMap,
-  GetExtractorRunnerParamsForDeploymentEntityState,
-  getExtractorRunnerParamsForDeploymentEntityState,
-  GetQueryRunnerParamsForDeploymentEntityState,
-  getQueryRunnerParamsForDeploymentEntityState,
-  runQueryFromDeploymentEntityState,
-  selectEntityInstanceFromDeploymentEntityState,
-  selectEntityInstanceListFromDeploymentEntityState,
-  selectEntityInstanceUuidIndexFromDeploymentEntityState,
-} from "./2_domain/DeploymentEntityStateQuerySelectors.js";
+  extractEntityJzodSchemaFromReduxDeploymentsState,
+  getReduxDeploymentsStateJzodSchemaSelectorMap,
+  getReduxDeploymentsStateSelectorMap,
+  GetExtractorRunnerParamsForReduxDeploymentsState,
+  getExtractorRunnerParamsForReduxDeploymentsState,
+  GetQueryRunnerParamsForReduxDeploymentsState,
+  getQueryRunnerParamsForReduxDeploymentsState,
+  runQueryFromReduxDeploymentsState,
+  selectEntityInstanceFromReduxDeploymentsState,
+  selectEntityInstanceListFromReduxDeploymentsState,
+  selectEntityInstanceUuidIndexFromReduxDeploymentsState,
+} from "./2_domain/ReduxDeploymentsStateQuerySelectors.js";
 export {
-  createDeploymentEntityStateSelectorMap,
-  executeDeploymentEntityStateQuery,
+  createReduxDeploymentsStateSelectorMap,
+  executeReduxDeploymentsStateQuery,
   getEntityInstancesUuidIndexNonHook,
   getMultipleEntityInstancesUuidIndexNonHook,
-} from "./2_domain/DeploymentEntityStateQueryExecutor.js";
+} from "./2_domain/ReduxDeploymentsStateQueryExecutor.js";
 export {
-  getDeploymentEntityStateJzodSchemaSelectorTemplateMap,
-  getDeploymentEntityStateSelectorTemplateMap,
-  getExtractorTemplateRunnerParamsForDeploymentEntityState,
-  GetExtractorTemplateRunnerParamsForDeploymentEntityState,
-  getQueryTemplateRunnerParamsForDeploymentEntityState,
-  GetQueryTemplateRunnerParamsForDeploymentEntityState,
-  runQueryTemplateFromDeploymentEntityState,
-} from "./2_domain/DeploymentEntityStateQueryTemplateSelectors.js";
+  getReduxDeploymentsStateJzodSchemaSelectorTemplateMap,
+  getReduxDeploymentsStateSelectorTemplateMap,
+  getExtractorTemplateRunnerParamsForReduxDeploymentsState,
+  GetExtractorTemplateRunnerParamsForReduxDeploymentsState,
+  getQueryTemplateRunnerParamsForReduxDeploymentsState,
+  GetQueryTemplateRunnerParamsForReduxDeploymentsState,
+  runQueryTemplateFromReduxDeploymentsState,
+} from "./2_domain/ReduxDeploymentsStateQueryTemplateSelectors.js";
 export {
   selectCurrentDeploymentModel,
   selectEntityInstances,
@@ -886,7 +886,7 @@ export {
 export { miroirCoreStartup } from "./startup.js";
 export {
   circularReplacer,
-  domainStateToDeploymentEntityState,
+  domainStateToReduxDeploymentsState,
   resolvePathOnObject,
   AbsolutePath as ResultAccessPath,
   safeResolvePathOnObject,

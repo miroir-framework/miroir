@@ -1,26 +1,26 @@
 import { createSelector } from "@reduxjs/toolkit";
 import {
-  DeploymentEntityState,
+  ReduxDeploymentsState,
   QueryTemplateRunnerMapForJzodSchema,
   SyncBoxedExtractorOrQueryRunnerMap,
   extractEntityInstanceListWithObjectListExtractorInMemory,
   extractEntityInstanceUuidIndexWithObjectListExtractorInMemory,
-  extractEntityJzodSchemaFromDeploymentEntityState,
+  extractEntityJzodSchemaFromReduxDeploymentsState,
   extractFetchQueryJzodSchema,
   extractJzodSchemaForDomainModelQuery,
   extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList,
   runQueryTemplateWithExtractorCombinerTransformer,
   runQuery,
   extractzodSchemaForSingleSelectQuery,
-  selectEntityInstanceFromDeploymentEntityState,
-  selectEntityInstanceListFromDeploymentEntityState,
-  selectEntityInstanceUuidIndexFromDeploymentEntityState
+  selectEntityInstanceFromReduxDeploymentsState,
+  selectEntityInstanceListFromReduxDeploymentsState,
+  selectEntityInstanceUuidIndexFromReduxDeploymentsState
 } from "miroir-core";
 
-const deploymentEntityStateSelector = (domainState: DeploymentEntityState, params: any) => domainState;
-const deploymentEntityStateSelectorParams = (domainState: DeploymentEntityState, params: any) => params;
+const deploymentEntityStateSelector = (domainState: ReduxDeploymentsState, params: any) => domainState;
+const deploymentEntityStateSelectorParams = (domainState: ReduxDeploymentsState, params: any) => params;
 
-export function getMemoizedDeploymentEntityStateSelectorForTemplateMap(): SyncBoxedExtractorOrQueryRunnerMap<DeploymentEntityState> {
+export function getMemoizedReduxDeploymentsStateSelectorForTemplateMap(): SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> {
   return {
     extractorType: "sync",
     extractState: createSelector(
@@ -29,15 +29,15 @@ export function getMemoizedDeploymentEntityStateSelectorForTemplateMap(): SyncBo
     ),
     extractEntityInstance: createSelector(
       [deploymentEntityStateSelector, deploymentEntityStateSelectorParams],
-      selectEntityInstanceFromDeploymentEntityState
+      selectEntityInstanceFromReduxDeploymentsState
     ),
     extractEntityInstanceUuidIndex: createSelector(
       [deploymentEntityStateSelector, deploymentEntityStateSelectorParams],
-      selectEntityInstanceUuidIndexFromDeploymentEntityState
+      selectEntityInstanceUuidIndexFromReduxDeploymentsState
     ),
     extractEntityInstanceList: createSelector(
       [deploymentEntityStateSelector, deploymentEntityStateSelectorParams],
-      selectEntityInstanceListFromDeploymentEntityState
+      selectEntityInstanceListFromReduxDeploymentsState
     ),
     extractEntityInstanceUuidIndexWithObjectListExtractor: createSelector(
       [deploymentEntityStateSelector, deploymentEntityStateSelectorParams],
@@ -64,7 +64,7 @@ export function getMemoizedDeploymentEntityStateSelectorForTemplateMap(): SyncBo
   };
 }
 
-export function getMemoizedDeploymentEntityStateJzodSchemaSelectorTemplateMap(): QueryTemplateRunnerMapForJzodSchema<DeploymentEntityState> {
+export function getMemoizedReduxDeploymentsStateJzodSchemaSelectorTemplateMap(): QueryTemplateRunnerMapForJzodSchema<ReduxDeploymentsState> {
   return {
     extractJzodSchemaForDomainModelQuery: createSelector(
       [deploymentEntityStateSelector, deploymentEntityStateSelectorParams],
@@ -72,7 +72,7 @@ export function getMemoizedDeploymentEntityStateJzodSchemaSelectorTemplateMap():
     ),
     extractEntityJzodSchema: createSelector(
       [deploymentEntityStateSelector, deploymentEntityStateSelectorParams],
-      extractEntityJzodSchemaFromDeploymentEntityState
+      extractEntityJzodSchemaFromReduxDeploymentsState
     ),
     extractFetchQueryJzodSchema: createSelector(
       [deploymentEntityStateSelector, deploymentEntityStateSelectorParams],

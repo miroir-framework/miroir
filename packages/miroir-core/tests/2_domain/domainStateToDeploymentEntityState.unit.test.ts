@@ -6,23 +6,23 @@ import domainStateImport from "./domainState.json" assert { type: "json" };
 
 const domainState: DomainState = domainStateImport as DomainState;
 
-import { DeploymentEntityState } from "../../src/0_interfaces/2_domain/DeploymentStateInterface";
-import { domainStateToDeploymentEntityState } from "../../src/tools";
+import { ReduxDeploymentsState } from "../../src/0_interfaces/2_domain/DeploymentStateInterface";
+import { domainStateToReduxDeploymentsState } from "../../src/tools";
 // const env:any = (import.meta as any).env
 // console.log("@@@@@@@@@@@@@@@@@@ env", env);
 
 // console.log("@@@@@@@@@@@@@@@@@@ miroirConfig", miroirConfig);
 
 // describe.sequential("templatesDEFUNCT.unit.test", () => {
-describe("domainStateToDeploymentEntityState.unit.test", () => {
+describe("domainStateToReduxDeploymentsState.unit.test", () => {
   // ################################################################################################
-  it("domainStateToDeploymentEntityState", async () => 
+  it("domainStateToReduxDeploymentsState", async () => 
     {
       // TODO: test failure cases!
       console.log("transformer_menu_addItem START");
 
-      const result = domainStateToDeploymentEntityState(domainState);
-      const expectedResult: DeploymentEntityState = {
+      const result = domainStateToReduxDeploymentsState(domainState);
+      const expectedResult: ReduxDeploymentsState = {
         "10ff36f2-50a3-48d8-b80f-e48e5d13af8e_model_16dbfe28-e1d7-4f20-9ba4-c1a9873202ad": {
           ids: [
             "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",

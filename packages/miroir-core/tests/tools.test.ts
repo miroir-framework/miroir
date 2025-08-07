@@ -3,7 +3,7 @@ import {
 
 stringTuple,
 circularReplacer,
-domainStateToDeploymentEntityState,
+domainStateToReduxDeploymentsState,
 safeResolvePathOnObject,
 resolvePathOnObject,
 AbsolutePath,
@@ -36,8 +36,8 @@ describe("stringTuple", () => {
 //   });
 // });
 
-describe("domainStateToDeploymentEntityState", () => {
-  it("converts domainState to DeploymentEntityState", () => {
+describe("domainStateToReduxDeploymentsState", () => {
+  it("converts domainState to ReduxDeploymentsState", () => {
     const domainState = {
       dep1: {
         sectionA: {
@@ -48,7 +48,7 @@ describe("domainStateToDeploymentEntityState", () => {
         },
       },
     };
-    const result = domainStateToDeploymentEntityState(domainState as any);
+    const result = domainStateToReduxDeploymentsState(domainState as any);
     const keys = Object.keys(result);
     expect(keys.length).toBe(1);
     const state = result[keys[0]];

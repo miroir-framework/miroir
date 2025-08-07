@@ -3,7 +3,7 @@ import { useMemo, useState } from "react";
 
 
 import {
-  DeploymentEntityState,
+  ReduxDeploymentsState,
   Domain2QueryReturnType,
   DomainElementSuccess,
   EntityInstance,
@@ -19,15 +19,15 @@ import {
   adminConfigurationDeploymentMiroir,
   dummyDomainManyQueryWithDeploymentUuid,
   getApplicationSection,
-  getQueryRunnerParamsForDeploymentEntityState,
+  getQueryRunnerParamsForReduxDeploymentsState,
   resolvePathOnObject
 } from "miroir-core";
 import { JzodObject } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import { getMemoizedDeploymentEntityStateSelectorMap } from "miroir-localcache-redux";
+import { getMemoizedReduxDeploymentsStateSelectorMap } from "miroir-localcache-redux";
 import { packageName } from "../../../../constants";
 import { cleanLevel } from "../../constants";
 import { MiroirReactContext, useMiroirContextService } from "../../MiroirContextReactProvider";
-import { useCurrentModel, useDeploymentEntityStateQuerySelectorForCleanedResult } from "../../ReduxHooks";
+import { useCurrentModel, useReduxDeploymentsStateQuerySelectorForCleanedResult } from "../../ReduxHooks";
 import { JzodEditorPropsRoot, noValue } from "./JzodElementEditorInterface";
 import { getItemsOrder } from "../Themes/Style";
 
@@ -45,7 +45,7 @@ export interface JzodElementEditorHooks {
   currentModel: MetaModel;
   miroirMetaModel: MetaModel;
   // ??
-  deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<DeploymentEntityState>;
+  deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState>;
   // state
   formik: FormikProps<Record<string, any>>;
   currentValue: any; // current value of the jzod element
@@ -136,13 +136,13 @@ export function useJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
       [localResolvedElementJzodSchemaBasedOnValue, currentValue]
     );
     
-  const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<DeploymentEntityState> =
-    useMemo(() => getMemoizedDeploymentEntityStateSelectorMap(), []);
+  const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> =
+    useMemo(() => getMemoizedReduxDeploymentsStateSelectorMap(), []);
 
   // ######################### foreignKeyObjects #########################
-  const foreignKeyObjectsFetchQueryParams: SyncQueryRunnerParams<DeploymentEntityState> = useMemo(
+  const foreignKeyObjectsFetchQueryParams: SyncQueryRunnerParams<ReduxDeploymentsState> = useMemo(
     () =>
-      getQueryRunnerParamsForDeploymentEntityState(
+      getQueryRunnerParamsForReduxDeploymentsState(
         props.currentDeploymentUuid &&
         currentTypecheckKeyMap &&
         currentTypecheckKeyMap.rawSchema &&
@@ -177,9 +177,9 @@ export function useJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
   );
 
   const foreignKeyObjects: Record<string, EntityInstancesUuidIndex> =
-    useDeploymentEntityStateQuerySelectorForCleanedResult(
+    useReduxDeploymentsStateQuerySelectorForCleanedResult(
       deploymentEntityStateSelectorMap.runQuery as SyncQueryRunner<
-        DeploymentEntityState,
+        ReduxDeploymentsState,
         Domain2QueryReturnType<DomainElementSuccess>
       >,
       foreignKeyObjectsFetchQueryParams

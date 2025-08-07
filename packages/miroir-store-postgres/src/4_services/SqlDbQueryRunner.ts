@@ -489,7 +489,7 @@ export class SqlDbQueryRunner {
       }
       case "extractorForObjectByDirectReference": {
         const instanceDomainElement = querySelectorParams.instanceUuid
-        // log.info("selectEntityInstanceFromDeploymentEntityStateForTemplate extractorForObjectByDirectReference found domainState", JSON.stringify(domainState))
+        // log.info("selectEntityInstanceFromReduxDeploymentsStateForTemplate extractorForObjectByDirectReference found domainState", JSON.stringify(domainState))
 
         log.info(
           "extractEntityInstance found instanceUuid",

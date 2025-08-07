@@ -59,7 +59,7 @@ import {
   defaultAdminViewParams,
   defaultMiroirMetaModel,
   defaultViewParamsFromAdminStorageFetchQueryParams,
-  DeploymentEntityState,
+  ReduxDeploymentsState,
   Domain2ElementFailed,
   Domain2QueryReturnType,
   DomainControllerInterface,
@@ -68,7 +68,7 @@ import {
   entityDeployment,
   EntityInstancesUuidIndex,
   entityViewParams,
-  getQueryRunnerParamsForDeploymentEntityState,
+  getQueryRunnerParamsForReduxDeploymentsState,
   LoggerInterface,
   MetaModel,
   miroirFundamentalJzodSchema,
@@ -83,7 +83,7 @@ import {
   AppTheme,
   ViewParamsData
 } from "miroir-core";
-import { getMemoizedDeploymentEntityStateSelectorMap, ReduxStateChanges } from "miroir-localcache-redux";
+import { getMemoizedReduxDeploymentsStateSelectorMap, ReduxStateChanges } from "miroir-localcache-redux";
 
 import {
   useDomainControllerService,
@@ -101,7 +101,7 @@ import { cleanLevel } from '../../constants.js';
 import { Sidebar } from "./Sidebar.js";
 import { SidebarWidth } from "./SidebarSection.js";
 import { InstanceEditorOutline } from '../InstanceEditorOutline.js';
-import { useCurrentModel, useDeploymentEntityStateQuerySelectorForCleanedResult } from "../../ReduxHooks.js";
+import { useCurrentModel, useReduxDeploymentsStateQuerySelectorForCleanedResult } from "../../ReduxHooks.js";
 import { ViewParamsUpdateQueue, ViewParamsUpdateQueueConfig } from '../ViewParamsUpdateQueue.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -519,23 +519,23 @@ export const RootComponent = (props: RootComponentProps) => {
     [isOutlineOpen, outlineWidth, outlineData, outlineTitle, handleToggleOutline, handleNavigateToPath]
   );
 
-  const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<DeploymentEntityState> =
-  useMemo(() => getMemoizedDeploymentEntityStateSelectorMap(), []);
+  const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> =
+  useMemo(() => getMemoizedReduxDeploymentsStateSelectorMap(), []);
 
   // Stabilize query params to prevent unnecessary selector re-runs
   const stableQueryParams = useMemo(
     () => currentModel?.entities?.length > 0
       ? defaultViewParamsFromAdminStorageFetchQueryParams(deploymentEntityStateSelectorMap)
-      : getQueryRunnerParamsForDeploymentEntityState(dummyDomainManyQueryWithDeploymentUuid),
+      : getQueryRunnerParamsForReduxDeploymentsState(dummyDomainManyQueryWithDeploymentUuid),
     [currentModel?.entities?.length, deploymentEntityStateSelectorMap]
   );
 
   const defaultViewParamsFromAdminStorageFetchQueryResults: Record<
     string,
     EntityInstancesUuidIndex
-  > = useDeploymentEntityStateQuerySelectorForCleanedResult(
+  > = useReduxDeploymentsStateQuerySelectorForCleanedResult(
     deploymentEntityStateSelectorMap.runQuery as SyncQueryRunner<
-      DeploymentEntityState,
+      ReduxDeploymentsState,
       Domain2QueryReturnType<DomainElementSuccess>
     >,
     stableQueryParams

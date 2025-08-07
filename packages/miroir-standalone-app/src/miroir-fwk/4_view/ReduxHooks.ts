@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 
 import {
   ApplicationSection,
-  DeploymentEntityState,
+  ReduxDeploymentsState,
   DomainElementSuccess,
   DomainModelQueryTemplateJzodSchemaParams,
   Domain2QueryReturnType,
@@ -34,12 +34,12 @@ import {
 } from "miroir-core";
 import {
   ReduxStateWithUndoRedo,
-  applyDeploymentEntityStateJzodSchemaSelector,
-  applyDeploymentEntityStateJzodSchemaSelectorTemplate,
-  applyDeploymentEntityStateQuerySelector,
-  applyDeploymentEntityStateQuerySelectorForCleanedResult,
-  applyDeploymentEntityStateQueryTemplateSelector,
-  applyDeploymentEntityStateQueryTemplateSelectorForCleanedResult,
+  applyReduxDeploymentsStateJzodSchemaSelector,
+  applyReduxDeploymentsStateJzodSchemaSelectorTemplate,
+  applyReduxDeploymentsStateQuerySelector,
+  applyReduxDeploymentsStateQuerySelectorForCleanedResult,
+  applyReduxDeploymentsStateQueryTemplateSelector,
+  applyReduxDeploymentsStateQueryTemplateSelectorForCleanedResult,
   applyDomainStateJzodSchemaSelector,
   applyDomainStateQuerySelectorForCleanedResult,
   applyDomainStateQueryTemplateSelector,
@@ -61,60 +61,60 @@ MiroirLoggerFactory.registerLoggerToStart(
 
 // ################################################################################################
 // ################################################################################################
-// ACCESS TO DeploymentEntityState
+// ACCESS TO ReduxDeploymentsState
 // ################################################################################################
 // ################################################################################################
-export function useDeploymentEntityStateQueryTemplateSelector<ResultType extends Domain2QueryReturnType<DomainElementSuccess>
+export function useReduxDeploymentsStateQueryTemplateSelector<ResultType extends Domain2QueryReturnType<DomainElementSuccess>
 >(
-  deploymentEntityStateQuerySelector: SyncQueryTemplateRunner<DeploymentEntityState, ResultType>,
-  selectorParams: SyncQueryTemplateRunnerParams<DeploymentEntityState>,
-  // selectorParams: SyncExtractorOrQueryTemplateRunnerParams<QueryType, DeploymentEntityState>,
+  deploymentEntityStateQuerySelector: SyncQueryTemplateRunner<ReduxDeploymentsState, ResultType>,
+  selectorParams: SyncQueryTemplateRunnerParams<ReduxDeploymentsState>,
+  // selectorParams: SyncExtractorOrQueryTemplateRunnerParams<QueryType, ReduxDeploymentsState>,
   customQueryInterpreter?: { [k: string]: (query: MiroirQueryTemplate) => ResultType }
 ): ResultType {
   const innerSelector = useMemo(() => {
-    return applyDeploymentEntityStateQueryTemplateSelector(deploymentEntityStateQuerySelector);
+    return applyReduxDeploymentsStateQueryTemplateSelector(deploymentEntityStateQuerySelector);
   }, [deploymentEntityStateQuerySelector]);
   const result: ResultType = useSelector((state: ReduxStateWithUndoRedo) => innerSelector(state, selectorParams));
   return result;
 }
 
 // ################################################################################################
-export function useDeploymentEntityStateQuerySelector<ResultType extends Domain2QueryReturnType<DomainElementSuccess>>(
-  deploymentEntityStateQuerySelector: SyncQueryRunner<DeploymentEntityState, ResultType>,
-  selectorParams: SyncQueryRunnerParams<DeploymentEntityState>,
+export function useReduxDeploymentsStateQuerySelector<ResultType extends Domain2QueryReturnType<DomainElementSuccess>>(
+  deploymentEntityStateQuerySelector: SyncQueryRunner<ReduxDeploymentsState, ResultType>,
+  selectorParams: SyncQueryRunnerParams<ReduxDeploymentsState>,
   customQueryInterpreter?: { [k: string]: (query: MiroirQuery) => ResultType }
 ): ResultType {
   const innerSelector = useMemo(() => {
-    return applyDeploymentEntityStateQuerySelector(deploymentEntityStateQuerySelector);
+    return applyReduxDeploymentsStateQuerySelector(deploymentEntityStateQuerySelector);
   }, [deploymentEntityStateQuerySelector]);
   const result: ResultType = useSelector((state: ReduxStateWithUndoRedo) => innerSelector(state, selectorParams));
   return result;
 }
 
 // ################################################################################################
-export function useDeploymentEntityStateQueryTemplateSelectorForCleanedResult(
+export function useReduxDeploymentsStateQueryTemplateSelectorForCleanedResult(
   deploymentEntityStateQueryTemplateSelector: SyncQueryTemplateRunner<
-    DeploymentEntityState,
+    ReduxDeploymentsState,
     Domain2QueryReturnType<DomainElementSuccess>
   >,
-  selectorParams: SyncQueryTemplateRunnerParams<DeploymentEntityState>,
+  selectorParams: SyncQueryTemplateRunnerParams<ReduxDeploymentsState>,
   customQueryInterpreter?: { [k: string]: (query: MiroirQueryTemplate) => Domain2QueryReturnType<DomainElementSuccess> }
 ): any {
   const innerSelector = useMemo(() => {
-    return applyDeploymentEntityStateQueryTemplateSelectorForCleanedResult(deploymentEntityStateQueryTemplateSelector);
+    return applyReduxDeploymentsStateQueryTemplateSelectorForCleanedResult(deploymentEntityStateQueryTemplateSelector);
   }, [deploymentEntityStateQueryTemplateSelector]);
   const result: any = useSelector((state: ReduxStateWithUndoRedo) => innerSelector(state, selectorParams));
   return result;
 }
 
 // ################################################################################################
-export function useDeploymentEntityStateQuerySelectorForCleanedResult(
-  deploymentEntityStateQuerySelector: SyncQueryRunner<DeploymentEntityState, Domain2QueryReturnType<DomainElementSuccess>>,
-  selectorParams: SyncQueryRunnerParams<DeploymentEntityState>,
+export function useReduxDeploymentsStateQuerySelectorForCleanedResult(
+  deploymentEntityStateQuerySelector: SyncQueryRunner<ReduxDeploymentsState, Domain2QueryReturnType<DomainElementSuccess>>,
+  selectorParams: SyncQueryRunnerParams<ReduxDeploymentsState>,
   customQueryInterpreter?: { [k: string]: (query: MiroirQuery) => Domain2QueryReturnType<DomainElementSuccess> }
 ): any {
   const innerSelector = useMemo(() => {
-    return applyDeploymentEntityStateQuerySelectorForCleanedResult(deploymentEntityStateQuerySelector);
+    return applyReduxDeploymentsStateQuerySelectorForCleanedResult(deploymentEntityStateQuerySelector);
   }, [deploymentEntityStateQuerySelector]);
   const result: any = useSelector((state: ReduxStateWithUndoRedo) => innerSelector(state, selectorParams));
   return result;
@@ -176,14 +176,14 @@ export function useDomainStateJzodSchemaSelector<QueryType extends DomainModelQu
 }
 
 // ################################################################################################
-export function useDeploymentEntityStateJzodSchemaSelectorForTemplate<QueryTemplateType extends DomainModelQueryTemplateJzodSchemaParams>(
-  domainStateSelector:JzodSchemaQueryTemplateSelector<QueryTemplateType, DeploymentEntityState>,
-  selectorParams:ExtractorTemplateRunnerParamsForJzodSchema<QueryTemplateType, DeploymentEntityState>,
+export function useReduxDeploymentsStateJzodSchemaSelectorForTemplate<QueryTemplateType extends DomainModelQueryTemplateJzodSchemaParams>(
+  domainStateSelector:JzodSchemaQueryTemplateSelector<QueryTemplateType, ReduxDeploymentsState>,
+  selectorParams:ExtractorTemplateRunnerParamsForJzodSchema<QueryTemplateType, ReduxDeploymentsState>,
   customQueryInterpreter?: { [k: string]: (query:DomainModelQueryTemplateJzodSchemaParams) => RecordOfJzodElement | JzodElement | undefined }
 ): RecordOfJzodElement | JzodElement | undefined {
   const innerSelector = useMemo(
     () => {
-      return applyDeploymentEntityStateJzodSchemaSelectorTemplate(domainStateSelector);
+      return applyReduxDeploymentsStateJzodSchemaSelectorTemplate(domainStateSelector);
     }, [domainStateSelector]);
   const result: RecordOfJzodElement | JzodElement | undefined = useSelector((state: ReduxStateWithUndoRedo) =>
     innerSelector(state, selectorParams)
@@ -192,14 +192,14 @@ export function useDeploymentEntityStateJzodSchemaSelectorForTemplate<QueryTempl
 }
 
 // ################################################################################################
-export function useDeploymentEntityStateJzodSchemaSelector<QueryType extends QueryJzodSchemaParams>(
-  domainStateSelector:JzodSchemaQuerySelector<QueryType, DeploymentEntityState>,
-  selectorParams:ExtractorRunnerParamsForJzodSchema<QueryType, DeploymentEntityState>,
+export function useReduxDeploymentsStateJzodSchemaSelector<QueryType extends QueryJzodSchemaParams>(
+  domainStateSelector:JzodSchemaQuerySelector<QueryType, ReduxDeploymentsState>,
+  selectorParams:ExtractorRunnerParamsForJzodSchema<QueryType, ReduxDeploymentsState>,
   customQueryInterpreter?: { [k: string]: (query:QueryJzodSchemaParams) => RecordOfJzodElement | JzodElement | undefined }
 ): RecordOfJzodElement | JzodElement | undefined {
   const innerSelector = useMemo(
     () => {
-      return applyDeploymentEntityStateJzodSchemaSelector(domainStateSelector);
+      return applyReduxDeploymentsStateJzodSchemaSelector(domainStateSelector);
     }, [domainStateSelector]);
   const result: RecordOfJzodElement | JzodElement | undefined = useSelector((state: ReduxStateWithUndoRedo) =>
     innerSelector(state, selectorParams)

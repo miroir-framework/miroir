@@ -19,12 +19,12 @@ import { Link } from 'react-router-dom';
 import {
   adminConfigurationDeploymentAdmin,
   adminConfigurationDeploymentMiroir,
-  DeploymentEntityState,
+  ReduxDeploymentsState,
   Domain2QueryReturnType,
   dummyDomainManyQueryWithDeploymentUuid,
   entityMenu,
   getApplicationSection,
-  getQueryRunnerParamsForDeploymentEntityState,
+  getQueryRunnerParamsForReduxDeploymentsState,
   LoggerInterface,
   MetaModel,
   MiroirLoggerFactory,
@@ -32,9 +32,9 @@ import {
   SyncQueryRunnerParams,
   Uuid
 } from "miroir-core";
-import { getMemoizedDeploymentEntityStateSelectorMap } from 'miroir-localcache-redux';
+import { getMemoizedReduxDeploymentsStateSelectorMap } from 'miroir-localcache-redux';
 import { packageName } from '../../../../constants.js';
-import { useCurrentModel, useDeploymentEntityStateQuerySelector } from '../../ReduxHooks.js';
+import { useCurrentModel, useReduxDeploymentsStateQuerySelector } from '../../ReduxHooks.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -123,14 +123,14 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
     adminConfigurationDeploymentAdmin.uuid
   );
 
-  const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<DeploymentEntityState> = useMemo(
-    () => getMemoizedDeploymentEntityStateSelectorMap(),
+  const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> = useMemo(
+    () => getMemoizedReduxDeploymentsStateSelectorMap(),
     []
   )
 
-  const fetchDeploymentMenusQueryParams: SyncQueryRunnerParams<DeploymentEntityState> = useMemo(
+  const fetchDeploymentMenusQueryParams: SyncQueryRunnerParams<ReduxDeploymentsState> = useMemo(
     () =>
-      getQueryRunnerParamsForDeploymentEntityState(
+      getQueryRunnerParamsForReduxDeploymentsState(
         currentModel?.entities?.length > 0? 
         {
               queryType: "boxedQueryWithExtractorCombinerTransformer",
@@ -158,7 +158,7 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
   // log.info("fetchDeploymentMenusQueryParams",fetchDeploymentMenusQueryParams)
   const miroirMenusDomainElementObject: Domain2QueryReturnType<
     Domain2QueryReturnType<Record<string, any>>
-  > = useDeploymentEntityStateQuerySelector(
+  > = useReduxDeploymentsStateQuerySelector(
     deploymentEntityStateSelectorMap.runQuery,
     fetchDeploymentMenusQueryParams
   );

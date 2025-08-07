@@ -1,4 +1,5 @@
 
+import { get } from 'http';
 import { entityEntityDefinition } from '../..';
 import { Uuid } from '../../0_interfaces/1_core/EntityDefinition';
 import {
@@ -23,12 +24,12 @@ export function resolveConditionalSchema(
   jzodSchema: JzodElement,
   rootObject: any, // Changed from currentDefaultValue to rootObject
   currentValuePath: string[],
-  getEntityInstancesUuidIndex: (
+  getEntityInstancesUuidIndex: ((
     deploymentUuid: Uuid,
     entityUuid: Uuid,
     sortBy?: string
-  ) => EntityInstancesUuidIndex,
-  deploymentUuid: string,
+  ) => EntityInstancesUuidIndex) | undefined = undefined,
+  deploymentUuid: Uuid | undefined = undefined,
   context: 'defaultValue' | 'typeCheck' = 'typeCheck' // New parameter for context
 ) {
   let effectiveSchema: JzodElement = jzodSchema;
@@ -73,7 +74,16 @@ export function resolveConditionalSchema(
       );
       
       log.info("getDefaultValueForJzodSchemaWithResolution resolved parentUuid", parentUuid);
-      // const parentEntityMMLSchema = getEntityInstancesUuidIndex(
+      if (!getEntityInstancesUuidIndex) {
+        throw new Error(
+          "resolveConditionalSchema called with conditionalMMLS.parentUuid but no getEntityInstancesUuidIndex function provided"
+        );
+      }
+      if (!deploymentUuid) {
+        throw new Error(
+          "resolveConditionalSchema called with conditionalMMLS.parentUuid but no deploymentUuid provided"
+        );
+      }
       const currentDeploymentEntityDefinitions: EntityDefinition[] =
         getEntityInstancesUuidIndex(deploymentUuid, entityEntityDefinition.uuid) as any;
       log.info(

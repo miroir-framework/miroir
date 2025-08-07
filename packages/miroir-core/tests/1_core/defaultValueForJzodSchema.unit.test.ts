@@ -1,9 +1,14 @@
 import { describe, it, expect } from 'vitest';
 import {
-  JzodElement
+  JzodElement,
+  JzodSchema,
 } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import {
+  miroirFundamentalJzodSchema,
+} from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalJzodSchema";
 
-import { getDefaultValueForJzodSchemaDEFUNCT } from "../../src/1_core/jzod/getDefaultValueForJzodSchemaDEFUNCT";
+import { getDefaultValueForJzodSchemaWithResolution, getDefaultValueForJzodSchemaWithResolutionNonHook } from "../../src/1_core/jzod/getDefaultValueForJzodSchema";
+import {  } from '../../src';
 
 
 
@@ -15,8 +20,25 @@ function testResolve(
   expectedResult: JzodElement,
 ){
   console.log("######################################### running test", testId, "...")
-  const testResult = getDefaultValueForJzodSchemaDEFUNCT(
+  // const testResult = getDefaultValueForJzodSchemaWithResolution(
+  const testResult = getDefaultValueForJzodSchemaWithResolutionNonHook(
+    "",
     testSchema,
+    undefined, // currentDefaultValue,
+    undefined, // currentValuePath,
+    undefined, // deploymentEntityState,
+    false, // forceOptional,
+    undefined, // deploymentUuid,
+    miroirFundamentalJzodSchema as JzodSchema, // miroirFundamentalJzodSchema,
+      // currentValuePath: string[] = [],
+      // deploymentEntityState: ReduxDeploymentsState | undefined = undefined,
+      // forceOptional: boolean = false,
+      // deploymentUuid: Uuid | undefined,
+      // miroirFundamentalJzodSchema: JzodSchema,
+      // currentModel?: MetaModel,
+      // miroirMetaModel?: MetaModel,
+      // relativeReferenceJzodContext?: { [k: string]: JzodElement },
+      // rootObject?: any,
   )
     expect(testResult).toEqual(expectedResult);
 }

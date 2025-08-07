@@ -5,8 +5,7 @@ import {
 } from "../0_interfaces/2_domain/ExtractorRunnerInterface";
 
 import {
-  EntityInstancesUuidIndex,
-  EntityInstance,
+  EntityInstancesUuidIndex
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 import {
@@ -14,7 +13,7 @@ import {
 } from "../0_interfaces/1_core/EntityDefinition";
 
 import {
-  DeploymentEntityState,
+  ReduxDeploymentsState,
 } from "../0_interfaces/2_domain/DeploymentStateInterface";
 
 import {
@@ -28,25 +27,22 @@ import {
   runQuery,
 } from "./QuerySelectors";
 
-import { 
-  runQueryTemplateWithExtractorCombinerTransformer as runQueryTemplateWithExtractorCombinerTransformerFromTemplateSelectors 
+import {
+  runQueryTemplateWithExtractorCombinerTransformer as runQueryTemplateWithExtractorCombinerTransformerFromTemplateSelectors
 } from "./QueryTemplateSelectors";
 
-import { 
-  getQueryRunnerParamsForDeploymentEntityState,
-  selectEntityInstanceFromDeploymentEntityState,
-  selectEntityInstanceListFromDeploymentEntityState,
-  selectEntityInstanceUuidIndexFromDeploymentEntityState,
-} from "./DeploymentEntityStateQuerySelectors";
+import {
+  getQueryRunnerParamsForReduxDeploymentsState,
+  selectEntityInstanceFromReduxDeploymentsState,
+  selectEntityInstanceListFromReduxDeploymentsState,
+  selectEntityInstanceUuidIndexFromReduxDeploymentsState,
+} from "./ReduxDeploymentsStateQuerySelectors";
 
-import { 
-  dummyDomainManyQueryWithDeploymentUuid 
-} from "./DomainStateQuerySelectors";
 
-import { 
-  getApplicationSection 
-} from "../1_core/AdminApplication";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
+import {
+  getApplicationSection
+} from "../1_core/AdminApplication";
 import { MiroirLoggerFactory } from "../4_services/LoggerFactory";
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
@@ -54,20 +50,20 @@ import { cleanLevel } from "./constants";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "DeploymentEntityStateQueryExecutor")
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ReduxDeploymentsStateQueryExecutor")
 ).then((logger: LoggerInterface) => {log = logger});
 
 // ################################################################################################
 /**
  * Creates a non-memoized deployment entity state selector map for use outside of React hooks
  */
-export function createDeploymentEntityStateSelectorMap(): SyncBoxedExtractorOrQueryRunnerMap<DeploymentEntityState> {
+export function createReduxDeploymentsStateSelectorMap(): SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> {
   return {
     extractorType: "sync",
-    extractState: (deploymentEntityState: DeploymentEntityState, params: any) => deploymentEntityState,
-    extractEntityInstance: selectEntityInstanceFromDeploymentEntityState,
-    extractEntityInstanceUuidIndex: selectEntityInstanceUuidIndexFromDeploymentEntityState,
-    extractEntityInstanceList: selectEntityInstanceListFromDeploymentEntityState,
+    extractState: (deploymentEntityState: ReduxDeploymentsState, params: any) => deploymentEntityState,
+    extractEntityInstance: selectEntityInstanceFromReduxDeploymentsState,
+    extractEntityInstanceUuidIndex: selectEntityInstanceUuidIndexFromReduxDeploymentsState,
+    extractEntityInstanceList: selectEntityInstanceListFromReduxDeploymentsState,
     extractEntityInstanceUuidIndexWithObjectListExtractor: extractEntityInstanceUuidIndexWithObjectListExtractorInMemory,
     extractEntityInstanceListWithObjectListExtractor: extractEntityInstanceListWithObjectListExtractorInMemory,
     runQuery: runQuery,
@@ -80,13 +76,13 @@ export function createDeploymentEntityStateSelectorMap(): SyncBoxedExtractorOrQu
 /**
  * Executes a deployment entity state query without React hooks or memoization
  */
-export function executeDeploymentEntityStateQuery<T>(
-  deploymentEntityState: DeploymentEntityState,
-  queryParams: SyncQueryRunnerParams<DeploymentEntityState>,
-  selectorMap: SyncBoxedExtractorOrQueryRunnerMap<DeploymentEntityState>
+export function executeReduxDeploymentsStateQuery<T>(
+  deploymentEntityState: ReduxDeploymentsState,
+  queryParams: SyncQueryRunnerParams<ReduxDeploymentsState>,
+  selectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState>
 ): T {
   const queryRunner = selectorMap.runQuery as SyncQueryRunner<
-    DeploymentEntityState,
+    ReduxDeploymentsState,
     Domain2QueryReturnType<any>
   >;
   
@@ -99,7 +95,7 @@ export function executeDeploymentEntityStateQuery<T>(
  * Gets entity instances UUID index for a specific entity without hooks
  */
 export function getEntityInstancesUuidIndexNonHook(
-  deploymentEntityState: DeploymentEntityState,
+  deploymentEntityState: ReduxDeploymentsState,
   currentDeploymentUuid: Uuid,
   targetEntity: Uuid,
   orderBy?: string
@@ -116,10 +112,10 @@ export function getEntityInstancesUuidIndexNonHook(
     orderBy
   );
   // Create selector map (non-memoized)
-  const selectorMap = createDeploymentEntityStateSelectorMap();
+  const selectorMap = createReduxDeploymentsStateSelectorMap();
   
   // Generate query parameters
-  const queryParams = getQueryRunnerParamsForDeploymentEntityState(
+  const queryParams = getQueryRunnerParamsForReduxDeploymentsState(
     {
       queryType: "boxedQueryWithExtractorCombinerTransformer",
       deploymentUuid: currentDeploymentUuid,
@@ -142,7 +138,7 @@ export function getEntityInstancesUuidIndexNonHook(
   );
   
   // Execute query
-  const result = executeDeploymentEntityStateQuery<Record<string, EntityInstancesUuidIndex>>(
+  const result = executeReduxDeploymentsStateQuery<Record<string, EntityInstancesUuidIndex>>(
     deploymentEntityState,
     queryParams,
     selectorMap
@@ -156,7 +152,7 @@ export function getEntityInstancesUuidIndexNonHook(
  * Gets entity instances UUID index for multiple entities without hooks
  */
 export function getMultipleEntityInstancesUuidIndexNonHook(
-  deploymentEntityState: DeploymentEntityState,
+  deploymentEntityState: ReduxDeploymentsState,
   currentDeploymentUuid: string,
   targetEntities: { entityUuid: string; orderBy?: string }[]
 ): Record<string, EntityInstancesUuidIndex> {
@@ -166,7 +162,7 @@ export function getMultipleEntityInstancesUuidIndexNonHook(
   }
   
   // Create selector map (non-memoized)
-  const selectorMap = createDeploymentEntityStateSelectorMap();
+  const selectorMap = createReduxDeploymentsStateSelectorMap();
   
   // Generate extractors for all target entities
   const extractors = Object.fromEntries(
@@ -185,7 +181,7 @@ export function getMultipleEntityInstancesUuidIndexNonHook(
   );
   
   // Generate query parameters
-  const queryParams = getQueryRunnerParamsForDeploymentEntityState(
+  const queryParams = getQueryRunnerParamsForReduxDeploymentsState(
     {
       queryType: "boxedQueryWithExtractorCombinerTransformer",
       deploymentUuid: currentDeploymentUuid,
@@ -198,7 +194,7 @@ export function getMultipleEntityInstancesUuidIndexNonHook(
   );
   
   // Execute query
-  return executeDeploymentEntityStateQuery<Record<string, EntityInstancesUuidIndex>>(
+  return executeReduxDeploymentsStateQuery<Record<string, EntityInstancesUuidIndex>>(
     deploymentEntityState,
     queryParams,
     selectorMap

@@ -2,7 +2,7 @@ import { Uuid } from "../0_interfaces/1_core/EntityDefinition";
 import { ApplicationSection } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 //#########################################################################################
-export function getDeploymentEntityStateIndex(
+export function getReduxDeploymentsStateIndex(
   deploymentUuid: Uuid | undefined,
   applicationSection: ApplicationSection | undefined,
   entityUuid: Uuid | undefined

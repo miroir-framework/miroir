@@ -14,7 +14,7 @@ import 'ag-grid-community/styles/ag-theme-alpine.css';
 
 
 import {
-  DeploymentEntityState,
+  ReduxDeploymentsState,
   Domain2QueryReturnType,
   DomainElementSuccess,
   EntityDefinition,
@@ -39,7 +39,7 @@ import {
   useMiroirContextService,
   // useViewParams
 } from '../../MiroirContextReactProvider.js';
-import { useCurrentModel, useDeploymentEntityStateQuerySelectorForCleanedResult } from '../../ReduxHooks.js';
+import { useCurrentModel, useReduxDeploymentsStateQuerySelectorForCleanedResult } from '../../ReduxHooks.js';
 import { cleanLevel } from '../../constants.js';
 import { calculateAdaptiveColumnWidths, ToolsColumnDefinition } from '../../adaptiveColumnWidths.js';
 import { ToolsCellRenderer } from './GenderCellRenderer.js';
@@ -54,7 +54,7 @@ import {
   TableComponentRow,
   TableComponentTypeSchema,
 } from "./MTableComponentInterface.js";
-import { getMemoizedDeploymentEntityStateSelectorMap } from 'miroir-localcache-redux';
+import { getMemoizedReduxDeploymentsStateSelectorMap } from 'miroir-localcache-redux';
 import { useMiroirTableTheme } from '../../contexts/MiroirThemeContext.js';
 import { TableTheme, DeepPartial, createTableTheme } from '../../themes/TableTheme.js';
 import { generateAgGridStyles, generateGlideTheme, getFilterToolbarStyles } from '../../themes/TableStyleGenerators.js';
@@ -143,13 +143,13 @@ export const MTableComponent = (props: TableComponentProps & { theme?: DeepParti
 
 
     // const viewParams = useViewParams();
-  const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<DeploymentEntityState> =
-  useMemo(() => getMemoizedDeploymentEntityStateSelectorMap(), []);
+  const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> =
+  useMemo(() => getMemoizedReduxDeploymentsStateSelectorMap(), []);
     
   const defaultViewParamsFromAdminStorageFetchQueryResults: Record<string, EntityInstancesUuidIndex> =
-    useDeploymentEntityStateQuerySelectorForCleanedResult(
+    useReduxDeploymentsStateQuerySelectorForCleanedResult(
       deploymentEntityStateSelectorMap.runQuery as SyncQueryRunner<
-        DeploymentEntityState,
+        ReduxDeploymentsState,
         Domain2QueryReturnType<DomainElementSuccess>
       >,
       defaultViewParamsFromAdminStorageFetchQueryParams(deploymentEntityStateSelectorMap)

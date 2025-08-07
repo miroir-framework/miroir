@@ -12,7 +12,7 @@ import {
   adminConfigurationDeploymentMiroir,
   ApplicationSection,
   applicationSection,
-  DeploymentEntityState,
+  ReduxDeploymentsState,
   domain2ElementObjectZodSchema,
   Domain2QueryReturnType,
   DomainControllerInterface,
@@ -24,7 +24,7 @@ import {
   ExtractorOrCombinerRecord,
   getApplicationSection,
   getDefaultValueForJzodSchemaWithResolutionNonHook,
-  getQueryRunnerParamsForDeploymentEntityState,
+  getQueryRunnerParamsForReduxDeploymentsState,
   InstanceAction,
   JzodElement,
   JzodObject,
@@ -41,7 +41,7 @@ import {
 } from "miroir-core";
 
 import AddBox from "@mui/icons-material/AddBox";
-import { getMemoizedDeploymentEntityStateSelectorForTemplateMap, getMemoizedDeploymentEntityStateSelectorMap, ReduxStateWithUndoRedo } from "miroir-localcache-redux";
+import { getMemoizedReduxDeploymentsStateSelectorForTemplateMap, getMemoizedReduxDeploymentsStateSelectorMap, ReduxStateWithUndoRedo } from "miroir-localcache-redux";
 import { packageName } from "../../../../constants.js";
 import { deleteCascade } from "../../scripts.js";
 import {
@@ -49,7 +49,7 @@ import {
   useMiroirContextService,
   useSnackbar,
 } from "../../MiroirContextReactProvider.js";
-import { useCurrentModel, useDeploymentEntityStateQuerySelectorForCleanedResult } from "../../ReduxHooks.js";
+import { useCurrentModel, useReduxDeploymentsStateQuerySelectorForCleanedResult } from "../../ReduxHooks.js";
 import { cleanLevel } from "../../constants.js";
 import { getColumnDefinitionsFromEntityDefinitionJzodObjectSchema } from "../../getColumnDefinitionsFromEntityAttributes.js";
 import { analyzeForeignKeyAttributes, convertToLegacyFormat } from "../../utils/foreignKeyAttributeAnalyzer.js";
@@ -243,10 +243,10 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
 
   const domainController: DomainControllerInterface = useDomainControllerService();
 
-  const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<DeploymentEntityState> =
-      getMemoizedDeploymentEntityStateSelectorMap();
+  const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> =
+      getMemoizedReduxDeploymentsStateSelectorMap();
 
-  const deploymentEntityState: DeploymentEntityState = useSelector(
+  const deploymentEntityState: ReduxDeploymentsState = useSelector(
     (state: ReduxStateWithUndoRedo) =>
       deploymentEntityStateSelectorMap.extractState(state.presentModelSnapshot.current, () => ({}))
   );
@@ -335,7 +335,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   );
 
   const foreignKeyObjectsFetchQueryParams: SyncQueryRunnerParams<
-    DeploymentEntityState
+    ReduxDeploymentsState
   > = useMemo(
     () => {
       const extractors: ExtractorOrCombinerRecord = Object.fromEntries(
@@ -375,7 +375,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
           ])
         ),
       };
-      return getQueryRunnerParamsForDeploymentEntityState(
+      return getQueryRunnerParamsForReduxDeploymentsState(
         {
           queryType: "boxedQueryWithExtractorCombinerTransformer",
           deploymentUuid: props.deploymentUuid,
@@ -397,9 +397,9 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   );
 
   const foreignKeyObjects: Record<string, EntityInstancesUuidIndex> =
-  useDeploymentEntityStateQuerySelectorForCleanedResult(
+  useReduxDeploymentsStateQuerySelectorForCleanedResult(
     deploymentEntityStateSelectorMap.runQuery as SyncQueryRunner<
-      DeploymentEntityState,
+      ReduxDeploymentsState,
       Domain2QueryReturnType<DomainElementSuccess>
     >,
     foreignKeyObjectsFetchQueryParams

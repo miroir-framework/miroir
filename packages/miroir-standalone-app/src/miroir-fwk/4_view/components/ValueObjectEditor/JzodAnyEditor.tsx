@@ -1,7 +1,7 @@
 
 
 import {
-  DeploymentEntityState,
+  ReduxDeploymentsState,
   getDefaultValueForJzodSchemaWithResolution,
   getDefaultValueForJzodSchemaWithResolutionNonHook,
   LoggerInterface,
@@ -19,7 +19,7 @@ import { JzodAnyEditorProps } from "./JzodElementEditorInterface";
 import { ChangeValueTypeSelect } from "../ChangeValueTypeSelect";
 import { JzodElement, JzodSchema } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { measuredUseJzodElementEditorHooks } from "../../tools/hookPerformanceMeasure";
-import { getMemoizedDeploymentEntityStateSelectorMap, ReduxStateWithUndoRedo } from "miroir-localcache-redux";
+import { getMemoizedReduxDeploymentsStateSelectorMap, ReduxStateWithUndoRedo } from "miroir-localcache-redux";
 import { useSelector } from "react-redux";
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -61,10 +61,10 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
     );
   
   const currentValue = resolvePathOnObject(formik.values, rootLessListKeyArray);
-  const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<DeploymentEntityState> =
-      getMemoizedDeploymentEntityStateSelectorMap();
+  const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> =
+      getMemoizedReduxDeploymentsStateSelectorMap();
 
-  const deploymentEntityState: DeploymentEntityState = useSelector(
+  const deploymentEntityState: ReduxDeploymentsState = useSelector(
     (state: ReduxStateWithUndoRedo) =>
       deploymentEntityStateSelectorMap.extractState(state.presentModelSnapshot.current, () => ({}))
   );

@@ -368,7 +368,7 @@ export async function asyncInnerSelectElementFromQuery /*BoxedExtractorTemplateR
 
 // ################################################################################################
 export const asyncExtractWithExtractor: AsyncExtractWithBoxedExtractorOrCombinerReturningObjectOrObjectList /**: SyncBoxedExtractorTemplateRunner */= (
-  // selectorParams: SyncExtractorOrQueryTemplateRunnerParams<BoxedQueryTemplateWithExtractorCombinerTransformer, DeploymentEntityState>,
+  // selectorParams: SyncExtractorOrQueryTemplateRunnerParams<BoxedQueryTemplateWithExtractorCombinerTransformer, ReduxDeploymentsState>,
   selectorParams: AsyncBoxedExtractorRunnerParams<
     BoxedExtractorOrCombinerReturningObjectOrObjectList
   >
@@ -404,7 +404,7 @@ export const asyncExtractWithExtractor: AsyncExtractWithBoxedExtractorOrCombiner
 
 // ################################################################################################
 /**
- * StateType is the type of the deploymentEntityState, which may be a DeploymentEntityState or a DeploymentEntityStateWithUuidIndex
+ * StateType is the type of the deploymentEntityState, which may be a ReduxDeploymentsState or a ReduxDeploymentsStateWithUuidIndex
  * 
  * 
  * @param state: StateType

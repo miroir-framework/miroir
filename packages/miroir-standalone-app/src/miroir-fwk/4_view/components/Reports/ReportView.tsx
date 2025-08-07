@@ -5,10 +5,10 @@ import {
   ApplicationSection,
   BoxedQueryTemplateWithExtractorCombinerTransformer,
   BoxedQueryWithExtractorCombinerTransformer,
-  DeploymentEntityState,
+  ReduxDeploymentsState,
   Domain2QueryReturnType,
   ExtractorRunnerParamsForJzodSchema,
-  getQueryRunnerParamsForDeploymentEntityState,
+  getQueryRunnerParamsForReduxDeploymentsState,
   LoggerInterface,
   MiroirLoggerFactory,
   QueryByQuery2GetParamJzodSchema,
@@ -23,15 +23,15 @@ import {
 
 
 
-import { useDeploymentEntityStateJzodSchemaSelector, useDeploymentEntityStateQuerySelector } from '../../ReduxHooks.js';
+import { useReduxDeploymentsStateJzodSchemaSelector, useReduxDeploymentsStateQuerySelector } from '../../ReduxHooks.js';
 import { ReportSectionView } from './ReportSectionView.js';
 import { useDocumentOutlineContext } from '../Page/RootComponent.js';
 import { useMiroirContextService } from "../../MiroirContextReactProvider.js";
 import { ThemedSpan } from '../Themes/ThemedComponents.js';
 
 import {
-  getMemoizedDeploymentEntityStateJzodSchemaSelectorMap,
-  getMemoizedDeploymentEntityStateSelectorMap,
+  getMemoizedReduxDeploymentsStateJzodSchemaSelectorMap,
+  getMemoizedReduxDeploymentsStateSelectorMap,
 } from "miroir-localcache-redux";
 import { packageName, ReportUrlParamKeys } from '../../../../constants.js';
 import { cleanLevel } from '../../constants.js';
@@ -81,8 +81,8 @@ export const ReportView = (props: ReportViewProps) => {
   //   props.reportSection.extractors
   // );
 
-  const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<DeploymentEntityState> = useMemo(
-    () => getMemoizedDeploymentEntityStateSelectorMap(),
+  const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> = useMemo(
+    () => getMemoizedReduxDeploymentsStateSelectorMap(),
     []
   );
 
@@ -160,10 +160,10 @@ export const ReportView = (props: ReportViewProps) => {
   );
   resolvedTemplateQuery;
   const deploymentEntityStateFetchQueryParams: SyncQueryRunnerParams<
-    DeploymentEntityState
+    ReduxDeploymentsState
   > = useMemo(
     () =>
-    getQueryRunnerParamsForDeploymentEntityState(
+    getQueryRunnerParamsForReduxDeploymentsState(
         usedQuery,
         deploymentEntityStateSelectorMap
       ),
@@ -176,7 +176,7 @@ export const ReportView = (props: ReportViewProps) => {
 
   const deploymentEntityStateQueryResults: Domain2QueryReturnType<
     Domain2QueryReturnType<Record<string, any>>
-  > = useDeploymentEntityStateQuerySelector(
+  > = useReduxDeploymentsStateQuerySelector(
     deploymentEntityStateSelectorMap.runQuery,
     deploymentEntityStateFetchQueryParams
   );
@@ -184,8 +184,8 @@ export const ReportView = (props: ReportViewProps) => {
   // log.info("deploymentEntityStateQueryResults", deploymentEntityStateQueryResults);
 
 
-  const jzodSchemaSelectorMap: QueryRunnerMapForJzodSchema<DeploymentEntityState> = useMemo(
-    () => getMemoizedDeploymentEntityStateJzodSchemaSelectorMap(),
+  const jzodSchemaSelectorMap: QueryRunnerMapForJzodSchema<ReduxDeploymentsState> = useMemo(
+    () => getMemoizedReduxDeploymentsStateJzodSchemaSelectorMap(),
     []
   );
 
@@ -193,7 +193,7 @@ export const ReportView = (props: ReportViewProps) => {
 
   const fetchedDataJzodSchemaParams: ExtractorRunnerParamsForJzodSchema<
     QueryByQuery2GetParamJzodSchema,
-    DeploymentEntityState
+    ReduxDeploymentsState
   > = useMemo(
     () => ({
       extractorRunnerMap: jzodSchemaSelectorMap,
@@ -238,7 +238,7 @@ export const ReportView = (props: ReportViewProps) => {
     }),
     [jzodSchemaSelectorMap, props.pageParams, props.reportDefinition]
   );
-  const fetchedDataJzodSchema: RecordOfJzodObject | undefined = useDeploymentEntityStateJzodSchemaSelector(
+  const fetchedDataJzodSchema: RecordOfJzodObject | undefined = useReduxDeploymentsStateJzodSchemaSelector(
     jzodSchemaSelectorMap.extractFetchQueryJzodSchema,
     fetchedDataJzodSchemaParams
   ) as RecordOfJzodObject | undefined; // TODO: use correct return type

@@ -1,35 +1,29 @@
 import { v4 as uuidv4 } from 'uuid';
 
+import { DomainState } from '../../0_interfaces/2_domain/DomainControllerInterface';
+import { Uuid } from '../../0_interfaces/1_core/EntityDefinition';
 import {
-  ApplicationSection,
-  DomainElementSuccess,
-  EntityDefinition,
   EntityInstancesUuidIndex,
   JzodElement,
   JzodSchema,
   MetaModel
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { ReduxDeploymentsState } from '../../0_interfaces/2_domain/DeploymentStateInterface';
 import { LoggerInterface } from "../../0_interfaces/4-services/LoggerInterface";
+import { getEntityInstancesUuidIndexNonHook } from '../../2_domain/ReduxDeploymentsStateQueryExecutor';
 import { MiroirLoggerFactory } from "../../4_services/LoggerFactory";
 import { packageName } from "../../constants";
 import { cleanLevel } from "../constants";
 import { resolveJzodSchemaReferenceInContext } from "./jzodResolveSchemaReferenceInContext";
 import { resolveObjectExtendClauseAndDefinition } from "./jzodTypeCheck";
-import { SyncBoxedExtractorOrQueryRunnerMap, SyncQueryRunner, SyncQueryRunnerParams } from '../../0_interfaces/2_domain/ExtractorRunnerInterface';
-import { DeploymentEntityState } from '../../0_interfaces/2_domain/DeploymentStateInterface';
-import { getQueryRunnerParamsForDeploymentEntityState } from '../../2_domain/DeploymentEntityStateQuerySelectors';
-import { Uuid } from '../../0_interfaces/1_core/EntityDefinition';
-import { getApplicationSection } from '../AdminApplication';
-import { Domain2QueryReturnType } from '../../0_interfaces/2_domain/DomainElement';
-import { getEntityInstancesUuidIndexNonHook } from '../../2_domain/DeploymentEntityStateQueryExecutor';
-import { RelativePath, resolvePathOnObject, resolveRelativePath } from '../../tools';
-import { entityEntity, entityEntityDefinition, transformer_extended_apply_wrapper } from '../..';
 import { resolveConditionalSchema } from './resolveConditionalSchema';
+import { transformer_extended_apply_wrapper } from '../../2_domain/TransformersForRuntime';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "getDefaultValueForJzodSchema")
 ).then((logger: LoggerInterface) => {log = logger});
+
 
 // ################################################################################################
 export function getDefaultValueForJzodSchemaWithResolution(
@@ -37,13 +31,14 @@ export function getDefaultValueForJzodSchemaWithResolution(
   jzodSchema: JzodElement,
   currentDefaultValue: any = undefined,
   currentValuePath: string[] = [],
-  getEntityInstancesUuidIndex:(
+  getEntityInstancesUuidIndex:((
     deploymentUuid: Uuid,
     entityUuid: Uuid,
     sortBy?: string
-  ) => EntityInstancesUuidIndex,
+  ) => EntityInstancesUuidIndex) | undefined = undefined,
+  // domainState: DomainState | undefined = undefined,
   forceOptional: boolean = false,
-  deploymentUuid: Uuid,
+  deploymentUuid: Uuid | undefined,
   miroirFundamentalJzodSchema: JzodSchema,
   currentModel?: MetaModel,
   miroirMetaModel?: MetaModel,
@@ -254,6 +249,16 @@ export function getDefaultValueForJzodSchemaWithResolution(
         effectiveSchema.tag.value.selectorParams &&
         effectiveSchema.tag.value.selectorParams.targetEntity
       ) {
+        if (!getEntityInstancesUuidIndex) {
+          throw new Error(
+            "getDefaultValueForJzodSchemaWithResolution called with UUID foreign key but no getEntityInstancesUuidIndex function provided"
+          );
+        }
+        if (!deploymentUuid) {
+          throw new Error(
+            "getDefaultValueForJzodSchemaWithResolution called with UUID foreign key but no deploymentUuid provided"
+          );
+        }
         const foreignKeyObjects: EntityInstancesUuidIndex = getEntityInstancesUuidIndex(
           deploymentUuid,
           effectiveSchema.tag.value.selectorParams.targetEntity,
@@ -350,8 +355,6 @@ export function getDefaultValueForJzodSchemaWithResolution(
           getEntityInstancesUuidIndex,
           forceOptional,
           deploymentUuid,
-          // applicationSection,
-          // deploymentEntityStateSelectorMap,
           miroirFundamentalJzodSchema,
           currentModel,
           miroirMetaModel,
@@ -400,7 +403,7 @@ export function getDefaultValueForJzodSchemaWithResolution(
 
 // ################################################################################################
 /**
- * Non-hook version of getDefaultValueForJzodSchemaWithResolution that uses DeploymentEntityState directly
+ * Non-hook version of getDefaultValueForJzodSchemaWithResolution that uses ReduxDeploymentsState directly
  * instead of relying on React hooks for data fetching
  */
 export function getDefaultValueForJzodSchemaWithResolutionNonHook(
@@ -408,7 +411,7 @@ export function getDefaultValueForJzodSchemaWithResolutionNonHook(
   jzodSchema: JzodElement,
   currentDefaultValue: any = undefined,
   currentValuePath: string[] = [],
-  deploymentEntityState: DeploymentEntityState | undefined = undefined,
+  deploymentEntityState: ReduxDeploymentsState | undefined = undefined,
   forceOptional: boolean = false,
   deploymentUuid: Uuid | undefined,
   miroirFundamentalJzodSchema: JzodSchema,
@@ -435,12 +438,24 @@ export function getDefaultValueForJzodSchemaWithResolutionNonHook(
     currentValuePath,
     "deploymentEntityState", deploymentEntityState,
   );
+
   // Create a function that uses the deployment entity state directly
   if (deploymentUuid == undefined || deploymentUuid.length < 8 || !deploymentEntityState) {
-    return undefined;
-    // throw new Error(
-    //   "getDefaultValueForJzodSchemaWithResolutionNonHook called with invalid deploymentUuid or deploymentEntityState"
-    // );
+    // return undefined;
+    return getDefaultValueForJzodSchemaWithResolution(
+      rootLessListKey,
+      jzodSchema,
+      currentDefaultValue,
+      currentValuePath,
+      undefined,
+      forceOptional,
+      undefined,
+      miroirFundamentalJzodSchema,
+      currentModel,
+      miroirMetaModel,
+      relativeReferenceJzodContext,
+      rootObject
+    );
   }
   const getEntityInstancesUuidIndex = (
     deploymentUuid: Uuid,

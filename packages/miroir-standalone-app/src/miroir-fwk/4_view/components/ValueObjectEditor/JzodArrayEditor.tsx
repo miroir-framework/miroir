@@ -2,7 +2,7 @@
 import { ErrorBoundary } from "react-error-boundary";
 import {
   adminConfigurationDeploymentMiroir,
-  DeploymentEntityState,
+  ReduxDeploymentsState,
   entity,
   entityDefinition,
   EntityDefinition,
@@ -40,7 +40,7 @@ import {
   ThemedStyledButton 
 } from "../Themes/ThemedComponents";
 import { useMiroirTheme } from '../../contexts/MiroirThemeContext';
-import { getMemoizedDeploymentEntityStateSelectorMap, ReduxStateWithUndoRedo } from "miroir-localcache-redux";
+import { getMemoizedReduxDeploymentsStateSelectorMap, ReduxStateWithUndoRedo } from "miroir-localcache-redux";
 import { useSelector } from "react-redux";
 // import { JzodUnion } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
@@ -337,10 +337,10 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
   //   ? rootLessListKey.substring(0, rootLessListKey.lastIndexOf("."))
   //   : "";
   // const parentKeyMap = typeCheckKeyMap ? typeCheckKeyMap[parentKey] : undefined;
-  const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<DeploymentEntityState> =
-      getMemoizedDeploymentEntityStateSelectorMap();
+  const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> =
+      getMemoizedReduxDeploymentsStateSelectorMap();
 
-  const deploymentEntityState: DeploymentEntityState = useSelector(
+  const deploymentEntityState: ReduxDeploymentsState = useSelector(
     (state: ReduxStateWithUndoRedo) =>
       deploymentEntityStateSelectorMap.extractState(state.presentModelSnapshot.current, () => ({}))
   );

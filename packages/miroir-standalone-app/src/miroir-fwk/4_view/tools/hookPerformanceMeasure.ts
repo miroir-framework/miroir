@@ -1,7 +1,7 @@
 import {
   getApplicationSection,
   getDefaultValueForJzodSchemaWithResolution,
-  getQueryRunnerParamsForDeploymentEntityState,
+  getQueryRunnerParamsForReduxDeploymentsState,
   jzodTypeCheck,
   measurePerformance,
   rootLessListKeyMapDEFUNCT,
@@ -21,9 +21,9 @@ export const measuredRootLessListKeyMap = measurePerformance(
 //   getApplicationSection,
 //   100
 // );
-export const measuredGetQueryRunnerParamsForDeploymentEntityState = measurePerformance(
-  "getQueryRunnerParamsForDeploymentEntityState",
-  getQueryRunnerParamsForDeploymentEntityState,
+export const measuredGetQueryRunnerParamsForReduxDeploymentsState = measurePerformance(
+  "getQueryRunnerParamsForReduxDeploymentsState",
+  getQueryRunnerParamsForReduxDeploymentsState,
   100
 );
 

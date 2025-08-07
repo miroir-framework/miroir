@@ -6,7 +6,7 @@ import { useSelector } from 'react-redux';
 
 import {
   ApplicationSection,
-  DeploymentEntityState,
+  ReduxDeploymentsState,
   Domain2QueryReturnType,
   DomainElementSuccess,
   EntityInstancesUuidIndex,
@@ -22,11 +22,11 @@ import {
   Uuid,
   adminConfigurationDeploymentMiroir,
   dummyDomainManyQueryWithDeploymentUuid,
-  getQueryRunnerParamsForDeploymentEntityState,
+  getQueryRunnerParamsForReduxDeploymentsState,
   jzodTypeCheck,
   getApplicationSection
 } from "miroir-core";
-import { getMemoizedDeploymentEntityStateSelectorMap, ReduxStateWithUndoRedo, selectCurrentDeploymentEntityStateFromReduxState } from 'miroir-localcache-redux';
+import { getMemoizedReduxDeploymentsStateSelectorMap, ReduxStateWithUndoRedo, selectCurrentReduxDeploymentsStateFromReduxState } from 'miroir-localcache-redux';
 
 import {
   useMiroirContextService
@@ -38,7 +38,7 @@ import { packageName } from '../../../../constants.js';
 import { cleanLevel } from '../../constants.js';
 import {
   useCurrentModel,
-  useDeploymentEntityStateQuerySelectorForCleanedResult
+  useReduxDeploymentsStateQuerySelectorForCleanedResult
 } from "../../ReduxHooks.js";
 import { useRenderTracker } from '../../tools/renderCountTracker.js';
 import { ErrorFallbackComponent } from '../ErrorFallbackComponent.js';
@@ -105,11 +105,11 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
   const currentMiroirModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
 
   // Get the deployment entity state from Redux store for conditional schema resolution
-  const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<DeploymentEntityState> =
-    getMemoizedDeploymentEntityStateSelectorMap();
+  const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> =
+    getMemoizedReduxDeploymentsStateSelectorMap();
   
-  // const deploymentEntityState: DeploymentEntityState = useSelector(selectCurrentDeploymentEntityStateFromReduxState);
-  const deploymentEntityState: DeploymentEntityState = useSelector(
+  // const deploymentEntityState: ReduxDeploymentsState = useSelector(selectCurrentReduxDeploymentsStateFromReduxState);
+  const deploymentEntityState: ReduxDeploymentsState = useSelector(
     (state: ReduxStateWithUndoRedo) =>
       deploymentEntityStateSelectorMap.extractState(state.presentModelSnapshot.current, () => ({}))
   );
@@ -248,12 +248,12 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
           );
         }
 
-        const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<DeploymentEntityState> =
-          useMemo(() => getMemoizedDeploymentEntityStateSelectorMap(), []);
-        const foreignKeyObjectsFetchQueryParams: SyncQueryRunnerParams<DeploymentEntityState> =
+        const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> =
+          useMemo(() => getMemoizedReduxDeploymentsStateSelectorMap(), []);
+        const foreignKeyObjectsFetchQueryParams: SyncQueryRunnerParams<ReduxDeploymentsState> =
           useMemo(
             () =>
-              getQueryRunnerParamsForDeploymentEntityState(
+              getQueryRunnerParamsForReduxDeploymentsState(
                 deploymentUuid &&
                   typeCheckKeyMap &&
                   typeCheckKeyMap.status == "ok" &&
@@ -284,9 +284,9 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
           );
 
         const foreignKeyObjects: Record<string, EntityInstancesUuidIndex> =
-          useDeploymentEntityStateQuerySelectorForCleanedResult(
+          useReduxDeploymentsStateQuerySelectorForCleanedResult(
             deploymentEntityStateSelectorMap.runQuery as SyncQueryRunner<
-              DeploymentEntityState,
+              ReduxDeploymentsState,
               Domain2QueryReturnType<DomainElementSuccess>
             >,
             foreignKeyObjectsFetchQueryParams

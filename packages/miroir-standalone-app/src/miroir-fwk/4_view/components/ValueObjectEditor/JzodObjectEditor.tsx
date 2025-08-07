@@ -5,7 +5,7 @@ import { ErrorBoundary } from "react-error-boundary";
 import {
   alterObjectAtPath,
   deleteObjectAtPath,
-  DeploymentEntityState,
+  ReduxDeploymentsState,
   foldableElementTypes,
   getDefaultValueForJzodSchemaWithResolutionNonHook,
   JzodElement,
@@ -18,7 +18,7 @@ import {
   SyncBoxedExtractorOrQueryRunnerMap
 } from "miroir-core";
 
-import { getMemoizedDeploymentEntityStateSelectorMap, ReduxStateWithUndoRedo } from "miroir-localcache-redux";
+import { getMemoizedReduxDeploymentsStateSelectorMap, ReduxStateWithUndoRedo } from "miroir-localcache-redux";
 import { useSelector } from "react-redux";
 import { packageName } from "../../../../constants";
 import { cleanLevel } from "../../constants";
@@ -408,10 +408,10 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
     [formik.values, rootLessListKeyArray]
   );
 
-  const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<DeploymentEntityState> =
-      getMemoizedDeploymentEntityStateSelectorMap();
+  const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> =
+      getMemoizedReduxDeploymentsStateSelectorMap();
 
-  const deploymentEntityState: DeploymentEntityState = useSelector(
+  const deploymentEntityState: ReduxDeploymentsState = useSelector(
     (state: ReduxStateWithUndoRedo) =>
       deploymentEntityStateSelectorMap.extractState(state.presentModelSnapshot.current, () => ({}))
   );

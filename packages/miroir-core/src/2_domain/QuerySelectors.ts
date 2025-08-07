@@ -850,7 +850,7 @@ export const extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList /*: 
 
 // ################################################################################################
 /**
- * StateType is the type of the deploymentEntityState, which may be a DeploymentEntityState or a DeploymentEntityStateWithUuidIndex
+ * StateType is the type of the deploymentEntityState, which may be a ReduxDeploymentsState or a ReduxDeploymentsStateWithUuidIndex
  * 
  * 
  * @param selectorParams the array of basic extractor functions

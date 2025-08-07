@@ -7,4 +7,4 @@ export type MiroirDictionary = z.infer<typeof ZDictionarySchema>;
 export const ZEntityStateSchema = z.object({ ids: z.array(z.string()), entities: ZDictionarySchema });
 export type ZEntityState = z.infer<typeof ZEntityStateSchema>; //not used
 
-export type DeploymentEntityState = { [DeploymentUuidSectionEntityUuid: string]: ZEntityState };
+export type ReduxDeploymentsState = { [DeploymentUuidSectionEntityUuid: string]: ZEntityState };

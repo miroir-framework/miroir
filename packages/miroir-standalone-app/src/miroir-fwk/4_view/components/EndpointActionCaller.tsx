@@ -14,7 +14,7 @@ import {
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
   defaultMiroirMetaModel,
-  DeploymentEntityState,
+  ReduxDeploymentsState,
   Domain2QueryReturnType,
   DomainControllerInterface,
   DomainElementSuccess,
@@ -23,7 +23,7 @@ import {
   getApplicationSection,
   getDefaultValueForJzodSchemaWithResolution,
   getDefaultValueForJzodSchemaWithResolutionNonHook,
-  getQueryRunnerParamsForDeploymentEntityState,
+  getQueryRunnerParamsForReduxDeploymentsState,
   instanceEndpointVersionV1,
   JzodObject,
   LoggerInterface,
@@ -43,8 +43,8 @@ import { useDomainControllerService, useMiroirContextService } from '../MiroirCo
 import { cleanLevel } from '../constants.js';
 import { TypedValueObjectEditor } from './Reports/TypedValueObjectEditor.js';
 import { ThemedFormControl, ThemedInputLabel, ThemedMUISelect, ThemedPaper } from './Themes/ThemedComponents.js';
-import { useCurrentModel, useDeploymentEntityStateQuerySelectorForCleanedResult } from '../ReduxHooks.js';
-import { getMemoizedDeploymentEntityStateSelectorMap, ReduxStateWithUndoRedo } from 'miroir-localcache-redux';
+import { useCurrentModel, useReduxDeploymentsStateQuerySelectorForCleanedResult } from '../ReduxHooks.js';
+import { getMemoizedReduxDeploymentsStateSelectorMap, ReduxStateWithUndoRedo } from 'miroir-localcache-redux';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -148,10 +148,10 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
   }, [currentAction]);
   log.info('EndpointActionCaller: currentActionParametersMMLSchema', currentActionParametersMMLSchema);
 
-  const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<DeploymentEntityState> =
-      getMemoizedDeploymentEntityStateSelectorMap();
+  const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> =
+      getMemoizedReduxDeploymentsStateSelectorMap();
 
-  const deploymentEntityState: DeploymentEntityState = useSelector(
+  const deploymentEntityState: ReduxDeploymentsState = useSelector(
     (state: ReduxStateWithUndoRedo) =>
       deploymentEntityStateSelectorMap.extractState(state.presentModelSnapshot.current, () => ({}))
   );
