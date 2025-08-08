@@ -45,6 +45,7 @@ import {
   ThemedMenuItem,
   ThemedMUISelect
 } from '../Themes/ThemedComponents';
+import { ActionButton } from './ActionButton';
 
 import { v4 as uuidv4 } from 'uuid';
 
@@ -1009,51 +1010,41 @@ export const RootComponent = (props: RootComponentProps) => {
                       </ThemedButton>
                       {/* commit miroir */}
                       <span>
-                        <ThemedButton
-                          onClick={() =>
-                            handleAsyncAction(
-                              async () => {
-                                await domainController.handleAction(
-                                  {
-                                    // actionType: "modelAction",
-                                    actionType: "commit",
-                                    endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                                    deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
-                                  },
-                                  defaultMiroirMetaModel
-                                );
+                        <ActionButton
+                          onAction={async () => {
+                            await domainController.handleAction(
+                              {
+                                actionType: "commit",
+                                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                                deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
                               },
-                              "Miroir committed successfully",
-                              "commit miroir"
-                            )
-                          }
-                        >
-                          Commit Miroir
-                        </ThemedButton>
+                              defaultMiroirMetaModel
+                            );
+                          }}
+                          successMessage="Miroir committed successfully"
+                          label="Commit Miroir"
+                          handleAsyncAction={handleAsyncAction}
+                          actionName="commit miroir"
+                        />
                       </span>
                       {/* Commit Library app */}
                       <span>
-                        <ThemedButton
-                          onClick={() =>
-                            handleAsyncAction(
-                              async () => {
-                                await domainController.handleAction(
-                                  {
-                                    // actionType: "modelAction",
-                                    actionType: "commit",
-                                    endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                                    deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-                                  },
-                                  defaultMiroirMetaModel
-                                );
+                        <ActionButton
+                          onAction={async () => {
+                            await domainController.handleAction(
+                              {
+                                actionType: "commit",
+                                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                                deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                               },
-                              "Library app committed successfully",
-                              "commit library app"
-                            )
-                          }
-                        >
-                          Commit Library app
-                        </ThemedButton>
+                              defaultMiroirMetaModel
+                            );
+                          }}
+                          successMessage="Library app committed successfully"
+                          label="Commit Library app"
+                          handleAsyncAction={handleAsyncAction}
+                          actionName="commit library app"
+                        />
                       </span>
                     </span>
                     {/* Wrap Outlet in a container that allows scrolling when needed */}

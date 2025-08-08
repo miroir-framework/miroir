@@ -13,6 +13,34 @@ function formatMessage(testName: string | undefined, message: string) {
   return testName ? `[${testName}] ${message}` : message;
 }
 
+type DescribeEachFunction = (data: any[]) => (template: string, testFn: (item: any) => void | Promise<void>, timeout?: number) => Promise<void>;
+type Describe = {
+  (title: string, testFn: () => void | Promise<void>): void | Promise<void>;
+  each: DescribeEachFunction;
+};
+
+export function describe(title: string, testFn: () => void | Promise<void>): void | Promise<void> {
+  console.log(`Describe: ${title}`);
+  return testFn();
+}
+
+describe.each = function(data: any[]): (template: string, testFn: (item: any) => void | Promise<void>, timeout?: number) => Promise<void> {
+  return async function(template: string, testFn: (item: any) => void | Promise<void>, timeout?: number): Promise<void> {
+    console.log(`Describe.each with template: ${template}`);
+    const promises = data.map(async (item, index) => {
+      const testTitle = template.replace('$currentTestSuiteName', item.transformerTestLabel || `Item ${index}`);
+      console.log(`Running test: ${testTitle}`);
+      try {
+        await testFn(item);
+      } catch (error) {
+        console.error(`Test failed: ${testTitle}`, error);
+        throw error;
+      }
+    });
+    await Promise.all(promises);
+  };
+} as DescribeEachFunction;
+
 export function expect(actual: any, testName?: string) {
   const matchers = {
     toBe(expected: any): ExpectResult {

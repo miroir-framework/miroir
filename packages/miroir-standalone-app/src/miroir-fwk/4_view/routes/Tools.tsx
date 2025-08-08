@@ -31,16 +31,19 @@ import {
   entitySelfApplication,
   jzodTypeCheck,
   miroirFundamentalJzodSchema,
-  testSuitesResultsSchema
+  testSuitesResultsSchema,
+  runTransformerTestSuite,
+  runTransformerTestInMemory,
+  transformerTestSuite_resolveConditionalSchema
 } from "miroir-core";
 
-import {
-  Entity,
-  TestSuiteResult
-} from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+// import {
+//   Entity,
+//   TestSuiteResult
+// } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { adminConfigurationDeploymentParis, applicationParis, packageName } from "../../../constants.js";
 import { getTestSuitesForBuildPlusRuntimeCompositeAction } from "../../4-tests/applicative.Library.BuildPlusRuntimeCompositeAction.js";
-import { expect } from "../../4-tests/test-expect.js";
+import { expect, describe } from "../../4-tests/test-expect.js";
 import { testOnLibrary_deleteLibraryDeployment } from "../../4-tests/tests-utils-testOnLibrary.js";
 import { runTestOrTestSuite } from "../../4-tests/tests-utils.js";
 import { JzodEnumSchemaToJzodElementResolver, getCurrentEnumJzodSchemaResolver } from "../../JzodTools.js";
@@ -50,12 +53,19 @@ import {
   useMiroirContextInnerFormOutput,
   useMiroirContextService,
   useMiroirContextformHelperState,
+  useSnackbar,
 } from "../MiroirContextReactProvider.js";
 import { useCurrentModel } from "../ReduxHooks.js";
 import { JzodElementDisplay } from "../components/JzodElementDisplay.js";
 import { JzodElementEditor } from "../components/ValueObjectEditor/JzodElementEditor.js";
 import { cleanLevel } from "../constants.js";
 import { EndpointActionCaller } from "../components/EndpointActionCaller";
+import { ActionButton } from "../components/Page/ActionButton.js";
+
+import {
+  Entity,
+  TestSuiteResult
+} from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -127,6 +137,7 @@ export const ToolsPage: React.FC<any> = (
   const errorLog = useErrorLogService();
   const context = useMiroirContextService();
   const domainController: DomainControllerInterface = useDomainControllerService();
+  const { handleAsyncAction } = useSnackbar();
   const currentModel: MetaModel = useCurrentModel(
     context.applicationSection == "data" ? context.deploymentUuid : adminConfigurationDeploymentMiroir.uuid
   );
@@ -137,190 +148,191 @@ export const ToolsPage: React.FC<any> = (
   const [testResults, setTestResults] = useState<TestSuiteResult | undefined>(
     undefined
   );
+  const [resolveConditionalSchemaResults, setResolveConditionalSchemaResults] = useState<string>("");
 
   // const miroirMetaModel: MetaModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
 
-  // DOES NOTHING
-  const actionHandlerCreateApplication = useMemo(()=> ({
-    interface: {
-      actionJzodObjectSchema: {
-        type: "object",
-        definition: {
-          newApplicationName: {
-            type: "string"
-          },
-          newAdminAppApplicationUuid: {
-            type: "uuid"
-          },
-          newSelfApplicationUuid: {
-            type: "uuid"
-          },
-          newDeploymentUuid: {
-            type: "uuid"
-          },
-        }
-      },
-    },
-    implementation: {
-      templates: {
-      },
-      compositeActionTemplate: {
-        actionType: "compositeAction",
-        actionName: "sequence",
-        definition: [
-          // {
-          //   actionType: "action",
-          //   action: {
-          //     actionType: "storeManagementAction",
-          //     actionName: "storeManagementAction_openStore",
-          //     endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-          //     configuration: {
-          //       transformerType: "innerFullObjectTemplate",
-          //       definition: [
-          //         {
-          //           attributeKey: {
-          //             transformerType: "parameterReference",
-          //             referenceName: "newDeploymentUuid",
-          //           },
-          //           attributeValue: {
-          //             transformerType: "parameterReference",
-          //             referenceName: "newDeploymentStoreConfiguration",
-          //           }
-          //         }
-          //       ],
-          //     },
-          //     deploymentUuid: {
-          //       transformerType: "parameterReference",
-          //       referenceName: "newDeploymentUuid",
-          //     },
-          //   }
-          // },
-          // {
-          //   actionType: "action",
-          //   action: {
-          //     transformerType: "parameterReference",
-          //     referenceName: "createStoreAction",
-          //   }
-          // },
-          // {
-          //   actionType: "action",
-          //   action: {
-          //     transformerType: "parameterReference",
-          //     referenceName: "resetAndInitAction",
-          //   }
-          // },
-          // {
-          //   actionType: "action",
-          //   action: {
-          //     transformerType: "parameterReference",
-          //     referenceName: "createSelfApplicationAction",
-          //   }
-          // },
-          // {
-          //   actionType: "action",
-          //   action: {
-          //     transformerType: "parameterReference",
-          //     referenceName: "createApplicationForAdminAction",
-          //   }
-          // },
-          // {
-          //   actionType: "action",
-          //   action: {
-          //     transformerType: "parameterReference",
-          //     referenceName: "createAdminDeploymentAction",
-          //   }
-          // },
-          // {
-          //   actionType: "action",
-          //   action: {
-          //     transformerType: "parameterReference",
-          //     referenceName: "createNewApplicationMenuAction",
-          //   }
-          // },
-          // {
-          //   actionType: "action",
-          //   action: {
-          //     transformerType: "parameterReference",
-          //     referenceName: "commitAction",
-          //   }
-          // },
-        ],
-      }
-    },
-  }),[])
+  // // DOES NOTHING
+  // const actionHandlerCreateApplication = useMemo(()=> ({
+  //   interface: {
+  //     actionJzodObjectSchema: {
+  //       type: "object",
+  //       definition: {
+  //         newApplicationName: {
+  //           type: "string"
+  //         },
+  //         newAdminAppApplicationUuid: {
+  //           type: "uuid"
+  //         },
+  //         newSelfApplicationUuid: {
+  //           type: "uuid"
+  //         },
+  //         newDeploymentUuid: {
+  //           type: "uuid"
+  //         },
+  //       }
+  //     },
+  //   },
+  //   implementation: {
+  //     templates: {
+  //     },
+  //     compositeActionTemplate: {
+  //       actionType: "compositeAction",
+  //       actionName: "sequence",
+  //       definition: [
+  //         // {
+  //         //   actionType: "action",
+  //         //   action: {
+  //         //     actionType: "storeManagementAction",
+  //         //     actionName: "storeManagementAction_openStore",
+  //         //     endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+  //         //     configuration: {
+  //         //       transformerType: "innerFullObjectTemplate",
+  //         //       definition: [
+  //         //         {
+  //         //           attributeKey: {
+  //         //             transformerType: "parameterReference",
+  //         //             referenceName: "newDeploymentUuid",
+  //         //           },
+  //         //           attributeValue: {
+  //         //             transformerType: "parameterReference",
+  //         //             referenceName: "newDeploymentStoreConfiguration",
+  //         //           }
+  //         //         }
+  //         //       ],
+  //         //     },
+  //         //     deploymentUuid: {
+  //         //       transformerType: "parameterReference",
+  //         //       referenceName: "newDeploymentUuid",
+  //         //     },
+  //         //   }
+  //         // },
+  //         // {
+  //         //   actionType: "action",
+  //         //   action: {
+  //         //     transformerType: "parameterReference",
+  //         //     referenceName: "createStoreAction",
+  //         //   }
+  //         // },
+  //         // {
+  //         //   actionType: "action",
+  //         //   action: {
+  //         //     transformerType: "parameterReference",
+  //         //     referenceName: "resetAndInitAction",
+  //         //   }
+  //         // },
+  //         // {
+  //         //   actionType: "action",
+  //         //   action: {
+  //         //     transformerType: "parameterReference",
+  //         //     referenceName: "createSelfApplicationAction",
+  //         //   }
+  //         // },
+  //         // {
+  //         //   actionType: "action",
+  //         //   action: {
+  //         //     transformerType: "parameterReference",
+  //         //     referenceName: "createApplicationForAdminAction",
+  //         //   }
+  //         // },
+  //         // {
+  //         //   actionType: "action",
+  //         //   action: {
+  //         //     transformerType: "parameterReference",
+  //         //     referenceName: "createAdminDeploymentAction",
+  //         //   }
+  //         // },
+  //         // {
+  //         //   actionType: "action",
+  //         //   action: {
+  //         //     transformerType: "parameterReference",
+  //         //     referenceName: "createNewApplicationMenuAction",
+  //         //   }
+  //         // },
+  //         // {
+  //         //   actionType: "action",
+  //         //   action: {
+  //         //     transformerType: "parameterReference",
+  //         //     referenceName: "commitAction",
+  //         //   }
+  //         // },
+  //       ],
+  //     }
+  //   },
+  // }),[])
 
-  const [rawSchema, setRawSchema] = useState<JzodElement>(
-    actionHandlerCreateApplication.interface.actionJzodObjectSchema as JzodElement
-  );
+  // const [rawSchema, setRawSchema] = useState<JzodElement>(
+  //   actionHandlerCreateApplication.interface.actionJzodObjectSchema as JzodElement
+  // );
 
 
-  const handleAddObjectDialogFormSubmit = useCallback(
-    async (data:any, source?: string) => {
-      // const buttonType: string = (event?.nativeEvent as any)["submitter"]["name"];
-      log.info(
-        "@@@@@@@@@@@@@@@@@@@@@@ handleAddObjectDialogFormSubmit called for data",
-        data,
-        "props",
-        props,
-        "dialogOuterFormObject",
-        dialogOuterFormObject,
-      );
-      const effectiveData = source == "param" && data?data:dialogOuterFormObject;
-      log.info("handleAddObjectDialogFormSubmit called with dialogOuterFormObject", dialogOuterFormObject);
+  // const handleAddObjectDialogFormSubmit = useCallback(
+  //   async (data:any, source?: string) => {
+  //     // const buttonType: string = (event?.nativeEvent as any)["submitter"]["name"];
+  //     log.info(
+  //       "@@@@@@@@@@@@@@@@@@@@@@ handleAddObjectDialogFormSubmit called for data",
+  //       data,
+  //       "props",
+  //       props,
+  //       "dialogOuterFormObject",
+  //       dialogOuterFormObject,
+  //     );
+  //     const effectiveData = source == "param" && data?data:dialogOuterFormObject;
+  //     log.info("handleAddObjectDialogFormSubmit called with dialogOuterFormObject", dialogOuterFormObject);
 
-      let reorderedDataValue: any;
-      let result: any;
-      const newVersion = _.merge(effectiveData, effectiveData["ROOT"]);
-      delete newVersion["ROOT"];
-      log.info(
-        // "handleAddObjectDialogFormSubmit called for buttonType",
-        // buttonType,
-        "handleAddObjectDialogFormSubmit producing",
-        "newVersion",
-        newVersion,
-        "data",
-        data,
-        "props",
-        props,
-        "passed value",
-      );
-      result = props.onSubmit(newVersion);
-      return result;
-    },
-    [props,JSON.stringify(dialogOuterFormObject, null, 2)]
-  );
+  //     let reorderedDataValue: any;
+  //     let result: any;
+  //     const newVersion = _.merge(effectiveData, effectiveData["ROOT"]);
+  //     delete newVersion["ROOT"];
+  //     log.info(
+  //       // "handleAddObjectDialogFormSubmit called for buttonType",
+  //       // buttonType,
+  //       "handleAddObjectDialogFormSubmit producing",
+  //       "newVersion",
+  //       newVersion,
+  //       "data",
+  //       data,
+  //       "props",
+  //       props,
+  //       "passed value",
+  //     );
+  //     result = props.onSubmit(newVersion);
+  //     return result;
+  //   },
+  //   [props,JSON.stringify(dialogOuterFormObject, null, 2)]
+  // );
 
-  const resolvedJzodSchema:JzodElement = useMemo(
-    () => {
-      if (context.miroirFundamentalJzodSchema == undefined || context.miroirFundamentalJzodSchema.name == "dummyJzodSchema") {
-        return defaultObject
-      } else {
-        const configuration = jzodTypeCheck(
-          rawSchema,
-          formState,
-          [], // currentValuePath
-          [], // currentTypePath
-          context.miroirFundamentalJzodSchema,
-          currentModel,
-          currentMiroirModel,
-          emptyObject,
-        )
+  // const resolvedJzodSchema:JzodElement = useMemo(
+  //   () => {
+  //     if (context.miroirFundamentalJzodSchema == undefined || context.miroirFundamentalJzodSchema.name == "dummyJzodSchema") {
+  //       return defaultObject
+  //     } else {
+  //       const configuration = jzodTypeCheck(
+  //         rawSchema,
+  //         formState,
+  //         [], // currentValuePath
+  //         [], // currentTypePath
+  //         context.miroirFundamentalJzodSchema,
+  //         currentModel,
+  //         currentMiroirModel,
+  //         emptyObject,
+  //       )
 
-        return configuration.status == "ok"? configuration.resolvedSchema : defaultObject;
-      }
-    },
-    [context, rawSchema, formState]
-  );
+  //       return configuration.status == "ok"? configuration.resolvedSchema : defaultObject;
+  //     }
+  //   },
+  //   [context, rawSchema, formState]
+  // );
 
-  log.info(
-    "called jzodTypeCheck: resolvedJzodSchema",
-    resolvedJzodSchema,
-    "miroirFundamentalJzodSchema",
-    context.miroirFundamentalJzodSchema,
-    // context.miroirFundamentalJzodSchema.name,
-    "rawSchema",
-    rawSchema
-  );
+  // log.info(
+  //   "called jzodTypeCheck: resolvedJzodSchema",
+  //   resolvedJzodSchema,
+  //   "miroirFundamentalJzodSchema",
+  //   context.miroirFundamentalJzodSchema,
+  //   // context.miroirFundamentalJzodSchema.name,
+  //   "rawSchema",
+  //   rawSchema
+  // );
 
   const resolvedTestResultsJzodSchema: JzodElement | undefined = useMemo(() => {
     if (
@@ -341,14 +353,14 @@ export const ToolsPage: React.FC<any> = (
 
       return configuration.status == "ok" ? configuration.resolvedSchema : defaultObject;
     }
-  }, [context.miroirFundamentalJzodSchema, rawSchema, testResults]);
+  }, [context.miroirFundamentalJzodSchema, testResults]);
 
   log.info(
     "called jzodTypeCheck: resolvedTestResultsJzodSchema",
     resolvedTestResultsJzodSchema,
     context.miroirFundamentalJzodSchema,
-    "rawSchema",
-    rawSchema
+    // "rawSchema",
+    // rawSchema
   );
 
   // const currentEnumJzodSchemaResolver: JzodEnumSchemaToJzodElementResolver | undefined = useMemo(
@@ -543,12 +555,12 @@ export const ToolsPage: React.FC<any> = (
     []
   ); // end onSubmit()
 
-  // ##############################################################################################
-  const onCodeEditorChange = useCallback((values:any, viewUpdate:any) => {
-    log.info('edit code received value:', values);
-    setRawSchema(JSON.parse(values))
-    log.info('edit code done');
-  }, []);
+  // // ##############################################################################################
+  // const onCodeEditorChange = useCallback((values:any, viewUpdate:any) => {
+  //   log.info('edit code received value:', values);
+  //   setRawSchema(JSON.parse(values))
+  //   log.info('edit code done');
+  // }, []);
 
   log.info(
     "Tools.tsx render",
@@ -559,8 +571,8 @@ export const ToolsPage: React.FC<any> = (
     testSuitesResultsSchema,
     "testSuitesResultsSchema.context",
     testSuitesResultsSchema.context,
-    "resolvedTestResultsJzodSchema",
-    resolvedTestResultsJzodSchema,
+    // "resolvedTestResultsJzodSchema",
+    // resolvedTestResultsJzodSchema,
     // (resolvedTestResultsJzodSchema as any)?.element,
   );
   return (
@@ -574,6 +586,104 @@ export const ToolsPage: React.FC<any> = (
           />
         
       <div>Hello World!</div>
+      
+      {/* resolveConditionalSchema Test Button */}
+      <div style={{ margin: "20px 0" }}>
+        <ActionButton
+          onAction={async () => {
+            // Reset previous results
+            setResolveConditionalSchemaResults("");
+            TestSuiteContext.resetResults();
+            
+            // // Create a mock vitest object with expect function
+            // const mockVitest = {
+            //   expect: (actual: any, message?: string) => ({
+            //     toEqual: (expected: any) => {
+            //       if (JSON.stringify(actual) !== JSON.stringify(expected)) {
+            //         throw new Error(`${message || 'Assertion failed'}: expected ${JSON.stringify(expected)} but got ${JSON.stringify(actual)}`);
+            //       }
+            //     }
+            //   }),
+            //   describe: {
+            //     each: (data: any[]) => (template: string, testFn: any, timeout?: number) => {
+            //       // Simple implementation for describe.each
+            //       return Promise.all(data.map(item => testFn(item)));
+            //     }
+            //   }
+            // };
+            
+            // Run the test suite
+            const testSuitePath = ["resolveConditionalSchema"];
+            await runTransformerTestSuite(
+              { expect, describe },
+              testSuitePath,
+              transformerTestSuite_resolveConditionalSchema,
+              runTransformerTestInMemory
+            );
+            
+            // Get and format results - find the correct test suite key
+            const allResults = TestSuiteContext.getTestAssertionsResults();
+            const availableKeys = Object.keys(allResults);
+            log.info("Available test suite keys:", availableKeys);
+            
+            // Find the key that contains our test suite name
+            const matchingKey = availableKeys.find(key => key.includes("resolveConditionalSchema"));
+            
+            if (!matchingKey) {
+              throw new Error(`No test suite found containing 'resolveConditionalSchema'. Available keys: ${availableKeys.join(', ')}`);
+            }
+            
+            const testSuiteResults = TestSuiteContext.getTestSuiteResult(matchingKey);
+            log.info("resolveConditionalSchema test results:", testSuiteResults);
+            
+            // Format results for display
+            let resultText = "=== resolveConditionalSchema Test Results ===\n\n";
+            
+            if (testSuiteResults && testSuiteResults[matchingKey]) {
+              const suiteResults = testSuiteResults[matchingKey];
+              for (const [testName, testResult] of Object.entries(suiteResults)) {
+                resultText += `Test: ${testResult.testLabel}\n`;
+                resultText += `Result: ${testResult.testResult}\n`;
+                
+                for (const [assertionName, assertion] of Object.entries(testResult.testAssertionsResults)) {
+                  resultText += `  Assertion: ${assertionName} - ${assertion.assertionResult}\n`;
+                  if (assertion.assertionResult !== "ok") {
+                    resultText += `    Expected: ${JSON.stringify(assertion.assertionExpectedValue, null, 2)}\n`;
+                    resultText += `    Actual: ${JSON.stringify(assertion.assertionActualValue, null, 2)}\n`;
+                  }
+                }
+                resultText += "\n";
+              }
+            } else {
+              resultText += "No test results found or test suite not executed properly.\n";
+            }
+            
+            setResolveConditionalSchemaResults(resultText);
+          }}
+          successMessage="resolveConditionalSchema tests completed successfully"
+          label="Run resolveConditionalSchema Tests"
+          handleAsyncAction={handleAsyncAction}
+          actionName="run resolveConditionalSchema tests"
+        />
+      </div>
+      
+      {/* Test Results Display */}
+      {resolveConditionalSchemaResults && (
+        <div style={{ margin: "20px 0" }}>
+          <h3>resolveConditionalSchema Test Results:</h3>
+          <pre style={{ 
+            backgroundColor: "#f5f5f5", 
+            padding: "10px", 
+            borderRadius: "4px", 
+            fontSize: "12px",
+            overflow: "auto",
+            maxHeight: "400px",
+            whiteSpace: "pre-wrap"
+          }}>
+            {resolveConditionalSchemaResults}
+          </pre>
+        </div>
+      )}
       {/* test results */}
       <div>
         {
@@ -637,9 +747,9 @@ export const ToolsPage: React.FC<any> = (
           {(formik) => (
             <>
               <form id={"form." + pageLabel} onSubmit={formik.handleSubmit}>
-                {resolvedJzodSchema === defaultObject ? (
+                {/* {resolvedJzodSchema === defaultObject ? (
                   <div>no object definition found!</div>
-                ) : (
+                ) : ( */}
                   <>
                     {/* <JzodElementEditor
                       name={"ROOT"}
@@ -664,7 +774,7 @@ export const ToolsPage: React.FC<any> = (
                       submit form.{pageLabel}
                     </button>
                   </>
-                )}
+                {/* )} */}
               </form>
             </>
           )}
