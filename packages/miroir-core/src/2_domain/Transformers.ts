@@ -29,6 +29,9 @@ import transformer_objectEntries_json from '../assets/miroir_data/a557419d-a288-
 import transformer_objectValues_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/8b03069a-f812-4334-a530-e7f8fd684744.json';
 import transformer_parameterReference_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/af5029f2-b42e-4541-8e50-4e2f2d8fcfab.json';
 import transformer_unique_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/a93aec8f-3f8b-4129-a907-e7321c1e7171.json';
+// MMLS
+import transformer_resolveConditionalSchema_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/70f5e617-2aa3-4dc4-b897-4cc3cffa3405.json';
+
 
 export const transformer_menu_addItem: TransformerDefinition = transformer_menu_addItem_json as TransformerDefinition;
 // 
@@ -58,10 +61,14 @@ export const transformer_objectValues: TransformerDefinition = transformer_objec
 export const transformer_object_fullTemplate: TransformerDefinition = transformer_objectFullTemplate_json as TransformerDefinition;
 export const transformer_parameterReference: TransformerDefinition = transformer_parameterReference_json as TransformerDefinition;
 export const transformer_unique: TransformerDefinition = transformer_unique_json as TransformerDefinition;
+// MMLS
+export const transformer_resolveConditionalSchema: TransformerDefinition = transformer_resolveConditionalSchema_json as TransformerDefinition;
 
-export const miroirTransformers: Record<string,TransformerDefinition> = {
-  transformer_menu_addItem,
-  // 
+export const mmlsTransformers: Record<string,TransformerDefinition> = {
+  transformer_resolveConditionalSchema,
+};
+
+export const miroirCoreTransformers: Record<string,TransformerDefinition> = {
   transformer_constant,
   transformer_constantArray,
   transformer_constantBoolean,
@@ -88,6 +95,13 @@ export const miroirTransformers: Record<string,TransformerDefinition> = {
   transformer_parameterReference,
   transformer_unique,
   transformer_constantBigint,
+  // MMLS
+  ...mmlsTransformers,
+};
+export const miroirTransformers: Record<string,TransformerDefinition> = {
+  transformer_menu_addItem,
+  ...miroirCoreTransformers,
+  ...mmlsTransformers,
 };
 export const transformerForBuildNames = Object.keys(miroirTransformers)
   .filter((e) => e != "transformer_contextReference")

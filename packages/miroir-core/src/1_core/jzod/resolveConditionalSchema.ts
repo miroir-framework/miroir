@@ -4,7 +4,10 @@ import { Uuid } from '../../0_interfaces/1_core/EntityDefinition';
 import {
   EntityDefinition,
   EntityInstancesUuidIndex,
-  JzodElement
+  JzodElement,
+  type TransformerForBuild_resolveConditionalSchema,
+  type TransformerForBuildPlusRuntime_resolveConditionalSchema,
+  type TransformerForRuntime_resolveConditionalSchema
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { ReduxDeploymentsState } from "../../0_interfaces/2_domain/ReduxDeploymentsStateInterface";
 import { LoggerInterface } from "../../0_interfaces/4-services/LoggerInterface";
@@ -13,6 +16,7 @@ import { packageName } from "../../constants";
 import { RelativePath, resolveRelativePath } from '../../tools';
 import { cleanLevel } from "../constants";
 import { getEntityInstancesUuidIndexNonHook } from "../../2_domain/ReduxDeploymentsStateQueryExecutor";
+import type { ResolveBuildTransformersTo, Step } from "../../2_domain/TransformersForRuntime";
 
 // Error value types for resolveConditionalSchema
 export type ResolveConditionalSchemaError =
@@ -28,7 +32,36 @@ MiroirLoggerFactory.registerLoggerToStart(
 ).then((logger: LoggerInterface) => {log = logger});
 
 // ################################################################################################
+export function resolveConditionalSchemaTransformer(
+  step: Step,
+  label: string | undefined,
+  transformer:
+    | TransformerForBuild_resolveConditionalSchema
+    | TransformerForRuntime_resolveConditionalSchema
+    | TransformerForBuildPlusRuntime_resolveConditionalSchema,
+  resolveBuildTransformersTo: ResolveBuildTransformersTo,
+  queryParams: Record<string, any>,
+  contextResults?: Record<string, any>
+): ResolveConditionalSchemaResult {
+  return resolveConditionalSchema(
+    transformer.schema,
+    transformer.valueObject, // Use rootObject from contextResults or an empty object
+    transformer.valuePath || [], // Use currentValuePath from contextResults or an
+    transformer?.reduxDeploymentsState, // Use reduxDeploymentsState from contextResults
+    transformer?.deploymentUuid, // Use deploymentUuid from contextResults
+    transformer.context
+  );
+}
+// ################################################################################################
 export function resolveConditionalSchema(
+  // step: Step,
+  // label: string | undefined,
+  // transformer: T,
+  // resolveBuildTransformersTo: ResolveBuildTransformersTo,
+  // queryParams: Record<string, any>,
+  // contextResults?: Record<string, any>
+
+  // 
   jzodSchema: JzodElement,
   rootObject: any, // Changed from currentDefaultValue to rootObject
   currentValuePath: string[],

@@ -63,6 +63,7 @@ import { resolvePathOnObject } from "../tools";
 import { cleanLevel } from "./constants";
 import { transformer_spreadSheetToJzodSchema } from "./Transformer_Spreadsheet";
 import {
+  mmlsTransformers,
   transformer_constant,
   transformer_constantArray,
   transformer_constantAsExtractor,
@@ -91,6 +92,7 @@ import {
   transformer_parameterReference,
   transformer_unique,
 } from "./Transformers";
+import { resolveConditionalSchema, resolveConditionalSchemaTransformer } from '../1_core/jzod/resolveConditionalSchema';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -160,11 +162,13 @@ const inMemoryTransformerImplementations: Record<string, ITransformerHandler<any
   transformer_object_listReducerToSpreadObject_apply: defaultTransformers.transformer_object_listReducerToSpreadObject_apply,
   transformerForBuild_list_listMapperToList_apply:
     defaultTransformers.transformerForBuild_list_listMapperToList_apply,
+  // MMLS
+  "transformer_resolveConditionalSchema": resolveConditionalSchemaTransformer,
 };
 
 export const applicationTransformerDefinitions: Record<string, TransformerDefinition> = {
   transformer_menu_addItem: transformer_menu_addItem,
-  // 
+  //
   spreadSheetToJzodSchema: transformer_spreadSheetToJzodSchema,
   count: transformer_count,
   constant: transformer_constant,
@@ -192,6 +196,13 @@ export const applicationTransformerDefinitions: Record<string, TransformerDefini
   object_fullTemplate: transformer_object_fullTemplate,
   parameterReference: transformer_parameterReference,
   unique: transformer_unique,
+  // MMLS
+  ...Object.fromEntries(
+    Object.entries(mmlsTransformers).map(([key, value]) => [
+      key.replace("transformer_", ""),
+      value as TransformerDefinition,
+    ])
+  ),
 };
 
 // ################################################################################################

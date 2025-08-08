@@ -20,6 +20,7 @@ import {
   miroirTransformersForBuild,
   miroirTransformersForBuildPlusRuntime,
   miroirTransformersForRuntime,
+  mmlsTransformers,
   transformerForBuildNames,
   transformerForBuildPlusRuntimeNames,
   transformerForRuntimeNames
@@ -757,6 +758,11 @@ export function getMiroirFundamentalJzodSchema(
         transformerForBuild_parameterReference:
           miroirTransformersForBuild.transformer_parameterReference,
         transformerForBuild_unique: miroirTransformersForBuild.transformer_unique,
+        // MMLS
+        ...Object.fromEntries(Object.entries(mmlsTransformers).map(([key, value]) => [
+          key.replace("transformer_", "transformerForBuild_"),
+          miroirTransformersForBuild[key as keyof typeof miroirTransformersForBuild]])),
+        // 
         transformerForBuild: {
           type: "union",
           discriminator: ["transformerType", "interpolation"],
@@ -830,6 +836,10 @@ export function getMiroirFundamentalJzodSchema(
         transformerForRuntime_object_fullTemplate:
           miroirTransformersForRuntime.transformer_object_fullTemplate,
         transformerForRuntime_unique: miroirTransformersForRuntime.transformer_unique,
+        // MMLS
+        ...Object.fromEntries(Object.entries(mmlsTransformers).map(([key, value]) => [
+          key.replace("transformer_", "transformerForRuntime_"),
+          miroirTransformersForBuild[key as keyof typeof miroirTransformersForRuntime]])),
         // extendedTransformerForRuntime: {
         //   type: "schemaReference",
         //   definition: {
@@ -941,6 +951,10 @@ export function getMiroirFundamentalJzodSchema(
           miroirTransformersForBuildPlusRuntime.transformer_object_fullTemplate,
         transformerForBuildPlusRuntime_unique:
           miroirTransformersForBuildPlusRuntime.transformer_unique,
+        // MMLS
+        ...Object.fromEntries(Object.entries(mmlsTransformers).map(([key, value]) => [
+          key.replace("transformer_", "transformerForBuildPlusRuntime_"),
+          miroirTransformersForBuild[key as keyof typeof miroirTransformersForBuildPlusRuntime]])),
         transformerForBuildPlusRuntime: {
           type: "union",
           optInDiscriminator: true,
