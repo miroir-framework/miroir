@@ -46,6 +46,7 @@ import { packageName } from "../../../../constants.js";
 import { deleteCascade } from "../../scripts.js";
 import {
   useDomainControllerService,
+  useMiroirContextInnerFormOutput,
   useMiroirContextService,
   useSnackbar,
 } from "../../MiroirContextReactProvider.js";
@@ -221,8 +222,8 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
 
   // ##############################################################################################
   const [addObjectdialogFormIsOpen, setAddObjectdialogFormIsOpen] = useState(false);
-  // const [dialogOuterFormObject, setdialogOuterFormObject] = useMiroirContextInnerFormOutput();
-  const [dialogOuterFormObject, setdialogOuterFormObject] = useState({});
+  const [dialogOuterFormObject, setdialogOuterFormObject] = useMiroirContextInnerFormOutput();
+  // const [dialogOuterFormObject, setdialogOuterFormObject] = useState({});
 
   const miroirMetaModel: MetaModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
   const currentModel: MetaModel = useCurrentModel(props.deploymentUuid)
@@ -281,6 +282,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   const currentReportTargetEntityDefinition: EntityDefinition | undefined =
     entityDefinitions?.find((e:EntityDefinition) => e?.entityUuid === currentReportTargetEntity?.uuid);
 
+  log.info("ReportSectionListDisplay currentReportTargetEntity", currentReportTargetEntity, "currentReportTargetEntityDefinition", currentReportTargetEntityDefinition);
   // TODO: AMBIGUOUS!! APPEARS ALSO IN THE Report DEFINITION. PROVIDE A DIRECT WAY TO DETERMINE THIS?
   // const currentApplicationSection = (props.section?.definition as any)["applicationSection"]??"data";
   const currentApplicationSection = props.chosenApplicationSection??"data";
@@ -622,40 +624,45 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   const handleAddObjectDialogFormOpen = useCallback(
     // (label: string  | undefined, a: any) => {
     () => {
+      const defaultFormValuesObject =
+        currentReportTargetEntity &&
+        currentReportTargetEntityDefinition &&
+        currentReportTargetEntityDefinition?.jzodSchema &&
+        context.miroirFundamentalJzodSchema
+          ? getDefaultValueForJzodSchemaWithResolutionNonHook(
+              "", // rootLessListKey,
+              currentReportTargetEntityDefinition?.jzodSchema,
+              undefined, // No need to pass currentDefaultValue here
+              [], // currentPath on value is root
+              deploymentEntityState,
+              false, // forceOptional
+              props.deploymentUuid,
+              context.miroirFundamentalJzodSchema,
+              currentModel,
+              miroirMetaModel,
+              {}, // relativeReferenceJzodContext
+              undefined // rootObject
+            )
+          : undefined;
 
-    const defaultFormValuesObject = 
-      currentReportTargetEntity &&
-      currentReportTargetEntityDefinition &&
-      currentReportTargetEntityDefinition?.jzodSchema &&
-      context.miroirFundamentalJzodSchema
-        ? getDefaultValueForJzodSchemaWithResolutionNonHook(
-            "", // rootLessListKey,
-            currentReportTargetEntityDefinition?.jzodSchema,
-            undefined, // No need to pass currentDefaultValue here
-            [], // currentPath on value is root
-            deploymentEntityState,
-            false, // forceOptional
-            props.deploymentUuid,
-            context.miroirFundamentalJzodSchema,
-            currentModel,
-            miroirMetaModel,
-            {}, // relativeReferenceJzodContext
-            undefined // rootObject
-          )
-        : undefined;
+      log.info(
+        "handleAddObjectDialogFormOpen",
+        "called, formObject",
+        defaultFormValuesObject,
+        "currentReportTargetEntityDefinition",
+        currentReportTargetEntityDefinition
+      );
 
-    log.info(
-      "handleAddObjectDialogFormOpen",
-      "called, formObject",
-      defaultFormValuesObject,
-      "currentReportTargetEntityDefinition",
+      setdialogOuterFormObject(defaultFormValuesObject);
+      setAddObjectdialogFormIsOpen(true);
+    },
+    [
+      setAddObjectdialogFormIsOpen,
+      setdialogOuterFormObject,
+      currentReportTargetEntity,
       currentReportTargetEntityDefinition,
-    );
-
-    setdialogOuterFormObject(defaultFormValuesObject);
-    setAddObjectdialogFormIsOpen(true);
-    
-  },[setAddObjectdialogFormIsOpen, setdialogOuterFormObject]);
+    ]
+  );
 
   // ##############################################################################################
   const handleAddObjectDialogTableRowFormClose = useCallback((value?: string, event?:any) => {

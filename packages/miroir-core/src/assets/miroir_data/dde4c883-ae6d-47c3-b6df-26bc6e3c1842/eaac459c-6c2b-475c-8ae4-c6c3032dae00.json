@@ -62,6 +62,13 @@
             "icon": "list"
           },
           {
+            "label": "Miroir Transformer Tests",
+            "section": "data",
+            "selfApplication": "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
+            "reportUuid": "963f9cfb-1f26-4e9a-8031-7627151630ae",
+            "icon": "list"
+          },
+          {
             "label": "Miroir Tests",
             "section": "data",
             "selfApplication": "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",

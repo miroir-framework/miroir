@@ -921,6 +921,7 @@ const entitySelfApplicationModelBranch = require("./assets/miroir_model/16dbfe28
 const entityStoreBasedConfiguration = require("./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/7990c0c9-86c3-40a1-a121-036c91b55ed7.json");
 const entityQueryVersion = require("./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/e4320b9e-ab45-4abe-85d8-359604b3c62f.json");
 const entityTest = require("./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/c37625c7-0b35-4d6a-811d-8181eb978301.json");
+const entityTransformerTest = require("./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/681be9ca-c593-45f5-b45a-5f1d4969e91e.json");
 
 const entityDefinitionAdminApplication = require("../src/assets/admin_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/3fb6203e-f639-4b2a-afe1-e1fb45d6b2ea.json");
 const entityDefinitionEndpoint = require("./assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/e3c1cc69-066d-4f52-beeb-b659dc7a88b9.json");
@@ -935,6 +936,7 @@ const entityDefinitionSelfApplicationDeploymentConfiguration = require("./assets
 const entityDefinitionSelfApplicationVersion = require("./assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/27046fce-742f-4cc4-bb95-76b271f490a5.json");
 const entityDefinitionSelfApplicationModelBranch = require("./assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/69bf7c03-a1df-4d1c-88c1-44363feeea87.json");
 const entityDefinitionTest = require("./assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/d2842a84-3e66-43ee-ac58-7e13b95b01e8.json");
+const entityDefinitionTransformerTest = require("./assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/405bb1fc-a20f-4def-9d3a-206f72350633.json");
 
 const selfApplicationMiroir = require("./assets/miroir_data/a659d350-dd97-4da9-91de-524fa01745dc/21840247-b5b1-4344-baec-f818f4797d92.json");
 const selfApplicationDeploymentMiroir = require("./assets/miroir_data/35c5608a-7678-4f07-a4ec-76fc5bc35424/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json");
@@ -959,6 +961,8 @@ const reportReportList = require("./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6
 const reportReportDetails = require("./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/ef57aada-6b77-4384-8007-12f13eddd337.json");
 const reportTestList = require("./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/683ba925-835e-4f9d-845b-7fae500316ad.json");
 const reportTestDetails = require("./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/d65d8dc8-2a7f-4111-81b1-0324e816c1a8.json");
+const reportTransformerTestList = require("./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/963f9cfb-1f26-4e9a-8031-7627151630ae.json");
+const reportTransformerTestDetails = require("./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/1c06268b-2ddb-433c-ae4f-46546908125d.json");
 
 const queryVersionBundleProducerV1 = require("./assets/miroir_data/e4320b9e-ab45-4abe-85d8-359604b3c62f/e8c15587-af5d-4c08-b5b7-22f959447690.json");
 
@@ -1033,6 +1037,7 @@ export {
   entityDefinitionSelfApplicationVersion,
   entityDefinitionStoreBasedConfiguration,
   entityDefinitionTest,
+  entityDefinitionTransformerTest,
   entityDefinitionTransformerDefinition,
   entityEndpointVersion,
   entityEntity,
@@ -1048,6 +1053,7 @@ export {
   entitySelfApplicationVersion,
   entityStoreBasedConfiguration,
   entityTest,
+  entityTransformerTest,
   instanceEndpointV1,
   instanceEndpointVersionV1,
   jzodSchemajzodMiroirBootstrapSchema,
@@ -1077,6 +1083,8 @@ export {
   reportReportDetails,
   reportTestDetails,
   reportTestList,
+  reportTransformerTestList,
+  reportTransformerTestDetails,
   selfApplicationDeploymentMiroir,
   selfApplicationMiroir,
   selfApplicationModelBranchMiroirMasterBranch,

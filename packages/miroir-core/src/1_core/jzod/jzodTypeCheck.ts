@@ -795,7 +795,7 @@ export function jzodTypeCheck(
     const isOptional = jzodSchema.optional === true;
     const isNullable = jzodSchema.nullable === true;
     
-    if (!isOptional && !isNullable) {
+    if (!isOptional && !isNullable && jzodSchema.type !== "any") {
       return {
         status: "error",
         error: `jzodTypeCheck expected a value but got ${valueObject === null ? 'null' : 'undefined'} for non-optional schema`,
@@ -863,12 +863,19 @@ export function jzodTypeCheck(
         miroirMetaModel,
         newContext
       );
-      // log.info(
-      //   "jzodTypeCheck schemaReference resultJzodSchema",
-      //   JSON.stringify(resolvedJzodSchema, null, 2),
-      //   "valueObject",
-      //   JSON.stringify(valueObject, null, 2)
-      // );
+      log.info(
+        "jzodTypeCheck schemaReference",
+        "effectiveSchema",
+        effectiveSchema,
+        "resultJzodSchema",
+        resolvedJzodSchema,
+        // JSON.stringify(resolvedJzodSchema, null, 2),
+        "valueObject",
+        valueObject,
+        "newContext",
+        newContext,
+        // JSON.stringify(valueObject, null, 2)
+      );
       const typeCheck = jzodTypeCheck(
         resolvedJzodSchema,
         valueObject,
@@ -880,7 +887,6 @@ export function jzodTypeCheck(
         newContext,
         currentDefaultValue,
         reduxDeploymentsState,
-        // getEntityInstancesUuidIndex,
         deploymentUuid,
         rootObject
       );

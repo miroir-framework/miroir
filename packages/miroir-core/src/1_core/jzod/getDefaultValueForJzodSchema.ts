@@ -78,8 +78,8 @@ export function getDefaultValueForJzodSchemaWithResolution(
   if (effectiveSchema.optional && !forceOptional) {
     return undefined;
   }
-  // let result
 
+  // handle initializeTo tag
   if (
     effectiveSchema.tag &&
     effectiveSchema.tag.value &&
@@ -320,12 +320,14 @@ export function getDefaultValueForJzodSchemaWithResolution(
       return {};
     }
     case "schemaReference": {
+      const localContext = effectiveSchema.context?{...relativeReferenceJzodContext, ...effectiveSchema.context}:relativeReferenceJzodContext
+
       const resolvedReference = resolveJzodSchemaReferenceInContext(
         miroirFundamentalJzodSchema,
         effectiveSchema,
         currentModel,
         miroirMetaModel,
-        relativeReferenceJzodContext
+        localContext,
       );
       return getDefaultValueForJzodSchemaWithResolution(
         rootLessListKey,
@@ -335,12 +337,10 @@ export function getDefaultValueForJzodSchemaWithResolution(
         reduxDeploymentsState,
         forceOptional,
         deploymentUuid,
-        // applicationSection,
-        // deploymentEntityStateSelectorMap,
         miroirFundamentalJzodSchema,
         currentModel,
         miroirMetaModel,
-        relativeReferenceJzodContext,
+        localContext, //relativeReferenceJzodContext
         rootObject
       );
       // throw new Error(

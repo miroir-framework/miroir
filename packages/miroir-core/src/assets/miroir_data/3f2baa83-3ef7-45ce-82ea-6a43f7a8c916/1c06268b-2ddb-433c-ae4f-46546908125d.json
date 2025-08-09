@@ -1,0 +1,40 @@
+{
+  "uuid": "1c06268b-2ddb-433c-ae4f-46546908125d",
+  "selfApplication": "21840247-b5b1-4344-baec-f818f4797d92",
+  "parentName": "Report",
+  "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+  "conceptLevel": "Model",
+  "name": "TransformerTestsDetails",
+  "defaultLabel": "Details of Transformer Test",
+  "definition": {
+    "extractorTemplates": {
+      "elementToDisplay": {
+        "extractorTemplateType": "extractorForObjectByDirectReference",
+        "parentName": "TransformerDefinition",
+        "parentUuid": {
+          "interpolation": "build",
+          "transformerType": "constantUuid",
+          "value": "681be9ca-c593-45f5-b45a-5f1d4969e91e"
+        },
+        "instanceUuid": {
+          "transformerType": "parameterReference",
+          "interpolation": "build",
+          "referenceName": "instanceUuid"
+        }
+      }
+    },
+    "section": {
+      "type": "list",
+      "definition": [
+        {
+          "type": "objectInstanceReportSection",
+          "definition": {
+            "label": "My Transformer Test",
+            "parentUuid": "681be9ca-c593-45f5-b45a-5f1d4969e91e",
+            "fetchedDataReference": "elementToDisplay"
+          }
+        }
+      ]
+    }
+  }
+}

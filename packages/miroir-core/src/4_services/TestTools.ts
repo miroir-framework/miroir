@@ -26,6 +26,54 @@ import { TestSuiteContext } from "./TestSuiteContext";
     transformerTestLabel: string;
     transformerTests: Record<string, TransformerTestSuite>;
   }
+
+  // ################################################################################################
+  // Jzod schemas for TransformerTest and TransformerTestSuite
+
+  export const transformerTestJzodSchema = {
+    type: "object",
+    definition: {
+      transformerTestType: { type: "literal", definition: "transformerTest" },
+      transformerTestLabel: { type: "string" },
+      transformerName: { type: "string" },
+      transformer: { type: "any" },
+      runTestStep: { type: "string", optional: true },
+      transformerParams: { type: "record", definition: { type: "any" } },
+      transformerRuntimeContext: {
+        type: "record",
+        definition: { type: "any" },
+        optional: true,
+      },
+      expectedValue: { type: "any" },
+      ignoreAttributes: {
+        type: "array",
+        definition: { type: "string" },
+        optional: true,
+      },
+    },
+  };
+
+  export const transformerTestSuiteJzodSchema = {
+    type: "union",
+    discriminator: "transformerTestType",
+    definition: [
+      { type: "schemaReference", definition: { relativePath: "transformerTestJzodSchema" } },
+      {
+        type: "object",
+        definition: {
+          transformerTestType: { type: "literal", definition: "transformerTestSuite" },
+          transformerTestLabel: { type: "string" },
+          transformerTests: {
+            type: "record",
+            definition: {
+              type: "schemaReference",
+              definition: { relativePath: "transformerTestSuiteJzodSchema" },
+            },
+          },
+        },
+      },
+    ],
+  };
   
 // ################################################################################################
 export const globalTimeOut = 30000;

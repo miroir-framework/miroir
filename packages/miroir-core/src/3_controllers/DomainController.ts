@@ -1249,17 +1249,6 @@ export class DomainController implements DomainControllerInterface {
 
     if (
       // !(
-      //   domainAction.actionType == "initModel" ||
-      //   domainAction.actionType == "commit" ||
-      //   domainAction.actionType == "rollback" ||
-      //   domainAction.actionType == "remoteLocalCacheRollback" ||
-      //   domainAction.actionType == "resetModel" ||
-      //   domainAction.actionType == "resetData" ||
-      //   domainAction.actionType == "alterEntityAttribute" ||
-      //   domainAction.actionType == "renameEntity" ||
-      //   domainAction.actionType == "createEntity" ||
-      //   domainAction.actionType == "dropEntity"
-      // ) ||
       domainAction.actionType != "initModel") {
       log.debug(
         "DomainController handleAction domainAction",
@@ -1283,16 +1272,16 @@ export class DomainController implements DomainControllerInterface {
           break;
         }
         // case "modelAction":
-        case 'initModel':
-        case 'commit':
-        case 'rollback':
-        case 'remoteLocalCacheRollback':
-        case 'resetModel':
-        case 'resetData':
-        case 'alterEntityAttribute':
-        case 'renameEntity':
-        case 'createEntity':
-        case 'dropEntity': {
+        case "initModel":
+        case "commit":
+        case "rollback":
+        case "remoteLocalCacheRollback":
+        case "resetModel":
+        case "resetData":
+        case "alterEntityAttribute":
+        case "renameEntity":
+        case "createEntity":
+        case "dropEntity": {
           if (!currentModel) {
             throw new Error(
               "DomainController handleAction for modelAction needs a currentModel argument"
@@ -1301,23 +1290,25 @@ export class DomainController implements DomainControllerInterface {
           return this.handleModelAction(domainAction.deploymentUuid, domainAction, currentModel);
         }
         // case "instanceAction": {
-        case 'createInstance':
-        case 'deleteInstance':
-        case 'deleteInstanceWithCascade':
-        case 'updateInstance':
-        case 'loadNewInstancesInLocalCache':
-        case 'getInstance':
-        case 'getInstances': {
+        case "createInstance":
+        case "deleteInstance":
+        case "deleteInstanceWithCascade":
+        case "updateInstance":
+        case "loadNewInstancesInLocalCache":
+        case "getInstance":
+        case "getInstances": {
           return this.handleInstanceAction(domainAction.deploymentUuid, domainAction);
         }
         // case "storeManagementAction": {
-          case "storeManagementAction_createStore":
-          case "storeManagementAction_deleteStore":
-          case "storeManagementAction_resetAndInitApplicationDeployment":
-          case "storeManagementAction_openStore":
-          case "storeManagementAction_closeStore": {
+        case "storeManagementAction_createStore":
+        case "storeManagementAction_deleteStore":
+        case "storeManagementAction_resetAndInitApplicationDeployment":
+        case "storeManagementAction_openStore":
+        case "storeManagementAction_closeStore": {
           // if (domainAction.actionName == "storeManagementAction_resetAndInitApplicationDeployment") {
-          if (domainAction.actionType == "storeManagementAction_resetAndInitApplicationDeployment") {
+          if (
+            domainAction.actionType == "storeManagementAction_resetAndInitApplicationDeployment"
+          ) {
             await resetAndInitApplicationDeployment(
               this,
               domainAction.deployments as any as SelfApplicationDeploymentConfiguration[]

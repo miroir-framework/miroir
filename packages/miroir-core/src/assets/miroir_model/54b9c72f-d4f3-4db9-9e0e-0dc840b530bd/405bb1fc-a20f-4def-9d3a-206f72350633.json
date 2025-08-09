@@ -1,0 +1,156 @@
+{
+  "parentName": "EntityDefinition",
+  "name": "TransformerTest",
+  "uuid": "405bb1fc-a20f-4def-9d3a-206f72350633",
+  "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+  "entityUuid": "681be9ca-c593-45f5-b45a-5f1d4969e91e",
+  "conceptLevel": "Model",
+  "defaultInstanceDetailsReportUuid": "1c06268b-2ddb-433c-ae4f-46546908125d",
+  "jzodSchema": {
+    "type": "object",
+    "definition": {
+      "uuid": {
+        "type": "string",
+        "validations": [
+          {
+            "type": "uuid"
+          }
+        ],
+        "tag": {
+          "value": {
+            "id": 1,
+            "defaultLabel": "Uuid",
+            "editable": false
+          }
+        }
+      },
+      "parentName": {
+        "type": "string",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 1,
+            "defaultLabel": "Uuid",
+            "editable": false
+          }
+        }
+      },
+      "parentUuid": {
+        "type": "string",
+        "validations": [
+          {
+            "type": "uuid"
+          }
+        ],
+        "tag": {
+          "value": {
+            "id": 1,
+            "defaultLabel": "parentUuid",
+            "editable": false
+          }
+        }
+      },
+      "selfApplication": {
+        "type": "uuid",
+        "tag": {
+          "value": {
+            "id": 9,
+            "defaultLabel": "SelfApplication",
+            "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
+            "editable": false
+          }
+        }
+      },
+      "branch": {
+        "type": "uuid",
+        "tag": {
+          "value": {
+            "id": 10,
+            "defaultLabel": "Branch",
+            "description": "The Branch of the SelfApplication",
+            "editable": false
+          }
+        }
+      },
+      "name": {
+        "type": "string",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 1,
+            "defaultLabel": "Name",
+            "editable": true
+          }
+        }
+      },
+      "description": {
+        "type": "string",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 1,
+            "defaultLabel": "Name",
+            "editable": true
+          }
+        }
+      },
+      "definition": {
+        "type": "schemaReference",
+        "context": {
+          "transformerTestJzodSchema": {
+            "type": "object",
+            "definition": {
+              "transformerTestType": { "type": "literal", "definition": "transformerTest" },
+              "transformerTestLabel": { "type": "string" },
+              "transformerName": { "type": "string" },
+              "transformer": { "type": "any" },
+              "runTestStep": { "type": "string", "optional": true },
+              "transformerParams": { "type": "record", "definition": { "type": "any" } },
+              "transformerRuntimeContext": {
+                "type": "record",
+                "definition": { "type": "any" },
+                "optional": true
+              },
+              "expectedValue": { "type": "any" },
+              "ignoreAttributes": {
+                "type": "array",
+                "definition": { "type": "string" },
+                "optional": true
+              }
+            }
+          },
+          "transformerTestSuiteJzodSchema": {
+            "type": "union",
+            "discriminator": "transformerTestType",
+            "definition": [
+              {
+                "type": "schemaReference",
+                "definition": { "relativePath": "transformerTestJzodSchema" }
+              },
+              {
+                "type": "object",
+                "definition": {
+                  "transformerTestType": {
+                    "type": "literal",
+                    "definition": "transformerTestSuite"
+                  },
+                  "transformerTestLabel": { "type": "string" },
+                  "transformerTests": {
+                    "type": "record",
+                    "definition": {
+                      "type": "schemaReference",
+                      "definition": { "relativePath": "transformerTestSuiteJzodSchema" }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "definition": {
+          "relativePath": "transformerTestSuiteJzodSchema"
+        }
+      }
+    }
+  }
+}
