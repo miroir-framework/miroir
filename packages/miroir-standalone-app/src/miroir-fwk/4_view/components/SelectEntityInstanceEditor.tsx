@@ -36,7 +36,7 @@ import { cleanLevel } from "../constants.js";
 import {
   useMiroirContextService
 } from '../MiroirContextReactProvider.js';
-import { TableComponentRow } from "./Grids/MTableComponentInterface.js";
+import { TableComponentRow } from "./Grids/EntityInstanceGridInterface.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

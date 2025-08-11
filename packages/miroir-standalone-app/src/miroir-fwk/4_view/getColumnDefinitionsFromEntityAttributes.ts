@@ -17,7 +17,7 @@ import {
 } from "./components/SelectEntityInstanceEditor.js";
 import { cleanLevel } from "./constants.js";
 import { calculateAdaptiveColumnWidths, ColumnWidthSpec } from "./adaptiveColumnWidths.js";
-import { TableComponentRow } from "./components/Grids/MTableComponentInterface.js";
+import { TableComponentRow } from "./components/Grids/EntityInstanceGridInterface.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

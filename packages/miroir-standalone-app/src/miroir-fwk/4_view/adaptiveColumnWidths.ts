@@ -1,5 +1,5 @@
 import { JzodElement } from "miroir-core";
-import { TableComponentRow } from "./components/Grids/MTableComponentInterface.js";
+import { TableComponentRow } from "./components/Grids/EntityInstanceGridInterface.js";
 
 export interface ColumnWidthSpec {
   field: string;

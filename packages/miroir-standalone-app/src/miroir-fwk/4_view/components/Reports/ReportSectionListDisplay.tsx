@@ -56,8 +56,8 @@ import { getColumnDefinitionsFromEntityDefinitionJzodObjectSchema } from "../../
 import { analyzeForeignKeyAttributes, convertToLegacyFormat } from "../../utils/foreignKeyAttributeAnalyzer.js";
 import { JsonObjectEditFormDialog, JsonObjectEditFormDialogInputs } from "../JsonObjectEditFormDialog.js";
 import { noValue } from "../ValueObjectEditor/JzodElementEditorInterface.js";
-import { MTableComponent } from "../Grids/MTableComponent.js";
-import { TableComponentType, TableComponentTypeSchema } from "../Grids/MTableComponentInterface.js";
+import { EntityInstanceGrid } from "../Grids/EntityInstanceGrid.js";
+import { TableComponentType, TableComponentTypeSchema } from "../Grids/EntityInstanceGridInterface.js";
 import { useRenderTracker } from "../../tools/renderCountTracker.js";
 import { ThemedBox, ThemedButton, ThemedSpan } from "../Themes/ThemedComponents.js";
 import { useSelector } from "react-redux";
@@ -741,7 +741,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
             {props.displayedDeploymentDefinition ? (
               <div>
                 {/* <div>instancesToDisplay: {JSON.stringify(instancesToDisplay)}</div> */}
-                <MTableComponent
+                <EntityInstanceGrid
                   type={props.tableComponentReportType}
                   displayedDeploymentDefinition={props.displayedDeploymentDefinition}
                   styles={props.styles}
@@ -758,7 +758,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
                   onRowDelete={onDeleteFormObject}
                   sortByAttribute={props.section.definition.sortByAttribute}
                   paramsAsdomainElements={props.paramsAsdomainElements as any} // TODO: which is right? DomainElementObject or record<string, any>?
-                ></MTableComponent>
+                ></EntityInstanceGrid>
               </div>
             ) : (
               <div></div>
@@ -788,14 +788,14 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   //         label='InnerDialog'
   //         onSubmit={onSubmitInnerFormDialog}
   //       />
-  //       <MTableComponent
+  //       <EntityInstanceGrid
   //         type="JSON_ARRAY"
   //         styles={props.styles}
   //         columnDefs={props.columnDefs}
   //         rowData={existingRows}
   //         displayTools={true}
   //       >
-  //       </MTableComponent> */}
+  //       </EntityInstanceGrid> */}
   //     </div>
   //   );
   // }

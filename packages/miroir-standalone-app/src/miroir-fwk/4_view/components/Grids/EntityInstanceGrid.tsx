@@ -53,7 +53,7 @@ import {
   TableComponentProps,
   TableComponentRow,
   TableComponentTypeSchema,
-} from "./MTableComponentInterface.js";
+} from "./EntityInstanceGridInterface.js";
 import { getMemoizedReduxDeploymentsStateSelectorMap } from 'miroir-localcache-redux';
 import { useMiroirTableTheme } from '../../contexts/MiroirThemeContext.js';
 import { TableTheme, DeepPartial, createTableTheme } from '../../themes/TableTheme.js';
@@ -73,13 +73,13 @@ import { generateAgGridStyles, generateGlideTheme, getFilterToolbarStyles } from
 // Usage Examples:
 // 
 // // Use default theme
-// <MTableComponent {...props} />
+// <EntityInstanceGrid {...props} />
 //
 // // Use a predefined theme variant
-// <MTableComponent {...props} theme={darkTableTheme} />
+// <EntityInstanceGrid {...props} theme={darkTableTheme} />
 //
 // // Custom theme with overrides
-// <MTableComponent {...props} theme={{
+// <EntityInstanceGrid {...props} theme={{
 //   colors: { primary: '#ff0000' },
 //   typography: { fontSize: '16px' }
 // }} />
@@ -91,7 +91,7 @@ import { generateAgGridStyles, generateGlideTheme, getFilterToolbarStyles } from
 //     header: { background: '#lightgray' }
 //   }
 // });
-// <MTableComponent {...props} theme={customTheme} />
+// <EntityInstanceGrid {...props} theme={customTheme} />
 //
 // The system automatically generates appropriate styles for both grid types,
 // ensuring visual consistency regardless of which grid implementation is used.
@@ -99,7 +99,7 @@ import { generateAgGridStyles, generateGlideTheme, getFilterToolbarStyles } from
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "MtableComponent")
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "EntityInstanceGrid")
 ).then((logger: LoggerInterface) => {log = logger});
 
 
@@ -117,8 +117,8 @@ const autoSizeStrategy = {
   ]
 };
 // ################################################################################################
-export const MTableComponent = (props: TableComponentProps & { theme?: DeepPartial<TableTheme> }) => {
-  log.info(":::::::::::::::::::::::::: MTableComponent refreshing with props",props);
+export const EntityInstanceGrid = (props: TableComponentProps & { theme?: DeepPartial<TableTheme> }) => {
+  log.info(":::::::::::::::::::::::::: EntityInstanceGrid refreshing with props",props);
   
   // Get theme from context first, then allow prop overrides
   const contextTheme = useMiroirTableTheme();
@@ -159,7 +159,7 @@ export const MTableComponent = (props: TableComponentProps & { theme?: DeepParti
     "viewParams"
   ] as any;
 
-  // log.info("MTableComponent viewParams", viewParams, "defaultViewParamsFromAdminStorageFetchQueryResults", defaultViewParamsFromAdminStorageFetchQueryResults);
+  // log.info("EntityInstanceGrid viewParams", viewParams, "defaultViewParamsFromAdminStorageFetchQueryResults", defaultViewParamsFromAdminStorageFetchQueryResults);
   const gridType = viewParams?.gridType || 'ag-grid';
 
   // ##############################################################################################
@@ -326,12 +326,12 @@ export const MTableComponent = (props: TableComponentProps & { theme?: DeepParti
 
   const [deleteDialogFormIsOpen, setDeleteDialogFormIsOpen] = useState(false);
   
-  // log.info("MTableComponent refreshing with dialogFormObject",dialogFormObject);
+  // log.info("EntityInstanceGrid refreshing with dialogFormObject",dialogFormObject);
 
 
   const miroirMetaModel: MetaModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
   const currentModel: MetaModel = useCurrentModel(contextDeploymentUuid);
-  // log.info("MTableComponent currentModel", currentModel);
+  // log.info("EntityInstanceGrid currentModel", currentModel);
 
   const tableComponentRows: { tableComponentRowUuidIndexSchema: TableComponentRow[] } = useMemo(
     // always use object, not array, to ensure correct refresh!
@@ -374,7 +374,7 @@ export const MTableComponent = (props: TableComponentProps & { theme?: DeepParti
     }),
     [props.instancesToDisplay,props.sortByAttribute]
   );
-  // log.info("MTableComponent tableComponentRows", tableComponentRows);
+  // log.info("EntityInstanceGrid tableComponentRows", tableComponentRows);
 
   // ##############################################################################################
   const onCellValueChanged = useCallback(async (event:CellValueChangedEvent) => {
@@ -531,7 +531,7 @@ export const MTableComponent = (props: TableComponentProps & { theme?: DeepParti
         // Add hysteresis to prevent constant re-calculations on small changes
         if (width > 0 && Math.abs(width - containerWidth) > 10) {
           setContainerWidth(width);
-          log.debug("MTableComponent container width updated:", width);
+          log.debug("EntityInstanceGrid container width updated:", width);
         }
       }
     };
@@ -640,7 +640,7 @@ export const MTableComponent = (props: TableComponentProps & { theme?: DeepParti
     );
     
     // Log the calculated widths for debugging
-    log.info("MTableComponent calculated column widths", {
+    log.info("EntityInstanceGrid calculated column widths", {
       containerWidth,
       stableWidth,
       rowCount,
@@ -748,7 +748,7 @@ export const MTableComponent = (props: TableComponentProps & { theme?: DeepParti
 
     // Apply adaptive widths if we have calculated them
     if (calculatedColumnWidths) {
-      log.info("MTableComponent applying calculated widths to AgGrid columns");
+      log.info("EntityInstanceGrid applying calculated widths to AgGrid columns");
       
       // Apply calculated widths to the base column definitions
       baseColumnDefs.forEach((colDef: any, index) => {
@@ -796,7 +796,7 @@ export const MTableComponent = (props: TableComponentProps & { theme?: DeepParti
   ]);
   
   // log.info(
-  //   "MTableComponent started count",
+  //   "EntityInstanceGrid started count",
   //   count++,
   //   "with props",
   //   props,
@@ -987,7 +987,7 @@ export const MTableComponent = (props: TableComponentProps & { theme?: DeepParti
     >
       {/* Apply unified table styles */}
       <style>{agGridStyles}</style>
-      {/* <span>MtableComponent count {count}</span>
+      {/* <span>EntityInstanceGrid count {count}</span>
       <br /> */}
       {/* <span>{props.type}</span>
       <br /> */}
@@ -1155,7 +1155,7 @@ export const MTableComponent = (props: TableComponentProps & { theme?: DeepParti
             columnDefs={props.columnDefs.columnDefs}
             rowData={props.rowData}
             getRowId={(params: any) => {
-              log.info("MtableComponent getRowId", params);
+              log.info("EntityInstanceGrid getRowId", params);
               return params?.data["uuid"]
                 ? params?.data["uuid"]
                 : params.data["id"]

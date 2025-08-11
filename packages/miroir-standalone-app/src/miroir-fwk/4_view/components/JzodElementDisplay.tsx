@@ -93,14 +93,14 @@ export function JzodElementDisplay(props: JzodElementDisplayProps){
       return (
         <>
         array!
-          {/* <MTableComponent
+          {/* <EntityInstanceGrid
             type="JSON_ARRAY"
             styles={styles}
             columnDefs={{columnDefs:columnDefs}}
             rowData={props.element}
             displayTools={true}
           >
-          </MTableComponent> */}
+          </EntityInstanceGrid> */}
         </>
       )
       break;

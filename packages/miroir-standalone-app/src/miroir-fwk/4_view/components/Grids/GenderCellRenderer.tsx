@@ -6,7 +6,7 @@ import React, { memo, useMemo } from 'react';
 import { packageName } from '../../../../constants';
 import { cleanLevel } from '../../constants';
 import { TableActionButtons } from './TableActionButtons.js';
-import { TableComponentRow } from './MTableComponentInterface.js';
+import { TableComponentRow } from './EntityInstanceGridInterface.js';
 
 // export default (props) => {
 //   const image = props.value === 'Male' ? 'male.png' : 'female.png';

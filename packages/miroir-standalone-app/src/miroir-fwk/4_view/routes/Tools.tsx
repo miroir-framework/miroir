@@ -7,6 +7,7 @@ import { javascript } from "@codemirror/lang-javascript";
 import ReactCodeMirror from "@uiw/react-codemirror";
 import { ChangeEvent, useCallback, useMemo, useState } from "react";
 import { PageContainer } from "../components/Page/PageContainer";
+import { EntityInstanceGrid } from "../components/Grids/EntityInstanceGrid";
 
 // const MyReactCodeMirror: React.Component = ReactCodeMirror
 const MyReactCodeMirror: any = ReactCodeMirror // TODO: solve the mystery: it was once well-typed, now the linter raises an error upon direct (default-typed) use!
@@ -454,134 +455,173 @@ export const ToolsPage: React.FC<any> = (
       <div>
         <EndpointActionCaller
           key={"aaaa"}
-            // currentDeploymentUuid={displayedDeploymentUuid}
-            // currentApplicationSection={displayedApplicationSection}
-            // currentReportUuid={displayedReportUuid}
-          />
-        
-      <div>Hello World!</div>
-      
-      {/* resolveConditionalSchema Test Button */}
-      <div style={{ margin: "20px 0" }}>
-        <ActionButton
-          onAction={async () => {
-            // Reset previous results
-            setResolveConditionalSchemaResults("");
-            TestSuiteContext.resetResults();
-            
-            if (!transformerTestSuite_resolveConditionalSchema) {
-              throw new Error("No transformerTestSuite_resolveConditionalSchema found");
-            }
-            // Run the test suite
-            const testSuitePath = ["resolveConditionalSchema"];
-            await runTransformerTestSuite(
-              { expect, describe },
-              testSuitePath,
-              transformerTestSuite_resolveConditionalSchema.definition,
-              runTransformerTestInMemory
-            );
-            
-            // Get and format results - find the correct test suite key
-            const allResults = TestSuiteContext.getTestAssertionsResults();
-            const availableKeys = Object.keys(allResults);
-            log.info("Available test suite keys:", availableKeys);
-            
-            // Find the key that contains our test suite name
-            const matchingKey = availableKeys.find(key => key.includes("resolveConditionalSchema"));
-            
-            if (!matchingKey) {
-              throw new Error(`No test suite found containing 'resolveConditionalSchema'. Available keys: ${availableKeys.join(', ')}`);
-            }
-            
-            const testSuiteResults = TestSuiteContext.getTestSuiteResult(matchingKey);
-            log.info("resolveConditionalSchema test results:", testSuiteResults);
-            
-            // Format results for display
-            let resultText = "=== resolveConditionalSchema Test Results ===\n\n";
-            
-            if (testSuiteResults && testSuiteResults[matchingKey]) {
-              const suiteResults = testSuiteResults[matchingKey];
-              for (const [testName, testResult] of Object.entries(suiteResults)) {
-                resultText += `Test: ${testResult.testLabel}\n`;
-                resultText += `Result: ${testResult.testResult}\n`;
-                
-                for (const [assertionName, assertion] of Object.entries(testResult.testAssertionsResults)) {
-                  resultText += `  Assertion: ${assertionName} - ${assertion.assertionResult}\n`;
-                  if (assertion.assertionResult !== "ok") {
-                    resultText += `    Expected: ${JSON.stringify(assertion.assertionExpectedValue, null, 2)}\n`;
-                    resultText += `    Actual: ${JSON.stringify(assertion.assertionActualValue, null, 2)}\n`;
-                  }
-                }
-                resultText += "\n";
-              }
-            } else {
-              resultText += "No test results found or test suite not executed properly.\n";
-            }
-            
-            setResolveConditionalSchemaResults(resultText);
-          }}
-          successMessage="resolveConditionalSchema tests completed successfully"
-          label="Run resolveConditionalSchema Tests"
-          handleAsyncAction={handleAsyncAction}
-          actionName="run resolveConditionalSchema tests"
+          // currentDeploymentUuid={displayedDeploymentUuid}
+          // currentApplicationSection={displayedApplicationSection}
+          // currentReportUuid={displayedReportUuid}
         />
-      </div>
-      
-      {/* Test Results Display */}
-      {resolveConditionalSchemaResults && (
-        <div style={{ margin: "20px 0" }}>
-          <h3>resolveConditionalSchema Test Results:</h3>
-          <pre style={{ 
-            backgroundColor: "#f5f5f5", 
-            padding: "10px", 
-            borderRadius: "4px", 
-            fontSize: "12px",
-            overflow: "auto",
-            maxHeight: "400px",
-            whiteSpace: "pre-wrap"
-          }}>
-            {resolveConditionalSchemaResults}
-          </pre>
-        </div>
-      )}
-      {/* test results */}
-      <div>
-        {
-        // currentEnumJzodSchemaResolver != undefined &&
-        testResults &&
-        testSuitesResultsSchema != undefined &&
-        testSuitesResultsSchema.context != undefined &&
-        resolvedTestResultsJzodSchema != undefined ? (
-          <div>
-            <div>Test results:</div>
-            <pre>
-            {testResults["applicative.Library.BuildPlusRuntimeCompositeAction.integ.test"] &&
-              JSON.stringify(
-                testResults["applicative.Library.BuildPlusRuntimeCompositeAction.integ.test"],
-                null,
-                2
-              )}
 
+        <div>Hello World!</div>
+
+        {/* resolveConditionalSchema Test Button */}
+        <div style={{ margin: "20px 0" }}>
+          <ActionButton
+            onAction={async () => {
+              // Reset previous results
+              setResolveConditionalSchemaResults("");
+              TestSuiteContext.resetResults();
+
+              if (!transformerTestSuite_resolveConditionalSchema) {
+                throw new Error("No transformerTestSuite_resolveConditionalSchema found");
+              }
+              // Run the test suite
+              const testSuitePath = ["resolveConditionalSchema"];
+              await runTransformerTestSuite(
+                { expect, describe },
+                testSuitePath,
+                transformerTestSuite_resolveConditionalSchema.definition,
+                runTransformerTestInMemory
+              );
+
+              // Get and format results - find the correct test suite key
+              const allResults = TestSuiteContext.getTestAssertionsResults();
+              const availableKeys = Object.keys(allResults);
+              log.info("Available test suite keys:", availableKeys);
+
+              // Find the key that contains our test suite name
+              const matchingKey = availableKeys.find((key) =>
+                key.includes("resolveConditionalSchema")
+              );
+
+              if (!matchingKey) {
+                throw new Error(
+                  `No test suite found containing 'resolveConditionalSchema'. Available keys: ${availableKeys.join(
+                    ", "
+                  )}`
+                );
+              }
+
+              const testSuiteResults = TestSuiteContext.getTestSuiteResult(matchingKey);
+              log.info("resolveConditionalSchema test results:", testSuiteResults);
+
+              // Format results for display
+              let resultText = "=== resolveConditionalSchema Test Results ===\n\n";
+
+              if (testSuiteResults && testSuiteResults[matchingKey]) {
+                const suiteResults = testSuiteResults[matchingKey];
+                for (const [testName, testResult] of Object.entries(suiteResults)) {
+                  resultText += `Test: ${testResult.testLabel}\n`;
+                  resultText += `Result: ${testResult.testResult}\n`;
+
+                  for (const [assertionName, assertion] of Object.entries(
+                    testResult.testAssertionsResults
+                  )) {
+                    resultText += `  Assertion: ${assertionName} - ${assertion.assertionResult}\n`;
+                    if (assertion.assertionResult !== "ok") {
+                      resultText += `    Expected: ${JSON.stringify(
+                        assertion.assertionExpectedValue,
+                        null,
+                        2
+                      )}\n`;
+                      resultText += `    Actual: ${JSON.stringify(
+                        assertion.assertionActualValue,
+                        null,
+                        2
+                      )}\n`;
+                    }
+                  }
+                  resultText += "\n";
+                }
+              } else {
+                resultText += "No test results found or test suite not executed properly.\n";
+              }
+
+              setResolveConditionalSchemaResults(resultText);
+            }}
+            successMessage="resolveConditionalSchema tests completed successfully"
+            label="Run resolveConditionalSchema Tests"
+            handleAsyncAction={handleAsyncAction}
+            actionName="run resolveConditionalSchema tests"
+          />
+        </div>
+
+        {/* Test Results Display */}
+        {resolveConditionalSchemaResults && (
+          <div style={{ margin: "20px 0" }}>
+            <h3>resolveConditionalSchema Test Results:</h3>
+            <pre
+              style={{
+                backgroundColor: "#f5f5f5",
+                padding: "10px",
+                borderRadius: "4px",
+                fontSize: "12px",
+                overflow: "auto",
+                maxHeight: "400px",
+                whiteSpace: "pre-wrap",
+              }}
+            >
+              {resolveConditionalSchemaResults}
             </pre>
-            {/* <JzodElementDisplay
-              path={"applicative.Library.BuildPlusRuntimeCompositeAction.integ.test"}
-              name={"applicative.Library.BuildPlusRuntimeCompositeAction.integ.test"}
-              deploymentUuid={props.deploymentUuid}
-              // prop drilling!
-              applicationSection={context.applicationSection as ApplicationSection}
-              entityUuid={props.entityUuid}
-              element={testResults["applicative.Library.BuildPlusRuntimeCompositeAction.integ.test"]}
-              elementJzodSchema={testSuitesResultsSchema.context.innerTestSuitesResults}
-              resolvedElementJzodSchema={resolvedTestResultsJzodSchema}
-              currentReportDeploymentSectionEntities={currentReportDeploymentSectionEntities}
-              currentEnumJzodSchemaResolver={currentEnumJzodSchemaResolver}
-            ></JzodElementDisplay> */}
           </div>
-        ) : (
-          <div>could not display test results!</div>
         )}
-      </div>
-      {/* <div>
+        {/* test results */}
+        <div>
+          {
+            // currentEnumJzodSchemaResolver != undefined &&
+            testResults &&
+            testSuitesResultsSchema != undefined &&
+            testSuitesResultsSchema.context != undefined &&
+            resolvedTestResultsJzodSchema != undefined ? (
+              <div>
+                <div>Test results:</div>
+                <EntityInstanceGrid
+                  type="EntityInstance"
+                  columnDefs={{
+                    columnDefs: [
+                      { field: "testName", headerName: "Test Name" },
+                      { field: "testResult", headerName: "Result" },
+                      { field: "assertions", headerName: "Assertions" },
+                    ],
+                  }}
+                  instancesToDisplay={
+                    testResults["applicative.Library.BuildPlusRuntimeCompositeAction.integ.test"]
+                      ? Object.entries(
+                          testResults[
+                            "applicative.Library.BuildPlusRuntimeCompositeAction.integ.test"
+                          ]
+                        ).reduce((acc, [testName, testResult]: any) => {
+                          acc[testName] = {
+                            uuid: testName,
+                            testName: testResult.testLabel || testName,
+                            testResult: testResult.testResult,
+                            assertions: Object.entries(testResult.testAssertionsResults || {})
+                              .map(
+                                ([assertionName, assertion]: any) =>
+                                  `${assertionName}: ${assertion.assertionResult}`
+                              )
+                              .join("; "),
+                          };
+                          return acc;
+                        }, {} as Record<string, any>)
+                      : {}
+                  }
+                  currentEntityDefinition={{
+                    jzodSchema: {
+                      type: "object",
+                      definition: {
+                        testName: { type: "string" },
+                        testResult: { type: "string" },
+                        assertions: { type: "string" },
+                      },
+                    },
+                  }}
+                />
+              </div>
+            ) : (
+              <div>could not display test results!</div>
+            )
+          }
+        </div>
+        {/* <div>
         {
           dialogOuterFormObject ? (
             <MyReactCodeMirror
@@ -595,19 +635,19 @@ export const ToolsPage: React.FC<any> = (
           )
         }
       </div> */}
-      <div>
-        <Formik
-          enableReinitialize={true}
-          initialValues={formState}
-          onSubmit={onSubmit}
-          handleChange={async (e: ChangeEvent<any>): Promise<void> => {
-            log.info("onChange formik", e);
-          }}
-        >
-          {(formik) => (
-            <>
-              <form id={"form." + pageLabel} onSubmit={formik.handleSubmit}>
-                {/* {resolvedJzodSchema === defaultObject ? (
+        <div>
+          <Formik
+            enableReinitialize={true}
+            initialValues={formState}
+            onSubmit={onSubmit}
+            handleChange={async (e: ChangeEvent<any>): Promise<void> => {
+              log.info("onChange formik", e);
+            }}
+          >
+            {(formik) => (
+              <>
+                <form id={"form." + pageLabel} onSubmit={formik.handleSubmit}>
+                  {/* {resolvedJzodSchema === defaultObject ? (
                   <div>no object definition found!</div>
                 ) : ( */}
                   <>
@@ -634,14 +674,13 @@ export const ToolsPage: React.FC<any> = (
                       submit form.{pageLabel}
                     </button>
                   </>
-                {/* )} */}
-              </form>
-            </>
-          )}
-        </Formik>
+                  {/* )} */}
+                </form>
+              </>
+            )}
+          </Formik>
+        </div>
       </div>
-      </div>
-
     </PageContainer>
   );
 }

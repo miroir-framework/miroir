@@ -7,7 +7,7 @@ import {
   ColumnWidthSpec,
   ToolsColumnDefinition,
 } from "../../src/miroir-fwk/4_view/adaptiveColumnWidths";
-import { TableComponentRow } from "../../src/miroir-fwk/4_view/components/Grids/MTableComponentInterface";
+import { TableComponentRow } from "../../src/miroir-fwk/4_view/components/Grids/EntityInstanceGridInterface";
 
 const defaultToolsColumnDef: ToolsColumnDefinition = {
   field: "",
