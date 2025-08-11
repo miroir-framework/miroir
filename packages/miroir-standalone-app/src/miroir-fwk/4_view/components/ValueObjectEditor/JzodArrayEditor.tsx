@@ -517,18 +517,18 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
         .map((attributeParam: [number, JzodElement]) => {
           const index: number = attributeParam[0];
           const attributeRootLessListKey: string = rootLessListKey.length > 0? rootLessListKey + "." + index : "" + index;
-          log.info(
-            "JzodArrayEditor arrayItems map",
-            "index",
-            index,
-            "attributeRootLessListKey",
-            attributeRootLessListKey,
-            "attributeValue",
-            attributeParam[1],
-            // JSON.stringify(attributeParam[1], null, 2),
-            "typeCheckKeyMap",
-            typeCheckKeyMap,
-          );
+          // log.info(
+          //   "JzodArrayEditor arrayItems map",
+          //   "index",
+          //   index,
+          //   "attributeRootLessListKey",
+          //   attributeRootLessListKey,
+          //   "attributeValue",
+          //   attributeParam[1],
+          //   // JSON.stringify(attributeParam[1], null, 2),
+          //   "typeCheckKeyMap",
+          //   typeCheckKeyMap,
+          // );
           const currentArrayElementRawDefinition: JzodElement | undefined =
             typeCheckKeyMap &&
             typeCheckKeyMap[rootLessListKey].rawSchema &&
@@ -645,6 +645,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
               }
                 <ThemedSizedButton
                   aria-label={rootLessListKey + ".add"}
+                  name={rootLessListKey + ".add"}
                   onClick={addNewArrayItem}
                   title="Add new array item"
                   style={{ 

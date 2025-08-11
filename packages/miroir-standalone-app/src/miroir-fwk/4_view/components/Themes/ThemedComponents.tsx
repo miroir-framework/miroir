@@ -554,7 +554,11 @@ export const ThemedSizedButton: React.FC<ThemedComponentProps> = ({
   children, 
   className, 
   style,
-  onClick 
+  onClick,
+  id,
+  name,
+  'aria-label': ariaLabel,
+  title
 }) => {
   const { currentTheme } = useMiroirTheme();
   
@@ -580,7 +584,16 @@ export const ThemedSizedButton: React.FC<ThemedComponentProps> = ({
   });
 
   return (
-    <button css={buttonStyles} className={className} style={style} onClick={onClick}>
+    <button 
+      css={buttonStyles} 
+      className={className} 
+      style={style} 
+      onClick={onClick}
+      id={id}
+      name={name}
+      aria-label={ariaLabel}
+      title={title}
+    >
       {children}
     </button>
   );
@@ -1525,10 +1538,18 @@ export const ThemedSwitch: React.FC<ThemedComponentProps & {
   checked?: boolean;
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
   disabled?: boolean;
+  id?: string;
+  name?: string;
+  'aria-label'?: string;
+  title?: string;
 }> = ({ 
   checked = false,
   onChange,
   disabled = false,
+  id,
+  name,
+  'aria-label': ariaLabel,
+  title,
   className, 
   style 
 }) => {
@@ -1579,6 +1600,10 @@ export const ThemedSwitch: React.FC<ThemedComponentProps & {
         checked={checked} 
         onChange={onChange} 
         disabled={disabled}
+        id={id}
+        name={name}
+        aria-label={ariaLabel}
+        title={title}
       />
       <span css={sliderStyles}></span>
     </label>

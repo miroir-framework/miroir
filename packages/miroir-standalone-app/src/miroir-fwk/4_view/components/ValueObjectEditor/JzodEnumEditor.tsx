@@ -72,24 +72,23 @@ export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
   const editor = useMemo(() => {
     if (currentEnumSchema?.type === "enum") {
       return (
-                <div>
+        <div>
           <ThemedSelect
             id={rootLessListKey}
-            // aria-label={rootLessListKey}
+            aria-label={rootLessListKey}
             variant="standard"
             {...formik.getFieldProps(rootLessListKey)}
             name={rootLessListKey}
           >
             {menuItems}
           </ThemedSelect>
-            {forceTestingMode ? (
-              <div>enumValues={JSON.stringify((rawJzodSchema as JzodEnum).definition)}</div>
-            ) : (
-              <></>
-            )}
+          {forceTestingMode ? (
+            <div>enumValues={JSON.stringify((rawJzodSchema as JzodEnum).definition)}</div>
+          ) : (
+            <></>
+          )}
         </div>
-
-      )
+      );
     } else {
       return (<div>error on enum {rootLessListKey}: schema is not an enum {JSON.stringify(currentEnumSchema, undefined, 2)}</div>)
     }

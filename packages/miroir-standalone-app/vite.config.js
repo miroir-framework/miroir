@@ -102,5 +102,8 @@ export default defineConfig({
     hookTimeout: 30000,
     testTimeout: 180000, // 3 minutes for complex tests
     setupFiles: ['./setup.ts'],
+    env: {
+      VITE_TEST_MODE: 'true'
+    }
   },
 });

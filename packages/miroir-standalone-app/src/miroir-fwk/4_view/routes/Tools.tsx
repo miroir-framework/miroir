@@ -77,6 +77,7 @@ import {
   TestSuiteResult
 } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { getMemoizedReduxDeploymentsStateSelectorMap, type ReduxStateWithUndoRedo } from "miroir-localcache-redux";
+import { EntityInstanceGrid } from "../components/Grids/EntityInstanceGrid";
 
 
 let log: LoggerInterface = console as any as LoggerInterface;
