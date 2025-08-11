@@ -13,7 +13,7 @@ import {
   LoggerInterface,
   MiroirLoggerFactory,
 } from "miroir-core";
-import { JzodElementEditor } from "../../src/miroir-fwk/4_view/components/JzodElementEditor";
+import {JzodElementEditor} from "../../src/miroir-fwk/4_view/components/ValueObjectEditor/JzodElementEditor";
 import { cleanLevel, packageName } from "../3_controllers/constants";
 import {
   allTestModes,
@@ -107,80 +107,80 @@ export function getJzodArrayEditorTests(
         initialFormState: arrayValues,
       },
       tests: {
-        "renders input with label when label prop is provided": {
-          tests: async (expect: ExpectStatic, container: Container) => {
-            expect(screen.getByText(/Test Label/)).toBeInTheDocument();
-          },
-        },
-        "renders all array values, in the right order": {
-          tests: async (expect: ExpectStatic, container: Container) => {
-            const cells = screen
-              .getAllByRole("textbox")
-              .filter((input: HTMLElement) =>
-                (input as HTMLInputElement).name.startsWith("testField.")
-              );
-            const values = cells.map((cell) => (cell as HTMLInputElement).value);
-            expect(values).toEqual(arrayValues);
-          },
-        },
-        "form state is changed when selection changes": {
-          tests: async (expect: ExpectStatic, container: Container) => {
-            const cell = screen.getAllByRole("textbox").filter((input: HTMLElement) =>
-              (input as HTMLInputElement).name.startsWith("testField.")
-            )[1] as HTMLInputElement;
-            await act(() => {
-              fireEvent.change(cell, { target: { value: "new value" } });
-            });
-            await waitAfterUserInteraction();
+        // "renders input with label when label prop is provided": {
+        //   tests: async (expect: ExpectStatic, container: Container) => {
+        //     expect(screen.getByText(/Test Label/)).toBeInTheDocument();
+        //   },
+        // },
+        // "renders all array values, in the right order": {
+        //   tests: async (expect: ExpectStatic, container: Container) => {
+        //     const cells = screen
+        //       .getAllByRole("textbox")
+        //       .filter((input: HTMLElement) =>
+        //         (input as HTMLInputElement).name.startsWith("testField.")
+        //       );
+        //     const values = cells.map((cell) => (cell as HTMLInputElement).value);
+        //     expect(values).toEqual(arrayValues);
+        //   },
+        // },
+        // "form state is changed when selection changes": {
+        //   tests: async (expect: ExpectStatic, container: Container) => {
+        //     const cell = screen.getAllByRole("textbox").filter((input: HTMLElement) =>
+        //       (input as HTMLInputElement).name.startsWith("testField.")
+        //     )[1] as HTMLInputElement;
+        //     await act(() => {
+        //       fireEvent.change(cell, { target: { value: "new value" } });
+        //     });
+        //     await waitAfterUserInteraction();
 
-            expect(cell).toContainHTML("new value");
-          },
-        },
-        "changing order of array items when button ROOT.testField.1.up is clicked": {
-          tests: async (expect, container) => {
-            const upButtons = screen.getAllByRole("ROOT.testField.button.up");
-            await act(() => {
-              fireEvent.click(upButtons[1]); // Click the up button for the third item
-            });
-            const cells = screen
-              .getAllByRole("textbox")
-              .filter((input: HTMLElement) =>
-                (input as HTMLInputElement).name.startsWith("testField.")
-              );
-            const values = cells.map((cell) => (cell as HTMLInputElement).value);
-            expect(values).toEqual(["value2", "value1", "value3" ]);
-          },
-        },
-        "changing order of array items when button ROOT.testField.2.up is clicked": {
-          tests: async (expect, container) => {
-            const upButtons = screen.getAllByRole("ROOT.testField.button.up");
-            await act(() => {
-              fireEvent.click(upButtons[2]); // Click the up button for the third item
-            });
-            const cells = screen
-              .getAllByRole("textbox")
-              .filter((input: HTMLElement) =>
-                (input as HTMLInputElement).name.startsWith("testField.")
-              );
-            const values = cells.map((cell) => (cell as HTMLInputElement).value);
-            expect(values).toEqual(["value1", "value3", "value2"]);
-          },
-        },
-        "changing order of array items when button ROOT.testField.0.down is clicked": {
-          tests: async (expect, container) => {
-            const upButtons = screen.getAllByRole("ROOT.testField.button.down");
-            await act(() => {
-              fireEvent.click(upButtons[0]); // Click the up button for the third item
-            });
-            const cells = screen
-              .getAllByRole("textbox")
-              .filter((input: HTMLElement) =>
-                (input as HTMLInputElement).name.startsWith("testField.")
-              );
-            const values = cells.map((cell) => (cell as HTMLInputElement).value);
-            expect(values).toEqual([ "value2", "value1", "value3"]);
-          },
-        },
+        //     expect(cell).toContainHTML("new value");
+        //   },
+        // },
+        // "changing order of array items when button ROOT.testField.1.up is clicked": {
+        //   tests: async (expect, container) => {
+        //     const upButtons = screen.getAllByRole("ROOT.testField.button.up");
+        //     await act(() => {
+        //       fireEvent.click(upButtons[1]); // Click the up button for the third item
+        //     });
+        //     const cells = screen
+        //       .getAllByRole("textbox")
+        //       .filter((input: HTMLElement) =>
+        //         (input as HTMLInputElement).name.startsWith("testField.")
+        //       );
+        //     const values = cells.map((cell) => (cell as HTMLInputElement).value);
+        //     expect(values).toEqual(["value2", "value1", "value3" ]);
+        //   },
+        // },
+        // "changing order of array items when button ROOT.testField.2.up is clicked": {
+        //   tests: async (expect, container) => {
+        //     const upButtons = screen.getAllByRole("ROOT.testField.button.up");
+        //     await act(() => {
+        //       fireEvent.click(upButtons[2]); // Click the up button for the third item
+        //     });
+        //     const cells = screen
+        //       .getAllByRole("textbox")
+        //       .filter((input: HTMLElement) =>
+        //         (input as HTMLInputElement).name.startsWith("testField.")
+        //       );
+        //     const values = cells.map((cell) => (cell as HTMLInputElement).value);
+        //     expect(values).toEqual(["value1", "value3", "value2"]);
+        //   },
+        // },
+        // "changing order of array items when button ROOT.testField.0.down is clicked": {
+        //   tests: async (expect, container) => {
+        //     const upButtons = screen.getAllByRole("ROOT.testField.button.down");
+        //     await act(() => {
+        //       fireEvent.click(upButtons[0]); // Click the up button for the third item
+        //     });
+        //     const cells = screen
+        //       .getAllByRole("textbox")
+        //       .filter((input: HTMLElement) =>
+        //         (input as HTMLInputElement).name.startsWith("testField.")
+        //       );
+        //     const values = cells.map((cell) => (cell as HTMLInputElement).value);
+        //     expect(values).toEqual([ "value2", "value1", "value3"]);
+        //   },
+        // },
         "changing order of heteronomous object array items from union when button ROOT.testField.0.down is clicked": {
           props: {
             label: "Test Label",

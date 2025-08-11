@@ -203,7 +203,6 @@ export const JzodLiteralEditor: FC<JzodLiteralEditorProps> =  (
               id={rootLessListKey}
               label={name}
               variant="standard"
-              labelId="demo-simple-select-label"
               {...formik.getFieldProps(rootLessListKey)}
               onChange={handleSelectLiteralChange}
             >

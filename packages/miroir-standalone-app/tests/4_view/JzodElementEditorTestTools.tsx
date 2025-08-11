@@ -46,8 +46,8 @@ import { LocalCache, PersistenceReduxSaga } from "miroir-localcache-redux";
 
 import { rootLessListKeyMapDEFUNCT } from "miroir-core";
 import { Container } from "react-dom";
-import { JzodElementEditor } from "../../src/miroir-fwk/4_view/components/JzodElementEditor";
-import { JzodEditorPropsRoot } from "../../src/miroir-fwk/4_view/components/JzodElementEditorInterface";
+import { JzodElementEditor } from "../../src/miroir-fwk/4_view/components/ValueObjectEditor/JzodElementEditor";
+import { JzodEditorPropsRoot } from "../../src/miroir-fwk/4_view/components/ValueObjectEditor/JzodElementEditorInterface";
 import { MiroirContextReactProvider, useMiroirContextService } from "../../src/miroir-fwk/4_view/MiroirContextReactProvider";
 import { useCurrentModel } from "../../src/miroir-fwk/4_view/ReduxHooks";
 import { emptyObject } from "../../src/miroir-fwk/4_view/routes/Tools";

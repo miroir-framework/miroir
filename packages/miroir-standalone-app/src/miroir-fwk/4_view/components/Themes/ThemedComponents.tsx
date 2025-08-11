@@ -411,6 +411,17 @@ export const ThemedSelect: React.FC<ThemedComponentProps & {
   width,
   ...props 
 }) => {
+  // Filter out non-DOM props that shouldn't be passed to the select element
+  const {
+    labelId,
+    variant,
+    label,
+    'data-testid': dataTestId,
+    'aria-label': ariaLabel,
+    role,
+    title,
+    ...validSelectProps
+  } = props;
   const { currentTheme } = useMiroirTheme();
   
   const selectStyles = css`
@@ -521,7 +532,18 @@ export const ThemedSelect: React.FC<ThemedComponentProps & {
   `;
 
   return (
-    <select css={selectStyles} className={className} style={style} value={value} onChange={onChange} {...props}>
+    <select 
+      css={selectStyles} 
+      className={className} 
+      style={style} 
+      value={value} 
+      onChange={onChange} 
+      data-testid={dataTestId}
+      aria-label={ariaLabel}
+      role={role}
+      title={title}
+      {...validSelectProps}
+    >
       {children}
     </select>
   );

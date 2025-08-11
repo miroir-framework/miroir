@@ -583,7 +583,6 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                     key={props.rootLessListKey}
                     data-testid="miroirInput"
                     aria-label={props.rootLessListKey}
-                    labelId="demo-simple-select-label"
                     variant="standard"
                     width="auto"
                     minWidth="200px"

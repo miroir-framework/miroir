@@ -26,7 +26,11 @@ import {
   jzodTypeCheck,
   getApplicationSection
 } from "miroir-core";
-import { getMemoizedReduxDeploymentsStateSelectorMap, ReduxStateWithUndoRedo, selectCurrentReduxDeploymentsStateFromReduxState } from 'miroir-localcache-redux';
+import {
+  getMemoizedReduxDeploymentsStateSelectorMap,
+  ReduxStateWithUndoRedo,
+  selectCurrentReduxDeploymentsStateFromReduxState,
+} from "miroir-localcache-redux";
 
 import {
   useMiroirContextService

@@ -76,7 +76,6 @@ export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
           <ThemedSelect
             id={rootLessListKey}
             // aria-label={rootLessListKey}
-            labelId="demo-simple-select-label"
             variant="standard"
             {...formik.getFieldProps(rootLessListKey)}
             name={rootLessListKey}
