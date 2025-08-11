@@ -54,6 +54,7 @@ import {
   TableComponentRow,
   TableComponentTypeSchema,
 } from "./EntityInstanceGridInterface.js";
+import { ValueObjectGrid } from "./ValueObjectGrid.js";
 import { getMemoizedReduxDeploymentsStateSelectorMap } from 'miroir-localcache-redux';
 import { useMiroirTableTheme } from '../../contexts/MiroirThemeContext.js';
 import { TableTheme, DeepPartial, createTableTheme } from '../../themes/TableTheme.js';
@@ -1131,43 +1132,26 @@ export const EntityInstanceGrid = (props: TableComponentProps & { theme?: DeepPa
           )}
         </div>
       ) : (
-        // <div className="ag-theme-alpine" style={{height: 200, width: 200}}>
-        <div className="ag-theme-alpine" style={{
-          borderRadius: tableTheme.components.table.borderRadius,
-          border: tableTheme.components.table.border,
-        }}>
-          {/* Global Clear All Filters Icon */}
-          {hasAnyFilter && (
-            <div style={filterToolbarStyles.container}>
-              <span
-                className="mtable-global-clear-filters"
-                onClick={handleGlobalClearAllFilters}
-                style={filterToolbarStyles.clearAllButton}
-                title="Clear all filters"
-              >
-                ▼ Clear All Filters
-              </span>
-            </div>
-          )}
-          <div>Not EntityInstance</div>
-          <AgGridReact
-            domLayout="autoHeight"
-            columnDefs={props.columnDefs.columnDefs}
-            rowData={props.rowData}
-            getRowId={(params: any) => {
-              log.info("EntityInstanceGrid getRowId", params);
-              return params?.data["uuid"]
-                ? params?.data["uuid"]
-                : params.data["id"]
-                ? params.data["id"]
-                : typeof params.data == "object"
-                ? JSON.stringify(params.data)
-                : params.data;
-            }}
-            defaultColDef={defaultColDef}
-            onCellClicked={onCellClicked}
-          ></AgGridReact>
-        </div>
+        // For non-EntityInstance types (JSON_ARRAY), use ValueObjectGrid
+        <ValueObjectGrid
+          valueObjects={(props as any).rowData || []}
+          jzodSchema={{
+            type: "object",
+            definition: Object.fromEntries(
+              props.columnDefs.columnDefs.map((colDef: any) => [
+                colDef.field,
+                { type: "string" } // Default to string type for JSON array columns
+              ])
+            )
+          }}
+          columnDefs={props.columnDefs}
+          styles={props.styles}
+          theme={props.theme}
+          maxRows={props.maxRows}
+          sortByAttribute={props.sortByAttribute}
+          gridType={gridType}
+          displayTools={false} // No editing for JSON arrays in EntityInstanceGrid context
+        />
       )}
     </div>
   );

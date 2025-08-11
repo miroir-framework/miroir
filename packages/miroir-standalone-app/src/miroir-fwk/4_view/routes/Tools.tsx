@@ -7,7 +7,7 @@ import { javascript } from "@codemirror/lang-javascript";
 import ReactCodeMirror from "@uiw/react-codemirror";
 import { ChangeEvent, useCallback, useMemo, useState } from "react";
 import { PageContainer } from "../components/Page/PageContainer";
-import { EntityInstanceGrid } from "../components/Grids/EntityInstanceGrid";
+import { ValueObjectGrid } from "../components/Grids/ValueObjectGrid";
 
 // const MyReactCodeMirror: React.Component = ReactCodeMirror
 const MyReactCodeMirror: any = ReactCodeMirror // TODO: solve the mystery: it was once well-typed, now the linter raises an error upon direct (default-typed) use!
@@ -160,6 +160,7 @@ export const ToolsPage: React.FC<any> = (
     undefined
   );
   const [resolveConditionalSchemaResults, setResolveConditionalSchemaResults] = useState<string>("");
+  const [resolveConditionalSchemaResultsData, setResolveConditionalSchemaResultsData] = useState<any[]>([]);
 
 
   const resolvedTestResultsJzodSchema: JzodElement | undefined = useMemo(() => {
@@ -505,12 +506,32 @@ export const ToolsPage: React.FC<any> = (
 
               // Format results for display
               let resultText = "=== resolveConditionalSchema Test Results ===\n\n";
+              const structuredResults: any[] = [];
 
               if (testSuiteResults && testSuiteResults[matchingKey]) {
                 const suiteResults = testSuiteResults[matchingKey];
                 for (const [testName, testResult] of Object.entries(suiteResults)) {
                   resultText += `Test: ${testResult.testLabel}\n`;
                   resultText += `Result: ${testResult.testResult}\n`;
+
+                  // Create structured data for ValueObjectGrid
+                  const assertionsDetails = Object.entries(testResult.testAssertionsResults)
+                    .map(([assertionName, assertion]) => {
+                      let details = `${assertionName}: ${assertion.assertionResult}`;
+                      if (assertion.assertionResult !== "ok") {
+                        details += `\nExpected: ${JSON.stringify(assertion.assertionExpectedValue, null, 2)}`;
+                        details += `\nActual: ${JSON.stringify(assertion.assertionActualValue, null, 2)}`;
+                      }
+                      return details;
+                    }).join('\n');
+
+                  structuredResults.push({
+                    testName: testResult.testLabel || testName,
+                    testResult: testResult.testResult,
+                    assertions: assertionsDetails,
+                    assertionCount: Object.keys(testResult.testAssertionsResults).length,
+                    status: testResult.testResult === "ok" ? "✅ Pass" : "❌ Fail"
+                  });
 
                   for (const [assertionName, assertion] of Object.entries(
                     testResult.testAssertionsResults
@@ -536,6 +557,7 @@ export const ToolsPage: React.FC<any> = (
               }
 
               setResolveConditionalSchemaResults(resultText);
+              setResolveConditionalSchemaResultsData(structuredResults);
             }}
             successMessage="resolveConditionalSchema tests completed successfully"
             label="Run resolveConditionalSchema Tests"
@@ -545,9 +567,36 @@ export const ToolsPage: React.FC<any> = (
         </div>
 
         {/* Test Results Display */}
-        {resolveConditionalSchemaResults && (
+        {resolveConditionalSchemaResultsData && resolveConditionalSchemaResultsData.length > 0 && (
           <div style={{ margin: "20px 0" }}>
             <h3>resolveConditionalSchema Test Results:</h3>
+            <ValueObjectGrid
+              valueObjects={resolveConditionalSchemaResultsData}
+              jzodSchema={{
+                type: "object",
+                definition: {
+                  testName: { type: "string" },
+                  testResult: { type: "string" },
+                  status: { type: "string" },
+                  assertionCount: { type: "number" },
+                  assertions: { type: "string" }
+                }
+              }}
+              styles={{
+                height: "400px",
+                width: "100%"
+              }}
+              maxRows={20}
+              sortByAttribute="testName"
+              displayTools={false}
+              gridType="ag-grid"
+            />
+          </div>
+        )}
+        {/* Fallback to text display if no structured data */}
+        {resolveConditionalSchemaResults && (!resolveConditionalSchemaResultsData || resolveConditionalSchemaResultsData.length === 0) && (
+          <div style={{ margin: "20px 0" }}>
+            <h3>resolveConditionalSchema Test Results (Text):</h3>
             <pre
               style={{
                 backgroundColor: "#f5f5f5",
@@ -575,6 +624,16 @@ export const ToolsPage: React.FC<any> = (
                 <div>Test results:</div>
                 <EntityInstanceGrid
                   type="EntityInstance"
+                  deploymentUuid={context.deploymentUuid}
+                  displayTools={false}
+                  currentModel={currentModel}
+                  defaultFormValuesObject={{}}
+                  paramsAsdomainElements={{
+                    elementType: "object",
+                    elementValue: {}
+                  }}
+                  foreignKeyObjects={{}}
+                  displayedDeploymentDefinition={adminConfigurationDeploymentMiroir}
                   columnDefs={{
                     columnDefs: [
                       { field: "testName", headerName: "Test Name" },
@@ -605,6 +664,12 @@ export const ToolsPage: React.FC<any> = (
                       : {}
                   }
                   currentEntityDefinition={{
+                    uuid: "test-results-entity-definition",
+                    parentName: "TestResults",
+                    parentUuid: "test-results-parent-uuid",
+                    name: "TestResultsEntity",
+                    entityUuid: "test-results-entity-uuid",
+                    conceptLevel: "Data",
                     jzodSchema: {
                       type: "object",
                       definition: {
@@ -613,7 +678,7 @@ export const ToolsPage: React.FC<any> = (
                         assertions: { type: "string" },
                       },
                     },
-                  }}
+                  } as any}
                 />
               </div>
             ) : (
