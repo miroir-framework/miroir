@@ -37,6 +37,7 @@ import entityDefinitionMenu from "../src/assets/miroir_model/54b9c72f-d4f3-4db9-
 import entityDefinitionQueryVersionV1 from "../src/assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/359f1f9b-7260-4d76-a864-72c839b9711b.json";
 import entityDefinitionReportV1 from "../src/assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/952d2c65-4da2-45c2-9394-a0920ceedfb6.json";
 import entityDefinitionTest from "../src/assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/d2842a84-3e66-43ee-ac58-7e13b95b01e8.json";
+import entityDefinitionTransformerTest from "../src/assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/405bb1fc-a20f-4def-9d3a-206f72350633.json";
 import entityDefinitionTransformerDefinition from "../src/assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/54a16d69-c1f0-4dd7-aba4-a2cda883586c.json";
 import entityDefinitionEndpointDefinition from "../src/assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/e3c1cc69-066d-4f52-beeb-b659dc7a88b9.json";
 import transformerMenuV1 from "../src/assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/685440be-7f3f-4774-b90d-bafa82d6832b.json";
@@ -50,6 +51,7 @@ import {
   miroirFundamentalJzodSchemaUuid,
 } from "../src/0_interfaces/1_core/bootstrapJzodSchemas/getMiroirFundamentalJzodSchema.js";
 import { miroirTransformersForBuild, mmlsTransformers } from "../src/2_domain/Transformers";
+import { entity } from "../src";
 
 async function build() {
     try {
@@ -469,6 +471,7 @@ async function generateSchemas(generateFundamentalJzodSchema = true) {
         entityDefinitionReportV1,
         entityDefinitionSelfApplicationDeploymentConfiguration,
         entityDefinitionTest,
+        entityDefinitionTransformerTest,
         entityDefinitionTransformerDefinition,
         entityDefinitionEndpointDefinition,
       );

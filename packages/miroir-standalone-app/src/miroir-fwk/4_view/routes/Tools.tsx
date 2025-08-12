@@ -1,19 +1,17 @@
 import { Formik } from "formik";
 import { useSelector } from "react-redux";
 
-import _ from "lodash";
 // import { ReactCodeMirror } from "@uiw/react-codemirror";
-import { javascript } from "@codemirror/lang-javascript";
 import ReactCodeMirror from "@uiw/react-codemirror";
 import { ChangeEvent, useCallback, useMemo, useState } from "react";
-import { PageContainer } from "../components/Page/PageContainer";
 import { ValueObjectGrid } from "../components/Grids/ValueObjectGrid";
+import { PageContainer } from "../components/Page/PageContainer";
 
 // const MyReactCodeMirror: React.Component = ReactCodeMirror
-const MyReactCodeMirror: any = ReactCodeMirror // TODO: solve the mystery: it was once well-typed, now the linter raises an error upon direct (default-typed) use!
+// const MyReactCodeMirror: any = ReactCodeMirror // TODO: solve the mystery: it was once well-typed, now the linter raises an error upon direct (default-typed) use!
 
 import {
-  ApplicationSection,
+  Domain2ElementFailed,
   DomainAction,
   DomainControllerInterface,
   JzodElement,
@@ -32,31 +30,28 @@ import {
   entityDeployment,
   entityMenu,
   entitySelfApplication,
+  entityTransformerTest,
   jzodTypeCheck,
-  miroirFundamentalJzodSchema,
-  testSuitesResultsSchema,
-  runTransformerTestSuite,
-  runTransformerTestInMemory,
-  transformerTestSuite_resolveConditionalSchema,
+  testSuitesResults,
+  transformerTest_resolveConditionalSchema,
+  type Domain2QueryReturnType,
+  type Entity,
   type ReduxDeploymentsState,
   type SyncBoxedExtractorOrQueryRunnerMap,
-  entityTransformerTest,
-  transformerTest_resolveConditionalSchema,
-  Domain2ElementFailed,
-  type Domain2QueryReturnType,
-  type TransformerTestSuite,
+  type TestSuiteResult,
+  type TransformerTestSuite
 } from "miroir-core";
 
+import { getMemoizedReduxDeploymentsStateSelectorMap, type ReduxStateWithUndoRedo } from "miroir-localcache-redux";
 // import {
 //   Entity,
 //   TestSuiteResult
 // } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { adminConfigurationDeploymentParis, applicationParis, packageName } from "../../../constants.js";
 import { getTestSuitesForBuildPlusRuntimeCompositeAction } from "../../4-tests/applicative.Library.BuildPlusRuntimeCompositeAction.js";
-import { expect, describe } from "../../4-tests/test-expect.js";
+import { describe, expect } from "../../4-tests/test-expect.js";
 import { testOnLibrary_deleteLibraryDeployment } from "../../4-tests/tests-utils-testOnLibrary.js";
 import { runTestOrTestSuite } from "../../4-tests/tests-utils.js";
-import { JzodEnumSchemaToJzodElementResolver, getCurrentEnumJzodSchemaResolver } from "../../JzodTools.js";
 import {
   useDomainControllerService,
   useErrorLogService,
@@ -66,20 +61,13 @@ import {
   useSnackbar,
 } from "../MiroirContextReactProvider.js";
 import { useCurrentModel } from "../ReduxHooks.js";
-import { JzodElementDisplay } from "../components/JzodElementDisplay.js";
-import { JzodElementEditor } from "../components/ValueObjectEditor/JzodElementEditor.js";
-import { cleanLevel } from "../constants.js";
 import { EndpointActionCaller } from "../components/EndpointActionCaller";
-import { ActionButton } from "../components/Page/ActionButton.js";
+import { cleanLevel } from "../constants.js";
 
-import {
-  Entity,
-  TestSuiteResult
-} from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import { getMemoizedReduxDeploymentsStateSelectorMap, type ReduxStateWithUndoRedo } from "miroir-localcache-redux";
+import { RunTransformerTestSuiteButton } from "../components/Buttons/RunTransformerTestSuiteButton";
 import { EntityInstanceGrid } from "../components/Grids/EntityInstanceGrid";
 
-
+// ################################################################################################
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ToolsPage")
@@ -135,6 +123,10 @@ export interface MiroirForm {
 }
 
 
+
+
+
+// ################################################################################################
 // ################################################################################################
 // ################################################################################################
 // ################################################################################################
@@ -161,14 +153,14 @@ export const ToolsPage: React.FC<any> = (
     undefined
   );
   const [resolveConditionalSchemaResults, setResolveConditionalSchemaResults] = useState<string>("");
-  const [resolveConditionalSchemaResultsData, setResolveConditionalSchemaResultsData] = useState<any[]>([]);
+  const [resolveConditionalSchemaResultsData, setResolveConditionalSchemaResultsData] = useState<any[]>([]); // TODO: use a precise type!
 
 
   const resolvedTestResultsJzodSchema: JzodElement | undefined = useMemo(() => {
     if (
       testResults &&
       context.miroirFundamentalJzodSchema != undefined &&
-      (testSuitesResultsSchema != undefined && testSuitesResultsSchema.context != undefined)
+      (testSuitesResults != undefined && testSuitesResults.context != undefined)
     ) {
       const configuration = jzodTypeCheck(
         (context.miroirFundamentalJzodSchema.definition as any).context.testsResults,
@@ -412,6 +404,7 @@ export const ToolsPage: React.FC<any> = (
         setTestResults(globalTestSuiteResults);
         log.info("testResults", globalTestSuiteResults);
 
+
         displayTestSuiteResultsDetails(expect,Object.keys(testSuitesForBuildPlusRuntimeCompositeAction)[0]);
 
 
@@ -439,19 +432,23 @@ export const ToolsPage: React.FC<any> = (
   //   log.info('edit code done');
   // }, []);
 
+  // ##############################################################################################
+
   log.info(
     "Tools.tsx render",
     // currentEnumJzodSchemaResolver,
     "testResults",
     testResults,
-    "testSuitesResultsSchema",
-    testSuitesResultsSchema,
-    "testSuitesResultsSchema.context",
-    testSuitesResultsSchema.context,
+    "testSuitesResults",
+    testSuitesResults,
+    "testSuitesResults.context",
+    testSuitesResults.context,
     // "resolvedTestResultsJzodSchema",
     // resolvedTestResultsJzodSchema,
     // (resolvedTestResultsJzodSchema as any)?.element,
   );
+  const testSuiteKey = "resolveConditionalSchema";
+
   return (
     <PageContainer>
       <div>
@@ -466,104 +463,15 @@ export const ToolsPage: React.FC<any> = (
 
         {/* resolveConditionalSchema Test Button */}
         <div style={{ margin: "20px 0" }}>
-          <ActionButton
-            onAction={async () => {
-              // Reset previous results
-              setResolveConditionalSchemaResults("");
-              TestSuiteContext.resetResults();
-
-              if (!transformerTestSuite_resolveConditionalSchema) {
-                throw new Error("No transformerTestSuite_resolveConditionalSchema found");
-              }
-              // Run the test suite
-              const testSuitePath = ["resolveConditionalSchema"];
-              await runTransformerTestSuite(
-                { expect, describe },
-                testSuitePath,
-                transformerTestSuite_resolveConditionalSchema.definition,
-                runTransformerTestInMemory
-              );
-
-              // Get and format results - find the correct test suite key
-              const allResults = TestSuiteContext.getTestAssertionsResults();
-              const availableKeys = Object.keys(allResults);
-              log.info("Available test suite keys:", availableKeys);
-
-              // Find the key that contains our test suite name
-              const matchingKey = availableKeys.find((key) =>
-                key.includes("resolveConditionalSchema")
-              );
-
-              if (!matchingKey) {
-                throw new Error(
-                  `No test suite found containing 'resolveConditionalSchema'. Available keys: ${availableKeys.join(
-                    ", "
-                  )}`
-                );
-              }
-
-              const testSuiteResults = TestSuiteContext.getTestSuiteResult(matchingKey);
-              log.info("resolveConditionalSchema test results:", testSuiteResults);
-
-              // Format results for display
-              let resultText = "=== resolveConditionalSchema Test Results ===\n\n";
-              const structuredResults: any[] = [];
-
-              if (testSuiteResults && testSuiteResults[matchingKey]) {
-                const suiteResults = testSuiteResults[matchingKey];
-                for (const [testName, testResult] of Object.entries(suiteResults)) {
-                  resultText += `Test: ${testResult.testLabel}\n`;
-                  resultText += `Result: ${testResult.testResult}\n`;
-
-                  // Create structured data for ValueObjectGrid
-                  const assertionsDetails = Object.entries(testResult.testAssertionsResults)
-                    .map(([assertionName, assertion]) => {
-                      let details = `${assertionName}: ${assertion.assertionResult}`;
-                      if (assertion.assertionResult !== "ok") {
-                        details += `\nExpected: ${JSON.stringify(assertion.assertionExpectedValue, null, 2)}`;
-                        details += `\nActual: ${JSON.stringify(assertion.assertionActualValue, null, 2)}`;
-                      }
-                      return details;
-                    }).join('\n');
-
-                  structuredResults.push({
-                    testName: testResult.testLabel || testName,
-                    testResult: testResult.testResult,
-                    assertions: assertionsDetails,
-                    assertionCount: Object.keys(testResult.testAssertionsResults).length,
-                    status: testResult.testResult === "ok" ? "✅ Pass" : "❌ Fail"
-                  });
-
-                  for (const [assertionName, assertion] of Object.entries(
-                    testResult.testAssertionsResults
-                  )) {
-                    resultText += `  Assertion: ${assertionName} - ${assertion.assertionResult}\n`;
-                    if (assertion.assertionResult !== "ok") {
-                      resultText += `    Expected: ${JSON.stringify(
-                        assertion.assertionExpectedValue,
-                        null,
-                        2
-                      )}\n`;
-                      resultText += `    Actual: ${JSON.stringify(
-                        assertion.assertionActualValue,
-                        null,
-                        2
-                      )}\n`;
-                    }
-                  }
-                  resultText += "\n";
-                }
-              } else {
-                resultText += "No test results found or test suite not executed properly.\n";
-              }
-
-              setResolveConditionalSchemaResults(resultText);
+          <RunTransformerTestSuiteButton
+            transformerTestSuite={transformerTestSuite_resolveConditionalSchema}
+            testSuiteKey={testSuiteKey}
+            expect={expect}
+            describe={describe}
+            handleAsyncAction={handleAsyncAction}
+            onTestComplete={(testSuiteKey, structuredResults) => {
               setResolveConditionalSchemaResultsData(structuredResults);
             }}
-            successMessage="resolveConditionalSchema tests completed successfully"
-            label="Run resolveConditionalSchema Tests"
-            handleAsyncAction={handleAsyncAction}
-            actionName="run resolveConditionalSchema tests"
           />
         </div>
 
@@ -580,12 +488,12 @@ export const ToolsPage: React.FC<any> = (
                   testResult: { type: "string" },
                   status: { type: "string" },
                   assertionCount: { type: "number" },
-                  assertions: { type: "string" }
-                }
+                  assertions: { type: "string" },
+                },
               }}
               styles={{
                 height: "400px",
-                width: "100%"
+                width: "100%",
               }}
               maxRows={20}
               sortByAttribute="testName"
@@ -595,31 +503,33 @@ export const ToolsPage: React.FC<any> = (
           </div>
         )}
         {/* Fallback to text display if no structured data */}
-        {resolveConditionalSchemaResults && (!resolveConditionalSchemaResultsData || resolveConditionalSchemaResultsData.length === 0) && (
-          <div style={{ margin: "20px 0" }}>
-            <h3>resolveConditionalSchema Test Results (Text):</h3>
-            <pre
-              style={{
-                backgroundColor: "#f5f5f5",
-                padding: "10px",
-                borderRadius: "4px",
-                fontSize: "12px",
-                overflow: "auto",
-                maxHeight: "400px",
-                whiteSpace: "pre-wrap",
-              }}
-            >
-              {resolveConditionalSchemaResults}
-            </pre>
-          </div>
-        )}
+        {resolveConditionalSchemaResults &&
+          (!resolveConditionalSchemaResultsData ||
+            resolveConditionalSchemaResultsData.length === 0) && (
+            <div style={{ margin: "20px 0" }}>
+              <h3>resolveConditionalSchema Test Results (Text):</h3>
+              <pre
+                style={{
+                  backgroundColor: "#f5f5f5",
+                  padding: "10px",
+                  borderRadius: "4px",
+                  fontSize: "12px",
+                  overflow: "auto",
+                  maxHeight: "400px",
+                  whiteSpace: "pre-wrap",
+                }}
+              >
+                {resolveConditionalSchemaResults}
+              </pre>
+            </div>
+          )}
         {/* test results */}
         <div>
           {
             // currentEnumJzodSchemaResolver != undefined &&
             testResults &&
-            testSuitesResultsSchema != undefined &&
-            testSuitesResultsSchema.context != undefined &&
+            testSuitesResults != undefined &&
+            testSuitesResults.context != undefined &&
             resolvedTestResultsJzodSchema != undefined ? (
               <div>
                 <div>Test results:</div>
@@ -631,7 +541,7 @@ export const ToolsPage: React.FC<any> = (
                   defaultFormValuesObject={{}}
                   paramsAsdomainElements={{
                     elementType: "object",
-                    elementValue: {}
+                    elementValue: {},
                   }}
                   foreignKeyObjects={{}}
                   displayedDeploymentDefinition={adminConfigurationDeploymentMiroir}
@@ -664,22 +574,24 @@ export const ToolsPage: React.FC<any> = (
                         }, {} as Record<string, any>)
                       : {}
                   }
-                  currentEntityDefinition={{
-                    uuid: "test-results-entity-definition",
-                    parentName: "TestResults",
-                    parentUuid: "test-results-parent-uuid",
-                    name: "TestResultsEntity",
-                    entityUuid: "test-results-entity-uuid",
-                    conceptLevel: "Data",
-                    jzodSchema: {
-                      type: "object",
-                      definition: {
-                        testName: { type: "string" },
-                        testResult: { type: "string" },
-                        assertions: { type: "string" },
+                  currentEntityDefinition={
+                    {
+                      uuid: "test-results-entity-definition",
+                      parentName: "TestResults",
+                      parentUuid: "test-results-parent-uuid",
+                      name: "TestResultsEntity",
+                      entityUuid: "test-results-entity-uuid",
+                      conceptLevel: "Data",
+                      jzodSchema: {
+                        type: "object",
+                        definition: {
+                          testName: { type: "string" },
+                          testResult: { type: "string" },
+                          assertions: { type: "string" },
+                        },
                       },
-                    },
-                  } as any}
+                    } as any
+                  }
                 />
               </div>
             ) : (

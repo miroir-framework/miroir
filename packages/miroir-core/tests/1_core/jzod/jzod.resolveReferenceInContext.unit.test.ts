@@ -101,6 +101,7 @@ import entityDefinitionJzodSchemaV1 from "../../../src/assets/miroir_model/54b9c
 import entityDefinitionQueryVersionV1 from "../../../src/assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/359f1f9b-7260-4d76-a864-72c839b9711b.json";
 import entityDefinitionReportV1 from "../../../src/assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/952d2c65-4da2-45c2-9394-a0920ceedfb6.json";
 import entityDefinitionTest from '../../../src/assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/d2842a84-3e66-43ee-ac58-7e13b95b01e8.json';
+import entityDefinitionTransformerTest from "../../../src/assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/405bb1fc-a20f-4def-9d3a-206f72350633.json";
 import entityDefinitionTransformerDefinition from "../../../src/assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/54a16d69-c1f0-4dd7-aba4-a2cda883586c.json";
 
 
@@ -247,6 +248,7 @@ describe(
           entityDefinitionReport as EntityDefinition,
           entityDefinitionSelfApplicationDeploymentConfiguration as EntityDefinition,
           entityDefinitionTest as EntityDefinition,
+          entityDefinitionTransformerTest as EntityDefinition,
           entityDefinitionTransformerDefinition as EntityDefinition,
           entityDefinitionEndpoint as EntityDefinition,
           // jzodSchemajzodMiroirBootstrapSchema as any,

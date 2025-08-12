@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest";
 import entityBook from "./assets/library_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/e8ba151b-d68e-4cc3-9a83-3459d309ccf5.json";
 import adminConfigurationDeploymentLibrary from "./assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/f714bb2f-a12d-4e71-a03b-74dcedea6eb4.json";
 
-import { EntityInstance } from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { EntityInstance, type TransformerTestSuite } from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { JzodElement } from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 import entityDefinitionCountry from "./assets/library_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/56628e31-3db5-4c5c-9328-4ff7ce54c36a.json";
@@ -37,9 +37,9 @@ import {
   ignoreFailureAttributes,
   runTransformerTestInMemory,
   runTransformerTestSuite,
-  TransformerTest,
+  // TransformerTest,
   transformerTestsDisplayResults,
-  TransformerTestSuite,
+  // TransformerTestSuite,
 } from "./4_services/TestTools";
 import { Step } from "./2_domain/TransformersForRuntime";
 

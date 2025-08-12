@@ -97,13 +97,13 @@
       "definition": {
         "type": "schemaReference",
         "context": {
-          "transformerTestJzodSchema": {
+          "transformerTest": {
             "type": "object",
             "definition": {
               "transformerTestType": { "type": "literal", "definition": "transformerTest" },
               "transformerTestLabel": { "type": "string" },
               "transformerName": { "type": "string" },
-              "transformer": { "type": "any" },
+              "transformer": { "type": "any", "optional": false },
               "runTestStep": { "type": "string", "optional": true },
               "transformerParams": { "type": "record", "definition": { "type": "any" } },
               "transformerRuntimeContext": {
@@ -119,13 +119,13 @@
               }
             }
           },
-          "transformerTestSuiteJzodSchema": {
+          "transformerTestSuite": {
             "type": "union",
             "discriminator": "transformerTestType",
             "definition": [
               {
                 "type": "schemaReference",
-                "definition": { "relativePath": "transformerTestJzodSchema" }
+                "definition": { "relativePath": "transformerTest" }
               },
               {
                 "type": "object",
@@ -139,7 +139,7 @@
                     "type": "record",
                     "definition": {
                       "type": "schemaReference",
-                      "definition": { "relativePath": "transformerTestSuiteJzodSchema" }
+                      "definition": { "relativePath": "transformerTestSuite" }
                     }
                   }
                 }
@@ -148,7 +148,7 @@
           }
         },
         "definition": {
-          "relativePath": "transformerTestSuiteJzodSchema"
+          "relativePath": "transformerTestSuite"
         }
       }
     }

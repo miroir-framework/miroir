@@ -436,6 +436,17 @@ export {
   compositeRunTestAssertion,
   EndpointDefinition,
   endpointDefinition,
+  TransformerTest,
+  transformerTest,
+  TransformerTestSuite,
+  transformerTestSuite,
+  TransformerTestDefinition,
+  transformerTestDefinition,
+  TestResult,
+  testResult,
+  TestSuiteResult,
+  testSuiteResult,
+  TestSuitesResults,
 } from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 export {
@@ -862,8 +873,6 @@ export { restServerDefaultHandlers } from "./4_services/RestServer.js";
 export { generateRestServiceResponse } from "./4_services/RestTools.js";
 export { TestSuiteContext } from "./4_services/TestSuiteContext.js";
 export {
-  TransformerTest,
-  TransformerTestSuite,
   displayTestSuiteResults,
   displayTestSuiteResultsDetails,
   runTransformerTestInMemory,
@@ -896,7 +905,7 @@ export {
 } from "./tools";
 
 export {
-  testSuitesResultsSchema
+  testSuitesResults
 } from "./0_interfaces/4-services/TestInterface.js";
 
 console.log("miroir-core: DONE exports");

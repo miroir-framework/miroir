@@ -28,7 +28,7 @@ import {
 import { MiroirLoggerFactory } from "../../../4_services/LoggerFactory";
 import { packageName } from "../../../constants";
 import { LoggerInterface } from "../../4-services/LoggerInterface";
-import { testSuitesResultsSchema } from "../../4-services/TestInterface";
+import { testSuitesResults } from "../../4-services/TestInterface";
 import { zodParseErrorJzodSchema, zodParseErrorIssueJzodSchema } from "../zodParseError";
 import { JzodElement, JzodReference } from "../preprocessor-generated/miroirFundamentalType";
 
@@ -658,6 +658,7 @@ export function getMiroirFundamentalJzodSchema(
   // entityDefinitionSelfApplication: any,
   entityDefinitionSelfApplicationDeploymentConfiguration: any,
   entityDefinitionTest: any,
+  entityDefinitionTransformerTest: any,
   entityDefinitionTransformerDefinition: any,
   entityDefinitionEndpointDefinition: any,
 // ): JzodReference {
@@ -665,6 +666,10 @@ export function getMiroirFundamentalJzodSchema(
   ): any /** JzodSchema, avoiding reference to ensure proper compilation */ {
   // TODO: not really a JzodReference!!
   console.log("getMiroirFundamentalJzodSchema called!");
+  console.log(
+    "getMiroirFundamentalJzodSchema entityDefinitionTransformerTest.jzodSchema.definition.definition.context",
+    entityDefinitionTransformerTest.jzodSchema.definition.definition.context
+  );
   const entityDefinitionQueryVersionV1WithAbsoluteReferences = makeReferencesAbsolute(
     entityDefinitionQueryVersionV1.jzodSchema.definition.definition,
     miroirFundamentalJzodSchemaUuid
@@ -1295,15 +1300,18 @@ export function getMiroirFundamentalJzodSchema(
           {
             type: "never",
           },
-        ...makeReferencesAbsolute(testSuitesResultsSchema, miroirFundamentalJzodSchemaUuid, true)
+        ...makeReferencesAbsolute(testSuitesResults, miroirFundamentalJzodSchemaUuid, true)
           .context,
         testSuitesResults: {
           type: "schemaReference",
           definition: {
             absolutePath: miroirFundamentalJzodSchemaUuid,
-            relativePath: testSuitesResultsSchema.definition.relativePath,
+            relativePath: testSuitesResults.definition.relativePath,
           },
         },
+        ...makeReferencesAbsolute(entityDefinitionTransformerTest.jzodSchema.definition.definition, miroirFundamentalJzodSchemaUuid, true)
+          .context,
+        transformerTestDefinition: entityDefinitionTransformerTest.jzodSchema as any,
         ______________________________________________entities_____________________________________________:
           {
             type: "never",

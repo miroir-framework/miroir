@@ -6990,6 +6990,266 @@ export const miroirFundamentalJzodSchema = {
           "relativePath": "innerTestSuitesResults"
         }
       },
+      "transformerTest": {
+        "type": "object",
+        "definition": {
+          "transformerTestType": {
+            "type": "literal",
+            "definition": "transformerTest"
+          },
+          "transformerTestLabel": {
+            "type": "string"
+          },
+          "transformerName": {
+            "type": "string"
+          },
+          "transformer": {
+            "type": "any",
+            "optional": false
+          },
+          "runTestStep": {
+            "type": "string",
+            "optional": true
+          },
+          "transformerParams": {
+            "type": "record",
+            "definition": {
+              "type": "any"
+            }
+          },
+          "transformerRuntimeContext": {
+            "type": "record",
+            "definition": {
+              "type": "any"
+            },
+            "optional": true
+          },
+          "expectedValue": {
+            "type": "any"
+          },
+          "ignoreAttributes": {
+            "type": "array",
+            "definition": {
+              "type": "string"
+            },
+            "optional": true
+          }
+        }
+      },
+      "transformerTestSuite": {
+        "type": "union",
+        "discriminator": "transformerTestType",
+        "definition": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "transformerTest",
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+            },
+            "context": {}
+          },
+          {
+            "type": "object",
+            "definition": {
+              "transformerTestType": {
+                "type": "literal",
+                "definition": "transformerTestSuite"
+              },
+              "transformerTestLabel": {
+                "type": "string"
+              },
+              "transformerTests": {
+                "type": "record",
+                "definition": {
+                  "type": "schemaReference",
+                  "definition": {
+                    "relativePath": "transformerTestSuite",
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+                  },
+                  "context": {}
+                }
+              }
+            }
+          }
+        ]
+      },
+      "transformerTestDefinition": {
+        "type": "object",
+        "definition": {
+          "uuid": {
+            "type": "string",
+            "validations": [
+              {
+                "type": "uuid"
+              }
+            ],
+            "tag": {
+              "value": {
+                "id": 1,
+                "defaultLabel": "Uuid",
+                "editable": false
+              }
+            }
+          },
+          "parentName": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 1,
+                "defaultLabel": "Uuid",
+                "editable": false
+              }
+            }
+          },
+          "parentUuid": {
+            "type": "string",
+            "validations": [
+              {
+                "type": "uuid"
+              }
+            ],
+            "tag": {
+              "value": {
+                "id": 1,
+                "defaultLabel": "parentUuid",
+                "editable": false
+              }
+            }
+          },
+          "selfApplication": {
+            "type": "uuid",
+            "tag": {
+              "value": {
+                "id": 9,
+                "defaultLabel": "SelfApplication",
+                "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
+                "editable": false
+              }
+            }
+          },
+          "branch": {
+            "type": "uuid",
+            "tag": {
+              "value": {
+                "id": 10,
+                "defaultLabel": "Branch",
+                "description": "The Branch of the SelfApplication",
+                "editable": false
+              }
+            }
+          },
+          "name": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 1,
+                "defaultLabel": "Name",
+                "editable": true
+              }
+            }
+          },
+          "description": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 1,
+                "defaultLabel": "Name",
+                "editable": true
+              }
+            }
+          },
+          "definition": {
+            "type": "schemaReference",
+            "context": {
+              "transformerTest": {
+                "type": "object",
+                "definition": {
+                  "transformerTestType": {
+                    "type": "literal",
+                    "definition": "transformerTest"
+                  },
+                  "transformerTestLabel": {
+                    "type": "string"
+                  },
+                  "transformerName": {
+                    "type": "string"
+                  },
+                  "transformer": {
+                    "type": "any",
+                    "optional": false
+                  },
+                  "runTestStep": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "transformerParams": {
+                    "type": "record",
+                    "definition": {
+                      "type": "any"
+                    }
+                  },
+                  "transformerRuntimeContext": {
+                    "type": "record",
+                    "definition": {
+                      "type": "any"
+                    },
+                    "optional": true
+                  },
+                  "expectedValue": {
+                    "type": "any"
+                  },
+                  "ignoreAttributes": {
+                    "type": "array",
+                    "definition": {
+                      "type": "string"
+                    },
+                    "optional": true
+                  }
+                }
+              },
+              "transformerTestSuite": {
+                "type": "union",
+                "discriminator": "transformerTestType",
+                "definition": [
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "transformerTest"
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "definition": {
+                      "transformerTestType": {
+                        "type": "literal",
+                        "definition": "transformerTestSuite"
+                      },
+                      "transformerTestLabel": {
+                        "type": "string"
+                      },
+                      "transformerTests": {
+                        "type": "record",
+                        "definition": {
+                          "type": "schemaReference",
+                          "definition": {
+                            "relativePath": "transformerTestSuite"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            },
+            "definition": {
+              "relativePath": "transformerTestSuite"
+            }
+          }
+        }
+      },
       "______________________________________________entities_____________________________________________": {
         "type": "never"
       },
