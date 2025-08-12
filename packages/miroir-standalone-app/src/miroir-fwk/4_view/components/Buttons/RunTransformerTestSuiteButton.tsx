@@ -1,10 +1,4 @@
 
-// import { ReactCodeMirror } from "@uiw/react-codemirror";
-import ReactCodeMirror from "@uiw/react-codemirror";
-
-// const MyReactCodeMirror: React.Component = ReactCodeMirror
-const MyReactCodeMirror: any = ReactCodeMirror // TODO: solve the mystery: it was once well-typed, now the linter raises an error upon direct (default-typed) use!
-
 import {
   MiroirLoggerFactory,
   TestSuiteContext,
@@ -16,13 +10,12 @@ import {
   type TransformerTestDefinition
 } from "miroir-core";
 
-// import {
-//   Entity,
-//   TestSuiteResult
-// } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import { describe, expect } from "../../../4-tests/test-expect.js";
+
 import { ActionButton } from "../../components/Page/ActionButton.js";
 import { packageName } from "../../../../constants.js";
 import { cleanLevel } from "../../constants.js";
+import { useSnackbar } from "../../MiroirContextReactProvider.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -102,13 +95,7 @@ export function generateTestReport(
 interface RunTransformerTestSuiteButtonProps {
   transformerTestSuite: Domain2QueryReturnType<any> | undefined;
   testSuiteKey: string;
-  expect: any;
-  describe: any;
-  handleAsyncAction: (
-    action: () => Promise<void>,
-    successMessage: string,
-    actionName: string
-  ) => void;
+  useSnackBar: boolean;
   onTestComplete?: (testSuiteKey: string, structuredResults: any[]) => void;
   label?: string;
   [key: string]: any; // for passing extra props to ActionButton
@@ -121,13 +108,13 @@ interface RunTransformerTestSuiteButtonProps {
 export const RunTransformerTestSuiteButton: React.FC<RunTransformerTestSuiteButtonProps> = ({
   transformerTestSuite,
   testSuiteKey,
-  expect,
-  describe,
-  handleAsyncAction,
+  useSnackBar,
   onTestComplete,
   label,
   ...buttonProps
 }) => {
+  const { handleAsyncAction } = useSnackbar();
+
   const onAction = async () => {
     // Reset previous results
     TestSuiteContext.resetResults();
@@ -185,7 +172,7 @@ export const RunTransformerTestSuiteButton: React.FC<RunTransformerTestSuiteButt
       onAction={onAction}
       successMessage={`${testSuiteKey} tests completed successfully`}
       label={label || `Run ${testSuiteKey} Tests`}
-      handleAsyncAction={handleAsyncAction}
+      handleAsyncAction={useSnackBar?handleAsyncAction: undefined}
       actionName={`run ${testSuiteKey} tests`}
       {...buttonProps}
     />

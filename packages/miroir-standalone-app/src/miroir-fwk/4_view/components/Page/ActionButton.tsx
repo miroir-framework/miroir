@@ -5,7 +5,7 @@ interface ActionButtonProps {
   onAction: () => Promise<void>;
   successMessage: string;
   label: string;
-  handleAsyncAction: (
+  handleAsyncAction?: (
     action: () => Promise<void>,
     successMessage: string,
     actionName: string
@@ -27,7 +27,7 @@ export const ActionButton: React.FC<ActionButtonProps> = ({
 }) => {
   return (
     <ThemedButton
-      onClick={() => handleAsyncAction(onAction, successMessage, actionName)}
+      onClick={() => handleAsyncAction?handleAsyncAction(onAction, successMessage, actionName):undefined}
       {...buttonProps}
     >
       {label}

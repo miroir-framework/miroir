@@ -86,30 +86,6 @@ export const defaultObject: JzodObject = {
   definition: {}
 } as JzodObject
 
-// const actionsJzodSchema: JzodObject = {
-//   type: "object",
-//   definition: {
-//     "applicationName": {
-//       type: "string"
-//     }
-//   }    
-// }
-
-// const formJzodSchema:JzodObject = {
-//   type: "object",
-//   definition: {
-//     "applicationName": {
-//       type: "string"
-//     },
-//     // "configuration": {
-//     //   "type": "schemaReference",
-//     //   "definition": { "absolutePath": miroirFundamentalJzodSchemaUuid, "relativePath": "miroirConfigForRestClient"}
-//     // },
-//   }
-// };
-// // miroirConfigForRestClient
-
-
 const initialValues = {
   newApplicationName: "placeholder...",
   newAdminAppApplicationUuid: applicationParis.uuid,
@@ -121,9 +97,6 @@ export interface MiroirForm {
   formSchema: JzodElement,
   formAction: DomainAction,
 }
-
-
-
 
 
 // ################################################################################################
@@ -138,15 +111,14 @@ export const ToolsPage: React.FC<any> = (
   const [dialogOuterFormObject, setdialogOuterFormObject] = useMiroirContextInnerFormOutput();
   const [formHelperState, setformHelperState] = useMiroirContextformHelperState();
 
-  const errorLog = useErrorLogService();
+  // const errorLog = useErrorLogService();
   const context = useMiroirContextService();
   const domainController: DomainControllerInterface = useDomainControllerService();
-  const { handleAsyncAction } = useSnackbar();
   const currentModel: MetaModel = useCurrentModel(
     context.applicationSection == "data" ? context.deploymentUuid : adminConfigurationDeploymentMiroir.uuid
   );
   const currentMiroirModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
-  const currentReportDeploymentSectionEntities: Entity[] = currentModel.entities; // Entities are always defined in the 'model' section
+  // const currentReportDeploymentSectionEntities: Entity[] = currentModel.entities; // Entities are always defined in the 'model' section
 
   const [formState,setFormState] = useState<{[k:string]:any}>(initialValues)
   const [testResults, setTestResults] = useState<TestSuiteResult | undefined>(
@@ -466,9 +438,9 @@ export const ToolsPage: React.FC<any> = (
           <RunTransformerTestSuiteButton
             transformerTestSuite={transformerTestSuite_resolveConditionalSchema}
             testSuiteKey={testSuiteKey}
-            expect={expect}
-            describe={describe}
-            handleAsyncAction={handleAsyncAction}
+            // expect={expect}
+            // describe={describe}
+            useSnackBar={true}
             onTestComplete={(testSuiteKey, structuredResults) => {
               setResolveConditionalSchemaResultsData(structuredResults);
             }}

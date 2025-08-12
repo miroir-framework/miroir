@@ -11,7 +11,8 @@ import {
   MetaModel,
   MiroirLoggerFactory,
   Uuid,
-  adminConfigurationDeploymentMiroir
+  adminConfigurationDeploymentMiroir,
+  entityTransformerTest
 } from "miroir-core";
 
 import {
@@ -43,6 +44,8 @@ import {
   ThemedTooltip
 } from "../Themes/ThemedComponents.js";
 import { TypedValueObjectEditor } from './TypedValueObjectEditor.js';
+import { RunTransformerTestSuiteButton } from '../Buttons/RunTransformerTestSuiteButton.js';
+import { ValueObjectGrid } from '../Grids/ValueObjectGrid.js';
 // import { GlobalRenderPerformanceDisplay, RenderPerformanceDisplay, trackRenderPerformance } from '../tools/renderPerformanceMeasure.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -142,6 +145,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   const [displayAsStructuredElement, setDisplayAsStructuredElement] = useState(true);
   const [displayEditor, setDisplayEditor] = useState(true);
   const [foldedObjectAttributeOrArrayItems, setFoldedObjectAttributeOrArrayItems] = useState<{ [k: string]: boolean }>({});
+  const [resolveConditionalSchemaResultsData, setResolveConditionalSchemaResultsData] = useState<any[]>([]); // TODO: use a precise type!
 
   // Use outline context for outline state management
   const outlineContext = useDocumentOutlineContext();
@@ -281,6 +285,33 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   );
   
   // ##############################################################################################
+  // Check if this is a TransformerTest entity instance
+  const isTransformerTestEntity = currentReportTargetEntity?.uuid === entityTransformerTest.uuid;
+  const isTransformerTest = isTransformerTestEntity && 
+    instance?.parentUuid === entityTransformerTest.uuid;
+  
+  // Log for debugging
+  log.info("ReportSectionEntityInstance - TransformerTest detection:", 
+    "currentReportTargetEntity",
+    currentReportTargetEntity,
+    "entityUuid",
+    currentReportTargetEntity?.uuid,
+    "entityTransformerTest",
+    entityTransformerTest,
+    "instance",
+    instance,
+    "isTransformerTest",
+    isTransformerTest,
+  //   {
+  //   transformerTestEntityUuid: entityTransformerTest.uuid,
+  //   isTransformerTestEntity,
+  //   instanceTransformerTestType: instance?.transformerTestType,
+  //   instanceName: instance?.name,
+  //   transformerTestLabel: instance?.transformerTestLabel
+  // }
+);
+  
+  // ##############################################################################################
   if (instance) {
     return (
       <ThemedContainer>
@@ -292,6 +323,71 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
               ReportSectionEntityInstance renders: {navigationCount} (total: {totalCount})
             </ThemedText>
           )}
+
+          {/* Show test button if this is a TransformerTest entity */}
+          {isTransformerTest && (
+            <div
+              style={{
+                marginBottom: "16px",
+                padding: "12px",
+                backgroundColor: "#e8f4fd",
+                borderRadius: "8px",
+                border: "1px solid #b3d9ff",
+                boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+              }}
+            >
+              <div style={{ marginBottom: "8px", fontWeight: "bold", color: "#1976d2" }}>
+                🧪 Transformer Test Available
+              </div>
+              <RunTransformerTestSuiteButton
+                transformerTestSuite={instance}
+                testSuiteKey={instance.transformerTestLabel || instance.name || "TransformerTest"}
+                useSnackBar={true}
+                onTestComplete={(testSuiteKey, structuredResults) => {
+                  setResolveConditionalSchemaResultsData(structuredResults);
+                  log.info(`Test completed for ${testSuiteKey}:`, structuredResults);
+                }}
+                label={`▶️ Run ${instance.transformerTestLabel || "Transformer Test"}`}
+                style={{
+                  backgroundColor: "#1976d2",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "6px",
+                  padding: "8px 16px",
+                  fontWeight: "bold",
+                }}
+              />
+              {/* Test Results Display */}
+              {resolveConditionalSchemaResultsData &&
+                resolveConditionalSchemaResultsData.length > 0 && (
+                  <div style={{ margin: "20px 0" }}>
+                    <h3>resolveConditionalSchema Test Results:</h3>
+                    <ValueObjectGrid
+                      valueObjects={resolveConditionalSchemaResultsData}
+                      jzodSchema={{
+                        type: "object",
+                        definition: {
+                          testName: { type: "string" },
+                          testResult: { type: "string" },
+                          status: { type: "string" },
+                          assertionCount: { type: "number" },
+                          assertions: { type: "string" },
+                        },
+                      }}
+                      styles={{
+                        height: "400px",
+                        width: "100%",
+                      }}
+                      maxRows={20}
+                      sortByAttribute="testName"
+                      displayTools={false}
+                      gridType="ag-grid"
+                    />
+                  </div>
+                )}
+            </div>
+          )}
+
           <div>
             <label htmlFor="displayEditorSwitch">Display editor:</label>
             <ThemedSwitch
@@ -326,55 +422,53 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
               </ThemedTooltip>
             )}
           </ThemedHeaderSection>
-          {
-            currentReportTargetEntityDefinition && context.applicationSection ? (
-              displayEditor ? (
-                <TypedValueObjectEditor
-                  labelElement={labelElement}
-                  valueObject={instance}
-                  valueObjectMMLSchema={currentReportTargetEntityDefinition.jzodSchema}
-                  deploymentUuid={props.deploymentUuid}
-                  applicationSection={props.applicationSection}
-                  // 
-                  formLabel={formLabel}
-                  onSubmit={onEditValueObjectFormSubmit}
-                  foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
-                  setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
-                />
-              ) : (
-                <div>
-                  {displayAsStructuredElement ? (
-                    <div>Can not display non-editor as structured element</div>
-                  ) : (
-                    <div>
-                      <ThemedCodeBlock>{safeStringify(instance)}</ThemedCodeBlock>
-                    </div>
-                  )}
-                </div>
-              )
+          {currentReportTargetEntityDefinition && context.applicationSection ? (
+            displayEditor ? (
+              <TypedValueObjectEditor
+                labelElement={labelElement}
+                valueObject={instance}
+                valueObjectMMLSchema={currentReportTargetEntityDefinition.jzodSchema}
+                deploymentUuid={props.deploymentUuid}
+                applicationSection={props.applicationSection}
+                //
+                formLabel={formLabel}
+                onSubmit={onEditValueObjectFormSubmit}
+                foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
+                setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
+              />
             ) : (
               <div>
-                Oops, ReportSectionEntityInstance could not be displayed.
-                <p />
-                <div>props selfApplication section: {props.applicationSection}</div>
-                <div>context selfApplication section: {context.applicationSection}</div>
-                <div>
-                  target entity:{" "}
-                  {currentReportTargetEntity?.name ?? "report target entity not found!"}
-                </div>
-                {/* <div>resolved schema: {JSON.stringify(resolvedJzodSchema)}</div> */}
-                <ThemedPreformattedText>
-                  target entity definition:{" "}
-                  {currentReportTargetEntityDefinition?.name ??
-                    "report target entity definition not found!"}
-                </ThemedPreformattedText>
-                <div> ######################################## </div>
-                <ThemedPreformattedText>
-                  entity jzod schema: {safeStringify(instance?.jzodSchema)}
-                </ThemedPreformattedText>
+                {displayAsStructuredElement ? (
+                  <div>Can not display non-editor as structured element</div>
+                ) : (
+                  <div>
+                    <ThemedCodeBlock>{safeStringify(instance)}</ThemedCodeBlock>
+                  </div>
+                )}
               </div>
             )
-          }
+          ) : (
+            <div>
+              Oops, ReportSectionEntityInstance could not be displayed.
+              <p />
+              <div>props selfApplication section: {props.applicationSection}</div>
+              <div>context selfApplication section: {context.applicationSection}</div>
+              <div>
+                target entity:{" "}
+                {currentReportTargetEntity?.name ?? "report target entity not found!"}
+              </div>
+              {/* <div>resolved schema: {JSON.stringify(resolvedJzodSchema)}</div> */}
+              <ThemedPreformattedText>
+                target entity definition:{" "}
+                {currentReportTargetEntityDefinition?.name ??
+                  "report target entity definition not found!"}
+              </ThemedPreformattedText>
+              <div> ######################################## </div>
+              <ThemedPreformattedText>
+                entity jzod schema: {safeStringify(instance?.jzodSchema)}
+              </ThemedPreformattedText>
+            </div>
+          )}
         </div>
         {/* <PerformanceMetricsDisplay /> */}
       </ThemedContainer>
