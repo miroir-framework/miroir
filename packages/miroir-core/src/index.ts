@@ -512,7 +512,7 @@ export {
 export {
   ReduxDeploymentsState,
   ZEntityState,
-  ZEntityStateSchema,
+  zEntityStateSchema as ZEntityStateSchema,
 } from "./0_interfaces/2_domain/ReduxDeploymentsStateInterface.js";
 export {
   CRUDActionName,
@@ -823,7 +823,6 @@ export {
 } from "./2_domain/Templates";
 export { transformer_spreadSheetToJzodSchema } from "./2_domain/Transformer_Spreadsheet";
 export {
-  ActionTemplate,
   applicationTransformerDefinitions,
   resolveApplyTo_legacy,
   transformer_extended_apply,

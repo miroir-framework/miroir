@@ -162,7 +162,7 @@ export type TransformerForBuild =
   | TransformerForBuild_constantBigint
   | TransformerForBuild_InnerReference
   | TransformerForBuild_dataflowSequence
-  // MMLS
+  // MLS
   | ${Object.keys(mmlsTransformers)
     .map((e) => `${e.replace("transformer_", "TransformerForBuild_")}`)
     .join("\n  | ")}
@@ -219,9 +219,9 @@ export const transformerForBuild: z.ZodType<TransformerForBuild> = z.lazy(() => 
     transformerForBuild_constantBigint,
     transformerForBuild_InnerReference,
     transformerForBuild_dataflowSequence,
-    // MMLS
+    // MLS
     ${Object.keys(mmlsTransformers)
-      .map((e) => `${e.replace("transformer_", "transformerForBuild_")},`)
+      .map((e) => `${e.replace("transformer_", "transformerForBuild_")}`)
       .join(",\n   ")}
   ]);
 });
@@ -255,7 +255,7 @@ export type TransformerForRuntime =
   | TransformerForRuntime_constantBigint
   | TransformerForRuntime_InnerReference
   | TransformerForRuntime_dataflowSequence
-  // MMLS
+  // MLS
   | ${Object.keys(mmlsTransformers)
     .map((e) => `${e.replace("transformer_", "TransformerForRuntime_")}`)
     .join("\n  | ")}
@@ -291,9 +291,9 @@ export const transformerForRuntime: z.ZodType<TransformerForRuntime> = z.union([
   z.lazy(() => transformerForRuntime_constantBigint),
   z.lazy(() => transformerForRuntime_InnerReference),
   z.lazy(() => transformerForRuntime_dataflowSequence),
-  // MMLS
+  // MLS
   ${Object.keys(mmlsTransformers)
-    .map((e) => `z.lazy(() => ${e.replace("transformer_", "transformerForRuntime_")}),\n  `)
+    .map((e) => `z.lazy(() => ${e.replace("transformer_", "transformerForRuntime_")})`)
     .join(",\n   ")}
 ]);
 
@@ -343,7 +343,7 @@ export type TransformerForBuildPlusRuntime =
   | TransformerForBuildPlusRuntime_constantBigint
   | TransformerForBuildPlusRuntime_InnerReference
   | TransformerForBuildPlusRuntime_dataflowSequence
-  // MMLS
+  // MLS
   | ${Object.keys(mmlsTransformers)
     .map((e) => `${e.replace("transformer_", "TransformerForBuildPlusRuntime_")}`)
     .join("\n  | ")}
@@ -402,9 +402,9 @@ export const transformerForBuildPlusRuntime: z.ZodType<TransformerForBuildPlusRu
     transformerForBuildPlusRuntime_constantBigint,
     transformerForBuildPlusRuntime_InnerReference,
     transformerForBuildPlusRuntime_dataflowSequence,
-    // MMLS
+    // MLS
     ${Object.keys(mmlsTransformers)
-      .map((e) => `${e.replace("transformer_", "transformerForBuildPlusRuntime_")},\n  `)
+      .map((e) => `${e.replace("transformer_", "transformerForBuildPlusRuntime_")}`)
       .join(",\n   ")}
   ]);
 });

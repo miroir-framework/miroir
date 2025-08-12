@@ -29,8 +29,14 @@ import transformer_objectEntries_json from '../assets/miroir_data/a557419d-a288-
 import transformer_objectValues_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/8b03069a-f812-4334-a530-e7f8fd684744.json';
 import transformer_parameterReference_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/af5029f2-b42e-4541-8e50-4e2f2d8fcfab.json';
 import transformer_unique_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/a93aec8f-3f8b-4129-a907-e7321c1e7171.json';
-// MMLS
+// MLS
+import transformer_defaultValueForMLSchema_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/3026a4f6-9f4b-4f1a-97bb-ecda4df35309.json';
 import transformer_resolveConditionalSchema_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/70f5e617-2aa3-4dc4-b897-4cc3cffa3405.json';
+
+// ################################################################################################
+export type ActionTemplate = any;
+export type Step = "build" | "runtime";
+export type ResolveBuildTransformersTo = "value" | "constantTransformer";
 
 
 export const transformer_menu_addItem: TransformerDefinition = transformer_menu_addItem_json as TransformerDefinition;
@@ -61,10 +67,12 @@ export const transformer_objectValues: TransformerDefinition = transformer_objec
 export const transformer_object_fullTemplate: TransformerDefinition = transformer_objectFullTemplate_json as TransformerDefinition;
 export const transformer_parameterReference: TransformerDefinition = transformer_parameterReference_json as TransformerDefinition;
 export const transformer_unique: TransformerDefinition = transformer_unique_json as TransformerDefinition;
-// MMLS
+// MLS
+export const transformer_defaultValueForMLSchema: TransformerDefinition = transformer_defaultValueForMLSchema_json as TransformerDefinition;
 export const transformer_resolveConditionalSchema: TransformerDefinition = transformer_resolveConditionalSchema_json as TransformerDefinition;
 
 export const mmlsTransformers: Record<string,TransformerDefinition> = {
+  transformer_defaultValueForMLSchema,
   transformer_resolveConditionalSchema,
 };
 
@@ -95,7 +103,7 @@ export const miroirCoreTransformers: Record<string,TransformerDefinition> = {
   transformer_parameterReference,
   transformer_unique,
   transformer_constantBigint,
-  // MMLS
+  // MLS
   ...mmlsTransformers,
 };
 export const miroirTransformers: Record<string,TransformerDefinition> = {

@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest";
 import entityBook from "../../../src/assets/library_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/e8ba151b-d68e-4cc3-9a83-3459d309ccf5.json";
 import adminConfigurationDeploymentLibrary from "../../../src/assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/f714bb2f-a12d-4e71-a03b-74dcedea6eb4.json";
 
-import { EntityInstance } from "../../../src//0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { EntityInstance, type TransformerTestSuite } from "../../../src//0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { JzodElement } from "../../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 import entityDefinitionCountry from "../../../src/assets/library_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/56628e31-3db5-4c5c-9328-4ff7ce54c36a.json";
@@ -33,8 +33,13 @@ import publisher2 from "../../../src/assets/library_data/a027c379-8468-43a5-ba4d
 import publisher3 from "../../../src/assets/library_data/a027c379-8468-43a5-ba4d-bf618be25cab/c1c97d54-aba8-4599-883a-7fe8f3874095.json";
 // import { json } from "sequelize";
 // import { transformerTestSuite_spreadsheet } from "./transformersTests_spreadsheet.data";
-import { ignoreFailureAttributes, runTransformerTestInMemory, runTransformerTestSuite, TransformerTest, transformerTestsDisplayResults, TransformerTestSuite } from "../../../src/4_services/TestTools";
-import { Step } from "../../../src/2_domain/TransformersForRuntime";
+import {
+  ignoreFailureAttributes,
+  runTransformerTestInMemory,
+  runTransformerTestSuite,
+  transformerTestsDisplayResults,
+} from "../../../src/4_services/TestTools";
+import { Step } from "../../../src/2_domain/Transformers";
 
 
 
@@ -620,14 +625,23 @@ console.log("@@@@@@@@@@@@@@@@@@ RUN_TEST", RUN_TEST);
 
 afterAll(async () => {
   if (RUN_TEST) {
-    transformerTestsDisplayResults(transformerTestSuite_resolveConditionalSchema, RUN_TEST, transformerTestSuite_resolveConditionalSchema.transformerTestLabel);
+    transformerTestsDisplayResults(
+      transformerTestSuite_resolveConditionalSchema,
+      RUN_TEST,
+      transformerTestSuite_resolveConditionalSchema.transformerTestLabel
+    );
   }
 });
 
 // ################################################################################################
 // const testSuiteName = "transformers.unit.test";
 if (RUN_TEST == transformerTestSuite_resolveConditionalSchema.transformerTestLabel) {
-  await runTransformerTestSuite(vitest, [], transformerTestSuite_resolveConditionalSchema, runTransformerTestInMemory);
+  await runTransformerTestSuite(
+    vitest,
+    [],
+    transformerTestSuite_resolveConditionalSchema,
+    runTransformerTestInMemory
+  );
 } else {
   console.log("################################ skipping test suite:", transformerTestSuite_resolveConditionalSchema.transformerTestLabel);
 }

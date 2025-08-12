@@ -43,11 +43,11 @@ export const jzodUnion_recursivelyUnfold = (
     ;
     const resolvedReferences: JzodElement[] = referencesToBeExplored.map((a: JzodReference) =>
       resolveJzodSchemaReferenceInContext(
-        miroirFundamentalJzodSchema,
         a,
+        { ...relativeReferenceJzodContext, ...a.context },
+        miroirFundamentalJzodSchema,
         currentModel,
         miroirMetaModel,
-        { ...relativeReferenceJzodContext, ...a.context }
       )
     );
 

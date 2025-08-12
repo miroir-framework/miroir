@@ -223,11 +223,11 @@ export function unfoldJzodSchemaOnce(
       );
 
       const resolvedJzodSchema = resolveJzodSchemaReferenceInContext(
-        miroirFundamentalJzodSchema,
         {type: "schemaReference", context: unfoldedReferenceJzodSchema.context, definition:jzodSchema.definition},
+        {...relativeReferenceJzodContext, ...unfoldedReferenceJzodSchema.context}, // local context (unfoldedReferenceJzodSchema.context) is not taken into account by resolveJzodSchemaReferenceInContext
+        miroirFundamentalJzodSchema,
         currentModel,
         miroirMetaModel,
-        {...relativeReferenceJzodContext, ...unfoldedReferenceJzodSchema.context} // local context (unfoldedReferenceJzodSchema.context) is not taken into account by resolveJzodSchemaReferenceInContext
       )
 
       // log.info("unfoldJzodSchemaOnce resolvedJzodSchema", resolvedJzodSchema);
@@ -276,13 +276,12 @@ export function unfoldJzodSchemaOnce(
     case "object": {
       let extendedJzodSchema: JzodObject
       if (jzodSchema.extend) {
-        // const extension = resolveJzodSchemaReferenceInContext(
         const extension = resolveJzodSchemaReferenceInContext(
-          miroirFundamentalJzodSchema,
           jzodSchema.extend,
+          relativeReferenceJzodContext,
+          miroirFundamentalJzodSchema,
           currentModel,
           miroirMetaModel,
-          relativeReferenceJzodContext
         )
         if (extension.type == "object") {
           extendedJzodSchema = {

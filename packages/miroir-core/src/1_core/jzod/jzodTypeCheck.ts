@@ -127,22 +127,22 @@ export function resolveObjectExtendClauseAndDefinition(
     if (jzodObject.extend) {
       // const extension = resolveJzodSchemaReferenceInContext(
       const extension:JzodElement = resolveJzodSchemaReferenceInContext(
-        miroirFundamentalJzodSchema,
         jzodObject.extend,
+        relativeReferenceJzodContext,
+        miroirFundamentalJzodSchema,
         currentModel,
         miroirMetaModel,
-        relativeReferenceJzodContext
       )
       const resolvedDefinition = Object.fromEntries(
         Object.entries(jzodObject.definition).filter(
           (e:[string, JzodElement]) => e[1].type == "schemaReference"
         ).map(
           (e) => [e[0], resolveJzodSchemaReferenceInContext(
-            miroirFundamentalJzodSchema,
             e[1] as JzodReference,
+            relativeReferenceJzodContext,
+            miroirFundamentalJzodSchema,
             currentModel,
             miroirMetaModel,
-            relativeReferenceJzodContext
           )]
         )
       );
@@ -236,11 +236,11 @@ export function unionObjectChoices (
             )
             .map((k: JzodReference) =>
               resolveJzodSchemaReferenceInContext(
-                miroirFundamentalJzodSchema,
                 k,
+                { ...relativeReferenceJzodContext, ...k.context },
+                miroirFundamentalJzodSchema,
                 currentModel,
                 miroirMetaModel,
-                { ...relativeReferenceJzodContext, ...k.context }
               )
             )
             .filter((j) => j.type == "object") as JzodObject[]
@@ -302,11 +302,11 @@ export function unionArrayChoices (
         (j.definition.filter((k: JzodElement) => k.type == "schemaReference") as JzodReference[])
           .map((k: JzodReference) =>
             resolveJzodSchemaReferenceInContext(
-              miroirFundamentalJzodSchema,
               k,
+              { ...relativeReferenceJzodContext, ...k.context },
+              miroirFundamentalJzodSchema,
               currentModel,
               miroirMetaModel,
-              { ...relativeReferenceJzodContext, ...k.context }
             )
           )
           .filter((j) => j.type == "array" || j.type == "tuple") as (JzodArray | JzodTuple)[]
@@ -384,11 +384,11 @@ export function selectUnionBranchFromDiscriminator(
       let extendedJzodSchema: JzodObject
       if (jzodObjectSchema.extend) {
         const extension = resolveJzodSchemaReferenceInContext(
-          miroirFundamentalJzodSchema,
           jzodObjectSchema.extend,
+          relativeReferenceJzodContext,
+          miroirFundamentalJzodSchema,
           currentModel,
           miroirMetaModel,
-          relativeReferenceJzodContext
         )
         if (extension.type == "object") {
           extendedJzodSchema = {
@@ -857,11 +857,11 @@ export function jzodTypeCheck(
     case "schemaReference": {
       const newContext = { ...relativeReferenceJzodContext, ...effectiveSchema.context };
       const resolvedJzodSchema = resolveJzodSchemaReferenceInContext(
-        miroirFundamentalJzodSchema,
         effectiveSchema,
+        newContext,
+        miroirFundamentalJzodSchema,
         currentModel,
         miroirMetaModel,
-        newContext
       );
       log.info(
         "jzodTypeCheck schemaReference",

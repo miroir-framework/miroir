@@ -568,7 +568,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
           //   props.listKey,
           //   "with value",
           //   currentValue,
-          //   "MMLS tag",
+          //   "MLS tag",
           //   localResolvedElementJzodSchemaBasedOnValue.tag,
           //   "foreignKeyObjects",
           //   foreignKeyObjects

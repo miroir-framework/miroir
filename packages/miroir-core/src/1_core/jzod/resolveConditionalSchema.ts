@@ -16,7 +16,7 @@ import { packageName } from "../../constants";
 import { RelativePath, resolveRelativePath } from '../../tools';
 import { cleanLevel } from "../constants";
 import { getEntityInstancesUuidIndexNonHook } from "../../2_domain/ReduxDeploymentsStateQueryExecutor";
-import type { ResolveBuildTransformersTo, Step } from "../../2_domain/TransformersForRuntime";
+import type { ResolveBuildTransformersTo, Step } from "../../2_domain/Transformers";
 
 // Error value types for resolveConditionalSchema
 export type ResolveConditionalSchemaError =

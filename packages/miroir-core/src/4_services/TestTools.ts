@@ -11,7 +11,8 @@ import {
   Domain2ElementFailed,
   Domain2QueryReturnType,
 } from "../0_interfaces/2_domain/DomainElement";
-import { Step, transformer_extended_apply_wrapper } from "../2_domain/TransformersForRuntime";
+import { Step } from "../2_domain/Transformers";
+import { transformer_extended_apply_wrapper } from "../2_domain/TransformersForRuntime";
 import { ignorePostgresExtraAttributes } from "./otherTools";
 import { TestSuiteContext } from "./TestSuiteContext";
 

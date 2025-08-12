@@ -188,12 +188,11 @@ function testResolveReferenceInContext(
 ){
   console.log("######################################### running test", testId, "...")
   const testResult = resolveJzodSchemaReferenceInContext(
-    miroirFundamentalJzodSchema,
     testSchema,
-    // testValueObject,
+    testSchema.context,
+    miroirFundamentalJzodSchema,
     defaultMiroirMetaModel,
     defaultMiroirMetaModel,
-    testSchema.context
   )
     expect(testResult).toEqual(expectedResult);
 }

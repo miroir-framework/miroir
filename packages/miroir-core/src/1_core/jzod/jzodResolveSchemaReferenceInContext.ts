@@ -11,22 +11,22 @@ import {
 // ################################################################################################
 // ################################################################################################
 export function resolveJzodSchemaReferenceInContext(
-  miroirFundamentalJzodSchema: JzodSchema,
   jzodReference: JzodReference | JzodObject | (JzodReference | JzodObject | undefined)[],
+  relativeReferenceJzodContext: { [k: string]: JzodElement } = {},
+  miroirFundamentalJzodSchema: JzodSchema,
   currentModel?: MetaModel,
   miroirMetaModel?: MetaModel,
-  relativeReferenceJzodContext?: { [k: string]: JzodElement },
 ): JzodElement {
   if (Array.isArray(jzodReference)) {
     // Aggregate resolved items into an object with keys as indices
     const resolvedItems = jzodReference.map((ref, idx) => {
       if (ref === undefined) return undefined;
       return resolveJzodSchemaReferenceInContext(
-        miroirFundamentalJzodSchema,
         ref,
+        relativeReferenceJzodContext,
+        miroirFundamentalJzodSchema,
         currentModel,
         miroirMetaModel,
-        relativeReferenceJzodContext
       );
     });
     // If all items are objects with a definition, merge them into one object

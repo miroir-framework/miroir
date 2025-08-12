@@ -21,6 +21,8 @@ export type QueryFailureType =
   | "FailedTransformer_constant"
   | "FailedTransformer_contextReference"
   | "FailedTransformer_listPickElement"
+  | "FailedTransformer"
+  | "TransformerNotFound"
   | "FailedExtractor"
   | "QueryNotExecutable"
   | "DomainStateNotLoaded"
