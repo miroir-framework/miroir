@@ -26,7 +26,6 @@ import {
   compactTableTheme,
   materialTableTheme,
 } from "./TableTheme.js";
-import { TableTheme as TableThemeId } from 'miroir-core';
 
 // Deep partial type for theme overrides
 export type DeepPartial<T> = {
@@ -77,10 +76,12 @@ export interface MiroirTheme {
     // Status colors
     error: string;
     errorLight: string;
+    errorSurface: string;
     warning: string;
     warningLight: string;
     success: string;
     successLight: string;
+    successSurface: string;
     info: string;
     infoLight: string;
     
@@ -321,10 +322,12 @@ export const defaultMiroirTheme: MiroirTheme = {
     
     error: '#d32f2f',
     errorLight: '#ffebee',
+    errorSurface: '#fff5f5',
     warning: '#ff8c00',
     warningLight: '#fff8f0',
     success: '#388e3c',
     successLight: '#e8f5e8',
+    successSurface: '#f9fff9',
     info: '#1976d2',
     infoLight: '#e3f2fd',
     
@@ -554,10 +557,12 @@ export const darkMiroirTheme: MiroirTheme = {
     
     error: '#f44336',
     errorLight: '#ffebee',
+    errorSurface: '#2d1b1b',
     warning: '#ff8c00',
     warningLight: '#fff8f0',
     success: '#4caf50',
     successLight: '#e8f5e8',
+    successSurface: '#1b2d1b',
     info: '#90caf9',
     infoLight: 'rgba(144, 202, 249, 0.1)',
     

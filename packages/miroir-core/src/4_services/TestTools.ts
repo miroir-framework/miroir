@@ -582,7 +582,7 @@ export const transformerTestsDisplayResults = (
 ) => {
   if (RUN_TEST == testSuiteName) {
     console.log(
-      "#################################### afterAll",
+      "#################################### transformerTestsDisplayResults",
       testSuiteName,
       "testResults",
       JSON.stringify(TestSuiteContext.testAssertionsResults, null, 2)
@@ -592,12 +592,12 @@ export const transformerTestsDisplayResults = (
     const testSuitesNames = testSuitesPaths.map(TestSuiteContext.testSuitePathName);
     // console.log("#################################### afterAll TestSuites:", testSuitesPaths);
     console.log(
-      "#################################### afterAll",
+      "#################################### transformerTestsDisplayResults",
       testSuiteName,
       "TestSuites names:",
       testSuitesNames
     );
-    console.log("#################################### afterAll", testSuiteName, "TestResults:");
+    console.log("#################################### transformerTestsDisplayResults", testSuiteName, "TestResults:");
     for (const testSuiteName of testSuitesNames) {
       displayTestSuiteResults(expect, testSuiteName);
       console.log("");

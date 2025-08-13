@@ -51,47 +51,52 @@ if (RUN_TEST == transformerTestSuite_defaultValueForMLSchema.definition.transfor
     transformerTestSuite_defaultValueForMLSchema.definition as TransformerTestSuite,
     runTransformerTestInMemory
   );
+  transformerTestsDisplayResults(
+    transformerTestSuite_defaultValueForMLSchema.definition as TransformerTestSuite,
+    RUN_TEST,
+    transformerTestSuite_defaultValueForMLSchema.definition.transformerTestLabel
+  );
 } else {
   console.log("################################ skipping test suite:", transformerTestSuite_defaultValueForMLSchema.definition.transformerTestLabel);
 }
 
 
-// ################################################################################################
-function testResolve(
-  testId: string,
-  testSchema: JzodElement,
-  expectedResult: JzodElement,
-){
-  console.log("######################################### running test", testId, "...")
-  // const testResult = getDefaultValueForJzodSchemaWithResolution(
-  const testResult = getDefaultValueForJzodSchemaWithResolutionNonHook(
-    testSchema,
-    undefined, // rootObject,
-    "", // rootLessListKey
-    undefined, // currentDefaultValue,
-    undefined, // currentValuePath,
-    undefined, // deploymentEntityState,
-    false, // forceOptional,
-    undefined, // deploymentUuid,
-    miroirFundamentalJzodSchema as JzodSchema, // miroirFundamentalJzodSchema,
-      // currentValuePath: string[] = [],
-      // deploymentEntityState: ReduxDeploymentsState | undefined = undefined,
-      // forceOptional: boolean = false,
-      // deploymentUuid: Uuid | undefined,
-      // miroirFundamentalJzodSchema: JzodSchema,
-      // currentModel?: MetaModel,
-      // miroirMetaModel?: MetaModel,
-      // relativeReferenceJzodContext?: { [k: string]: JzodElement },
-      // rootObject?: any,
-  );
-  console.log("#########################################", testId, "testResult:", JSON.stringify(testResult, null, 2));
-  expect(testResult).toEqual(expectedResult);
-}
+// // ################################################################################################
+// function testResolve(
+//   testId: string,
+//   testSchema: JzodElement,
+//   expectedResult: JzodElement,
+// ){
+//   console.log("######################################### running test", testId, "...")
+//   // const testResult = getDefaultValueForJzodSchemaWithResolution(
+//   const testResult = getDefaultValueForJzodSchemaWithResolutionNonHook(
+//     testSchema,
+//     undefined, // rootObject,
+//     "", // rootLessListKey
+//     undefined, // currentDefaultValue,
+//     undefined, // currentValuePath,
+//     undefined, // deploymentEntityState,
+//     false, // forceOptional,
+//     undefined, // deploymentUuid,
+//     miroirFundamentalJzodSchema as JzodSchema, // miroirFundamentalJzodSchema,
+//       // currentValuePath: string[] = [],
+//       // deploymentEntityState: ReduxDeploymentsState | undefined = undefined,
+//       // forceOptional: boolean = false,
+//       // deploymentUuid: Uuid | undefined,
+//       // miroirFundamentalJzodSchema: JzodSchema,
+//       // currentModel?: MetaModel,
+//       // miroirMetaModel?: MetaModel,
+//       // relativeReferenceJzodContext?: { [k: string]: JzodElement },
+//       // rootObject?: any,
+//   );
+//   console.log("#########################################", testId, "testResult:", JSON.stringify(testResult, null, 2));
+//   expect(testResult).toEqual(expectedResult);
+// }
 
-interface testFormat {
-  testSchema: JzodElement,
-  expectedResult: any,
-}
+// interface testFormat {
+//   testSchema: JzodElement,
+//   expectedResult: any,
+// }
 
 // ################################################################################################
 // ################################################################################################

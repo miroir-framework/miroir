@@ -70,6 +70,20 @@ export function resolveConditionalSchema(
   context: 'defaultValue' | 'typeCheck' = 'typeCheck' // New parameter for context
 ): ResolveConditionalSchemaResult {
   let effectiveSchema: JzodElement = jzodSchema;
+  log.info(
+    "resolveConditionalSchema called with jzodSchema",
+    JSON.stringify(jzodSchema, null, 2),
+    "rootObject",
+    rootObject,
+    "currentValuePath",
+    currentValuePath,
+    "reduxDeploymentsState",
+    reduxDeploymentsState,
+    "deploymentUuid",
+    deploymentUuid,
+    "context",
+    context
+  );
   if (jzodSchema.tag && jzodSchema.tag.value && jzodSchema.tag.value.conditionalMMLS) {
     // If the schema has a conditionalMMLS, we use it as the effective schema
     const conditionalConfig = jzodSchema.tag.value.conditionalMMLS;
