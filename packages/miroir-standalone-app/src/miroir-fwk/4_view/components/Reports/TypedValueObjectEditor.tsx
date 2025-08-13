@@ -59,6 +59,72 @@ MiroirLoggerFactory.registerLoggerToStart(
 
 const codeMirrorExtensions = [javascript()];
 
+// Extract value at a given path from an object
+function getValueAtPath(obj: any, path: string): any {
+  if (!path || !obj) return obj;
+  
+  const pathParts = path.split('.');
+  let current = obj;
+  
+  for (const part of pathParts) {
+    if (current === null || current === undefined || typeof current !== 'object') {
+      return undefined;
+    }
+    current = current[part];
+  }
+  
+  return current;
+}
+
+// Set value at a given path in an object, creating intermediate objects as needed
+function setValueAtPath(obj: any, path: string, value: any): any {
+  if (!path) return value;
+  
+  const pathParts = path.split('.');
+  const result = { ...obj };
+  let current = result;
+  
+  for (let i = 0; i < pathParts.length - 1; i++) {
+    const part = pathParts[i];
+    if (current[part] === null || current[part] === undefined || typeof current[part] !== 'object') {
+      current[part] = {};
+    } else {
+      current[part] = { ...current[part] };
+    }
+    current = current[part];
+  }
+  
+  current[pathParts[pathParts.length - 1]] = value;
+  return result;
+}
+
+// Extract schema for a given path from a jzod schema
+function getSchemaAtPath(schema: any, path: string): any {
+  if (!path || !schema) return schema;
+  
+  const pathParts = path.split('.');
+  let current = schema;
+  
+  for (const part of pathParts) {
+    if (!current || typeof current !== 'object') {
+      return undefined;
+    }
+    
+    // Handle jzod schema structure
+    if (current.type === 'object' && current.definition) {
+      current = current.definition[part];
+    } else if (current.definition && current.definition[part]) {
+      current = current.definition[part];
+    } else if (current[part]) {
+      current = current[part];
+    } else {
+      return undefined;
+    }
+  }
+  
+  return current;
+}
+
 // ################################################################################################
 // ################################################################################################
 // ################################################################################################
@@ -80,6 +146,8 @@ interface TypedValueObjectEditorProps {
   // fold / unfold element
   foldedObjectAttributeOrArrayItems: { [k: string]: boolean };
   setFoldedObjectAttributeOrArrayItems: React.Dispatch<React.SetStateAction<{ [k: string]: boolean }>>;
+  // zoom functionality
+  zoomInPath?: string; // Optional path like "x.y.z" to zoom into a subset of the instance
   // navigationCount: number;
 }
 
@@ -95,6 +163,8 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
   onSubmit: onEditFormObject,
   foldedObjectAttributeOrArrayItems,
   setFoldedObjectAttributeOrArrayItems,
+  // zoom
+  zoomInPath,
   // 
   formLabel: pageLabel, // TODO: remove
 }) => {
@@ -102,6 +172,52 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
 
   const navigationKey = `${deploymentUuid}-${applicationSection}`;
   const { navigationCount, totalCount } = useRenderTracker("FreeFormEditor", navigationKey);
+
+  // Handle zoom functionality
+  const hasZoomPath = zoomInPath && zoomInPath.trim() !== '';
+  const displayValueObject = hasZoomPath ? getValueAtPath(valueObject, zoomInPath) : valueObject;
+  const displaySchema = hasZoomPath && valueObjectMMLSchema 
+    ? getSchemaAtPath(valueObjectMMLSchema, zoomInPath)
+    : valueObjectMMLSchema;
+
+  // Log zoom functionality usage
+  if (hasZoomPath) {
+    log.info(
+      "TypedValueObjectEditor using zoom path",
+      "zoomInPath", zoomInPath,
+      "original valueObject", valueObject,
+      "displayValueObject", displayValueObject,
+      "original schema", valueObjectMMLSchema,
+      "displaySchema", displaySchema
+    );
+  }
+
+  // Handle error case where zoom path doesn't exist
+  if (hasZoomPath && displayValueObject === undefined) {
+    return (
+      <div style={{ padding: '16px', border: '1px solid #ff9800', borderRadius: '4px', backgroundColor: '#fff3e0' }}>
+        <div style={{ color: '#f57c00', fontWeight: 'bold', marginBottom: '8px' }}>
+          Zoom Path Error
+        </div>
+        <div>The zoom path "{zoomInPath}" does not exist in the current object.</div>
+        <div style={{ marginTop: '8px', fontSize: '0.9em', color: '#666' }}>
+          Available top-level keys: {valueObject ? Object.keys(valueObject).join(', ') : 'none'}
+        </div>
+      </div>
+    );
+  }
+
+  // Handle error case where zoom path results in invalid schema
+  if (hasZoomPath && !displaySchema) {
+    return (
+      <div style={{ padding: '16px', border: '1px solid #ff9800', borderRadius: '4px', backgroundColor: '#fff3e0' }}>
+        <div style={{ color: '#f57c00', fontWeight: 'bold', marginBottom: '8px' }}>
+          Schema Path Error
+        </div>
+        <div>The zoom path "{zoomInPath}" does not correspond to a valid schema path.</div>
+      </div>
+    );
+  }
 
   const currentModel: MetaModel = useCurrentModel(
     context.applicationSection == "data" ? context.deploymentUuid : adminConfigurationDeploymentMiroir.uuid
@@ -137,16 +253,28 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
     "instance",
     valueObject,
     "valueObjectMMLSchema",
-    valueObjectMMLSchema
+    valueObjectMMLSchema,
+    "hasZoomPath",
+    hasZoomPath,
+    "displayValueObject",
+    displayValueObject,
+    "displaySchema",
+    displaySchema
   );
   return (
     <Formik
       enableReinitialize={true}
-      initialValues={valueObject}
+      initialValues={displayValueObject}
       onSubmit={async (values, { setSubmitting, setErrors }) => {
         try {
           log.info("onSubmit formik values", values);
-          await onEditFormObject(values);
+          
+          // Handle zoom case: merge changes back into the full object for submission
+          const finalValues = hasZoomPath 
+            ? setValueAtPath(valueObject, zoomInPath!, values)
+            : values;
+            
+          await onEditFormObject(finalValues);
         } catch (e) {
           log.error(e);
         } finally {
@@ -164,12 +292,12 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
             try {
               result =
                 context.miroirFundamentalJzodSchema &&
-                valueObjectMMLSchema &&
+                displaySchema &&
                 formik.values &&
                 currentModel
                   ? // ? measuredJzodTypeCheck(
                     jzodTypeCheck(
-                      valueObjectMMLSchema,
+                      displaySchema,
                       formik.values,
                       [],
                       [],
@@ -181,7 +309,7 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
                       reduxDeploymentsState,
                       // getEntityInstancesUuidIndex, // Now passing the actual function
                       deploymentUuid, // Now passing the actual deploymentUuid
-                      formik.values // rootObject - for resolving conditional schemas
+                      hasZoomPath ? valueObject : formik.values // rootObject - use full object for context, but validate the subset
                     )
                   : undefined;
             } catch (e) {
@@ -198,7 +326,7 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
               };
             }
             return result;
-          }, [valueObjectMMLSchema, valueObject, formik.values, context]);
+          }, [displaySchema, displayValueObject, formik.values, context, hasZoomPath, valueObject]);
         log.info(
           "TypedValueObjectEditor jzodTypeCheck done for render",
           navigationCount,
@@ -314,9 +442,9 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
                         origin: "TypedValueObjectEditor",
                         objectType: "root_editor",
                         rootLessListKey: "ROOT",
-                        currentValue: valueObject,
+                        currentValue: displayValueObject,
                         formikValues: undefined,
-                        rawJzodSchema: valueObjectMMLSchema,
+                        rawJzodSchema: displaySchema,
                         localResolvedElementJzodSchemaBasedOnValue:
                           typeCheckKeyMap?.status == "ok"
                             ? typeCheckKeyMap.resolvedSchema

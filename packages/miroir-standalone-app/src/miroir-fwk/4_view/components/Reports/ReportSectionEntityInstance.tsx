@@ -113,6 +113,7 @@ export interface ReportSectionEntityInstanceProps {
   entityUuid: Uuid,
   // Note: Outline props removed since using context now
   showPerformanceDisplay?: boolean;
+  zoomInPath?: string; // Optional path like "x.y.z" to zoom into a subset of the instance
 }
 
 const codeMirrorExtensions = [javascript()];
@@ -172,7 +173,8 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
     currentReportDeploymentSectionEntityDefinitions?.find((e) => e?.entityUuid === currentReportTargetEntity?.uuid);
 
 
-  const formLabel: string = props.applicationSection + "." + currentReportTargetEntity?.name;
+  const formLabel: string = props.applicationSection + "." + currentReportTargetEntity?.name + 
+    (props.zoomInPath ? ` (${props.zoomInPath})` : "");
 
   // Update the outline title when the current entity changes
   useEffect(() => {
@@ -406,6 +408,9 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
           <ThemedHeaderSection>
             <ThemedTitle>
               {currentReportTargetEntity?.name} details: {instance.name}{" "}
+              {props.zoomInPath && <span style={{ fontSize: '0.8em', fontStyle: 'italic', color: '#666' }}>
+                (viewing: {props.zoomInPath})
+              </span>}
             </ThemedTitle>
             {displayEditor && (
               <ThemedTooltip
@@ -435,6 +440,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                 onSubmit={onEditValueObjectFormSubmit}
                 foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
                 setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
+                zoomInPath={props.zoomInPath}
               />
             ) : (
               <div>
@@ -442,7 +448,29 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                   <div>Can not display non-editor as structured element</div>
                 ) : (
                   <div>
-                    <ThemedCodeBlock>{safeStringify(instance)}</ThemedCodeBlock>
+                    {props.zoomInPath && (
+                      <div style={{ marginBottom: '8px', fontSize: '0.9em', color: '#666', fontStyle: 'italic' }}>
+                        Viewing path: {props.zoomInPath}
+                      </div>
+                    )}
+                    <ThemedCodeBlock>
+                      {safeStringify(
+                        props.zoomInPath 
+                          ? (() => {
+                              const pathParts = props.zoomInPath.split('.');
+                              let current = instance;
+                              for (const part of pathParts) {
+                                if (current && typeof current === 'object') {
+                                  current = current[part];
+                                } else {
+                                  return `Path "${props.zoomInPath}" not found`;
+                                }
+                              }
+                              return current;
+                            })()
+                          : instance
+                      )}
+                    </ThemedCodeBlock>
                   </div>
                 )}
               </div>
@@ -457,6 +485,9 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                 target entity:{" "}
                 {currentReportTargetEntity?.name ?? "report target entity not found!"}
               </div>
+              {props.zoomInPath && (
+                <div>zoom path: {props.zoomInPath}</div>
+              )}
               {/* <div>resolved schema: {JSON.stringify(resolvedJzodSchema)}</div> */}
               <ThemedPreformattedText>
                 target entity definition:{" "}
