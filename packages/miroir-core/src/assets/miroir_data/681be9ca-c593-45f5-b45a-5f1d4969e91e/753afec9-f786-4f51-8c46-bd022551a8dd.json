@@ -1,0 +1,99 @@
+{
+  "uuid": "753afec9-f786-4f51-8c46-bd022551a8dd",
+  "parentName": "TransformerTest",
+  "parentUuid": "681be9ca-c593-45f5-b45a-5f1d4969e91e",
+  "name": "defaultValueForMLSchema",
+  "selfApplication": "21840247-b5b1-4344-baec-f818f4797d92",
+  "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
+  "description": "The Test for the defaultValueForMLSchema Transformer",
+  "definition": {
+    "transformerTestType": "transformerTestSuite",
+    "transformerTestLabel": "defaultValueForMLSchema",
+    "transformerTests": {
+      "returns undefined for an optional string MLS": {
+        "transformerTestType": "transformerTest",
+        "transformerTestLabel": "returns undefined for an optional string MLS",
+        "transformerName": "defaultValueForMLSchema",
+        "runTestStep": "build",
+        "transformer": {
+          "transformerType": "defaultValueForMLSchema",
+          "interpolation": "build",
+          "mlSchema": {
+            "type": "string",
+            "optional": true
+          }
+        },
+        "transformerParams": {},
+        "expectedValue": ""
+      },
+      "returns undefined for an optional number MLS": {
+        "transformerTestType": "transformerTest",
+        "transformerTestLabel": "returns undefined for an optional number MLS",
+        "transformerName": "defaultValueForMLSchema",
+        "runTestStep": "build",
+        "transformer": {
+          "transformerType": "defaultValueForMLSchema",
+          "interpolation": "build",
+          "mlSchema": {
+            "type": "number",
+            "optional": true
+          }
+        },
+        "transformerParams": {},
+        "expectedValue": null
+      },
+      "returns undefined for an optional bigint MLS": {
+        "transformerTestType": "transformerTest",
+        "transformerTestLabel": "returns undefined for an optional bigint MLS",
+        "transformerName": "defaultValueForMLSchema",
+        "runTestStep": "build",
+        "transformer": {
+          "transformerType": "defaultValueForMLSchema",
+          "interpolation": "build",
+          "mlSchema": {
+            "type": "bigint",
+            "optional": true
+          }
+        },
+        "transformerParams": {},
+        "expectedValue": null
+      },
+      "returns undefined for an optional object MLS": {
+        "transformerTestType": "transformerTest",
+        "transformerTestLabel": "returns undefined for an optional object MLS",
+        "transformerName": "defaultValueForMLSchema",
+        "runTestStep": "build",
+        "transformer": {
+          "transformerType": "defaultValueForMLSchema",
+          "interpolation": "build",
+          "mlSchema": {
+            "type": "object",
+            "definition": {
+              "a": {
+                "type": "string"
+              }
+            },
+            "optional": true
+          }
+        },
+        "transformerParams": {},
+        "expectedValue": null
+      },
+      "returns an empty string for a mandatory string MLS": {
+        "transformerTestType": "transformerTest",
+        "transformerTestLabel": "returns an empty string for a string MLS",
+        "transformerName": "defaultValueForMLSchema",
+        "runTestStep": "build",
+        "transformer": {
+          "transformerType": "defaultValueForMLSchema",
+          "interpolation": "build",
+          "mlSchema": {
+            "type": "string"
+          }
+        },
+        "transformerParams": {},
+        "expectedValue": ""
+      }
+    }
+  }
+}

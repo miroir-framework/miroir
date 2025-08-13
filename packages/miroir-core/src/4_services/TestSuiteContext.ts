@@ -41,7 +41,7 @@ export class TestSuiteContext {
     const test = TestSuiteContext.getTest();
     // const testSuite = LoggerGlobalContext.getTestSuite();
     // const test = LoggerGlobalContext.getTest();
-    console.log("TestSuiteContext.setTestAssertionResult called for", testSuite, test, testAssertionResult.assertionName);
+    console.log("TestSuiteContext.setTestAssertionResult called for", testSuite, test, "testAssertionResult", JSON.stringify(testAssertionResult, null, 2));
     if (testSuite === undefined || test === undefined || testAssertionResult.assertionName === undefined) {
       throw new Error("TestSuite or Test not defined: suite=" + testSuite + ", test=" + test + ", assertion=" + testAssertionResult.assertionName);
     }

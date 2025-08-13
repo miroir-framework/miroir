@@ -11,8 +11,11 @@ import {
   Domain2ElementFailed,
   Domain2QueryReturnType,
 } from "../0_interfaces/2_domain/DomainElement";
-import { Step } from "../2_domain/Transformers";
+import type { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { transformer_extended_apply_wrapper } from "../2_domain/TransformersForRuntime";
+import { packageName } from "../constants";
+import { cleanLevel } from "./constants";
+import { MiroirLoggerFactory } from "./LoggerFactory";
 import { ignorePostgresExtraAttributes } from "./otherTools";
 import { TestSuiteContext } from "./TestSuiteContext";
 
@@ -64,6 +67,11 @@ export const transformerTestSuiteJzodSchema = {
     },
   ],
 };
+
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "TestTools")
+).then((logger: LoggerInterface) => {log = logger});
 
 // ################################################################################################
 export const globalTimeOut = 30000;
@@ -147,13 +155,37 @@ export async function runTransformerTestInMemory(
   );
   const testSuiteNamePathAsString = TestSuiteContext.testSuitePathName(testSuiteNamePath);
   try {
-    vitest
+    // real vitest throws an exception if the assertion fails, simulated vitest does not throw an exception
+    const testResult = vitest
       .expect(result, `${testSuiteNamePathAsString} > ${assertionName}`)
       .toEqual(transformerTest.expectedValue);
-    TestSuiteContext.setTestAssertionResult({
-      assertionName,
-      assertionResult: "ok",
-    });
+    console.log(
+      "################################ runTransformerTestInMemory testResult",
+      JSON.stringify(testResult, null, 2)
+    );
+    if (!Object.hasOwn(testResult, "result")) {
+      // vitest case
+      TestSuiteContext.setTestAssertionResult({
+        assertionName,
+        assertionResult: "ok",
+      });
+    } else {
+      // simulated vitest case
+      if (testResult.result) {
+        TestSuiteContext.setTestAssertionResult({
+          assertionName,
+          assertionResult: "ok",
+        });
+      } else {
+        // TODO: use returned message from the testResult?
+        TestSuiteContext.setTestAssertionResult({
+          assertionName,
+          assertionResult: "error",
+          assertionExpectedValue: transformerTest.expectedValue,
+          assertionActualValue: result,
+        });
+      };
+    }
   } catch (error) {
     TestSuiteContext.setTestAssertionResult({
       assertionName,
@@ -185,6 +217,18 @@ export async function runTransformerTestSuite(
   console.log(
     `@@@@@@@@@@@@@@@@@@@@ running transformer test suite called ${testSuitePathAsString} transformerTestType=${transformerTestSuite.transformerTestType}`
   );
+  if (!vitest.expect) {
+    throw new Error(
+      "runTransformerTestSuite called without vitest.expect, this is not a test environment"
+    );
+  } else {
+    log.info(
+      `runTransformerTestSuite called for ${testSuitePathAsString} with transformerTestType=${transformerTestSuite.transformerTestType}`,
+      "vitest",
+      vitest
+    );
+  }
+
   TestSuiteContext.setTestSuite(testSuitePathAsString);
   if (transformerTestSuite.transformerTestType == "transformerTest") {
     TestSuiteContext.setTest(transformerTestSuite.transformerTestLabel);
@@ -247,6 +291,12 @@ export function runTransformerIntegrationTest(sqlDbDataStore: any) {
     const runAsSql = true;
 
     console.log("runTransformerIntegrationTest called for", testSuitePathName, "START");
+
+    if (!vitest.expect) {
+      throw new Error(
+        "runTransformerIntegrationTest called without vitest.expect, this is not a test environment"
+      );
+    }
 
     let queryResult: Action2ReturnType;
     console.log(

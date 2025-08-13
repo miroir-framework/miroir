@@ -119,7 +119,7 @@ MiroirLoggerFactory.registerLoggerToStart(
   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "Transformer")
 ).then((logger: LoggerInterface) => {log = logger});
 
-
+// TODO: keep this??
 (BigInt.prototype as any).toJSON = function () {
   return Number(this);
 };

@@ -126,7 +126,7 @@ export const RunTransformerTestSuiteButton: React.FC<RunTransformerTestSuiteButt
     // Run the test suite
     const testSuitePath = [testSuiteKey];
     await runTransformerTestSuite(
-      { expect, describe },
+      { expect, describe }, // vitest-like interface
       testSuitePath,
       (transformerTestSuite as TransformerTestDefinition).definition,
       runTransformerTestInMemory

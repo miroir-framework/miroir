@@ -50,6 +50,7 @@ export function expect(actual: any, testName?: string) {
         : { result: false, message: formatMessage(testName, `Expected ${actual} to be ${expected}`) };
     },
     toEqual(expected: any): ExpectResult {
+      console.log("Miroir vitest Expecting toEqual", actual, expected);
       const pass = JSON.stringify(actual) === JSON.stringify(expected);
       return pass
         ? { result: true }
