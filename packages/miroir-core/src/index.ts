@@ -696,6 +696,10 @@ export {
   metaModelEntities,
   miroirModelEntities,
 } from "./1_core/Model.js";
+export {
+  describe,
+  expect,
+} from "./1_core/test-expect";
 export {} from "./1_core/Report";
 export {} from "./1_core/Report.js";
 export { zodErrorFirstIssueLeaf, zodErrorDeepestIssueLeaves } from "./1_core/zodParseErrorHandler";

@@ -173,19 +173,6 @@ export function getDefaultValueForJzodSchemaWithResolution(
   relativeReferenceJzodContext?: { [k: string]: JzodElement },
 ): any {
 
-  log.info(
-    "getDefaultValueForJzodSchemaWithResolution called with",
-    "currentValuePath",
-    currentValuePath,
-    "jzodSchema",
-    jzodSchema,
-    "currentDefaultValue",
-    currentDefaultValue,
-    "forceOptional",
-    forceOptional,
-    "deploymentUuid",
-    deploymentUuid,
-  );
 
   let effectiveSchemaOrError = resolveConditionalSchema(
     jzodSchema,
@@ -207,6 +194,11 @@ export function getDefaultValueForJzodSchemaWithResolution(
   let effectiveSchema: JzodElement = effectiveSchemaOrError;
 
   if (effectiveSchema.optional && !forceOptional) {
+    log.info(
+      "getDefaultValueForJzodSchemaWithResolution: effectiveSchema is optional and forceOptional is false",
+      "currentValuePath", currentValuePath,
+      "effectiveSchema", effectiveSchema
+    );
     return undefined;
   }
 
@@ -262,6 +254,20 @@ export function getDefaultValueForJzodSchemaWithResolution(
     );
     return result;
   }
+  
+  log.info(
+    "getDefaultValueForJzodSchemaWithResolution called with",
+    "currentValuePath",
+    currentValuePath,
+    "effectiveSchema",
+    effectiveSchema,
+    "currentDefaultValue",
+    currentDefaultValue,
+    "forceOptional",
+    forceOptional,
+    "deploymentUuid",
+    deploymentUuid,
+  );
 
   switch (effectiveSchema.type) {
     case "object": {
@@ -297,6 +303,10 @@ export function getDefaultValueForJzodSchemaWithResolution(
       return result;
     }
     case "string": {
+      log.info(
+        "getDefaultValueForJzodSchemaWithResolution called for string",
+        "effectiveSchema", effectiveSchema, "return empty string"
+      );
       return "";
     }
     case "number":
@@ -583,16 +593,7 @@ export function defaultValueForMLSchemaTransformer(
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>
 ): any {
-  log.info(
-    "defaultValueForMLSchemaTransformer called with",
-    "step", step,
-    "label", label,
-    "transformer", transformer,
-    "resolveBuildTransformersTo", resolveBuildTransformersTo,
-    "queryParams", queryParams,
-    "contextResults", contextResults
-  );
-  return getDefaultValueForJzodSchemaWithResolutionNonHook(
+  const result = getDefaultValueForJzodSchemaWithResolutionNonHook(
     transformer.mlSchema,
     undefined,
     "",
@@ -603,6 +604,17 @@ export function defaultValueForMLSchemaTransformer(
     undefined,
     miroirFundamentalJzodSchema as JzodSchema,
   );
+  log.info(
+    "defaultValueForMLSchemaTransformer called with",
+    "step", step,
+    "label", label,
+    "transformer", transformer,
+    "resolveBuildTransformersTo", resolveBuildTransformersTo,
+    "queryParams", queryParams,
+    "contextResults", contextResults,
+    "result", result
+  );
+  return result;
 }
 
 const inMemoryTransformerImplementations: Record<string, ITransformerHandler<any>> = {

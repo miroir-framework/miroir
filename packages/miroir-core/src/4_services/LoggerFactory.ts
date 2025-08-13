@@ -35,12 +35,18 @@ export function templateLogLevelOptionsFactory(
   };
 }
 
+// ################################################################################################
 export interface RegisteredLoggerToStart {
   returnLoggerContinuation: (value: LoggerInterface | PromiseLike<LoggerInterface>) => void;
   logLevel?: string | number,
   template?: string,
 
 }
+
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
 // ################################################################################################
 export class MiroirLoggerFactory implements LoggerFactoryAsyncInterface {
   static effectiveLoggerFactory: LoggerFactoryInterface | undefined = undefined;

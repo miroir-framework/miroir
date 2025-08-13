@@ -151,7 +151,8 @@ export async function runTransformerTestInMemory(
   const result = ignorePostgresExtraAttributes(rawResult, transformerTest.ignoreAttributes);
   console.log(
     "################################ runTransformerTestInMemory result",
-    JSON.stringify(result, null, 2)
+    result
+    // JSON.stringify(result, null, 2)
   );
   const testSuiteNamePathAsString = TestSuiteContext.testSuitePathName(testSuiteNamePath);
   try {

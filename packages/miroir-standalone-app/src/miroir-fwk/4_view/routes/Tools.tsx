@@ -2,7 +2,6 @@ import { Formik } from "formik";
 import { useSelector } from "react-redux";
 
 // import { ReactCodeMirror } from "@uiw/react-codemirror";
-import ReactCodeMirror from "@uiw/react-codemirror";
 import { ChangeEvent, useCallback, useMemo, useState } from "react";
 import { ValueObjectGrid } from "../components/Grids/ValueObjectGrid";
 import { PageContainer } from "../components/Page/PageContainer";
@@ -31,11 +30,11 @@ import {
   entityMenu,
   entitySelfApplication,
   entityTransformerTest,
+  expect,
   jzodTypeCheck,
   testSuitesResults,
   transformerTest_resolveConditionalSchema,
   type Domain2QueryReturnType,
-  type Entity,
   type ReduxDeploymentsState,
   type SyncBoxedExtractorOrQueryRunnerMap,
   type TestSuiteResult,
@@ -49,16 +48,13 @@ import { getMemoizedReduxDeploymentsStateSelectorMap, type ReduxStateWithUndoRed
 // } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { adminConfigurationDeploymentParis, applicationParis, packageName } from "../../../constants.js";
 import { getTestSuitesForBuildPlusRuntimeCompositeAction } from "../../4-tests/applicative.Library.BuildPlusRuntimeCompositeAction.js";
-import { describe, expect } from "../../4-tests/test-expect.js";
 import { testOnLibrary_deleteLibraryDeployment } from "../../4-tests/tests-utils-testOnLibrary.js";
 import { runTestOrTestSuite } from "../../4-tests/tests-utils.js";
 import {
   useDomainControllerService,
-  useErrorLogService,
   useMiroirContextInnerFormOutput,
   useMiroirContextService,
-  useMiroirContextformHelperState,
-  useSnackbar,
+  useMiroirContextformHelperState
 } from "../MiroirContextReactProvider.js";
 import { useCurrentModel } from "../ReduxHooks.js";
 import { EndpointActionCaller } from "../components/EndpointActionCaller";

@@ -10,7 +10,7 @@ import {
   type TransformerTestDefinition
 } from "miroir-core";
 
-import { describe, expect } from "../../../4-tests/test-expect.js";
+import { describe, expect } from "miroir-core";
 
 import { ActionButton } from "../../components/Page/ActionButton.js";
 import { packageName } from "../../../../constants.js";
@@ -26,6 +26,18 @@ MiroirLoggerFactory.registerLoggerToStart(
 // ################################################################################################
 // ################################################################################################
 // ################################################################################################
+// Local type definitions based on miroir-core types
+interface TestAssertionResult {
+  assertionName: string;
+  assertionResult: "ok" | "error";
+  assertionExpectedValue?: any;
+  assertionActualValue?: any;
+}
+
+interface TestAssertionsResults {
+  [assertionName: string]: TestAssertionResult;
+}
+
 export function generateTestReport(
   matchingKey: string | undefined,
   testSuiteResults: TestSuiteResult,
@@ -38,6 +50,7 @@ export function generateTestReport(
     assertions: string;
     assertionCount: number;
     status: "✅ Pass" | "❌ Fail";
+    fullAssertionsResults: TestAssertionsResults; // Add full assertion data
   }
   const structuredResults: StructuredTestResult[] = [];
 
@@ -68,6 +81,7 @@ export function generateTestReport(
         assertions: assertionsDetails,
         assertionCount: Object.keys(testResult.testAssertionsResults).length,
         status: testResult.testResult === "ok" ? "✅ Pass" : "❌ Fail",
+        fullAssertionsResults: testResult.testAssertionsResults, // Include full assertion data
       });
 
       for (const [assertionName, assertion] of Object.entries(testResult.testAssertionsResults)) {

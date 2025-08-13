@@ -24,7 +24,7 @@
           }
         },
         "transformerParams": {},
-        "expectedValue": ""
+        "expectedValue": null
       },
       "returns undefined for an optional number MLS": {
         "transformerTestType": "transformerTest",

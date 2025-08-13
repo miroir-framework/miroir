@@ -1,4 +1,4 @@
-// A minimal "expect" function with a Vitest-like interface, returning {result:boolean, message?:string}
+import equal from "fast-deep-equal";// A minimal "expect" function with a Vitest-like interface, returning {result:boolean, message?:string}
 
 type ExpectResult = { result: boolean; message?: string };
 type Expect = (actual: any, testName?: string) => {
@@ -50,14 +50,26 @@ export function expect(actual: any, testName?: string) {
         : { result: false, message: formatMessage(testName, `Expected ${actual} to be ${expected}`) };
     },
     toEqual(expected: any): ExpectResult {
-      console.log("Miroir vitest Expecting toEqual", actual, expected);
-      const pass = JSON.stringify(actual) === JSON.stringify(expected);
+      const pass = typeof actual == "object" && typeof expected == "object"? equal(actual,expected): actual == expected;
+      console.log(
+        "Miroir vitest toEqual expecting",
+        expected,
+        typeof expected,
+        "actual",
+        actual,
+        typeof actual,
+        "non object comparison", actual == expected,
+        "pass",
+        pass
+      );
+      // const pass = JSON.stringify(actual) == JSON.stringify(expected);
       return pass
         ? { result: true }
         : { result: false, message: formatMessage(testName, `Expected ${JSON.stringify(actual)} to equal ${JSON.stringify(expected)}`) };
     },
     toStrictEqual(expected: any): ExpectResult {
-      const pass = JSON.stringify(actual) === JSON.stringify(expected);
+      // const pass = JSON.stringify(actual) === JSON.stringify(expected);
+      const pass = actual === expected;
       return pass
         ? { result: true }
         : { result: false, message: formatMessage(testName, `Expected ${JSON.stringify(actual)} to strictly equal ${JSON.stringify(expected)}`) };
