@@ -1,5 +1,9 @@
-import * as vitest from 'vitest';
-import { describe, expect, it } from "vitest";
+// import * as vitest from 'vitest';
+// import { describe, expect, it } from "vitest";
+import {
+  describe,
+  expect,
+} from "../../src/1_core/test-expect";
 
 import {
   JzodElement,
@@ -17,49 +21,13 @@ import {
 
 // import entityDefinitionTransformerTest from "../../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/405bb1fc-a20f-4def-9d3a-206f72350633.json";
 import entityDefinitionTransformerTest from "../../src/assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/405bb1fc-a20f-4def-9d3a-206f72350633.json";
-import { runTransformerTestInMemory, runTransformerTestSuite, transformerTestsDisplayResults } from '../../src/4_services/TestTools';
+import transformerTestSuite_defaultValueForMLSchema from "../../src/assets/miroir_data/681be9ca-c593-45f5-b45a-5f1d4969e91e/753afec9-f786-4f51-8c46-bd022551a8dd.json";
+import {
+  runTransformerTestInMemory,
+  runTransformerTestSuite,
+  transformerTestsDisplayResults,
+} from "../../src/4_services/TestTools";
 
-export const transformerTestSuite_defaultValueForMLSchema: TransformerTestSuite = {
-  transformerTestType: "transformerTestSuite",
-  transformerTestLabel: "defaultValueForMLSchema",
-  transformerTests: {
-    buildTransformerTests: {
-      transformerTestType: "transformerTestSuite",
-      transformerTestLabel: "defaultValueForMLSchemaTransformerTests",
-      transformerTests: {
-        constants: {
-          transformerTestType: "transformerTestSuite",
-          transformerTestLabel: "defaultValueForMLSchema",
-          transformerTests: {
-            defaultValue: {
-              transformerTestType: "transformerTestSuite",
-              transformerTestLabel: "defaultValueForMLSchema",
-              transformerTests: {
-                "returns an empty string for a mandatory string MLS": {
-                  transformerTestType: "transformerTest",
-                  transformerTestLabel: "returns an empty string for a string MLS",
-                  transformerName: "defaultValueForMLSchema",
-                  runTestStep: "build",
-                  transformer: {
-                    transformerType: "defaultValueForMLSchema",
-                    interpolation: "build",
-                    mlSchema: { type: "string" },
-                    // valueObject: "test",
-                    // context: "defaultValue",
-                    // valuePath: [],
-                    // deploymentUuid: "dummyDeploymentUuid",
-                  },
-                  transformerParams: {},
-                  expectedValue: "",
-                },
-              },
-            },
-          },
-        },
-      }
-    },
-  }
-};
 
 const RUN_TEST= process.env.RUN_TEST
 console.log("@@@@@@@@@@@@@@@@@@ RUN_TEST", RUN_TEST);
@@ -67,24 +35,24 @@ console.log("@@@@@@@@@@@@@@@@@@ RUN_TEST", RUN_TEST);
 afterAll(async () => {
   if (RUN_TEST) {
     transformerTestsDisplayResults(
-      transformerTestSuite_defaultValueForMLSchema,
+      transformerTestSuite_defaultValueForMLSchema.definition as TransformerTestSuite,
       RUN_TEST,
-      transformerTestSuite_defaultValueForMLSchema.transformerTestLabel
+      transformerTestSuite_defaultValueForMLSchema.definition.transformerTestLabel
     );
   }
 });
 
 // ################################################################################################
 // const testSuiteName = "transformers.unit.test";
-if (RUN_TEST == transformerTestSuite_defaultValueForMLSchema.transformerTestLabel) {
+if (RUN_TEST == transformerTestSuite_defaultValueForMLSchema.definition.transformerTestLabel) {
   await runTransformerTestSuite(
-    vitest,
+    {describe, expect, custom: true},// vitest,
     [],
-    transformerTestSuite_defaultValueForMLSchema,
+    transformerTestSuite_defaultValueForMLSchema.definition as TransformerTestSuite,
     runTransformerTestInMemory
   );
 } else {
-  console.log("################################ skipping test suite:", transformerTestSuite_defaultValueForMLSchema.transformerTestLabel);
+  console.log("################################ skipping test suite:", transformerTestSuite_defaultValueForMLSchema.definition.transformerTestLabel);
 }
 
 

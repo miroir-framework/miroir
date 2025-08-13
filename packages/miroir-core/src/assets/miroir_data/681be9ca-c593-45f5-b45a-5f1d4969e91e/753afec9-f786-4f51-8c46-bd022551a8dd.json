@@ -93,6 +93,94 @@
         },
         "transformerParams": {},
         "expectedValue": ""
+      },
+      "returns a simple object for an object MLS": {
+        "transformerTestType": "transformerTest",
+        "transformerTestLabel": "returns a simple object for an object MLS",
+        "transformerName": "defaultValueForMLSchema",
+        "runTestStep": "build",
+        "transformer": {
+          "transformerType": "defaultValueForMLSchema",
+          "interpolation": "build",
+          "mlSchema": {
+            "type": "object",
+            "definition": {
+              "a": { "type": "string" },
+              "b": { "type": "number" }
+            }
+          }
+        },
+        "transformerParams": {},
+        "expectedValue": {
+          "a": "",
+          "b": 0
+        }
+      },
+      "returns correct object for an object MLS with optional attribute": {
+        "transformerTestType": "transformerTest",
+        "transformerTestLabel": "returns correct object for an object MLS with optional attribute",
+        "transformerName": "defaultValueForMLSchema",
+        "runTestStep": "build",
+        "transformer": {
+          "transformerType": "defaultValueForMLSchema",
+          "interpolation": "build",
+          "mlSchema": {
+            "type": "object",
+            "definition": {
+              "a": { "type": "string" },
+              "b": { "type": "number", "optional": true }
+            }
+          }
+        },
+        "transformerParams": {},
+        "expectedValue": {
+          "a": ""
+        }
+      },
+      "returns correct object for nested object MLS": {
+        "transformerTestType": "transformerTest",
+        "transformerTestLabel": "returns correct object for nested object MLS",
+        "transformerName": "defaultValueForMLSchema",
+        "runTestStep": "build",
+        "transformer": {
+          "transformerType": "defaultValueForMLSchema",
+          "interpolation": "build",
+          "mlSchema": {
+            "type": "object",
+            "definition": {
+              "a": { "type": "string" },
+              "b": {
+                "type": "object",
+                "definition": {
+                  "c": { "type": "number" }
+                }
+              }
+            }
+          }
+        },
+        "transformerParams": {},
+        "expectedValue": {
+          "a": "",
+          "b": {
+            "c": 0
+          }
+        }
+      },
+      "returns empty array for array MLS": {
+        "transformerTestType": "transformerTest",
+        "transformerTestLabel": "returns empty array for array MLS",
+        "transformerName": "defaultValueForMLSchema",
+        "runTestStep": "build",
+        "transformer": {
+          "transformerType": "defaultValueForMLSchema",
+          "interpolation": "build",
+          "mlSchema": {
+            "type": "array",
+            "definition": { "type": "string" }
+          }
+        },
+        "transformerParams": {},
+        "expectedValue": []
       }
     }
   }

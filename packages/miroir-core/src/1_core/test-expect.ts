@@ -41,7 +41,9 @@ describe.each = function(data: any[]): (template: string, testFn: (item: any) =>
   };
 } as DescribeEachFunction;
 
+// ################################################################################################
 export function expect(actual: any, testName?: string) {
+  // console.log(`@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Expect called with actual: ${actual}, testName: ${testName}`);
   const matchers = {
     toBe(expected: any): ExpectResult {
       const pass = Object.is(actual, expected);
@@ -51,17 +53,17 @@ export function expect(actual: any, testName?: string) {
     },
     toEqual(expected: any): ExpectResult {
       const pass = typeof actual == "object" && typeof expected == "object"? equal(actual,expected): actual == expected;
-      console.log(
-        "Miroir vitest toEqual expecting",
-        expected,
-        typeof expected,
-        "actual",
-        actual,
-        typeof actual,
-        "non object comparison", actual == expected,
-        "pass",
-        pass
-      );
+      // console.log(
+      //   "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Miroir vitest toEqual expecting",
+      //   expected,
+      //   typeof expected,
+      //   "actual",
+      //   actual,
+      //   typeof actual,
+      //   "non object comparison", actual == expected,
+      //   "pass",
+      //   pass
+      // );
       // const pass = JSON.stringify(actual) == JSON.stringify(expected);
       return pass
         ? { result: true }

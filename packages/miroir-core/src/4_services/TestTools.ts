@@ -93,7 +93,7 @@ export const ignoreFailureAttributes: string[] = [
 
 // ################################################################################################
 export async function runTransformerTestInMemory(
-  vitest: any,
+  localVitest: any,
   testSuiteNamePath: string[],
   transformerTest: TransformerTest
 ) {
@@ -103,6 +103,10 @@ export async function runTransformerTestInMemory(
     assertionName,
     "START"
   );
+  // console.log(
+  //   "################################ runTransformerTestInMemory vitest",
+  //   JSON.stringify(vitest, null, 2)
+  // );
   // TestSuiteContext.setTest(transformerTest.transformerTestLabel);
 
   const transformer: TransformerForBuild | TransformerForRuntime = transformerTest.transformer;
@@ -157,9 +161,15 @@ export async function runTransformerTestInMemory(
   const testSuiteNamePathAsString = TestSuiteContext.testSuitePathName(testSuiteNamePath);
   try {
     // real vitest throws an exception if the assertion fails, simulated vitest does not throw an exception
-    const testResult = vitest
+    // console.log(
+    //   "################################ runTransformerTestInMemory calling localVitest.expect"
+    // );
+    const expectForm = localVitest
       .expect(result, `${testSuiteNamePathAsString} > ${assertionName}`)
-      .toEqual(transformerTest.expectedValue);
+    // console.log(
+    //   "################################ runTransformerTestInMemory localVitest.expect called expectForm", expectForm
+    // );
+    const testResult = expectForm.toEqual(transformerTest.expectedValue);
     console.log(
       "################################ runTransformerTestInMemory testResult",
       JSON.stringify(testResult, null, 2)
