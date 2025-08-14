@@ -12,6 +12,7 @@ import {
   Domain2QueryReturnType,
 } from "../0_interfaces/2_domain/DomainElement";
 import type { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
+import { jsonify } from "../1_core/test-expect";
 import { transformer_extended_apply_wrapper } from "../2_domain/TransformersForRuntime";
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
@@ -159,17 +160,25 @@ export async function runTransformerTestInMemory(
     // JSON.stringify(result, null, 2)
   );
   const testSuiteNamePathAsString = TestSuiteContext.testSuitePathName(testSuiteNamePath);
+  const jsonifiedResult = jsonify(result);
+  // const jsonifiedResult = result;
   try {
     // real vitest throws an exception if the assertion fails, simulated vitest does not throw an exception
     // console.log(
-    //   "################################ runTransformerTestInMemory calling localVitest.expect"
-    // );
+      //   "################################ runTransformerTestInMemory calling localVitest.expect"
+      // );
+    
+    // Normalize both actual and expected values to handle undefined properties consistently
+    const normalizedResult = removeUndefinedProperties(jsonifiedResult);
+    const normalizedExpected = removeUndefinedProperties(unNullify(transformerTest.expectedValue));
+    
     const expectForm = localVitest
-      .expect(result, `${testSuiteNamePathAsString} > ${assertionName}`)
+      .expect(normalizedResult, `${testSuiteNamePathAsString} > ${assertionName}`)
     // console.log(
     //   "################################ runTransformerTestInMemory localVitest.expect called expectForm", expectForm
     // );
-    const testResult = expectForm.toEqual(transformerTest.expectedValue);
+    // const testResult = expectForm.toEqual(transformerTest.expectedValue);
+    const testResult = expectForm.toEqual(normalizedExpected);
     console.log(
       "################################ runTransformerTestInMemory testResult",
       JSON.stringify(testResult, null, 2)
@@ -193,7 +202,7 @@ export async function runTransformerTestInMemory(
           assertionName,
           assertionResult: "error",
           assertionExpectedValue: transformerTest.expectedValue,
-          assertionActualValue: result,
+          assertionActualValue: jsonifiedResult,
         });
       };
     }
@@ -202,7 +211,7 @@ export async function runTransformerTestInMemory(
       assertionName,
       assertionResult: "error",
       assertionExpectedValue: transformerTest.expectedValue,
-      assertionActualValue: result,
+      assertionActualValue: jsonifiedResult,
     });
   }
 
@@ -212,7 +221,7 @@ export async function runTransformerTestInMemory(
 
 // ################################################################################################
 export async function runTransformerTestSuite(
-  vitest: any,
+  localVitest: any,
   // step: Step,
   testSuitePath: string[],
   transformerTestSuite: TransformerTestSuite,
@@ -228,7 +237,7 @@ export async function runTransformerTestSuite(
   console.log(
     `@@@@@@@@@@@@@@@@@@@@ running transformer test suite called ${testSuitePathAsString} transformerTestType=${transformerTestSuite.transformerTestType}`
   );
-  if (!vitest.expect) {
+  if (!localVitest.expect) {
     throw new Error(
       "runTransformerTestSuite called without vitest.expect, this is not a test environment"
     );
@@ -236,14 +245,14 @@ export async function runTransformerTestSuite(
     log.info(
       `runTransformerTestSuite called for ${testSuitePathAsString} with transformerTestType=${transformerTestSuite.transformerTestType}`,
       "vitest",
-      vitest
+      localVitest
     );
   }
 
   TestSuiteContext.setTestSuite(testSuitePathAsString);
   if (transformerTestSuite.transformerTestType == "transformerTest") {
     TestSuiteContext.setTest(transformerTestSuite.transformerTestLabel);
-    await runTransformerTest(vitest, testSuitePath, transformerTestSuite);
+    await runTransformerTest(localVitest, testSuitePath, transformerTestSuite);
     TestSuiteContext.setTest(undefined);
   } else {
     // console.log(`running transformer test suite ${testSuiteName} with ${JSON.stringify(Object.keys(transformerTestSuite.transformerTests))} tests`);
@@ -255,7 +264,7 @@ export async function runTransformerTestSuite(
         2
       )} tests`
     );
-    await vitest.describe.each(Object.values(transformerTestSuite.transformerTests))(
+    await localVitest.describe.each(Object.values(transformerTestSuite.transformerTests))(
       "test $currentTestSuiteName",
       async (transformerTestParam: TransformerTestSuite) => {
         console.log(
@@ -263,7 +272,7 @@ export async function runTransformerTestSuite(
         );
         // TestSuiteContext.setTestSuite(undefined);
         await runTransformerTestSuite(
-          vitest,
+          localVitest,
           // step,
           // [...testSuiteName, transformerTestParam.transformerTestLabel],
           [...testSuitePath, testSuiteName],
@@ -468,6 +477,47 @@ export function runTransformerIntegrationTest(sqlDbDataStore: any) {
 
     console.log(testNameArray, "END");
   };
+}
+
+/**
+ * Recursively replaces all `null` values with `undefined` in the input.
+ * Leaves all other values unchanged.
+ */
+export function unNullify<T>(value: T): T {
+  if (value === null) {
+    return undefined as any;
+  }
+  if (Array.isArray(value)) {
+    return value.map(unNullify) as any;
+  }
+  if (typeof value === "object" && value !== null) {
+    const result: any = {};
+    for (const [k, v] of Object.entries(value)) {
+      result[k] = unNullify(v);
+    }
+    return result;
+  }
+  return value;
+}
+
+/**
+ * Recursively removes all properties with `undefined` values to match JSON serialization behavior.
+ * This ensures that objects with explicit `undefined` properties match their JSON-serialized counterparts.
+ */
+export function removeUndefinedProperties<T>(value: T): T {
+  if (Array.isArray(value)) {
+    return value.map(removeUndefinedProperties) as any;
+  }
+  if (typeof value === "object" && value !== null) {
+    const result: any = {};
+    for (const [k, v] of Object.entries(value)) {
+      if (v !== undefined) {
+        result[k] = removeUndefinedProperties(v);
+      }
+    }
+    return result;
+  }
+  return value;
 }
 
 // ################################################################################################

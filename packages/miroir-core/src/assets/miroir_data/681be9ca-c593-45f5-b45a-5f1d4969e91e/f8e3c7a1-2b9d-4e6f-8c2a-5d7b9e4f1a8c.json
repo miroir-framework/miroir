@@ -856,7 +856,7 @@
                     "type": "number"
                   }
                 ],
-                "expandedReferences": {}
+                "expandedReferences": []
               },
               "resolvedSchema": {
                 "type": "string"

@@ -42,6 +42,54 @@ describe.each = function(data: any[]): (template: string, testFn: (item: any) =>
 } as DescribeEachFunction;
 
 // ################################################################################################
+export function jsonify(value: any): any {
+  if (value instanceof Map) {
+    const obj: any = {};
+    for (const [k, v] of value.entries()) {
+      obj[k] = jsonify(v);
+    }
+    return obj;
+  } else if (value instanceof Set) {
+    return Array.from(value).map(jsonify);
+  } else if (Array.isArray(value)) {
+    return value.map(jsonify);
+  } else if (value && typeof value === 'object') {
+    const obj: any = {};
+    for (const k in value) {
+      if (Object.prototype.hasOwnProperty.call(value, k)) {
+        obj[k] = jsonify(value[k]);
+      }
+    }
+    return obj;
+  } else {
+    return value;
+  }
+}
+
+function findFirstDiffPath(a: any, b: any, path: string[] = []): string[] | null {
+  if (a === b) return null;
+  if (typeof a !== typeof b) return path;
+  if (typeof a !== 'object' || a === null || b === null) return path;
+  if (Array.isArray(a) && Array.isArray(b)) {
+    const len = Math.max(a.length, b.length);
+    for (let i = 0; i < len; i++) {
+      if (i >= a.length || i >= b.length) return path.concat([i.toString()]);
+      const sub = findFirstDiffPath(a[i], b[i], path.concat([i.toString()]));
+      if (sub) return sub;
+    }
+    return null;
+  }
+  const aKeys = Object.keys(a);
+  const bKeys = Object.keys(b);
+  for (const key of new Set([...aKeys, ...bKeys])) {
+    if (!(key in a) || !(key in b)) return path.concat([key]);
+    const sub = findFirstDiffPath(a[key], b[key], path.concat([key]));
+    if (sub) return sub;
+  }
+  return null;
+}
+
+// ################################################################################################
 export function expect(actual: any, testName?: string) {
   // console.log(`@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Expect called with actual: ${actual}, testName: ${testName}`);
   const matchers = {
@@ -53,21 +101,15 @@ export function expect(actual: any, testName?: string) {
     },
     toEqual(expected: any): ExpectResult {
       const pass = typeof actual == "object" && typeof expected == "object"? equal(actual,expected): actual == expected;
-      // console.log(
-      //   "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Miroir vitest toEqual expecting",
-      //   expected,
-      //   typeof expected,
-      //   "actual",
-      //   actual,
-      //   typeof actual,
-      //   "non object comparison", actual == expected,
-      //   "pass",
-      //   pass
-      // );
-      // const pass = JSON.stringify(actual) == JSON.stringify(expected);
-      return pass
-        ? { result: true }
-        : { result: false, message: formatMessage(testName, `Expected ${JSON.stringify(actual)} to equal ${JSON.stringify(expected)}`) };
+      if (pass) {
+        return { result: true };
+      } else {
+        let diffPath = findFirstDiffPath(actual, expected);
+        return {
+          result: false,
+          message: formatMessage(testName, `Expected ${JSON.stringify(actual)} to equal ${JSON.stringify(expected)}. First difference at path: ${diffPath ? JSON.stringify(diffPath) : 'unknown'}`)
+        };
+      }
     },
     toStrictEqual(expected: any): ExpectResult {
       // const pass = JSON.stringify(actual) === JSON.stringify(expected);
@@ -224,3 +266,4 @@ export function expect(actual: any, testName?: string) {
   }
   return { ...matchers, not };
 }
+

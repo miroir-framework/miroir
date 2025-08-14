@@ -1,6 +1,6 @@
 import {
-  describe,
-  expect,
+  describe as localDescribe,
+  expect as localExpect,
 } from "../../../src/1_core/test-expect";
 
 import {
@@ -35,7 +35,7 @@ if (RUN_TEST == testSuiteName) {
     transformerTests: selectedTests as any
   } as any;
   await runTransformerTestSuite(
-    { describe, expect},
+    { describe: localDescribe, expect: localExpect},
     [],
     effectiveTests,
     runTransformerTestInMemory
