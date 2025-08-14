@@ -5,6 +5,25 @@ import {
   JzodSchema,
   MetaModel
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { Step, ResolveBuildTransformersTo } from "../../2_domain/Transformers";
+
+// ################################################################################################
+export function resolveSchemaReferenceInContextTransformer(
+  step: Step,
+  label: string | undefined,
+  transformer: any, // Use any for now until transformer types are generated
+  resolveBuildTransformersTo: ResolveBuildTransformersTo,
+  queryParams: Record<string, any>,
+  contextResults?: Record<string, any>
+): JzodElement {
+  return resolveJzodSchemaReferenceInContext(
+    transformer.jzodReference,
+    transformer.relativeReferenceJzodContext || {},
+    transformer.miroirFundamentalJzodSchema,
+    transformer.currentModel,
+    transformer.miroirMetaModel,
+  );
+}
 
 // ################################################################################################
 // ################################################################################################

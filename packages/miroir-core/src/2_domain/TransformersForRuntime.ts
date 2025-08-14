@@ -110,6 +110,7 @@ import {
   type Step,
 } from "./Transformers";
 import { resolveConditionalSchemaTransformer } from '../1_core/jzod/resolveConditionalSchema';
+import { resolveSchemaReferenceInContextTransformer } from '../1_core/jzod/jzodResolveSchemaReferenceInContext';
 
 // Re-export types needed by other modules
 export type { ResolveBuildTransformersTo, Step } from "./Transformers";
@@ -655,6 +656,7 @@ const inMemoryTransformerImplementations: Record<string, ITransformerHandler<any
   // MLS
   "transformer_defaultValueForMLSchema": defaultValueForMLSchemaTransformer,
   "transformer_resolveConditionalSchema": resolveConditionalSchemaTransformer,
+  "transformer_resolveSchemaReferenceInContext": resolveSchemaReferenceInContextTransformer,
 };
 
 // transformer_defaultValueForMLSchema

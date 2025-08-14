@@ -32,6 +32,7 @@ import transformer_unique_json from '../assets/miroir_data/a557419d-a288-4fb8-8a
 // MLS
 import transformer_defaultValueForMLSchema_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/3026a4f6-9f4b-4f1a-97bb-ecda4df35309.json';
 import transformer_resolveConditionalSchema_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/70f5e617-2aa3-4dc4-b897-4cc3cffa3405.json';
+import transformer_resolveSchemaReferenceInContext_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/a8f8e3c6-9876-4e2d-8b4f-123456789abc.json';
 
 // ################################################################################################
 export type ActionTemplate = any;
@@ -70,10 +71,12 @@ export const transformer_unique: TransformerDefinition = transformer_unique_json
 // MLS
 export const transformer_defaultValueForMLSchema: TransformerDefinition = transformer_defaultValueForMLSchema_json as TransformerDefinition;
 export const transformer_resolveConditionalSchema: TransformerDefinition = transformer_resolveConditionalSchema_json as TransformerDefinition;
+export const transformer_resolveSchemaReferenceInContext: TransformerDefinition = transformer_resolveSchemaReferenceInContext_json as TransformerDefinition;
 
 export const mmlsTransformers: Record<string,TransformerDefinition> = {
   transformer_defaultValueForMLSchema,
   transformer_resolveConditionalSchema,
+  transformer_resolveSchemaReferenceInContext,
 };
 
 export const miroirCoreTransformers: Record<string,TransformerDefinition> = {
