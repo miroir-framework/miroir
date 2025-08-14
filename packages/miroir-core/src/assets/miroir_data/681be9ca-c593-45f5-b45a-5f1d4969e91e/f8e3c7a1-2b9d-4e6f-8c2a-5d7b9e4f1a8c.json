@@ -1,0 +1,1044 @@
+{
+  "uuid": "f8e3c7a1-2b9d-4e6f-8c2a-5d7b9e4f1a8c",
+  "parentName": "TransformerTestSuite",
+  "parentUuid": "681be9ca-c593-45f5-b45a-5f1d4969e91e",
+  "name": "jzodTypeCheck_TransformerTestSuite",
+  "selfApplication": "21840247-b5b1-4344-baec-f818f4797d92",
+  "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
+  "definition": {
+    "transformerTestType": "transformerTestSuite",
+    "transformerTestLabel": "jzodTypeCheck",
+    "transformerTests": {
+      "test010_literal": {
+        "transformerTestType": "transformerTest",
+        "transformerTestLabel": "test010_literal",
+        "transformerName": "jzodTypeCheck",
+        "runTestStep": "build",
+        "transformer": {
+          "transformerType": "jzodTypeCheck",
+          "interpolation": "build",
+          "jzodSchema": {
+            "type": "literal",
+            "definition": "myLiteral"
+          },
+          "valueObject": "myLiteral",
+          "currentValuePath": [],
+          "currentTypePath": [],
+          "miroirFundamentalJzodSchema": {
+            "uuid": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "parentName": "JzodSchema",
+            "parentUuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf",
+            "name": "miroirFundamentalJzodSchema",
+            "defaultLabel": "The Jzod Schema of Miroir Fundamental Schemas",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "jzodElement"
+              },
+              "context": {}
+            }
+          },
+          "currentModel": {
+            "uuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+            "parentName": "Entity",
+            "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+            "name": "Entity",
+            "defaultLabel": "Entity",
+            "description": "The Metamodel for entities",
+            "definition": {
+              "type": "metaModel",
+              "definition": {}
+            }
+          },
+          "miroirMetaModel": {
+            "uuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+            "parentName": "Entity",
+            "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+            "name": "Entity",
+            "defaultLabel": "Entity",
+            "description": "The Metamodel for entities",
+            "definition": {
+              "type": "metaModel",
+              "definition": {}
+            }
+          },
+          "relativeReferenceJzodContext": {}
+        },
+        "expectedValue": {
+          "status": "ok",
+          "valuePath": [],
+          "typePath": [],
+          "rawSchema": {
+            "type": "literal",
+            "definition": "myLiteral"
+          },
+          "resolvedSchema": {
+            "type": "literal",
+            "definition": "myLiteral"
+          },
+          "keyMap": {
+            "": {
+              "rawSchema": {
+                "type": "literal",
+                "definition": "myLiteral"
+              },
+              "resolvedSchema": {
+                "type": "literal",
+                "definition": "myLiteral"
+              }
+            }
+          }
+        }
+      },
+      "test020_string": {
+        "transformerTestType": "transformerTest",
+        "transformerTestLabel": "test020_string",
+        "transformerName": "jzodTypeCheck",
+        "runTestStep": "build",
+        "transformer": {
+          "transformerType": "jzodTypeCheck",
+          "interpolation": "build",
+          "jzodSchema": {
+            "type": "string"
+          },
+          "valueObject": "myString",
+          "currentValuePath": [],
+          "currentTypePath": [],
+          "miroirFundamentalJzodSchema": {
+            "uuid": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "parentName": "JzodSchema",
+            "parentUuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf",
+            "name": "miroirFundamentalJzodSchema",
+            "defaultLabel": "The Jzod Schema of Miroir Fundamental Schemas",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "jzodElement"
+              },
+              "context": {}
+            }
+          },
+          "currentModel": {
+            "uuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+            "parentName": "Entity",
+            "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+            "name": "Entity",
+            "defaultLabel": "Entity",
+            "description": "The Metamodel for entities",
+            "definition": {
+              "type": "metaModel",
+              "definition": {}
+            }
+          },
+          "miroirMetaModel": {
+            "uuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+            "parentName": "Entity",
+            "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+            "name": "Entity",
+            "defaultLabel": "Entity",
+            "description": "The Metamodel for entities",
+            "definition": {
+              "type": "metaModel",
+              "definition": {}
+            }
+          },
+          "relativeReferenceJzodContext": {}
+        },
+        "expectedValue": {
+          "status": "ok",
+          "valuePath": [],
+          "typePath": [],
+          "rawSchema": {
+            "type": "string"
+          },
+          "resolvedSchema": {
+            "type": "string"
+          },
+          "keyMap": {
+            "": {
+              "rawSchema": {
+                "type": "string"
+              },
+              "resolvedSchema": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "test022_boolean_true": {
+        "transformerTestType": "transformerTest",
+        "transformerTestLabel": "test022_boolean_true",
+        "transformerName": "jzodTypeCheck",
+        "runTestStep": "build",
+        "transformer": {
+          "transformerType": "jzodTypeCheck",
+          "interpolation": "build",
+          "jzodSchema": {
+            "type": "boolean"
+          },
+          "valueObject": true,
+          "currentValuePath": [],
+          "currentTypePath": [],
+          "miroirFundamentalJzodSchema": {
+            "uuid": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "parentName": "JzodSchema",
+            "parentUuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf",
+            "name": "miroirFundamentalJzodSchema",
+            "defaultLabel": "The Jzod Schema of Miroir Fundamental Schemas",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "jzodElement"
+              },
+              "context": {}
+            }
+          },
+          "currentModel": {
+            "uuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+            "parentName": "Entity",
+            "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+            "name": "Entity",
+            "defaultLabel": "Entity",
+            "description": "The Metamodel for entities",
+            "definition": {
+              "type": "metaModel",
+              "definition": {}
+            }
+          },
+          "miroirMetaModel": {
+            "uuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+            "parentName": "Entity",
+            "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+            "name": "Entity",
+            "defaultLabel": "Entity",
+            "description": "The Metamodel for entities",
+            "definition": {
+              "type": "metaModel",
+              "definition": {}
+            }
+          },
+          "relativeReferenceJzodContext": {}
+        },
+        "expectedValue": {
+          "status": "ok",
+          "valuePath": [],
+          "typePath": [],
+          "rawSchema": {
+            "type": "boolean"
+          },
+          "resolvedSchema": {
+            "type": "boolean"
+          },
+          "keyMap": {
+            "": {
+              "rawSchema": {
+                "type": "boolean"
+              },
+              "resolvedSchema": {
+                "type": "boolean"
+              }
+            }
+          }
+        }
+      },
+      "test024_boolean_false": {
+        "transformerTestType": "transformerTest",
+        "transformerTestLabel": "test024_boolean_false",
+        "transformerName": "jzodTypeCheck",
+        "runTestStep": "build",
+        "transformer": {
+          "transformerType": "jzodTypeCheck",
+          "interpolation": "build",
+          "jzodSchema": {
+            "type": "boolean"
+          },
+          "valueObject": false,
+          "currentValuePath": [],
+          "currentTypePath": [],
+          "miroirFundamentalJzodSchema": {
+            "uuid": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "parentName": "JzodSchema",
+            "parentUuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf",
+            "name": "miroirFundamentalJzodSchema",
+            "defaultLabel": "The Jzod Schema of Miroir Fundamental Schemas",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "jzodElement"
+              },
+              "context": {}
+            }
+          },
+          "currentModel": {
+            "uuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+            "parentName": "Entity",
+            "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+            "name": "Entity",
+            "defaultLabel": "Entity",
+            "description": "The Metamodel for entities",
+            "definition": {
+              "type": "metaModel",
+              "definition": {}
+            }
+          },
+          "miroirMetaModel": {
+            "uuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+            "parentName": "Entity",
+            "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+            "name": "Entity",
+            "defaultLabel": "Entity",
+            "description": "The Metamodel for entities",
+            "definition": {
+              "type": "metaModel",
+              "definition": {}
+            }
+          },
+          "relativeReferenceJzodContext": {}
+        },
+        "expectedValue": {
+          "status": "ok",
+          "valuePath": [],
+          "typePath": [],
+          "rawSchema": {
+            "type": "boolean"
+          },
+          "resolvedSchema": {
+            "type": "boolean"
+          },
+          "keyMap": {
+            "": {
+              "rawSchema": {
+                "type": "boolean"
+              },
+              "resolvedSchema": {
+                "type": "boolean"
+              }
+            }
+          }
+        }
+      },
+      "test026_number": {
+        "transformerTestType": "transformerTest",
+        "transformerTestLabel": "test026_number",
+        "transformerName": "jzodTypeCheck",
+        "runTestStep": "build",
+        "transformer": {
+          "transformerType": "jzodTypeCheck",
+          "interpolation": "build",
+          "jzodSchema": {
+            "type": "number"
+          },
+          "valueObject": 42,
+          "currentValuePath": [],
+          "currentTypePath": [],
+          "miroirFundamentalJzodSchema": {
+            "uuid": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "parentName": "JzodSchema",
+            "parentUuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf",
+            "name": "miroirFundamentalJzodSchema",
+            "defaultLabel": "The Jzod Schema of Miroir Fundamental Schemas",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "jzodElement"
+              },
+              "context": {}
+            }
+          },
+          "currentModel": {
+            "uuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+            "parentName": "Entity",
+            "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+            "name": "Entity",
+            "defaultLabel": "Entity",
+            "description": "The Metamodel for entities",
+            "definition": {
+              "type": "metaModel",
+              "definition": {}
+            }
+          },
+          "miroirMetaModel": {
+            "uuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+            "parentName": "Entity",
+            "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+            "name": "Entity",
+            "defaultLabel": "Entity",
+            "description": "The Metamodel for entities",
+            "definition": {
+              "type": "metaModel",
+              "definition": {}
+            }
+          },
+          "relativeReferenceJzodContext": {}
+        },
+        "expectedValue": {
+          "status": "ok",
+          "valuePath": [],
+          "typePath": [],
+          "rawSchema": {
+            "type": "number"
+          },
+          "resolvedSchema": {
+            "type": "number"
+          },
+          "keyMap": {
+            "": {
+              "rawSchema": {
+                "type": "number"
+              },
+              "resolvedSchema": {
+                "type": "number"
+              }
+            }
+          }
+        }
+      },
+      "test030_array": {
+        "transformerTestType": "transformerTest",
+        "transformerTestLabel": "test030_array",
+        "transformerName": "jzodTypeCheck",
+        "runTestStep": "build",
+        "transformer": {
+          "transformerType": "jzodTypeCheck",
+          "interpolation": "build",
+          "jzodSchema": {
+            "type": "array",
+            "definition": {
+              "type": "string"
+            }
+          },
+          "valueObject": ["element1", "element2"],
+          "currentValuePath": [],
+          "currentTypePath": [],
+          "miroirFundamentalJzodSchema": {
+            "uuid": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "parentName": "JzodSchema",
+            "parentUuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf",
+            "name": "miroirFundamentalJzodSchema",
+            "defaultLabel": "The Jzod Schema of Miroir Fundamental Schemas",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "jzodElement"
+              },
+              "context": {}
+            }
+          },
+          "currentModel": {
+            "uuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+            "parentName": "Entity",
+            "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+            "name": "Entity",
+            "defaultLabel": "Entity",
+            "description": "The Metamodel for entities",
+            "definition": {
+              "type": "metaModel",
+              "definition": {}
+            }
+          },
+          "miroirMetaModel": {
+            "uuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+            "parentName": "Entity",
+            "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+            "name": "Entity",
+            "defaultLabel": "Entity",
+            "description": "The Metamodel for entities",
+            "definition": {
+              "type": "metaModel",
+              "definition": {}
+            }
+          },
+          "relativeReferenceJzodContext": {}
+        },
+        "expectedValue": {
+          "status": "ok",
+          "valuePath": [],
+          "typePath": [],
+          "rawSchema": {
+            "type": "array",
+            "definition": {
+              "type": "string"
+            }
+          },
+          "resolvedSchema": {
+            "type": "tuple",
+            "definition": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          },
+          "subSchemas": [
+            {
+              "status": "ok",
+              "valuePath": [0],
+              "typePath": [0],
+              "rawSchema": {
+                "type": "string"
+              },
+              "resolvedSchema": {
+                "type": "string"
+              },
+              "keyMap": {
+                "0": {
+                  "rawSchema": {
+                    "type": "string"
+                  },
+                  "resolvedSchema": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            {
+              "status": "ok",
+              "valuePath": [1],
+              "typePath": [1],
+              "rawSchema": {
+                "type": "string"
+              },
+              "resolvedSchema": {
+                "type": "string"
+              },
+              "keyMap": {
+                "1": {
+                  "rawSchema": {
+                    "type": "string"
+                  },
+                  "resolvedSchema": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          ],
+          "keyMap": {
+            "0": {
+              "rawSchema": {
+                "type": "string"
+              },
+              "resolvedSchema": {
+                "type": "string"
+              }
+            },
+            "1": {
+              "rawSchema": {
+                "type": "string"
+              },
+              "resolvedSchema": {
+                "type": "string"
+              }
+            },
+            "": {
+              "rawSchema": {
+                "type": "array",
+                "definition": {
+                  "type": "string"
+                }
+              },
+              "resolvedSchema": {
+                "type": "tuple",
+                "definition": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "string"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+      "test032_object": {
+        "transformerTestType": "transformerTest",
+        "transformerTestLabel": "test032_object",
+        "transformerName": "jzodTypeCheck",
+        "runTestStep": "build",
+        "transformer": {
+          "transformerType": "jzodTypeCheck",
+          "interpolation": "build",
+          "jzodSchema": {
+            "type": "object",
+            "definition": {
+              "name": {
+                "type": "string"
+              },
+              "age": {
+                "type": "number"
+              }
+            }
+          },
+          "valueObject": {
+            "name": "John",
+            "age": 30
+          },
+          "currentValuePath": [],
+          "currentTypePath": [],
+          "miroirFundamentalJzodSchema": {
+            "uuid": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "parentName": "JzodSchema",
+            "parentUuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf",
+            "name": "miroirFundamentalJzodSchema",
+            "defaultLabel": "The Jzod Schema of Miroir Fundamental Schemas",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "jzodElement"
+              },
+              "context": {}
+            }
+          },
+          "currentModel": {
+            "uuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+            "parentName": "Entity",
+            "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+            "name": "Entity",
+            "defaultLabel": "Entity",
+            "description": "The Metamodel for entities",
+            "definition": {
+              "type": "metaModel",
+              "definition": {}
+            }
+          },
+          "miroirMetaModel": {
+            "uuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+            "parentName": "Entity",
+            "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+            "name": "Entity",
+            "defaultLabel": "Entity",
+            "description": "The Metamodel for entities",
+            "definition": {
+              "type": "metaModel",
+              "definition": {}
+            }
+          },
+          "relativeReferenceJzodContext": {}
+        },
+        "expectedValue": {
+          "status": "ok",
+          "valuePath": [],
+          "typePath": [],
+          "rawSchema": {
+            "type": "object",
+            "definition": {
+              "name": {
+                "type": "string"
+              },
+              "age": {
+                "type": "number"
+              }
+            }
+          },
+          "resolvedSchema": {
+            "type": "object",
+            "definition": {
+              "name": {
+                "type": "string"
+              },
+              "age": {
+                "type": "number"
+              }
+            }
+          },
+          "subSchemas": {
+            "name": {
+              "status": "ok",
+              "valuePath": ["name"],
+              "typePath": ["name"],
+              "rawSchema": {
+                "type": "string"
+              },
+              "resolvedSchema": {
+                "type": "string"
+              },
+              "keyMap": {
+                "name": {
+                  "rawSchema": {
+                    "type": "string"
+                  },
+                  "resolvedSchema": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "age": {
+              "status": "ok",
+              "valuePath": ["age"],
+              "typePath": ["age"],
+              "rawSchema": {
+                "type": "number"
+              },
+              "resolvedSchema": {
+                "type": "number"
+              },
+              "keyMap": {
+                "age": {
+                  "rawSchema": {
+                    "type": "number"
+                  },
+                  "resolvedSchema": {
+                    "type": "number"
+                  }
+                }
+              }
+            }
+          },
+          "keyMap": {
+            "name": {
+              "rawSchema": {
+                "type": "string"
+              },
+              "resolvedSchema": {
+                "type": "string"
+              }
+            },
+            "age": {
+              "rawSchema": {
+                "type": "number"
+              },
+              "resolvedSchema": {
+                "type": "number"
+              }
+            },
+            "": {
+              "rawSchema": {
+                "type": "object",
+                "definition": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "age": {
+                    "type": "number"
+                  }
+                }
+              },
+              "resolvedSchema": {
+                "type": "object",
+                "definition": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "age": {
+                    "type": "number"
+                  }
+                }
+              },
+              "jzodObjectFlattenedSchema": {
+                "type": "object",
+                "definition": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "age": {
+                    "type": "number"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "test034_union": {
+        "transformerTestType": "transformerTest",
+        "transformerTestLabel": "test034_union",
+        "transformerName": "jzodTypeCheck",
+        "runTestStep": "build",
+        "transformer": {
+          "transformerType": "jzodTypeCheck",
+          "interpolation": "build",
+          "jzodSchema": {
+            "type": "union",
+            "definition": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              }
+            ]
+          },
+          "valueObject": "test string",
+          "currentValuePath": [],
+          "currentTypePath": [],
+          "miroirFundamentalJzodSchema": {
+            "uuid": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "parentName": "JzodSchema",
+            "parentUuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf",
+            "name": "miroirFundamentalJzodSchema",
+            "defaultLabel": "The Jzod Schema of Miroir Fundamental Schemas",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "jzodElement"
+              },
+              "context": {}
+            }
+          },
+          "currentModel": {
+            "uuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+            "parentName": "Entity",
+            "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+            "name": "Entity",
+            "defaultLabel": "Entity",
+            "description": "The Metamodel for entities",
+            "definition": {
+              "type": "metaModel",
+              "definition": {}
+            }
+          },
+          "miroirMetaModel": {
+            "uuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+            "parentName": "Entity",
+            "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+            "name": "Entity",
+            "defaultLabel": "Entity",
+            "description": "The Metamodel for entities",
+            "definition": {
+              "type": "metaModel",
+              "definition": {}
+            }
+          },
+          "relativeReferenceJzodContext": {}
+        },
+        "expectedValue": {
+          "status": "ok",
+          "valuePath": [],
+          "typePath": [],
+          "rawSchema": {
+            "type": "union",
+            "definition": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              }
+            ]
+          },
+          "resolvedSchema": {
+            "type": "string"
+          },
+          "keyMap": {
+            "": {
+              "rawSchema": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ]
+              },
+              "recursivelyUnfoldedUnionSchema": {
+                "status": "ok",
+                "result": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ],
+                "expandedReferences": {}
+              },
+              "resolvedSchema": {
+                "type": "string"
+              },
+              "chosenUnionBranchRawSchema": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "test036_optional": {
+      "transformerTestType": "transformerTest",
+      "transformerTestLabel": "test036_optional",
+      "transformerName": "jzodTypeCheck",
+      "runTestStep": "build",
+      "transformer": {
+        "transformerType": "jzodTypeCheck",
+        "interpolation": "build",
+        "jzodSchema": {
+          "type": "object",
+          "definition": {
+            "name": {
+              "type": "string"
+            },
+            "age": {
+              "type": "number",
+              "optional": true
+            }
+          }
+        },
+        "valueObject": {
+          "name": "John"
+        },
+        "currentValuePath": [],
+        "currentTypePath": [],
+        "miroirFundamentalJzodSchema": {
+          "uuid": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          "parentName": "JzodSchema",
+          "parentUuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf",
+          "name": "miroirFundamentalJzodSchema",
+          "defaultLabel": "The Jzod Schema of Miroir Fundamental Schemas",
+          "definition": {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "jzodElement"
+            },
+            "context": {}
+          }
+        },
+        "currentModel": {
+          "uuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+          "parentName": "Entity",
+          "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+          "name": "Entity",
+          "defaultLabel": "Entity",
+          "description": "The Metamodel for entities",
+          "definition": {
+            "type": "metaModel",
+            "definition": {}
+          }
+        },
+        "miroirMetaModel": {
+          "uuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+          "parentName": "Entity",
+          "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+          "name": "Entity",
+          "defaultLabel": "Entity",
+          "description": "The Metamodel for entities",
+          "definition": {
+            "type": "metaModel",
+            "definition": {}
+          }
+        },
+        "relativeReferenceJzodContext": {}
+      },
+      "expectedValue": {
+        "status": "ok",
+        "valuePath": [],
+        "typePath": [],
+        "rawSchema": {
+          "type": "object",
+          "definition": {
+            "name": {
+              "type": "string"
+            },
+            "age": {
+              "type": "number",
+              "optional": true
+            }
+          }
+        },
+        "resolvedSchema": {
+          "type": "object",
+          "definition": {
+            "name": {
+              "type": "string"
+            },
+            "age": {
+              "type": "number",
+              "optional": true
+            }
+          }
+        },
+        "subSchemas": {
+          "name": {
+            "status": "ok",
+            "valuePath": [
+              "name"
+            ],
+            "typePath": [
+              "name"
+            ],
+            "rawSchema": {
+              "type": "string"
+            },
+            "resolvedSchema": {
+              "type": "string"
+            },
+            "keyMap": {
+              "name": {
+                "rawSchema": {
+                  "type": "string"
+                },
+                "resolvedSchema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "keyMap": {
+          "name": {
+            "rawSchema": {
+              "type": "string"
+            },
+            "resolvedSchema": {
+              "type": "string"
+            }
+          },
+          "": {
+            "rawSchema": {
+              "type": "object",
+              "definition": {
+                "name": {
+                  "type": "string"
+                },
+                "age": {
+                  "type": "number",
+                  "optional": true
+                }
+              }
+            },
+            "resolvedSchema": {
+              "type": "object",
+              "definition": {
+                "name": {
+                  "type": "string"
+                },
+                "age": {
+                  "type": "number",
+                  "optional": true
+                }
+              }
+            },
+            "jzodObjectFlattenedSchema": {
+              "type": "object",
+              "definition": {
+                "name": {
+                  "type": "string"
+                },
+                "age": {
+                  "type": "number",
+                  "optional": true
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -112,6 +112,7 @@ import {
 import { resolveConditionalSchemaTransformer } from '../1_core/jzod/resolveConditionalSchema';
 import { resolveSchemaReferenceInContextTransformer } from '../1_core/jzod/jzodResolveSchemaReferenceInContext';
 import { unfoldSchemaOnceTransformer } from '../1_core/jzod/JzodUnfoldSchemaOnce';
+import { jzodTypeCheckTransformer } from '../1_core/jzod/jzodTypeCheck';
 
 // Re-export types needed by other modules
 export type { ResolveBuildTransformersTo, Step } from "./Transformers";
@@ -659,6 +660,7 @@ const inMemoryTransformerImplementations: Record<string, ITransformerHandler<any
   "transformer_resolveConditionalSchema": resolveConditionalSchemaTransformer,
   "transformer_resolveSchemaReferenceInContext": resolveSchemaReferenceInContextTransformer,
   "transformer_unfoldSchemaOnce": unfoldSchemaOnceTransformer,
+  "transformer_jzodTypeCheck": jzodTypeCheckTransformer,
 };
 
 // transformer_defaultValueForMLSchema

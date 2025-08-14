@@ -27,6 +27,7 @@ import { getObjectUniondiscriminatorValuesFromResolvedSchema } from "./getObject
 import { resolveConditionalSchema, type ResolveConditionalSchemaError } from "./resolveConditionalSchema";
 import { Uuid } from "../../0_interfaces/1_core/EntityDefinition";
 import { ReduxDeploymentsState } from "../../0_interfaces/2_domain/ReduxDeploymentsStateInterface";
+import { Step } from "../../2_domain/Transformers";
 import type {
   SelectUnionBranchFromDiscriminatorReturnType,
   SelectUnionBranchFromDiscriminatorReturnTypeError,
@@ -1925,6 +1926,47 @@ export function jzodTypeCheck(
     }
   }
 
+}
+
+// ################################################################################################
+// Transformer function for jzodTypeCheck
+export function jzodTypeCheckTransformer(
+  step: Step,
+  label: string | undefined,
+  transformer: any,
+  resolveBuildTransformersTo: any,
+  queryParams: Record<string, any>,
+  contextResults?: Record<string, any>,
+): ResolvedJzodSchemaReturnType {
+  const {
+    jzodSchema,
+    valueObject,
+    currentValuePath = [],
+    currentTypePath = [],
+    miroirFundamentalJzodSchema,
+    currentModel,
+    miroirMetaModel,
+    relativeReferenceJzodContext = {},
+    currentDefaultValue,
+    reduxDeploymentsState,
+    deploymentUuid,
+    rootObject
+  } = transformer;
+
+  return jzodTypeCheck(
+    jzodSchema,
+    valueObject,
+    currentValuePath,
+    currentTypePath,
+    miroirFundamentalJzodSchema,
+    currentModel,
+    miroirMetaModel,
+    relativeReferenceJzodContext,
+    currentDefaultValue,
+    reduxDeploymentsState,
+    deploymentUuid,
+    rootObject
+  );
 }
 
 // ################################################################################################
