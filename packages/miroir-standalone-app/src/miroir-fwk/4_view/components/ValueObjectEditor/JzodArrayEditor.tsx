@@ -458,8 +458,9 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
       
 
       const newItem = getDefaultValueForJzodSchemaWithResolutionNonHook(
-        rootLessListKey,
         newItemSchema, // TODO: not correct with runtimeTypes
+        formik.values,
+        rootLessListKey,
         undefined, // currentDefaultValue is not known yet, this is what this call will determine
         [], // currentPath on value is root
         deploymentEntityState, // deploymentEntityState is not needed here
@@ -469,7 +470,6 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
         currentModel,
         miroirMetaModel,
         {}, // relativeReferenceJzodContext
-        formik.values,
       );
       // Create the new array value
       const newArrayValue = [

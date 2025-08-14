@@ -186,11 +186,12 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
       !selectedDeploymentUuid
         ? {}
         : getDefaultValueForJzodSchemaWithResolutionNonHook(
-            "", // rootLessListKey,
             {
               type: "object",
               definition: currentAction.actionParameters || {},
             },
+            undefined, // rootObject
+            "", // rootLessListKey,
             undefined, // No need to pass currentDefaultValue here
             [], // currentPath on value is root
             deploymentEntityState,
@@ -199,8 +200,7 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
             context.miroirFundamentalJzodSchema,
             currentModel,
             miroirMetaModel,
-            {}, // relativeReferenceJzodContext
-            undefined, // rootObject
+            {} // relativeReferenceJzodContext
           );
     log.info(
       "EndpointActionCaller: handleActionChange Initial form state",

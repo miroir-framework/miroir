@@ -525,8 +525,9 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
     // log.info("addExtraRecordEntry newAttributeType", JSON.stringify(newAttributeType, null, 2));
     const newAttributeValue = currentMiroirFundamentalJzodSchema
       ? getDefaultValueForJzodSchemaWithResolutionNonHook(
-          rootLessListKey,
           currentTypeCheckKeyMap?.rawSchema.definition,
+          formik.values, // rootObject
+          rootLessListKey,
           undefined, // currentDefaultValue is not known yet, this is what this call will determine
           [], // currentPath on value is root
           deploymentEntityState,
@@ -535,9 +536,8 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
           currentMiroirFundamentalJzodSchema,
           currentModel,
           miroirMetaModel,
-          {},
+          {}
           // Object.hasOwn(formik.values,"")?formik.values[""]:{}, // rootObject
-          formik.values // rootObject
         )
       : undefined;
 
@@ -595,8 +595,9 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
       );
       const newAttributeValue = !!currentMiroirFundamentalJzodSchema
         ? getDefaultValueForJzodSchemaWithResolutionNonHook(
-            rootLessListKey,
             newAttributeType,
+            formik.values,
+            rootLessListKey,
             undefined, // currentDefaultValue is not known yet, this is what this call will determine
             [], // currentPath on value is root
             deploymentEntityState,
@@ -606,7 +607,6 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
             currentModel,
             miroirMetaModel,
             {}, // relativeReferenceJzodContext
-            formik.values
           )
         : undefined;
 
