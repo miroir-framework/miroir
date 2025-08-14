@@ -10,6 +10,7 @@ import { packageName } from "../../constants";
 import { mStringify } from "../../tools";
 import { cleanLevel } from "../constants";
 import { resolveJzodSchemaReferenceInContext } from "./jzodResolveSchemaReferenceInContext";
+import type { ResolveBuildTransformersTo, Step } from "../../2_domain/Transformers";
 
 // export const miroirFundamentalJzodSchema2 = miroirFundamentalJzodSchema;
 // import { miroirFundamentalJzodSchema } from "../tmp/src/0_interfaces/1_core/bootstrapJzodSchemas/miroirFundamentalJzodSchema";
@@ -642,4 +643,26 @@ export function unfoldJzodSchemaOnce(
       break;
     }
   }
+}
+
+// ################################################################################################
+export function unfoldSchemaOnceTransformer(
+  step: Step,
+  label: string | undefined,
+  transformer: any, // TransformerForBuild_unfoldSchemaOnce | TransformerForRuntime_unfoldSchemaOnce | TransformerForBuildPlusRuntime_unfoldSchemaOnce,
+  resolveBuildTransformersTo: ResolveBuildTransformersTo,
+  queryParams: Record<string, any>,
+  contextResults?: Record<string, any>
+): UnfoldJzodSchemaOnceReturnType {
+  return unfoldJzodSchemaOnce(
+    transformer.miroirFundamentalJzodSchema,
+    transformer.jzodSchema,
+    transformer.path || [],
+    transformer.unfoldingReference || [],
+    transformer.rootSchema,
+    transformer.depth || 0,
+    transformer.currentModel,
+    transformer.miroirMetaModel,
+    transformer.relativeReferenceJzodContext
+  );
 }

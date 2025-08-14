@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import test_createEntityAndReportFromSpreadsheetAndUpdateMenu from "../../../src/assets/miroir_data/c37625c7-0b35-4d6a-811d-8181eb978301/ffe6ab3c-8296-4293-8aaf-ebbad1f0ac9a.json";
 import entityDefinitionTest from "../../../src/assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/d2842a84-3e66-43ee-ac58-7e13b95b01e8.json";
 
-import {
+import type {
   JzodElement,
   JzodSchema
 } from "../../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
@@ -13,7 +13,8 @@ import {
 } from "../../../src/0_interfaces/1_core/bootstrapJzodSchemas/getMiroirFundamentalJzodSchema";
 
 import { miroirFundamentalJzodSchema } from "../../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalJzodSchema";
-import { jzodTypeCheck, ResolvedJzodSchemaReturnType } from "../../../src/1_core/jzod/jzodTypeCheck";
+import { jzodTypeCheck } from "../../../src/1_core/jzod/jzodTypeCheck";
+import type { ResolvedJzodSchemaReturnType } from '../../../src/0_interfaces/1_core/jzodTypeCheckInterface';
 
 
 import { KeyMapEntry } from '../../../dist';

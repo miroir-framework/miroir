@@ -1,0 +1,415 @@
+{
+  "uuid": "e8b5d1a2-9473-4f6c-b2e8-7f8a5c6d9e0f",
+  "parentName": "TransformerTest",
+  "parentUuid": "681be9ca-c593-45f5-b45a-5f1d4969e91e",
+  "name": "unfoldSchemaOnce",
+  "selfApplication": "21840247-b5b1-4344-baec-f818f4797d92",
+  "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
+  "description": "The Test for the unfoldSchemaOnce Transformer",
+  "definition": {
+    "transformerTestType": "transformerTestSuite",
+    "transformerTestLabel": "unfoldSchemaOnce",
+    "transformerTests": {
+      "literal schema remains unchanged": {
+        "transformerTestType": "transformerTest",
+        "transformerTestLabel": "literal schema remains unchanged",
+        "transformerName": "unfoldSchemaOnce",
+        "runTestStep": "build",
+        "transformer": {
+          "transformerType": "unfoldSchemaOnce",
+          "interpolation": "build",
+          "jzodSchema": {
+            "type": "literal",
+            "definition": "myLiteral"
+          },
+          "path": [],
+          "unfoldingReference": [],
+          "depth": 0,
+          "miroirFundamentalJzodSchema": {
+            "type": "any"
+          }
+        },
+        "transformerParams": {},
+        "expectedValue": {
+          "status": "ok",
+          "element": {
+            "type": "literal",
+            "definition": "myLiteral"
+          }
+        }
+      },
+      "simple string schema remains unchanged": {
+        "transformerTestType": "transformerTest",
+        "transformerTestLabel": "simple string schema remains unchanged",
+        "transformerName": "unfoldSchemaOnce",
+        "runTestStep": "build",
+        "transformer": {
+          "transformerType": "unfoldSchemaOnce",
+          "interpolation": "build",
+          "jzodSchema": {
+            "type": "string"
+          },
+          "path": [],
+          "unfoldingReference": [],
+          "depth": 0,
+          "miroirFundamentalJzodSchema": {
+            "type": "any"
+          }
+        },
+        "transformerParams": {},
+        "expectedValue": {
+          "status": "ok",
+          "element": {
+            "type": "string"
+          }
+        }
+      },
+      "simple schema reference resolution": {
+        "transformerTestType": "transformerTest",
+        "transformerTestLabel": "simple schema reference resolution",
+        "transformerName": "unfoldSchemaOnce",
+        "runTestStep": "build",
+        "transformer": {
+          "transformerType": "unfoldSchemaOnce",
+          "interpolation": "build",
+          "jzodSchema": {
+            "type": "schemaReference",
+            "context": {
+              "a": {
+                "type": "string"
+              }
+            },
+            "definition": {
+              "relativePath": "a"
+            }
+          },
+          "path": [],
+          "unfoldingReference": [],
+          "depth": 0,
+          "miroirFundamentalJzodSchema": {
+            "type": "any"
+          },
+          "relativeReferenceJzodContext": {}
+        },
+        "transformerParams": {},
+        "expectedValue": {
+          "status": "ok",
+          "element": {
+            "type": "string"
+          }
+        }
+      },
+      "object with schema reference unfolding": {
+        "transformerTestType": "transformerTest",
+        "transformerTestLabel": "object with schema reference unfolding",
+        "transformerName": "unfoldSchemaOnce",
+        "runTestStep": "build",
+        "transformer": {
+          "transformerType": "unfoldSchemaOnce",
+          "interpolation": "build",
+          "jzodSchema": {
+            "type": "object",
+            "definition": {
+              "a": {
+                "type": "schemaReference",
+                "optional": true,
+                "context": {
+                  "myString": {
+                    "type": "string"
+                  }
+                },
+                "definition": {
+                  "relativePath": "myString"
+                }
+              },
+              "b": {
+                "type": "string",
+                "optional": true
+              }
+            }
+          },
+          "path": [],
+          "unfoldingReference": [],
+          "depth": 0,
+          "miroirFundamentalJzodSchema": {
+            "type": "any"
+          },
+          "relativeReferenceJzodContext": {}
+        },
+        "transformerParams": {},
+        "expectedValue": {
+          "status": "ok",
+          "element": {
+            "type": "object",
+            "definition": {
+              "a": {
+                "type": "string",
+                "optional": true
+              },
+              "b": {
+                "type": "string",
+                "optional": true
+              }
+            }
+          }
+        }
+      },
+      "array with schema reference unfolding": {
+        "transformerTestType": "transformerTest",
+        "transformerTestLabel": "array with schema reference unfolding",
+        "transformerName": "unfoldSchemaOnce",
+        "runTestStep": "build",
+        "transformer": {
+          "transformerType": "unfoldSchemaOnce",
+          "interpolation": "build",
+          "jzodSchema": {
+            "type": "array",
+            "definition": {
+              "type": "schemaReference",
+              "context": {
+                "stringType": {
+                  "type": "string"
+                }
+              },
+              "definition": {
+                "relativePath": "stringType"
+              }
+            }
+          },
+          "path": [],
+          "unfoldingReference": [],
+          "depth": 0,
+          "miroirFundamentalJzodSchema": {
+            "type": "any"
+          },
+          "relativeReferenceJzodContext": {}
+        },
+        "transformerParams": {},
+        "expectedValue": {
+          "status": "ok",
+          "element": {
+            "type": "array",
+            "definition": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "recursive schema reference unfolding": {
+        "transformerTestType": "transformerTest",
+        "transformerTestLabel": "recursive schema reference unfolding",
+        "transformerName": "unfoldSchemaOnce",
+        "runTestStep": "build",
+        "transformer": {
+          "transformerType": "unfoldSchemaOnce",
+          "interpolation": "build",
+          "jzodSchema": {
+            "type": "schemaReference",
+            "context": {
+              "myObject": {
+                "type": "object",
+                "definition": {
+                  "a": {
+                    "type": "union",
+                    "optional": true,
+                    "definition": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "schemaReference",
+                        "definition": {
+                          "relativePath": "myObject"
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            "definition": {
+              "relativePath": "myObject"
+            }
+          },
+          "path": [],
+          "unfoldingReference": [],
+          "depth": 0,
+          "miroirFundamentalJzodSchema": {
+            "type": "any"
+          },
+          "relativeReferenceJzodContext": {}
+        },
+        "transformerParams": {},
+        "expectedValue": {
+          "status": "ok",
+          "element": {
+            "type": "object",
+            "definition": {
+              "a": {
+                "type": "union",
+                "optional": true,
+                "definition": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "context": {
+                      "myObject": {
+                        "type": "object",
+                        "definition": {
+                          "a": {
+                            "type": "union",
+                            "optional": true,
+                            "definition": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "schemaReference",
+                                "definition": {
+                                  "relativePath": "myObject"
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    },
+                    "definition": {
+                      "relativePath": "myObject"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+      "record with union unfolding": {
+        "transformerTestType": "transformerTest",
+        "transformerTestLabel": "record with union unfolding",
+        "transformerName": "unfoldSchemaOnce",
+        "runTestStep": "build",
+        "transformer": {
+          "transformerType": "unfoldSchemaOnce",
+          "interpolation": "build",
+          "jzodSchema": {
+            "type": "record",
+            "definition": {
+              "type": "union",
+              "discriminator": "extractorOrCombinerType",
+              "definition": [
+                {
+                  "type": "object",
+                  "definition": {
+                    "extractorOrCombinerType": {
+                      "type": "literal",
+                      "definition": "literal"
+                    },
+                    "definition": {
+                      "type": "string"
+                    }
+                  }
+                }
+              ]
+            },
+            "optional": true
+          },
+          "path": [],
+          "unfoldingReference": [],
+          "depth": 0,
+          "miroirFundamentalJzodSchema": {
+            "type": "any"
+          },
+          "relativeReferenceJzodContext": {}
+        },
+        "transformerParams": {},
+        "expectedValue": {
+          "status": "ok",
+          "element": {
+            "type": "record",
+            "definition": {
+              "type": "union",
+              "discriminator": "extractorOrCombinerType",
+              "definition": [
+                {
+                  "type": "object",
+                  "definition": {
+                    "extractorOrCombinerType": {
+                      "type": "literal",
+                      "definition": "literal"
+                    },
+                    "definition": {
+                      "type": "string"
+                    }
+                  }
+                }
+              ]
+            },
+            "optional": true
+          }
+        }
+      },
+      "union with simple schema references": {
+        "transformerTestType": "transformerTest",
+        "transformerTestLabel": "union with simple schema references",
+        "transformerName": "unfoldSchemaOnce",
+        "runTestStep": "build",
+        "transformer": {
+          "transformerType": "unfoldSchemaOnce",
+          "interpolation": "build",
+          "jzodSchema": {
+            "type": "union",
+            "definition": [
+              {
+                "type": "schemaReference",
+                "context": {
+                  "stringType": {
+                    "type": "string"
+                  }
+                },
+                "definition": {
+                  "relativePath": "stringType"
+                }
+              },
+              {
+                "type": "schemaReference",
+                "context": {
+                  "numberType": {
+                    "type": "number"
+                  }
+                },
+                "definition": {
+                  "relativePath": "numberType"
+                }
+              }
+            ]
+          },
+          "path": [],
+          "unfoldingReference": [],
+          "depth": 0,
+          "miroirFundamentalJzodSchema": {
+            "type": "any"
+          },
+          "relativeReferenceJzodContext": {}
+        },
+        "transformerParams": {},
+        "expectedValue": {
+          "status": "ok",
+          "element": {
+            "type": "union",
+            "definition": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              }
+            ]
+          }
+        }
+      }
+    }
+  }
+}
