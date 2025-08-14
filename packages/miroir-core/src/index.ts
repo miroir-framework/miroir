@@ -502,6 +502,21 @@ export {
   TestImplementationExpect,
 } from "./0_interfaces/1_core/TestImplementation.js";
 export {
+  JzodUnionResolvedTypeForArrayReturnTypeOK,
+  JzodUnionResolvedTypeReturnTypeError,
+  JzodUnionResolvedTypeForObjectReturnTypeOK,
+  JzodUnionResolvedTypeReturnType,
+  KeyMapEntry,
+  SelectUnionBranchFromDiscriminatorReturnType,
+  ResolvedJzodSchemaReturnType,
+  ResolvedJzodSchemaReturnTypeError,
+  ResolvedJzodSchemaReturnTypeOK,
+  SelectUnionBranchFromDiscriminatorReturnTypeError,
+  SelectUnionBranchFromDiscriminatorReturnTypeOK,
+  resolvedJzodSchemaReturnType,
+  resolvedJzodSchemaReturnTypeOK,
+} from "./0_interfaces/1_core/jzodTypeCheckInterface";
+export {
   EntityDefinitionEntityDefinition,
   EntityDefinitionEntityDefinitionAttribute,
   EntityDefinitionEntityDefinitionAttributeNew,
@@ -655,16 +670,16 @@ export {
   getDefaultValueForJzodSchemaWithResolutionNonHook,
 } from "./1_core/jzod/getDefaultValueForJzodSchema.js";
 export {
-  KeyMapEntry,
-  ResolvedJzodSchemaReturnType,
-  ResolvedJzodSchemaReturnTypeError,
-  ResolvedJzodSchemaReturnTypeOK,
+  // KeyMapEntry,
+  // ResolvedJzodSchemaReturnType,
+  // ResolvedJzodSchemaReturnTypeError,
+  // ResolvedJzodSchemaReturnTypeOK,
   // getReportSectionTargetEntityUuid,
   jzodTypeCheck,
   jzodUnionResolvedTypeForObject,
-  JzodUnionResolvedTypeReturnType,
-  JzodUnionResolvedTypeForObjectReturnTypeOK,
-  JzodUnionResolvedTypeReturnTypeError as JzodUnionResolvedTypeForObjectReturnTypeError,
+  // JzodUnionResolvedTypeReturnType,
+  // JzodUnionResolvedTypeForObjectReturnTypeOK,
+  // JzodUnionResolvedTypeReturnTypeError as JzodUnionResolvedTypeForObjectReturnTypeError,
   unionObjectChoices,
   selectUnionBranchFromDiscriminator,
 } from "./1_core/jzod/jzodTypeCheck.js";
@@ -672,9 +687,9 @@ export {
   getObjectUniondiscriminatorValuesFromResolvedSchema
 } from "./1_core/jzod/getObjectUniondiscriminatorValuesFromResolvedSchema";
 export {
-  JzodUnion_RecursivelyUnfold_ReturnTypeError,
-  JzodUnion_RecursivelyUnfold_ReturnTypeOK,
-  JzodUnion_RecursivelyUnfold_ReturnType,
+  // JzodUnion_RecursivelyUnfold_ReturnTypeError,
+  // JzodUnion_RecursivelyUnfold_ReturnTypeOK,
+  // JzodUnion_RecursivelyUnfold_ReturnType,
   jzodUnion_recursivelyUnfold,
 } from "./1_core/jzod/jzodUnion_RecursivelyUnfold";
 export {

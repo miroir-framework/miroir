@@ -10,7 +10,6 @@ import { packageName } from "../../constants";
 import { mStringify } from "../../tools";
 import { cleanLevel } from "../constants";
 import { resolveJzodSchemaReferenceInContext } from "./jzodResolveSchemaReferenceInContext";
-import { ResolvedJzodSchemaReturnType, ResolvedJzodSchemaReturnTypeOK } from "./jzodTypeCheck";
 
 // export const miroirFundamentalJzodSchema2 = miroirFundamentalJzodSchema;
 // import { miroirFundamentalJzodSchema } from "../tmp/src/0_interfaces/1_core/bootstrapJzodSchemas/miroirFundamentalJzodSchema";
@@ -42,10 +41,6 @@ export function localizeJzodSchemaReferenceContext<T extends JzodElement>(
   miroirMetaModel?: MetaModel,
   relativeReferenceJzodContext?: {[k:string]: JzodElement},
 ): T {
-  // const absoluteReferences = (currentModel
-  //   ? [miroirFundamentalJzodSchema, ...(currentModel as any).jzodSchemas, ...(miroirMetaModel as any).jzodSchemas] // very inefficient!
-  //   : [miroirFundamentalJzodSchema]
-  // )
 
   switch (jzodElement.type) {
     case "object": {

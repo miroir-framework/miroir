@@ -1,3 +1,4 @@
+import type { ResolvedJzodSchemaReturnType } from "../../0_interfaces/1_core/jzodTypeCheckInterface";
 import {
   JzodElement,
   JzodObject,
@@ -8,7 +9,7 @@ import { LoggerInterface } from "../../0_interfaces/4-services/LoggerInterface";
 import { MiroirLoggerFactory } from "../../4_services/LoggerFactory";
 import { packageName } from "../../constants";
 import { cleanLevel } from "../constants";
-import { jzodTypeCheck, ResolvedJzodSchemaReturnType } from "./jzodTypeCheck";
+import { jzodTypeCheck } from "./jzodTypeCheck";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -32,24 +33,24 @@ function mapResolveJzodSchemaToValueKeys(
   resolvedElementJzodSchema: JzodElement,
   value: any,
   rootLessListKey: string,
-  result: Record<string, { resolvedElementJzodSchema: JzodElement }> = {},
+  result: Record<string, { resolvedElementJzodSchema: JzodElement }> = {}
 ): void {
   // log.info("mapResolveJzodSchemaToValueKeys called with", "resolvedElementJzodSchema", JSON.stringify(resolvedElementJzodSchema, null, 2));
   result[rootLessListKey] = {
     resolvedElementJzodSchema: resolvedElementJzodSchema,
   };
- switch (typeof value) {
-   case "string":
-   case "number":
-   case "bigint":
-   case "boolean":
-   case "undefined": {
-    //  result[rootLessListKey] = {
-    //    resolvedElementJzodSchema: resolvedElementJzodSchema,
-    //  };
-     break;
-   }
-   case "object": {
+  switch (typeof value) {
+    case "string":
+    case "number":
+    case "bigint":
+    case "boolean":
+    case "undefined": {
+      //  result[rootLessListKey] = {
+      //    resolvedElementJzodSchema: resolvedElementJzodSchema,
+      //  };
+      break;
+    }
+    case "object": {
       if (Array.isArray(value)) {
         // If the value is an array, we need to handle it differently
         // result[rootLessListKey] = {
@@ -103,7 +104,7 @@ function mapResolveJzodSchemaToValueKeys(
           mapResolveJzodSchemaToValueKeys(
             resolvedElementJzodSchema.definition[key],
             value[key],
-            `${rootLessListKey.length > 0? rootLessListKey + '.' : ""}${key}`,
+            `${rootLessListKey.length > 0 ? rootLessListKey + "." : ""}${key}`,
             result
           );
         });
@@ -120,23 +121,23 @@ function mapResolveJzodSchemaToValueKeys(
         );
       }
       break;
-   }
-   case "symbol":
-   case "function":
-   default: {
-     throw new Error(
-       "mapResolveJzodSchemaToValueKeys " +
-         "path '" +
-         rootLessListKey +
-         "' could not resolve jzod schema for default " +
-         " currentValue " +
-         JSON.stringify(value, null, 2) +
-         " resolvedJzodSchema " +
-         JSON.stringify(resolvedElementJzodSchema, null, 2)
-     );
-     break;
-   }
- }
+    }
+    case "symbol":
+    case "function":
+    default: {
+      throw new Error(
+        "mapResolveJzodSchemaToValueKeys " +
+          "path '" +
+          rootLessListKey +
+          "' could not resolve jzod schema for default " +
+          " currentValue " +
+          JSON.stringify(value, null, 2) +
+          " resolvedJzodSchema " +
+          JSON.stringify(resolvedElementJzodSchema, null, 2)
+      );
+      break;
+    }
+  }
 }
 
 /**

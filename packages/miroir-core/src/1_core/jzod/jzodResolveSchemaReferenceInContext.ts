@@ -61,10 +61,13 @@ export function resolveJzodSchemaReferenceInContext(
   //   "resolveJzodSchemaReferenceInContext called for reference",
   //   JSON.stringify(jzodReference, null, 2),
   // );
-  const absoluteReferences = (currentModel
-    ? [miroirFundamentalJzodSchema, ...(currentModel as any).jzodSchemas, ...(miroirMetaModel as any).jzodSchemas] // very inefficient!
-    : [miroirFundamentalJzodSchema]
-  )
+  const absoluteReferences = currentModel
+    ? [
+        miroirFundamentalJzodSchema,
+        ...((currentModel as any)?.jzodSchemas || []),
+        ...((miroirMetaModel as any)?.jzodSchemas || []),
+      ] // very inefficient!
+    : [miroirFundamentalJzodSchema];
   const absoluteReferenceTargetJzodSchema: { [k: string]: JzodElement } = jzodReference?.definition.absolutePath
     ? absoluteReferences.find((s: JzodSchema) => s.uuid == jzodReference?.definition.absolutePath)?.definition
         .context ?? {}
@@ -114,9 +117,7 @@ export function resolveJzodSchemaReference(
 ): JzodElement {
   // const fundamentalJzodSchemas = miroirFundamentalJzodSchema.definition.context
   const absoluteReferences = (currentModel
-    // ? (currentModel as any).jzodSchemas
-    // : []
-    ? [miroirFundamentalJzodSchema, ...(currentModel as any).jzodSchemas] // very inefficient!
+    ? [miroirFundamentalJzodSchema, ...((currentModel as any)?.jzodSchemas || [])] // very inefficient!
     : [miroirFundamentalJzodSchema]
   )
   const absoluteReferenceTargetJzodSchema: JzodObject | JzodReference | undefined = jzodReference?.definition
