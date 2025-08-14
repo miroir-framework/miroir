@@ -111,6 +111,7 @@ const muiIcons = {
 //    const Icon = icon && MUIcon[icon];
 //    return ({Icon && <Icon />})
 // }
+// ################################################################################################
 export interface SidebarSectionProps {deploymentUuid: Uuid, menuUuid: Uuid, open:boolean, setOpen: (v:boolean)=>void};
 export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProps) => {
   count++;
@@ -155,7 +156,7 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
     [deploymentEntityStateSelectorMap, currentModel, props.deploymentUuid, props.menuUuid]
   );
 
-  // log.info("fetchDeploymentMenusQueryParams",fetchDeploymentMenusQueryParams)
+  log.info("SidebarSection fetchDeploymentMenusQueryParams",fetchDeploymentMenusQueryParams)
   const miroirMenusDomainElementObject: Domain2QueryReturnType<
     Domain2QueryReturnType<Record<string, any>>
   > = useReduxDeploymentsStateQuerySelector(
@@ -163,15 +164,20 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
     fetchDeploymentMenusQueryParams
   );
 
-  // log.info("deploymentEntityStateDomainElementObject",miroirMenusDomainElementObject)
-  // console.log(
-  //   "SidebarSection refresh",
-  //   count++,
-  //   "found miroir menu:",
-  //   miroirMenusDomainElementObject,
-  //   // miroirMenusDomainElementObject?.elementValue
-  // );
-  const drawerSx = useMemo(()=>({flexDirection:'column'}),[])
+  log.info("SidebarSection deploymentEntityStateDomainElementObject",miroirMenusDomainElementObject)
+  console.log(
+    "SidebarSection refresh",
+    count++,
+    "props.deploymentUuid",
+    props.deploymentUuid,
+    "props.menuUuid",
+    props.menuUuid,
+    "found miroir menu miroirMenusDomainElementObject result",
+    miroirMenusDomainElementObject.elementType == "failure",
+    miroirMenusDomainElementObject,
+    // miroirMenusDomainElementObject?.elementValue
+  );
+  // const drawerSx = useMemo(()=>({flexDirection:'column'}),[])
   return (
     <>
       {

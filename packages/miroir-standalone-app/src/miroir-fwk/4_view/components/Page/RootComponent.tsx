@@ -97,13 +97,14 @@ import { MiroirThemeProvider, useMiroirTheme } from '../../contexts/MiroirThemeC
 import { useRenderTracker } from "../../tools/renderCountTracker.js";
 import AppBar from './AppBar.js';
 
-import { deployments, packageName } from '../../../../constants.js';
+import { adminConfigurationDeploymentParis, deployments, packageName } from '../../../../constants.js';
 import { cleanLevel } from '../../constants.js';
 import { Sidebar } from "./Sidebar.js";
 import { SidebarWidth } from "./SidebarSection.js";
 import { InstanceEditorOutline } from '../InstanceEditorOutline.js';
 import { useCurrentModel, useReduxDeploymentsStateQuerySelectorForCleanedResult } from "../../ReduxHooks.js";
 import { ViewParamsUpdateQueue, ViewParamsUpdateQueueConfig } from '../ViewParamsUpdateQueue.js';
+import type { Deployment } from 'miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -898,7 +899,7 @@ export const RootComponent = (props: RootComponentProps) => {
 
                               const foundDeployments =
                                 adminDeployments.returnedDomainElement[subQueryName];
-                              log.info("found adminDeployments", adminDeployments);
+                              log.info("found adminDeployments", foundDeployments);
 
                               // Batch all deployment operations to reduce re-renders
                               // Create arrays of all actions first
@@ -908,8 +909,10 @@ export const RootComponent = (props: RootComponentProps) => {
                                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e";
                                 deploymentUuid: string;
                               }> = [];
-
-                              for (const c of Object.values(foundDeployments)) {
+                              // const deploymentsToLoad:Deployment[] = [foundDeployments.find((e:Deployment)=> e.uuid == adminConfigurationDeploymentParis.uuid)];
+                              const deploymentsToLoad:Deployment[] = foundDeployments;
+                              // for (const c of Object.values(foundDeployments)) {
+                              for (const c of Object.values(deploymentsToLoad)) {
                                 openStoreActions.push({
                                   actionType: "storeManagementAction_openStore",
                                   endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f" as const,

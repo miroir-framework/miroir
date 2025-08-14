@@ -630,7 +630,9 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
       return new Action2Error("FailedToGetInstances", `getInstances failed for section: ${section}, entityUuid ${entityEntity.uuid}, error: ${instances}`);
     }
 
-    log.info(this.logHeader,'getInstances','section',section,'entity',entityUuid, "result", instances);
+    // log.info(this.logHeader,'getInstances succeeded','section',section,'entity',entityUuid, "result", instances);
+    // log.info(this.logHeader,'getInstances succeeded','section',section,'entity',entityUuid, "result", JSON.stringify(instances));
+    log.info(this.logHeader,'getInstances succeeded','section',section,'entity',entityUuid, "result", JSON.stringify(instances));
     return instances;
   }
   

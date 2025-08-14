@@ -139,7 +139,7 @@ export function resolveConditionalSchema(
         };
       }
 
-      log.info("getDefaultValueForJzodSchemaWithResolution resolved parentUuid", parentUuid);
+      log.info("resolveConditionalSchema resolved parentUuid", parentUuid);
       const currentDeploymentEntityDefinitions: EntityDefinition[] =
         getEntityInstancesUuidIndexNonHook(
           reduxDeploymentsState,
@@ -147,14 +147,14 @@ export function resolveConditionalSchema(
           entityEntityDefinition.uuid,
         ) as EntityDefinition[];
       log.info(
-        "getDefaultValueForJzodSchemaWithResolution currentDeploymentEntityDefinitions",
+        "resolveConditionalSchema currentDeploymentEntityDefinitions",
         currentDeploymentEntityDefinitions
       );
       const parentEntityDefinition = (
         currentDeploymentEntityDefinitions.find(e => e.entityUuid === parentUuid) as EntityDefinition
       ).jzodSchema;
       log.info(
-        "getDefaultValueForJzodSchemaWithResolution parentEntityDefinition",
+        "resolveConditionalSchema parentEntityDefinition",
         parentEntityDefinition
       );
       effectiveSchema = parentEntityDefinition;

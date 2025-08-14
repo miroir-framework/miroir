@@ -434,8 +434,6 @@ export const ToolsPage: React.FC<any> = (
           <RunTransformerTestSuiteButton
             transformerTestSuite={transformerTestSuite_resolveConditionalSchema}
             testSuiteKey={testSuiteKey}
-            // expect={expect}
-            // describe={describe}
             useSnackBar={true}
             onTestComplete={(testSuiteKey, structuredResults) => {
               setResolveConditionalSchemaResultsData(structuredResults);
@@ -494,7 +492,6 @@ export const ToolsPage: React.FC<any> = (
         {/* test results */}
         <div>
           {
-            // currentEnumJzodSchemaResolver != undefined &&
             testResults &&
             testSuitesResults != undefined &&
             testSuitesResults.context != undefined &&
@@ -567,20 +564,6 @@ export const ToolsPage: React.FC<any> = (
             )
           }
         </div>
-        {/* <div>
-        {
-          dialogOuterFormObject ? (
-            <MyReactCodeMirror
-              value={JSON.stringify(rawSchema, null, 2)}
-              height="400px"
-              extensions={[javascript({ jsx: true })]}
-              onChange={onCodeEditorChange}
-            />
-          ) : (
-            <></>
-          )
-        }
-      </div> */}
         <div>
           <Formik
             enableReinitialize={true}
@@ -593,29 +576,7 @@ export const ToolsPage: React.FC<any> = (
             {(formik) => (
               <>
                 <form id={"form." + pageLabel} onSubmit={formik.handleSubmit}>
-                  {/* {resolvedJzodSchema === defaultObject ? (
-                  <div>no object definition found!</div>
-                ) : ( */}
                   <>
-                    {/* <JzodElementEditor
-                      name={"ROOT"}
-                      listKey={"ROOT"}
-                      rootLessListKey={emptyString}
-                      rootLessListKeyArray={emptyList}
-                      labelElement={<>{pageLabel}</>}
-                      currentDeploymentUuid={emptyString}
-                      currentApplicationSection={dataSection}
-                      resolvedElementJzodSchema={resolvedJzodSchema}
-                      // localRootLessListKeyMap={{}}
-                      foreignKeyObjects={emptyObject}
-                      indentLevel={0}
-                      // handleChange={formik.handleChange as any}
-                      // formik={formik}
-                      // setFormState={setFormState}
-                      // formState={formState}
-                      // hasTypeError={typeError != undefined}
-                      // typeCheckKeyMap={resolvedTestResultsJzodSchema?.}
-                    /> */}
                     <button type="submit" name={pageLabel} form={"form." + pageLabel}>
                       submit form.{pageLabel}
                     </button>

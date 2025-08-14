@@ -184,6 +184,17 @@ export function getDefaultValueForJzodSchemaWithResolution(
     'defaultValue' // Specify this is for default value generation
   );
 
+  log.info(
+    "getDefaultValueForJzodSchemaWithResolution called with",
+    "jzodSchema", jzodSchema,
+    "rootObject", rootObject,
+    "currentValuePath", currentValuePath,
+    "reduxDeploymentsState", reduxDeploymentsState,
+    "deploymentUuid", deploymentUuid,
+    // "relativeReferenceJzodContext", relativeReferenceJzodContext
+    "effectiveSchemaOrError", effectiveSchemaOrError,
+  );
+  
   if ('error' in effectiveSchemaOrError) {
     log.error(
       "getDefaultValueForJzodSchemaWithResolution: resolveConditionalSchema returned error",
