@@ -49,6 +49,7 @@ import { ErrorFallbackComponent } from '../ErrorFallbackComponent.js';
 import {
   ThemedCodeBlock
 } from "../Themes/ThemedComponents.js";
+import { CodeBlock } from './CodeBlock.js';
 import { JzodElementEditor } from '../ValueObjectEditor/JzodElementEditor.js';
 // import { GlobalRenderPerformanceDisplay, RenderPerformanceDisplay, trackRenderPerformance } from '../tools/renderPerformanceMeasure.js';
 
@@ -341,44 +342,7 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
             typeCheckKeyMap
           );
           const jsonString = JSON.stringify(typeCheckKeyMap, null, 2);
-          // const jsonString = JSON.stringify(resolvedJzodSchema);
-          const lines = jsonString?.split("\n");
-          const maxLineLength = lines?Math.max(...lines.map((line) => line.length)): 0;
-          const fixedWidth = Math.min(Math.max(maxLineLength * 0.6, 1200), 1800);
-          typeError = (
-            <ReactCodeMirror
-              editable={false}
-              height="400px"
-              style={{
-                width: `${fixedWidth}px`,
-                maxWidth: "90vw",
-                maxHeight: "100px",
-              }}
-              value={jsonString}
-              extensions={[
-                ...codeMirrorExtensions,
-                EditorView.lineWrapping,
-                EditorView.theme({
-                  ".cm-editor": {
-                    width: `${fixedWidth}px`,
-                    maxHeight: "100px",
-                  },
-                  ".cm-scroller": {
-                    width: "100%",
-                    overflow: "auto",
-                    maxHeight: "100px",
-                  },
-                  ".cm-content": {
-                    minWidth: `${fixedWidth}px`,
-                  },
-                }),
-              ]}
-              basicSetup={{
-                foldGutter: true,
-                lineNumbers: true,
-              }}
-            />
-          );
+          typeError = <CodeBlock value={jsonString} />;
         }
 
         const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> =
@@ -428,8 +392,7 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
         return (
           <>
             <div>
-              {typeError ? "typeError: " : ""}
-              <ThemedCodeBlock>{typeError ?? <></>}</ThemedCodeBlock>
+              {typeError ? "typeError: " : ""}{typeError}
             </div>
             <form id={"form." + pageLabel} onSubmit={formik.handleSubmit}>
               <div>

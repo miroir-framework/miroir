@@ -198,7 +198,76 @@ export const ThemedCodeBlock: React.FC<ThemedComponentProps> = ({
   style 
 }) => {
   const { currentTheme } = useMiroirTheme();
+  const containerRef = React.useRef<HTMLDivElement>(null);
+  const preRef = React.useRef<HTMLPreElement>(null);
+  const [dynamicHeight, setDynamicHeight] = React.useState<number | undefined>(undefined);
+
+  React.useEffect(() => {
+    if (children) {
+      // If children is a React element (like ReactCodeMirror), don't try to calculate height
+      // as it will manage its own dimensions
+      if (React.isValidElement(children)) {
+        setDynamicHeight(undefined);
+        return;
+      }
+      
+      // Count the number of lines in the content for text content
+      const textContent = typeof children === 'string' ? children : String(children);
+      const lineCount = textContent.split('\n').length;
+      
+      // Calculate height based on line height and font size
+      // Approximate line height calculation: fontSize * 1.4 (typical line-height ratio)
+      const fontSize = parseFloat(currentTheme.typography.fontSize.sm.replace('px', '')) || 14;
+      const lineHeight = fontSize * 1.4;
+      const padding = parseFloat(currentTheme.spacing.md.replace('px', '')) || 16;
+      
+      // Calculate content height with padding
+      const calculatedHeight = (lineCount * lineHeight) + (padding * 2);
+      
+      // Set height proportional to content, but clamped to max 400px
+      const finalHeight = Math.min(calculatedHeight, 400);
+      setDynamicHeight(finalHeight);
+    }
+  }, [children, currentTheme.typography.fontSize.sm, currentTheme.spacing.md]);
+
+  // If children is a React element, render it directly with a themed container
+  if (React.isValidElement(children)) {
+    const containerStyles = css({
+      backgroundColor: currentTheme.colors.surface,
+      color: currentTheme.colors.text,
+      border: `1px solid ${currentTheme.colors.border}`,
+      borderRadius: currentTheme.borderRadius.md,
+      overflow: 'hidden',
+      '& .cm-editor': {
+        backgroundColor: `${currentTheme.colors.surface} !important`,
+        color: `${currentTheme.colors.text} !important`,
+      },
+      '& .cm-content': {
+        backgroundColor: `${currentTheme.colors.surface} !important`,
+        color: `${currentTheme.colors.text} !important`,
+        fontFamily: 'monospace !important',
+      },
+      '& .cm-line': {
+        color: `${currentTheme.colors.text} !important`,
+      },
+      '& .cm-gutters': {
+        backgroundColor: `${currentTheme.colors.surface} !important`,
+        borderRight: `1px solid ${currentTheme.colors.border} !important`,
+        color: `${currentTheme.colors.textSecondary || currentTheme.colors.text} !important`,
+      },
+      '& .cm-lineNumbers .cm-gutterElement': {
+        color: `${currentTheme.colors.textSecondary || currentTheme.colors.text} !important`,
+      }
+    });
+
+    return (
+      <div ref={containerRef} css={containerStyles} className={className} style={style}>
+        {children}
+      </div>
+    );
+  }
   
+  // For text content, use the original pre-based approach
   const codeStyles = css({
     backgroundColor: currentTheme.colors.surface,
     color: currentTheme.colors.text,
@@ -208,12 +277,14 @@ export const ThemedCodeBlock: React.FC<ThemedComponentProps> = ({
     fontFamily: 'monospace',
     fontSize: currentTheme.typography.fontSize.sm,
     whiteSpace: 'pre-wrap',
-    overflow: 'hidden',
+    overflow: dynamicHeight === 400 ? 'auto' : 'hidden',
+    height: dynamicHeight ? `${dynamicHeight}px` : 'auto',
     maxHeight: '400px',
+    lineHeight: 1.4,
   });
 
   return (
-    <pre css={codeStyles} className={className} style={style}>
+    <pre ref={preRef} css={codeStyles} className={className} style={style}>
       {children}
     </pre>
   );
