@@ -630,8 +630,9 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
         currentReportTargetEntityDefinition?.jzodSchema &&
         context.miroirFundamentalJzodSchema
           ? getDefaultValueForJzodSchemaWithResolutionNonHook(
-              "", // rootLessListKey,
               currentReportTargetEntityDefinition?.jzodSchema,
+              undefined, // rootObject
+              "", // rootLessListKey,
               undefined, // No need to pass currentDefaultValue here
               [], // currentPath on value is root
               deploymentEntityState,
@@ -641,7 +642,6 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
               currentModel,
               miroirMetaModel,
               {}, // relativeReferenceJzodContext
-              undefined // rootObject
             )
           : undefined;
 
