@@ -1741,7 +1741,7 @@ export function getJzodEntityDefinitionEditorTests(
           },
           tests: async (expect: ExpectStatic, container: Container) => {
             const formValues: Record<string, any> = extractValuesFromRenderedElements(expect, container, "testField", "initial form state");
-            // console.log("Extracted initial values:", values);
+            console.log("Extracted initial values:", formValues);
             const testResult = formValuesToJSON(formValues);
             expect(testResult).toEqual(entityDefinitionBook);
           },

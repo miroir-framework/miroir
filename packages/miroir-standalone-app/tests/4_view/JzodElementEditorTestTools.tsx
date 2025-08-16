@@ -464,15 +464,16 @@ export const getJzodElementEditorForTest: (pageLabel: string) => React.FC<JzodEl
                   effectiveRawJzodSchema &&
                   formik.values &&
                   currentModel
-                    // ? measuredJzodTypeCheck(
                     ? jzodTypeCheck(
                         effectiveRawJzodSchema,
                         formik.values,
                         [], // currentValuePath
                         [], // currentTypePath
-                        context.miroirFundamentalJzodSchema,
-                        currentModel,
-                        currentMiroirModel,
+                        {
+                          miroirFundamentalJzodSchema: context.miroirFundamentalJzodSchema,
+                          currentModel,
+                          miroirMetaModel: currentMiroirModel,
+                        },
                         {}
                       )
                     : undefined;
