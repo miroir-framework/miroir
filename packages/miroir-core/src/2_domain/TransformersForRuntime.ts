@@ -42,7 +42,7 @@ import {
   TransformerForRuntime_contextReference,
   TransformerForRuntime_count,
   TransformerForRuntime_dataflowObject,
-  TransformerForRuntime_defaultValueForSchema,
+  TransformerForRuntime_defaultValueForMLSchema,
   TransformerForRuntime_freeObjectTemplate,
   // TransformerForRuntime_innerFullObjectTemplate,
   TransformerForRuntime_InnerReference,
@@ -627,7 +627,7 @@ export function getDefaultValueForJzodSchemaWithResolutionNonHook<T extends Miro
 export function defaultValueForMLSchemaTransformer<T extends MiroirModelEnvironment>(
   step: Step,
   label: string | undefined,
-  transformer: TransformerForRuntime_defaultValueForSchema,
+  transformer: TransformerForRuntime_defaultValueForMLSchema,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   transformerParams: T,
   // queryParams: Record<string, any>,
