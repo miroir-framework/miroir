@@ -4,8 +4,12 @@ import {
 } from "../../../src/1_core/test-expect";
 
 import {
+  type JzodSchema,
   type TransformerTestSuite,
 } from "../../../src//0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import {
+  miroirFundamentalJzodSchema
+} from "../../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalJzodSchema";
 
 import {
   runTransformerTestInMemory,
@@ -14,6 +18,7 @@ import {
 } from "../../../src/4_services/TestTools";
 
 import transformerTestSuite_jzodTypeCheck from "../../../src/assets/miroir_data/681be9ca-c593-45f5-b45a-5f1d4969e91e/f8e3c7a1-2b9d-4e6f-8c2a-5d7b9e4f1a8c.json";
+import { defaultMiroirMetaModel } from "../../../src/1_core/Model";
 
 const RUN_TEST= process.env.RUN_TEST
 console.log("@@@@@@@@@@@@@@@@@@ RUN_TEST", RUN_TEST);
@@ -38,7 +43,11 @@ if (RUN_TEST == testSuiteName) {
     { describe: localDescribe, expect: localExpect},
     [],
     effectiveTests,
-    runTransformerTestInMemory
+    runTransformerTestInMemory,
+    {
+      miroirFundamentalJzodSchema: miroirFundamentalJzodSchema as JzodSchema,
+      currentModel: defaultMiroirMetaModel, 
+    }
   );
   transformerTestsDisplayResults(
     effectiveTests,

@@ -39,6 +39,7 @@ import type {
   ResolvedJzodSchemaReturnTypeError,
   ResolvedJzodSchemaReturnTypeOK,
 } from "../../0_interfaces/1_core/jzodTypeCheckInterface";
+import type { MiroirModelEnvironment } from "../../2_domain/TransformersForRuntime";
 
 // export const miroirFundamentalJzodSchema2 = miroirFundamentalJzodSchema;
 // import { miroirFundamentalJzodSchema } from "../tmp/src/0_interfaces/1_core/bootstrapJzodSchemas/miroirFundamentalJzodSchema";
@@ -51,11 +52,12 @@ MiroirLoggerFactory.registerLoggerToStart(
 
 // ################################################################################################
 // to be replaced by jzodObjectFlatten?
-export function resolveObjectExtendClauseAndDefinition(
+export function resolveObjectExtendClauseAndDefinition<T extends MiroirModelEnvironment>(
   jzodObject: JzodObject,
-  miroirFundamentalJzodSchema: JzodSchema,
-  currentModel?: MetaModel,
-  miroirMetaModel?: MetaModel,
+  modelEnvironment: T,
+  // miroirFundamentalJzodSchema: JzodSchema,
+  // currentModel?: MetaModel,
+  // miroirMetaModel?: MetaModel,
   relativeReferenceJzodContext?: {[k:string]: JzodElement},
 ): JzodObject {
   // if (j.type == "object") {
@@ -64,9 +66,10 @@ export function resolveObjectExtendClauseAndDefinition(
       const extension:JzodElement = resolveJzodSchemaReferenceInContext(
         jzodObject.extend,
         relativeReferenceJzodContext,
-        miroirFundamentalJzodSchema,
-        currentModel,
-        miroirMetaModel,
+        modelEnvironment,
+        // miroirFundamentalJzodSchema,
+        // currentModel,
+        // miroirMetaModel,
       )
       const resolvedDefinition = Object.fromEntries(
         Object.entries(jzodObject.definition).filter(
@@ -75,9 +78,10 @@ export function resolveObjectExtendClauseAndDefinition(
           (e) => [e[0], resolveJzodSchemaReferenceInContext(
             e[1] as JzodReference,
             relativeReferenceJzodContext,
-            miroirFundamentalJzodSchema,
-            currentModel,
-            miroirMetaModel,
+            modelEnvironment,
+            // miroirFundamentalJzodSchema,
+            // currentModel,
+            // miroirMetaModel,
           )]
         )
       );
@@ -131,11 +135,12 @@ function isValidUUID(uuid: string): boolean {
  * @param relativeReferenceJzodContext 
  * @returns 
  */
-export function unionObjectChoices (
+export function unionObjectChoices<T extends MiroirModelEnvironment> (
   concreteUnrolledJzodSchemas: JzodElement[],
-  miroirFundamentalJzodSchema: JzodSchema,
-  currentModel: MetaModel,
-  miroirMetaModel: MetaModel,
+  modelEnvironment: T,
+  // miroirFundamentalJzodSchema: JzodSchema,
+  // currentModel: MetaModel,
+  // miroirMetaModel: MetaModel,
   relativeReferenceJzodContext: { [k: string]: JzodElement }
 ) {
   return concreteUnrolledJzodSchemas
@@ -152,9 +157,10 @@ export function unionObjectChoices (
               // resolveObjectExtendClauseAndDefinition(
               jzodObjectFlatten(
                 k,
-                miroirFundamentalJzodSchema,
-                currentModel,
-                miroirMetaModel,
+                modelEnvironment,
+                // miroirFundamentalJzodSchema,
+                // currentModel,
+                // miroirMetaModel,
                 relativeReferenceJzodContext
               )
           ) as JzodObject[]
@@ -173,9 +179,10 @@ export function unionObjectChoices (
               resolveJzodSchemaReferenceInContext(
                 k,
                 { ...relativeReferenceJzodContext, ...k.context },
-                miroirFundamentalJzodSchema,
-                currentModel,
-                miroirMetaModel,
+                modelEnvironment,
+                // miroirFundamentalJzodSchema,
+                // currentModel,
+                // miroirMetaModel,
               )
             )
             .filter((j) => j.type == "object") as JzodObject[]
@@ -183,9 +190,10 @@ export function unionObjectChoices (
             (k: JzodObject): JzodObject =>
               jzodObjectFlatten(
                 k,
-                miroirFundamentalJzodSchema,
-                currentModel,
-                miroirMetaModel,
+                modelEnvironment,
+                // miroirFundamentalJzodSchema,
+                // currentModel,
+                // miroirMetaModel,
                 relativeReferenceJzodContext
               )
           ) as JzodObject[]
@@ -205,11 +213,12 @@ export function unionObjectChoices (
  * @param relativeReferenceJzodContext 
  * @returns 
  */
-export function unionArrayChoices (
+export function unionArrayChoices<T extends MiroirModelEnvironment> (
   concreteUnrolledJzodSchemas: JzodElement[],
-  miroirFundamentalJzodSchema: JzodSchema,
-  currentModel: MetaModel,
-  miroirMetaModel: MetaModel,
+  modelEnvironment: T,
+  // miroirFundamentalJzodSchema: JzodSchema,
+  // currentModel: MetaModel,
+  // miroirMetaModel: MetaModel,
   relativeReferenceJzodContext: { [k: string]: JzodElement }
 ): (JzodArray | JzodTuple)[] {
   return (
@@ -239,9 +248,10 @@ export function unionArrayChoices (
             resolveJzodSchemaReferenceInContext(
               k,
               { ...relativeReferenceJzodContext, ...k.context },
-              miroirFundamentalJzodSchema,
-              currentModel,
-              miroirMetaModel,
+              modelEnvironment,
+              // miroirFundamentalJzodSchema,
+              // currentModel,
+              // miroirMetaModel,
             )
           )
           .filter((j) => j.type == "array" || j.type == "tuple") as (JzodArray | JzodTuple)[]
@@ -259,16 +269,17 @@ export function unionArrayChoices (
 // #####################################################################################################
 // #####################################################################################################
 // #####################################################################################################
-export function selectUnionBranchFromDiscriminator(
+export function selectUnionBranchFromDiscriminator<T extends MiroirModelEnvironment>(
   objectUnionChoices: JzodObject[],
   discriminator: string | string[] | undefined,
   valueObject: Record<string,any>,
   valueObjectPath: (string | number)[],
   typePath: (string | number)[], // for logging purposes only
+  modelEnvironment: T,
   // from above:
-  miroirFundamentalJzodSchema: JzodSchema,
-  currentModel: MetaModel,
-  miroirMetaModel: MetaModel,
+  // miroirFundamentalJzodSchema: JzodSchema,
+  // currentModel: MetaModel,
+  // miroirMetaModel: MetaModel,
   relativeReferenceJzodContext: {[k:string]: JzodElement},
 ): SelectUnionBranchFromDiscriminatorReturnType {
   // const discriminators: string | string[] | undefined = !discriminator
@@ -296,9 +307,10 @@ export function selectUnionBranchFromDiscriminator(
         const extension = resolveJzodSchemaReferenceInContext(
           jzodObjectSchema.extend,
           relativeReferenceJzodContext,
-          miroirFundamentalJzodSchema,
-          currentModel,
-          miroirMetaModel,
+          modelEnvironment,
+          // miroirFundamentalJzodSchema,
+          // currentModel,
+          // miroirMetaModel,
         )
         if (extension.type == "object") {
           extendedJzodSchema = {
@@ -502,15 +514,16 @@ export function selectUnionBranchFromDiscriminator(
 // ################################################################################################
 // ################################################################################################
 // ################################################################################################
-export function jzodUnionResolvedTypeForArray(
+export function jzodUnionResolvedTypeForArray<T extends MiroirModelEnvironment>(
   concreteUnrolledJzodSchemas: JzodElement[],
   discriminator: string | string[] | undefined,
   valueArray: any[],
   currentValuePath: (string | number)[],
   currentTypePath: (string | number)[],
-  miroirFundamentalJzodSchema: JzodSchema,
-  currentModel: MetaModel,
-  miroirMetaModel: MetaModel,
+  modelEnvironment: T,
+  // miroirFundamentalJzodSchema: JzodSchema,
+  // currentModel: MetaModel,
+  // miroirMetaModel: MetaModel,
   relativeReferenceJzodContext: { [k: string]: JzodElement }
 ): JzodUnionResolvedTypeForArrayReturnTypeOK
   | JzodUnionResolvedTypeReturnTypeError
@@ -521,9 +534,10 @@ export function jzodUnionResolvedTypeForArray(
   // log.info("jzodUnionResolvedTypeForArray called for valueArray=", valueArray, "discriminator=", discriminator);
   const arrayUnionChoices = unionArrayChoices(
     concreteUnrolledJzodSchemas,
-    miroirFundamentalJzodSchema,
-    currentModel,
-    miroirMetaModel,
+    modelEnvironment,
+    // miroirFundamentalJzodSchema,
+    // currentModel,
+    // miroirMetaModel,
     relativeReferenceJzodContext
   );
   if (arrayUnionChoices.length == 1) {
@@ -559,24 +573,26 @@ export function jzodUnionResolvedTypeForArray(
 } // end of jzodUnionResolvedTypeForArray
 
 // ################################################################################################
-export function jzodUnionResolvedTypeForObject(
+export function jzodUnionResolvedTypeForObject<T extends MiroirModelEnvironment>(
   concreteUnrolledJzodSchemas: JzodElement[],
   discriminator: string | string[] | undefined,
   valueObject: Record<string, any>,
   currentValuePath: (string | number)[],
   currentTypePath: (string | number)[],
-  miroirFundamentalJzodSchema: JzodSchema,
-  currentModel: MetaModel,
-  miroirMetaModel: MetaModel,
+  modelEnvironment: T,
+  // miroirFundamentalJzodSchema: JzodSchema,
+  // currentModel: MetaModel,
+  // miroirMetaModel: MetaModel,
   relativeReferenceJzodContext: { [k: string]: JzodElement }
 ): JzodUnionResolvedTypeForObjectReturnTypeOK
   | JzodUnionResolvedTypeReturnTypeError
  {
   const objectUnionChoices: JzodObject[] = unionObjectChoices(
     concreteUnrolledJzodSchemas,
-    miroirFundamentalJzodSchema,
-    currentModel,
-    miroirMetaModel,
+    modelEnvironment,
+    // miroirFundamentalJzodSchema,
+    // currentModel,
+    // miroirMetaModel,
     relativeReferenceJzodContext
   ) as any;
   if (objectUnionChoices.length == 1) {
@@ -605,9 +621,10 @@ export function jzodUnionResolvedTypeForObject(
     currentValuePath,
     currentTypePath, // typePath
     // to resolve the extend clause of the object schema:
-    miroirFundamentalJzodSchema,
-    currentModel,
-    miroirMetaModel,
+    modelEnvironment,
+    // miroirFundamentalJzodSchema,
+    // currentModel,
+    // miroirMetaModel,
     relativeReferenceJzodContext
   );
   
@@ -672,9 +689,10 @@ export function jzodTypeCheck(
   valueObject: any,
   currentValuePath: (string | number)[],
   currentTypePath: (string | number)[],
-  miroirFundamentalJzodSchema: JzodSchema,
-  currentModel: MetaModel,
-  miroirMetaModel: MetaModel,
+  modelEnvironment: MiroirModelEnvironment,
+  // miroirFundamentalJzodSchema: JzodSchema,
+  // currentModel: MetaModel,
+  // miroirMetaModel: MetaModel,
   relativeReferenceJzodContext: {[k:string]: JzodElement},
   // 
   // 
@@ -737,6 +755,7 @@ export function jzodTypeCheck(
         jzodSchema,
         rootObject || currentDefaultValue, // Use rootObject if provided, fallback to currentDefaultValue
         currentValuePath as string[],
+        modelEnvironment,
         reduxDeploymentsState,
         deploymentUuid,
         'typeCheck' // Specify this is for type checking
@@ -773,9 +792,10 @@ export function jzodTypeCheck(
       const resolvedJzodSchema = resolveJzodSchemaReferenceInContext(
         effectiveSchema,
         newContext,
-        miroirFundamentalJzodSchema,
-        currentModel,
-        miroirMetaModel,
+        modelEnvironment
+        // miroirFundamentalJzodSchema,
+        // currentModel,
+        // miroirMetaModel,
       );
       log.info(
         "jzodTypeCheck schemaReference",
@@ -795,9 +815,10 @@ export function jzodTypeCheck(
         valueObject,
         currentValuePath,
         [...currentTypePath, "ref:" + (effectiveSchema.definition.relativePath ?? "NO_RELATIVE_PATH")],
-        miroirFundamentalJzodSchema,
-        currentModel,
-        miroirMetaModel,
+        modelEnvironment,
+        // miroirFundamentalJzodSchema,
+        // currentModel,
+        // miroirMetaModel,
         newContext,
         currentDefaultValue,
         reduxDeploymentsState,
@@ -862,9 +883,10 @@ export function jzodTypeCheck(
 
       const jzodObjectFlattenedSchema: JzodObject = jzodObjectFlatten(
         effectiveSchema,
-        miroirFundamentalJzodSchema,
-        currentModel,
-        miroirMetaModel,
+        modelEnvironment,
+        // miroirFundamentalJzodSchema,
+        // currentModel,
+        // miroirMetaModel,
         relativeReferenceJzodContext
       );
       // log.info("jzodTypeCheck object extendedJzodSchema",JSON.stringify(extendedJzodSchema, null, 2));
@@ -879,9 +901,10 @@ export function jzodTypeCheck(
             e[1],
             [...currentValuePath, e[0]],
             [...currentTypePath, e[0]],
-            miroirFundamentalJzodSchema,
-            currentModel,
-            miroirMetaModel,
+            modelEnvironment,
+            // miroirFundamentalJzodSchema,
+            // currentModel,
+            // miroirMetaModel,
             relativeReferenceJzodContext,
             currentDefaultValue,
             reduxDeploymentsState,
@@ -994,9 +1017,10 @@ export function jzodTypeCheck(
       const recursivelyUnfoldedUnionSchema = jzodUnion_recursivelyUnfold(
         effectiveSchema as JzodUnion,
         new Set(),
-        miroirFundamentalJzodSchema,
-        currentModel,
-        miroirMetaModel,
+        modelEnvironment,
+        // miroirFundamentalJzodSchema,
+        // currentModel,
+        // miroirMetaModel,
         relativeReferenceJzodContext
       );
 
@@ -1134,9 +1158,10 @@ export function jzodTypeCheck(
               valueObject,
               currentValuePath,
               currentTypePath,
-              miroirFundamentalJzodSchema,
-              currentModel,
-              miroirMetaModel,
+              modelEnvironment,
+              // miroirFundamentalJzodSchema,
+              // currentModel,
+              // miroirMetaModel,
               relativeReferenceJzodContext
             );
             if (resolveUnionResult.status === "error") {
@@ -1168,9 +1193,10 @@ export function jzodTypeCheck(
               valueObject[0], // we take the first element of the array to determine the type
               currentValuePath,
               [...currentTypePath, "0"],
-              miroirFundamentalJzodSchema,
-              currentModel,
-              miroirMetaModel,
+              modelEnvironment,
+              // miroirFundamentalJzodSchema,
+              // currentModel,
+              // miroirMetaModel,
               relativeReferenceJzodContext,
               currentDefaultValue,
               reduxDeploymentsState,
@@ -1220,9 +1246,10 @@ export function jzodTypeCheck(
             valueObject,
             currentValuePath,
             currentTypePath,
-            miroirFundamentalJzodSchema,
-            currentModel,
-            miroirMetaModel,
+            modelEnvironment,
+            // miroirFundamentalJzodSchema,
+            // currentModel,
+            // miroirMetaModel,
             relativeReferenceJzodContext
           );
 
@@ -1246,9 +1273,10 @@ export function jzodTypeCheck(
             valueObject,
             currentValuePath,
             [...currentTypePath, "union choice"],
-            miroirFundamentalJzodSchema,
-            currentModel,
-            miroirMetaModel,
+            modelEnvironment,
+            // miroirFundamentalJzodSchema,
+            // currentModel,
+            // miroirMetaModel,
             relativeReferenceJzodContext,
             currentDefaultValue,
             reduxDeploymentsState,
@@ -1351,9 +1379,10 @@ export function jzodTypeCheck(
               e[1],
               [...currentValuePath, e[0]],
               [...currentTypePath, e[0]],
-              miroirFundamentalJzodSchema,
-              currentModel,
-              miroirMetaModel,
+              modelEnvironment,
+              // miroirFundamentalJzodSchema,
+              // currentModel,
+              // miroirMetaModel,
               relativeReferenceJzodContext,
               currentDefaultValue,
               reduxDeploymentsState,
@@ -1521,9 +1550,10 @@ export function jzodTypeCheck(
             valueObject[index],
             [...currentValuePath, index],
             [...currentTypePath, index],
-            miroirFundamentalJzodSchema,
-            currentModel,
-            miroirMetaModel,
+            modelEnvironment,
+            // miroirFundamentalJzodSchema,
+            // currentModel,
+            // miroirMetaModel,
             relativeReferenceJzodContext,
             currentDefaultValue,
             reduxDeploymentsState,
@@ -1617,9 +1647,10 @@ export function jzodTypeCheck(
             e,
             [...currentValuePath, index],
             [...currentTypePath, index],
-            miroirFundamentalJzodSchema,
-            currentModel,
-            miroirMetaModel,
+            modelEnvironment,
+            // miroirFundamentalJzodSchema,
+            // currentModel,
+            // miroirMetaModel,
             relativeReferenceJzodContext,
             currentDefaultValue,
             reduxDeploymentsState,
@@ -1930,12 +1961,13 @@ export function jzodTypeCheck(
 
 // ################################################################################################
 // Transformer function for jzodTypeCheck
-export function jzodTypeCheckTransformer(
+export function jzodTypeCheckTransformer<T extends MiroirModelEnvironment>(
   step: Step,
   label: string | undefined,
   transformer: any,
   resolveBuildTransformersTo: any,
-  queryParams: Record<string, any>,
+  // queryParams: Record<string, any>,
+  queryParams: T,
   contextResults?: Record<string, any>,
 ): ResolvedJzodSchemaReturnType {
   const {
@@ -1943,9 +1975,9 @@ export function jzodTypeCheckTransformer(
     valueObject,
     currentValuePath = [],
     currentTypePath = [],
-    miroirFundamentalJzodSchema,
-    currentModel,
-    miroirMetaModel,
+    // miroirFundamentalJzodSchema,
+    // currentModel,
+    // miroirMetaModel,
     relativeReferenceJzodContext = {},
     currentDefaultValue,
     reduxDeploymentsState,
@@ -1958,9 +1990,9 @@ export function jzodTypeCheckTransformer(
     valueObject,
     currentValuePath,
     currentTypePath,
-    miroirFundamentalJzodSchema,
-    currentModel,
-    miroirMetaModel,
+    // miroirFundamentalJzodSchema,
+    // currentModel,
+    // miroirMetaModel,
     relativeReferenceJzodContext,
     currentDefaultValue,
     reduxDeploymentsState,

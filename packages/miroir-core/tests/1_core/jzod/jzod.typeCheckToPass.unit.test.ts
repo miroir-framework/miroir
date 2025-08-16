@@ -59,9 +59,13 @@ function testResolve(
     testValueObject,
     [], // currentValuePath
     [], // currentTypePath
-    castMiroirFundamentalJzodSchema,
-    defaultMiroirMetaModel,
-    defaultMiroirMetaModel,
+    {
+      miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+      currentModel: defaultMiroirMetaModel,
+      miroirMetaModel: defaultMiroirMetaModel,
+    },
+    // defaultMiroirMetaModel,
+    // defaultMiroirMetaModel,
     {}
   );
   if (expectedResult) {

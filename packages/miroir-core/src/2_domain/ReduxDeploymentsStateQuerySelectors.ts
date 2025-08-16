@@ -40,7 +40,7 @@ import {
 import {
   runQueryTemplateWithExtractorCombinerTransformer
 } from "./QueryTemplateSelectors";
-import { transformer_InnerReference_resolve } from "./TransformersForRuntime";
+import { transformer_InnerReference_resolve, type MiroirModelEnvironment } from "./TransformersForRuntime";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -68,7 +68,8 @@ export const selectEntityInstanceFromReduxDeploymentsState: SyncBoxedExtractorRu
   Domain2QueryReturnType<EntityInstance>
 > = (
   deploymentEntityState: ReduxDeploymentsState,
-  selectorParams: SyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObject, ReduxDeploymentsState>
+  selectorParams: SyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObject, ReduxDeploymentsState>,
+  modelEnvironment: MiroirModelEnvironment,
 ): Domain2QueryReturnType<EntityInstance> => {
   const querySelectorParams = selectorParams.extractor.select as ExtractorOrCombinerReturningObject;
   const deploymentUuid = selectorParams.extractor.deploymentUuid;
@@ -101,7 +102,7 @@ export const selectEntityInstanceFromReduxDeploymentsState: SyncBoxedExtractorRu
           referenceName: querySelectorParams.objectReference,
         },
         "value",
-        selectorParams.extractor.queryParams,
+        {...modelEnvironment, ...selectorParams.extractor.queryParams},
         selectorParams.extractor.contextResults
       );
 
@@ -286,9 +287,10 @@ export const selectEntityInstanceListFromReduxDeploymentsState: SyncBoxedExtract
   Domain2QueryReturnType<EntityInstance[]>
 > = (
   deploymentEntityState: ReduxDeploymentsState,
-  selectorParams: SyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList, ReduxDeploymentsState>
+  selectorParams: SyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList, ReduxDeploymentsState>,
+  modelEnvironment: MiroirModelEnvironment,
 ): Domain2QueryReturnType<EntityInstance[]> => {
-  const result = selectEntityInstanceUuidIndexFromReduxDeploymentsState(deploymentEntityState, selectorParams);
+  const result = selectEntityInstanceUuidIndexFromReduxDeploymentsState(deploymentEntityState, selectorParams, modelEnvironment);
 
   if (result instanceof Domain2ElementFailed) {
     return result;

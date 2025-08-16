@@ -129,7 +129,7 @@ export interface TestExtractorParams {
   >;
 }
 
-const testExtractorTools = {
+const testExtractorTools: TestExtractorParams = {
     // Domain State
     getQueryTemplateRunnerParamsForDomainState: getQueryTemplateRunnerParamsForDomainState,
     runQueryTemplateFromDomainState: runQueryTemplateFromDomainState,

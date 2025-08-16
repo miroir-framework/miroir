@@ -1,3 +1,4 @@
+import type { MiroirModelEnvironment } from "../../2_domain/TransformersForRuntime";
 import {
   BoxedExtractorOrCombinerReturningObject,
   BoxedExtractorOrCombinerReturningObjectList,
@@ -34,13 +35,22 @@ export type RecordOfJzodObject = Record<string, JzodObject | undefined>;
 
 // ################################################################################################
 export interface ExtractorTemplatePersistenceStoreRunner {
-  handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(query: RunBoxedQueryTemplateOrBoxedExtractorTemplateAction): Promise<Action2ReturnType>;
+  handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(
+    query: RunBoxedQueryTemplateOrBoxedExtractorTemplateAction,
+    modelEnvironment: MiroirModelEnvironment,
+  ): Promise<Action2ReturnType>;
 }
 
 // ################################################################################################
 export interface ExtractorOrQueryPersistenceStoreRunner {
-  handleBoxedExtractorAction(query: RunBoxedExtractorAction): Promise<Action2ReturnType>;
-  handleBoxedQueryAction(query: RunBoxedQueryAction): Promise<Action2ReturnType>;
+  handleBoxedExtractorAction(
+    query: RunBoxedExtractorAction,
+    modelEnvironment: MiroirModelEnvironment
+  ): Promise<Action2ReturnType>;
+  handleBoxedQueryAction(
+    query: RunBoxedQueryAction,
+    modelEnvironment: MiroirModelEnvironment
+  ): Promise<Action2ReturnType>;
 }
 
 // ################################################################################################
@@ -59,31 +69,51 @@ export type SyncBoxedExtractorTemplateRunner<
   QueryType extends BoxedExtractorTemplateReturningObjectOrObjectList,
   StateType,
   ResultType
-> = (state: StateType, extractorAndParams: SyncBoxedExtractorTemplateRunnerParams<QueryType, StateType>) => ResultType;
+> = (
+  state: StateType,
+  extractorAndParams: SyncBoxedExtractorTemplateRunnerParams<QueryType, StateType>,
+  modelEnvironment: MiroirModelEnvironment
+) => ResultType;
 
 // ################################################################################################
-export interface AsyncBoxedExtractorTemplateRunnerParams<ExtractorTemplateDomainModelType extends BoxedExtractorTemplateReturningObjectOrObjectList> {
-  extractorRunnerMap?: AsyncBoxedExtractorOrQueryRunnerMap
-  extractorOrCombinerTemplate: ExtractorTemplateDomainModelType
+export interface AsyncBoxedExtractorTemplateRunnerParams<
+  ExtractorTemplateDomainModelType extends BoxedExtractorTemplateReturningObjectOrObjectList
+> {
+  extractorRunnerMap?: AsyncBoxedExtractorOrQueryRunnerMap;
+  extractorOrCombinerTemplate: ExtractorTemplateDomainModelType;
 }
 
 
 // ################################################################################################
-export type AsyncBoxedExtractorTemplateRunner<QueryType extends BoxedExtractorTemplateReturningObjectOrObjectList, ResultType> = (
-  extractorAndParams: AsyncBoxedExtractorTemplateRunnerParams<QueryType>
-) => Promise<ResultType>;
+export type AsyncBoxedExtractorTemplateRunner<
+  QueryType extends BoxedExtractorTemplateReturningObjectOrObjectList,
+  ResultType
+> = (extractorAndParams: AsyncBoxedExtractorTemplateRunnerParams<QueryType>) => Promise<ResultType>;
 
 
 // ################################################################################################
-export type BoxedExtractorTemplateRunner<QueryType extends BoxedExtractorTemplateReturningObjectOrObjectList, StateType, ResultType> =
+export type BoxedExtractorTemplateRunner<
+  QueryType extends BoxedExtractorTemplateReturningObjectOrObjectList,
+  StateType,
+  ResultType
+> =
   | SyncBoxedExtractorTemplateRunner<QueryType, StateType, ResultType>
   | AsyncBoxedExtractorTemplateRunner<QueryType, ResultType>;
 
 // ################################################################################################
 export interface ExtractorTemplatePersistenceStoreRunner {
-  handleQueryTemplateActionForServerONLY(query: RunBoxedQueryTemplateAction): Promise<Action2ReturnType>;
-  handleBoxedExtractorTemplateActionForServerONLY(query: RunBoxedExtractorTemplateAction): Promise<Action2ReturnType>;
-  handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(query: RunBoxedQueryTemplateOrBoxedExtractorTemplateAction): Promise<Action2ReturnType>;
+  handleQueryTemplateActionForServerONLY(
+    query: RunBoxedQueryTemplateAction,
+    modelEnvironment: MiroirModelEnvironment
+  ): Promise<Action2ReturnType>;
+  handleBoxedExtractorTemplateActionForServerONLY(
+    query: RunBoxedExtractorTemplateAction,
+    modelEnvironment: MiroirModelEnvironment
+  ): Promise<Action2ReturnType>;
+  handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(
+    query: RunBoxedQueryTemplateOrBoxedExtractorTemplateAction,
+    modelEnvironment: MiroirModelEnvironment
+  ): Promise<Action2ReturnType>;
 }
 
 
@@ -102,11 +132,13 @@ export interface AsyncBoxedExtractorRunnerParams<ExtractorType extends BoxedExtr
 
 export type SyncBoxedExtractorRunner<QueryType extends BoxedExtractorOrCombinerReturningObjectOrObjectList, StateType, ResultType> = (
   domainState: StateType,
-  extractorAndParams: SyncBoxedExtractorRunnerParams<QueryType, StateType>
+  extractorAndParams: SyncBoxedExtractorRunnerParams<QueryType, StateType>,
+  modelEnvironment: MiroirModelEnvironment,
 ) => ResultType;
 
 export type AsyncBoxedExtractorRunner<ExtractorType extends BoxedExtractorOrCombinerReturningObjectOrObjectList, ResultType> = (
-  extractorAndParams: AsyncBoxedExtractorRunnerParams<ExtractorType>
+  extractorAndParams: AsyncBoxedExtractorRunnerParams<ExtractorType>,
+  modelEnvironment: MiroirModelEnvironment,
 ) => Promise<ResultType>;
 
 export type AsyncExtractWithBoxedExtractorOrCombinerReturningObjectOrObjectList = AsyncBoxedExtractorRunner<
@@ -132,20 +164,23 @@ export interface SyncQueryRunnerParams<StateType> {
 }
 
 // ################################################################################################
-export type SyncQueryRunner<
-  StateType,
-  ResultType
-> = (state: StateType, extractorAndParams: SyncQueryRunnerParams<StateType>) => ResultType;
+export type SyncQueryRunner<StateType, ResultType> = (
+  state: StateType,
+  extractorAndParams: SyncQueryRunnerParams<StateType>,
+  modelEnvironment: MiroirModelEnvironment
+) => ResultType;
 
 // ################################################################################################
 export interface AsyncQueryRunnerParams {
   extractorRunnerMap?: AsyncBoxedExtractorOrQueryRunnerMap
-  extractor: BoxedQueryWithExtractorCombinerTransformer
+  extractor: BoxedQueryWithExtractorCombinerTransformer,
+  // modelEnvironment: MiroirModelEnvironment,
 }
 
 // ################################################################################################
 export type AsyncQueryRunner<ResultType> = (
-  extractorAndParams: AsyncQueryRunnerParams
+  extractorAndParams: AsyncQueryRunnerParams,
+  modelEnvironment: MiroirModelEnvironment,
 ) => Promise<ResultType>;
 
 
@@ -158,10 +193,11 @@ export interface SyncQueryTemplateRunnerParams<StateType> {
 }
 
 // ################################################################################################
-export type SyncQueryTemplateRunner<
-  StateType,
-  ResultType
-> = (state: StateType, extractorAndParams: SyncQueryTemplateRunnerParams<StateType>) => ResultType;
+export type SyncQueryTemplateRunner<StateType, ResultType> = (
+  state: StateType,
+  extractorAndParams: SyncQueryTemplateRunnerParams<StateType>,
+  modelEnvironment: MiroirModelEnvironment,
+) => ResultType;
 
 // ################################################################################################
 export interface AsyncQueryTemplateRunnerParams {
@@ -315,7 +351,8 @@ export interface ExtractorRunnerParamsForJzodSchema<QueryType extends QueryJzodS
 // ################################################################################################
 export type JzodSchemaQueryTemplateSelector<QueryTemplateType extends DomainModelQueryTemplateJzodSchemaParams, StateType> = (
   domainState: StateType,
-  params: ExtractorTemplateRunnerParamsForJzodSchema<QueryTemplateType, StateType>
+  params: ExtractorTemplateRunnerParamsForJzodSchema<QueryTemplateType, StateType>,
+  modelEnvironment: MiroirModelEnvironment,
 ) => RecordOfJzodElement | JzodElement | undefined;
 
 // ################################################################################################

@@ -30,6 +30,7 @@ import {
 } from "./DomainStateQueryTemplateSelector";
 import { ExtractorRunnerInMemory } from "./ExtractorRunnerInMemory";
 import { handleBoxedExtractorTemplateAction, handleBoxedExtractorTemplateOrQueryTemplateAction, handleQueryTemplateAction } from "./QueryTemplateSelectors";
+import type { MiroirModelEnvironment } from "./TransformersForRuntime";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -64,7 +65,8 @@ export class ExtractorTemplateRunnerInMemory implements ExtractorTemplatePersist
 
   // ################################################################################################
   async handleQueryTemplateActionForServerONLY(
-    runBoxedQueryTemplateAction: RunBoxedQueryTemplateAction
+    runBoxedQueryTemplateAction: RunBoxedQueryTemplateAction,
+    modelEnvironment: MiroirModelEnvironment
   ): Promise<Action2ReturnType> {
     log.info(
       this.logHeader,
@@ -75,13 +77,15 @@ export class ExtractorTemplateRunnerInMemory implements ExtractorTemplatePersist
     return handleQueryTemplateAction(
       "ExtractorTemplateRunnerInMemory",
       runBoxedQueryTemplateAction,
-      this.selectorMap
+      this.selectorMap,
+      modelEnvironment
     );
   }
 
   // ################################################################################################
   async handleBoxedExtractorTemplateActionForServerONLY(
-    runBoxedExtractorTemplateAction: RunBoxedExtractorTemplateAction
+    runBoxedExtractorTemplateAction: RunBoxedExtractorTemplateAction,
+    modelEnvironment: MiroirModelEnvironment,
   ): Promise<Action2ReturnType> {
     log.info(
       this.logHeader,
@@ -92,13 +96,15 @@ export class ExtractorTemplateRunnerInMemory implements ExtractorTemplatePersist
     return handleBoxedExtractorTemplateAction(
       "ExtractorTemplateRunnerInMemory",
       runBoxedExtractorTemplateAction,
-      this.selectorMap
+      this.selectorMap,
+      modelEnvironment
     );
   }
 
   // ################################################################################################
   async handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(
-    runBoxedQueryTemplateOrBoxedExtractorTemplateAction: RunBoxedQueryTemplateOrBoxedExtractorTemplateAction
+    runBoxedQueryTemplateOrBoxedExtractorTemplateAction: RunBoxedQueryTemplateOrBoxedExtractorTemplateAction,
+    modelEnvironment: MiroirModelEnvironment,
   ): Promise<Action2ReturnType> {
     log.info(
       this.logHeader,
@@ -109,7 +115,8 @@ export class ExtractorTemplateRunnerInMemory implements ExtractorTemplatePersist
     return handleBoxedExtractorTemplateOrQueryTemplateAction(
       "ExtractorTemplateRunnerInMemory",
       runBoxedQueryTemplateOrBoxedExtractorTemplateAction,
-      this.selectorMap
+      this.selectorMap,
+      modelEnvironment
     );
   }
 } // end of class ExtractorTemplateRunnerInMemory

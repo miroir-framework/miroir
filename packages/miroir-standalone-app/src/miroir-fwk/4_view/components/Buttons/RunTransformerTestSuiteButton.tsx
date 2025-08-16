@@ -2,9 +2,12 @@
 import {
   MiroirLoggerFactory,
   TestSuiteContext,
+  defaultMiroirMetaModel,
+  miroirFundamentalJzodSchema,
   runTransformerTestInMemory,
   runTransformerTestSuite,
   type Domain2QueryReturnType,
+  type JzodSchema,
   type LoggerInterface,
   type TestSuiteResult,
   type TransformerTestDefinition
@@ -143,7 +146,12 @@ export const RunTransformerTestSuiteButton: React.FC<RunTransformerTestSuiteButt
       { expect, describe }, // vitest-like interface
       testSuitePath,
       (transformerTestSuite as TransformerTestDefinition).definition,
-      runTransformerTestInMemory
+      runTransformerTestInMemory,
+      {
+        miroirFundamentalJzodSchema: miroirFundamentalJzodSchema as JzodSchema,
+        miroirMetaModel: defaultMiroirMetaModel
+        // TODO: current app schema
+      }
     );
 
     // Get and format results - find the correct test suite key

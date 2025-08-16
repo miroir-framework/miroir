@@ -49,7 +49,7 @@ import { MiroirLoggerFactory } from "../4_services/LoggerFactory";
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
 import { resolveExtractorTemplate } from "./Templates";
-import { applyTransformer, transformer_extended_apply_wrapper } from "./TransformersForRuntime";
+import { applyTransformer, transformer_extended_apply_wrapper, type MiroirModelEnvironment } from "./TransformersForRuntime";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -469,10 +469,12 @@ export const extractEntityInstanceUuidIndexWithObjectListExtractorInMemory
   selectorParams: SyncBoxedExtractorRunnerParams<
   BoxedExtractorOrCombinerReturningObjectList, 
     StateType
-  >
+  >,
+  modelEnvironment: MiroirModelEnvironment,
 ): Domain2QueryReturnType<EntityInstancesUuidIndex> => {
-  const selectedInstancesUuidIndex: Domain2QueryReturnType<EntityInstancesUuidIndex> =
-    (selectorParams?.extractorRunnerMap ?? emptySelectorMap).extractEntityInstanceUuidIndex(deploymentEntityState, selectorParams);
+  const selectedInstancesUuidIndex: Domain2QueryReturnType<EntityInstancesUuidIndex> = (
+    selectorParams?.extractorRunnerMap ?? emptySelectorMap
+  ).extractEntityInstanceUuidIndex(deploymentEntityState, selectorParams, modelEnvironment);
 
   // log.info(
   //   "extractEntityInstanceUuidIndexWithObjectListExtractorInMemory found selectedInstances", selectedInstancesUuidIndex
@@ -494,10 +496,12 @@ export const extractEntityInstanceUuidIndexWithObjectListExtractorInMemory
 export const extractEntityInstanceListWithObjectListExtractorInMemory
 = <StateType>(
   deploymentEntityState: StateType,
-  selectorParams: SyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList, StateType>
+  selectorParams: SyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList, StateType>,
+  modelEnvironment: MiroirModelEnvironment,
 ): Domain2QueryReturnType<EntityInstance[]> => {
-  const selectedInstancesUuidIndex: Domain2QueryReturnType<EntityInstance[]> =
-    (selectorParams?.extractorRunnerMap ?? emptySelectorMap).extractEntityInstanceList(deploymentEntityState, selectorParams);
+  const selectedInstancesUuidIndex: Domain2QueryReturnType<EntityInstance[]> = (
+    selectorParams?.extractorRunnerMap ?? emptySelectorMap
+  ).extractEntityInstanceList(deploymentEntityState, selectorParams, modelEnvironment);
 
   // log.info(
   //   "extractEntityInstanceUuidIndexWithObjectListExtractorInMemory found selectedInstances", selectedInstancesUuidIndex
@@ -511,22 +515,30 @@ export const extractEntityInstanceListWithObjectListExtractorInMemory
 };
 
 // ################################################################################################
-export const applyExtractorTransformerInMemory = (
+export const applyExtractorTransformerInMemory = <T extends MiroirModelEnvironment>(
   // actionRuntimeTransformer: ExtendedTransformerForRuntime,
   actionRuntimeTransformer: TransformerForBuildPlusRuntime| ExtendedTransformerForRuntime,
-  queryParams: Record<string, any>,
+  // queryParams: Record<string, any>,
+  queryParams: T,
   newFetchedData: Record<string, any>
 // ): Domain2QueryReturnType<DomainElementSuccess> => {
 ): Domain2QueryReturnType<any> => {
   log.info("applyExtractorTransformerInMemory  query", JSON.stringify(actionRuntimeTransformer, null, 2));
-  return transformer_extended_apply_wrapper("runtime", "ROOT"/**WHAT?? */, actionRuntimeTransformer, queryParams, newFetchedData);
+  return transformer_extended_apply_wrapper(
+    "runtime",
+    "ROOT" /**WHAT?? */,
+    actionRuntimeTransformer,
+    queryParams,
+    newFetchedData
+  );
 };
 
 // ################################################################################################
 export async function handleBoxedExtractorAction(
   origin: string,
   runBoxedExtractorAction: RunBoxedExtractorAction,
-  selectorMap: AsyncBoxedExtractorOrQueryRunnerMap
+  selectorMap: AsyncBoxedExtractorOrQueryRunnerMap,
+  modelEnvironment: MiroirModelEnvironment
 ): Promise<Action2ReturnType> {
   log.info(
     "handleBoxedExtractorAction for",
@@ -541,7 +553,8 @@ export async function handleBoxedExtractorAction(
     {
       extractorRunnerMap: selectorMap,
       extractor,
-    }
+    },
+    modelEnvironment,
   );
   if (queryResult instanceof Domain2ElementFailed) {
     return new Action2Error(
@@ -561,7 +574,8 @@ export async function handleBoxedExtractorAction(
 export async function handleBoxedQueryAction(
   origin: string,
   runBoxedQueryAction: RunBoxedQueryAction,
-  selectorMap: AsyncBoxedExtractorOrQueryRunnerMap
+  selectorMap: AsyncBoxedExtractorOrQueryRunnerMap,
+  modelEnvironment: MiroirModelEnvironment,
 ): Promise<Action2ReturnType> {
   log.info(
     "handleBoxedQueryAction for",
@@ -575,7 +589,8 @@ export async function handleBoxedQueryAction(
     {
       extractor: runBoxedQueryAction.payload.query,
       extractorRunnerMap: selectorMap,
-    }
+    },
+    modelEnvironment,
   );
   if (queryResult instanceof Domain2ElementFailed) {
     return new Action2Error(
@@ -597,15 +612,17 @@ export async function handleBoxedQueryAction(
 }
 
 // ################################################################################################
-export function innerSelectDomainElementFromExtractorOrCombiner/*BoxedExtractorTemplateRunner*/<StateType>(
+export function innerSelectDomainElementFromExtractorOrCombiner/*BoxedExtractorTemplateRunner*/ <
+  StateType
+>(
   state: StateType,
   context: Record<string, any>,
   pageParams: Record<string, any>,
-  queryParams: Record<string, any>,
-  extractorRunnerMap:SyncBoxedExtractorOrQueryRunnerMap<StateType>,
+  queryParams: MiroirModelEnvironment & Record<string, any>,
+  extractorRunnerMap: SyncBoxedExtractorOrQueryRunnerMap<StateType>,
   deploymentUuid: Uuid,
   extractorOrCombiner: ExtractorOrCombiner
-// ): Domain2QueryReturnType<DomainElementSuccess> {
+  // ): Domain2QueryReturnType<DomainElementSuccess> {
 ): Domain2QueryReturnType<any> {
   switch (extractorOrCombiner.extractorOrCombinerType) {
     case "literal": {
@@ -615,45 +632,53 @@ export function innerSelectDomainElementFromExtractorOrCombiner/*BoxedExtractorT
     // ############################################################################################
     // Impure Monads
     case "extractorByEntityReturningObjectList":
-    case "combinerByRelationReturningObjectList": 
+    case "combinerByRelationReturningObjectList":
     case "combinerByManyToManyRelationReturningObjectList": {
       // return extractorRunnerMap.extractEntityInstanceUuidIndexWithObjectListExtractorInMemory(state, {
-      return extractorRunnerMap.extractEntityInstanceListWithObjectListExtractor(state, {
-        extractorRunnerMap,
-        extractor: {
-          queryType: "boxedExtractorOrCombinerReturningObjectList",
-          deploymentUuid: deploymentUuid,
-          contextResults: context,
-          pageParams: pageParams,
-          queryParams,
-          select: extractorOrCombiner.applicationSection
-          ? extractorOrCombiner
-          : {
-              ...extractorOrCombiner,
-              applicationSection: pageParams.applicationSection as ApplicationSection,
-            },
+      return extractorRunnerMap.extractEntityInstanceListWithObjectListExtractor(
+        state,
+        {
+          extractorRunnerMap,
+          extractor: {
+            queryType: "boxedExtractorOrCombinerReturningObjectList",
+            deploymentUuid: deploymentUuid,
+            contextResults: context,
+            pageParams: pageParams,
+            queryParams,
+            select: extractorOrCombiner.applicationSection
+              ? extractorOrCombiner
+              : {
+                  ...extractorOrCombiner,
+                  applicationSection: pageParams.applicationSection as ApplicationSection,
+                },
+          },
         },
-      });
+        queryParams // modelEnvironment
+      );
       break;
     }
     case "combinerForObjectByRelation":
     case "extractorForObjectByDirectReference": {
-      return extractorRunnerMap.extractEntityInstance(state, {
-        extractorRunnerMap,
-        extractor: {
-          queryType: "boxedExtractorOrCombinerReturningObject",
-          deploymentUuid: deploymentUuid,
-          contextResults: context,
-          pageParams,
-          queryParams,
-          select: extractorOrCombiner.applicationSection // TODO: UGLY!!! WHERE IS THE APPLICATION SECTION PLACED?
-          ? extractorOrCombiner
-          : {
-              ...extractorOrCombiner,
-              applicationSection: pageParams?.applicationSection as ApplicationSection,
-            },
-        }
-      });
+      return extractorRunnerMap.extractEntityInstance(
+        state,
+        {
+          extractorRunnerMap,
+          extractor: {
+            queryType: "boxedExtractorOrCombinerReturningObject",
+            deploymentUuid: deploymentUuid,
+            contextResults: context,
+            pageParams,
+            queryParams,
+            select: extractorOrCombiner.applicationSection // TODO: UGLY!!! WHERE IS THE APPLICATION SECTION PLACED?
+              ? extractorOrCombiner
+              : {
+                  ...extractorOrCombiner,
+                  applicationSection: pageParams?.applicationSection as ApplicationSection,
+                },
+          },
+        },
+        queryParams, // modelEnvironment
+      );
       break;
     }
     // ############################################################################################
@@ -680,8 +705,10 @@ export function innerSelectDomainElementFromExtractorOrCombiner/*BoxedExtractorT
       break;
     }
     case "extractorWrapperReturningList": {
-      return extractorOrCombiner.definition.map((e) =>
-          innerSelectDomainElementFromExtractorOrCombiner( // recursive call
+      return extractorOrCombiner.definition.map(
+        (e) =>
+          innerSelectDomainElementFromExtractorOrCombiner(
+            // recursive call
             state,
             context,
             pageParams ?? {},
@@ -689,17 +716,26 @@ export function innerSelectDomainElementFromExtractorOrCombiner/*BoxedExtractorT
             extractorRunnerMap,
             deploymentUuid,
             e
-          )// TODO: check for error!
-        );
+          ) // TODO: check for error!
+      );
       break;
     }
-    case "extractorCombinerByHeteronomousManyToManyReturningListOfObjectList": { // join
+    case "extractorCombinerByHeteronomousManyToManyReturningListOfObjectList": {
+      // join
       const rootQueryResults: Domain2QueryReturnType<any> =
         typeof extractorOrCombiner.rootExtractorOrReference == "string"
-          ? innerSelectDomainElementFromExtractorOrCombiner(state, context, pageParams, queryParams, extractorRunnerMap, deploymentUuid, {
-              extractorOrCombinerType: "extractorOrCombinerContextReference",
-              extractorOrCombinerContextReference: extractorOrCombiner.rootExtractorOrReference,
-            })
+          ? innerSelectDomainElementFromExtractorOrCombiner(
+              state,
+              context,
+              pageParams,
+              queryParams,
+              extractorRunnerMap,
+              deploymentUuid,
+              {
+                extractorOrCombinerType: "extractorOrCombinerContextReference",
+                extractorOrCombinerContextReference: extractorOrCombiner.rootExtractorOrReference,
+              }
+            )
           : innerSelectDomainElementFromExtractorOrCombiner(
               state,
               context,
@@ -715,7 +751,9 @@ export function innerSelectDomainElementFromExtractorOrCombiner/*BoxedExtractorT
           elementValue: {
             queryFailure: "IncorrectParameters",
             query: JSON.stringify(extractorOrCombiner.rootExtractorOrReference),
-            queryContext: "innerSelectDomainElementFromExtractorOrCombiner for extractorCombinerByHeteronomousManyToManyReturningListOfObjectList, rootExtractorOrReference could not be resolved, rootExtractorOrReference=" + JSON.stringify(rootQueryResults,null,2),
+            queryContext:
+              "innerSelectDomainElementFromExtractorOrCombiner for extractorCombinerByHeteronomousManyToManyReturningListOfObjectList, rootExtractorOrReference could not be resolved, rootExtractorOrReference=" +
+              JSON.stringify(rootQueryResults, null, 2),
           },
         };
       }
@@ -726,7 +764,10 @@ export function innerSelectDomainElementFromExtractorOrCombiner/*BoxedExtractorT
               ...queryParams,
               ...Object.fromEntries(
                 Object.entries(
-                  applyTransformer(extractorOrCombiner.subQueryTemplate.rootQueryObjectTransformer, entry[1])
+                  applyTransformer(
+                    extractorOrCombiner.subQueryTemplate.rootQueryObjectTransformer,
+                    entry[1]
+                  )
                 )
               ),
             };
@@ -739,7 +780,10 @@ export function innerSelectDomainElementFromExtractorOrCombiner/*BoxedExtractorT
             );
 
             if ("QueryFailure" in resolvedQuery) {
-              return [(entry[1] as any).uuid ?? "no uuid found for entry " + entry[0], resolvedQuery];
+              return [
+                (entry[1] as any).uuid ?? "no uuid found for entry " + entry[0],
+                resolvedQuery,
+              ];
             }
             const innerResult = innerSelectDomainElementFromExtractorOrCombiner(
               // recursive call
@@ -761,7 +805,9 @@ export function innerSelectDomainElementFromExtractorOrCombiner/*BoxedExtractorT
           elementValue: {
             queryFailure: "IncorrectParameters",
             query: JSON.stringify(extractorOrCombiner.rootExtractorOrReference),
-            queryContext: "innerSelectDomainElementFromExtractorOrCombiner for extractorCombinerByHeteronomousManyToManyReturningListOfObjectList, rootExtractorOrReference is not an object, rootExtractorOrReference=" + JSON.stringify(rootQueryResults,null,2),
+            queryContext:
+              "innerSelectDomainElementFromExtractorOrCombiner for extractorCombinerByHeteronomousManyToManyReturningListOfObjectList, rootExtractorOrReference is not an object, rootExtractorOrReference=" +
+              JSON.stringify(rootQueryResults, null, 2),
           },
         };
       }
@@ -776,8 +822,7 @@ export function innerSelectDomainElementFromExtractorOrCombiner/*BoxedExtractorT
         "result",
         context[extractorOrCombiner.extractorOrCombinerContextReference]
       );
-      return context &&
-        context[extractorOrCombiner.extractorOrCombinerContextReference]
+      return context && context[extractorOrCombiner.extractorOrCombinerContextReference]
         ? context[extractorOrCombiner.extractorOrCombinerContextReference]
         : {
             elementType: "failure",
@@ -820,7 +865,8 @@ export const extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList /*: 
   selectorParams: SyncBoxedExtractorRunnerParams<
     BoxedExtractorOrCombinerReturningObjectOrObjectList,
     StateType
-  >
+  >,
+  modelEnvironment: MiroirModelEnvironment
 ): Domain2QueryReturnType<DomainElementSuccess> => {
   // log.info("########## extractExtractor begin, query", selectorParams);
   const localSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<StateType> = selectorParams?.extractorRunnerMap ?? emptySelectorMap;
@@ -829,7 +875,7 @@ export const extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList /*: 
     state,
     selectorParams.extractor.contextResults,
     selectorParams.extractor.pageParams,
-    selectorParams.extractor.queryParams,
+    {...modelEnvironment, ...selectorParams.extractor.queryParams},
     localSelectorMap as any,
     selectorParams.extractor.deploymentUuid,
     selectorParams.extractor.select
@@ -859,6 +905,7 @@ export const extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList /*: 
 export const runQuery = <StateType>(
   state: StateType,
   selectorParams: SyncQueryRunnerParams<StateType>,
+  modelEnvironment: MiroirModelEnvironment,
 ): Domain2QueryReturnType<Record<string,any>> => { 
 
   // log.info("########## runQuery begin, query", selectorParams);
@@ -877,6 +924,7 @@ export const runQuery = <StateType>(
       context,
       selectorParams.extractor.pageParams,
       {
+        ...modelEnvironment,
         ...selectorParams.extractor.pageParams,
         ...selectorParams.extractor.queryParams,
       },
@@ -919,6 +967,7 @@ export const runQuery = <StateType>(
       context,
       selectorParams.extractor.pageParams,
       {
+        ...modelEnvironment,
         ...selectorParams.extractor.pageParams,
         ...selectorParams.extractor.queryParams,
       },
@@ -935,6 +984,7 @@ export const runQuery = <StateType>(
     selectorParams.extractor.runtimeTransformers ?? {}
   )) {
     let result = applyExtractorTransformerInMemory(transformerForRuntime[1], {
+      ...modelEnvironment,
       ...selectorParams.extractor.pageParams,
       ...selectorParams.extractor.queryParams,
     }, context)

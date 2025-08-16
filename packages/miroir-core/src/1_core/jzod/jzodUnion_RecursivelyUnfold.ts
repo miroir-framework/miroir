@@ -6,16 +6,18 @@ import type {
   JzodUnion,
   MetaModel
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import type { MiroirModelEnvironment } from "../../2_domain/TransformersForRuntime";
 import { resolveJzodSchemaReferenceInContext } from "./jzodResolveSchemaReferenceInContext";
 
 
 // ################################################################################################
-export const jzodUnion_recursivelyUnfold = (
+export const jzodUnion_recursivelyUnfold = <T extends MiroirModelEnvironment>(
   jzodUnion: JzodUnion,
   expandedReferences: Set<string>,
-  miroirFundamentalJzodSchema: JzodSchema,
-  currentModel: MetaModel,
-  miroirMetaModel: MetaModel,
+  modelEnvironment: T,
+  // miroirFundamentalJzodSchema: JzodSchema,
+  // currentModel: MetaModel,
+  // miroirMetaModel: MetaModel,
   relativeReferenceJzodContext: { [k: string]: JzodElement }
 ): JzodUnion_RecursivelyUnfold_ReturnType => {
   try {
@@ -34,9 +36,10 @@ export const jzodUnion_recursivelyUnfold = (
       resolveJzodSchemaReferenceInContext(
         a,
         { ...relativeReferenceJzodContext, ...a.context },
-        miroirFundamentalJzodSchema,
-        currentModel,
-        miroirMetaModel,
+        modelEnvironment,
+        // miroirFundamentalJzodSchema,
+        // currentModel,
+        // miroirMetaModel,
       )
     );
 
@@ -70,9 +73,10 @@ export const jzodUnion_recursivelyUnfold = (
       const subResult = jzodUnion_recursivelyUnfold(
         r as JzodUnion,
         newExpandedReferences,
-        miroirFundamentalJzodSchema,
-        currentModel,
-        miroirMetaModel,
+        modelEnvironment,
+        // miroirFundamentalJzodSchema,
+        // currentModel,
+        // miroirMetaModel,
         relativeReferenceJzodContext
       );
       

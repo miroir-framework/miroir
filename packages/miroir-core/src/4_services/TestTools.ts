@@ -13,7 +13,7 @@ import {
 } from "../0_interfaces/2_domain/DomainElement";
 import type { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { jsonify } from "../1_core/test-expect";
-import { transformer_extended_apply_wrapper } from "../2_domain/TransformersForRuntime";
+import { transformer_extended_apply_wrapper, type MiroirModelEnvironment } from "../2_domain/TransformersForRuntime";
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
 import { MiroirLoggerFactory } from "./LoggerFactory";
@@ -96,7 +96,8 @@ export const ignoreFailureAttributes: string[] = [
 export async function runTransformerTestInMemory(
   localVitest: any,
   testSuiteNamePath: string[],
-  transformerTest: TransformerTest
+  transformerTest: TransformerTest,
+  modelEnvironment: MiroirModelEnvironment,
 ) {
   const assertionName = transformerTest.transformerTestLabel ?? transformerTest.transformerName;
   console.log(
@@ -124,7 +125,8 @@ export async function runTransformerTestInMemory(
     "build",
     undefined,
     runtimeTransformer,
-    transformerTest.transformerParams,
+    // transformerTest.transformerParams,
+    modelEnvironment,
     transformerTest.transformerRuntimeContext ?? {},
     "value"
   );
@@ -138,7 +140,8 @@ export async function runTransformerTestInMemory(
       "runtime",
       undefined,
       convertedTransformer,
-      transformerTest.transformerParams,
+      // transformerTest.transformerParams,
+      modelEnvironment,
       transformerTest.transformerRuntimeContext ?? {}
     );
   } else {
@@ -228,8 +231,10 @@ export async function runTransformerTestSuite(
   runTransformerTest: (
     vitest: any,
     testSuitePath: string[],
-    transformerTest: TransformerTest
-  ) => Promise<void>
+    transformerTest: TransformerTest,
+    modelEnvironment: MiroirModelEnvironment
+  ) => Promise<void>,
+  modelEnvironment: MiroirModelEnvironment,
 ) {
   const testSuitePathAsString = TestSuiteContext.testSuitePathName(testSuitePath);
   const testSuiteName =
@@ -252,7 +257,7 @@ export async function runTransformerTestSuite(
   TestSuiteContext.setTestSuite(testSuitePathAsString);
   if (transformerTestSuite.transformerTestType == "transformerTest") {
     TestSuiteContext.setTest(transformerTestSuite.transformerTestLabel);
-    await runTransformerTest(localVitest, testSuitePath, transformerTestSuite);
+    await runTransformerTest(localVitest, testSuitePath, transformerTestSuite, modelEnvironment);
     TestSuiteContext.setTest(undefined);
   } else {
     // console.log(`running transformer test suite ${testSuiteName} with ${JSON.stringify(Object.keys(transformerTestSuite.transformerTests))} tests`);
@@ -277,7 +282,8 @@ export async function runTransformerTestSuite(
           // [...testSuiteName, transformerTestParam.transformerTestLabel],
           [...testSuitePath, testSuiteName],
           transformerTestParam,
-          runTransformerTest
+          runTransformerTest,
+          modelEnvironment
         );
       },
       globalTimeOut
@@ -304,7 +310,12 @@ function isJsonArray(t: any) {
 
 // ################################################################################################
 export function runTransformerIntegrationTest(sqlDbDataStore: any) {
-  return async (vitest: any, testNameArray: string[], transformerTest: TransformerTest) => {
+  return async (
+    vitest: any,
+    testNameArray: string[],
+    transformerTest: TransformerTest,
+    modelEnvironment: MiroirModelEnvironment,
+  ) => {
     const testSuitePathName = TestSuiteContext.testSuitePathName(testNameArray);
     const testRunStep = transformerTest.runTestStep ?? "runtime";
     // const runAsSql = false;
@@ -332,7 +343,8 @@ export function runTransformerIntegrationTest(sqlDbDataStore: any) {
         "build",
         (transformerTest.transformer as any)?.label,
         transformerTest.transformer,
-        transformerTest.transformerParams,
+        modelEnvironment,
+        // transformerTest.transformerParams,
         transformerTest.transformerRuntimeContext ?? {},
         "value" // resolveBuildTransformerTo
       );

@@ -172,9 +172,11 @@ export function rootLessListKeyMapDEFUNCT(
           currentValue,
           [], // currentValuePath
           [], // currentTypePath
-          miroirFundamentalJzodSchema,
-          currentModel,
-          miroirMetaModel,
+          {
+            miroirFundamentalJzodSchema,
+            currentModel,
+            miroirMetaModel,
+          },
           {}
         )
       : undefined;

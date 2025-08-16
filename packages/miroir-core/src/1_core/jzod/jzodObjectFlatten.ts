@@ -5,6 +5,7 @@ import {
   JzodSchema,
   MetaModel,
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import type { MiroirModelEnvironment } from "../../2_domain/TransformersForRuntime";
 import { resolveJzodSchemaReferenceInContext } from "./jzodResolveSchemaReferenceInContext";
 import equal from "fast-deep-equal";
 
@@ -20,11 +21,12 @@ import equal from "fast-deep-equal";
  * @returns A new JzodObject with all inherited properties directly in the definition
  * @throws Error if a schema reference resolves to a non-object type
  */
-export function jzodObjectFlatten(
+export function jzodObjectFlatten<T extends MiroirModelEnvironment>(
   obj: JzodObject,
-  miroirFundamentalJzodSchema: JzodSchema,
-  currentModel: MetaModel,
-  miroirMetaModel: MetaModel,
+  modelEnvironment: T,
+  // miroirFundamentalJzodSchema: JzodSchema,
+  // currentModel: MetaModel,
+  // miroirMetaModel: MetaModel,
   relativeReferenceJzodContext?: { [k: string]: JzodElement }
 ): JzodObject {
   // If there's no extend property, just return the object as is
@@ -60,18 +62,19 @@ export function jzodObjectFlatten(
         }
       }
 
-      if (!miroirFundamentalJzodSchema) {
+      if (!modelEnvironment.miroirFundamentalJzodSchema) {
         throw new Error(
           "jzodObjectFlatten: Cannot resolve schema reference without miroirFundamentalJzodSchema"
         );
       }
 
       const resolvedElement = resolveJzodSchemaReferenceInContext(
-        miroirFundamentalJzodSchema,
         parent,
-        currentModel,
-        miroirMetaModel,
-        relativeReferenceJzodContext
+        relativeReferenceJzodContext || {},
+        modelEnvironment,
+        // miroirFundamentalJzodSchema,
+        // currentModel,
+        // miroirMetaModel,
       );
 
       // Add current reference to the chain for circular detection

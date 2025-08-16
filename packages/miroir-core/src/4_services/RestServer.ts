@@ -7,7 +7,8 @@ import {
   ModelAction,
   RunBoxedExtractorOrQueryAction,
   RunBoxedQueryTemplateOrBoxedExtractorTemplateAction,
-  StoreOrBundleAction
+  StoreOrBundleAction,
+  type JzodSchema
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import {
@@ -35,6 +36,7 @@ import {
   getSelectorMapForTemplate
 } from "../2_domain/DomainStateQueryTemplateSelector";
 import { extractWithBoxedExtractorTemplate, runQueryTemplateWithExtractorCombinerTransformer } from "../2_domain/QueryTemplateSelectors";
+import { miroirFundamentalJzodSchema } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalJzodSchema";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -482,7 +484,12 @@ export async function queryTemplateActionHandler(
           getExtractorTemplateRunnerParamsForDomainState(
             runBoxedQueryTemplateOrBoxedExtractorTemplateAction.payload.query,
             extractorRunnerMapOnDomainState
-          )
+          ),
+          {
+            miroirFundamentalJzodSchema: miroirFundamentalJzodSchema as JzodSchema,
+            // TODO: current model for app / deployment?
+            miroirMetaModel: defaultMiroirMetaModel,
+          }
         );
         break;
       }
@@ -492,7 +499,12 @@ export async function queryTemplateActionHandler(
           getQueryTemplateRunnerParamsForDomainState(
             runBoxedQueryTemplateOrBoxedExtractorTemplateAction.payload.query,
             extractorRunnerMapOnDomainState
-          )
+          ),
+          {
+            miroirFundamentalJzodSchema: miroirFundamentalJzodSchema as JzodSchema,
+            // TODO: current model for app / deployment?
+            miroirMetaModel: defaultMiroirMetaModel,
+          }
         );
 
         break;

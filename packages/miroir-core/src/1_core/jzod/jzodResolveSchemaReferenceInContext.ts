@@ -6,22 +6,24 @@ import {
   MetaModel
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { Step, ResolveBuildTransformersTo } from "../../2_domain/Transformers";
+import type { MiroirModelEnvironment } from "../../2_domain/TransformersForRuntime";
 
 // ################################################################################################
-export function resolveSchemaReferenceInContextTransformer(
+export function resolveSchemaReferenceInContextTransformer<T extends MiroirModelEnvironment>(
   step: Step,
   label: string | undefined,
   transformer: any, // Use any for now until transformer types are generated
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
-  queryParams: Record<string, any>,
+  modelEnvironment: T,
   contextResults?: Record<string, any>
 ): JzodElement {
   return resolveJzodSchemaReferenceInContext(
     transformer.jzodReference,
     transformer.relativeReferenceJzodContext || {},
-    transformer.miroirFundamentalJzodSchema,
-    transformer.currentModel,
-    transformer.miroirMetaModel,
+    modelEnvironment,
+    // transformer.miroirFundamentalJzodSchema,
+    // transformer.currentModel,
+    // transformer.miroirMetaModel,
   );
 }
 
@@ -29,12 +31,13 @@ export function resolveSchemaReferenceInContextTransformer(
 // ################################################################################################
 // ################################################################################################
 // ################################################################################################
-export function resolveJzodSchemaReferenceInContext(
+export function resolveJzodSchemaReferenceInContext<T extends MiroirModelEnvironment>(
   jzodReference: JzodReference | JzodObject | (JzodReference | JzodObject | undefined)[],
   relativeReferenceJzodContext: { [k: string]: JzodElement } = {},
-  miroirFundamentalJzodSchema: JzodSchema,
-  currentModel?: MetaModel,
-  miroirMetaModel?: MetaModel,
+  miroirEnvironment: T,
+  // miroirFundamentalJzodSchema: JzodSchema,
+  // currentModel?: MetaModel,
+  // miroirMetaModel?: MetaModel,
 ): JzodElement {
   if (Array.isArray(jzodReference)) {
     // Aggregate resolved items into an object with keys as indices
@@ -43,9 +46,10 @@ export function resolveJzodSchemaReferenceInContext(
       return resolveJzodSchemaReferenceInContext(
         ref,
         relativeReferenceJzodContext,
-        miroirFundamentalJzodSchema,
-        currentModel,
-        miroirMetaModel,
+        miroirEnvironment,
+        // miroirFundamentalJzodSchema,
+        // currentModel,
+        // miroirMetaModel,
       );
     });
     // If all items are objects with a definition, merge them into one object
@@ -80,13 +84,13 @@ export function resolveJzodSchemaReferenceInContext(
   //   "resolveJzodSchemaReferenceInContext called for reference",
   //   JSON.stringify(jzodReference, null, 2),
   // );
-  const absoluteReferences = currentModel
+  const absoluteReferences = miroirEnvironment.currentModel
     ? [
-        miroirFundamentalJzodSchema,
-        ...((currentModel as any)?.jzodSchemas || []),
-        ...((miroirMetaModel as any)?.jzodSchemas || []),
+        miroirEnvironment.miroirFundamentalJzodSchema,
+        ...((miroirEnvironment.currentModel as any)?.jzodSchemas || []),
+        ...((miroirEnvironment.miroirMetaModel as any)?.jzodSchemas || []),
       ] // very inefficient!
-    : [miroirFundamentalJzodSchema];
+    : [miroirEnvironment.miroirFundamentalJzodSchema];
   const absoluteReferenceTargetJzodSchema: { [k: string]: JzodElement } = jzodReference?.definition.absolutePath
     ? absoluteReferences.find((s: JzodSchema) => s.uuid == jzodReference?.definition.absolutePath)?.definition
         .context ?? {}
@@ -115,7 +119,7 @@ export function resolveJzodSchemaReferenceInContext(
         JSON.stringify(jzodReference.definition) +
         " absoluteReferences keys " +
         JSON.stringify(absoluteReferences.map(r => r.uuid)) +
-        " current Model " + Object.keys(currentModel??{}) + 
+        " current Model " + Object.keys(miroirEnvironment.currentModel??{}) + 
         " relativeReferenceJzodContext keys " +
         JSON.stringify(relativeReferenceJzodContext)
     );

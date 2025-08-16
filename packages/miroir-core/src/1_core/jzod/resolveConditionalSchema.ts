@@ -17,6 +17,7 @@ import { RelativePath, resolveRelativePath } from '../../tools';
 import { cleanLevel } from "../constants";
 import { getEntityInstancesUuidIndexNonHook } from "../../2_domain/ReduxDeploymentsStateQueryExecutor";
 import type { ResolveBuildTransformersTo, Step } from "../../2_domain/Transformers";
+import type { MiroirModelEnvironment } from "../../2_domain/TransformersForRuntime";
 
 // Error value types for resolveConditionalSchema
 export type ResolveConditionalSchemaError =
@@ -40,13 +41,14 @@ export function resolveConditionalSchemaTransformer(
     | TransformerForRuntime_resolveConditionalSchema
     | TransformerForBuildPlusRuntime_resolveConditionalSchema,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
-  queryParams: Record<string, any>,
+  queryParams: MiroirModelEnvironment & Record<string, any>,
   contextResults?: Record<string, any>
 ): ResolveConditionalSchemaResult {
   return resolveConditionalSchema(
     transformer.schema,
     transformer.valueObject, // Use rootObject from contextResults or an empty object
     transformer.valuePath || [], // Use currentValuePath from contextResults or an
+    queryParams, // modelEnvironment 
     transformer?.reduxDeploymentsState, // Use reduxDeploymentsState from contextResults
     transformer?.deploymentUuid, // Use deploymentUuid from contextResults
     transformer.context
@@ -65,6 +67,7 @@ export function resolveConditionalSchema(
   jzodSchema: JzodElement,
   rootObject: any, // Changed from currentDefaultValue to rootObject
   currentValuePath: string[],
+  modelEnvironment: MiroirModelEnvironment,
   reduxDeploymentsState: ReduxDeploymentsState | undefined = undefined,
   deploymentUuid: Uuid | undefined = undefined,
   context: 'defaultValue' | 'typeCheck' = 'typeCheck' // New parameter for context
@@ -143,6 +146,7 @@ export function resolveConditionalSchema(
       const currentDeploymentEntityDefinitions: EntityDefinition[] =
         getEntityInstancesUuidIndexNonHook(
           reduxDeploymentsState,
+          modelEnvironment,
           deploymentUuid,
           entityEntityDefinition.uuid,
         ) as EntityDefinition[];

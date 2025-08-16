@@ -47,6 +47,7 @@ import {
 import { MiroirLoggerFactory } from "../4_services/LoggerFactory";
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
+import type { MiroirModelEnvironment } from "./TransformersForRuntime";
 
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -79,15 +80,16 @@ export function createReduxDeploymentsStateSelectorMap(): SyncBoxedExtractorOrQu
  */
 export function executeReduxDeploymentsStateQuery<T>(
   deploymentEntityState: ReduxDeploymentsState,
+  modelEnvironment: MiroirModelEnvironment,
   queryParams: SyncQueryRunnerParams<ReduxDeploymentsState>,
-  selectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState>
+  selectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState>,
 ): T {
   const queryRunner = selectorMap.runQuery as SyncQueryRunner<
     ReduxDeploymentsState,
     Domain2QueryReturnType<any>
   >;
   
-  const result = queryRunner(deploymentEntityState, queryParams);
+  const result = queryRunner(deploymentEntityState, queryParams, modelEnvironment);
   return result as T;
 }
 
@@ -97,9 +99,10 @@ export function executeReduxDeploymentsStateQuery<T>(
  */
 export function getEntityInstancesUuidIndexNonHook(
   deploymentEntityState: ReduxDeploymentsState,
+  modelEnvironment: MiroirModelEnvironment,
   currentDeploymentUuid: Uuid,
   targetEntity: Uuid,
-  orderBy?: string
+  orderBy?: string,
 // ): EntityInstancesUuidIndex {
 ): EntityInstance[] {
   log.info(
@@ -143,8 +146,9 @@ export function getEntityInstancesUuidIndexNonHook(
   // const result = executeReduxDeploymentsStateQuery<Record<string, EntityInstancesUuidIndex>>(
   const result = executeReduxDeploymentsStateQuery<Record<string, EntityInstance[]>>(
     deploymentEntityState,
+    modelEnvironment,
     queryParams,
-    selectorMap
+    selectorMap,
   );
   
   return result[targetEntity] || {};
@@ -156,6 +160,7 @@ export function getEntityInstancesUuidIndexNonHook(
  */
 export function getMultipleEntityInstancesUuidIndexNonHook(
   deploymentEntityState: ReduxDeploymentsState,
+  modelEnvironment: MiroirModelEnvironment,
   currentDeploymentUuid: string,
   targetEntities: { entityUuid: string; orderBy?: string }[]
 ): Record<string, EntityInstancesUuidIndex> {
@@ -199,6 +204,7 @@ export function getMultipleEntityInstancesUuidIndexNonHook(
   // Execute query
   return executeReduxDeploymentsStateQuery<Record<string, EntityInstancesUuidIndex>>(
     deploymentEntityState,
+    modelEnvironment,
     queryParams,
     selectorMap
   );

@@ -57,27 +57,6 @@
               ]
             }
           },
-          "miroirFundamentalJzodSchema": {
-            "type": "schemaReference",
-            "definition": {
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "jzodSchema"
-            }
-          },
-          "currentModel": {
-            "type": "schemaReference",
-            "definition": {
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "metaModel"
-            }
-          },
-          "miroirMetaModel": {
-            "type": "schemaReference",
-            "definition": {
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "metaModel"
-            }
-          },
           "relativeReferenceJzodContext": {
             "type": "record",
             "optional": true,

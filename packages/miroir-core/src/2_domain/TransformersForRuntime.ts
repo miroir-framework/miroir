@@ -128,18 +128,27 @@ MiroirLoggerFactory.registerLoggerToStart(
 };
 
 
+export interface MiroirModelEnvironment {
+  miroirFundamentalJzodSchema: JzodSchema,
+  currentModel?: MetaModel,
+  miroirMetaModel?: MetaModel,
+  deploymentUuid?: Uuid,
+};
+
 // ################################################################################################
 export type ITransformerHandler<
   T extends
     | TransformerForBuild
-    | TransformerForRuntime
+    | TransformerForRuntime,
+  U extends MiroirModelEnvironment
     // | TransformerForRuntime_innerFullObjectTemplate
 > = (
   step: Step,
   label: string | undefined,
   transformer: T,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
-  queryParams: Record<string, any>,
+  transformerParams: U,
+  // queryParams: Record<string, any>,
   contextResults?: Record<string, any>
 ) => Domain2QueryReturnType<any>;
 
@@ -161,7 +170,7 @@ export const defaultTransformers = {
 // ################################################################################################
 // Default value for Jzod Schema functions - moved here to avoid circular dependency
 // ################################################################################################
-export function getDefaultValueForJzodSchemaWithResolution(
+export function getDefaultValueForJzodSchemaWithResolution<T extends MiroirModelEnvironment>(
   jzodSchema: JzodElement,
   rootObject: any | undefined, // Optional parameter for backward compatibility
   rootLessListKey: string,
@@ -170,9 +179,10 @@ export function getDefaultValueForJzodSchemaWithResolution(
   reduxDeploymentsState: ReduxDeploymentsState | undefined = undefined,
   forceOptional: boolean = false,
   deploymentUuid: Uuid | undefined = undefined,
-  miroirFundamentalJzodSchema: JzodSchema,
-  currentModel?: MetaModel,
-  miroirMetaModel?: MetaModel,
+  miroirEnvironment: T,
+  // miroirFundamentalJzodSchema: JzodSchema,
+  // currentModel?: MetaModel,
+  // miroirMetaModel?: MetaModel,
   relativeReferenceJzodContext?: { [k: string]: JzodElement },
 ): any {
 
@@ -181,6 +191,7 @@ export function getDefaultValueForJzodSchemaWithResolution(
     jzodSchema,
     rootObject || currentDefaultValue, // Use rootObject if provided, fallback to currentDefaultValue
     currentValuePath,
+    miroirEnvironment,
     reduxDeploymentsState,
     // getEntityInstancesUuidIndex,
     deploymentUuid,
@@ -253,6 +264,10 @@ export function getDefaultValueForJzodSchemaWithResolution(
       undefined,
       effectiveSchema.tag.value.initializeTo.transformer,
       {
+        // miroirFundamentalJzodSchema,
+        // currentModel,
+        // miroirMetaModel,
+        ...miroirEnvironment,
         deploymentUuid,
         rootObject
       }, // parameters
@@ -287,9 +302,10 @@ export function getDefaultValueForJzodSchemaWithResolution(
     case "object": {
       const resolvedObjectType = resolveObjectExtendClauseAndDefinition(
         effectiveSchema,
-        miroirFundamentalJzodSchema,
-        currentModel,
-        miroirMetaModel,
+        miroirEnvironment,
+        // miroirFundamentalJzodSchema,
+        // currentModel,
+        // miroirMetaModel,
         relativeReferenceJzodContext
       );
       let result: Record<string, any> = {};
@@ -307,9 +323,10 @@ export function getDefaultValueForJzodSchemaWithResolution(
             reduxDeploymentsState,
             forceOptional,
             deploymentUuid,
-            miroirFundamentalJzodSchema,
-            currentModel,
-            miroirMetaModel,
+            miroirEnvironment,
+            // miroirFundamentalJzodSchema,
+            // currentModel,
+            // miroirMetaModel,
             relativeReferenceJzodContext,
           );
           result[attributeName] = attributeValue;
@@ -375,6 +392,7 @@ export function getDefaultValueForJzodSchemaWithResolution(
           undefined,
           effectiveSchema.tag.value.initializeTo.transformer,
           {
+            ...miroirEnvironment,
             deploymentUuid
           }, // parameters
           {}, // runtimeContext
@@ -405,6 +423,7 @@ export function getDefaultValueForJzodSchemaWithResolution(
         }
         const foreignKeyObjects: EntityInstance[] = getEntityInstancesUuidIndexNonHook(
           reduxDeploymentsState,
+          miroirEnvironment,
           deploymentUuid,
           effectiveSchema.tag.value.selectorParams.targetEntity,
           effectiveSchema.tag.value.selectorParams.targetEntityOrderInstancesBy
@@ -457,9 +476,10 @@ export function getDefaultValueForJzodSchemaWithResolution(
       const resolvedReference = resolveJzodSchemaReferenceInContext(
         effectiveSchema,
         localContext,
-        miroirFundamentalJzodSchema,
-        currentModel,
-        miroirMetaModel,
+        miroirEnvironment,
+        // miroirFundamentalJzodSchema,
+        // currentModel,
+        // miroirMetaModel,
       );
       return getDefaultValueForJzodSchemaWithResolution(
         resolvedReference,
@@ -470,9 +490,10 @@ export function getDefaultValueForJzodSchemaWithResolution(
         reduxDeploymentsState,
         forceOptional,
         deploymentUuid,
-        miroirFundamentalJzodSchema,
-        currentModel,
-        miroirMetaModel,
+        miroirEnvironment,
+        // miroirFundamentalJzodSchema,
+        // currentModel,
+        // miroirMetaModel,
         localContext,
       );
     }
@@ -495,9 +516,10 @@ export function getDefaultValueForJzodSchemaWithResolution(
           reduxDeploymentsState,
           forceOptional,
           deploymentUuid,
-          miroirFundamentalJzodSchema,
-          currentModel,
-          miroirMetaModel,
+          miroirEnvironment,
+          // miroirFundamentalJzodSchema,
+          // currentModel,
+          // miroirMetaModel,
           relativeReferenceJzodContext,
         );
       }
@@ -533,7 +555,7 @@ export function getDefaultValueForJzodSchemaWithResolution(
   }
 }
 
-export function getDefaultValueForJzodSchemaWithResolutionNonHook(
+export function getDefaultValueForJzodSchemaWithResolutionNonHook<T extends MiroirModelEnvironment>(
   jzodSchema: JzodElement,
   rootObject: any = undefined, 
   rootLessListKey: string,
@@ -542,9 +564,10 @@ export function getDefaultValueForJzodSchemaWithResolutionNonHook(
   reduxDeploymentsState: ReduxDeploymentsState | undefined = undefined,
   forceOptional: boolean = false,
   deploymentUuid: Uuid | undefined,
-  miroirFundamentalJzodSchema: JzodSchema,
-  currentModel?: MetaModel,
-  miroirMetaModel?: MetaModel,
+  miroirEnvironment: T,
+  // miroirFundamentalJzodSchema: JzodSchema,
+  // currentModel?: MetaModel,
+  // miroirMetaModel?: MetaModel,
   relativeReferenceJzodContext?: { [k: string]: JzodElement },
 ): any {
   log.info(
@@ -576,9 +599,10 @@ export function getDefaultValueForJzodSchemaWithResolutionNonHook(
       undefined,
       forceOptional,
       undefined,
-      miroirFundamentalJzodSchema,
-      currentModel,
-      miroirMetaModel,
+      miroirEnvironment,
+      // miroirFundamentalJzodSchema,
+      // currentModel,
+      // miroirMetaModel,
       relativeReferenceJzodContext,
     );
   }
@@ -592,31 +616,35 @@ export function getDefaultValueForJzodSchemaWithResolutionNonHook(
     reduxDeploymentsState,
     forceOptional,
     deploymentUuid,
-    miroirFundamentalJzodSchema,
-    currentModel,
-    miroirMetaModel,
+    miroirEnvironment,
+    // miroirFundamentalJzodSchema,
+    // currentModel,
+    // miroirMetaModel,
     relativeReferenceJzodContext,
   );
 }
 
-export function defaultValueForMLSchemaTransformer(
+export function defaultValueForMLSchemaTransformer<T extends MiroirModelEnvironment>(
   step: Step,
   label: string | undefined,
   transformer: TransformerForRuntime_defaultValueForSchema,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
-  queryParams: Record<string, any>,
+  transformerParams: T,
+  // queryParams: Record<string, any>,
   contextResults?: Record<string, any>
 ): any {
   const result = getDefaultValueForJzodSchemaWithResolutionNonHook(
     transformer.mlSchema,
-    undefined,
-    "",
-    undefined,
-    undefined,
-    undefined,
-    false,
-    undefined,
-    miroirFundamentalJzodSchema as JzodSchema,
+    undefined, // rootObject
+    "", // rootLessListKey
+    undefined, // currentDefaultValue
+    [], // currentValuePath
+    undefined, // reduxDeploymentsState
+    false, // forceOptional
+    undefined, // deploymentUuid
+    transformerParams, // miroirEnvironment
+    undefined, // relativeReferenceJzodContext
+    // miroirFundamentalJzodSchema as JzodSchema,
   );
   log.info(
     "defaultValueForMLSchemaTransformer called with",
@@ -624,14 +652,14 @@ export function defaultValueForMLSchemaTransformer(
     "label", label,
     "transformer", transformer,
     "resolveBuildTransformersTo", resolveBuildTransformersTo,
-    "queryParams", queryParams,
+    "transformerParams", transformerParams,
     "contextResults", contextResults,
     "result", result
   );
   return result;
 }
 
-const inMemoryTransformerImplementations: Record<string, ITransformerHandler<any>> = {
+const inMemoryTransformerImplementations: Record<string, ITransformerHandler<any, MiroirModelEnvironment>> = {
   handleTransformer_menu_AddItem: defaultTransformers.handleTransformer_menu_AddItem,
   // 
   handleCountTransformer,
@@ -705,7 +733,7 @@ export const applicationTransformerDefinitions: Record<string, TransformerDefini
 };
 
 // ################################################################################################
-function resolveApplyTo(
+function resolveApplyTo<T extends MiroirModelEnvironment>(
   step: Step,
   label: string | undefined,
   transformer:
@@ -714,7 +742,8 @@ function resolveApplyTo(
     | TransformerForBuild_objectAlter
     | TransformerForRuntime_objectAlter,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
-  queryParams: Record<string, any>,
+  // queryParams: Record<string, any>,
+  queryParams: T,
   contextResults?: Record<string, any>
 ) {
   switch (typeof transformer.applyTo) {
@@ -821,7 +850,7 @@ function resolveApplyTo(
 
 // ################################################################################################
 // TODO: identical to resolveApplyTo, should be merged?
-export function resolveApplyTo_legacy(
+export function resolveApplyTo_legacy<T extends MiroirModelEnvironment>(
   transformer: 
   | TransformerForBuild_count
   | TransformerForBuild_mapperListToList
@@ -843,7 +872,8 @@ export function resolveApplyTo_legacy(
   ,
   step: Step,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
-  queryParams: Record<string, any>,
+  // queryParams: Record<string, any>,
+  queryParams: T,
   contextResults: Record<string, any> | undefined,
   label: string | undefined
 ) {
@@ -935,12 +965,13 @@ export function resolveApplyTo_legacy(
 }
 
 // ################################################################################################
-function transformerForBuild_list_listMapperToList_apply(
+function transformerForBuild_list_listMapperToList_apply<T extends MiroirModelEnvironment>(
   step: Step,
   label: string | undefined,
   transformer: TransformerForRuntime_mapperListToList | TransformerForBuild_mapperListToList,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
-  queryParams: Record<string, any>,
+  // queryParams: Record<string, any>,
+  queryParams: T,
   contextResults?: Record<string, any>,
 ): Domain2QueryReturnType<any[]> {
   const resolvedApplyTo = resolveApplyTo_legacy(transformer, step, resolveBuildTransformersTo, queryParams, contextResults, label);
@@ -1015,12 +1046,13 @@ function transformerForBuild_list_listMapperToList_apply(
 }
 
 // ################################################################################################
-function transformer_object_listReducerToSpreadObject_apply(
+function transformer_object_listReducerToSpreadObject_apply<T extends MiroirModelEnvironment>(
   step: Step,
   label: string | undefined,
   transformer: TransformerForBuild_listReducerToSpreadObject | TransformerForRuntime_listReducerToSpreadObject,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
-  queryParams: Record<string, any>,
+  // queryParams: Record<string, any>,
+  queryParams: T,
   contextResults?: Record<string, any>,
 ): Domain2QueryReturnType<any> {
   // log.info(
@@ -1071,14 +1103,15 @@ function transformer_object_listReducerToSpreadObject_apply(
 }
 
 // ################################################################################################
-function transformer_object_listReducerToIndexObject_apply(
+function transformer_object_listReducerToIndexObject_apply<T extends MiroirModelEnvironment>(
   step: Step,
   label: string | undefined,
   transformer:
     | TransformerForBuild_listReducerToIndexObject
     | TransformerForRuntime_listReducerToIndexObject,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
-  queryParams: Record<string, any>,
+  // queryParams: Record<string, any>,
+  queryParams: T,
   contextResults?: Record<string, any>
 ): Domain2QueryReturnType<any> {
   // log.info(
@@ -1116,13 +1149,14 @@ function transformer_object_listReducerToIndexObject_apply(
  * 
  */
 // ################################################################################################
-function handleTransformer_object_fullTemplate(
+function handleTransformer_object_fullTemplate<T extends MiroirModelEnvironment>(
   step: Step,
   objectName: string | undefined,
   transformer: TransformerForBuild_object_fullTemplate
     | TransformerForRuntime_object_fullTemplate,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
-  queryParams: Record<string, any>,
+  // queryParams: Record<string, any>,
+  queryParams: T,
   contextResults?: Record<string, any>
 ): Domain2QueryReturnType<DomainElementString | DomainElementInstanceArray> {
   // log.info(
@@ -1256,12 +1290,13 @@ function handleTransformer_object_fullTemplate(
 }
 
 // ################################################################################################
-function handleTransformer_objectAlter(
+function handleTransformer_objectAlter<T extends MiroirModelEnvironment>(
   step: Step,
   objectName: string | undefined,
   transformer: TransformerForBuild_objectAlter | TransformerForRuntime_objectAlter,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
-  queryParams: Record<string, any>,
+  // queryParams: Record<string, any>,
+  queryParams: T,
   contextResults?: Record<string, any>,
 ): Domain2QueryReturnType<any> {
   const resolvedApplyTo = resolveApplyTo(step, objectName, transformer, resolveBuildTransformersTo, queryParams, contextResults);
@@ -1432,14 +1467,15 @@ export function transformer_resolveReference(
 // parameterReference<A> -> A
 // constantUuid -> Uuid
 // constantString -> string
-export function transformer_InnerReference_resolve(
+export function transformer_InnerReference_resolve<T extends MiroirModelEnvironment>(
   step: Step,
   transformerInnerReference:
     | TransformerForRuntime_constants
     | TransformerForBuild_InnerReference
     | TransformerForRuntime_InnerReference,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
-  queryParams: Record<string, any>,
+  transformerParams: T,
+  // queryParams: Record<string, any>,
   contextResults?: Record<string, any>
 ): Domain2QueryReturnType<any> {
   // TODO: copy / paste (almost?) from query parameter lookup!
@@ -1451,7 +1487,7 @@ export function transformer_InnerReference_resolve(
   //   "contextResults=",
   //   Object.keys(contextResults ?? {})
   // );
-  const localQueryParams = queryParams ?? {};
+  const localQueryParams = transformerParams ?? {};
   const localContextResults = contextResults ?? {};
   if (step == "build" && (transformerInnerReference as any).interpolation == "runtime") {
     log.warn(
@@ -1606,12 +1642,13 @@ export function transformer_mustacheStringTemplate_apply(
 }
 
 // ################################################################################################
-export function transformer_dynamicObjectAccess_apply(
+export function transformer_dynamicObjectAccess_apply<T extends MiroirModelEnvironment>(
   step: Step,
   objectName: string | undefined,
   transformer: TransformerForRuntime_objectDynamicAccess | TransformerForBuild_objectDynamicAccess,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
-  queryParams: Record<string, any>,
+  transformerParams: T,
+  // queryParams: Record<string, any>,
   contextResults?: Record<string, any>,
 ): Domain2QueryReturnType<any> {
   const result = (transformer.objectAccessPath.reduce as any)( // triggers "error TS2349: This expression is not callable" in tsc. Not in eslint, though!
@@ -1665,7 +1702,7 @@ export function transformer_dynamicObjectAccess_apply(
             "NO NAME",
             currentPathElement,
             resolveBuildTransformersTo,
-            queryParams,
+            transformerParams,
             contextResults
           );
           if (key instanceof Domain2ElementFailed) {
@@ -1716,21 +1753,22 @@ export function transformer_dynamicObjectAccess_apply(
 }
 
 // ################################################################################################
-export function handleCountTransformer(
+export function handleCountTransformer<T extends MiroirModelEnvironment>(
   step: Step,
   label: string | undefined,
   transformer:
   | TransformerForBuild_count
   | TransformerForRuntime_count,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
-  queryParams: Record<string, any>,
+  transformerParams: T,
+  // queryParams: Record<string, any>,
   contextResults?: Record<string, any>
 ): Domain2QueryReturnType<any> {
   const resolvedReference = resolveApplyTo_legacy(
     transformer,
     step,
     resolveBuildTransformersTo,
-    queryParams,
+    transformerParams,
     contextResults,
     label
   );
@@ -1800,21 +1838,22 @@ export function handleCountTransformer(
   // break;
 }
 // ################################################################################################
-export function handleUniqueTransformer(
+export function handleUniqueTransformer<T extends MiroirModelEnvironment>(
   step: Step,
   label: string | undefined,
   transformer:
   | TransformerForBuild_unique
   | TransformerForRuntime_unique,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
-  queryParams: Record<string, any>,
+  transformerParams: T,
+  // queryParams: Record<string, any>,
   contextResults?: Record<string, any>
 ): Domain2QueryReturnType<any> {
   const resolvedReference = resolveApplyTo_legacy(
     transformer,
     step,
     resolveBuildTransformersTo,
-    queryParams,
+    transformerParams,
     contextResults,
     label
   );
@@ -1877,21 +1916,22 @@ export function handleUniqueTransformer(
 }
 
 // ################################################################################################
-export function handleListPickElementTransformer(
+export function handleListPickElementTransformer<T extends MiroirModelEnvironment>(
   step: Step,
   label: string | undefined,
   transformer:
   | TransformerForBuild_listPickElement
   | TransformerForRuntime_listPickElement,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
-  queryParams: Record<string, any>,
+  transformerParams: T,
+  // queryParams: Record<string, any>,
   contextResults?: Record<string, any>
 ): Domain2QueryReturnType<any> {
   const resolvedReference = resolveApplyTo_legacy(
     transformer,
     step,
     resolveBuildTransformersTo,
-    queryParams,
+    transformerParams,
     contextResults,
     label
   );
@@ -1971,14 +2011,15 @@ export function handleListPickElementTransformer(
 }
 
 // ################################################################################################
-export function handleTransformer_FreeObjectTemplate(
+export function handleTransformer_FreeObjectTemplate<T extends MiroirModelEnvironment>(
   step: Step,
   label: string | undefined,
   transformer:
   | TransformerForBuild_freeObjectTemplate
   | TransformerForRuntime_freeObjectTemplate,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
-  queryParams: Record<string, any>,
+  transformerParams: T,
+  // queryParams: Record<string, any>,
   contextResults?: Record<string, any>
 ): Domain2QueryReturnType<any> {
   // log.info("innerTransformer_apply freeObjectTemplate", JSON.stringify(transformer, null, 2));
@@ -1991,7 +2032,7 @@ export function handleTransformer_FreeObjectTemplate(
           objectTemplateEntry[0],
           objectTemplateEntry[1],
           resolveBuildTransformersTo,
-          queryParams,
+          transformerParams,
           contextResults
         ),
       ];
@@ -2019,21 +2060,22 @@ export function handleTransformer_FreeObjectTemplate(
 }
 
 // ################################################################################################
-export function handleTransformer_objectEntries(
+export function handleTransformer_objectEntries<T extends MiroirModelEnvironment>(
   step: Step,
   label: string | undefined,
   transformer:
   | TransformerForBuild_objectEntries
   | TransformerForRuntime_objectEntries,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
-  queryParams: Record<string, any>,
+  transformerParams: T,
+  // queryParams: Record<string, any>,
   contextResults?: Record<string, any>
 ): Domain2QueryReturnType<any> {
   const resolvedReference = resolveApplyTo_legacy(
     transformer,
     step,
     resolveBuildTransformersTo,
-    queryParams,
+    transformerParams,
     contextResults,
     label
   );
@@ -2075,21 +2117,22 @@ export function handleTransformer_objectEntries(
 }
 
 // ################################################################################################
-export function handleTransformer_objectValues(
+export function handleTransformer_objectValues<T extends MiroirModelEnvironment>(
   step: Step,
   label: string | undefined,
   transformer:
   | TransformerForBuild_objectValues
   | TransformerForRuntime_objectValues,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
-  queryParams: Record<string, any>,
+  transformerParams: T,
+  // queryParams: Record<string, any>,
   contextResults?: Record<string, any>
 ): Domain2QueryReturnType<any> {
   const resolvedReference = resolveApplyTo_legacy(
     transformer,
     step,
     resolveBuildTransformersTo,
-    queryParams,
+    transformerParams,
     contextResults,
     label
   );
@@ -2126,14 +2169,15 @@ export function handleTransformer_objectValues(
 }
 
 // ################################################################################################
-export function handleTransformer_dataflowObject(
+export function handleTransformer_dataflowObject<T extends MiroirModelEnvironment>(
   step: Step,
   label: string | undefined,
   transformer:
   | TransformerForBuild_dataflowObject
   | TransformerForRuntime_dataflowObject,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
-  queryParams: Record<string, any>,
+  transformerParams: T,
+  // queryParams: Record<string, any>,
   contextResults?: Record<string, any>
 ): Domain2QueryReturnType<any> {
   const resultObject: Record<string, any> = {};
@@ -2155,7 +2199,7 @@ export function handleTransformer_dataflowObject(
       key,
       value,
       resolveBuildTransformersTo,
-      queryParams,
+      transformerParams,
       currentContext
     );
   }
@@ -2238,19 +2282,20 @@ export function handleTransformer_constant(
 }
 
 // ################################################################################################
-export function handleTransformer_contextReference(
+export function handleTransformer_contextReference<T extends MiroirModelEnvironment>(
   step: Step,
   label: string | undefined,
   transformer: TransformerForRuntime_contextReference,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
-  queryParams: Record<string, any>,
+  transformerParams: T,
+  // queryParams: Record<string, any>,
   contextResults?: Record<string, any>
 ): Domain2QueryReturnType<any> {
   const rawValue = defaultTransformers.transformer_InnerReference_resolve(
     step,
     transformer,
     resolveBuildTransformersTo,
-    queryParams,
+    transformerParams,
     contextResults
   );
   const returnedValue: Domain2QueryReturnType<any> =
@@ -2261,19 +2306,20 @@ export function handleTransformer_contextReference(
 }
 
 // ################################################################################################
-export function handleTransformer_parameterReference(
+export function handleTransformer_parameterReference<T extends MiroirModelEnvironment>(
   step: Step,
   label: string | undefined,
   transformer: TransformerForBuild_parameterReference,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
-  queryParams: Record<string, any>,
+  transformerParams: T,
+  // queryParams: Record<string, any>,
   contextResults?: Record<string, any>
 ): Domain2QueryReturnType<any> {
   const rawValue = defaultTransformers.transformer_InnerReference_resolve(
     step,
     transformer,
     resolveBuildTransformersTo,
-    queryParams,
+    transformerParams,
     contextResults
   );
   const returnedValue: Domain2QueryReturnType<any> =
@@ -2296,19 +2342,20 @@ export function handleTransformer_constantAsExtractor(
 }
 
 // ################################################################################################
-export function handleTransformer_newUuid(
+export function handleTransformer_newUuid<T extends MiroirModelEnvironment>(
   step: Step,
   label: string | undefined,
   transformer: TransformerForBuild_newUuid | TransformerForRuntime_newUuid,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
-  queryParams: Record<string, any>,
+  transformerParams: T,
+  // queryParams: Record<string, any>,
   contextResults?: Record<string, any>
 ): Domain2QueryReturnType<any> {
   const rawValue = defaultTransformers.transformer_InnerReference_resolve(
     step,
     transformer,
     resolveBuildTransformersTo,
-    queryParams,
+    transformerParams,
     contextResults
   );
   const returnedValue: Domain2QueryReturnType<any> =
@@ -2326,12 +2373,13 @@ export function handleTransformer_newUuid(
 // <A>[] -> <A>[]
 // object -> object
 // innerFullObjectTemplate { a: A, b: B } -> object 
-export function innerTransformer_plainObject_apply(
+export function innerTransformer_plainObject_apply<T extends MiroirModelEnvironment>(
   step: Step,
   label: string | undefined,
   transformer: Record<string, any>,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
-  queryParams: Record<string, any>,
+  // queryParams: Record<string, any>,
+  transformerParams: T,
   contextResults?: Record<string, any>,
 ): Domain2QueryReturnType<any> {
   // log.info(
@@ -2360,7 +2408,7 @@ export function innerTransformer_plainObject_apply(
           objectTemplateEntry[0],
           objectTemplateEntry[1],
           resolveBuildTransformersTo,
-          queryParams,
+          transformerParams,
           contextResults
         ),
       ];
@@ -2407,12 +2455,13 @@ export function innerTransformer_plainObject_apply(
 // <A>[] -> <A>[]
 // object -> object
 // innerFullObjectTemplate { a: A, b: B } -> object 
-export function innerTransformer_array_apply(
+export function innerTransformer_array_apply<T extends MiroirModelEnvironment>(
   step: Step,
   objectName: string | undefined,
   transformer: any[],
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
-  queryParams: Record<string, any>,
+  // queryParams: Record<string, any>,
+  transformerParams: T,
   contextResults?: Record<string, any>,
 ): Domain2QueryReturnType<any> {
   // log.info(
@@ -2432,7 +2481,7 @@ export function innerTransformer_array_apply(
   //   JSON.stringify(Object.keys(contextResults??{}), null, 2)
   // );
   const subObject = transformer.map((e, index) =>
-    transformer_extended_apply(step, index.toString(), e, resolveBuildTransformersTo, queryParams, contextResults)
+    transformer_extended_apply(step, index.toString(), e, resolveBuildTransformersTo, transformerParams, contextResults)
   );
   const failureIndex = subObject.findIndex(
     (e) => typeof e == "object" && e != null && !Array.isArray(e) && e.elementType == "failure"
@@ -2490,29 +2539,35 @@ export function innerTransformer_array_apply(
 // <A>[] -> <A>[]
 // object -> object
 // innerFullObjectTemplate { a: A, b: B } -> object 
-export function transformer_extended_apply(
+export function transformer_extended_apply<T extends MiroirModelEnvironment>(
   step: Step,
   label: string | undefined,
   // transformer: TransformerForBuild | TransformerForRuntime | ExtendedTransformerForRuntime | undefined,
-  transformer: TransformerForBuild | TransformerForRuntime | ExtendedTransformerForRuntime | TransformerForBuildPlusRuntime | undefined,
+  transformer:
+    | TransformerForBuild
+    | TransformerForRuntime
+    | ExtendedTransformerForRuntime
+    | TransformerForBuildPlusRuntime
+    | undefined,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
-  queryParams: Record<string, any>,
-  contextResults?: Record<string, any>,
+  // queryParams: Record<string, any>,
+  transformerParams: T,
+  contextResults?: Record<string, any>
 ): Domain2QueryReturnType<any> {
-// ): Domain2QueryReturnType<DomainElementSuccess> {
+  // ): Domain2QueryReturnType<DomainElementSuccess> {
   log.info(
     "transformer_extended_apply called for label",
     label,
     "step:",
     step,
     "transformer.interpolation:",
-    (transformer as any)?.interpolation??"build",
-    ((transformer as any)?.interpolation??"build") == step,
+    (transformer as any)?.interpolation ?? "build",
+    ((transformer as any)?.interpolation ?? "build") == step,
     typeof transformer,
     "transformer",
     JSON.stringify(transformer, null, 2),
     "queryParams elements",
-    Object.keys(queryParams??{}),
+    Object.keys(transformerParams ?? {})
     // // JSON.stringify(Object.keys(queryParams??{}), null, 2),
     // "contextResults elements",
     // Object.keys(contextResults??{})
@@ -2527,7 +2582,7 @@ export function transformer_extended_apply(
         label,
         transformer,
         resolveBuildTransformersTo,
-        queryParams,
+        transformerParams,
         contextResults
       );
       // log.info(
@@ -2603,8 +2658,11 @@ export function transformer_extended_apply(
             foundApplicationTransformer.transformerImplementation.transformerImplementationType
           ) {
             case "libraryImplementation": {
-              const transformerIndexName: string = foundApplicationTransformer?.transformerImplementation?.inMemoryImplementationFunctionName;
-              const transformerFunction: ITransformerHandler<any> = inMemoryTransformerImplementations[transformerIndexName];
+              const transformerIndexName: string =
+                foundApplicationTransformer?.transformerImplementation
+                  ?.inMemoryImplementationFunctionName;
+              const transformerFunction: ITransformerHandler<any, MiroirModelEnvironment> =
+                inMemoryTransformerImplementations[transformerIndexName];
               log.info(
                 "transformer_extended_apply libraryImplementation for",
                 "foundApplicationTransformer",
@@ -2615,16 +2673,20 @@ export function transformer_extended_apply(
                 // "transformerIndexName",
                 // Object.keys(inMemoryTransformerImplementations).findIndex(
                 //   (e) => e == transformerIndexName),
-                JSON.stringify(Object.entries(inMemoryTransformerImplementations).find(
-                  (e) => e[0] == transformerIndexName
-                ), null, 2),
+                JSON.stringify(
+                  Object.entries(inMemoryTransformerImplementations).find(
+                    (e) => e[0] == transformerIndexName
+                  ),
+                  null,
+                  2
+                ),
                 typeof inMemoryTransformerImplementations,
                 Array.isArray(inMemoryTransformerImplementations),
                 "transformerIndexName",
                 transformerIndexName,
                 "transformerFunction",
                 transformerFunction == undefined ? "undefined" : "defined",
-                transformerFunction.toString(),
+                transformerFunction.toString()
                 // JSON.stringify(transformerFunction, null, 2)
                 // foundApplicationTransformer?.transformerImplementation?.inMemoryImplementationFunctionName,
                 // JSON.stringify(inMemoryTransformerImplementations[
@@ -2664,15 +2726,13 @@ export function transformer_extended_apply(
               //   foundApplicationTransformer.transformerImplementation
               //     .inMemoryImplementationFunctionName
               // ](
-              log.info(
-                "transformer_extended_apply calling transformerFunction"
-              );
+              log.info("transformer_extended_apply calling transformerFunction");
               const result = transformerFunction(
                 step,
                 label,
                 transformer,
                 newResolveBuildTransformersTo,
-                queryParams,
+                transformerParams,
                 contextResults
               );
               log.info(
@@ -2727,7 +2787,7 @@ export function transformer_extended_apply(
                         label,
                         (transformer as any)[param],
                         resolveBuildTransformersTo,
-                        queryParams,
+                        transformerParams,
                         contextResults
                       ),
                     ];
@@ -2738,7 +2798,7 @@ export function transformer_extended_apply(
                   label,
                   foundApplicationTransformer.transformerImplementation.definition,
                   newResolveBuildTransformersTo,
-                  queryParams,
+                  transformerParams,
                   { ...contextResults, ...evaluatedParams }
                   // {...contextResults, ...(transformer as any)} // inner definitions do not have parameter references, only context references
                 );
@@ -2811,7 +2871,7 @@ export function transformer_extended_apply(
             label,
             transformer,
             newResolveBuildTransformersTo,
-            queryParams,
+            transformerParams,
             contextResults
           );
           // log.info(
@@ -2828,7 +2888,7 @@ export function transformer_extended_apply(
           label,
           transformer,
           newResolveBuildTransformersTo,
-          queryParams,
+          transformerParams,
           contextResults
         );
         // log.info(
@@ -2883,58 +2943,14 @@ export function transformer_extended_apply(
 }
 
 // // ################################################################################################
-// export function transformer_apply_wrapper(
-//   step: Step,
-//   label: string | undefined,
-//   transformer: TransformerForBuild | TransformerForRuntime,
-//   queryParams: Record<string, any>,
-//   contextResults?: Record<string, any>,
-//   resolveBuildTransformersTo: ResolveBuildTransformersTo = "constantTransformer",
-// ): Domain2QueryReturnType<any> {
-//   // const result = transformer_extended_apply(step, label, transformer, queryParams, contextResults);
-//   const result = transformer_extended_apply(
-//     step,
-//     label,
-//     transformer,
-//     resolveBuildTransformersTo,
-//     queryParams,
-//     contextResults
-//   );
-//   log.info(
-//     "transformer_apply_wrapper called for",
-//     label,
-//     "transformer_extended_apply result",
-//     JSON.stringify(result, null, 2),
-//   );  
-
-//   if (result instanceof Domain2ElementFailed) {
-//     log.error(
-//       "transformer_apply_wrapper transformer_extended_apply failed for",
-//       label,
-//       "step",
-//       step,
-//       "transformer",
-//       JSON.stringify(transformer, null, 2),
-//       "result",
-//       JSON.stringify(result, null, 2)
-//     );
-//     return new Domain2ElementFailed({
-//       queryFailure: "QueryNotExecutable",
-//       failureOrigin: ["transformer_extended_apply"],
-//       innerError: result,
-//       queryContext: "failed to transform object attribute",
-//     });
-//   } else {
-//     return result;
-//   }
-// }
 
 // ################################################################################################
-export function transformer_extended_apply_wrapper(
+export function transformer_extended_apply_wrapper<T extends MiroirModelEnvironment>(
   step: Step,
   label: string | undefined,
   transformer: TransformerForBuild | TransformerForRuntime | ExtendedTransformerForRuntime | TransformerForBuildPlusRuntime,
-  queryParams: Record<string, any>,
+  // queryParams: Record<string, any>,
+  transformerParams: T,
   contextResults?: Record<string, any>,
   resolveBuildTransformersTo: ResolveBuildTransformersTo = "constantTransformer",
 ): Domain2QueryReturnType<any> {
@@ -2944,7 +2960,7 @@ export function transformer_extended_apply_wrapper(
       label,
       transformer,
       resolveBuildTransformersTo,
-      queryParams,
+      transformerParams,
       contextResults,
     );
     // log.info(

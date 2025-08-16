@@ -62,7 +62,7 @@ import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { ACTION_OK } from "../1_core/constants";
 import { defaultMiroirMetaModel, metaModelEntities, miroirModelEntities } from "../1_core/Model";
 import { resolveCompositeActionTemplate } from "../2_domain/ResolveCompositeActionTemplate";
-import { transformer_extended_apply, transformer_extended_apply_wrapper } from "../2_domain/TransformersForRuntime.js";
+import { transformer_extended_apply, transformer_extended_apply_wrapper, type MiroirModelEnvironment } from "../2_domain/TransformersForRuntime.js";
 import { LoggerGlobalContext } from '../4_services/LoggerContext.js';
 import { MiroirLoggerFactory } from "../4_services/LoggerFactory";
 import { packageName } from "../constants";
@@ -88,6 +88,7 @@ import {
 } from "../0_interfaces/2_domain/DomainElement.js";
 import { ignorePostgresExtraAttributesOnList, ignorePostgresExtraAttributesOnObject } from '../4_services/otherTools.js';
 import { ConfigurationService } from './ConfigurationService.js';
+import { miroirFundamentalJzodSchema } from '../0_interfaces/1_core/preprocessor-generated/miroirFundamentalJzodSchema.js';
 
 
 
@@ -1443,11 +1444,11 @@ export class DomainController implements DomainControllerInterface {
   // TODO: used in tests only?!
   async handleCompositeAction(
     compositeAction: CompositeAction,
-    actionParamValues: Record<string, any>,
-    currentModel: MetaModel
+    actionParamValues: MiroirModelEnvironment & Record<string, any>,
+    currentModel: MetaModel // TODO: redundant with actionParamValues, remove it?
   ): Promise<Action2VoidReturnType> {
     const localActionParams = { ...actionParamValues };
-    let localContext: Record<string, any> = { ...actionParamValues };
+    let localContext: MiroirModelEnvironment & Record<string, any> = { ...actionParamValues };
 
     log.info(
       "handleCompositeAction compositeAction",
@@ -1640,11 +1641,11 @@ export class DomainController implements DomainControllerInterface {
     // runtimeCompositeAction: RuntimeCompositeAction,
     runtimeCompositeAction: BuildPlusRuntimeCompositeAction,
     // runtimeCompositeAction: BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction,
-    actionParamValues: Record<string, any>,
+    actionParamValues: MiroirModelEnvironment & Record<string, any>,
     currentModel: MetaModel
   ): Promise<Action2VoidReturnType> {
     const localActionParams = { ...actionParamValues };
-    let localContext: Record<string, any> = { ...actionParamValues };
+    let localContext: MiroirModelEnvironment & Record<string, any> = { ...actionParamValues };
 
     log.info(
       "handleRuntimeCompositeAction compositeAction",
@@ -1947,8 +1948,8 @@ export class DomainController implements DomainControllerInterface {
   // ##############################################################################################
   async handleBuildPlusRuntimeCompositeAction(
     buildPlusRuntimeCompositeAction: BuildPlusRuntimeCompositeAction,
-    actionParamValues: Record<string, any>,
-    currentModel: MetaModel
+    actionParamValues: MiroirModelEnvironment & Record<string, any>,
+    currentModel: MetaModel // TODO: redundant with actionParamValues, remove it?
   ): Promise<Action2VoidReturnType> {
     const localActionParams = { ...actionParamValues };
     let localContext: Record<string, any> = { ...actionParamValues };
@@ -1966,7 +1967,14 @@ export class DomainController implements DomainControllerInterface {
         // log.info("handleBuildPlusRuntimeCompositeAction resolving templates", buildPlusRuntimeCompositeAction.templates);
 
         for (const t of Object.entries(buildPlusRuntimeCompositeAction.templates)) {
-          const newLocalParameters: Record<string,any> = { ...localActionParams, ...resolvedCompositeActionTemplates };
+          // const newLocalParameters: Record<string,any> = { ...localActionParams, ...resolvedCompositeActionTemplates };
+          const newLocalParameters: MiroirModelEnvironment & Record<string, any> = {
+            // miroirFundamentalJzodSchema: miroirFundamentalJzodSchema as JzodSchema,
+            // TODO: missing miroirMetaModel: MetaModel
+            currentModel,
+            ...localActionParams,
+            ...resolvedCompositeActionTemplates,
+          };
           // log.info(
           //   "buildPlusRuntimeCompositeAction",
           //   buildPlusRuntimeCompositeAction.actionLabel,
@@ -2081,7 +2089,7 @@ export class DomainController implements DomainControllerInterface {
       nameGivenToResult: string;
       testAssertion: TestAssertion;
     },
-    localContext: Record<string, any>,
+    localContext: MiroirModelEnvironment & Record<string, any>,
     actionResult: Action2ReturnType | undefined
   ) {
     if (!ConfigurationService.testImplementation) {
@@ -2100,8 +2108,8 @@ export class DomainController implements DomainControllerInterface {
             undefined /**WHAT?? */,
             currentAction.testAssertion.definition.resultTransformer,
             "value",
-            {},
-            localContext
+            localContext,
+            localContext // TODO: should be {}?
           )
         : localContext;
 
@@ -2386,7 +2394,7 @@ export class DomainController implements DomainControllerInterface {
   // ##############################################################################################
   async handleCompositeActionTemplate(
     compositeAction: CompositeActionTemplate,
-    actionParamValues: Record<string, any>,
+    actionParamValues: MiroirModelEnvironment & Record<string, any>,
     currentModel: MetaModel
   ): Promise<Action2VoidReturnType> {
     const localActionParams = { ...actionParamValues };
@@ -2644,7 +2652,7 @@ export class DomainController implements DomainControllerInterface {
     // testAction: TestAction_runTestCompositeAction,
     testAction: TestCompositeAction | TestRuntimeCompositeAction | TestBuildPlusRuntimeCompositeAction,
     // testAction: TestCompositeAction,
-    actionParamValues: Record<string, any>,
+    actionParamValues: MiroirModelEnvironment & Record<string, any>,
     currentModel: MetaModel
   ): Promise<Action2VoidReturnType> {
     const localActionParams = { ...actionParamValues };
@@ -2740,7 +2748,7 @@ export class DomainController implements DomainControllerInterface {
   async handleTestCompositeActionSuite(
     // testAction: TestCompositeActionSuite,
     testAction: TestCompositeActionSuite | TestRuntimeCompositeActionSuite | TestBuildPlusRuntimeCompositeActionSuite,
-    actionParamValues: Record<string, any>,
+    actionParamValues: MiroirModelEnvironment & Record<string, any>,
     currentModel: MetaModel
     // ): Promise<Action2VoidReturnType> {
     // ): Promise<Action2ReturnType> {
@@ -3054,7 +3062,7 @@ export class DomainController implements DomainControllerInterface {
   // ##############################################################################################
   async handleTestCompositeActionTemplateSuite(
     testAction: TestCompositeActionTemplateSuite,
-    actionParamValues: Record<string, any>,
+    actionParamValues: MiroirModelEnvironment & Record<string, any>,
     currentModel: MetaModel
   ): Promise<Action2VoidReturnType> {
     const localActionParams = { ...actionParamValues };
