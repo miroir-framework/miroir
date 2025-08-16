@@ -43,7 +43,8 @@ import {
   selectJzodSchemaBySingleSelectQueryFromDomainStateNew,
 } from "./DomainStateQuerySelectors";
 import { handleBoxedExtractorAction, handleBoxedQueryAction } from "./QuerySelectors";
-import { transformer_InnerReference_resolve, type MiroirModelEnvironment } from "./TransformersForRuntime";
+import {  type MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
+import { transformer_InnerReference_resolve } from "./TransformersForRuntime";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

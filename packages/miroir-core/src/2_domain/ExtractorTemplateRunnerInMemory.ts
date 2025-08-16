@@ -30,7 +30,7 @@ import {
 } from "./DomainStateQueryTemplateSelector";
 import { ExtractorRunnerInMemory } from "./ExtractorRunnerInMemory";
 import { handleBoxedExtractorTemplateAction, handleBoxedExtractorTemplateOrQueryTemplateAction, handleQueryTemplateAction } from "./QueryTemplateSelectors";
-import type { MiroirModelEnvironment } from "./TransformersForRuntime";
+import type { MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

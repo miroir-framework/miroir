@@ -1,34 +1,14 @@
-import { valueToJzod } from "@miroir-framework/jzod";
 
 import {
-  EntityInstancesUuidIndex,
   JzodArray,
   JzodElement,
-  JzodEnum,
-  JzodLiteral,
   JzodObject,
-  JzodReference,
-  JzodSchema,
-  JzodTuple,
-  JzodUnion,
-  MetaModel
+  JzodTuple
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-// import { LoggerInterface } from "../../0_interfaces/4-services/LoggerInterface";
-// import { MiroirLoggerFactory } from "../../4_services/LoggerFactory";
-// import { resolveJzodSchemaReferenceInContext } from "./jzodResolveSchemaReferenceInContext";
 import {
   JzodUnion_RecursivelyUnfold_ReturnTypeError,
   JzodUnion_RecursivelyUnfold_ReturnTypeOK,
 } from "./jzodUnion_RecursivelyUnfoldInterface";
-
-// import { packageName } from "../../constants";
-// import { cleanLevel } from "../constants";
-// import { jzodObjectFlatten } from "./jzodObjectFlatten";
-// import { getObjectUniondiscriminatorValuesFromResolvedSchema } from "./getObjectUniondiscriminatorValuesFromResolvedSchema";
-// import { resolveConditionalSchema, type ResolveConditionalSchemaError } from "./resolveConditionalSchema";
-// import { Uuid } from "../../0_interfaces/1_core/EntityDefinition";
-// import { ReduxDeploymentsState } from "../../0_interfaces/2_domain/ReduxDeploymentsStateInterface";
-
 
 // ################################################################################################
 export interface SelectUnionBranchFromDiscriminatorReturnTypeOK {
@@ -43,7 +23,6 @@ export interface SelectUnionBranchFromDiscriminatorReturnTypeError {
   error: string;
   discriminator?: string | string[] | undefined;
   discriminatorValues?: any;
-  // possibleDiscriminators?: string[][];
   possibleDiscriminators?: (string | undefined)[][];
   valuePath: (string | number)[];
   typePath: (string | number)[];
@@ -91,14 +70,55 @@ export type JzodUnionResolvedTypeReturnType =
 export interface KeyMapEntry {
   rawSchema: JzodElement;
   jzodObjectFlattenedSchema?: JzodObject;
-  // recursivelyUnfoldedRawSchema?: JzodElement[];
   recursivelyUnfoldedUnionSchema?: JzodUnion_RecursivelyUnfold_ReturnTypeOK;
   resolvedSchema: JzodElement;
   chosenUnionBranchRawSchema?: JzodElement; // for unions, this is the raw schema of the chosen branch
   discriminatorValues?: string[]; // for unions, this is the list of possible discriminator values
   discriminator?: string | string[]; // for unions, this is the discriminator used to select the branch
 }
-
+export const keyMapEntry: JzodElement = {
+  type: "object",
+  definition: {
+    rawSchema: {
+      type: "schemaReference",
+      definition: {
+        absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+        relativePath: "jzodElement",
+      },
+    }, // the raw schema that was checked
+    jzodObjectFlattenedSchema: {
+      type: "schemaReference",
+      definition: {
+        absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+        relativePath: "jzodObject",
+      },
+    }, // the flattened schema of the object
+    recursivelyUnfoldedUnionSchema: {
+      type: "schemaReference",
+      definition: {
+        absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+        relativePath: "jzodUnion_RecursivelyUnfold_ReturnTypeOK",
+      },
+    }, // the recursively unfolded union schema
+    resolvedSchema: {
+      type: "schemaReference",
+      definition: {
+        absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+        relativePath: "jzodElement",
+      },
+    }, // the resolved schema that was checked
+    chosenUnionBranchRawSchema: {
+      type: "schemaReference",
+      optional: true,
+      definition: {
+        absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+        relativePath: "jzodElement",
+      },
+    }, // for unions, this is the raw schema of the chosen branch
+    discriminatorValues: { type: "array", definition: { type: "string" } }, // for unions, this is the list of possible discriminator values
+    discriminator: { type: "union", definition: [{ type: "string" }, { type: "array", definition: { type: "string" } }] }, // for unions, this is the discriminator used to select the branch
+  },
+};
 
 export interface ResolvedJzodSchemaReturnTypeOK {
   status: "ok";
@@ -186,7 +206,7 @@ export interface ResolvedJzodSchemaReturnTypeError {
     | Record<string, ResolvedJzodSchemaReturnTypeError>
     | undefined; // for unions, this is the error of the sub-schema that failed
 }
-const resolvedJzodSchemaReturnTypeError: JzodElement = {
+export const resolvedJzodSchemaReturnTypeError: JzodElement = {
   type: "object",
   definition: {
     status: { type: "literal", definition: "error" },

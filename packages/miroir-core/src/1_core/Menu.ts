@@ -7,7 +7,8 @@ import {
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { Domain2QueryReturnType } from "../0_interfaces/2_domain/DomainElement";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
-import { defaultTransformers, ResolveBuildTransformersTo, Step, type MiroirModelEnvironment } from "../2_domain/TransformersForRuntime";
+import { type MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
+import { defaultTransformers, ResolveBuildTransformersTo, Step } from "../2_domain/TransformersForRuntime";
 import { MiroirLoggerFactory } from "../4_services/LoggerFactory";
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";

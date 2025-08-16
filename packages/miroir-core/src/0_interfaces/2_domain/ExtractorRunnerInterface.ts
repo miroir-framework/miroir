@@ -1,4 +1,3 @@
-import type { MiroirModelEnvironment } from "../../2_domain/TransformersForRuntime";
 import {
   BoxedExtractorOrCombinerReturningObject,
   BoxedExtractorOrCombinerReturningObjectList,
@@ -27,6 +26,7 @@ import {
   EntityInstance,
   TransformerForBuildPlusRuntime
 } from "../1_core/preprocessor-generated/miroirFundamentalType";
+import type { MiroirModelEnvironment } from "../1_core/Transformer";
 import { Action2ReturnType, Domain2QueryReturnType } from "./DomainElement";
 
 // ################################################################################################

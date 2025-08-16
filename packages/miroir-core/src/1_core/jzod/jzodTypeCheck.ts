@@ -39,7 +39,7 @@ import type {
   ResolvedJzodSchemaReturnTypeError,
   ResolvedJzodSchemaReturnTypeOK,
 } from "../../0_interfaces/1_core/jzodTypeCheckInterface";
-import type { MiroirModelEnvironment } from "../../2_domain/TransformersForRuntime";
+import type { MiroirModelEnvironment } from "../../0_interfaces/1_core/Transformer";
 
 // export const miroirFundamentalJzodSchema2 = miroirFundamentalJzodSchema;
 // import { miroirFundamentalJzodSchema } from "../tmp/src/0_interfaces/1_core/bootstrapJzodSchemas/miroirFundamentalJzodSchema";

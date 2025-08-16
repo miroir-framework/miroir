@@ -31,6 +31,8 @@ import { LoggerInterface } from "../../4-services/LoggerInterface";
 import { testSuitesResults } from "../../4-services/TestInterface";
 import { zodParseErrorJzodSchema, zodParseErrorIssueJzodSchema } from "../zodParseError";
 import { JzodElement, JzodReference } from "../preprocessor-generated/miroirFundamentalType";
+import { keyMapEntry, resolvedJzodSchemaReturnType, resolvedJzodSchemaReturnTypeError, resolvedJzodSchemaReturnTypeOK } from "../jzodTypeCheckInterface";
+import { jzodUnion_RecursivelyUnfold_ReturnType, jzodUnion_RecursivelyUnfold_ReturnTypeError, jzodUnion_RecursivelyUnfold_ReturnTypeOK } from "../jzodUnion_RecursivelyUnfoldInterface";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -723,6 +725,15 @@ export function getMiroirFundamentalJzodSchema(
           miroirFundamentalJzodSchemaUuid,
           true
         ).context, // gives "transformerForBuild_InnerReference", "transformerForBuild", "actionHandler"
+        // jzodTypeCheck
+        jzodUnion_RecursivelyUnfold_ReturnTypeOK: jzodUnion_RecursivelyUnfold_ReturnTypeOK,
+        jzodUnion_RecursivelyUnfold_ReturnTypeError: jzodUnion_RecursivelyUnfold_ReturnTypeError,
+        jzodUnion_RecursivelyUnfold_ReturnType: jzodUnion_RecursivelyUnfold_ReturnType,
+        keyMapEntry: keyMapEntry,
+        resolvedJzodSchemaReturnTypeOK: resolvedJzodSchemaReturnTypeOK,
+        resolvedJzodSchemaReturnTypeError: resolvedJzodSchemaReturnTypeError,
+        resolvedJzodSchemaReturnType: resolvedJzodSchemaReturnType,
+        // ########################################################################################
         ...Object.fromEntries(
           miroirTransformersJzodSchemas.map((e: any) => [
             e.name,

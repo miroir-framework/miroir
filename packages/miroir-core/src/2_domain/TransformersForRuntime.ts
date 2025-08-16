@@ -1,16 +1,15 @@
 import mustache from 'mustache';
-import {serializeError} from 'serialize-error';
+import { serializeError } from 'serialize-error';
 // import Mustache from "mustache";
 import { v4 as uuidv4 } from 'uuid';
+import { Uuid } from '../0_interfaces/1_core/EntityDefinition';
 import {
   DomainElementInstanceArray,
   DomainElementString,
   DomainElementSuccess,
-  ExtendedTransformerForRuntime,
   EntityInstance,
+  ExtendedTransformerForRuntime,
   JzodElement,
-  JzodSchema,
-  MetaModel,
   Transformer,
   Transformer_contextOrParameterReferenceTO_REMOVE,
   TransformerDefinition,
@@ -22,19 +21,20 @@ import {
   TransformerForBuild_dataflowObject,
   TransformerForBuild_freeObjectTemplate,
   TransformerForBuild_InnerReference,
+  TransformerForBuild_listPickElement,
+  TransformerForBuild_listReducerToIndexObject,
+  TransformerForBuild_listReducerToSpreadObject,
   TransformerForBuild_mapperListToList,
   TransformerForBuild_mustacheStringTemplate,
   TransformerForBuild_newUuid,
   TransformerForBuild_object_fullTemplate,
-  TransformerForBuild_listPickElement,
-  TransformerForBuild_listReducerToIndexObject,
-  TransformerForBuild_listReducerToSpreadObject,
   TransformerForBuild_objectAlter,
   TransformerForBuild_objectDynamicAccess,
   TransformerForBuild_objectEntries,
   TransformerForBuild_objectValues,
   TransformerForBuild_parameterReference,
   TransformerForBuild_unique,
+  TransformerForBuildPlusRuntime,
   TransformerForRuntime,
   TransformerForRuntime_constant,
   TransformerForRuntime_constantArray,
@@ -46,36 +46,33 @@ import {
   TransformerForRuntime_freeObjectTemplate,
   // TransformerForRuntime_innerFullObjectTemplate,
   TransformerForRuntime_InnerReference,
-  TransformerForRuntime_mapperListToList,
   TransformerForRuntime_listPickElement,
-  TransformerForRuntime_mustacheStringTemplate,
-  TransformerForRuntime_newUuid,
-  TransformerForRuntime_objectAlter,
-  TransformerForRuntime_object_fullTemplate,
   TransformerForRuntime_listReducerToIndexObject,
   TransformerForRuntime_listReducerToSpreadObject,
+  TransformerForRuntime_mapperListToList,
+  TransformerForRuntime_mustacheStringTemplate,
+  TransformerForRuntime_newUuid,
+  TransformerForRuntime_object_fullTemplate,
+  TransformerForRuntime_objectAlter,
   TransformerForRuntime_objectDynamicAccess,
   TransformerForRuntime_objectEntries,
   TransformerForRuntime_objectValues,
-  TransformerForRuntime_unique,
-  TransformerForBuildPlusRuntime
+  TransformerForRuntime_unique
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import { Uuid } from '../0_interfaces/1_core/EntityDefinition';
-import {
-  miroirFundamentalJzodSchema,
-} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalJzodSchema";
+import type { ITransformerHandler, MiroirModelEnvironment } from '../0_interfaces/1_core/Transformer';
 import { Action2Error, Domain2ElementFailed, Domain2QueryReturnType } from "../0_interfaces/2_domain/DomainElement";
 import { ReduxDeploymentsState } from '../0_interfaces/2_domain/ReduxDeploymentsStateInterface';
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
+import { resolveJzodSchemaReferenceInContext, resolveSchemaReferenceInContextTransformer } from "../1_core/jzod/jzodResolveSchemaReferenceInContext";
+import { jzodTypeCheckTransformer, resolveObjectExtendClauseAndDefinition } from "../1_core/jzod/jzodTypeCheck";
+import { unfoldSchemaOnceTransformer } from '../1_core/jzod/JzodUnfoldSchemaOnce';
+import { resolveConditionalSchema, resolveConditionalSchemaTransformer } from '../1_core/jzod/resolveConditionalSchema';
 import { handleTransformer_menu_AddItem } from "../1_core/Menu";
-import { resolveJzodSchemaReferenceInContext } from "../1_core/jzod/jzodResolveSchemaReferenceInContext";
-import { resolveObjectExtendClauseAndDefinition } from "../1_core/jzod/jzodTypeCheck";
-import { resolveConditionalSchema } from '../1_core/jzod/resolveConditionalSchema';
-import { getEntityInstancesUuidIndexNonHook } from './ReduxDeploymentsStateQueryExecutor';
 import { MiroirLoggerFactory } from "../4_services/LoggerFactory";
 import { packageName } from "../constants";
 import { resolvePathOnObject } from "../tools";
 import { cleanLevel } from "./constants";
+import { getEntityInstancesUuidIndexNonHook } from './ReduxDeploymentsStateQueryExecutor';
 import { transformer_spreadSheetToJzodSchema } from "./Transformer_Spreadsheet";
 import {
   mmlsTransformers,
@@ -109,10 +106,6 @@ import {
   type ResolveBuildTransformersTo,
   type Step,
 } from "./Transformers";
-import { resolveConditionalSchemaTransformer } from '../1_core/jzod/resolveConditionalSchema';
-import { resolveSchemaReferenceInContextTransformer } from '../1_core/jzod/jzodResolveSchemaReferenceInContext';
-import { unfoldSchemaOnceTransformer } from '../1_core/jzod/JzodUnfoldSchemaOnce';
-import { jzodTypeCheckTransformer } from '../1_core/jzod/jzodTypeCheck';
 
 // Re-export types needed by other modules
 export type { ResolveBuildTransformersTo, Step } from "./Transformers";
@@ -128,29 +121,6 @@ MiroirLoggerFactory.registerLoggerToStart(
 };
 
 
-export interface MiroirModelEnvironment {
-  miroirFundamentalJzodSchema: JzodSchema,
-  currentModel?: MetaModel,
-  miroirMetaModel?: MetaModel,
-  deploymentUuid?: Uuid,
-};
-
-// ################################################################################################
-export type ITransformerHandler<
-  T extends
-    | TransformerForBuild
-    | TransformerForRuntime,
-  U extends MiroirModelEnvironment
-    // | TransformerForRuntime_innerFullObjectTemplate
-> = (
-  step: Step,
-  label: string | undefined,
-  transformer: T,
-  resolveBuildTransformersTo: ResolveBuildTransformersTo,
-  transformerParams: U,
-  // queryParams: Record<string, any>,
-  contextResults?: Record<string, any>
-) => Domain2QueryReturnType<any>;
 
 // ################################################################################################
 export const defaultTransformers = {

@@ -6,7 +6,7 @@ import type {
   JzodUnion,
   MetaModel
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import type { MiroirModelEnvironment } from "../../2_domain/TransformersForRuntime";
+import type { MiroirModelEnvironment } from "../../0_interfaces/1_core/Transformer";
 import { resolveJzodSchemaReferenceInContext } from "./jzodResolveSchemaReferenceInContext";
 
 

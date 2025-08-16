@@ -32,7 +32,8 @@ import {
   applyExtractorTransformerInMemory,
 } from "./QuerySelectors";
 import { resolveExtractorTemplate } from "./Templates";
-import { applyTransformer, type MiroirModelEnvironment } from "./TransformersForRuntime";
+import { type MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
+import { applyTransformer } from "./TransformersForRuntime";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

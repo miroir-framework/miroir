@@ -13,7 +13,8 @@ import {
 } from "../0_interfaces/2_domain/DomainElement";
 import type { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { jsonify } from "../1_core/test-expect";
-import { transformer_extended_apply_wrapper, type MiroirModelEnvironment } from "../2_domain/TransformersForRuntime";
+import { type MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
+import { transformer_extended_apply_wrapper } from "../2_domain/TransformersForRuntime";
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
 import { MiroirLoggerFactory } from "./LoggerFactory";

@@ -6,7 +6,7 @@ import {
   MetaModel
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { Step, ResolveBuildTransformersTo } from "../../2_domain/Transformers";
-import type { MiroirModelEnvironment } from "../../2_domain/TransformersForRuntime";
+import type { MiroirModelEnvironment } from "../../0_interfaces/1_core/Transformer";
 
 // ################################################################################################
 export function resolveSchemaReferenceInContextTransformer<T extends MiroirModelEnvironment>(

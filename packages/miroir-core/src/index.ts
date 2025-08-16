@@ -447,6 +447,13 @@ export {
   TestSuiteResult,
   testSuiteResult,
   TestSuitesResults,
+  JzodUnion_RecursivelyUnfold_ReturnTypeError,
+  JzodUnion_RecursivelyUnfold_ReturnTypeOK,
+  JzodUnion_RecursivelyUnfold_ReturnType,
+  // those are zod schemas, not imported. Importing MLS with the same name.
+  // jzodUnion_RecursivelyUnfold_ReturnType,
+  // jzodUnion_RecursivelyUnfold_ReturnTypeError,
+  // jzodUnion_RecursivelyUnfold_ReturnTypeOK,
 } from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 export {
@@ -474,6 +481,14 @@ export {
   JzodSchemaDefinition,
   jzodSchemaDefinitionSchema,
 } from "./0_interfaces/1_core/JzodSchemaDefinition.js";
+export {
+  // JzodUnion_RecursivelyUnfold_ReturnType,
+  // JzodUnion_RecursivelyUnfold_ReturnTypeError,
+  // JzodUnion_RecursivelyUnfold_ReturnTypeOK,
+  jzodUnion_RecursivelyUnfold_ReturnType,
+  jzodUnion_RecursivelyUnfold_ReturnTypeError,
+  jzodUnion_RecursivelyUnfold_ReturnTypeOK,
+} from "./0_interfaces/1_core/jzodUnion_RecursivelyUnfoldInterface";
 export { DeploymentMode } from "./0_interfaces/1_core/MiroirConfig.js";
 export {
   DeploymentUuidToReportsEntitiesDefinitionsMapping,
@@ -524,6 +539,10 @@ export {
   entityDefinitionEntityDefinitionAttributeSchema,
   entityDefinitionEntityDefinitionSchema,
 } from "./0_interfaces/1_core/writtenByHandSchema.js";
+export {
+  ITransformerHandler,
+  MiroirModelEnvironment
+} from "./0_interfaces/1_core/Transformer";
 export {
   ReduxDeploymentsState,
   ZEntityState,
@@ -687,9 +706,6 @@ export {
   getObjectUniondiscriminatorValuesFromResolvedSchema
 } from "./1_core/jzod/getObjectUniondiscriminatorValuesFromResolvedSchema";
 export {
-  // JzodUnion_RecursivelyUnfold_ReturnTypeError,
-  // JzodUnion_RecursivelyUnfold_ReturnTypeOK,
-  // JzodUnion_RecursivelyUnfold_ReturnType,
   jzodUnion_recursivelyUnfold,
 } from "./1_core/jzod/jzodUnion_RecursivelyUnfold";
 export {
@@ -844,7 +860,6 @@ export {
 export { transformer_spreadSheetToJzodSchema } from "./2_domain/Transformer_Spreadsheet";
 export {
   applicationTransformerDefinitions,
-  type MiroirModelEnvironment,
   resolveApplyTo_legacy,
   transformer_extended_apply,
   transformer_extended_apply_wrapper,

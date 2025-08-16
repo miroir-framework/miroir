@@ -47,7 +47,7 @@ import {
 import { MiroirLoggerFactory } from "../4_services/LoggerFactory";
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
-import type { MiroirModelEnvironment } from "./TransformersForRuntime";
+import type { MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 
 
 let log: LoggerInterface = console as any as LoggerInterface;
