@@ -268,7 +268,8 @@ export type AsyncBoxedExtractorOrQueryRunnerMap = {
 
 export type SyncBoxedExtractorOrQueryRunnerMap<StateType> = {
   extractorType: "sync";
-  extractState: (state: StateType, params: any) => StateType;
+  // extractState: (state: StateType, params: any) => StateType;
+  extractState: (state: StateType, params: any, modelEnvironment: MiroirModelEnvironment) => StateType;
   extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList: SyncExtractWithBoxedExtractorOrCombinerReturningObjectOrObjectList<StateType>;
   runQuery: SyncQueryRunner<StateType, Domain2QueryReturnType<any>>;
   extractEntityInstance: SyncBoxedExtractorRunner<
@@ -358,6 +359,7 @@ export type JzodSchemaQueryTemplateSelector<QueryTemplateType extends DomainMode
 // ################################################################################################
 export type JzodSchemaQuerySelector<QueryType extends QueryJzodSchemaParams, StateType> = (
   domainState: StateType,
-  params: ExtractorRunnerParamsForJzodSchema<QueryType, StateType>
+  params: ExtractorRunnerParamsForJzodSchema<QueryType, StateType>,
+  modelEnvironment: MiroirModelEnvironment,
 ) => RecordOfJzodElement | JzodElement | undefined;
 

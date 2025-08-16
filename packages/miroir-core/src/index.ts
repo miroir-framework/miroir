@@ -706,6 +706,7 @@ export {
 export {
   applicationModelEntities,
   defaultMiroirMetaModel,
+  defaultMiroirModelEnviroment,
   // getCurrentEntityDefinition,
   getReportsAndEntitiesDefinitionsForDeploymentUuid,
   metaModelEntities,
@@ -843,6 +844,7 @@ export {
 export { transformer_spreadSheetToJzodSchema } from "./2_domain/Transformer_Spreadsheet";
 export {
   applicationTransformerDefinitions,
+  type MiroirModelEnvironment,
   resolveApplyTo_legacy,
   transformer_extended_apply,
   transformer_extended_apply_wrapper,

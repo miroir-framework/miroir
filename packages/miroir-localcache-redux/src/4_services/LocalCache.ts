@@ -27,7 +27,11 @@ import {
   RunBoxedExtractorOrQueryAction,
   TransactionalInstanceAction,
   Domain2ElementFailed,
-  Action2Error
+  Action2Error,
+  miroirFundamentalJzodSchema,
+  defaultMiroirMetaModel,
+  type JzodSchema,
+  defaultMiroirModelEnviroment
 } from "miroir-core";
 import { packageName } from '../constants.js';
 import { cleanLevel } from './constants.js';
@@ -206,14 +210,16 @@ export class LocalCache implements LocalCacheInterface {
        case "boxedExtractorOrCombinerReturningObjectList": {
          queryResult = extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList(
            domainState,
-           getExtractorRunnerParamsForDomainState(action.payload.query, extractorRunnerMapOnDomainState)
+           getExtractorRunnerParamsForDomainState(action.payload.query, extractorRunnerMapOnDomainState),
+           defaultMiroirModelEnviroment,
          );
          break;
        }
        case "boxedQueryWithExtractorCombinerTransformer": {
          queryResult = extractorRunnerMapOnDomainState.runQuery(
            domainState,
-           getQueryRunnerParamsForDomainState(action.payload.query, extractorRunnerMapOnDomainState)
+           getQueryRunnerParamsForDomainState(action.payload.query, extractorRunnerMapOnDomainState),
+           defaultMiroirModelEnviroment,
          );
          break;
        }
