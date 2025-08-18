@@ -15,7 +15,8 @@ import {
   LoggerInterface,
   MiroirLoggerFactory,
   resolvePathOnObject,
-  SyncBoxedExtractorOrQueryRunnerMap
+  SyncBoxedExtractorOrQueryRunnerMap,
+  defaultMiroirModelEnviroment
 } from "miroir-core";
 
 import { getMemoizedReduxDeploymentsStateSelectorMap, ReduxStateWithUndoRedo } from "miroir-localcache-redux";
@@ -413,7 +414,15 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
 
   const deploymentEntityState: ReduxDeploymentsState = useSelector(
     (state: ReduxStateWithUndoRedo) =>
-      deploymentEntityStateSelectorMap.extractState(state.presentModelSnapshot.current, () => ({}))
+      deploymentEntityStateSelectorMap.extractState(
+        state.presentModelSnapshot.current,
+        () => ({}),
+        currentMiroirFundamentalJzodSchema?{
+          miroirFundamentalJzodSchema: currentMiroirFundamentalJzodSchema,
+          currentModel,
+          miroirMetaModel,
+        }: defaultMiroirModelEnviroment
+      )
   );
 
   const foldableItemsCount = useMemo(() => {
@@ -533,9 +542,11 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
           deploymentEntityState,
           true, // force optional attributes to receive a default value
           currentDeploymentUuid,
-          currentMiroirFundamentalJzodSchema,
-          currentModel,
-          miroirMetaModel,
+          {
+            miroirFundamentalJzodSchema: currentMiroirFundamentalJzodSchema,
+            currentModel,
+            miroirMetaModel,
+          },
           {}
           // Object.hasOwn(formik.values,"")?formik.values[""]:{}, // rootObject
         )
@@ -603,10 +614,12 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
             deploymentEntityState,
             true, // force optional attributes to receive a default value
             currentDeploymentUuid,
-            currentMiroirFundamentalJzodSchema,
-            currentModel,
-            miroirMetaModel,
-            {}, // relativeReferenceJzodContext
+            {
+              miroirFundamentalJzodSchema: currentMiroirFundamentalJzodSchema,
+              currentModel,
+              miroirMetaModel,
+            },
+            {} // relativeReferenceJzodContext
           )
         : undefined;
 

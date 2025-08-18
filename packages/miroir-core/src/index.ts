@@ -629,6 +629,10 @@ export {
   MError,
 } from "./0_interfaces/3_controllers/ErrorLogServiceInterface.js";
 export { MiroirContextInterface } from "./0_interfaces/3_controllers/MiroirContextInterface.js";
+export { 
+  RunActionTrackerInterface,
+  ActionTrackingData,
+} from "./0_interfaces/3_controllers/RunActionTrackerInterface.js";
 export { LocalCacheInterface } from "./0_interfaces/4-services/LocalCacheInterface.js";
 export {
   ViewParams,
@@ -893,6 +897,7 @@ export { ErrorDataStore } from "./3_controllers/ErrorHandling/ErrorDataStore.js"
 export { ErrorLogService } from "./3_controllers/ErrorHandling/ErrorLogService.js";
 export { ErrorModelStore } from "./3_controllers/ErrorHandling/ErrorModelStore.js";
 export { MiroirContext } from "./3_controllers/MiroirContext.js";
+export { RunActionTracker } from "./3_controllers/RunActionTracker.js";
 export { modelInitialize } from "./3_controllers/ModelInitializer.js";
 export { LoggerGlobalContext } from "./4_services/LoggerContext.js";
 export { MiroirLoggerFactory, testLogger } from "./4_services/LoggerFactory.js";

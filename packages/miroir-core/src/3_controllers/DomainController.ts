@@ -1232,7 +1232,36 @@ export class DomainController implements DomainControllerInterface {
   }
 
   // ##############################################################################################
+  private async trackAction<T>(
+    actionType: string,
+    actionLabel: string | undefined,
+    actionFn: () => Promise<T>
+  ): Promise<T> {
+    const trackingId = this.miroirContext.runActionTracker.startAction(actionType, actionLabel);
+    try {
+      const result = await actionFn();
+      this.miroirContext.runActionTracker.endAction(trackingId);
+      return result;
+    } catch (error) {
+      this.miroirContext.runActionTracker.endAction(trackingId, error instanceof Error ? error.message : String(error));
+      throw error;
+    }
+  }
+
+  // ##############################################################################################
   async handleAction(
+    domainAction: DomainAction,
+    currentModel?: MetaModel
+  ): Promise<Action2VoidReturnType> {
+    return this.trackAction(
+      domainAction.actionType,
+      (domainAction as any).actionLabel,
+      async () => this.handleActionInternal(domainAction, currentModel)
+    );
+  }
+
+  // ##############################################################################################
+  private async handleActionInternal(
     domainAction: DomainAction,
     currentModel?: MetaModel
   ): Promise<Action2VoidReturnType> {
@@ -1444,6 +1473,19 @@ export class DomainController implements DomainControllerInterface {
   // ##############################################################################################
   // TODO: used in tests only?!
   async handleCompositeAction(
+    compositeAction: CompositeAction,
+    actionParamValues: MiroirModelEnvironment & Record<string, any>,
+    currentModel: MetaModel // TODO: redundant with actionParamValues, remove it?
+  ): Promise<Action2VoidReturnType> {
+    return this.trackAction(
+      "compositeAction",
+      compositeAction.actionLabel,
+      async () => this.handleCompositeActionInternal(compositeAction, actionParamValues, currentModel)
+    );
+  }
+
+  // ##############################################################################################
+  private async handleCompositeActionInternal(
     compositeAction: CompositeAction,
     actionParamValues: MiroirModelEnvironment & Record<string, any>,
     currentModel: MetaModel // TODO: redundant with actionParamValues, remove it?
