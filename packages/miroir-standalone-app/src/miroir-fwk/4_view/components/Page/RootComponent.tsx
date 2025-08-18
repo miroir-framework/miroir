@@ -980,7 +980,7 @@ export const RootComponent = (props: RootComponentProps) => {
                       >
                         fetch Admin configuration from database
                       </ThemedButton> */}
-                      <ThemedButton
+                      {/* <ThemedButton
                         onClick={() =>
                           handleAsyncAction(
                             async () => {
@@ -1007,7 +1007,7 @@ export const RootComponent = (props: RootComponentProps) => {
                         }
                       >
                         Load server local cache
-                      </ThemedButton>
+                      </ThemedButton> */}
                       {/* commit miroir */}
                       <span>
                         <ActionButton

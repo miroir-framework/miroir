@@ -8,6 +8,7 @@ export interface DraggableContainerProps {
   children: React.ReactNode;
   storageKey?: string;
   defaultPosition?: { x: number; y: number };
+  onClose?: () => void;
 }
 
 // Generic draggable container component
@@ -15,7 +16,8 @@ export const DraggableContainer: React.FC<DraggableContainerProps> = ({
   title = "Performance Stats",
   children,
   storageKey = "performanceStatsPosition",
-  defaultPosition = { x: 10, y: 10 }
+  defaultPosition = { x: 10, y: 10 },
+  onClose
 }) => {
   const { currentTheme } = useMiroirTheme();
   
@@ -100,8 +102,15 @@ export const DraggableContainer: React.FC<DraggableContainerProps> = ({
     cursor: 'grab',
     display: 'flex',
     alignItems: 'center',
+    justifyContent: 'space-between',
     gap: currentTheme.spacing.xs,
     color: currentTheme.colors.primary,
+  });
+
+  const titleContainerStyles = css({
+    display: 'flex',
+    alignItems: 'center',
+    gap: currentTheme.spacing.xs,
   });
 
   const dragIconStyles = css({
@@ -110,11 +119,39 @@ export const DraggableContainer: React.FC<DraggableContainerProps> = ({
     color: currentTheme.colors.textSecondary,
   });
 
+  const closeButtonStyles = css({
+    background: 'none',
+    border: 'none',
+    fontSize: '16px',
+    cursor: 'pointer',
+    color: currentTheme.colors.textSecondary,
+    padding: '2px 4px',
+    borderRadius: currentTheme.borderRadius.sm,
+    '&:hover': {
+      backgroundColor: currentTheme.colors.error + '20',
+      color: currentTheme.colors.error,
+    },
+  });
+
   return (
     <div ref={dragRef} onMouseDown={handleMouseDown} css={containerStyles}>
       <div className="drag-handle" css={headerStyles}>
-        <span css={dragIconStyles}>⋮⋮</span>
-        {title}
+        <div css={titleContainerStyles}>
+          <span css={dragIconStyles}>⋮⋮</span>
+          {title}
+        </div>
+        {onClose && (
+          <button 
+            css={closeButtonStyles}
+            onClick={(e) => {
+              e.stopPropagation();
+              onClose();
+            }}
+            title="Close"
+          >
+            ×
+          </button>
+        )}
       </div>
       {children}
     </div>

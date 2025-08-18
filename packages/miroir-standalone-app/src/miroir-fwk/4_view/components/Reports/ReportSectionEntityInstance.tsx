@@ -47,6 +47,7 @@ import { TypedValueObjectEditor } from './TypedValueObjectEditor.js';
 import { RunTransformerTestSuiteButton } from '../Buttons/RunTransformerTestSuiteButton.js';
 import { ValueObjectGrid } from '../Grids/ValueObjectGrid.js';
 import { TestCellWithDetails } from './TestCellWithDetails.js';
+import { TestResultCellWithActualValue } from './TestResultCellWithActualValue.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -409,11 +410,10 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                             field: "testResult",
                             headerName: "Result",
                             cellRenderer: (params: any) => (
-                              <TestCellWithDetails
+                              <TestResultCellWithActualValue
                                 value={params.value}
                                 testData={params.data.rawValue}
                                 testName={params.data.rawValue.testName}
-                                type="result"
                               />
                             ),
                             width: 100,
