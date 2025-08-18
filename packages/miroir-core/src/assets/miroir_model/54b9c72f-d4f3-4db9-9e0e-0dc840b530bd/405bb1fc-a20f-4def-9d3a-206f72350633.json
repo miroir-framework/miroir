@@ -100,21 +100,46 @@
           "transformerTest": {
             "type": "object",
             "definition": {
-              "transformerTestType": { "type": "literal", "definition": "transformerTest" },
-              "transformerTestLabel": { "type": "string" },
-              "transformerName": { "type": "string" },
-              "transformer": { "type": "any", "optional": false },
-              "runTestStep": { "type": "string", "optional": true },
-              "transformerParams": { "type": "record", "definition": { "type": "any" } },
-              "transformerRuntimeContext": {
-                "type": "record",
-                "definition": { "type": "any" },
+              "transformerTestType": {
+                "type": "literal",
+                "definition": "transformerTest"
+              },
+              "transformerTestLabel": {
+                "type": "string"
+              },
+              "transformerName": {
+                "type": "string"
+              },
+              "transformer": {
+                "type": "any",
+                "optional": false
+              },
+              "runTestStep": {
+                "type": "string",
                 "optional": true
               },
-              "expectedValue": { "type": "any" },
+              "transformerParams": {
+                "type": "record",
+                "definition": {
+                  "type": "any"
+                },
+                "optional": true
+              },
+              "transformerRuntimeContext": {
+                "type": "record",
+                "definition": {
+                  "type": "any"
+                },
+                "optional": true
+              },
+              "expectedValue": {
+                "type": "any"
+              },
               "ignoreAttributes": {
                 "type": "array",
-                "definition": { "type": "string" },
+                "definition": {
+                  "type": "string"
+                },
                 "optional": true
               }
             }
@@ -125,7 +150,9 @@
             "definition": [
               {
                 "type": "schemaReference",
-                "definition": { "relativePath": "transformerTest" }
+                "definition": {
+                  "relativePath": "transformerTest"
+                }
               },
               {
                 "type": "object",
@@ -134,12 +161,16 @@
                     "type": "literal",
                     "definition": "transformerTestSuite"
                   },
-                  "transformerTestLabel": { "type": "string" },
+                  "transformerTestLabel": {
+                    "type": "string"
+                  },
                   "transformerTests": {
                     "type": "record",
                     "definition": {
                       "type": "schemaReference",
-                      "definition": { "relativePath": "transformerTestSuite" }
+                      "definition": {
+                        "relativePath": "transformerTestSuite"
+                      }
                     }
                   }
                 }

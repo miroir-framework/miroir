@@ -268,7 +268,8 @@ export function resolveQueryTemplateWithExtractorCombinerTransformer(
     "resolveQueryTemplateWithExtractorCombinerTransformer converting queryTemplate:",
     JSON.stringify(queryTemplate.extractorTemplates, null, 2),
     "params:",
-    JSON.stringify(params, null, 2)
+    params
+    // JSON.stringify(params, null, 2)
   );
   
   const queries = Object.fromEntries(

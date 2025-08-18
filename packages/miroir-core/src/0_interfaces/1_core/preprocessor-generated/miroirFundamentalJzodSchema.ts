@@ -8434,7 +8434,8 @@ export const miroirFundamentalJzodSchema = {
             "type": "record",
             "definition": {
               "type": "any"
-            }
+            },
+            "optional": true
           },
           "transformerRuntimeContext": {
             "type": "record",
@@ -8608,7 +8609,8 @@ export const miroirFundamentalJzodSchema = {
                     "type": "record",
                     "definition": {
                       "type": "any"
-                    }
+                    },
+                    "optional": true
                   },
                   "transformerRuntimeContext": {
                     "type": "record",

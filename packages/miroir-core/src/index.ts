@@ -720,6 +720,9 @@ export {
   unfoldJzodSchemaOnce,
 } from "./1_core/jzod/JzodUnfoldSchemaOnce.js";
 export {
+  getInnermostTypeCheckError,
+} from "./1_core/jzod/mlsTypeCheckError";
+export {
   applicationModelEntities,
   defaultMiroirMetaModel,
   defaultMiroirModelEnviroment,
