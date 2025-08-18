@@ -294,11 +294,13 @@ export const ConceptPage: React.FC<any> = (
           formState,
           [], // currentValuePath
           [], // currentTypePath
-          context.miroirFundamentalJzodSchema,
-          currentModel,
-          currentMiroirModel,
-          emptyObject,
-        )
+          {
+            miroirFundamentalJzodSchema: context.miroirFundamentalJzodSchema,
+            currentModel,
+            miroirMetaModel: currentMiroirModel,
+          },
+          emptyObject
+        );
 
         return configuration.status == "ok"? configuration.element : defaultObject;
       }

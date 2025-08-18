@@ -749,7 +749,7 @@ export const RootComponent = (props: RootComponentProps) => {
                     </div>
 
                     <span>
-                      <ThemedButton
+                      {/* <ThemedButton
                         onClick={() =>
                           handleAsyncAction(
                             async () => {
@@ -793,7 +793,7 @@ export const RootComponent = (props: RootComponentProps) => {
                         }
                       >
                         Open database
-                      </ThemedButton>
+                      </ThemedButton> */}
                       <ThemedButton
                         onClick={() =>
                           handleAsyncAction(
@@ -955,7 +955,7 @@ export const RootComponent = (props: RootComponentProps) => {
                       >
                         fetch Miroir & App configurations from database
                       </ThemedButton>
-                      <ThemedButton
+                      {/* <ThemedButton
                         onClick={() =>
                           handleAsyncAction(
                             async () => {
@@ -979,15 +979,13 @@ export const RootComponent = (props: RootComponentProps) => {
                         }
                       >
                         fetch Admin configuration from database
-                      </ThemedButton>
+                      </ThemedButton> */}
                       <ThemedButton
                         onClick={() =>
                           handleAsyncAction(
                             async () => {
-                              // await uploadBooksAndReports(domainController, defaultMiroirMetaModel);
                               await domainController.handleAction(
                                 {
-                                  // actionType: "modelAction",
                                   actionType: "remoteLocalCacheRollback",
                                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                                   deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
@@ -996,7 +994,6 @@ export const RootComponent = (props: RootComponentProps) => {
                               );
                               await domainController.handleAction(
                                 {
-                                  // actionType: "modelAction",
                                   actionType: "remoteLocalCacheRollback",
                                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                                   deploymentUuid: adminConfigurationDeploymentLibrary.uuid,

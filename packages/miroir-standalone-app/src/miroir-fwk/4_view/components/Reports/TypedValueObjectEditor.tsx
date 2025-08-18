@@ -24,7 +24,9 @@ import {
   dummyDomainManyQueryWithDeploymentUuid,
   getQueryRunnerParamsForReduxDeploymentsState,
   jzodTypeCheck,
-  getApplicationSection
+  getApplicationSection,
+  defaultMiroirModelEnviroment,
+  getInnermostTypeCheckError
 } from "miroir-core";
 import {
   getMemoizedReduxDeploymentsStateSelectorMap,
@@ -232,7 +234,7 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
   // const deploymentEntityState: ReduxDeploymentsState = useSelector(selectCurrentReduxDeploymentsStateFromReduxState);
   const reduxDeploymentsState: ReduxDeploymentsState = useSelector(
     (state: ReduxStateWithUndoRedo) =>
-      deploymentEntityStateSelectorMap.extractState(state.presentModelSnapshot.current, () => ({}))
+      deploymentEntityStateSelectorMap.extractState(state.presentModelSnapshot.current, () => ({}), defaultMiroirModelEnviroment)
   );
 
   // Create a function to get entity instances for conditional schema resolution
@@ -296,15 +298,17 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
                 displaySchema &&
                 formik.values &&
                 currentModel
-                  ? // ? measuredJzodTypeCheck(
-                    jzodTypeCheck(
+                  ? jzodTypeCheck(
                       displaySchema,
                       formik.values,
                       [],
                       [],
-                      context.miroirFundamentalJzodSchema,
-                      currentModel,
-                      currentMiroirModel,
+                      // defaultMiroirModelEnviroment,
+                      {
+                        miroirFundamentalJzodSchema: context.miroirFundamentalJzodSchema,
+                        currentModel,
+                        miroirMetaModel: currentMiroirModel,
+                      },
                       {}, // relativeReferenceJzodContext
                       formik.values, // currentDefaultValue
                       reduxDeploymentsState,
@@ -341,8 +345,13 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
             "TypedValueObjectEditor could not resolve jzod schema",
             typeCheckKeyMap
           );
-          const jsonString = JSON.stringify(typeCheckKeyMap, null, 2);
-          typeError = <CodeBlock value={jsonString} />;
+          // const jsonString = JSON.stringify(typeCheckKeyMap, null, 2);
+          if (typeCheckKeyMap) {
+            const jsonString = JSON.stringify(getInnermostTypeCheckError(typeCheckKeyMap as any), null, 2);
+            typeError = <CodeBlock value={jsonString} />;
+          } else {
+            typeError = <div>Could not resolve jzod schema</div>;
+          }
         }
 
         const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> =

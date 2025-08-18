@@ -1812,9 +1812,11 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
           formState,
           [], // currentValuePath
           [], // currentTypePath
-          context.miroirFundamentalJzodSchema,
-          currentModel,
-          currentMiroirModel,
+          {
+            miroirFundamentalJzodSchema: context.miroirFundamentalJzodSchema,
+            currentModel,
+            miroirMetaModel: currentMiroirModel,
+          },
           emptyObject
         );
 
@@ -2400,7 +2402,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                         currentDeploymentUuid={emptyString}
                         currentApplicationSection={dataSection}
                         indentLevel={0}
-                        localRootLessListKeyMap={{}}
+                        // localRootLessListKeyMap={{}}
                         // resolvedJzodSchema={actionsJzodSchema}
                         rawJzodSchema={rawSchema}
                         resolvedElementJzodSchema={resolvedJzodSchema}

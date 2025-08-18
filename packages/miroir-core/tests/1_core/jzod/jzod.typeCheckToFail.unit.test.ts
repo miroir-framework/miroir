@@ -40,10 +40,12 @@ function testResolve(
     testValueObject,
     [], // currentValuePath
     [], // currentTypePath
-    castMiroirFundamentalJzodSchema,
-    defaultMiroirMetaModel,
-    defaultMiroirMetaModel,
-    {}
+    {
+      miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+      currentModel: defaultMiroirMetaModel,
+      miroirMetaModel: defaultMiroirMetaModel,
+    }, // context
+    {} // relativeReferenceJzodContext
   );
 
   console.log("test", testId, "has result", JSON.stringify(testResult, null, 2));

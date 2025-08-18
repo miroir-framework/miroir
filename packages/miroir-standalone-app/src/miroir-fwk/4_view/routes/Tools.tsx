@@ -24,6 +24,7 @@ import {
   TestSuiteContext,
   adminConfigurationDeploymentAdmin,
   adminConfigurationDeploymentMiroir,
+  defaultMiroirModelEnviroment,
   displayTestSuiteResultsDetails,
   entityApplicationForAdmin,
   entityDeployment,
@@ -135,9 +136,11 @@ export const ToolsPage: React.FC<any> = (
         testResults["applicative.Library.BuildPlusRuntimeCompositeAction.integ.test"],
         [], // currentValuePath
         [], // currentTypePath
-        context.miroirFundamentalJzodSchema,
-        currentModel,
-        currentMiroirModel,
+        {
+          miroirFundamentalJzodSchema: context.miroirFundamentalJzodSchema,
+          currentModel,
+          miroirMetaModel: currentMiroirModel,
+        },
         emptyObject
       );
 
@@ -165,7 +168,7 @@ export const ToolsPage: React.FC<any> = (
 
   const deploymentEntityState: ReduxDeploymentsState = useSelector(
     (state: ReduxStateWithUndoRedo) =>
-      deploymentEntityStateSelectorMap?.extractState(state.presentModelSnapshot.current, () => ({}))
+      deploymentEntityStateSelectorMap?.extractState(state.presentModelSnapshot.current, () => ({}), defaultMiroirModelEnviroment)
   );
   
   const entityTransformerTestKey = adminConfigurationDeploymentMiroir.uuid + "_data_" + entityTransformerTest.uuid
@@ -181,22 +184,28 @@ export const ToolsPage: React.FC<any> = (
   // const transformerTestSuite_resolveConditionalSchema = deploymentEntityStateSelectorMap.extractEntityInstance(
   // const transformerTestSuite_resolveConditionalSchema: Domain2QueryReturnType<TransformerTestSuite> | undefined =
   const transformerTestSuite_resolveConditionalSchema: Domain2QueryReturnType<any> | undefined =
-  // const transformerTestSuite_resolveConditionalSchema: Domain2QueryReturnType<TransformerTest> | undefined =
-    Object.keys(deploymentEntityState).includes(entityTransformerTestKey)?deploymentEntityStateSelectorMap.extractEntityInstance(deploymentEntityState, {
-      extractor: {
-        queryType: "boxedExtractorOrCombinerReturningObject",
-        deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
-        contextResults: {},
-        pageParams: {},
-        queryParams: {},
-        select: {
-          extractorOrCombinerType: "extractorForObjectByDirectReference",
-          applicationSection: "data",
-          parentUuid: entityTransformerTest.uuid,
-          instanceUuid: transformerTest_resolveConditionalSchema.uuid,
-        },
-      },
-    }) as Domain2QueryReturnType<TransformerTestSuite> : undefined;
+    // const transformerTestSuite_resolveConditionalSchema: Domain2QueryReturnType<TransformerTest> | undefined =
+    Object.keys(deploymentEntityState).includes(entityTransformerTestKey)
+      ? (deploymentEntityStateSelectorMap.extractEntityInstance(
+          deploymentEntityState,
+          {
+            extractor: {
+              queryType: "boxedExtractorOrCombinerReturningObject",
+              deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+              contextResults: {},
+              pageParams: {},
+              queryParams: {},
+              select: {
+                extractorOrCombinerType: "extractorForObjectByDirectReference",
+                applicationSection: "data",
+                parentUuid: entityTransformerTest.uuid,
+                instanceUuid: transformerTest_resolveConditionalSchema.uuid,
+              },
+            },
+          },
+          defaultMiroirModelEnviroment
+        ) as Domain2QueryReturnType<TransformerTestSuite>)
+      : undefined;
   log.info(
     "Tools.tsx transformerTestSuite_resolveConditionalSchema",
     transformerTestSuite_resolveConditionalSchema

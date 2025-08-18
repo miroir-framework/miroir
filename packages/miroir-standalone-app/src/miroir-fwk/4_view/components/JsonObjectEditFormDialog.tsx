@@ -303,9 +303,11 @@ const JsonElementEditorDialog: React.FC<JsonElementEditorDialogProps> = ({
                     formik.values,
                     [], // currentValuePath
                     [], // currentTypePath
-                    miroirFundamentalJzodSchema,
-                    currentAppModel,
-                    currentMiroirModel,
+                    {
+                      miroirFundamentalJzodSchema,
+                      currentModel: currentAppModel,
+                      miroirMetaModel: currentMiroirModel,
+                    },
                     {}
                   )
                 : undefined;
