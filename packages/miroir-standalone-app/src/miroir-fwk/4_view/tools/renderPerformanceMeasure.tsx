@@ -130,6 +130,7 @@ export class RenderPerformanceMetrics {
       </div>
     );
   };
+
   // Global performance summary display - now uses the standalone DraggableContainer
   static GlobalRenderPerformanceDisplay = DraggableContainer;
 
@@ -160,10 +161,13 @@ export class RenderPerformanceMetrics {
     );
     const averageTime = totalRenders > 0 ? totalTime / totalRenders : 0;
 
-    if (totalRenders === 0) return <div>No stats yet!</div>;
+    if (totalRenders === 0) return <div key="no-stats">No stats yet!</div>;
+
+    // Create a unique key based on current metrics to ensure React re-renders parent naturally
+    const metricsKey = `metrics-${totalRenders}-${totalTime.toFixed(2)}`;
 
     return (
-      <>
+      <div key={metricsKey}>
         <div style={{ marginBottom: "8px", padding: "4px 0", borderBottom: "1px solid #eee" }}>
           <div>
             Total Renders: {totalRenders} | Total Time: {totalTime.toFixed(2)}ms | Avg:{" "}
@@ -197,7 +201,7 @@ export class RenderPerformanceMetrics {
               </div>
             ))}
         </div>
-      </>
+      </div>
     );
   };
 }
