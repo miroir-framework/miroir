@@ -1,4 +1,7 @@
+/** @jsxImportSource @emotion/react */
+import { css } from '@emotion/react';
 import * as React from 'react';
+import { useMiroirTheme } from '../contexts/MiroirThemeContext.js';
 
 export interface DraggableContainerProps {
   title?: string;
@@ -14,6 +17,8 @@ export const DraggableContainer: React.FC<DraggableContainerProps> = ({
   storageKey = "performanceStatsPosition",
   defaultPosition = { x: 10, y: 10 }
 }) => {
+  const { currentTheme } = useMiroirTheme();
+  
   const [position, setPosition] = React.useState(() => {
     // Load position from sessionStorage
     const saved = sessionStorage.getItem(storageKey);
@@ -67,44 +72,48 @@ export const DraggableContainer: React.FC<DraggableContainerProps> = ({
     }
   }, [isDragging, handleMouseMove, handleMouseUp]);
 
+  const containerStyles = css({
+    fontSize: currentTheme.typography.fontSize.sm,
+    color: currentTheme.colors.text,
+    backgroundColor: currentTheme.colors.backgroundPaper,
+    padding: currentTheme.spacing.sm,
+    border: `2px solid ${currentTheme.colors.primary}`,
+    borderRadius: currentTheme.borderRadius.md,
+    fontFamily: currentTheme.typography.fontFamily,
+    position: 'fixed',
+    top: `${position.y}px`,
+    left: `${position.x}px`,
+    zIndex: 9999,
+    maxWidth: '500px',
+    maxHeight: '80vh',
+    overflow: 'hidden',
+    boxShadow: currentTheme.elevation.medium,
+    cursor: isDragging ? 'grabbing' : 'grab',
+    userSelect: 'none',
+  });
+
+  const headerStyles = css({
+    fontWeight: currentTheme.typography.fontWeight.bold,
+    borderBottom: `1px solid ${currentTheme.colors.divider}`,
+    marginBottom: currentTheme.spacing.sm,
+    padding: `${currentTheme.spacing.xs} 0`,
+    cursor: 'grab',
+    display: 'flex',
+    alignItems: 'center',
+    gap: currentTheme.spacing.xs,
+    color: currentTheme.colors.primary,
+  });
+
+  const dragIconStyles = css({
+    fontSize: '12px',
+    opacity: 0.7,
+    color: currentTheme.colors.textSecondary,
+  });
+
   return (
-    <div
-      ref={dragRef}
-      onMouseDown={handleMouseDown}
-      style={{
-        fontSize: "0.7rem",
-        color: "#333",
-        backgroundColor: "rgba(255, 255, 255, 0.95)",
-        padding: "8px",
-        border: "2px solid #007acc",
-        borderRadius: "4px",
-        fontFamily: "monospace",
-        position: "fixed",
-        top: `${position.y}px`,
-        left: `${position.x}px`,
-        zIndex: 9999,
-        maxWidth: "500px",
-        maxHeight: "80vh",
-        overflow: "hidden",
-        boxShadow: "0 4px 8px rgba(0,0,0,0.2)",
-        cursor: isDragging ? "grabbing" : "grab",
-        userSelect: "none",
-      }}
-    >
-      <div
-        className="drag-handle"
-        style={{
-          fontWeight: "bold",
-          borderBottom: "1px solid #ddd",
-          marginBottom: "8px",
-          padding: "4px 0",
-          cursor: "grab",
-          display: "flex",
-          alignItems: "center",
-          gap: "8px",
-        }}
-      >
-        <span style={{ fontSize: "12px", opacity: 0.7 }}>⋮⋮</span>
+    <div ref={dragRef} onMouseDown={handleMouseDown} css={containerStyles}>
+      <div className="drag-handle" css={headerStyles}>
+        <span css={dragIconStyles}>⋮⋮</span>
         {title}
       </div>
       {children}
