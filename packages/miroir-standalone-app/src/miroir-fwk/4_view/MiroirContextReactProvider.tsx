@@ -52,7 +52,9 @@ export interface MiroirReactContext {
   setMiroirFundamentalJzodSchema: React.Dispatch<React.SetStateAction<JzodElement>>,
   viewParams: ViewParams,
   showPerformanceDisplay: boolean,
-  setShowPerformanceDisplay: React.Dispatch<React.SetStateAction<boolean>>,
+  setShowPerformanceDisplay: (value: boolean | ((prev: boolean) => boolean)) => void,
+  showActionTimeline: boolean,
+  setShowActionTimeline: (value: boolean | ((prev: boolean) => boolean)) => void,
   // Snackbar functionality
   snackbarOpen: boolean,
   snackbarMessage: string,
@@ -94,6 +96,12 @@ export function MiroirContextReactProvider(props: {
   const [showPerformanceDisplay, setShowPerformanceDisplay] = useState(() => {
     // Persist showPerformanceDisplay state across navigation
     const saved = sessionStorage.getItem('showPerformanceDisplay');
+    return saved ? JSON.parse(saved) : false;
+  });
+  
+  const [showActionTimeline, setShowActionTimeline] = useState(() => {
+    // Persist showActionTimeline state across navigation
+    const saved = sessionStorage.getItem('showActionTimeline');
     return saved ? JSON.parse(saved) : false;
   });
   
@@ -167,6 +175,12 @@ export function MiroirContextReactProvider(props: {
         const newValue = typeof value === 'function' ? value(showPerformanceDisplay) : value;
         setShowPerformanceDisplay(newValue);
         sessionStorage.setItem('showPerformanceDisplay', JSON.stringify(newValue));
+      },
+      showActionTimeline,
+      setShowActionTimeline: (value: boolean | ((prev: boolean) => boolean)) => {
+        const newValue = typeof value === 'function' ? value(showActionTimeline) : value;
+        setShowActionTimeline(newValue);
+        sessionStorage.setItem('showActionTimeline', JSON.stringify(newValue));
       },
       // Snackbar functionality
       snackbarOpen,

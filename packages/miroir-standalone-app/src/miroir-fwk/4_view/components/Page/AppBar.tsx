@@ -371,6 +371,57 @@ export function AppBar(props:AppBarProps) {
                 </Button>
               </Tooltip>
             )}{" "}
+            {/* Action Timeline Indicator */}
+            {context.setShowActionTimeline && (
+              <Tooltip
+                title={
+                  context.showActionTimeline
+                    ? "Action Timeline: ON (click to disable)"
+                    : "Action Timeline: OFF (click to enable)"
+                }
+              >
+                <Button
+                  onClick={() =>
+                    context.setShowActionTimeline?.(!context.showActionTimeline)
+                  }
+                  sx={{
+                    mr: 2,
+                    px: 1,
+                    py: 0.5,
+                    backgroundColor: "transparent",
+                    color: context.showActionTimeline
+                      ? miroirTheme.currentTheme.colors.secondary
+                      : miroirTheme.currentTheme.components.appBar.textColor,
+                    border: `1px solid ${
+                      context.showActionTimeline
+                        ? miroirTheme.currentTheme.colors.secondary
+                        : miroirTheme.currentTheme.components.appBar.textColor
+                    }`,
+                    borderRadius: 1,
+                    textShadow: context.showActionTimeline
+                      ? `0 0 8px ${miroirTheme.currentTheme.colors.secondary}aa, 0 0 16px ${miroirTheme.currentTheme.colors.secondary}77, 0 0 24px ${miroirTheme.currentTheme.colors.secondary}55`
+                      : "none",
+                    transition: "all 0.3s ease-in-out",
+                    fontSize: "0.875rem",
+                    fontWeight: "bold",
+                    textTransform: "none",
+                    minWidth: "auto",
+                    cursor: "pointer",
+                    "&:hover": {
+                      backgroundColor: miroirTheme.currentTheme.colors.hover,
+                      color: context.showActionTimeline
+                        ? miroirTheme.currentTheme.colors.secondary
+                        : miroirTheme.currentTheme.colors.text,
+                      textShadow: context.showActionTimeline
+                        ? `0 0 12px ${miroirTheme.currentTheme.colors.secondary}, 0 0 20px ${miroirTheme.currentTheme.colors.secondary}cc, 0 0 32px ${miroirTheme.currentTheme.colors.secondary}99`
+                        : "none",
+                    },
+                  }}
+                >
+                  Action Timeline
+                </Button>
+              </Tooltip>
+            )}{" "}
             {/* Document Outline Toggle Button */}
             {props.onOutlineToggle && (
               <Tooltip

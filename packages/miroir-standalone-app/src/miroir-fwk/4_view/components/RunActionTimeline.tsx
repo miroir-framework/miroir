@@ -43,6 +43,10 @@ interface FilterState {
   since: string;
 }
 
+// Local tree node type: ActionTrackingData from the tracker stores children as IDs (string[]).
+// For rendering, we build a nested structure where children are the actual nodes.
+type TreeNode = ActionTrackingData & { children?: TreeNode[] };
+
 export const RunActionTimeline: React.FC<RunActionTimelineProps> = ({
   className,
   style,
@@ -90,18 +94,19 @@ export const RunActionTimeline: React.FC<RunActionTimelineProps> = ({
     return Array.from(types).sort();
   }, [actions]);
 
-  // Build tree structure for nested display
-  const actionTree = useMemo(() => {
+  // Build tree structure for nested display (TreeNode uses nested children)
+  const actionTree = useMemo<TreeNode[]>(() => {
     const rootActions = filteredActions.filter((action: ActionTrackingData) => !action.parentId);
-    
-    const buildTree = (action: ActionTrackingData): ActionTrackingData & { children: any[] } => {
-      const children = filteredActions
+
+    const buildTree = (action: ActionTrackingData): TreeNode => {
+      const children: TreeNode[] = filteredActions
         .filter((child: ActionTrackingData) => child.parentId === action.id)
-        .map(buildTree);
-      
-      return { ...action, ...children };
+        .map((c) => buildTree(c));
+
+  // Return a TreeNode with nested children (may be empty array)
+  return ({ ...(action as any), children } as TreeNode);
     };
-    
+
     return rootActions.map(buildTree);
   }, [filteredActions]);
 
@@ -160,7 +165,7 @@ export const RunActionTimeline: React.FC<RunActionTimelineProps> = ({
     return new Date(timestamp).toLocaleTimeString();
   };
 
-  const renderAction = (action: ActionTrackingData & { children?: any[] }, depth = 0) => {
+  const renderAction = (action: TreeNode, depth = 0) => {
     const isExpanded = expanded[action.id];
     const hasChildren = action.children && action.children.length > 0;
     const indentLevel = depth * 24;
@@ -234,22 +239,19 @@ export const RunActionTimeline: React.FC<RunActionTimelineProps> = ({
   };
 
   return (
-    <Paper
-      elevation={1}
+    <Box
       className={className}
       style={{
-        position: 'fixed',
-        top: '64px', // Below app bar
-        right: '16px',
-        width: '400px',
-        maxHeight: 'calc(100vh - 80px)',
-        zIndex: 1200,
+        width: '100%',
+        maxHeight: '70vh',
+        overflow: 'hidden',
+        display: 'flex',
+        flexDirection: 'column',
         ...style,
       }}
     >
-      <Box sx={{ p: 2, borderBottom: '1px solid #e0e0e0' }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
-          <Typography variant="h6">Action Timeline</Typography>
+      <Box sx={{ p: 1, borderBottom: '1px solid #e0e0e0' }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', mb: 1 }}>
           <Box sx={{ display: 'flex', gap: 1 }}>
             <Tooltip title="Filter">
               <IconButton size="small" onClick={() => setShowFilters(!showFilters)}>
@@ -329,6 +331,6 @@ export const RunActionTimeline: React.FC<RunActionTimelineProps> = ({
           </List>
         )}
       </Box>
-    </Paper>
+    </Box>
   );
 };

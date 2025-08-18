@@ -259,7 +259,8 @@ export async function restActionHandler(
   log.info("restActionHandler called with params", params);
 
   if (body && (body as any).actionType !== "initModel") {
-    log.info("restActionHandler called with", "body", JSON.stringify(body, undefined, 2));
+    // log.info("restActionHandler called with", "body", JSON.stringify(body, undefined, 2));
+    log.info("restActionHandler called with", "body", body);
   }
   // else {
   //   console.log("restActionHandler called");
@@ -335,8 +336,8 @@ export async function restActionHandler(
           log.info(
             "restActionHandler handled action",
             action.actionType,
-            "result",
-            JSON.stringify(result, undefined, 2)
+            // "result",
+            // JSON.stringify(result, undefined, 2)
           );
           return continuationFunction(response)(result);
         }
@@ -410,10 +411,10 @@ export async function queryActionHandler(
   // USING THE LOCAL CACHE OR THE LOCAL PERSISTENCE STORE 
   // SHALL BE DETERMINED BY DOMAINCONTROLLER DEPENDING ON THE QUERY
   const result = await domainController.handleBoxedExtractorOrQueryAction(runBoxedExtractorOrQueryAction)
-  log.info(
-    "RestServer queryActionHandler used domainController result=",
-    JSON.stringify(result, undefined, 2)
-  );
+  // log.info(
+  //   "RestServer queryActionHandler used domainController result=",
+  //   JSON.stringify(result, undefined, 2)
+  // );
   return continuationFunction(response)(result)
 }
 
@@ -459,8 +460,8 @@ export async function queryTemplateActionHandler(
       runBoxedQueryTemplateOrBoxedExtractorTemplateAction
     );
     log.info(
-      "RestServer queryTemplateActionHandler used adminConfigurationDeploymentMiroir domainController result=",
-      JSON.stringify(result, undefined, 2)
+      "RestServer queryTemplateActionHandler used adminConfigurationDeploymentMiroir domainController result=", result
+      // JSON.stringify(result, undefined, 2)
     );
     return continuationFunction(response)(result);
   } else {
@@ -471,9 +472,10 @@ export async function queryTemplateActionHandler(
     const extractorRunnerMapOnDomainState = getSelectorMapForTemplate();
     log.info(
       "RestServer queryTemplateActionHandler runBoxedQueryTemplateOrBoxedExtractorTemplateAction=",
-      JSON.stringify(runBoxedQueryTemplateOrBoxedExtractorTemplateAction, undefined, 2)
+      runBoxedQueryTemplateOrBoxedExtractorTemplateAction,
+      // JSON.stringify(runBoxedQueryTemplateOrBoxedExtractorTemplateAction, undefined, 2)
     );
-    log.info("RestServer queryTemplateActionHandler domainState=", JSON.stringify(domainState, undefined, 2));
+    // log.info("RestServer queryTemplateActionHandler domainState=", JSON.stringify(domainState, undefined, 2));
     let queryResult: Domain2QueryReturnType<any> = undefined as any as Domain2QueryReturnType<any>;
 
     switch (runBoxedQueryTemplateOrBoxedExtractorTemplateAction.payload.query.queryType) {
@@ -516,7 +518,8 @@ export async function queryTemplateActionHandler(
       status: "ok",
       returnedDomainElement: queryResult,
     };
-    log.info("RestServer queryTemplateActionHandler used local cache result=", JSON.stringify(result, undefined, 2));
+    log.info("RestServer queryTemplateActionHandler used local cache result=", result);
+    // log.info("RestServer queryTemplateActionHandler used local cache result=", JSON.stringify(result, undefined, 2));
 
     return continuationFunction(response)(result);
   }
