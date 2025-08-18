@@ -143,6 +143,64 @@ export const TestCellWithDetails: React.FC<TestCellWithDetailsProps> = ({
     navigator.clipboard.writeText(formatDetailedTooltipContent());
   };
 
+  // Helper function to extract all expected results
+  const getExpectedResults = () => {
+    if (!testData.fullAssertionsResults) return "No assertion data available";
+    
+    const assertions = Object.entries(testData.fullAssertionsResults);
+    const failedAssertions = assertions.filter(([_, assertion]: [string, any]) => 
+      assertion.assertionResult !== "ok"
+    );
+    
+    if (failedAssertions.length === 0) {
+      return "All assertions passed - no expected results to display";
+    }
+    
+    let content = `Expected Results for Test: ${testName}\n`;
+    content += `${'='.repeat(50)}\n\n`;
+    
+    failedAssertions.forEach(([assertionName, assertion]: [string, any]) => {
+      content += `Assertion: ${assertionName}\n`;
+      content += `${'-'.repeat(30)}\n`;
+      content += `${JSON.stringify(assertion.assertionExpectedValue, null, 2)}\n\n`;
+    });
+    
+    return content;
+  };
+
+  // Helper function to extract all actual results
+  const getActualResults = () => {
+    if (!testData.fullAssertionsResults) return "No assertion data available";
+    
+    const assertions = Object.entries(testData.fullAssertionsResults);
+    const failedAssertions = assertions.filter(([_, assertion]: [string, any]) => 
+      assertion.assertionResult !== "ok"
+    );
+    
+    if (failedAssertions.length === 0) {
+      return "All assertions passed - no actual results to display";
+    }
+    
+    let content = `Actual Results for Test: ${testName}\n`;
+    content += `${'='.repeat(50)}\n\n`;
+    
+    failedAssertions.forEach(([assertionName, assertion]: [string, any]) => {
+      content += `Assertion: ${assertionName}\n`;
+      content += `${'-'.repeat(30)}\n`;
+      content += `${JSON.stringify(assertion.assertionActualValue, null, 2)}\n\n`;
+    });
+    
+    return content;
+  };
+
+  const handleCopyExpectedResults = () => {
+    navigator.clipboard.writeText(getExpectedResults());
+  };
+
+  const handleCopyActualResults = () => {
+    navigator.clipboard.writeText(getActualResults());
+  };
+
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     setIsExpanded(!isExpanded);
@@ -264,6 +322,44 @@ export const TestCellWithDetails: React.FC<TestCellWithDetailsProps> = ({
             style={{
               position: 'absolute',
               top: '8px',
+              right: '140px',
+              backgroundColor: currentTheme.colors.success || '#2e7d32',
+              color: 'white',
+              border: 'none',
+              borderRadius: currentTheme.borderRadius.sm,
+              padding: '4px 8px',
+              fontSize: '12px',
+              cursor: 'pointer',
+            }}
+            onClick={handleCopyExpectedResults}
+            title="Copy Expected Results"
+          >
+            📋 Expected
+          </ThemedStyledButton>
+
+          <ThemedStyledButton
+            style={{
+              position: 'absolute',
+              top: '8px',
+              right: '90px',
+              backgroundColor: currentTheme.colors.error || '#d32f2f',
+              color: 'white',
+              border: 'none',
+              borderRadius: currentTheme.borderRadius.sm,
+              padding: '4px 8px',
+              fontSize: '12px',
+              cursor: 'pointer',
+            }}
+            onClick={handleCopyActualResults}
+            title="Copy Actual Results"
+          >
+            📋 Actual
+          </ThemedStyledButton>
+          
+          <ThemedStyledButton
+            style={{
+              position: 'absolute',
+              top: '8px',
               right: '40px',
               backgroundColor: currentTheme.colors.primary,
               color: 'white',
@@ -274,8 +370,9 @@ export const TestCellWithDetails: React.FC<TestCellWithDetailsProps> = ({
               cursor: 'pointer',
             }}
             onClick={handleCopyToClipboard}
+            title="Copy All Details"
           >
-            📋 Copy
+            📋 All
           </ThemedStyledButton>
           
           <ThemedStyledButton
