@@ -1473,8 +1473,7 @@
                     "type": "union",
                     "definition": [
                       {
-                        "type": "string",
-                        "optional": true
+                        "type": "string"
                       },
                       {
                         "type": "schemaReference",
@@ -1483,14 +1482,6 @@
                         }
                       }
                     ]
-                  },
-                  "b": {
-                    "type": "string",
-                    "optional": true
-                  },
-                  "c": {
-                    "type": "number",
-                    "optional": true
                   }
                 }
               }
@@ -1500,7 +1491,11 @@
             }
           },
           "valueObject": {
-            "b": "onlyB"
+            "a": {
+              "a": {
+                "a": "myString"
+              }
+            }
           },
           "currentValuePath": [],
           "currentTypePath": [],
@@ -1522,8 +1517,7 @@
                     "type": "union",
                     "definition": [
                       {
-                        "type": "string",
-                        "optional": true
+                        "type": "string"
                       },
                       {
                         "type": "schemaReference",
@@ -1532,14 +1526,6 @@
                         }
                       }
                     ]
-                  },
-                  "b": {
-                    "type": "string",
-                    "optional": true
-                  },
-                  "c": {
-                    "type": "number",
-                    "optional": true
                   }
                 }
               }
@@ -1552,56 +1538,1920 @@
             "type": "object",
             "definition": {
               "a": {
-                "type": "string",
-                "optional": true
-              },
-              "c": {
-                "type": "number",
-                "optional": true
+                "type": "object",
+                "definition": {
+                  "a": {
+                    "type": "object",
+                    "definition": {
+                      "a": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
               }
             }
           },
           "subSchemas": {
-            "b": {
+            "a": {
               "status": "ok",
               "valuePath": [
-                "b"
+                "a"
               ],
               "typePath": [
                 "ref:myObject",
-                "b"
+                "a",
+                "union choice"
               ],
               "rawSchema": {
-                "type": "string",
-                "optional": true
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "myObject"
+                    }
+                  }
+                ]
               },
               "resolvedSchema": {
-                "type": "string",
-                "optional": true
+                "type": "object",
+                "definition": {
+                  "a": {
+                    "type": "object",
+                    "definition": {
+                      "a": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
               },
-              "keyMap": {
-                "b": {
+              "subSchemas": {
+                "a": {
+                  "status": "ok",
+                  "valuePath": [
+                    "a",
+                    "a"
+                  ],
+                  "typePath": [
+                    "ref:myObject",
+                    "a",
+                    "union choice",
+                    "a",
+                    "union choice"
+                  ],
                   "rawSchema": {
-                    "type": "string",
-                    "optional": true
+                    "type": "union",
+                    "definition": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "schemaReference",
+                        "definition": {
+                          "relativePath": "myObject"
+                        }
+                      }
+                    ]
                   },
                   "resolvedSchema": {
-                    "type": "string",
-                    "optional": true
+                    "type": "object",
+                    "definition": {
+                      "a": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "subSchemas": {
+                    "a": {
+                      "status": "ok",
+                      "valuePath": [
+                        "a",
+                        "a",
+                        "a"
+                      ],
+                      "typePath": [
+                        "ref:myObject",
+                        "a",
+                        "union choice",
+                        "a",
+                        "union choice",
+                        "a"
+                      ],
+                      "rawSchema": {
+                        "type": "union",
+                        "definition": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "myObject"
+                            }
+                          }
+                        ]
+                      },
+                      "resolvedSchema": {
+                        "type": "string"
+                      },
+                      "keyMap": {
+                        "a.a.a": {
+                          "rawSchema": {
+                            "type": "union",
+                            "definition": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "schemaReference",
+                                "definition": {
+                                  "relativePath": "myObject"
+                                }
+                              }
+                            ]
+                          },
+                          "recursivelyUnfoldedUnionSchema": {
+                            "status": "ok",
+                            "result": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "object",
+                                "definition": {
+                                  "a": {
+                                    "type": "union",
+                                    "definition": [
+                                      {
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "schemaReference",
+                                        "definition": {
+                                          "relativePath": "myObject"
+                                        }
+                                      }
+                                    ]
+                                  }
+                                }
+                              }
+                            ],
+                            "expandedReferences": [
+                              "myObject"
+                            ]
+                          },
+                          "resolvedSchema": {
+                            "type": "string"
+                          },
+                          "chosenUnionBranchRawSchema": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "keyMap": {
+                    "a.a.a": {
+                      "rawSchema": {
+                        "type": "union",
+                        "definition": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "myObject"
+                            }
+                          }
+                        ]
+                      },
+                      "recursivelyUnfoldedUnionSchema": {
+                        "status": "ok",
+                        "result": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "object",
+                            "definition": {
+                              "a": {
+                                "type": "union",
+                                "definition": [
+                                  {
+                                    "type": "string"
+                                  },
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "relativePath": "myObject"
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          }
+                        ],
+                        "expandedReferences": [
+                          "myObject"
+                        ]
+                      },
+                      "resolvedSchema": {
+                        "type": "string"
+                      },
+                      "chosenUnionBranchRawSchema": {
+                        "type": "string"
+                      }
+                    },
+                    "a.a": {
+                      "rawSchema": {
+                        "type": "union",
+                        "definition": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "myObject"
+                            }
+                          }
+                        ]
+                      },
+                      "resolvedSchema": {
+                        "type": "object",
+                        "definition": {
+                          "a": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "jzodObjectFlattenedSchema": {
+                        "type": "object",
+                        "definition": {
+                          "a": {
+                            "type": "union",
+                            "definition": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "schemaReference",
+                                "definition": {
+                                  "relativePath": "myObject"
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      },
+                      "recursivelyUnfoldedUnionSchema": {
+                        "status": "ok",
+                        "result": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "object",
+                            "definition": {
+                              "a": {
+                                "type": "union",
+                                "definition": [
+                                  {
+                                    "type": "string"
+                                  },
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "relativePath": "myObject"
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          }
+                        ],
+                        "expandedReferences": [
+                          "myObject"
+                        ]
+                      },
+                      "chosenUnionBranchRawSchema": {
+                        "type": "object",
+                        "definition": {
+                          "a": {
+                            "type": "union",
+                            "definition": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "schemaReference",
+                                "definition": {
+                                  "relativePath": "myObject"
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      },
+                      "discriminatorValues": []
+                    }
+                  }
+                }
+              },
+              "keyMap": {
+                "a.a.a": {
+                  "rawSchema": {
+                    "type": "union",
+                    "definition": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "schemaReference",
+                        "definition": {
+                          "relativePath": "myObject"
+                        }
+                      }
+                    ]
+                  },
+                  "recursivelyUnfoldedUnionSchema": {
+                    "status": "ok",
+                    "result": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "object",
+                        "definition": {
+                          "a": {
+                            "type": "union",
+                            "definition": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "schemaReference",
+                                "definition": {
+                                  "relativePath": "myObject"
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    ],
+                    "expandedReferences": [
+                      "myObject"
+                    ]
+                  },
+                  "resolvedSchema": {
+                    "type": "string"
+                  },
+                  "chosenUnionBranchRawSchema": {
+                    "type": "string"
+                  }
+                },
+                "a.a": {
+                  "rawSchema": {
+                    "type": "union",
+                    "definition": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "schemaReference",
+                        "definition": {
+                          "relativePath": "myObject"
+                        }
+                      }
+                    ]
+                  },
+                  "resolvedSchema": {
+                    "type": "object",
+                    "definition": {
+                      "a": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "jzodObjectFlattenedSchema": {
+                    "type": "object",
+                    "definition": {
+                      "a": {
+                        "type": "union",
+                        "definition": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "myObject"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "recursivelyUnfoldedUnionSchema": {
+                    "status": "ok",
+                    "result": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "object",
+                        "definition": {
+                          "a": {
+                            "type": "union",
+                            "definition": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "schemaReference",
+                                "definition": {
+                                  "relativePath": "myObject"
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    ],
+                    "expandedReferences": [
+                      "myObject"
+                    ]
+                  },
+                  "chosenUnionBranchRawSchema": {
+                    "type": "object",
+                    "definition": {
+                      "a": {
+                        "type": "union",
+                        "definition": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "myObject"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "discriminatorValues": []
+                },
+                "a": {
+                  "rawSchema": {
+                    "type": "union",
+                    "definition": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "schemaReference",
+                        "definition": {
+                          "relativePath": "myObject"
+                        }
+                      }
+                    ]
+                  },
+                  "resolvedSchema": {
+                    "type": "object",
+                    "definition": {
+                      "a": {
+                        "type": "object",
+                        "definition": {
+                          "a": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "jzodObjectFlattenedSchema": {
+                    "type": "object",
+                    "definition": {
+                      "a": {
+                        "type": "union",
+                        "definition": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "myObject"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "recursivelyUnfoldedUnionSchema": {
+                    "status": "ok",
+                    "result": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "object",
+                        "definition": {
+                          "a": {
+                            "type": "union",
+                            "definition": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "schemaReference",
+                                "definition": {
+                                  "relativePath": "myObject"
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    ],
+                    "expandedReferences": [
+                      "myObject"
+                    ]
+                  },
+                  "chosenUnionBranchRawSchema": {
+                    "type": "object",
+                    "definition": {
+                      "a": {
+                        "type": "union",
+                        "definition": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "myObject"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "discriminatorValues": []
+                }
+              }
+            }
+          },
+          "keyMap": {
+            "a.a.a": {
+              "rawSchema": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "myObject"
+                    }
+                  }
+                ]
+              },
+              "recursivelyUnfoldedUnionSchema": {
+                "status": "ok",
+                "result": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "object",
+                    "definition": {
+                      "a": {
+                        "type": "union",
+                        "definition": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "myObject"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                ],
+                "expandedReferences": [
+                  "myObject"
+                ]
+              },
+              "resolvedSchema": {
+                "type": "string"
+              },
+              "chosenUnionBranchRawSchema": {
+                "type": "string"
+              }
+            },
+            "a.a": {
+              "rawSchema": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "myObject"
+                    }
+                  }
+                ]
+              },
+              "resolvedSchema": {
+                "type": "object",
+                "definition": {
+                  "a": {
+                    "type": "string"
+                  }
+                }
+              },
+              "jzodObjectFlattenedSchema": {
+                "type": "object",
+                "definition": {
+                  "a": {
+                    "type": "union",
+                    "definition": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "schemaReference",
+                        "definition": {
+                          "relativePath": "myObject"
+                        }
+                      }
+                    ]
+                  }
+                }
+              },
+              "recursivelyUnfoldedUnionSchema": {
+                "status": "ok",
+                "result": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "object",
+                    "definition": {
+                      "a": {
+                        "type": "union",
+                        "definition": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "myObject"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                ],
+                "expandedReferences": [
+                  "myObject"
+                ]
+              },
+              "chosenUnionBranchRawSchema": {
+                "type": "object",
+                "definition": {
+                  "a": {
+                    "type": "union",
+                    "definition": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "schemaReference",
+                        "definition": {
+                          "relativePath": "myObject"
+                        }
+                      }
+                    ]
+                  }
+                }
+              },
+              "discriminatorValues": []
+            },
+            "a": {
+              "rawSchema": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "myObject"
+                    }
+                  }
+                ]
+              },
+              "resolvedSchema": {
+                "type": "object",
+                "definition": {
+                  "a": {
+                    "type": "object",
+                    "definition": {
+                      "a": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              },
+              "jzodObjectFlattenedSchema": {
+                "type": "object",
+                "definition": {
+                  "a": {
+                    "type": "union",
+                    "definition": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "schemaReference",
+                        "definition": {
+                          "relativePath": "myObject"
+                        }
+                      }
+                    ]
+                  }
+                }
+              },
+              "recursivelyUnfoldedUnionSchema": {
+                "status": "ok",
+                "result": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "object",
+                    "definition": {
+                      "a": {
+                        "type": "union",
+                        "definition": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "myObject"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                ],
+                "expandedReferences": [
+                  "myObject"
+                ]
+              },
+              "chosenUnionBranchRawSchema": {
+                "type": "object",
+                "definition": {
+                  "a": {
+                    "type": "union",
+                    "definition": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "schemaReference",
+                        "definition": {
+                          "relativePath": "myObject"
+                        }
+                      }
+                    ]
+                  }
+                }
+              },
+              "discriminatorValues": []
+            },
+            "": {
+              "rawSchema": {
+                "type": "schemaReference",
+                "context": {
+                  "myObject": {
+                    "type": "object",
+                    "definition": {
+                      "a": {
+                        "type": "union",
+                        "definition": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "myObject"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                },
+                "definition": {
+                  "relativePath": "myObject"
+                }
+              },
+              "resolvedSchema": {
+                "type": "object",
+                "definition": {
+                  "a": {
+                    "type": "object",
+                    "definition": {
+                      "a": {
+                        "type": "object",
+                        "definition": {
+                          "a": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "jzodObjectFlattenedSchema": {
+                "type": "object",
+                "definition": {
+                  "a": {
+                    "type": "union",
+                    "definition": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "schemaReference",
+                        "definition": {
+                          "relativePath": "myObject"
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "test070": {
+        "transformerTestType": "transformerTest",
+        "transformerTestLabel": "test070",
+        "transformerName": "jzodTypeCheck",
+        "runTestStep": "build",
+        "transformer": {
+          "transformerType": "jzodTypeCheck",
+          "interpolation": "build",
+          "jzodSchema": {
+            "type": "schemaReference",
+            "context": {
+              "myObject": {
+                "type": "object",
+                "definition": {
+                  "a": {
+                    "type": "union",
+                    "definition": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "schemaReference",
+                        "definition": {
+                          "relativePath": "myObject"
+                        }
+                      }
+                    ]
+                  }
+                }
+              },
+              "myRecord": {
+                "type": "record",
+                "definition": {
+                  "type": "schemaReference",
+                  "definition": {
+                    "relativePath": "myObject"
+                  }
+                }
+              }
+            },
+            "definition": {
+              "relativePath": "myRecord"
+            }
+          },
+          "valueObject": {
+            "r1": {
+              "a": {
+                "a": "myString"
+              }
+            },
+            "r2": {
+              "a": "myString"
+            }
+          },
+          "currentValuePath": [],
+          "currentTypePath": [],
+          "relativeReferenceJzodContext": {}
+        },
+        "expectedValue": {
+          "status": "ok",
+          "valuePath": [],
+          "typePath": ["ref:myRecord"],
+          "rawSchema": {
+            "type": "schemaReference",
+            "context": {
+              "myObject": {
+                "type": "object",
+                "definition": {
+                  "a": {
+                    "type": "union",
+                    "definition": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "schemaReference",
+                        "definition": {
+                          "relativePath": "myObject"
+                        }
+                      }
+                    ]
+                  }
+                }
+              },
+              "myRecord": {
+                "type": "record",
+                "definition": {
+                  "type": "schemaReference",
+                  "definition": {
+                    "relativePath": "myObject"
+                  }
+                }
+              }
+            },
+            "definition": {
+              "relativePath": "myRecord"
+            }
+          },
+          "resolvedSchema": {
+            "type": "object",
+            "definition": {
+              "r1": {
+                "type": "object",
+                "definition": {
+                  "a": {
+                    "type": "object",
+                    "definition": {
+                      "a": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              },
+              "r2": {
+                "type": "object",
+                "definition": {
+                  "a": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "subSchemas": {
+            "r1": {
+              "status": "ok",
+              "valuePath": ["r1"],
+              "typePath": ["ref:myRecord", "r1", "ref:myObject"],
+              "rawSchema": {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "myObject"
+                }
+              },
+              "resolvedSchema": {
+                "type": "object",
+                "definition": {
+                  "a": {
+                    "type": "object",
+                    "definition": {
+                      "a": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              },
+              "subSchemas": {
+                "a": {
+                  "status": "ok",
+                  "valuePath": ["r1", "a"],
+                  "typePath": ["ref:myRecord", "r1", "ref:myObject", "a", "union choice"],
+                  "rawSchema": {
+                    "type": "union",
+                    "definition": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "schemaReference",
+                        "definition": {
+                          "relativePath": "myObject"
+                        }
+                      }
+                    ]
+                  },
+                  "resolvedSchema": {
+                    "type": "object",
+                    "definition": {
+                      "a": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "subSchemas": {
+                    "a": {
+                      "status": "ok",
+                      "valuePath": ["r1", "a", "a"],
+                      "typePath": ["ref:myRecord", "r1", "ref:myObject", "a", "union choice", "a"],
+                      "rawSchema": {
+                        "type": "union",
+                        "definition": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "myObject"
+                            }
+                          }
+                        ]
+                      },
+                      "resolvedSchema": {
+                        "type": "string"
+                      },
+                      "keyMap": {
+                        "r1.a.a": {
+                          "rawSchema": {
+                            "type": "union",
+                            "definition": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "schemaReference",
+                                "definition": {
+                                  "relativePath": "myObject"
+                                }
+                              }
+                            ]
+                          },
+                          "recursivelyUnfoldedUnionSchema": {
+                            "status": "ok",
+                            "result": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "object",
+                                "definition": {
+                                  "a": {
+                                    "type": "union",
+                                    "definition": [
+                                      {
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "schemaReference",
+                                        "definition": {
+                                          "relativePath": "myObject"
+                                        }
+                                      }
+                                    ]
+                                  }
+                                }
+                              }
+                            ],
+                            "expandedReferences": ["myObject"]
+                          },
+                          "resolvedSchema": {
+                            "type": "string"
+                          },
+                          "chosenUnionBranchRawSchema": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "keyMap": {
+                    "r1.a.a": {
+                      "rawSchema": {
+                        "type": "union",
+                        "definition": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "myObject"
+                            }
+                          }
+                        ]
+                      },
+                      "recursivelyUnfoldedUnionSchema": {
+                        "status": "ok",
+                        "result": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "object",
+                            "definition": {
+                              "a": {
+                                "type": "union",
+                                "definition": [
+                                  {
+                                    "type": "string"
+                                  },
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "relativePath": "myObject"
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          }
+                        ],
+                        "expandedReferences": ["myObject"]
+                      },
+                      "resolvedSchema": {
+                        "type": "string"
+                      },
+                      "chosenUnionBranchRawSchema": {
+                        "type": "string"
+                      }
+                    },
+                    "r1.a": {
+                      "rawSchema": {
+                        "type": "union",
+                        "definition": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "myObject"
+                            }
+                          }
+                        ]
+                      },
+                      "resolvedSchema": {
+                        "type": "object",
+                        "definition": {
+                          "a": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "jzodObjectFlattenedSchema": {
+                        "type": "object",
+                        "definition": {
+                          "a": {
+                            "type": "union",
+                            "definition": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "schemaReference",
+                                "definition": {
+                                  "relativePath": "myObject"
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      },
+                      "recursivelyUnfoldedUnionSchema": {
+                        "status": "ok",
+                        "result": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "object",
+                            "definition": {
+                              "a": {
+                                "type": "union",
+                                "definition": [
+                                  {
+                                    "type": "string"
+                                  },
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "relativePath": "myObject"
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          }
+                        ],
+                        "expandedReferences": ["myObject"]
+                      },
+                      "chosenUnionBranchRawSchema": {
+                        "type": "object",
+                        "definition": {
+                          "a": {
+                            "type": "union",
+                            "definition": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "schemaReference",
+                                "definition": {
+                                  "relativePath": "myObject"
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      },
+                      "discriminatorValues": []
+                    }
+                  }
+                }
+              },
+              "keyMap": {
+                "r1.a.a": {
+                  "rawSchema": {
+                    "type": "union",
+                    "definition": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "schemaReference",
+                        "definition": {
+                          "relativePath": "myObject"
+                        }
+                      }
+                    ]
+                  },
+                  "recursivelyUnfoldedUnionSchema": {
+                    "status": "ok",
+                    "result": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "object",
+                        "definition": {
+                          "a": {
+                            "type": "union",
+                            "definition": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "schemaReference",
+                                "definition": {
+                                  "relativePath": "myObject"
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    ],
+                    "expandedReferences": ["myObject"]
+                  },
+                  "resolvedSchema": {
+                    "type": "string"
+                  },
+                  "chosenUnionBranchRawSchema": {
+                    "type": "string"
+                  }
+                },
+                "r1.a": {
+                  "rawSchema": {
+                    "type": "union",
+                    "definition": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "schemaReference",
+                        "definition": {
+                          "relativePath": "myObject"
+                        }
+                      }
+                    ]
+                  },
+                  "resolvedSchema": {
+                    "type": "object",
+                    "definition": {
+                      "a": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "jzodObjectFlattenedSchema": {
+                    "type": "object",
+                    "definition": {
+                      "a": {
+                        "type": "union",
+                        "definition": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "myObject"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "recursivelyUnfoldedUnionSchema": {
+                    "status": "ok",
+                    "result": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "object",
+                        "definition": {
+                          "a": {
+                            "type": "union",
+                            "definition": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "schemaReference",
+                                "definition": {
+                                  "relativePath": "myObject"
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    ],
+                    "expandedReferences": ["myObject"]
+                  },
+                  "chosenUnionBranchRawSchema": {
+                    "type": "object",
+                    "definition": {
+                      "a": {
+                        "type": "union",
+                        "definition": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "myObject"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "discriminatorValues": []
+                },
+                "r1": {
+                  "rawSchema": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "myObject"
+                    }
+                  },
+                  "resolvedSchema": {
+                    "type": "object",
+                    "definition": {
+                      "a": {
+                        "type": "object",
+                        "definition": {
+                          "a": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "jzodObjectFlattenedSchema": {
+                    "type": "object",
+                    "definition": {
+                      "a": {
+                        "type": "union",
+                        "definition": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "myObject"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "r2": {
+              "status": "ok",
+              "valuePath": ["r2"],
+              "typePath": ["ref:myRecord", "r2", "ref:myObject"],
+              "rawSchema": {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "myObject"
+                }
+              },
+              "resolvedSchema": {
+                "type": "object",
+                "definition": {
+                  "a": {
+                    "type": "string"
+                  }
+                }
+              },
+              "subSchemas": {
+                "a": {
+                  "status": "ok",
+                  "valuePath": ["r2", "a"],
+                  "typePath": ["ref:myRecord", "r2", "ref:myObject", "a"],
+                  "rawSchema": {
+                    "type": "union",
+                    "definition": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "schemaReference",
+                        "definition": {
+                          "relativePath": "myObject"
+                        }
+                      }
+                    ]
+                  },
+                  "resolvedSchema": {
+                    "type": "string"
+                  },
+                  "keyMap": {
+                    "r2.a": {
+                      "rawSchema": {
+                        "type": "union",
+                        "definition": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "myObject"
+                            }
+                          }
+                        ]
+                      },
+                      "recursivelyUnfoldedUnionSchema": {
+                        "status": "ok",
+                        "result": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "object",
+                            "definition": {
+                              "a": {
+                                "type": "union",
+                                "definition": [
+                                  {
+                                    "type": "string"
+                                  },
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "relativePath": "myObject"
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          }
+                        ],
+                        "expandedReferences": ["myObject"]
+                      },
+                      "resolvedSchema": {
+                        "type": "string"
+                      },
+                      "chosenUnionBranchRawSchema": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              },
+              "keyMap": {
+                "r2.a": {
+                  "rawSchema": {
+                    "type": "union",
+                    "definition": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "schemaReference",
+                        "definition": {
+                          "relativePath": "myObject"
+                        }
+                      }
+                    ]
+                  },
+                  "recursivelyUnfoldedUnionSchema": {
+                    "status": "ok",
+                    "result": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "object",
+                        "definition": {
+                          "a": {
+                            "type": "union",
+                            "definition": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "schemaReference",
+                                "definition": {
+                                  "relativePath": "myObject"
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    ],
+                    "expandedReferences": ["myObject"]
+                  },
+                  "resolvedSchema": {
+                    "type": "string"
+                  },
+                  "chosenUnionBranchRawSchema": {
+                    "type": "string"
+                  }
+                },
+                "r2": {
+                  "rawSchema": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "myObject"
+                    }
+                  },
+                  "resolvedSchema": {
+                    "type": "object",
+                    "definition": {
+                      "a": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "jzodObjectFlattenedSchema": {
+                    "type": "object",
+                    "definition": {
+                      "a": {
+                        "type": "union",
+                        "definition": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "myObject"
+                            }
+                          }
+                        ]
+                      }
+                    }
                   }
                 }
               }
             }
           },
           "keyMap": {
-            "b": {
+            "r1.a.a": {
               "rawSchema": {
-                "type": "string",
-                "optional": true
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "myObject"
+                    }
+                  }
+                ]
+              },
+              "recursivelyUnfoldedUnionSchema": {
+                "status": "ok",
+                "result": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "object",
+                    "definition": {
+                      "a": {
+                        "type": "union",
+                        "definition": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "myObject"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                ],
+                "expandedReferences": ["myObject"]
               },
               "resolvedSchema": {
-                "type": "string",
-                "optional": true
+                "type": "string"
+              },
+              "chosenUnionBranchRawSchema": {
+                "type": "string"
+              }
+            },
+            "r1.a": {
+              "rawSchema": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "myObject"
+                    }
+                  }
+                ]
+              },
+              "resolvedSchema": {
+                "type": "object",
+                "definition": {
+                  "a": {
+                    "type": "string"
+                  }
+                }
+              },
+              "jzodObjectFlattenedSchema": {
+                "type": "object",
+                "definition": {
+                  "a": {
+                    "type": "union",
+                    "definition": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "schemaReference",
+                        "definition": {
+                          "relativePath": "myObject"
+                        }
+                      }
+                    ]
+                  }
+                }
+              },
+              "recursivelyUnfoldedUnionSchema": {
+                "status": "ok",
+                "result": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "object",
+                    "definition": {
+                      "a": {
+                        "type": "union",
+                        "definition": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "myObject"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                ],
+                "expandedReferences": ["myObject"]
+              },
+              "chosenUnionBranchRawSchema": {
+                "type": "object",
+                "definition": {
+                  "a": {
+                    "type": "union",
+                    "definition": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "schemaReference",
+                        "definition": {
+                          "relativePath": "myObject"
+                        }
+                      }
+                    ]
+                  }
+                }
+              },
+              "discriminatorValues": []
+            },
+            "r1": {
+              "rawSchema": {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "myObject"
+                }
+              },
+              "resolvedSchema": {
+                "type": "object",
+                "definition": {
+                  "a": {
+                    "type": "object",
+                    "definition": {
+                      "a": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              },
+              "jzodObjectFlattenedSchema": {
+                "type": "object",
+                "definition": {
+                  "a": {
+                    "type": "union",
+                    "definition": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "schemaReference",
+                        "definition": {
+                          "relativePath": "myObject"
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            "r2.a": {
+              "rawSchema": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "myObject"
+                    }
+                  }
+                ]
+              },
+              "recursivelyUnfoldedUnionSchema": {
+                "status": "ok",
+                "result": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "object",
+                    "definition": {
+                      "a": {
+                        "type": "union",
+                        "definition": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "myObject"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                ],
+                "expandedReferences": ["myObject"]
+              },
+              "resolvedSchema": {
+                "type": "string"
+              },
+              "chosenUnionBranchRawSchema": {
+                "type": "string"
+              }
+            },
+            "r2": {
+              "rawSchema": {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "myObject"
+                }
+              },
+              "resolvedSchema": {
+                "type": "object",
+                "definition": {
+                  "a": {
+                    "type": "string"
+                  }
+                }
+              },
+              "jzodObjectFlattenedSchema": {
+                "type": "object",
+                "definition": {
+                  "a": {
+                    "type": "union",
+                    "definition": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "schemaReference",
+                        "definition": {
+                          "relativePath": "myObject"
+                        }
+                      }
+                    ]
+                  }
+                }
               }
             },
             "": {
@@ -1615,8 +3465,7 @@
                         "type": "union",
                         "definition": [
                           {
-                            "type": "string",
-                            "optional": true
+                            "type": "string"
                           },
                           {
                             "type": "schemaReference",
@@ -1625,60 +3474,46 @@
                             }
                           }
                         ]
-                      },
-                      "b": {
-                        "type": "string",
-                        "optional": true
-                      },
-                      "c": {
-                        "type": "number",
-                        "optional": true
+                      }
+                    }
+                  },
+                  "myRecord": {
+                    "type": "record",
+                    "definition": {
+                      "type": "schemaReference",
+                      "definition": {
+                        "relativePath": "myObject"
                       }
                     }
                   }
                 },
                 "definition": {
-                  "relativePath": "myObject"
+                  "relativePath": "myRecord"
                 }
               },
               "resolvedSchema": {
                 "type": "object",
                 "definition": {
-                  "a": {
-                    "type": "string",
-                    "optional": true
-                  },
-                  "c": {
-                    "type": "number",
-                    "optional": true
-                  }
-                }
-              },
-              "jzodObjectFlattenedSchema": {
-                "type": "object",
-                "definition": {
-                  "a": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "string",
-                        "optional": true
-                      },
-                      {
-                        "type": "schemaReference",
+                  "r1": {
+                    "type": "object",
+                    "definition": {
+                      "a": {
+                        "type": "object",
                         "definition": {
-                          "relativePath": "myObject"
+                          "a": {
+                            "type": "string"
+                          }
                         }
                       }
-                    ]
+                    }
                   },
-                  "b": {
-                    "type": "string",
-                    "optional": true
-                  },
-                  "c": {
-                    "type": "number",
-                    "optional": true
+                  "r2": {
+                    "type": "object",
+                    "definition": {
+                      "a": {
+                        "type": "string"
+                      }
+                    }
                   }
                 }
               }

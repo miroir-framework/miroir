@@ -181,6 +181,26 @@
         },
         "transformerParams": {},
         "expectedValue": []
+      },
+      "returns empty object MLS definition for mlsObject MLS": {
+        "transformerTestType": "transformerTest",
+        "transformerTestLabel": "returns empty object MLS definition for mlsObject MLS",
+        "transformerName": "defaultValueForMLSchema",
+        "runTestStep": "build",
+        "transformer": {
+          "transformerType": "defaultValueForMLSchema",
+          "interpolation": "build",
+          "mlSchema": {
+            "type": "schemaReference",
+            "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "jzodObject" }
+          }
+        },
+        "transformerParams": {},
+        "expectedValue": {
+          "type": "object",
+          "definition": {
+          }
+        }
       }
     }
   }

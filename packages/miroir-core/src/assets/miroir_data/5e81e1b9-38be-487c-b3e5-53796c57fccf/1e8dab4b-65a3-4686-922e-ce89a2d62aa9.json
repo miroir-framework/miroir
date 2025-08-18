@@ -1044,27 +1044,6 @@
             "type": "boolean",
             "optional": true
           },
-          "carryOn": {
-            "type": "union",
-            "discriminator": "type",
-            "optional": true,
-            "definition": [
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                  "relativePath": "jzodObject"
-                }
-              },
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                  "relativePath": "jzodUnion"
-                }
-              }
-            ]
-          },
           "definition": {
             "type": "record",
             "definition": {
@@ -1151,27 +1130,6 @@
               }
             }
           },
-          "carryOn": {
-            "type": "union",
-            "optional": true,
-            "discriminator":"type",
-            "definition": [
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                  "relativePath": "jzodObject"
-                }
-              },
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                  "relativePath": "jzodUnion"
-                }
-              }
-            ]
-          },
           "definition": {
             "type": "object",
             "definition": {
@@ -1184,8 +1142,7 @@
                 "optional": true
               },
               "relativePath": {
-                "type": "string",
-                "optional": true
+                "type": "string"
               },
               "absolutePath": {
                 "type": "string",
@@ -1308,14 +1265,6 @@
                 }
               }
             ]
-          },
-          "carryOn": {
-            "optional": true,
-            "type": "schemaReference",
-            "definition": {
-              "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-              "relativePath": "jzodObject"
-            }
           },
           "definition": {
             "type": "array",

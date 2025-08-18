@@ -6,6 +6,11 @@
   "entityUuid": "681be9ca-c593-45f5-b45a-5f1d4969e91e",
   "conceptLevel": "Model",
   "defaultInstanceDetailsReportUuid": "1c06268b-2ddb-433c-ae4f-46546908125d",
+  "viewAttributes": [
+    "name",
+    "uuid",
+    "description"
+  ],
   "jzodSchema": {
     "type": "object",
     "definition": {
@@ -89,7 +94,7 @@
         "tag": {
           "value": {
             "id": 1,
-            "defaultLabel": "Name",
+            "defaultLabel": "Description",
             "editable": true
           }
         }
