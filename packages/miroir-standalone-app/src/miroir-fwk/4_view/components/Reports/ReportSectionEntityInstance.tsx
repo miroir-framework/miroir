@@ -47,7 +47,6 @@ import { TypedValueObjectEditor } from './TypedValueObjectEditor.js';
 import { RunTransformerTestSuiteButton } from '../Buttons/RunTransformerTestSuiteButton.js';
 import { ValueObjectGrid } from '../Grids/ValueObjectGrid.js';
 import { TestCellWithDetails } from './TestCellWithDetails.js';
-// import { GlobalRenderPerformanceDisplay, RenderPerformanceDisplay, trackRenderPerformance } from '../tools/renderPerformanceMeasure.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -318,8 +317,6 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
     return (
       <ThemedContainer>
         <div>
-          {/* <RenderPerformanceDisplay componentKey={componentKey} indentLevel={0} /> */}
-
           {showPerformanceDisplay && (
             <ThemedText>
               ReportSectionEntityInstance renders: {navigationCount} (total: {totalCount})

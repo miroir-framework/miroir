@@ -31,7 +31,9 @@ export const PerformanceDisplayContainer = () => {
   return (
     <RenderPerformanceMetrics.GlobalRenderPerformanceDisplay
       key={updateTrigger}
-      renderMetrics={RenderPerformanceMetrics.renderMetrics}
-    />
+      title="ReportPage Performance Stats"
+    >
+      <RenderPerformanceMetrics.RenderMetricsContent />
+    </RenderPerformanceMetrics.GlobalRenderPerformanceDisplay>
   );
 };

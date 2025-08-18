@@ -1,37 +1,33 @@
-import { EditorView } from '@codemirror/view';
-import ReactCodeMirror from '@uiw/react-codemirror';
 import { Formik, FormikProps } from 'formik';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
 import {
+  adminConfigurationDeploymentMiroir,
   ApplicationSection,
-  ReduxDeploymentsState,
+  defaultMiroirModelEnviroment,
   Domain2QueryReturnType,
   DomainElementSuccess,
+  dummyDomainManyQueryWithDeploymentUuid,
   EntityInstancesUuidIndex,
-  getEntityInstancesUuidIndexNonHook,
+  getApplicationSection,
+  getInnermostTypeCheckError,
+  getQueryRunnerParamsForReduxDeploymentsState,
   JzodElement,
+  jzodTypeCheck,
   LoggerInterface,
   MetaModel,
   MiroirLoggerFactory,
+  ReduxDeploymentsState,
   ResolvedJzodSchemaReturnType,
   SyncBoxedExtractorOrQueryRunnerMap,
   SyncQueryRunner,
   SyncQueryRunnerParams,
-  Uuid,
-  adminConfigurationDeploymentMiroir,
-  dummyDomainManyQueryWithDeploymentUuid,
-  getQueryRunnerParamsForReduxDeploymentsState,
-  jzodTypeCheck,
-  getApplicationSection,
-  defaultMiroirModelEnviroment,
-  getInnermostTypeCheckError
+  Uuid
 } from "miroir-core";
 import {
   getMemoizedReduxDeploymentsStateSelectorMap,
-  ReduxStateWithUndoRedo,
-  selectCurrentReduxDeploymentsStateFromReduxState,
+  ReduxStateWithUndoRedo
 } from "miroir-localcache-redux";
 
 import {
@@ -48,12 +44,8 @@ import {
 } from "../../ReduxHooks.js";
 import { useRenderTracker } from '../../tools/renderCountTracker.js';
 import { ErrorFallbackComponent } from '../ErrorFallbackComponent.js';
-import {
-  ThemedCodeBlock
-} from "../Themes/ThemedComponents.js";
-import { CodeBlock } from './CodeBlock.js';
 import { JzodElementEditor } from '../ValueObjectEditor/JzodElementEditor.js';
-// import { GlobalRenderPerformanceDisplay, RenderPerformanceDisplay, trackRenderPerformance } from '../tools/renderPerformanceMeasure.js';
+import { CodeBlock } from './CodeBlock.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

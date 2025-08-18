@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { DraggableContainer } from '../components/DraggableContainer.js';
 
 // Performance tracking for JzodElementEditor renders
 export interface RenderPerformanceMetricsElement {
@@ -32,7 +33,7 @@ export class RenderPerformanceMetrics {
   }
 
   static removeChangeCallback(callback: () => void) {
-    this.changeCallbacks = this.changeCallbacks.filter(cb => cb !== callback);
+    this.changeCallbacks = this.changeCallbacks.filter((cb) => cb !== callback);
   }
 
   static notifyCallbacks() {
@@ -40,10 +41,10 @@ export class RenderPerformanceMetrics {
     if (this.notifyTimer) {
       return;
     }
-    
+
     this.notifyTimer = setTimeout(() => {
       // console.log('RenderPerformanceMetrics notifying callbacks, count:', this.changeCallbacks.length);
-      this.changeCallbacks.forEach(callback => callback());
+      this.changeCallbacks.forEach((callback) => callback());
       this.notifyTimer = null;
     }, 100); // Throttle to 100ms
   }
@@ -54,7 +55,7 @@ export class RenderPerformanceMetrics {
       clearTimeout(this.notifyTimer);
       this.notifyTimer = null;
     }
-    
+
     this.renderMetrics = this.renderMetrics
       ? Object.fromEntries(
           Object.keys(this.renderMetrics).map((k) => [
@@ -91,7 +92,7 @@ export class RenderPerformanceMetrics {
     metrics.maxRenderTime = Math.max(metrics.maxRenderTime, renderTime);
     metrics.minRenderTime = Math.min(metrics.minRenderTime, renderTime);
     metrics.averageRenderTime = metrics.totalRenderTime / metrics.renderCount;
-    
+
     this.notifyCallbacks();
     return metrics;
   }
@@ -129,120 +130,50 @@ export class RenderPerformanceMetrics {
       </div>
     );
   };
-  // Global performance summary display
-  static GlobalRenderPerformanceDisplay = (props: {
-    renderMetrics: Record<string, RenderPerformanceMetricsElement>;
-  }) => {
-    const [position, setPosition] = React.useState(() => {
-      // Load position from sessionStorage
-      const saved = sessionStorage.getItem('performanceStatsPosition');
-      return saved ? JSON.parse(saved) : { x: 10, y: 10 };
-    });
-    const [isDragging, setIsDragging] = React.useState(false);
-    const [dragStart, setDragStart] = React.useState({ x: 0, y: 0 });
-    const dragRef = React.useRef<HTMLDivElement>(null);
+  // Global performance summary display - now uses the standalone DraggableContainer
+  static GlobalRenderPerformanceDisplay = DraggableContainer;
 
-    const handleMouseDown = React.useCallback((e: React.MouseEvent) => {
-      if (e.target === dragRef.current || (e.target as HTMLElement)?.closest('.drag-handle')) {
-        setIsDragging(true);
-        setDragStart({
-          x: e.clientX - position.x,
-          y: e.clientY - position.y
-        });
-        e.preventDefault();
-      }
-    }, [position]);
-
-    const handleMouseMove = React.useCallback((e: MouseEvent) => {
-      if (isDragging) {
-        const newPosition = {
-          x: e.clientX - dragStart.x,
-          y: e.clientY - dragStart.y
-        };
-        setPosition(newPosition);
-        // Save position to sessionStorage
-        sessionStorage.setItem('performanceStatsPosition', JSON.stringify(newPosition));
-      }
-    }, [isDragging, dragStart]);
-
-    const handleMouseUp = React.useCallback(() => {
-      setIsDragging(false);
-    }, []);
+  // Specific render metrics display component
+  static RenderMetricsContent = () => {
+    const [, forceUpdate] = React.useReducer(x => x + 1, 0);
 
     React.useEffect(() => {
-      if (isDragging) {
-        document.addEventListener('mousemove', handleMouseMove);
-        document.addEventListener('mouseup', handleMouseUp);
-        return () => {
-          document.removeEventListener('mousemove', handleMouseMove);
-          document.removeEventListener('mouseup', handleMouseUp);
-        };
-      }
-    }, [isDragging, handleMouseMove, handleMouseUp]);
+      // Subscribe to metrics changes
+      RenderPerformanceMetrics.addChangeCallback(forceUpdate);
+      
+      return () => {
+        // Cleanup subscription
+        RenderPerformanceMetrics.removeChangeCallback(forceUpdate);
+      };
+    }, []);
 
-    const totalRenders = Object.values(props.renderMetrics).reduce(
+    // Read directly from the static renderMetrics
+    const renderMetrics = RenderPerformanceMetrics.renderMetrics;
+
+    const totalRenders = Object.values(renderMetrics).reduce(
       (sum, metrics) => sum + metrics.renderCount,
       0
     );
-    const totalTime = Object.values(props.renderMetrics).reduce(
+    const totalTime = Object.values(renderMetrics).reduce(
       (sum, metrics) => sum + metrics.totalRenderTime,
       0
     );
     const averageTime = totalRenders > 0 ? totalTime / totalRenders : 0;
 
-    // if (totalRenders === 0) return null;
     if (totalRenders === 0) return <div>No stats yet!</div>;
 
     return (
-      <div
-        ref={dragRef}
-        onMouseDown={handleMouseDown}
-        style={{
-          fontSize: "0.7rem",
-          color: "#333",
-          backgroundColor: "rgba(255, 255, 255, 0.95)",
-          padding: "8px",
-          border: "2px solid #007acc",
-          borderRadius: "4px",
-          fontFamily: "monospace",
-          position: "fixed",
-          top: `${position.y}px`,
-          left: `${position.x}px`,
-          zIndex: 9999,
-          maxWidth: "500px",
-          maxHeight: "80vh",
-          overflow: "hidden",
-          boxShadow: "0 4px 8px rgba(0,0,0,0.2)",
-          cursor: isDragging ? 'grabbing' : 'grab',
-          userSelect: 'none',
-        }}
-      >
-        <div
-          className="drag-handle"
-          style={{
-            fontWeight: "bold",
-            borderBottom: "1px solid #ddd",
-            marginBottom: "8px",
-            padding: "4px 0",
-            cursor: 'grab',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px'
-          }}
-        >
-          <span style={{ fontSize: '12px', opacity: 0.7 }}>⋮⋮</span>
-          ReportPage Performance Stats
-        </div>
+      <>
         <div style={{ marginBottom: "8px", padding: "4px 0", borderBottom: "1px solid #eee" }}>
           <div>
             Total Renders: {totalRenders} | Total Time: {totalTime.toFixed(2)}ms | Avg:{" "}
             {averageTime.toFixed(2)}ms
           </div>
-          <div>Active Components: {Object.keys(props.renderMetrics).length}</div>
+          <div>Active Components: {Object.keys(renderMetrics).length}</div>
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
-          {Object.entries(props.renderMetrics)
-            .sort(([, a], [, b]) => b.totalRenderTime - a.totalRenderTime)
+          {Object.entries(renderMetrics)
+            .sort(([, a], [, b]) => (b as RenderPerformanceMetricsElement).totalRenderTime - (a as RenderPerformanceMetricsElement).totalRenderTime)
             .map(([componentKey, metrics]) => (
               <div
                 key={componentKey}
@@ -258,15 +189,15 @@ export class RenderPerformanceMetrics {
                   {componentKey}
                 </div>
                 <div style={{ fontSize: "0.65rem", color: "#666" }}>
-                  #{metrics.renderCount} renders | Last: {metrics.lastRenderTime.toFixed(2)}ms |
-                  Total: {metrics.totalRenderTime.toFixed(2)}ms | Avg:{" "}
-                  {metrics.averageRenderTime.toFixed(2)}ms | Min/Max:{" "}
-                  {metrics.minRenderTime.toFixed(2)}ms/{metrics.maxRenderTime.toFixed(2)}ms
+                  #{(metrics as RenderPerformanceMetricsElement).renderCount} renders | Last: {(metrics as RenderPerformanceMetricsElement).lastRenderTime.toFixed(2)}ms |
+                  Total: {(metrics as RenderPerformanceMetricsElement).totalRenderTime.toFixed(2)}ms | Avg:{" "}
+                  {(metrics as RenderPerformanceMetricsElement).averageRenderTime.toFixed(2)}ms | Min/Max:{" "}
+                  {(metrics as RenderPerformanceMetricsElement).minRenderTime.toFixed(2)}ms/{(metrics as RenderPerformanceMetricsElement).maxRenderTime.toFixed(2)}ms
                 </div>
               </div>
             ))}
         </div>
-      </div>
+      </>
     );
   };
 }
