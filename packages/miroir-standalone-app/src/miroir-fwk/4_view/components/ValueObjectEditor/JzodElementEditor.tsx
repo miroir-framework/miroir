@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
@@ -95,15 +95,55 @@ export const FoldUnfoldObjectOrArray = (props: {
     }>
   >;
   listKey: string;
+  unfoldingDepth?: number; // Optional depth limit for unfolding (default: no limit)
 }): JSX.Element => {
   const handleClick = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
     e.preventDefault();
-    props.setFoldedObjectAttributeOrArrayItems((prev) => ({
-      ...prev,
-      [props.listKey]: !prev[props.listKey],
-    }));
-  }, [props.listKey, props.setFoldedObjectAttributeOrArrayItems]);
+    
+    const isCurrentlyFolded = props.foldedObjectAttributeOrArrayItems && props.foldedObjectAttributeOrArrayItems[props.listKey];
+    
+    if (isCurrentlyFolded && props.unfoldingDepth !== undefined && props.unfoldingDepth > 0) {
+      // Unfolding with depth limit
+      props.setFoldedObjectAttributeOrArrayItems((prev) => {
+        const newState = { ...prev };
+        
+        // Unfold current item
+        newState[props.listKey] = false;
+        
+        // Helper function to unfold children to a certain depth
+        const unfoldToDepth = (parentKey: string, remainingDepth: number) => {
+          if (remainingDepth <= 0) return;
+          
+          // Find all keys that are children of the parent key
+          Object.keys(prev).forEach(key => {
+            // Check if this key is a direct child of the parent
+            if (key.startsWith(parentKey + ".") && 
+                key.slice(parentKey.length + 1).indexOf(".") === -1) {
+              // This is a direct child, unfold it
+              newState[key] = false;
+              
+              // If there's more depth remaining, recursively unfold children
+              if (remainingDepth > 1) {
+                unfoldToDepth(key, remainingDepth - 1);
+              }
+            }
+          });
+        };
+        
+        // Start unfolding from the current item's children
+        unfoldToDepth(props.listKey, (props.unfoldingDepth || 1) - 1);
+        
+        return newState;
+      });
+    } else {
+      // Normal toggle behavior (fold/unfold without depth limit)
+      props.setFoldedObjectAttributeOrArrayItems((prev) => ({
+        ...prev,
+        [props.listKey]: !prev[props.listKey],
+      }));
+    }
+  }, [props.listKey, props.setFoldedObjectAttributeOrArrayItems, props.unfoldingDepth]);
 
   const isFolded = props.foldedObjectAttributeOrArrayItems && props.foldedObjectAttributeOrArrayItems[props.listKey];
 
@@ -131,13 +171,16 @@ export const FoldUnfoldAllObjectAttributesOrArrayItems = (props: {
   >;
   listKey: string;
   itemsOrder: Array<string>;
+  maxDepth?: number; // Optional: how many levels deep to unfold (default: 1)
 }): JSX.Element => {
+  const maxDepthToUnfold = props.maxDepth ?? 1;
+
   const handleClick = useCallback(
     (e: React.MouseEvent) => {
       e.stopPropagation();
       e.preventDefault();
 
-      // Generate list keys for all child attributes
+      // Generate list keys for all child attributes at the first level
       const childKeys = props.itemsOrder.map(
         (attributeName) => `${props.listKey}.${attributeName}`
       );
@@ -148,14 +191,41 @@ export const FoldUnfoldAllObjectAttributesOrArrayItems = (props: {
           !props.foldedObjectAttributeOrArrayItems || !props.foldedObjectAttributeOrArrayItems[key]
       );
 
-      // If any child is unfolded, fold all; otherwise unfold all
+      // If any child is unfolded, fold all; otherwise unfold to the specified depth
       const shouldFoldAll = hasUnfoldedChildren;
 
       props.setFoldedObjectAttributeOrArrayItems((prev) => {
         const newState = { ...prev };
-        childKeys.forEach((key) => {
-          newState[key] = shouldFoldAll;
-        });
+        
+        if (shouldFoldAll) {
+          // Fold all children
+          childKeys.forEach((key) => {
+            newState[key] = true;
+          });
+        } else {
+          // Unfold to the specified depth
+          const unfoldToDepth = (currentKeys: string[], depth: number) => {
+            if (depth <= 0) return;
+            
+            currentKeys.forEach((key) => {
+              newState[key] = false; // Unfold this level
+              
+              // If there's more depth to go, recursively unfold children
+              if (depth > 1) {
+                // This is a simplified approach - in a real implementation, 
+                // you'd need to inspect the actual data structure to find child keys
+                // For now, we'll just unfold direct children
+                props.itemsOrder.forEach((childAttr) => {
+                  const childKey = `${key}.${childAttr}`;
+                  unfoldToDepth([childKey], depth - 1);
+                });
+              }
+            });
+          };
+          
+          unfoldToDepth(childKeys, maxDepthToUnfold);
+        }
+        
         return newState;
       });
     },
@@ -164,6 +234,7 @@ export const FoldUnfoldAllObjectAttributesOrArrayItems = (props: {
       props.itemsOrder,
       props.foldedObjectAttributeOrArrayItems,
       props.setFoldedObjectAttributeOrArrayItems,
+      maxDepthToUnfold,
     ]
   );
 
@@ -176,10 +247,14 @@ export const FoldUnfoldAllObjectAttributesOrArrayItems = (props: {
         props.foldedObjectAttributeOrArrayItems && props.foldedObjectAttributeOrArrayItems[key]
     );
 
+  const title = allChildrenFolded 
+    ? `Unfold all attributes (${maxDepthToUnfold} level${maxDepthToUnfold !== 1 ? 's' : ''})` 
+    : "Fold all attributes";
+
   return (
     <ThemedLineIconButton
       onClick={handleClick}
-      title={allChildrenFolded ? "Unfold all attributes" : "Fold all attributes"}
+      title={title}
     >
       {allChildrenFolded ? (
         <UnfoldMore sx={{ color: "darkblue" }} />
@@ -240,6 +315,56 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
   
   // Extract hiddenFormItems and setHiddenFormItems from props
   const { foldedObjectAttributeOrArrayItems, setFoldedObjectAttributeOrArrayItems } = props;
+  
+  // Depth limiting logic: determine if this element should be folded based on depth
+  const maxRenderDepth = props.maxRenderDepth ?? 1;
+  const shouldAutoFoldAtDepth = useMemo(() => {
+    // Convert indentLevel to logical depth: indentLevel starts at 0 and increases by 2 per level
+    // So logical depth = indentLevel / 2
+    // Auto-fold if the logical depth is beyond maxRenderDepth
+    const logicalDepth = Math.floor((props.indentLevel || 0) / 2);
+    return maxRenderDepth > 0 && logicalDepth > maxRenderDepth;
+  }, [maxRenderDepth, props.indentLevel]);
+
+  // Apply auto-folding for depth limiting - but respect manual depth control
+  useEffect(() => {
+    if (shouldAutoFoldAtDepth && 
+        (localResolvedElementJzodSchemaBasedOnValue?.type === "object" || 
+         localResolvedElementJzodSchemaBasedOnValue?.type === "array") &&
+        props.listKey &&
+        foldedObjectAttributeOrArrayItems[props.listKey] === undefined) {
+      
+      console.log(`🤖 Auto-fold triggered for ${props.listKey} at indentLevel ${props.indentLevel} (logical depth ${Math.floor((props.indentLevel || 0) / 2)}), maxRenderDepth ${maxRenderDepth}`);
+      
+      // Only auto-fold if the item hasn't been explicitly set
+      // Use a longer delay to ensure manual depth control completes first
+      const timeoutId = setTimeout(() => {
+        setFoldedObjectAttributeOrArrayItems(prev => {
+          // Don't auto-fold if the item has been explicitly set by manual control
+          if (prev[props.listKey] === undefined) {
+            console.log(`🤖 Auto-folding ${props.listKey} (was undefined)`);
+            return {
+              ...prev,
+              [props.listKey]: true
+            };
+          } else {
+            console.log(`🤖 NOT auto-folding ${props.listKey} (already set to ${prev[props.listKey]})`);
+          }
+          return prev;
+        });
+      }, 200); // Longer delay to ensure manual actions complete
+
+      return () => clearTimeout(timeoutId);
+    }
+  }, [
+    shouldAutoFoldAtDepth, 
+    localResolvedElementJzodSchemaBasedOnValue?.type, 
+    props.listKey, 
+    foldedObjectAttributeOrArrayItems, 
+    setFoldedObjectAttributeOrArrayItems, 
+    maxRenderDepth, 
+    props.indentLevel
+  ]);
   
   // Handle switch for structured element display
   const handleDisplayAsStructuredElementSwitchChange = useCallback(
@@ -460,6 +585,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
               setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
               deleteButtonElement={props.deleteButtonElement}
+              maxRenderDepth={props.maxRenderDepth}
             />
           );
         }
@@ -486,6 +612,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               hidden={hideSubJzodEditor}
               displayAsStructuredElementSwitch={displayAsStructuredElementSwitch}
               deleteButtonElement={props.deleteButtonElement}
+              maxRenderDepth={props.maxRenderDepth}
             />
           );
           break;

@@ -20,6 +20,9 @@ import {
   MiroirLoggerFactory,
   resolvePathOnObject,
   SyncBoxedExtractorOrQueryRunnerMap,
+  miroirFundamentalJzodSchema,
+  type JzodSchema,
+  type MiroirModelEnvironment,
   // unfoldJzodSchemaOnce,
   // UnfoldJzodSchemaOnceReturnType,
   // UnfoldJzodSchemaOnceReturnTypeOK
@@ -139,6 +142,7 @@ interface ProgressiveArrayItemProps {
   currentValue: any;
   foldedObjectAttributeOrArrayItems: { [k: string]: boolean };
   setFoldedObjectAttributeOrArrayItems: React.Dispatch<React.SetStateAction<{ [k: string]: boolean }>>;
+  maxRenderDepth?: number;
 }
 
 const ProgressiveArrayItem: React.FC<ProgressiveArrayItemProps> = ({
@@ -161,6 +165,7 @@ const ProgressiveArrayItem: React.FC<ProgressiveArrayItemProps> = ({
   currentValue,
   foldedObjectAttributeOrArrayItems: hiddenFormItems,
   setFoldedObjectAttributeOrArrayItems: setHiddenFormItems,
+  maxRenderDepth,
 }) => {
   const isTestMode = process.env.VITE_TEST_MODE === 'true';
   // const [isRendered, setIsRendered] = useState(false);
@@ -260,6 +265,7 @@ const ProgressiveArrayItem: React.FC<ProgressiveArrayItemProps> = ({
                 foldedObjectAttributeOrArrayItems={hiddenFormItems}
                 setFoldedObjectAttributeOrArrayItems={setHiddenFormItems}
                 insideAny={insideAny}
+                maxRenderDepth={maxRenderDepth}
                 // parentType={parentUnfoldedRawSchema.type}
               />
             </ErrorBoundary>
@@ -296,6 +302,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
     itemsOrder,
     insideAny,
     displayAsStructuredElementSwitch,
+    maxRenderDepth,
     // setItemsOrder,
   }
 ) => {
@@ -327,6 +334,13 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
 
   const currentModel: MetaModel = useCurrentModel(currentDeploymentUuid);
   const miroirMetaModel: MetaModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
+  const currentMiroirModelEnvironment: MiroirModelEnvironment = useMemo(() => {
+    return {
+      miroirFundamentalJzodSchema: context.miroirFundamentalJzodSchema ?? (miroirFundamentalJzodSchema as JzodSchema),
+      currentModel: currentModel,
+      miroirMetaModel: miroirMetaModel,
+    };
+  }, [context.miroirFundamentalJzodSchema, currentModel, miroirMetaModel]);
   // ??
   const usedIndentLevel: number = indentLevel ?? 0;
 
@@ -342,7 +356,11 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
 
   const deploymentEntityState: ReduxDeploymentsState = useSelector(
     (state: ReduxStateWithUndoRedo) =>
-      deploymentEntityStateSelectorMap.extractState(state.presentModelSnapshot.current, () => ({}))
+      deploymentEntityStateSelectorMap.extractState(state.presentModelSnapshot.current, () => ({}), {
+        miroirFundamentalJzodSchema: context.miroirFundamentalJzodSchema??(miroirFundamentalJzodSchema as JzodSchema),
+        currentModel: currentModel,
+        miroirMetaModel: miroirMetaModel,
+      })
   );
 
   const foldableItemsCount = useMemo(() => {
@@ -412,6 +430,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
         }
         const entityDefinitions  =  getEntityInstancesUuidIndexNonHook(
           deploymentEntityState,
+          currentMiroirModelEnvironment,
           currentDeploymentUuid,
           entityEntityDefinition.uuid,
           "name",
@@ -466,9 +485,10 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
         deploymentEntityState, // deploymentEntityState is not needed here
         false,
         currentDeploymentUuid,
-        context.miroirFundamentalJzodSchema,
-        currentModel,
-        miroirMetaModel,
+        currentMiroirModelEnvironment,
+        // context.miroirFundamentalJzodSchema,
+        // currentModel,
+        // miroirMetaModel,
         {}, // relativeReferenceJzodContext
       );
       // Create the new array value
@@ -579,6 +599,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
               currentValue={currentValue}
               foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
               setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
+              maxRenderDepth={maxRenderDepth}
             />
           );
         })}
@@ -629,6 +650,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
               foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
               setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
               listKey={listKey}
+              unfoldingDepth={1}
             ></FoldUnfoldObjectOrArray>
             {!foldedObjectAttributeOrArrayItems || !foldedObjectAttributeOrArrayItems[listKey]  ? 
             (
@@ -640,6 +662,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
                       setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
                       listKey={listKey}
                       itemsOrder={itemsOrder.map(i => i.toString())}
+                      maxDepth={maxRenderDepth ?? 1}
                     ></FoldUnfoldAllObjectAttributesOrArrayItems>
                 ): <></>
               }

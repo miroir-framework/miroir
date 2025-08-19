@@ -147,9 +147,11 @@ export const JzodLiteralEditor: FC<JzodLiteralEditorProps> =  (
           undefined, // deploymentEntityState is not needed here
           true, // force optional attributes to receive a default value
           currentDeploymentUuid,
-          currentMiroirFundamentalJzodSchema, // context.miroirFundamentalJzodSchema,
-          currentModel,
-          miroirMetaModel
+          {
+            miroirFundamentalJzodSchema: currentMiroirFundamentalJzodSchema, // context.miroirFundamentalJzodSchema,
+            currentModel,
+            miroirMetaModel,
+          }
         )
       : undefined;
     // log.info(

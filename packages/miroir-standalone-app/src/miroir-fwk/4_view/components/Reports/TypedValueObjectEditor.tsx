@@ -143,6 +143,8 @@ interface TypedValueObjectEditorProps {
   setFoldedObjectAttributeOrArrayItems: React.Dispatch<React.SetStateAction<{ [k: string]: boolean }>>;
   // zoom functionality
   zoomInPath?: string; // Optional path like "x.y.z" to zoom into a subset of the instance
+  // depth control
+  maxRenderDepth?: number; // Optional max depth for initial rendering, default 1
   // navigationCount: number;
 }
 
@@ -160,6 +162,8 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
   setFoldedObjectAttributeOrArrayItems,
   // zoom
   zoomInPath,
+  // depth control
+  maxRenderDepth = 1,
   // 
   formLabel: pageLabel, // TODO: remove
 }) => {
@@ -440,6 +444,7 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
                     foreignKeyObjects={foreignKeyObjects}
                     foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
                     setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
+                    maxRenderDepth={maxRenderDepth}
                     submitButton={
                       <button
                         type="submit"

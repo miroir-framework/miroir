@@ -56,6 +56,7 @@ export interface JzodElementEditorProps extends JzodEditorPropsRoot {
       [k: string]: boolean;
     }>
   >;
+  maxRenderDepth?: number; // Optional max depth for initial rendering, default 1
 }
 
 // ################################################################################################
@@ -74,6 +75,7 @@ export interface JzodArrayEditorProps extends JzodEditorPropsRoot {
   // setItemsOrder: React.Dispatch<React.SetStateAction<any[]>>
   itemsOrder: any[];
   displayAsStructuredElementSwitch?: JSX.Element; // used to display switches in the editor
+  maxRenderDepth?: number; // Optional max depth for initial rendering, default 1
 }
 
 // #################################################################################################
@@ -109,6 +111,7 @@ export interface JzodObjectEditorProps extends JzodEditorPropsRoot {
       [k: string]: boolean;
     }>
   >;
+  maxRenderDepth?: number; // Optional max depth for initial rendering, default 1
 }
 
 // #####################################################################################################

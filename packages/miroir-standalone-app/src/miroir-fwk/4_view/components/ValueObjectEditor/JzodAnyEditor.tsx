@@ -1,3 +1,4 @@
+import { ChangeEvent, FC, useCallback, useEffect, useMemo, useState } from "react";
 
 
 import {
@@ -8,7 +9,8 @@ import {
   miroirFundamentalJzodSchema,
   MiroirLoggerFactory,
   resolvePathOnObject,
-  SyncBoxedExtractorOrQueryRunnerMap
+  SyncBoxedExtractorOrQueryRunnerMap,
+  type MiroirModelEnvironment
 } from "miroir-core";
 
 import { packageName } from "../../../../constants";
@@ -21,6 +23,7 @@ import { JzodElement, JzodSchema } from "miroir-core/src/0_interfaces/1_core/pre
 import { measuredUseJzodElementEditorHooks } from "../../tools/hookPerformanceMeasure";
 import { getMemoizedReduxDeploymentsStateSelectorMap, ReduxStateWithUndoRedo } from "miroir-localcache-redux";
 import { useSelector } from "react-redux";
+import { useMiroirContextService } from "../../MiroirContextReactProvider";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -34,6 +37,7 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
   props: JzodAnyEditorProps
 ) => {
   JzodAnyEditorRenderCount++;
+  const context = useMiroirContextService();
   const {
     name,
     listKey,
@@ -53,31 +57,41 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
     // indentLevel,
     // visible = true, // added visibility prop
   } = props;
-    // const { formik, currentModel, miroirMetaModel } = useJzodElementEditorHooks(
-    const { formik, currentModel, miroirMetaModel } = measuredUseJzodElementEditorHooks(
-      props,
-      JzodAnyEditorRenderCount,
-      "JzodAnyEditor"
-    );
-  
+  // const { formik, currentModel, miroirMetaModel } = useJzodElementEditorHooks(
+  const { formik, currentModel, miroirMetaModel } = measuredUseJzodElementEditorHooks(
+    props,
+    JzodAnyEditorRenderCount,
+    "JzodAnyEditor"
+  );
+
+  const currentMiroirModelEnvironment: MiroirModelEnvironment = useMemo(() => {
+    return {
+      miroirFundamentalJzodSchema:
+        context.miroirFundamentalJzodSchema ?? (miroirFundamentalJzodSchema as JzodSchema),
+      currentModel: currentModel,
+      miroirMetaModel: miroirMetaModel,
+    };
+  }, [context.miroirFundamentalJzodSchema, currentModel, miroirMetaModel]);
+
   const currentValue = resolvePathOnObject(formik.values, rootLessListKeyArray);
   const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> =
-      getMemoizedReduxDeploymentsStateSelectorMap();
+    getMemoizedReduxDeploymentsStateSelectorMap();
 
   const deploymentEntityState: ReduxDeploymentsState = useSelector(
     (state: ReduxStateWithUndoRedo) =>
-      deploymentEntityStateSelectorMap.extractState(state.presentModelSnapshot.current, () => ({}))
+      deploymentEntityStateSelectorMap.extractState(
+        state.presentModelSnapshot.current,
+        () => ({}),
+        currentMiroirModelEnvironment
+      )
   );
-
 
   return (
     <div key={rootLessListKey}>
       <div>
         <ChangeValueTypeSelect
           onChange={(type: JzodElement) => {
-            log.info(
-              `JzodAnyEditor: Change value type to ${type} for ${rootLessListKey}`
-            );
+            log.info(`JzodAnyEditor: Change value type to ${type} for ${rootLessListKey}`);
             const defaultValue = getDefaultValueForJzodSchemaWithResolutionNonHook(
               type,
               formik.values,
@@ -87,10 +101,11 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
               deploymentEntityState,
               true, // force optional attributes to receive a default value
               currentDeploymentUuid,
-              miroirFundamentalJzodSchema as JzodSchema, // context.miroirFundamentalJzodSchema,
-              currentModel,
-              miroirMetaModel,
-            )
+              currentMiroirModelEnvironment
+              // miroirFundamentalJzodSchema as JzodSchema, // context.miroirFundamentalJzodSchema,
+              // currentModel,
+              // miroirMetaModel
+            );
             formik.setFieldValue(rootLessListKey, defaultValue, false);
           }}
           // currentType={resolvedElementJzodSchema?.type || "undefined"}
@@ -121,5 +136,4 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
       </div>
     </div>
   );
-
 };

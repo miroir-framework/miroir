@@ -305,6 +305,7 @@ const ProgressiveAttribute: FC<{
             setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
             insideAny={insideAny}
             optional={definedOptionalAttributes.has(attribute[0])}
+            maxRenderDepth={props.maxRenderDepth}
             // parentType={currentKeyMap?.rawSchema?.type}
             deleteButtonElement={
               <>
@@ -820,6 +821,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
               foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
               setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
               listKey={listKey}
+              unfoldingDepth={1}
             ></FoldUnfoldObjectOrArray>
             {(!foldedObjectAttributeOrArrayItems || !foldedObjectAttributeOrArrayItems[listKey]) &&
             itemsOrder.length >= 2 &&
@@ -829,6 +831,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
                 setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
                 listKey={listKey}
                 itemsOrder={itemsOrder}
+                maxDepth={props.maxRenderDepth ?? 1}
               ></FoldUnfoldAllObjectAttributesOrArrayItems>
             ) : (
               <></>
