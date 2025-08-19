@@ -434,6 +434,33 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
   }, [currentTypeCheckKeyMap?.resolvedSchema]);
 
   // ##############################################################################################
+  // Get unfoldingDepth from schema tag or default to 1
+  const unfoldingDepth = useMemo(() => {
+    // log.info(
+    //   "JzodObjectEditor computing unfoldingDepth",
+    //   "rootLessListKey",
+    //   rootLessListKey,
+    //   (currentTypeCheckKeyMap?.resolvedSchema?.tag?.value?.display as any)?.unfoldSubLevels,
+    // );
+    return (currentTypeCheckKeyMap?.resolvedSchema?.tag?.value?.display as any)?.unfoldSubLevels ?? 1;
+  }, [currentTypeCheckKeyMap?.resolvedSchema?.tag?.value?.display]);
+
+  // if (
+  //   ["jzodSchema", "jzodSchema.definition.definition.context.transformerTest"].includes(rootLessListKey)
+  // ) {
+  //   log.info(
+  //     "JzodObjectEditor computed for type tag unfoldingDepth",
+  //     currentTypeCheckKeyMap?.resolvedSchema?.tag?.value?.display,
+  //     "rootLessListKey",
+  //     rootLessListKey,
+  //     "unfoldingDepth",
+  //     unfoldingDepth,
+  //     "currentTypeCheckKeyMap",
+  //     currentTypeCheckKeyMap,
+  //   );
+  // }
+
+  // ##############################################################################################
   // JzodSchemaTooltip
   //   const jzodSchemaTooltip: JSX.Element = useMemo(
   //     () => canRenderObject?(
@@ -821,7 +848,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
               foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
               setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
               listKey={listKey}
-              unfoldingDepth={1}
+              unfoldingDepth={unfoldingDepth}
             ></FoldUnfoldObjectOrArray>
             {(!foldedObjectAttributeOrArrayItems || !foldedObjectAttributeOrArrayItems[listKey]) &&
             itemsOrder.length >= 2 &&

@@ -56,16 +56,12 @@ export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
   const currentEnumSchema: JzodElement | undefined = currentKeyMap?.resolvedSchema;
   // const possibleEnumValues = (currentKeyMap?.resolvedSchema).;
   // Log only when component renders to track performance
-  log.info(
-    "JzodEnumEditor: render for",
-      name,
-      "rootLessListKey=",rootLessListKey,
-      "rawJzodSchema=", rawJzodSchema,
-    // `JzodEnumEditor: render for ${name}, rootLessListKey=${rootLessListKey}, rawJzodSchema=${rawJzodSchema}`
-    // `JzodEnumEditor: render for ${name}, rootLessListKey=${rootLessListKey}, rawJzodSchema=${JSON.stringify(
-    //   rawJzodSchema
-    // )}`
-  );
+  // log.info(
+  //   "JzodEnumEditor: render for",
+  //     name,
+  //     "rootLessListKey=",rootLessListKey,
+  //     "rawJzodSchema=", rawJzodSchema,
+  // );
 
   const isDiscriminator =
     parentKeyMap?.discriminator &&

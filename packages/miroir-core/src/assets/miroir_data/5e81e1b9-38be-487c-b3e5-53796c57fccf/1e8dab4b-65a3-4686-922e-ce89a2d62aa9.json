@@ -390,6 +390,10 @@
                       "displayedAttributeValueWhenFolded": {
                         "type": "string",
                         "optional": true
+                      },
+                      "unfoldSubLevels":{
+                        "type": "number",
+                        "optional": true
                       }
                     }
                   }
@@ -978,6 +982,11 @@
             "eager": true,
             "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
             "relativePath": "jzodBaseObject"
+          }
+        },
+        "tag": {
+          "value": {
+            "unfoldSubLevels": 2
           }
         },
         "definition": {

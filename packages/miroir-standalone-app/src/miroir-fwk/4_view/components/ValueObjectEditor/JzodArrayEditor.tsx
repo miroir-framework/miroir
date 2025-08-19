@@ -371,6 +371,12 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
   }, [currentTypeCheckKeyMap?.resolvedSchema]);
 
   // ##############################################################################################
+  // Get unfoldingDepth from schema tag or default to 1
+  const unfoldingDepth = useMemo(() => {
+    return (currentTypeCheckKeyMap?.resolvedSchema?.tag?.value?.display as any)?.unfoldSubLevels ?? 1;
+  }, [currentTypeCheckKeyMap?.resolvedSchema]);
+
+  // ##############################################################################################
   const addNewArrayItem = useCallback(
     async (e:any) => {
       e.stopPropagation();
@@ -650,7 +656,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
               foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
               setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
               listKey={listKey}
-              unfoldingDepth={1}
+              unfoldingDepth={unfoldingDepth}
             ></FoldUnfoldObjectOrArray>
             {!foldedObjectAttributeOrArrayItems || !foldedObjectAttributeOrArrayItems[listKey]  ? 
             (

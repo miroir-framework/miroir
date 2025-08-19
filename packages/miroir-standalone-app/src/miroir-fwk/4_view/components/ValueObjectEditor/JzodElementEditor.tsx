@@ -102,7 +102,14 @@ export const FoldUnfoldObjectOrArray = (props: {
     e.preventDefault();
     
     const isCurrentlyFolded = props.foldedObjectAttributeOrArrayItems && props.foldedObjectAttributeOrArrayItems[props.listKey];
-    
+    // log.info(
+    //   "FoldUnfoldObjectOrArray",
+    //   props.listKey,
+    //   "isCurrentlyFolded",
+    //   isCurrentlyFolded,
+    //   "unfoldingDepth",
+    //   props.unfoldingDepth
+    // );
     if (isCurrentlyFolded && props.unfoldingDepth !== undefined && props.unfoldingDepth > 0) {
       // Unfolding with depth limit
       props.setFoldedObjectAttributeOrArrayItems((prev) => {

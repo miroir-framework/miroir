@@ -2,6 +2,7 @@ import {
   TransformerForBuild,
   TransformerForBuildOrRuntime,
   TransformerForRuntime,
+  type TransformerForBuildPlusRuntime,
   type TransformerTest,
   type TransformerTestSuite,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
@@ -112,7 +113,8 @@ export async function runTransformerTestInMemory(
   // );
   // TestSuiteContext.setTest(transformerTest.transformerTestLabel);
 
-  const transformer: TransformerForBuild | TransformerForRuntime = transformerTest.transformer;
+  // const transformer: TransformerForBuild | TransformerForRuntime = transformerTest.transformer;
+  const transformer: TransformerForBuildPlusRuntime = transformerTest.transformer;
   const runtimeTransformer: TransformerForRuntime = transformer as any;
   console.log(
     "################################ runTransformerTestInMemory transformerTestParams",
