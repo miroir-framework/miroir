@@ -1,12 +1,26 @@
-import { JzodElement, LoggerInterface, MiroirLoggerFactory, resolvePathOnObject } from "miroir-core";
-import { JzodEnum } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import React, { FC, useMemo } from "react";
+import {
+  adminConfigurationDeploymentMiroir,
+  getDefaultValueForJzodSchemaWithResolutionNonHook,
+  JzodElement,
+  JzodEnum,
+  JzodLiteral,
+  LoggerInterface,
+  MetaModel,
+  MiroirLoggerFactory,
+  resolvePathOnObject
+} from "miroir-core";
+import React, { FC, useMemo, useCallback } from "react";
 import { packageName } from "../../../../constants";
 import { cleanLevel } from "../../constants";
 import { JzodEnumEditorProps } from "./JzodElementEditorInterface";
 import { ThemedLabeledEditor, ThemedSelect } from "../Themes/ThemedComponents";
 import { useFormikContext } from "formik";
 
+import { useMiroirContextService } from "../../MiroirContextReactProvider";
+import { useCurrentModel } from "../../ReduxHooks";
+import { handleDiscriminatorChange } from "./JzodDiscriminatorUtils";
+
+// Common function to handle discriminator changes
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "JzodElementEditor")
@@ -23,9 +37,15 @@ export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
   rootLessListKeyArray,
   forceTestingMode,
   typeCheckKeyMap,
+  currentDeploymentUuid,
 }: JzodEnumEditorProps) => {
   // const currentValue = resolvePathOnObject(props.formik.values, props.rootLessListKeyArray);
+
   const formik = useFormikContext<Record<string, any>>();
+  const context = useMiroirContextService();
+  const currentModel = useCurrentModel(currentDeploymentUuid);
+  const miroirMetaModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
+  const currentMiroirFundamentalJzodSchema = context.miroirFundamentalJzodSchema;
 
   const parentKey = rootLessListKey.includes(".")
     ? rootLessListKey.substring(0, rootLessListKey.lastIndexOf("."))
@@ -52,6 +72,23 @@ export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
     parentKeyMap?.discriminatorValues &&
     name === parentKeyMap?.discriminator;
 
+  // Handler for discriminator select change (using common function)
+  const handleSelectEnumChange = useCallback((event: any) => {
+    handleDiscriminatorChange(
+      event.target.value,
+      "enum",
+      parentKeyMap,
+      rootLessListKey,
+      rootLessListKeyArray,
+      currentDeploymentUuid,
+      currentMiroirFundamentalJzodSchema,
+      currentModel,
+      miroirMetaModel,
+      formik,
+      log
+    );
+  }, [parentKeyMap, rootLessListKey, rootLessListKeyArray, currentDeploymentUuid, currentMiroirFundamentalJzodSchema, currentModel, miroirMetaModel, formik]);
+
   // Memoize the menu items for better performance
   const menuItems = useMemo(() => {
     if (isDiscriminator) {
@@ -73,15 +110,31 @@ export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
     if (currentEnumSchema?.type === "enum") {
       return (
         <div>
-          <ThemedSelect
-            id={rootLessListKey}
-            aria-label={rootLessListKey}
-            variant="standard"
-            {...formik.getFieldProps(rootLessListKey)}
-            name={rootLessListKey}
-          >
-            {menuItems}
-          </ThemedSelect>
+          {isDiscriminator ? (
+            <>
+              <ThemedSelect
+                id={rootLessListKey}
+                aria-label={rootLessListKey}
+                variant="standard"
+                {...formik.getFieldProps(rootLessListKey)}
+                name={rootLessListKey}
+                onChange={handleSelectEnumChange}
+              >
+                {menuItems}
+              </ThemedSelect>
+              (enum discriminator)
+            </>
+          ) : (
+            <ThemedSelect
+              id={rootLessListKey}
+              aria-label={rootLessListKey}
+              variant="standard"
+              {...formik.getFieldProps(rootLessListKey)}
+              name={rootLessListKey}
+            >
+              {menuItems}
+            </ThemedSelect>
+          )}
           {forceTestingMode ? (
             <div>enumValues={JSON.stringify((rawJzodSchema as JzodEnum).definition)}</div>
           ) : (
@@ -92,7 +145,7 @@ export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
     } else {
       return (<div>error on enum {rootLessListKey}: schema is not an enum {JSON.stringify(currentEnumSchema, undefined, 2)}</div>)
     }
-  }, [currentEnumSchema, rootLessListKey, menuItems, formik, forceTestingMode]);
+  }, [currentEnumSchema, rootLessListKey, menuItems, formik, forceTestingMode, isDiscriminator, handleSelectEnumChange]);
   return (
     <ThemedLabeledEditor
       labelElement={labelElement ?? <></>}
