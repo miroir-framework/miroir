@@ -850,6 +850,12 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
               listKey={listKey}
               unfoldingDepth={unfoldingDepth}
             ></FoldUnfoldObjectOrArray>
+            <FoldUnfoldObjectOrArray
+              foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
+              setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
+              listKey={listKey}
+              unfoldingDepth={Infinity}
+            ></FoldUnfoldObjectOrArray>
             {(!foldedObjectAttributeOrArrayItems || !foldedObjectAttributeOrArrayItems[listKey]) &&
             itemsOrder.length >= 2 &&
             foldableItemsCount > 1 ? (

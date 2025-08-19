@@ -4,6 +4,8 @@ import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
 import UnfoldLess from "@mui/icons-material/UnfoldLess";
 import UnfoldMore from "@mui/icons-material/UnfoldMore";
+import KeyboardDoubleArrowUp from "@mui/icons-material/KeyboardDoubleArrowUp";
+import KeyboardDoubleArrowDown from "@mui/icons-material/KeyboardDoubleArrowDown";
 
 import {
   EntityAttribute,
@@ -111,35 +113,44 @@ export const FoldUnfoldObjectOrArray = (props: {
     //   props.unfoldingDepth
     // );
     if (isCurrentlyFolded && props.unfoldingDepth !== undefined && props.unfoldingDepth > 0) {
-      // Unfolding with depth limit
+      // Unfolding with depth limit or infinite depth
       props.setFoldedObjectAttributeOrArrayItems((prev) => {
         const newState = { ...prev };
         
         // Unfold current item
         newState[props.listKey] = false;
         
-        // Helper function to unfold children to a certain depth
-        const unfoldToDepth = (parentKey: string, remainingDepth: number) => {
-          if (remainingDepth <= 0) return;
-          
-          // Find all keys that are children of the parent key
+        if (props.unfoldingDepth === Infinity) {
+          // Unfold ALL descendants when depth is infinity
           Object.keys(prev).forEach(key => {
-            // Check if this key is a direct child of the parent
-            if (key.startsWith(parentKey + ".") && 
-                key.slice(parentKey.length + 1).indexOf(".") === -1) {
-              // This is a direct child, unfold it
+            if (key.startsWith(props.listKey + ".")) {
               newState[key] = false;
-              
-              // If there's more depth remaining, recursively unfold children
-              if (remainingDepth > 1) {
-                unfoldToDepth(key, remainingDepth - 1);
-              }
             }
           });
-        };
-        
-        // Start unfolding from the current item's children
-        unfoldToDepth(props.listKey, (props.unfoldingDepth || 1) - 1);
+        } else {
+          // Helper function to unfold children to a certain depth
+          const unfoldToDepth = (parentKey: string, remainingDepth: number) => {
+            if (remainingDepth <= 0) return;
+            
+            // Find all keys that are children of the parent key
+            Object.keys(prev).forEach(key => {
+              // Check if this key is a direct child of the parent
+              if (key.startsWith(parentKey + ".") && 
+                  key.slice(parentKey.length + 1).indexOf(".") === -1) {
+                // This is a direct child, unfold it
+                newState[key] = false;
+                
+                // If there's more depth remaining, recursively unfold children
+                if (remainingDepth > 1) {
+                  unfoldToDepth(key, remainingDepth - 1);
+                }
+              }
+            });
+          };
+          
+          // Start unfolding from the current item's children
+          unfoldToDepth(props.listKey, (props.unfoldingDepth as number) - 1);
+        }
         
         return newState;
       });
@@ -153,15 +164,24 @@ export const FoldUnfoldObjectOrArray = (props: {
   }, [props.listKey, props.setFoldedObjectAttributeOrArrayItems, props.unfoldingDepth]);
 
   const isFolded = props.foldedObjectAttributeOrArrayItems && props.foldedObjectAttributeOrArrayItems[props.listKey];
+  const isInfiniteDepth = props.unfoldingDepth === Infinity;
 
   return (
     <ThemedLineIconButton
       onClick={handleClick}
     >
       {isFolded ? (
-        <ExpandMore sx={{ color: "darkgreen" }} />
+        isInfiniteDepth ? (
+          <KeyboardDoubleArrowDown sx={{ color: "darkgreen" }} />
+        ) : (
+          <ExpandMore sx={{ color: "darkgreen" }} />
+        )
       ) : (
-        <ExpandLess />
+        isInfiniteDepth ? (
+          <KeyboardDoubleArrowUp />
+        ) : (
+          <ExpandLess />
+        )
       )}
     </ThemedLineIconButton>
   );
@@ -322,56 +342,6 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
   
   // Extract hiddenFormItems and setHiddenFormItems from props
   const { foldedObjectAttributeOrArrayItems, setFoldedObjectAttributeOrArrayItems } = props;
-  
-  // Depth limiting logic: determine if this element should be folded based on depth
-  const maxRenderDepth = props.maxRenderDepth ?? 1;
-  const shouldAutoFoldAtDepth = useMemo(() => {
-    // Convert indentLevel to logical depth: indentLevel starts at 0 and increases by 2 per level
-    // So logical depth = indentLevel / 2
-    // Auto-fold if the logical depth is beyond maxRenderDepth
-    const logicalDepth = Math.floor((props.indentLevel || 0) / 2);
-    return maxRenderDepth > 0 && logicalDepth > maxRenderDepth;
-  }, [maxRenderDepth, props.indentLevel]);
-
-  // Apply auto-folding for depth limiting - but respect manual depth control
-  useEffect(() => {
-    if (shouldAutoFoldAtDepth && 
-        (localResolvedElementJzodSchemaBasedOnValue?.type === "object" || 
-         localResolvedElementJzodSchemaBasedOnValue?.type === "array") &&
-        props.listKey &&
-        foldedObjectAttributeOrArrayItems[props.listKey] === undefined) {
-      
-      // console.log(`🤖 Auto-fold triggered for ${props.listKey} at indentLevel ${props.indentLevel} (logical depth ${Math.floor((props.indentLevel || 0) / 2)}), maxRenderDepth ${maxRenderDepth}`);
-      
-      // Only auto-fold if the item hasn't been explicitly set
-      // Use a longer delay to ensure manual depth control completes first
-      const timeoutId = setTimeout(() => {
-        setFoldedObjectAttributeOrArrayItems(prev => {
-          // Don't auto-fold if the item has been explicitly set by manual control
-          if (prev[props.listKey] === undefined) {
-            // console.log(`🤖 Auto-folding ${props.listKey} (was undefined)`);
-            return {
-              ...prev,
-              [props.listKey]: true
-            };
-          } else {
-            // console.log(`🤖 NOT auto-folding ${props.listKey} (already set to ${prev[props.listKey]})`);
-          }
-          return prev;
-        });
-      }, 200); // Longer delay to ensure manual actions complete
-
-      return () => clearTimeout(timeoutId);
-    }
-  }, [
-    shouldAutoFoldAtDepth, 
-    localResolvedElementJzodSchemaBasedOnValue?.type, 
-    props.listKey, 
-    foldedObjectAttributeOrArrayItems, 
-    setFoldedObjectAttributeOrArrayItems, 
-    maxRenderDepth, 
-    props.indentLevel
-  ]);
   
   // Handle switch for structured element display
   const handleDisplayAsStructuredElementSwitchChange = useCallback(

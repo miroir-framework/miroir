@@ -161,7 +161,7 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
   foldedObjectAttributeOrArrayItems,
   setFoldedObjectAttributeOrArrayItems,
   // zoom
-  zoomInPath,
+  zoomInPath, // display only a subset of the valueObject, like "x.y.z"
   // depth control
   maxRenderDepth = 1,
   // 

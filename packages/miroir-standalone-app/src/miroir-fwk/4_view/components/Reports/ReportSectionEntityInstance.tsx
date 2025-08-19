@@ -156,8 +156,8 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   const [displayEditor, setDisplayEditor] = useState(true);
   const [foldedObjectAttributeOrArrayItems, setFoldedObjectAttributeOrArrayItems] = useState<{
     [k: string]: boolean;
-  }>({});
-  const [maxRenderDepth, setMaxRenderDepth] = useState<number>(props.maxRenderDepth ?? 1);
+  }>({"ROOT": true}); // Initialize with empty key to handle root object folding
+  // const [maxRenderDepth, setMaxRenderDepth] = useState<number>(props.maxRenderDepth ?? 1);
   const [resolveConditionalSchemaResultsData, setResolveConditionalSchemaResultsData] = useState<
     any[]
   >([]); // TODO: use a precise type!
@@ -248,91 +248,6 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
     [setDisplayEditor]
   );
 
-  // ##############################################################################################
-  const handleMaxRenderDepthChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      const value = parseInt(event.target.value, 10);
-      setMaxRenderDepth(isNaN(value) ? 1 : value);
-    },
-    [setMaxRenderDepth]
-  );
-
-  // ##############################################################################################
-  const handleUnfoldToDepth = useCallback(
-    (depth: number) => {
-      const instance = props.instance;
-      if (!instance) return;
-
-      console.log(`🎯 handleUnfoldToDepth called with depth: ${depth}`);
-
-      // Handle infinite unfold case
-      if (depth === -1) {
-        console.log(`🎯 Setting maxRenderDepth to 10 for infinite unfold`);
-        setMaxRenderDepth(10); // Set to maximum for "infinite" unfold
-        setFoldedObjectAttributeOrArrayItems({}); // Clear all folded states
-        return;
-      }
-
-      // Set the maxRenderDepth to match the requested depth
-      const newDepth = Math.max(depth, 1);
-      console.log(`🎯 Setting maxRenderDepth to ${newDepth}`);
-      setMaxRenderDepth(newDepth);
-
-      // Optimized tree traversal: only unfold what needs to be unfolded
-      // Build the new folded state in a single pass without unnecessary exploration
-      const newFolded: { [k: string]: boolean } = {};
-      
-      // Efficient recursive traversal that only goes as deep as needed
-      const traverseAndUnfold = (obj: any, currentPath: string, currentDepth: number) => {
-        if (!obj || typeof obj !== 'object') return;
-        
-        Object.keys(obj).forEach(key => {
-          const keyPath = currentPath ? `${currentPath}.${key}` : key;
-          const value = obj[key];
-          
-          if (value && typeof value === 'object') {
-            if (currentDepth < depth) {
-              // We're within the target depth - unfold this item
-              newFolded[keyPath] = false;
-              console.log(`🎯 Unfolding ${keyPath} at depth ${currentDepth}`);
-              
-              // Continue traversal only if we haven't reached the depth limit
-              if (currentDepth + 1 < depth) {
-                if (Array.isArray(value)) {
-                  value.forEach((item, index) => {
-                    const itemPath = `${keyPath}.${index}`;
-                    if (item && typeof item === 'object') {
-                      newFolded[itemPath] = false;
-                      console.log(`🎯 Unfolding array item ${itemPath} at depth ${currentDepth + 1}`);
-                      traverseAndUnfold(item, itemPath, currentDepth + 2);
-                    }
-                  });
-                } else {
-                  traverseAndUnfold(value, keyPath, currentDepth + 1);
-                }
-              }
-            }
-            // If currentDepth >= depth, we don't need to explore this branch further
-            // The auto-folding mechanism will handle folding items beyond the depth limit
-          }
-        });
-      };
-
-      // Start traversal from root
-      traverseAndUnfold(instance, "", 0);
-      console.log(`🎯 Final folded state:`, newFolded);
-      
-      // Single state update - much more efficient than the previous approach
-      setFoldedObjectAttributeOrArrayItems(newFolded);
-    },
-    [props.instance, setFoldedObjectAttributeOrArrayItems, setMaxRenderDepth]
-  );
-
-  // ##############################################################################################
-  const handleCollapseAll = useCallback(() => {
-    setMaxRenderDepth(1); // Reset to shallow depth
-    setFoldedObjectAttributeOrArrayItems({}); // Collapse all items
-  }, [setMaxRenderDepth, setFoldedObjectAttributeOrArrayItems]);
 
   // ##############################################################################################
   const onEditValueObjectFormSubmit = useCallback(
@@ -572,7 +487,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
             />
           </div>
           
-          {displayEditor && (
+          {/* {displayEditor && (
             <div style={{ marginTop: "12px", padding: "12px", backgroundColor: "#f5f5f5", borderRadius: "6px" }}>
               <ThemedText style={{ fontWeight: "bold", marginBottom: "8px" }}>
                 🎛️ Rendering Depth Controls
@@ -629,7 +544,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                 </ThemedButton>
               </ThemedFlexRow>
             </div>
-          )}
+          )} */}
           <div>
             <ThemedStatusText>
               displayAsStructuredElement: {displayAsStructuredElement ? "true" : "false"}{" "}
@@ -675,7 +590,8 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                 foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
                 setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
                 zoomInPath={props.zoomInPath}
-                maxRenderDepth={maxRenderDepth}
+                // maxRenderDepth={maxRenderDepth}
+                maxRenderDepth={Infinity} // Always render fully for editor
               />
             ) : (
               <div>
