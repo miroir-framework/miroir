@@ -105,6 +105,7 @@ import { SidebarWidth } from "./SidebarSection.js";
 import { InstanceEditorOutline } from '../InstanceEditorOutline.js';
 import { useCurrentModel, useReduxDeploymentsStateQuerySelectorForCleanedResult } from "../../ReduxHooks.js";
 import { ViewParamsUpdateQueue, ViewParamsUpdateQueueConfig } from '../ViewParamsUpdateQueue.js';
+import { usePageConfiguration } from '../../services/index.js';
 import type { Deployment } from 'miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType';
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -266,6 +267,9 @@ export const RootComponent = (props: RootComponentProps) => {
   // Optimize transactions selector to avoid unnecessary re-renders during bulk operations
   const transactions: ReduxStateChanges[] = useLocalCacheTransactions();
   const miroirConfig = context.miroirContext.getMiroirConfig();
+
+  // Configuration loading service for centralized configuration management
+  const { fetchConfigurations } = usePageConfiguration();
 
   // Track render counts with centralized tracker
   const currentNavigationKey = `${context.deploymentUuid}-${context.applicationSection}`;
@@ -796,163 +800,7 @@ export const RootComponent = (props: RootComponentProps) => {
                         Open database
                       </ThemedButton> */}
                       <ThemedButton
-                        onClick={() =>
-                          handleAsyncAction(
-                            async () => {
-                              log.info(
-                                "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ FETCH CONFIGURATIONS START @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
-                              );
-                              if (!miroirConfig) {
-                                throw new Error(
-                                  "no miroirConfig given, it has to be given on the command line starting the server!"
-                                );
-                              }
-                              const configurations = miroirConfig.client.emulateServer
-                                ? miroirConfig.client.deploymentStorageConfig
-                                : miroirConfig.client.serverConfig.storeSectionConfiguration;
-
-                              if (!configurations[adminConfigurationDeploymentAdmin.uuid]) {
-                                throw new Error(
-                                  "no configuration for Admin selfApplication Deployment given, can not fetch data. Admin deployment uuid=" +
-                                    adminConfigurationDeploymentAdmin.uuid +
-                                    " configurations=" +
-                                    JSON.stringify(configurations, null, 2)
-                                );
-                              }
-
-                              // Use React 18's flushSync for batching to minimize re-renders
-                              // First, perform the rollback and query to get deployments
-                              await domainController.handleAction(
-                                {
-                                  actionType: "rollback",
-                                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                                  deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
-                                },
-                                defaultMiroirMetaModel
-                              );
-
-                              const subQueryName = "deployments";
-                              const adminDeploymentsQuery: BoxedQueryTemplateWithExtractorCombinerTransformer =
-                                {
-                                  queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
-                                  deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
-                                  pageParams: {},
-                                  queryParams: {},
-                                  contextResults: {},
-                                  extractorTemplates: {
-                                    [subQueryName]: {
-                                      extractorTemplateType:
-                                        "extractorTemplateForObjectListByEntity",
-                                      applicationSection: "data",
-                                      parentName: "Deployment",
-                                      parentUuid: {
-                                        transformerType: "constantUuid",
-                                        interpolation: "build",
-                                        value: entityDeployment.uuid,
-                                      },
-                                    },
-                                  },
-                                };
-                              const adminDeployments: Action2ReturnType =
-                                await domainController.handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(
-                                  {
-                                    actionType:
-                                      "runBoxedQueryTemplateOrBoxedExtractorTemplateAction",
-                                    actionName: "runQuery",
-                                    deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
-                                    endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-                                    payload: {
-                                      applicationSection: "data",
-                                      query: adminDeploymentsQuery,
-                                    },
-                                  }
-                                );
-                              if (adminDeployments instanceof Action2Error) {
-                                throw new Error(
-                                  "found adminDeployments with error " + adminDeployments
-                                );
-                              }
-
-                              if (
-                                adminDeployments.returnedDomainElement instanceof
-                                Domain2ElementFailed
-                              ) {
-                                throw new Error(
-                                  "found adminDeployments failed " +
-                                    adminDeployments.returnedDomainElement
-                                );
-                              }
-                              if (typeof adminDeployments.returnedDomainElement != "object") {
-                                throw new Error(
-                                  "found adminDeployments query result not an object as expected " +
-                                    adminDeployments.returnedDomainElement
-                                );
-                              }
-
-                              if (!adminDeployments.returnedDomainElement[subQueryName]) {
-                                throw new Error(
-                                  "found adminDeployments query result object does not have attribute " +
-                                    subQueryName +
-                                    " as expected " +
-                                    adminDeployments.returnedDomainElement
-                                );
-                              }
-
-                              const foundDeployments =
-                                adminDeployments.returnedDomainElement[subQueryName];
-                              log.info("found adminDeployments", foundDeployments);
-
-                              // Batch all deployment operations to reduce re-renders
-                              // Create arrays of all actions first
-                              const openStoreActions: StoreOrBundleAction[] = [];
-                              const rollbackActions: Array<{
-                                actionType: "rollback";
-                                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e";
-                                deploymentUuid: string;
-                              }> = [];
-                              // const deploymentsToLoad:Deployment[] = [foundDeployments.find((e:Deployment)=> e.uuid == adminConfigurationDeploymentParis.uuid)];
-                              const deploymentsToLoad:Deployment[] = foundDeployments;
-                              // for (const c of Object.values(foundDeployments)) {
-                              for (const c of Object.values(deploymentsToLoad)) {
-                                openStoreActions.push({
-                                  actionType: "storeManagementAction_openStore",
-                                  endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f" as const,
-                                  configuration: {
-                                    [(c as any).uuid]: (c as any) /** Deployment */
-                                      .configuration as StoreUnitConfiguration,
-                                  },
-                                  deploymentUuid: (c as any).uuid,
-                                });
-
-                                rollbackActions.push({
-                                  actionType: "rollback",
-                                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e" as const,
-                                  deploymentUuid: (c as any).uuid,
-                                });
-                              }
-
-                              // Execute all open store actions first
-                              await Promise.all(
-                                openStoreActions.map((action) =>
-                                  domainController.handleAction(action)
-                                )
-                              );
-
-                              // Then execute all rollback actions
-                              await Promise.all(
-                                rollbackActions.map((action) =>
-                                  domainController.handleAction(action, defaultMiroirMetaModel)
-                                )
-                              );
-
-                              log.info(
-                                "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ FETCH CONFIGURATIONS DONE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
-                              );
-                            },
-                            "Miroir & App configurations fetched successfully",
-                            "fetch configurations"
-                          )
-                        }
+                        onClick={fetchConfigurations}
                       >
                         fetch Miroir & App configurations from database
                       </ThemedButton>

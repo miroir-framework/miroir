@@ -48,6 +48,7 @@ import { getMemoizedReduxDeploymentsStateSelectorMap, type ReduxStateWithUndoRed
 //   TestSuiteResult
 // } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { adminConfigurationDeploymentParis, applicationParis, packageName } from "../../../constants.js";
+import { usePageConfiguration } from "../services/index.js";
 import { getTestSuitesForBuildPlusRuntimeCompositeAction } from "../../4-tests/applicative.Library.BuildPlusRuntimeCompositeAction.js";
 import { testOnLibrary_deleteLibraryDeployment } from "../../4-tests/tests-utils-testOnLibrary.js";
 import { runTestOrTestSuite } from "../../4-tests/tests-utils.js";
@@ -107,6 +108,13 @@ export const ToolsPage: React.FC<any> = (
   count++;
   const [dialogOuterFormObject, setdialogOuterFormObject] = useMiroirContextInnerFormOutput();
   const [formHelperState, setformHelperState] = useMiroirContextformHelperState();
+
+  // Auto-fetch configurations when the page loads
+  const { fetchConfigurations } = usePageConfiguration({
+    autoFetchOnMount: true,
+    successMessage: "Tools page configurations loaded successfully",
+    actionName: "tools page configuration fetch"
+  });
 
   // const errorLog = useErrorLogService();
   const context = useMiroirContextService();
