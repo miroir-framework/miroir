@@ -313,7 +313,6 @@ export type TransformerForBuildPlusRuntime =
         [P in "transformerType" | "interpolation"]?: never;
       }
     )
-  | TransformerForBuild
   | TransformerForBuildPlusRuntime_menu_addItem
   | TransformerForBuildPlusRuntime_constant
   | TransformerForBuildPlusRuntime_constantArray
@@ -372,7 +371,6 @@ export const transformerForBuildPlusRuntime: z.ZodType<TransformerForBuildPlusRu
     z.boolean(),
     z.array(transformerForBuildPlusRuntime),
     recordWithoutTransformerType,
-    transformerForBuild,
     transformerForBuildPlusRuntime_menu_addItem,
     transformerForBuildPlusRuntime_constant,
     transformerForBuildPlusRuntime_constantArray,
