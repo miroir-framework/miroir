@@ -132,30 +132,40 @@ export const FoldUnfoldAllObjectAttributesOrArrayItems = (props: {
   listKey: string;
   itemsOrder: Array<string>;
 }): JSX.Element => {
-  const handleClick = useCallback((e: React.MouseEvent) => {
-    e.stopPropagation();
-    e.preventDefault();
-    
-    // Generate list keys for all child attributes
-    const childKeys = props.itemsOrder.map(attributeName => `${props.listKey}.${attributeName}`);
-    
-    // Check if any child is currently unfolded (visible)
-    const hasUnfoldedChildren = childKeys.some(
-      (key) =>
-        !props.foldedObjectAttributeOrArrayItems || !props.foldedObjectAttributeOrArrayItems[key]
-    );
-    
-    // If any child is unfolded, fold all; otherwise unfold all
-    const shouldFoldAll = hasUnfoldedChildren;
-    
-    props.setFoldedObjectAttributeOrArrayItems((prev) => {
-      const newState = { ...prev };
-      childKeys.forEach(key => {
-        newState[key] = shouldFoldAll;
+  const handleClick = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation();
+      e.preventDefault();
+
+      // Generate list keys for all child attributes
+      const childKeys = props.itemsOrder.map(
+        (attributeName) => `${props.listKey}.${attributeName}`
+      );
+
+      // Check if any child is currently unfolded (visible)
+      const hasUnfoldedChildren = childKeys.some(
+        (key) =>
+          !props.foldedObjectAttributeOrArrayItems || !props.foldedObjectAttributeOrArrayItems[key]
+      );
+
+      // If any child is unfolded, fold all; otherwise unfold all
+      const shouldFoldAll = hasUnfoldedChildren;
+
+      props.setFoldedObjectAttributeOrArrayItems((prev) => {
+        const newState = { ...prev };
+        childKeys.forEach((key) => {
+          newState[key] = shouldFoldAll;
+        });
+        return newState;
       });
-      return newState;
-    });
-  }, [props.listKey, props.itemsOrder, props.foldedObjectAttributeOrArrayItems, props.setFoldedObjectAttributeOrArrayItems]);
+    },
+    [
+      props.listKey,
+      props.itemsOrder,
+      props.foldedObjectAttributeOrArrayItems,
+      props.setFoldedObjectAttributeOrArrayItems,
+    ]
+  );
 
   // Check if all children are folded
   const childKeys = props.itemsOrder.map(attributeName => `${props.listKey}.${attributeName}`);

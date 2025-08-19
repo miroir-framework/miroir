@@ -123,57 +123,71 @@ export interface ReportSectionEntityInstanceProps {
 // ###############################################################################################################
 export const ReportSectionEntityInstance = (props: ReportSectionEntityInstanceProps) => {
   const renderStartTime = performance.now();
-  
+
   // const errorLog = useErrorLogService();
   const context = useMiroirContextService();
   const showPerformanceDisplay = context.showPerformanceDisplay;
   // const { currentTheme } = useMiroirTheme();
 
   const navigationKey = `${props.deploymentUuid}-${props.applicationSection}`;
-  const { navigationCount, totalCount } = useRenderTracker("ReportSectionEntityInstance", navigationKey);
+  const { navigationCount, totalCount } = useRenderTracker(
+    "ReportSectionEntityInstance",
+    navigationKey
+  );
 
   // Track performance immediately for initial render
   const componentKey = `ReportSectionEntityInstance-${props.instance?.uuid || props.entityUuid}`;
-  
+
   log.info(
     "++++++++++++++++++++++++++++++++ render",
-    "navigationCount", navigationCount,
-    "totalCount", totalCount,
+    "navigationCount",
+    navigationCount,
+    "totalCount",
+    totalCount,
     "with props",
     props
   );
 
   const [displayAsStructuredElement, setDisplayAsStructuredElement] = useState(true);
   const [displayEditor, setDisplayEditor] = useState(true);
-  const [foldedObjectAttributeOrArrayItems, setFoldedObjectAttributeOrArrayItems] = useState<{ [k: string]: boolean }>({});
-  const [resolveConditionalSchemaResultsData, setResolveConditionalSchemaResultsData] = useState<any[]>([]); // TODO: use a precise type!
+  const [foldedObjectAttributeOrArrayItems, setFoldedObjectAttributeOrArrayItems] = useState<{
+    [k: string]: boolean;
+  }>({});
+  const [resolveConditionalSchemaResultsData, setResolveConditionalSchemaResultsData] = useState<
+    any[]
+  >([]); // TODO: use a precise type!
 
   // Use outline context for outline state management
   const outlineContext = useDocumentOutlineContext();
   const isOutlineOpen = outlineContext.isOutlineOpen;
   const handleToggleOutline = outlineContext.onToggleOutline;
 
-
   const instance: any = props.instance;
 
   const currentModel: MetaModel = useCurrentModel(
-    context.applicationSection == "data" ? context.deploymentUuid : adminConfigurationDeploymentMiroir.uuid
+    context.applicationSection == "data"
+      ? context.deploymentUuid
+      : adminConfigurationDeploymentMiroir.uuid
   );
 
   const domainController: DomainControllerInterface = useDomainControllerService();
-  
-  const currentReportDeploymentSectionEntities: Entity[] = currentModel.entities; // Entities are always defined in the 'model' section
-  const currentReportDeploymentSectionEntityDefinitions: EntityDefinition[] = currentModel.entityDefinitions; // EntityDefinitions are always defined in the 'model' section
 
-  const currentReportTargetEntity: Entity | undefined = currentReportDeploymentSectionEntities?.find(
-    (e) => e?.uuid === props.entityUuid
-  );
+  const currentReportDeploymentSectionEntities: Entity[] = currentModel.entities; // Entities are always defined in the 'model' section
+  const currentReportDeploymentSectionEntityDefinitions: EntityDefinition[] =
+    currentModel.entityDefinitions; // EntityDefinitions are always defined in the 'model' section
+
+  const currentReportTargetEntity: Entity | undefined =
+    currentReportDeploymentSectionEntities?.find((e) => e?.uuid === props.entityUuid);
 
   const currentReportTargetEntityDefinition: EntityDefinition | undefined =
-    currentReportDeploymentSectionEntityDefinitions?.find((e) => e?.entityUuid === currentReportTargetEntity?.uuid);
+    currentReportDeploymentSectionEntityDefinitions?.find(
+      (e) => e?.entityUuid === currentReportTargetEntity?.uuid
+    );
 
-
-  const formLabel: string = props.applicationSection + "." + currentReportTargetEntity?.name + 
+  const formLabel: string =
+    props.applicationSection +
+    "." +
+    currentReportTargetEntity?.name +
     (props.zoomInPath ? ` (${props.zoomInPath})` : "");
 
   // Update the outline title when the current entity changes
@@ -195,11 +209,14 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
     if (props.instance?.uuid) {
       const renderEndTime = performance.now();
       const renderDuration = renderEndTime - renderStartTime;
-      
+
       // Only track performance if render took longer than 5ms or every 100 renders
       if (renderDuration > 5) {
-        const currentMetrics = RenderPerformanceMetrics.trackRenderPerformance(componentKey, renderDuration);
-    
+        const currentMetrics = RenderPerformanceMetrics.trackRenderPerformance(
+          componentKey,
+          renderDuration
+        );
+
         // Log performance every 100 renders or if render took longer than 15ms
         if (currentMetrics.renderCount % 100 === 0 || renderDuration > 15) {
           log.info(
@@ -217,13 +234,15 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
     }
   }, [props.instance, props.entityUuid]);
   // });
-  
-  
+
   // ##############################################################################################
-  const handleDisplayEditorSwitchChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-    setDisplayEditor(event.target.checked);
-  },[setDisplayEditor]);
-  
+  const handleDisplayEditorSwitchChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      setDisplayEditor(event.target.checked);
+    },
+    [setDisplayEditor]
+  );
+
   // ##############################################################################################
   const onEditValueObjectFormSubmit = useCallback(
     async (data: any) => {
@@ -249,7 +268,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                       instances: [data],
                     },
                   ],
-                }
+                },
               },
             },
             currentModel
@@ -260,40 +279,35 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
             deploymentUuid: props.deploymentUuid,
             endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
             payload: {
-              applicationSection: props.applicationSection
-                ? props.applicationSection
-                : "data",
+              applicationSection: props.applicationSection ? props.applicationSection : "data",
               objects: [
                 {
                   parentName: data.name,
                   parentUuid: data.parentUuid,
-                  applicationSection: props.applicationSection
-                    ? props.applicationSection
-                    : "data",
+                  applicationSection: props.applicationSection ? props.applicationSection : "data",
                   instances: [data],
                 },
               ],
-            }
+            },
           };
           await domainController.handleAction(updateAction);
         }
       } else {
-        throw new Error(
-          "onEditValueObjectFormSubmit props.deploymentUuid is undefined."
-        );
+        throw new Error("onEditValueObjectFormSubmit props.deploymentUuid is undefined.");
       }
     },
     [domainController, props]
   );
-  
+
   // ##############################################################################################
   // Check if this is a TransformerTest entity instance
   const isTransformerTestEntity = currentReportTargetEntity?.uuid === entityTransformerTest.uuid;
-  const isTransformerTest = isTransformerTestEntity && 
-    instance?.parentUuid === entityTransformerTest.uuid;
-  
+  const isTransformerTest =
+    isTransformerTestEntity && instance?.parentUuid === entityTransformerTest.uuid;
+
   // Log for debugging
-  log.info("ReportSectionEntityInstance - TransformerTest detection:", 
+  log.info(
+    "ReportSectionEntityInstance - TransformerTest detection:",
     "currentReportTargetEntity",
     currentReportTargetEntity,
     "entityUuid",
@@ -303,16 +317,16 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
     "instance",
     instance,
     "isTransformerTest",
-    isTransformerTest,
-  //   {
-  //   transformerTestEntityUuid: entityTransformerTest.uuid,
-  //   isTransformerTestEntity,
-  //   instanceTransformerTestType: instance?.transformerTestType,
-  //   instanceName: instance?.name,
-  //   transformerTestLabel: instance?.transformerTestLabel
-  // }
-);
-  
+    isTransformerTest
+    //   {
+    //   transformerTestEntityUuid: entityTransformerTest.uuid,
+    //   isTransformerTestEntity,
+    //   instanceTransformerTestType: instance?.transformerTestType,
+    //   instanceName: instance?.name,
+    //   transformerTestLabel: instance?.transformerTestLabel
+    // }
+  );
+
   // ##############################################################################################
   if (instance) {
     return (
@@ -372,9 +386,9 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                           status: { type: "string" },
                           assertionCount: { type: "number" },
                           assertions: { type: "string" },
-                          fullAssertionsResults: { 
+                          fullAssertionsResults: {
                             type: "object",
-                            definition: {}
+                            definition: {},
                           },
                         },
                       }}
@@ -427,13 +441,13 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                             field: "assertions",
                             headerName: "Summary",
                             cellRenderer: (params: any) => (
-                              <div 
-                                style={{ 
-                                  maxWidth: "200px", 
-                                  overflow: "hidden", 
+                              <div
+                                style={{
+                                  maxWidth: "200px",
+                                  overflow: "hidden",
                                   textOverflow: "ellipsis",
                                   whiteSpace: "nowrap",
-                                  cursor: "pointer"
+                                  cursor: "pointer",
                                 }}
                                 title="Click test name or status for full details"
                               >
@@ -476,9 +490,11 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
           <ThemedHeaderSection>
             <ThemedTitle>
               {currentReportTargetEntity?.name} details: {instance.name}{" "}
-              {props.zoomInPath && <span style={{ fontSize: '0.8em', fontStyle: 'italic', color: '#666' }}>
-                (viewing: {props.zoomInPath})
-              </span>}
+              {props.zoomInPath && (
+                <span style={{ fontSize: "0.8em", fontStyle: "italic", color: "#666" }}>
+                  (viewing: {props.zoomInPath})
+                </span>
+              )}
             </ThemedTitle>
             {displayEditor && (
               <ThemedTooltip
@@ -517,18 +533,25 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                 ) : (
                   <div>
                     {props.zoomInPath && (
-                      <div style={{ marginBottom: '8px', fontSize: '0.9em', color: '#666', fontStyle: 'italic' }}>
+                      <div
+                        style={{
+                          marginBottom: "8px",
+                          fontSize: "0.9em",
+                          color: "#666",
+                          fontStyle: "italic",
+                        }}
+                      >
                         Viewing path: {props.zoomInPath}
                       </div>
                     )}
                     <ThemedCodeBlock>
                       {safeStringify(
-                        props.zoomInPath 
+                        props.zoomInPath
                           ? (() => {
-                              const pathParts = props.zoomInPath.split('.');
+                              const pathParts = props.zoomInPath.split(".");
                               let current = instance;
                               for (const part of pathParts) {
-                                if (current && typeof current === 'object') {
+                                if (current && typeof current === "object") {
                                   current = current[part];
                                 } else {
                                   return `Path "${props.zoomInPath}" not found`;
@@ -553,9 +576,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                 target entity:{" "}
                 {currentReportTargetEntity?.name ?? "report target entity not found!"}
               </div>
-              {props.zoomInPath && (
-                <div>zoom path: {props.zoomInPath}</div>
-              )}
+              {props.zoomInPath && <div>zoom path: {props.zoomInPath}</div>}
               {/* <div>resolved schema: {JSON.stringify(resolvedJzodSchema)}</div> */}
               <ThemedPreformattedText>
                 target entity definition:{" "}
