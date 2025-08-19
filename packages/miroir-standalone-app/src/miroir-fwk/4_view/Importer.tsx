@@ -138,113 +138,113 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   // ##############################################################################################
   // ##############################################################################################
   // ##############################################################################################
-  const actionHandlerCreateApplication: ActionHandler = useMemo(()=> ({
-    interface: {
-      actionJzodObjectSchema: {
-        type: "object",
-        definition: {
-          newApplicationName: {
-            type: "string"
-          },
-          newAdminAppApplicationUuid: {
-            type: "uuid"
-          },
-          newSelfApplicationUuid: {
-            type: "uuid"
-          },
-          newDeploymentUuid: {
-            type: "uuid"
-          },
-        }
-      },
-    },
-    implementation: {
-      templates: {
-      },
-      compositeActionTemplate: {
-        actionType: "compositeAction",
-        actionName: "sequence",
-        definition: [
-          // {
-          //   actionType: "domainAction",
-          //   domainAction: {
-          //     actionType: "storeManagementAction",
-          //     actionName: "storeManagementAction_openStore",
-          //     endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-          //     configuration: {
-          //       transformerType: "innerFullObjectTemplate",
-          //       definition: [
-          //         {
-          //           attributeKey: {
-          //             transformerType: "parameterReference",
-          //             referenceName: "newDeploymentUuid",
-          //           },
-          //           attributeValue: {
-          //             transformerType: "parameterReference",
-          //             referenceName: "newDeploymentStoreConfiguration",
-          //           }
-          //         }
-          //       ],
-          //     },
-          //     deploymentUuid: {
-          //       transformerType: "parameterReference",
-          //       referenceName: "newDeploymentUuid",
-          //     },
-          //   }
-          // },
-          // {
-          //   actionType: "domainAction",
-          //   domainAction: {
-          //     transformerType: "parameterReference",
-          //     referenceName: "createStoreAction",
-          //   }
-          // },
-          // {
-          //   actionType: "domainAction",
-          //   domainAction: {
-          //     transformerType: "parameterReference",
-          //     referenceName: "resetAndInitAction",
-          //   }
-          // },
-          // {
-          //   actionType: "domainAction",
-          //   domainAction: {
-          //     transformerType: "parameterReference",
-          //     referenceName: "createSelfApplicationAction",
-          //   }
-          // },
-          // {
-          //   actionType: "domainAction",
-          //   domainAction: {
-          //     transformerType: "parameterReference",
-          //     referenceName: "createApplicationForAdminAction",
-          //   }
-          // },
-          // {
-          //   actionType: "domainAction",
-          //   domainAction: {
-          //     transformerType: "parameterReference",
-          //     referenceName: "createAdminDeploymentAction",
-          //   }
-          // },
-          // {
-          //   actionType: "domainAction",
-          //   domainAction: {
-          //     transformerType: "parameterReference",
-          //     referenceName: "createNewApplicationMenuAction",
-          //   }
-          // },
-          // {
-          //   actionType: "domainAction",
-          //   domainAction: {
-          //     transformerType: "parameterReference",
-          //     referenceName: "commitAction",
-          //   }
-          // },
-        ],
-      }
-    },
-  }),[])
+  // const actionHandlerCreateApplication: ActionHandler = useMemo(()=> ({
+  //   interface: {
+  //     actionJzodObjectSchema: {
+  //       type: "object",
+  //       definition: {
+  //         newApplicationName: {
+  //           type: "string"
+  //         },
+  //         newAdminAppApplicationUuid: {
+  //           type: "uuid"
+  //         },
+  //         newSelfApplicationUuid: {
+  //           type: "uuid"
+  //         },
+  //         newDeploymentUuid: {
+  //           type: "uuid"
+  //         },
+  //       }
+  //     },
+  //   },
+  //   implementation: {
+  //     templates: {
+  //     },
+  //     compositeActionTemplate: {
+  //       actionType: "compositeAction",
+  //       actionName: "sequence",
+  //       definition: [
+  //         // {
+  //         //   actionType: "domainAction",
+  //         //   domainAction: {
+  //         //     actionType: "storeManagementAction",
+  //         //     actionName: "storeManagementAction_openStore",
+  //         //     endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+  //         //     configuration: {
+  //         //       transformerType: "innerFullObjectTemplate",
+  //         //       definition: [
+  //         //         {
+  //         //           attributeKey: {
+  //         //             transformerType: "parameterReference",
+  //         //             referenceName: "newDeploymentUuid",
+  //         //           },
+  //         //           attributeValue: {
+  //         //             transformerType: "parameterReference",
+  //         //             referenceName: "newDeploymentStoreConfiguration",
+  //         //           }
+  //         //         }
+  //         //       ],
+  //         //     },
+  //         //     deploymentUuid: {
+  //         //       transformerType: "parameterReference",
+  //         //       referenceName: "newDeploymentUuid",
+  //         //     },
+  //         //   }
+  //         // },
+  //         // {
+  //         //   actionType: "domainAction",
+  //         //   domainAction: {
+  //         //     transformerType: "parameterReference",
+  //         //     referenceName: "createStoreAction",
+  //         //   }
+  //         // },
+  //         // {
+  //         //   actionType: "domainAction",
+  //         //   domainAction: {
+  //         //     transformerType: "parameterReference",
+  //         //     referenceName: "resetAndInitAction",
+  //         //   }
+  //         // },
+  //         // {
+  //         //   actionType: "domainAction",
+  //         //   domainAction: {
+  //         //     transformerType: "parameterReference",
+  //         //     referenceName: "createSelfApplicationAction",
+  //         //   }
+  //         // },
+  //         // {
+  //         //   actionType: "domainAction",
+  //         //   domainAction: {
+  //         //     transformerType: "parameterReference",
+  //         //     referenceName: "createApplicationForAdminAction",
+  //         //   }
+  //         // },
+  //         // {
+  //         //   actionType: "domainAction",
+  //         //   domainAction: {
+  //         //     transformerType: "parameterReference",
+  //         //     referenceName: "createAdminDeploymentAction",
+  //         //   }
+  //         // },
+  //         // {
+  //         //   actionType: "domainAction",
+  //         //   domainAction: {
+  //         //     transformerType: "parameterReference",
+  //         //     referenceName: "createNewApplicationMenuAction",
+  //         //   }
+  //         // },
+  //         // {
+  //         //   actionType: "domainAction",
+  //         //   domainAction: {
+  //         //     transformerType: "parameterReference",
+  //         //     referenceName: "commitAction",
+  //         //   }
+  //         // },
+  //       ],
+  //     }
+  //   },
+  // }),[])
 
   // ##############################################################################################
   // ##############################################################################################
@@ -1793,41 +1793,41 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
 
   // const [formHelperState, setformHelperState] = useMiroirContextformHelperState(); // NOT USED
 
-  const [rawSchema, setRawSchema] = useState<JzodElement>(
-    actionHandlerCreateApplication.interface.actionJzodObjectSchema
-  );
+  // const [rawSchema, setRawSchema] = useState<JzodElement>(
+  //   actionHandlerCreateApplication.interface.actionJzodObjectSchema
+  // );
 
-  const currentModel: MetaModel = useCurrentModel(
-    context.applicationSection == "data" ? context.deploymentUuid : adminConfigurationDeploymentMiroir.uuid
-  );
-  const currentMiroirModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
+  // const currentModel: MetaModel = useCurrentModel(
+  //   context.applicationSection == "data" ? context.deploymentUuid : adminConfigurationDeploymentMiroir.uuid
+  // );
+  // const currentMiroirModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
 
-  const resolvedJzodSchema:JzodElement = useMemo(
-    () => {
-      if (!context.miroirFundamentalJzodSchema || context.miroirFundamentalJzodSchema.name == "dummyJzodSchema") {
-        return defaultObject
-      } else {
-        const configuration = jzodTypeCheck(
-          rawSchema,
-          formState,
-          [], // currentValuePath
-          [], // currentTypePath
-          {
-            miroirFundamentalJzodSchema: context.miroirFundamentalJzodSchema,
-            currentModel,
-            miroirMetaModel: currentMiroirModel,
-          },
-          emptyObject
-        );
+  // const resolvedJzodSchema:JzodElement = useMemo(
+  //   () => {
+  //     if (!context.miroirFundamentalJzodSchema || context.miroirFundamentalJzodSchema.name == "dummyJzodSchema") {
+  //       return defaultObject
+  //     } else {
+  //       const configuration = jzodTypeCheck(
+  //         rawSchema,
+  //         formState,
+  //         [], // currentValuePath
+  //         [], // currentTypePath
+  //         {
+  //           miroirFundamentalJzodSchema: context.miroirFundamentalJzodSchema,
+  //           currentModel,
+  //           miroirMetaModel: currentMiroirModel,
+  //         },
+  //         emptyObject
+  //       );
 
-        // return configuration.status == "ok"? configuration.element : defaultObject;
-        return configuration.status == "ok"? configuration.resolvedSchema : defaultObject;
-      }
-    },
-    [context.miroirFundamentalJzodSchema, rawSchema, formState]
-  );
+  //       // return configuration.status == "ok"? configuration.element : defaultObject;
+  //       return configuration.status == "ok"? configuration.resolvedSchema : defaultObject;
+  //     }
+  //   },
+  //   [context.miroirFundamentalJzodSchema, rawSchema, formState]
+  // );
 
-  log.info("resolvedJzodSchema", resolvedJzodSchema, context.miroirFundamentalJzodSchema?.name, "rawSchema", rawSchema)
+  // log.info("resolvedJzodSchema", resolvedJzodSchema, context.miroirFundamentalJzodSchema?.name, "rawSchema", rawSchema)
 
   // const createNewApplication: CompositeActionTemplate = useMemo(
   //   () => ({

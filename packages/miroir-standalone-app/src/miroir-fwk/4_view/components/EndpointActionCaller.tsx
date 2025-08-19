@@ -34,7 +34,10 @@ import {
   SyncBoxedExtractorOrQueryRunnerMap,
   SyncQueryRunner,
   SyncQueryRunnerParams,
-  Uuid
+  Uuid,
+  type MiroirModelEnvironment,
+  miroirFundamentalJzodSchema,
+  type JzodSchema
 } from 'miroir-core';
 import { Action } from 'miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js';
 import { FC, useMemo, useState } from 'react';
@@ -109,6 +112,16 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
   const adminAppModel: MetaModel = useCurrentModel(adminConfigurationDeploymentAdmin.uuid);
   const miroirMetaModel: MetaModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
 
+  const currentMiroirModelEnvironment: MiroirModelEnvironment = useMemo(() => {
+    return {
+      miroirFundamentalJzodSchema:
+        context.miroirFundamentalJzodSchema ?? (miroirFundamentalJzodSchema as JzodSchema),
+      currentModel,
+      miroirMetaModel: miroirMetaModel,
+    };
+  }, [context.miroirFundamentalJzodSchema, currentModel, miroirMetaModel]);
+
+
   // const libraryAppModel: MetaModel = useCurrentModel(adminConfigurationDeploymentLibrary.uuid);
 
   // Get available endpoints for selected deployment
@@ -153,7 +166,11 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
 
   const deploymentEntityState: ReduxDeploymentsState = useSelector(
     (state: ReduxStateWithUndoRedo) =>
-      deploymentEntityStateSelectorMap.extractState(state.presentModelSnapshot.current, () => ({}))
+      deploymentEntityStateSelectorMap.extractState(
+        state.presentModelSnapshot.current,
+        () => ({}),
+        currentMiroirModelEnvironment
+      )
   );
 
   const handleDeploymentChange = (event: SelectChangeEvent) => {
@@ -197,9 +214,7 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
             deploymentEntityState,
             false, // forceOptional
             selectedDeploymentUuid,
-            context.miroirFundamentalJzodSchema,
-            currentModel,
-            miroirMetaModel,
+            currentMiroirModelEnvironment,
             {} // relativeReferenceJzodContext
           );
     log.info(

@@ -37,7 +37,10 @@ import {
   selfApplicationDeploymentConfiguration,
   SyncBoxedExtractorOrQueryRunnerMap,
   SyncQueryRunner,
-  SyncQueryRunnerParams
+  SyncQueryRunnerParams,
+  type MiroirModelEnvironment,
+  miroirFundamentalJzodSchema,
+  type JzodSchema
 } from "miroir-core";
 
 import AddBox from "@mui/icons-material/AddBox";
@@ -229,6 +232,17 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   const currentModel: MetaModel = useCurrentModel(props.deploymentUuid)
   const context = useMiroirContextService();
   
+  const currentMiroirModelEnvironment: MiroirModelEnvironment = useMemo(() => {
+    return {
+      miroirFundamentalJzodSchema: context.miroirFundamentalJzodSchema?? miroirFundamentalJzodSchema as JzodSchema,
+      miroirMetaModel: miroirMetaModel,
+      currentModel: currentModel,
+    };
+  }, [
+    miroirMetaModel,
+    currentModel,
+    context.miroirFundamentalJzodSchema,
+  ]);
   // Get snackbar functionality from context
   const { showSnackbar, handleAsyncAction } = useSnackbar();
   
@@ -249,7 +263,11 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
 
   const deploymentEntityState: ReduxDeploymentsState = useSelector(
     (state: ReduxStateWithUndoRedo) =>
-      deploymentEntityStateSelectorMap.extractState(state.presentModelSnapshot.current, () => ({}))
+      deploymentEntityStateSelectorMap.extractState(
+        state.presentModelSnapshot.current,
+        () => ({}),
+        currentMiroirModelEnvironment
+      )
   );
 
   const { availableReports, entities, entityDefinitions } = useMemo(() => {
@@ -638,9 +656,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
               deploymentEntityState,
               false, // forceOptional
               props.deploymentUuid,
-              context.miroirFundamentalJzodSchema,
-              currentModel,
-              miroirMetaModel,
+              currentMiroirModelEnvironment,
               {}, // relativeReferenceJzodContext
             )
           : undefined;
