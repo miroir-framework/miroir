@@ -180,16 +180,16 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
     : valueObjectMMLSchema;
 
   // Log zoom functionality usage
-  if (hasZoomPath) {
-    log.info(
-      "TypedValueObjectEditor using zoom path",
-      "zoomInPath", zoomInPath,
-      "original valueObject", valueObject,
-      "displayValueObject", displayValueObject,
-      "original schema", valueObjectMMLSchema,
-      "displaySchema", displaySchema
-    );
-  }
+  // if (hasZoomPath) {
+  //   log.info(
+  //     "TypedValueObjectEditor using zoom path",
+  //     "zoomInPath", zoomInPath,
+  //     "original valueObject", valueObject,
+  //     "displayValueObject", displayValueObject,
+  //     "original schema", valueObjectMMLSchema,
+  //     "displaySchema", displaySchema
+  //   );
+  // }
 
   // Handle error case where zoom path doesn't exist
   if (hasZoomPath && displayValueObject === undefined) {
@@ -245,21 +245,21 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
   //   };
   // }, [reduxDeploymentsState]);
 
-  log.info(
-    "TypedValueObjectEditor render",
-    "navigationCount",
-    navigationCount,
-    "instance",
-    valueObject,
-    "valueObjectMMLSchema",
-    valueObjectMMLSchema,
-    "hasZoomPath",
-    hasZoomPath,
-    "displayValueObject",
-    displayValueObject,
-    "displaySchema",
-    displaySchema
-  );
+  // log.info(
+  //   "TypedValueObjectEditor render",
+  //   "navigationCount",
+  //   navigationCount,
+  //   "instance",
+  //   valueObject,
+  //   "valueObjectMMLSchema",
+  //   valueObjectMMLSchema,
+  //   "hasZoomPath",
+  //   hasZoomPath,
+  //   "displayValueObject",
+  //   displayValueObject,
+  //   "displaySchema",
+  //   displaySchema
+  // );
   return (
     <Formik
       enableReinitialize={true}
@@ -328,14 +328,14 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
             }
             return result;
           }, [displaySchema, displayValueObject, formik.values, context, hasZoomPath, valueObject]);
-        log.info(
-          "TypedValueObjectEditor jzodTypeCheck done for render",
-          navigationCount,
-          "formik.values",
-          formik.values,
-          "resolvedJzodSchema",
-          typeCheckKeyMap
-        );
+        // log.info(
+        //   "TypedValueObjectEditor jzodTypeCheck done for render",
+        //   navigationCount,
+        //   "formik.values",
+        //   formik.values,
+        //   "resolvedJzodSchema",
+        //   typeCheckKeyMap
+        // );
         if (!typeCheckKeyMap || typeCheckKeyMap.status != "ok") {
           log.error(
             "TypedValueObjectEditor could not resolve jzod schema",

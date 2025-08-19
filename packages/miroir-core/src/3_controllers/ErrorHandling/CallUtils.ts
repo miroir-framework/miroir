@@ -90,7 +90,8 @@ export class CallUtils {
     // //   );
     // // }
     const result: Action2ReturnType = await this.persistenceStoreLocalOrRemote.handlePersistenceAction(action);
-    log.info("CallUtils callPersistenceAction received result", JSON.stringify(result, null, 2));
+    // log.info("CallUtils callPersistenceAction received result", JSON.stringify(result, null, 2));
+    log.info("CallUtils callPersistenceAction received result", result, null, 2);
     if (result["status"] == "error") {
       //ensure the proper persistence of errors in the local storage, for it to be accessible by view components.
       // Problem: what if the local storage is not accessible? => store it in a in-memory effect.

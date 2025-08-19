@@ -341,7 +341,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
         props.listKey &&
         foldedObjectAttributeOrArrayItems[props.listKey] === undefined) {
       
-      console.log(`🤖 Auto-fold triggered for ${props.listKey} at indentLevel ${props.indentLevel} (logical depth ${Math.floor((props.indentLevel || 0) / 2)}), maxRenderDepth ${maxRenderDepth}`);
+      // console.log(`🤖 Auto-fold triggered for ${props.listKey} at indentLevel ${props.indentLevel} (logical depth ${Math.floor((props.indentLevel || 0) / 2)}), maxRenderDepth ${maxRenderDepth}`);
       
       // Only auto-fold if the item hasn't been explicitly set
       // Use a longer delay to ensure manual depth control completes first
@@ -349,13 +349,13 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
         setFoldedObjectAttributeOrArrayItems(prev => {
           // Don't auto-fold if the item has been explicitly set by manual control
           if (prev[props.listKey] === undefined) {
-            console.log(`🤖 Auto-folding ${props.listKey} (was undefined)`);
+            // console.log(`🤖 Auto-folding ${props.listKey} (was undefined)`);
             return {
               ...prev,
               [props.listKey]: true
             };
           } else {
-            console.log(`🤖 NOT auto-folding ${props.listKey} (already set to ${prev[props.listKey]})`);
+            // console.log(`🤖 NOT auto-folding ${props.listKey} (already set to ${prev[props.listKey]})`);
           }
           return prev;
         });

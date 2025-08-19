@@ -761,10 +761,10 @@ export function jzodTypeCheck(
         'typeCheck' // Specify this is for type checking
       ) : jzodSchema;
 
-  log.info(
-    "jzodTypeCheck effectiveSchemaOrError",
-    effectiveSchemaOrError,
-  );
+  // log.info(
+  //   "jzodTypeCheck effectiveSchemaOrError",
+  //   effectiveSchemaOrError,
+  // );
   if ('error' in effectiveSchemaOrError) {
     return {
       status: "error",
@@ -797,19 +797,19 @@ export function jzodTypeCheck(
         // currentModel,
         // miroirMetaModel,
       );
-      log.info(
-        "jzodTypeCheck schemaReference",
-        "effectiveSchema",
-        effectiveRawSchema,
-        "resultJzodSchema",
-        resolvedJzodSchema,
-        // JSON.stringify(resolvedJzodSchema, null, 2),
-        "valueObject",
-        valueObject,
-        "newContext",
-        newContext,
-        // JSON.stringify(valueObject, null, 2)
-      );
+      // log.info(
+      //   "jzodTypeCheck schemaReference",
+      //   "effectiveSchema",
+      //   effectiveRawSchema,
+      //   "resultJzodSchema",
+      //   resolvedJzodSchema,
+      //   // JSON.stringify(resolvedJzodSchema, null, 2),
+      //   "valueObject",
+      //   valueObject,
+      //   "newContext",
+      //   newContext,
+      //   // JSON.stringify(valueObject, null, 2)
+      // );
       const typeCheck = jzodTypeCheck(
         resolvedJzodSchema,
         valueObject,
@@ -1429,9 +1429,9 @@ export function jzodTypeCheck(
             but found error for key "${key}": ${value.error}`
         );
       }, {} as { [k: string]: { rawSchema: JzodElement; resolvedSchema: JzodElement } });
-      log.info(
-        "jzodTypeCheck recordEntrieskeyMap",
-        "done"  );
+      // log.info(
+      //   "jzodTypeCheck recordEntrieskeyMap",
+      //   "done"  );
       return {
         status: "ok",
         valuePath: currentValuePath,
