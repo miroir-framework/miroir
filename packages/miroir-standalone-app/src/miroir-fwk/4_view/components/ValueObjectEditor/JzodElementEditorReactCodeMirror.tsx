@@ -108,8 +108,11 @@ export const JzodElementEditorReactCodeMirror: React.FC<JzodElementEditorReactCo
     }
   }, [codeMirrorValue, setCodeMirrorValue, setCodeMirrorIsValidJson]);
 
-  // Calculate height once
-  const editorHeight = `${(new String(codeMirrorValue??"").match(/\n/g)?.length || 0) * 20 + 60}px`;
+  // Calculate height excluding trailing blank lines
+  // const editorHeight = `${(codeMirrorValue?.split('\n').filter(line => line.trim() !== '').length || 0) * 20 + 60}px`;
+
+  // Calculate the width based on the longest line in the text
+  const editorWidth = `${Math.max(...(codeMirrorValue?.split('\n').map(line => line.length) || [0])) + 1}ch`;
 
   return (
     <span>
@@ -166,11 +169,11 @@ export const JzodElementEditorReactCodeMirror: React.FC<JzodElementEditorReactCo
           ✓
         </ThemedStyledButton>
         <ReactCodeMirror
-          height={editorHeight}
+          // height={editorHeight}
           value={codeMirrorValue}
           extensions={extensions}
           onChange={handleChange}
-          style={{ overflowY: 'auto', maxHeight: editorHeight }}
+          style={{ overflowY: 'auto', width: editorWidth }}
         />
       </ThemedSpan>
     </span>
