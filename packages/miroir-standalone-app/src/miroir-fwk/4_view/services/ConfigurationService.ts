@@ -2,8 +2,6 @@
  * Configuration Service - Central mechanism for fetching Miroir & App configurations
  * 
  * This service provides a centralized way to initialize and fetch configurations
- * for deployments, handling the complex async operations with proper error handling
- * and batching for optimal performance.
  */
 
 import {
@@ -42,57 +40,54 @@ export interface ConfigurationServiceOptions {
 /**
  * Fetches Miroir & App configurations from the database
  * 
- * This function performs the following operations:
- * 1. Validates the miroir configuration
- * 2. Performs rollback on admin deployment
- * 3. Queries for all deployments
- * 4. Opens stores for all found deployments
- * 5. Performs rollback on all deployments to load their configurations
+ * CRITICAL TWO-STEP BATCHING STRATEGY:
+ * - Step 1: Open all stores first using Promise.all for batched execution
+ * - Step 2: Execute all rollbacks after stores are opened using Promise.all
+ * - Uses .then() chaining to maintain execution context for React 18 batching
+ * - No intermediate awaits that would break the batching context
  * 
  * @param options Configuration options including domain controller and callbacks
  * @returns Promise that resolves when configuration fetching is complete
  */
-export async function fetchMiroirAndAppConfigurations(
+export function fetchMiroirAndAppConfigurations(
   options: ConfigurationServiceOptions
 ): Promise<void> {
   const { domainController, miroirConfig, onSuccess, onError } = options;
 
-  try {
-    log.info(
-      "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ FETCH CONFIGURATIONS START @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
-    );
+  // Validate miroir configuration first
+  if (!miroirConfig) {
+    return Promise.reject(new Error(
+      "no miroirConfig given, it has to be given on the command line starting the server!"
+    ));
+  }
 
-    // Validate miroir configuration
-    if (!miroirConfig) {
-      throw new Error(
-        "no miroirConfig given, it has to be given on the command line starting the server!"
-      );
-    }
+  const configurations = miroirConfig.client.emulateServer
+    ? miroirConfig.client.deploymentStorageConfig
+    : (miroirConfig.client as MiroirConfigForRestClient).serverConfig.storeSectionConfiguration;
 
-    const configurations = miroirConfig.client.emulateServer
-      ? miroirConfig.client.deploymentStorageConfig
-      : (miroirConfig.client as MiroirConfigForRestClient).serverConfig.storeSectionConfiguration;
+  if (!configurations[adminConfigurationDeploymentAdmin.uuid]) {
+    return Promise.reject(new Error(
+      "no configuration for Admin selfApplication Deployment given, can not fetch data. Admin deployment uuid=" +
+        adminConfigurationDeploymentAdmin.uuid +
+        " configurations=" +
+        JSON.stringify(configurations, null, 2)
+    ));
+  }
 
-    if (!configurations[adminConfigurationDeploymentAdmin.uuid]) {
-      throw new Error(
-        "no configuration for Admin selfApplication Deployment given, can not fetch data. Admin deployment uuid=" +
-          adminConfigurationDeploymentAdmin.uuid +
-          " configurations=" +
-          JSON.stringify(configurations, null, 2)
-      );
-    }
+  log.info(
+    "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ FETCH CONFIGURATIONS START @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+  );
 
-    // Step 1: Perform rollback on admin deployment to get latest state
-    await domainController.handleAction(
-      {
-        actionType: "rollback",
-        endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-        deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
-      },
-      defaultMiroirMetaModel
-    );
-
-    // Step 2: Query for all deployments
+  // CRITICAL: Single promise chain with no intermediate awaits
+  return domainController.handleAction(
+    {
+      actionType: "rollback",
+      endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+      deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
+    },
+    defaultMiroirMetaModel
+  ).then(() => {
+    // Query for deployments
     const subQueryName = "deployments";
     const adminDeploymentsQuery: BoxedQueryTemplateWithExtractorCombinerTransformer = {
       queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
@@ -114,19 +109,18 @@ export async function fetchMiroirAndAppConfigurations(
       },
     };
 
-    const adminDeployments: Action2ReturnType =
-      await domainController.handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY({
-        actionType: "runBoxedQueryTemplateOrBoxedExtractorTemplateAction",
-        actionName: "runQuery",
-        deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
-        endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-        payload: {
-          applicationSection: "data",
-          query: adminDeploymentsQuery,
-        },
-      });
-
-    // Step 3: Validate query results
+    return domainController.handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY({
+      actionType: "runBoxedQueryTemplateOrBoxedExtractorTemplateAction",
+      actionName: "runQuery",
+      deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
+      endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+      payload: {
+        applicationSection: "data",
+        query: adminDeploymentsQuery,
+      },
+    });
+  }).then((adminDeployments: Action2ReturnType) => {
+    // Validate query results
     if (adminDeployments instanceof Action2Error) {
       throw new Error("found adminDeployments with error " + adminDeployments);
     }
@@ -144,60 +138,57 @@ export async function fetchMiroirAndAppConfigurations(
       );
     }
 
-    if (!adminDeployments.returnedDomainElement[subQueryName]) {
+    if (!adminDeployments.returnedDomainElement["deployments"]) {
       throw new Error(
-        "found adminDeployments query result object does not have attribute " +
-          subQueryName +
-          " as expected " +
+        "found adminDeployments query result object does not have attribute deployments as expected " +
           adminDeployments.returnedDomainElement
       );
     }
 
-    const foundDeployments = adminDeployments.returnedDomainElement[subQueryName];
+    const foundDeployments = adminDeployments.returnedDomainElement["deployments"];
     log.info("found adminDeployments", foundDeployments);
 
-    // Step 4: Prepare batch operations for all deployments
-    const openStoreActions: StoreOrBundleAction[] = [];
-    const rollbackActions: Array<{
-      actionType: "rollback";
-      endpoint: "7947ae40-eb34-4149-887b-15a9021e714e";
-      deploymentUuid: string;
-    }> = [];
-
+    // Build store opening actions first
+    const openStoreActions: Promise<any>[] = [];
     const deploymentsToLoad: Deployment[] = foundDeployments;
 
-    // Build arrays of actions to execute in batches
+    // Add all store opening actions
     for (const deployment of Object.values(deploymentsToLoad)) {
       const deploymentData = deployment as any;
       
-      openStoreActions.push({
-        actionType: "storeManagementAction_openStore",
-        endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f" as const,
-        configuration: {
-          [deploymentData.uuid]: deploymentData.configuration as StoreUnitConfiguration,
-        },
-        deploymentUuid: deploymentData.uuid,
-      });
-
-      rollbackActions.push({
-        actionType: "rollback",
-        endpoint: "7947ae40-eb34-4149-887b-15a9021e714e" as const,
-        deploymentUuid: deploymentData.uuid,
-      });
+      openStoreActions.push(
+        domainController.handleAction({
+          actionType: "storeManagementAction_openStore",
+          endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f" as const,
+          configuration: {
+            [deploymentData.uuid]: deploymentData.configuration as StoreUnitConfiguration,
+          },
+          deploymentUuid: deploymentData.uuid,
+        })
+      );
     }
 
-    // Step 5: Execute all open store actions in parallel
-    await Promise.all(
-      openStoreActions.map((action) => domainController.handleAction(action))
-    );
+    // STEP 1: Execute all store opening actions first
+    return Promise.all(openStoreActions).then(() => {
+      // STEP 2: Build and execute rollback actions after stores are opened
+      const rollbackActions: Promise<any>[] = [];
+      
+      for (const deployment of Object.values(deploymentsToLoad)) {
+        const deploymentData = deployment as any;
+        
+        rollbackActions.push(
+          domainController.handleAction({
+            actionType: "rollback",
+            endpoint: "7947ae40-eb34-4149-887b-15a9021e714e" as const,
+            deploymentUuid: deploymentData.uuid,
+          }, defaultMiroirMetaModel)
+        );
+      }
 
-    // Step 6: Execute all rollback actions in parallel to load configurations
-    await Promise.all(
-      rollbackActions.map((action) =>
-        domainController.handleAction(action, defaultMiroirMetaModel)
-      )
-    );
-
+      // Execute all rollback actions
+      return Promise.all(rollbackActions);
+    });
+  }).then(() => {
     log.info(
       "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ FETCH CONFIGURATIONS DONE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
     );
@@ -206,7 +197,7 @@ export async function fetchMiroirAndAppConfigurations(
     if (onSuccess) {
       onSuccess("Miroir & App configurations fetched successfully");
     }
-  } catch (error) {
+  }).catch((error) => {
     log.error("Error fetching configurations:", error);
     
     // Call error callback if provided
@@ -216,7 +207,7 @@ export async function fetchMiroirAndAppConfigurations(
       // Re-throw if no error handler provided
       throw error;
     }
-  }
+  });
 }
 
 /**
