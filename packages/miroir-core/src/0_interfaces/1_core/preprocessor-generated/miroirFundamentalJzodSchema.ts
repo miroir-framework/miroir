@@ -9463,6 +9463,32 @@ export const miroirFundamentalJzodSchema = {
               }
             }
           },
+          "display": {
+            "type": "object",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 13,
+                "defaultLabel": "Display Options",
+                "editable": true
+              }
+            },
+            "definition": {
+              "foldSubLevels": {
+                "type": "record",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Unfold Sub Levels",
+                    "editable": true
+                  }
+                },
+                "definition": {
+                  "type": "boolean"
+                }
+              }
+            }
+          },
           "jzodSchema": {
             "type": "schemaReference",
             "definition": {
@@ -31597,6 +31623,79 @@ export const miroirFundamentalJzodSchema = {
                     "type": "schemaReference",
                     "definition": {
                       "relativePath": "transformerForBuildCarryOnObject"
+                    }
+                  }
+                ]
+              },
+              "display": {
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "id": 13,
+                    "defaultLabel": "Display Options",
+                    "editable": true
+                  }
+                },
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "transformerForBuildCarryOnObject"
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "tag": {
+                      "value": {
+                        "id": 13,
+                        "defaultLabel": "Display Options",
+                        "editable": true
+                      }
+                    },
+                    "definition": {
+                      "foldSubLevels": {
+                        "type": "union",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Unfold Sub Levels",
+                            "editable": true
+                          }
+                        },
+                        "definition": [
+                          {
+                            "type": "record",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Unfold Sub Levels",
+                                "editable": true
+                              }
+                            },
+                            "definition": {
+                              "type": "union",
+                              "definition": [
+                                {
+                                  "type": "boolean"
+                                },
+                                {
+                                  "type": "schemaReference",
+                                  "definition": {
+                                    "relativePath": "transformerForBuildCarryOnObject"
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "transformerForBuildCarryOnObject"
+                            }
+                          }
+                        ]
+                      }
                     }
                   }
                 ]

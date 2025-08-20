@@ -191,5 +191,10 @@
         }
       }
     }
+  },
+  "display": {
+    "foldSubLevels": {
+      "ROOT.definition": true
+    }
   }
 }

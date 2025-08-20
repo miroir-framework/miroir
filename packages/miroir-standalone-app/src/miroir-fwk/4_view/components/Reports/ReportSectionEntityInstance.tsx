@@ -154,9 +154,6 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
 
   const [displayAsStructuredElement, setDisplayAsStructuredElement] = useState(true);
   const [displayEditor, setDisplayEditor] = useState(true);
-  const [foldedObjectAttributeOrArrayItems, setFoldedObjectAttributeOrArrayItems] = useState<{
-    [k: string]: boolean;
-  }>({"ROOT": true}); // Initialize with empty key to handle root object folding
   // const [maxRenderDepth, setMaxRenderDepth] = useState<number>(props.maxRenderDepth ?? 1);
   const [resolveConditionalSchemaResultsData, setResolveConditionalSchemaResultsData] = useState<
     any[]
@@ -188,6 +185,11 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
     currentReportDeploymentSectionEntityDefinitions?.find(
       (e) => e?.entityUuid === currentReportTargetEntity?.uuid
     );
+
+  const [foldedObjectAttributeOrArrayItems, setFoldedObjectAttributeOrArrayItems] = useState<{
+    [k: string]: boolean;
+  // }>({"ROOT": true}); // Initialize with empty key to handle root object folding
+  }>(currentReportTargetEntityDefinition?.display?.foldSubLevels??{}); // Initialize with empty key to handle root object folding
 
   const formLabel: string =
     props.applicationSection +
