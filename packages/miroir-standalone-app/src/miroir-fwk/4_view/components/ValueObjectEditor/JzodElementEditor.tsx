@@ -97,71 +97,111 @@ export const FoldUnfoldObjectOrArray = (props: {
     }>
   >;
   listKey: string;
+  currentValue: EntityInstance | Array<any>;
   unfoldingDepth?: number; // Optional depth limit for unfolding (default: no limit)
 }): JSX.Element => {
-  const handleClick = useCallback((e: React.MouseEvent) => {
-    e.stopPropagation();
-    e.preventDefault();
-    
-    const isCurrentlyFolded = props.foldedObjectAttributeOrArrayItems && props.foldedObjectAttributeOrArrayItems[props.listKey];
-    // log.info(
-    //   "FoldUnfoldObjectOrArray",
-    //   props.listKey,
-    //   "isCurrentlyFolded",
-    //   isCurrentlyFolded,
-    //   "unfoldingDepth",
-    //   props.unfoldingDepth
-    // );
-    if (isCurrentlyFolded && props.unfoldingDepth !== undefined && props.unfoldingDepth > 0) {
-      // Unfolding with depth limit or infinite depth
-      props.setFoldedObjectAttributeOrArrayItems((prev) => {
-        const newState = { ...prev };
-        
-        // Unfold current item
-        newState[props.listKey] = false;
-        
-        if (props.unfoldingDepth === Infinity) {
-          // Unfold ALL descendants when depth is infinity
-          Object.keys(prev).forEach(key => {
-            if (key.startsWith(props.listKey + ".")) {
-              newState[key] = false;
-            }
-          });
-        } else {
-          // Helper function to unfold children to a certain depth
-          const unfoldToDepth = (parentKey: string, remainingDepth: number) => {
-            if (remainingDepth <= 0) return;
-            
-            // Find all keys that are children of the parent key
-            Object.keys(prev).forEach(key => {
-              // Check if this key is a direct child of the parent
-              if (key.startsWith(parentKey + ".") && 
-                  key.slice(parentKey.length + 1).indexOf(".") === -1) {
-                // This is a direct child, unfold it
-                newState[key] = false;
-                
-                // If there's more depth remaining, recursively unfold children
-                if (remainingDepth > 1) {
-                  unfoldToDepth(key, remainingDepth - 1);
-                }
+  /**
+   * Handles the click event for folding or unfolding an object attribute or array item in a hierarchical editor.
+   *
+   * This function manages the folding state of a tree-like structure, allowing users to expand or collapse nodes
+   * (object attributes or array items) with support for unfolding to a specific depth. The folding state is tracked
+   * in a map where keys represent the hierarchical path (listKey) of each node.
+   *
+   * Behavior:
+   * - If folding (collapsing a node):
+   *   - With `unfoldingDepth === Infinity`: Sets the folding state for the current node to `true` and removes the folding state for all descendants.
+   *   - With `unfoldingDepth !== Infinity`: Sets the folding state for the current node to `true` and leaves the folding state for all descendants unchanged.
+   * - If unfolding (expanding a node):
+   *   - With `unfoldingDepth === Infinity`: Removes the folding state for the current node and all its descendants.
+   *   - With `unfoldingDepth !== Infinity`: Removes the folding state for the current node. For direct children, if they have no folding state for any of their children, sets their folding state to `true`; otherwise, leaves them unchanged.
+   *
+   * The function also logs actions for debugging purposes.
+   *
+   * @param e - The React mouse event triggered by the user interaction.
+   */
+  const handleClick = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation();
+      e.preventDefault();
+
+      const isCurrentlyFolded =
+        (props.foldedObjectAttributeOrArrayItems &&
+          props.foldedObjectAttributeOrArrayItems[props.listKey]) ||
+        false;
+      // log.info(
+      //   "FoldUnfoldObjectOrArray",
+      //   props.listKey,
+      //   "isCurrentlyFolded",
+      //   isCurrentlyFolded,
+      //   "unfoldingDepth",
+      //   props.unfoldingDepth,
+      //   "foldedObjectAttributeOrArrayItems",
+      //   props.foldedObjectAttributeOrArrayItems
+      // );
+      if (isCurrentlyFolded) {
+        // Unfolding
+        props.setFoldedObjectAttributeOrArrayItems((prev) => {
+          const newState = { ...prev };
+          delete newState[props.listKey];
+
+          if (props.unfoldingDepth === Infinity) {
+            // Remove folding state for all descendants
+            Object.keys(prev).forEach((key) => {
+              if (key.startsWith(props.listKey + ".")) {
+                delete newState[key];
               }
             });
-          };
-          
-          // Start unfolding from the current item's children
-          unfoldToDepth(props.listKey, (props.unfoldingDepth as number) - 1);
-        }
-        
-        return newState;
-      });
-    } else {
-      // Normal toggle behavior (fold/unfold without depth limit)
-      props.setFoldedObjectAttributeOrArrayItems((prev) => ({
-        ...prev,
-        [props.listKey]: !prev[props.listKey],
-      }));
-    }
-  }, [props.listKey, props.setFoldedObjectAttributeOrArrayItems, props.unfoldingDepth]);
+          } else {
+            const prevKeys = Object.keys(prev);
+            // For finite depth, only unfold current item (children remain as is)
+            // If currentValue is an array, we can fold all items
+            if (Array.isArray(props.currentValue)) {
+              props.currentValue.forEach((_, index) => {
+                const childKey = `${props.listKey}.${index}`;
+                if (!prevKeys.some((key) => key.startsWith(childKey))) {
+                  // Only fold if it has no children already folded
+                  newState[childKey] = true; // unfold this item
+                }
+              });
+            } else {
+              // If currentValue is an object, fold all attributes
+              Object.keys(props.currentValue).forEach((attributeName) => {
+                const childKey = `${props.listKey}.${attributeName}`;
+                if (!prevKeys.some((key) => key.startsWith(childKey))) {
+                  // Only fold if it has no children already folded
+                  newState[childKey] = true; // unfold this attribute
+                }
+              });
+            }
+          }
+
+          // For finite depth, only unfold current item (children remain as is)
+          return newState;
+        });
+      } else {
+        // Folding
+        props.setFoldedObjectAttributeOrArrayItems((prev) => {
+          const newState = { ...prev };
+          newState[props.listKey] = true;
+          if (props.unfoldingDepth === Infinity) {
+            // Remove folding state for all descendants
+            Object.keys(prev).forEach((key) => {
+              if (key.startsWith(props.listKey + ".")) {
+                delete newState[key];
+              }
+            });
+          }
+          return newState;
+        });
+      }
+    },
+    [
+      props.listKey,
+      props.foldedObjectAttributeOrArrayItems,
+      props.setFoldedObjectAttributeOrArrayItems,
+      props.unfoldingDepth,
+    ]
+  );
 
   const isFolded = props.foldedObjectAttributeOrArrayItems && props.foldedObjectAttributeOrArrayItems[props.listKey];
   const isInfiniteDepth = props.unfoldingDepth === Infinity;
