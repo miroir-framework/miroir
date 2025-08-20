@@ -503,6 +503,22 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
         return null;
       }
 
+      // DEBUG: Log for boolean fields specifically
+      // if (
+      //     props.rootLessListKey.includes("foldSubLevels") &&
+      //     (currentValue === true || currentValue === false ||
+      //     localResolvedElementJzodSchemaBasedOnValue?.type === "boolean")) {
+      //   console.log("=== BOOLEAN DEBUG ===");
+      //   console.log("rootLessListKey:", props.rootLessListKey);
+      //   console.log("currentValue:", currentValue, "type:", typeof currentValue);
+      //   console.log("localResolvedElementJzodSchemaBasedOnValue:", localResolvedElementJzodSchemaBasedOnValue);
+      //   console.log("currentKeyMap:", currentKeyMap);
+      //   // console.log("isSimpleType:", isSimpleType);
+      //   // console.log("shouldShowCodeEditorForThisElement:", shouldShowCodeEditorForThisElement);
+      //   console.log("hideSubJzodEditor:", hideSubJzodEditor);
+      //   console.log("===================");
+      // }
+
       // if (!localResolvedElementJzodSchemaBasedOnValue || !props.rawJzodSchema) {
       if (!localResolvedElementJzodSchemaBasedOnValue) {
         return (
@@ -606,7 +622,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                   aria-label={props.rootLessListKey}
                   {...fieldProps}
                   name={props.rootLessListKey}
-                  checked={fieldProps.value}
+                  checked={currentValue}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                     formik.setFieldValue(props.rootLessListKey, e.target.checked);
                   }}

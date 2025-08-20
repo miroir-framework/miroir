@@ -188,8 +188,16 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
 
   const [foldedObjectAttributeOrArrayItems, setFoldedObjectAttributeOrArrayItems] = useState<{
     [k: string]: boolean;
-  // }>({"ROOT": true}); // Initialize with empty key to handle root object folding
-  }>(currentReportTargetEntityDefinition?.display?.foldSubLevels??{}); // Initialize with empty key to handle root object folding
+    // }>({"ROOT": true}); // Initialize with empty key to handle root object folding
+  }>(
+    currentReportTargetEntityDefinition?.display?.foldSubLevels
+      ? Object.fromEntries(
+          Object.entries(currentReportTargetEntityDefinition?.display?.foldSubLevels).map(
+            ([keyMapEntry, value]) => [keyMapEntry.replace("#", "."), value]
+          )
+        )
+      : {}
+  ); // Initialize with empty key to handle root object folding
 
   const formLabel: string =
     props.applicationSection +
@@ -249,7 +257,6 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
     },
     [setDisplayEditor]
   );
-
 
   // ##############################################################################################
   const onEditValueObjectFormSubmit = useCallback(
@@ -488,7 +495,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
               onChange={handleDisplayEditorSwitchChange}
             />
           </div>
-          
+
           {/* {displayEditor && (
             <div style={{ marginTop: "12px", padding: "12px", backgroundColor: "#f5f5f5", borderRadius: "6px" }}>
               <ThemedText style={{ fontWeight: "bold", marginBottom: "8px" }}>
