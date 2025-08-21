@@ -126,7 +126,8 @@ export const JzodElementEditorReactCodeMirror: React.FC<JzodElementEditorReactCo
   }, [codeMirrorValue, setCodeMirrorValue, setCodeMirrorIsValidJson]);
 
   // Calculate the width based on the longest line in the text
-  const editorWidth = `${Math.max(...(codeMirrorValue?.split('\n').map(line => line.length) || [0])) + 1}ch`;
+  const editorWidth = `${Math.max(...(codeMirrorValue?.split('\n').map(line => line.length) || [0])) + 3}ch`;
+  // const editorWidth = `${Math.max(...(codeMirrorValue?.split('\n').map(line => line.length) || [0])) + 1}em`;
 
   return (
     <span>
