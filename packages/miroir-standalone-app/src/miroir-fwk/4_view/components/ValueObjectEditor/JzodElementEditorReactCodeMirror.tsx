@@ -11,7 +11,8 @@ import { JzodElementEditorReactCodeMirrorProps } from "./JzodElementEditorInterf
 import { 
   ThemedBox,
   ThemedStyledButton,
-  ThemedSpan
+  ThemedSpan,
+  ThemedCodeBlock
 } from "../Themes/ThemedComponents";
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -28,19 +29,17 @@ export const JzodElementEditorReactCodeMirror: React.FC<JzodElementEditorReactCo
 ) => {
   const {
     initialValue,
-    // formik,
     codeMirrorValue,
     setCodeMirrorValue,
     codeMirrorIsValidJson,
     setCodeMirrorIsValidJson,
-    // rootLessListKey,
-    // rootLessListKeyArray,
     hidden,
     insideAny,
     displayAsStructuredElementSwitch,
     jzodSchemaTooltip,
+    readOnly
   } = props;
-  
+
   if (props.isUnderTest) {
     // For testing purposes, return a simple div with the value
     return (
@@ -49,11 +48,30 @@ export const JzodElementEditorReactCodeMirror: React.FC<JzodElementEditorReactCo
       </ThemedBox>
     );
   }
-   useEffect(() => {
-    // log.info(
-    //   "JzodElementEditorReactCodeMirror mounted with initialValue:",
-    //   initialValue
-    // );
+
+  // If readOnly, render a themed code block instead of the editor
+  if (readOnly) {
+    return (
+      <span>
+        <span>{jzodSchemaTooltip ?? <></>}</span>
+        <ThemedSpan
+          border={`2px solid green`}
+          borderRadius="4px"
+          padding="2px"
+          minWidth="40ch"
+          position="relative"
+          display={!hidden && !insideAny ? "inline-block" : "none"}
+        >
+          {props.displayAsStructuredElementSwitch && (
+            <ThemedSpan marginBottom="10px">{displayAsStructuredElementSwitch}</ThemedSpan>
+          )}
+          <ThemedCodeBlock>{codeMirrorValue}</ThemedCodeBlock>
+        </ThemedSpan>
+      </span>
+    );
+  }
+
+  useEffect(() => {
     if (initialValue) {
       setCodeMirrorValue(initialValue);
       try {
@@ -66,8 +84,7 @@ export const JzodElementEditorReactCodeMirror: React.FC<JzodElementEditorReactCo
       setCodeMirrorValue("");
       setCodeMirrorIsValidJson(false);
     }
-  }, [
-  ]);
+  }, []);
 
   const handleFormat = useCallback(() => {
     try {
@@ -79,7 +96,7 @@ export const JzodElementEditorReactCodeMirror: React.FC<JzodElementEditorReactCo
       setCodeMirrorIsValidJson(false);
     }
   }, [codeMirrorValue, setCodeMirrorValue, setCodeMirrorIsValidJson]);
-  
+
   const handleChange = useCallback((value: string) => {
     log.info(
       "handleChange CodeMirror value changed:",
@@ -93,7 +110,7 @@ export const JzodElementEditorReactCodeMirror: React.FC<JzodElementEditorReactCo
     }
     setCodeMirrorValue(value);
   }, [setCodeMirrorIsValidJson, setCodeMirrorValue]);
-  
+
   const handleCheck = useCallback(() => {
     try {
       const parsed = JSON.parse(codeMirrorValue);
@@ -108,16 +125,13 @@ export const JzodElementEditorReactCodeMirror: React.FC<JzodElementEditorReactCo
     }
   }, [codeMirrorValue, setCodeMirrorValue, setCodeMirrorIsValidJson]);
 
-  // Calculate height excluding trailing blank lines
-  // const editorHeight = `${(codeMirrorValue?.split('\n').filter(line => line.trim() !== '').length || 0) * 20 + 60}px`;
-
   // Calculate the width based on the longest line in the text
   const editorWidth = `${Math.max(...(codeMirrorValue?.split('\n').map(line => line.length) || [0])) + 1}ch`;
 
   return (
     <span>
       <span>
-      {jzodSchemaTooltip??<></>}
+        {jzodSchemaTooltip ?? <></>}
       </span>
       <ThemedSpan
         border={`2px solid ${codeMirrorIsValidJson ? "green" : "red"}`}
@@ -169,7 +183,6 @@ export const JzodElementEditorReactCodeMirror: React.FC<JzodElementEditorReactCo
           ✓
         </ThemedStyledButton>
         <ReactCodeMirror
-          // height={editorHeight}
           value={codeMirrorValue}
           extensions={extensions}
           onChange={handleChange}

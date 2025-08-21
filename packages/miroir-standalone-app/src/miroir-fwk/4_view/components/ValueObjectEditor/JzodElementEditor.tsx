@@ -583,20 +583,21 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
       // Handle "any" type
       if (currentKeyMap?.rawSchema?.type === "any" && !props.insideAny) {
         return (
-          <JzodAnyEditor
-            name={props.name}
-            labelElement={props.labelElement}
-            listKey={props.listKey}
-            rootLessListKey={props.rootLessListKey}
-            rootLessListKeyArray={props.rootLessListKeyArray}
-            foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
-            setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
-            currentDeploymentUuid={props.currentDeploymentUuid}
-            currentApplicationSection={props.currentApplicationSection}
-            resolvedElementJzodSchema={localResolvedElementJzodSchemaBasedOnValue}
-            typeCheckKeyMap={ props.typeCheckKeyMap }
-            foreignKeyObjects={props.foreignKeyObjects}
-          />
+            <JzodAnyEditor
+              name={props.name}
+              labelElement={props.labelElement}
+              listKey={props.listKey}
+              rootLessListKey={props.rootLessListKey}
+              rootLessListKeyArray={props.rootLessListKeyArray}
+              foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
+              setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
+              currentDeploymentUuid={props.currentDeploymentUuid}
+              currentApplicationSection={props.currentApplicationSection}
+              resolvedElementJzodSchema={localResolvedElementJzodSchemaBasedOnValue}
+              typeCheckKeyMap={ props.typeCheckKeyMap }
+              foreignKeyObjects={props.foreignKeyObjects}
+              readOnly={props.readOnly}
+            />
         );
       }
       // Generate element based on schema type
@@ -851,6 +852,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                 typeCheckKeyMap={ props.typeCheckKeyMap }
                 // localRootLessListKeyMap={props.localRootLessListKeyMap}
                 insideAny={props.insideAny}
+                readOnly={props.readOnly}
               />
             // </div>
           );
@@ -880,6 +882,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                 enumValues={enumValues}
                 forceTestingMode={props.forceTestingMode}
                 insideAny={props.insideAny}
+                readOnly={props.readOnly}
               />
             // </div>
           );

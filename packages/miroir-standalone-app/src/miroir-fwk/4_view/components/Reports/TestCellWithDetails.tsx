@@ -1,14 +1,12 @@
 import React, { useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import * as Diff from "diff";
 
 import { useMiroirTheme } from "../../contexts/MiroirThemeContext.js";
 import {
-  ThemedCodeBlock,
-  ThemedPaper,
   ThemedBox,
+  ThemedPaper,
   ThemedStyledButton,
-  ThemedTitle,
+  ThemedTitle
 } from "../Themes/ThemedComponents.js";
 import { formatValue, SideBySideDiff } from './SideBySideDiff.js';
 

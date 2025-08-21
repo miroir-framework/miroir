@@ -1,0 +1,12 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Test JzodElementEditor (readOnly propagation)",
+			"type": "shell",
+			"command": "npx vitest run tests/4_view/JzodElementEditor.test.tsx",
+			"args": [],
+			"problemMatcher": []
+		}
+	]
+}

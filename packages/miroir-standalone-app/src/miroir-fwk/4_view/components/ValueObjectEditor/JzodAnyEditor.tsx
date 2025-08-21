@@ -1,29 +1,27 @@
-import { ChangeEvent, FC, useCallback, useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 
 
 import {
-  ReduxDeploymentsState,
-  getDefaultValueForJzodSchemaWithResolution,
   getDefaultValueForJzodSchemaWithResolutionNonHook,
   LoggerInterface,
   miroirFundamentalJzodSchema,
   MiroirLoggerFactory,
+  ReduxDeploymentsState,
   resolvePathOnObject,
   SyncBoxedExtractorOrQueryRunnerMap,
   type MiroirModelEnvironment
 } from "miroir-core";
 
-import { packageName } from "../../../../constants";
-import { cleanLevel } from "../../constants";
-import { JzodElementEditor } from "./JzodElementEditor";
-import { useJzodElementEditorHooks } from "./JzodElementEditorHooks";
-import { JzodAnyEditorProps } from "./JzodElementEditorInterface";
-import { ChangeValueTypeSelect } from "../ChangeValueTypeSelect";
 import { JzodElement, JzodSchema } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import { measuredUseJzodElementEditorHooks } from "../../tools/hookPerformanceMeasure";
 import { getMemoizedReduxDeploymentsStateSelectorMap, ReduxStateWithUndoRedo } from "miroir-localcache-redux";
 import { useSelector } from "react-redux";
+import { packageName } from "../../../../constants";
+import { cleanLevel } from "../../constants";
 import { useMiroirContextService } from "../../MiroirContextReactProvider";
+import { measuredUseJzodElementEditorHooks } from "../../tools/hookPerformanceMeasure";
+import { ChangeValueTypeSelect } from "../ChangeValueTypeSelect";
+import { JzodElementEditor } from "./JzodElementEditor";
+import { JzodAnyEditorProps } from "./JzodElementEditorInterface";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -43,21 +41,16 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
     listKey,
     rootLessListKey,
     rootLessListKeyArray,
-    // rawJzodSchema,
     currentDeploymentUuid,
     currentApplicationSection,
     foreignKeyObjects,
     resolvedElementJzodSchema, // handleSelectLiteralChange,
     foldedObjectAttributeOrArrayItems,
     setFoldedObjectAttributeOrArrayItems,
-    // localRootLessListKeyMap,
     labelElement,
     insideAny,
     typeCheckKeyMap,
-    // indentLevel,
-    // visible = true, // added visibility prop
   } = props;
-  // const { formik, currentModel, miroirMetaModel } = useJzodElementEditorHooks(
   const { formik, currentModel, miroirMetaModel } = measuredUseJzodElementEditorHooks(
     props,
     JzodAnyEditorRenderCount,
@@ -102,13 +95,9 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
               true, // force optional attributes to receive a default value
               currentDeploymentUuid,
               currentMiroirModelEnvironment
-              // miroirFundamentalJzodSchema as JzodSchema, // context.miroirFundamentalJzodSchema,
-              // currentModel,
-              // miroirMetaModel
             );
             formik.setFieldValue(rootLessListKey, defaultValue, false);
           }}
-          // currentType={resolvedElementJzodSchema?.type || "undefined"}
         />
         {/* <label>{label || "Any Value"}</label> */}
         {labelElement ?? <></>}
@@ -119,14 +108,12 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
           listKey={listKey}
           rootLessListKey={rootLessListKey}
           rootLessListKeyArray={rootLessListKeyArray}
-          // rawJzodSchema={rawJzodSchema}
           currentDeploymentUuid={currentDeploymentUuid}
           currentApplicationSection={currentApplicationSection}
           resolvedElementJzodSchema={resolvedElementJzodSchema}
           typeCheckKeyMap={typeCheckKeyMap}
           foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
           setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
-          // localRootLessListKeyMap={localRootLessListKeyMap}
           labelElement={<></>}
           foreignKeyObjects={foreignKeyObjects}
           insideAny={true}

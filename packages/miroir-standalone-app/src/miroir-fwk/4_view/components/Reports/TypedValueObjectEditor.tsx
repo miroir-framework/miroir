@@ -45,7 +45,7 @@ import {
 import { useRenderTracker } from '../../tools/renderCountTracker.js';
 import { ErrorFallbackComponent } from '../ErrorFallbackComponent.js';
 import { JzodElementEditor } from '../ValueObjectEditor/JzodElementEditor.js';
-import { CodeBlock } from './CodeBlock.js';
+import { CodeBlock_ReadOnly } from './CodeBlock_ReadOnly.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -344,7 +344,7 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
           // const jsonString = JSON.stringify(typeCheckKeyMap, null, 2);
           if (typeCheckKeyMap) {
             const jsonString = JSON.stringify(getInnermostTypeCheckError(typeCheckKeyMap as any), null, 2);
-            typeError = <CodeBlock value={jsonString} />;
+            typeError = <CodeBlock_ReadOnly value={jsonString} />;
           } else {
             typeError = <div>Could not resolve jzod schema</div>;
           }
@@ -445,7 +445,7 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
                     foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
                     setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
                     maxRenderDepth={maxRenderDepth}
-                    readOnly={true}
+                    // readOnly={true}
                     submitButton={
                       <button
                         type="submit"

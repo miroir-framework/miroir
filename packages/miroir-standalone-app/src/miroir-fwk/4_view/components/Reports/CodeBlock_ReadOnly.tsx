@@ -10,7 +10,7 @@ interface CodeBlockProps {
   value: string;
 }
 
-export const CodeBlock: React.FC<CodeBlockProps> = ({ value }) => {
+export const CodeBlock_ReadOnly: React.FC<CodeBlockProps> = ({ value }) => {
   const jsonString = value;
   const lines = jsonString?.split("\n");
   const lineCount = lines?.length || 1;

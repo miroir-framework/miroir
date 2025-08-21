@@ -131,6 +131,7 @@ export type JzodElementEditorReactCodeMirrorProps = {
   insideAny?: boolean; // used to control visibility of the editor
   displayAsStructuredElementSwitch?: JSX.Element;
   jzodSchemaTooltip?: JSX.Element; // used to display the actual raw jzod schema as a tooltip
+  readOnly?: boolean; // NEW: if true, display as read-only code block
   // displayAsCode?: boolean; // used to display the editor as a structured element, not as code editor  
 };
 

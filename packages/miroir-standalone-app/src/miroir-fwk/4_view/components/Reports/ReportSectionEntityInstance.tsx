@@ -599,7 +599,6 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                 foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
                 setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
                 zoomInPath={props.zoomInPath}
-                // maxRenderDepth={maxRenderDepth}
                 maxRenderDepth={Infinity} // Always render fully for editor
               />
             ) : (
