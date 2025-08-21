@@ -113,18 +113,30 @@ const handleDiscriminatorChange = (
       )
     : undefined;
 
+  const targetRootLessListKey = rootLessListKeyArray.slice(0, rootLessListKeyArray.length - 1).join(".")??"";
+  // const targetRootLessListKey = rootLessListKey;
   log.info(
-    `handleDiscriminatorChange (${discriminatorType}) defaultValue`,
+    `handleDiscriminatorChange (${discriminatorType})`,
+    "targetRootLessListKey",
+    targetRootLessListKey,
+    "defaultValue",
     defaultValue,
     "formik.values",
     JSON.stringify(formik.values, null, 2)
   );
-
-  formik.setFieldValue(
-    rootLessListKeyArray.slice(0, rootLessListKeyArray.length - 1).join("."),
-    defaultValue,
-    false
-  );
+  if (targetRootLessListKey.length === 0) {
+    // If the target key is empty, we set the value directly on formik.values
+    formik.setValues(
+      // ...formik.values,
+      defaultValue,
+    );
+  } else {
+    formik.setFieldValue(
+      targetRootLessListKey,
+      defaultValue,
+      false
+    );
+  }
 };
 
 let log: LoggerInterface = console as any as LoggerInterface;

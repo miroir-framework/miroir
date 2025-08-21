@@ -201,6 +201,33 @@
           "definition": {
           }
         }
+      },
+      "returns empty Transformer defintion for transformerDefinition MLS": {
+        "transformerTestType": "transformerTest",
+        "transformerTestLabel": "returns empty transformer defintion for transformerDefinition MLS",
+        "transformerName": "defaultValueForMLSchema",
+        "runTestStep": "build",
+        "transformer": {
+          "transformerType": "defaultValueForMLSchema",
+          "interpolation": "build",
+          "mlSchema": {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "transformerForBuildPlusRuntime"
+            }
+          }
+        },
+        "transformerParams": {},
+        "expectedValue": {
+          "transformerImplementationType": "transformer",
+          "definition": {
+            "interpolation": "runtime",
+            "transformerType": "transformer_menu_addItem",
+            "menuReference": "",
+            "menuItemReference": ""
+          }
+        }
       }
     }
   }

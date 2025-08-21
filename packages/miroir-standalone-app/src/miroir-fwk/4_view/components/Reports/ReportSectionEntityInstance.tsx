@@ -31,7 +31,7 @@ import { useRenderTracker } from '../../tools/renderCountTracker.js';
 import { RenderPerformanceMetrics } from '../../tools/renderPerformanceMeasure.js';
 import { useDocumentOutlineContext } from '../Page/RootComponent.js';
 import {
-  ThemedCodeBlock,
+  // ThemedCodeBlock,
   ThemedContainer,
   ThemedHeaderSection,
   ThemedIconButton,

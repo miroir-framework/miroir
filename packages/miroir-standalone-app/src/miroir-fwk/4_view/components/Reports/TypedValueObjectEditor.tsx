@@ -343,7 +343,7 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
           );
           // const jsonString = JSON.stringify(typeCheckKeyMap, null, 2);
           if (typeCheckKeyMap) {
-            const jsonString = JSON.stringify(getInnermostTypeCheckError(typeCheckKeyMap as any), null, 2);
+            const jsonString: string = JSON.stringify(getInnermostTypeCheckError(typeCheckKeyMap as any), null, 2);
             typeError = <CodeBlock_ReadOnly value={jsonString} />;
           } else {
             typeError = <div>Could not resolve jzod schema</div>;

@@ -447,8 +447,8 @@ export const ToolsPage: React.FC<any> = (
             // deploymentUuid={context.deploymentUuid}
             deploymentUuid={selfApplicationDeploymentLibrary.uuid}
             // entityUuid="e8ba151b-d68e-4cc3-9a83-3459d309ccf5" // Book entity UUID
-            // entityUuid={entityBook.uuid}
-            entityUuid={entityDefinitionTransformerDefinition.entityUuid}
+            // entityUuid={entityDefinitionTransformerDefinition.entityUuid}
+            entityUuid={entityBook.uuid}
           />
         </div>
 

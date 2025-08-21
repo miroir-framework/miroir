@@ -17,6 +17,7 @@ import {
   type JzodSchema,
   type MetaModel,
   type MiroirModelEnvironment,
+  getEntityInstancesUuidIndexNonHook,
 } from 'miroir-core';
 import { Formik, FormikProps } from 'formik';
 
@@ -35,6 +36,7 @@ import {
 import { ReportSectionEntityInstance } from '../Reports/ReportSectionEntityInstance';
 import { getMemoizedReduxDeploymentsStateSelectorMap, type ReduxStateWithUndoRedo } from 'miroir-localcache-redux';
 import { useSelector } from 'react-redux';
+import { TypedValueObjectEditor } from '../Reports/TypedValueObjectEditor';
 
 // ################################################################################################
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -96,6 +98,34 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
       )
   );
 
+  // Fetch all instances of the target entity
+  const entityInstances: EntityInstance[] = useMemo(() => {
+    try {
+      return getEntityInstancesUuidIndexNonHook(
+        deploymentEntityState,
+        currentMiroirModelEnvironment,
+        deploymentUuid,
+        entityUuid,
+        "name" // Order by name if available
+      );
+    } catch (error) {
+      log.error("Error fetching entity instances:", error);
+      return [];
+    }
+  }, [deploymentEntityState, currentMiroirModelEnvironment, deploymentUuid, entityUuid]);
+
+  // Select the first instance for display
+  const selectedEntityInstance: EntityInstance | undefined = useMemo(() => {
+    return entityInstances.length > 0 ? entityInstances[0] : undefined;
+  }, [entityInstances]);
+
+  log.info(
+    "TransformerEditor entityInstances",
+    entityInstances,
+    "selectedEntityInstance",
+    selectedEntityInstance
+  );
+
   // Initial transformer definition based on the actual TransformerDefinition schema
   // const [currentTransformerDefinition, setCurrentTransformerDefinition] = useState<any>({
   //   uuid: "new-transformer-" + Math.random().toString(36).substr(2, 9),
@@ -119,7 +149,9 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
   // const [foldedItems, setFoldedItems] = useState<{ [k: string]: boolean }>({});
 
   // TransformerDefinition schema based on the provided JSON - simplified for now
-  const transformerDefinitionSchema: JzodElement = entityDefinitionTransformerDefinition.jzodSchema;
+  const transformerEntityUuid = entityDefinitionTransformerDefinition.entityUuid;
+  const transformerDefinitionSchema: JzodElement =
+    entityDefinitionTransformerDefinition.jzodSchema.definition.transformerImplementation;
       // const defaultFormValuesObject =
       //   currentReportTargetEntity &&
       //   currentReportTargetEntityDefinition &&
@@ -160,63 +192,11 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
     "TransformerDefinition schema",
     transformerDefinitionSchema
   );
-  // const transformerDefinitionSchema: JzodElement = useMemo(() => ({
-  //   type: "object",
-  //   definition: {
-  //     uuid: {
-  //       type: "uuid"
-  //     },
-  //     parentName: {
-  //       type: "string",
-  //       optional: true
-  //     },
-  //     parentUuid: {
-  //       type: "uuid"
-  //     },
-  //     classification: {
-  //       type: "string",
-  //       optional: true
-  //     },
-  //     name: {
-  //       type: "string"
-  //     },
-  //     defaultLabel: {
-  //       type: "string"
-  //     },
-  //     description: {
-  //       type: "string",
-  //       optional: true
-  //     },
-  //     transformerImplementation: {
-  //       type: "object",
-  //       definition: {
-  //         transformerImplementationType: {
-  //           type: "enum",
-  //           definition: ["libraryImplementation", "transformer"]
-  //         },
-  //         definition: {
-  //           type: "object",
-  //           optional: true,
-  //           definition: {
-  //             interpolation: {
-  //               type: "enum",
-  //               definition: ["runtime", "build"]
-  //             },
-  //             transformerType: {
-  //               type: "enum",
-  //               definition: ["constant", "contextReference", "mustacheStringTemplate"]
-  //             },
-  //             value: {
-  //               type: "string",
-  //               optional: true
-  //             }
-  //           }
-  //         }
-  //       }
-  //     }
-  //   }
-  // }), []);
-
+  const [foldedObjectAttributeOrArrayItems, setFoldedObjectAttributeOrArrayItems] = useState<{
+      [k: string]: boolean;
+      // }>({"ROOT": true}); // Initialize with empty key to handle root object folding
+    }>({});
+  
   // Handle transformer definition changes
   const handleTransformerDefinitionChange = useCallback((newTransformerDefinition: any) => {
     log.info("handleTransformerDefinitionChange", newTransformerDefinition);
@@ -226,110 +206,43 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
   return (
     <ThemedContainer>
       <ThemedHeaderSection>
-        <ThemedTitle>Transformer Editor for Entity {entityUuid}</ThemedTitle>
+        <ThemedTitle>
+          Transformer Editor for Entity {transformerEntityUuid} of deployment {deploymentUuid}
+        </ThemedTitle>
       </ThemedHeaderSection>
 
       {/* 3-Pane Layout */}
       <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
         {/* Top Pane: Transformer Definition Editor */}
-        {/* <ThemedContainer>
-          <ThemedHeaderSection>
-            <ThemedTitle>Transformer Definition Editor</ThemedTitle>
-          </ThemedHeaderSection>
-          
-          <Formik
-            enableReinitialize={true}
-            initialValues={{ transformerDefinition: currentTransformerDefinition }}
-            onSubmit={(values) => {
-              log.info("Form submitted with values:", values);
-              setCurrentTransformerDefinition(values.transformerDefinition);
-            }}
-          >
-            {(formik: FormikProps<any>) => {
-              const effectiveRawJzodSchema: JzodElement = useMemo(() => ({
-                type: "object",
-                definition: { transformerDefinition: transformerDefinitionSchema }
-              }), [transformerDefinitionSchema]);
-
-              const resolvedJzodSchema: ResolvedJzodSchemaReturnType | undefined = useMemo(() => {
-                try {
-                  return context.miroirFundamentalJzodSchema &&
-                    effectiveRawJzodSchema &&
-                    formik.values &&
-                    currentModel
-                    ? jzodTypeCheck(
-                        effectiveRawJzodSchema,
-                        formik.values,
-                        [], // currentValuePath
-                        [], // currentTypePath
-                        {
-                          miroirFundamentalJzodSchema: context.miroirFundamentalJzodSchema,
-                          currentModel,
-                          miroirMetaModel: currentModel,
-                        },
-                        {}
-                      )
-                    : undefined;
-                } catch (e) {
-                  log.error("TransformerEditor jzodTypeCheck error", e);
-                  return {
-                    status: "error" as const,
-                    valuePath: [],
-                    typePath: [],
-                    error: JSON.stringify(e, Object.getOwnPropertyNames(e)),
-                  };
-                }
-              }, [formik.values, effectiveRawJzodSchema, context, currentModel]);
-
-              return (
-                <form onSubmit={formik.handleSubmit}>
-                  {resolvedJzodSchema && resolvedJzodSchema.status === "ok" ? (
-                    <JzodElementEditor
-                      name="transformerDefinition"
-                      listKey="ROOT"
-                      rootLessListKey=""
-                      rootLessListKeyArray={[]}
-                      currentDeploymentUuid={deploymentUuid}
-                      currentApplicationSection="data"
-                      resolvedElementJzodSchema={resolvedJzodSchema.resolvedSchema}
-                      typeCheckKeyMap={resolvedJzodSchema.keyMap}
-                      indentLevel={0}
-                      foldedObjectAttributeOrArrayItems={foldedItems}
-                      setFoldedObjectAttributeOrArrayItems={setFoldedItems}
-                      foreignKeyObjects={{}}
-                      readOnly={false}
-                    />
-                  ) : (
-                    <div>Schema resolution error: {JSON.stringify(resolvedJzodSchema)}</div>
-                  )}
-                </form>
-              );
-            }}
-          </Formik>
-        </ThemedContainer> */}
-        <ReportSectionEntityInstance
-          domainElement={{}}
-          instance={currentTransformerDefinition}
-          applicationSection={"model"}
+        <TypedValueObjectEditor
+          labelElement={<>label</>}
+          valueObject={currentTransformerDefinition}
+          valueObjectMMLSchema={transformerDefinitionSchema}
           deploymentUuid={deploymentUuid}
-          entityUuid={entityUuid}
+          applicationSection={"model"}
+          //
+          formLabel={"Transformer Definition Editor"}
+          // onSubmit={onEditValueObjectFormSubmit}
+          onSubmit={async ()=>{}}
+          foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
+          setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
+          // zoomInPath={props.zoomInPath}
+          maxRenderDepth={Infinity} // Always render fully for editor
         />
+
         {/* Bottom Panes: Side by side */}
         <div style={{ display: "flex", gap: "20px", minHeight: "300px" }}>
           {/* Left Pane: Entity Instance */}
           <ThemedContainer style={{ flex: 1 }}>
             <ThemedHeaderSection>
-              <ThemedTitle>Entity Instance ({entityUuid})</ThemedTitle>
+              <ThemedTitle>
+                Entity Instance ({entityInstances.length} instances available)
+              </ThemedTitle>
             </ThemedHeaderSection>
             <ThemedCodeBlock>
-              {safeStringify(
-                {
-                  message: "Random entity instance will be displayed here",
-                  entityUuid: entityUuid,
-                  deploymentUuid: deploymentUuid,
-                },
-                2
-              )}
+              {selectedEntityInstance
+                ? JSON.stringify(selectedEntityInstance, null, 2)
+                : "No entity instances found"}
             </ThemedCodeBlock>
           </ThemedContainer>
 

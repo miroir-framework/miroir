@@ -25,39 +25,39 @@ export const CodeBlock_ReadOnly: React.FC<CodeBlockProps> = ({ value }) => {
   const heightPx = `${calculatedHeight}px`;
   
   return (
-    <ThemedCodeBlock>
-      <ReactCodeMirror
-        editable={false}
-        height={heightPx}
-        style={{
-          width: `${fixedWidth}px`,
-          maxWidth: "90vw",
-          height: heightPx,
-        }}
-        value={jsonString}
-        extensions={[
-          ...codeMirrorExtensions,
-          EditorView.lineWrapping,
-          EditorView.theme({
-            ".cm-editor": {
-              width: `${fixedWidth}px`,
-              height: heightPx,
-            },
-            ".cm-scroller": {
-              width: "100%",
-              overflow: calculatedHeight >= 400 ? "auto" : "hidden",
-              height: heightPx,
-            },
-            ".cm-content": {
-              minWidth: `${fixedWidth}px`,
-            },
-          }),
-        ]}
-        basicSetup={{
-          foldGutter: true,
-          lineNumbers: true,
-        }}
-      />
-    </ThemedCodeBlock>
+    // <ThemedCodeBlock>
+    <ReactCodeMirror
+      editable={false}
+      height={heightPx}
+      style={{
+        width: `${fixedWidth}px`,
+        maxWidth: "90vw",
+        height: heightPx,
+      }}
+      value={jsonString}
+      extensions={[
+        ...codeMirrorExtensions,
+        EditorView.lineWrapping,
+        // EditorView.theme({
+        //   ".cm-editor": {
+        //     width: `${fixedWidth}px`,
+        //     height: heightPx,
+        //   },
+        //   ".cm-scroller": {
+        //     width: "100%",
+        //     overflow: calculatedHeight >= 400 ? "auto" : "hidden",
+        //     height: heightPx,
+        //   },
+        //   ".cm-content": {
+        //     minWidth: `${fixedWidth}px`,
+        //   },
+        // }),
+      ]}
+      basicSetup={{
+        foldGutter: true,
+        lineNumbers: true,
+      }}
+    />
+    // </ThemedCodeBlock>
   );
 };

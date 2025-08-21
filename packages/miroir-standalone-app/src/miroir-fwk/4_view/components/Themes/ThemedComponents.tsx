@@ -192,6 +192,12 @@ export const ThemedStatusText: React.FC<ThemedComponentProps> = ({
   );
 };
 
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
 export const ThemedCodeBlock: React.FC<ThemedComponentProps> = ({ 
   children, 
   className, 
@@ -202,7 +208,7 @@ export const ThemedCodeBlock: React.FC<ThemedComponentProps> = ({
   const preRef = React.useRef<HTMLPreElement>(null);
   const [dynamicHeight, setDynamicHeight] = React.useState<number | undefined>(undefined);
 
-  React.useEffect(() => {
+  React.useEffect(() => { // TODO:uselessy complicated, isn't it?
     if (children) {
       // If children is a React element (like ReactCodeMirror), don't try to calculate height
       // as it will manage its own dimensions
@@ -238,26 +244,26 @@ export const ThemedCodeBlock: React.FC<ThemedComponentProps> = ({
       border: `1px solid ${currentTheme.colors.border}`,
       borderRadius: currentTheme.borderRadius.md,
       overflow: 'hidden',
-      '& .cm-editor': {
-        backgroundColor: `${currentTheme.colors.surface} !important`,
-        color: `${currentTheme.colors.text} !important`,
-      },
-      '& .cm-content': {
-        backgroundColor: `${currentTheme.colors.surface} !important`,
-        color: `${currentTheme.colors.text} !important`,
-        fontFamily: 'monospace !important',
-      },
-      '& .cm-line': {
-        color: `${currentTheme.colors.text} !important`,
-      },
-      '& .cm-gutters': {
-        backgroundColor: `${currentTheme.colors.surface} !important`,
-        borderRight: `1px solid ${currentTheme.colors.border} !important`,
-        color: `${currentTheme.colors.textSecondary || currentTheme.colors.text} !important`,
-      },
-      '& .cm-lineNumbers .cm-gutterElement': {
-        color: `${currentTheme.colors.textSecondary || currentTheme.colors.text} !important`,
-      }
+      // '& .cm-editor': {
+      //   backgroundColor: `${currentTheme.colors.surface} !important`,
+      //   color: `${currentTheme.colors.text} !important`,
+      // },
+      // '& .cm-content': {
+      //   backgroundColor: `${currentTheme.colors.surface} !important`,
+      //   color: `${currentTheme.colors.text} !important`,
+      //   fontFamily: 'monospace !important',
+      // },
+      // '& .cm-line': {
+      //   color: `${currentTheme.colors.text} !important`,
+      // },
+      // '& .cm-gutters': {
+      //   backgroundColor: `${currentTheme.colors.surface} !important`,
+      //   borderRight: `1px solid ${currentTheme.colors.border} !important`,
+      //   color: `${currentTheme.colors.textSecondary || currentTheme.colors.text} !important`,
+      // },
+      // '& .cm-lineNumbers .cm-gutterElement': {
+      //   color: `${currentTheme.colors.textSecondary || currentTheme.colors.text} !important`,
+      // }
     });
 
     return (
@@ -290,6 +296,12 @@ export const ThemedCodeBlock: React.FC<ThemedComponentProps> = ({
   );
 };
 
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
 export const ThemedPreformattedText: React.FC<ThemedComponentProps> = ({ 
   children, 
   className, 
