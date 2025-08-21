@@ -306,18 +306,23 @@ const ProgressiveAttribute: FC<{
             insideAny={insideAny}
             optional={definedOptionalAttributes.has(attribute[0])}
             maxRenderDepth={props.maxRenderDepth}
+            readOnly={props.readOnly}
             // parentType={currentKeyMap?.rawSchema?.type}
             deleteButtonElement={
-              <>
-                <ThemedSmallIconButton
-                  id={attributeRootLessListKey + "-removeOptionalAttributeOrRecordEntry"}
-                  aria-label={attributeRootLessListKey + "-removeOptionalAttributeOrRecordEntry"}
-                  onClick={deleteElement(attributeRootLessListKeyArray)}
-                  visible={isRecordType || definedOptionalAttributes.has(attribute[0])}
-                >
-                  <Clear />
-                </ThemedSmallIconButton>
-              </>
+              !props.readOnly ? (
+                <>
+                  <ThemedSmallIconButton
+                    id={attributeRootLessListKey + "-removeOptionalAttributeOrRecordEntry"}
+                    aria-label={attributeRootLessListKey + "-removeOptionalAttributeOrRecordEntry"}
+                    onClick={deleteElement(attributeRootLessListKeyArray)}
+                    visible={isRecordType || definedOptionalAttributes.has(attribute[0])}
+                  >
+                    <Clear />
+                  </ThemedSmallIconButton>
+                </>
+              ) : (
+                <></>
+              )
             }
           />
         </ErrorBoundary>
@@ -874,7 +879,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
           </span>
           <span>
             {/* add record attribute button for records */}
-            {currentTypeCheckKeyMap?.rawSchema.type == "record" &&
+            {!props.readOnly && currentTypeCheckKeyMap?.rawSchema.type == "record" &&
             !foldedObjectAttributeOrArrayItems[listKey] ? (
               <ThemedSizedButton
                 id={rootLessListKey + ".addRecordAttribute"}
@@ -890,7 +895,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
           </span>
           <span>
             {/* add optional attributes buttons */}
-            {currentTypeCheckKeyMap?.rawSchema.type != "record" &&
+            {!props.readOnly && currentTypeCheckKeyMap?.rawSchema.type != "record" &&
             undefinedOptionalAttributes.length > 0 &&
             (!foldedObjectAttributeOrArrayItems || !foldedObjectAttributeOrArrayItems[listKey]) ? (
               <ThemedOptionalAttributeContainer>

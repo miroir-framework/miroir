@@ -42,6 +42,7 @@ export interface JzodEditorPropsRoot {
   // parentType?: string; // used to control the parent type of the element, used for record elements. TODO: accept real type enum
   deleteButtonElement?: JSX.Element; // used to display a delete button in the editor
   hasTypeError?: boolean; // used to control if the editor has a type error or not
+  readOnly?: boolean; // used to switch between editable and read-only display modes
 }
 
 // ################################################################################################

@@ -132,6 +132,7 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
           insideAny={true}
           indentLevel={0}
           returnsEmptyElement={resolvedElementJzodSchema?.type === "undefined" ? true : false}
+          readOnly={props.readOnly}
         />
       </div>
     </div>

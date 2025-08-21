@@ -4,7 +4,6 @@ import { z } from "zod";
 // import * as XLSX from 'xlsx/xlsx.mjs';
 import { Formik } from "formik";
 import {
-  ActionHandler,
   CompositeActionTemplate,
   DomainControllerInterface,
   EntityInstance,
@@ -2388,6 +2387,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                     <CodeMirror value={JSON.stringify(dialogOuterFormObject, null, 2)} height="200px" extensions={[javascript({ jsx: true })]} onChange={onCodeEditorChange} />
                     :<></>
                   } */}
+                  {/* DISABLED - resolvedJzodSchema and rawSchema are undefined
                   {
                     resolvedJzodSchema === defaultObject?
                     <div>no object definition found!</div>
@@ -2404,8 +2404,8 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                         indentLevel={0}
                         // localRootLessListKeyMap={{}}
                         // resolvedJzodSchema={actionsJzodSchema}
-                        rawJzodSchema={rawSchema}
                         resolvedElementJzodSchema={resolvedJzodSchema}
+                        typeCheckKeyMap={{}}
                         foreignKeyObjects={emptyObject}
                         // handleChange={formik.handleChange as any}
                         // formik={formik}
@@ -2415,6 +2415,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                       <button type="submit" name={pageLabel} form={"form." + pageLabel}>submit form.{pageLabel}</button>
                     </>
                   }
+                  */}
                 </form>
               </>
             )

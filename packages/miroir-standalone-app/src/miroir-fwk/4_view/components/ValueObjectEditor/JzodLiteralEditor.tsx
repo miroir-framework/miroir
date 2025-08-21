@@ -23,7 +23,8 @@ import { useCurrentModel } from "../../ReduxHooks";
 import { JzodLiteralEditorProps } from "./JzodElementEditorInterface";
 import { 
   ThemedLabeledEditor, 
-  ThemedSelect
+  ThemedSelect,
+  ThemedDisplayValue
 } from "../Themes/ThemedComponents";
 
 // Common function to handle discriminator changes
@@ -142,6 +143,7 @@ export const JzodLiteralEditor: FC<JzodLiteralEditorProps> =  (
     rootLessListKeyArray,
     currentDeploymentUuid,
     typeCheckKeyMap,
+    readOnly,
   }
 ) => {
   JzodLiteralEditorRenderCount++;
@@ -225,7 +227,12 @@ export const JzodLiteralEditor: FC<JzodLiteralEditorProps> =  (
     <ThemedLabeledEditor
       labelElement={labelElement ?? <></>}
       editor={
-        isDiscriminator ? (
+        readOnly ? (
+          <ThemedDisplayValue 
+            value={currentValue} 
+            type="literal" 
+          />
+        ) : isDiscriminator ? (
           <>
             <ThemedSelect
               id={rootLessListKey}

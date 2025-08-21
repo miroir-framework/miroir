@@ -10,14 +10,17 @@ import {
   resolvePathOnObject
 } from "miroir-core";
 import React, { FC, useMemo, useCallback } from "react";
-import { packageName } from "../../../../constants";
-import { cleanLevel } from "../../constants";
-import { JzodEnumEditorProps } from "./JzodElementEditorInterface";
-import { ThemedLabeledEditor, ThemedSelect } from "../Themes/ThemedComponents";
 import { useFormikContext } from "formik";
-
 import { useMiroirContextService } from "../../MiroirContextReactProvider";
 import { useCurrentModel } from "../../ReduxHooks";
+import { packageName } from "../../../../constants";
+import { cleanLevel } from "../../constants";
+import { 
+  ThemedSelect,
+  ThemedLabeledEditor,
+  ThemedDisplayValue
+} from "../Themes/ThemedComponents";
+import { JzodEnumEditorProps } from "./JzodElementEditorInterface";
 import { handleDiscriminatorChange } from "./JzodDiscriminatorUtils";
 
 // Common function to handle discriminator changes
@@ -38,6 +41,7 @@ export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
   forceTestingMode,
   typeCheckKeyMap,
   currentDeploymentUuid,
+  readOnly,
 }: JzodEnumEditorProps) => {
   // const currentValue = resolvePathOnObject(props.formik.values, props.rootLessListKeyArray);
 
@@ -103,6 +107,11 @@ export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
   }, [isDiscriminator, parentKeyMap, rawJzodSchema, rootLessListKey]);
 
   const editor = useMemo(() => {
+    if (readOnly) {
+      const currentValue = formik.getFieldProps(rootLessListKey).value;
+      return <ThemedDisplayValue value={currentValue} type="enum" />;
+    }
+    
     if (currentEnumSchema?.type === "enum") {
       return (
         <div>
@@ -141,7 +150,7 @@ export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
     } else {
       return (<div>error on enum {rootLessListKey}: schema is not an enum {JSON.stringify(currentEnumSchema, undefined, 2)}</div>)
     }
-  }, [currentEnumSchema, rootLessListKey, menuItems, formik, forceTestingMode, isDiscriminator, handleSelectEnumChange]);
+  }, [readOnly, currentEnumSchema, rootLessListKey, menuItems, formik, forceTestingMode, isDiscriminator, handleSelectEnumChange]);
   return (
     <ThemedLabeledEditor
       labelElement={labelElement ?? <></>}

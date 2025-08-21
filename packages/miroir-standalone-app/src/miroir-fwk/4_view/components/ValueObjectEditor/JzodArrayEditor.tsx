@@ -143,6 +143,7 @@ interface ProgressiveArrayItemProps {
   foldedObjectAttributeOrArrayItems: { [k: string]: boolean };
   setFoldedObjectAttributeOrArrayItems: React.Dispatch<React.SetStateAction<{ [k: string]: boolean }>>;
   maxRenderDepth?: number;
+  readOnly?: boolean;
 }
 
 const ProgressiveArrayItem: React.FC<ProgressiveArrayItemProps> = ({
@@ -166,6 +167,7 @@ const ProgressiveArrayItem: React.FC<ProgressiveArrayItemProps> = ({
   foldedObjectAttributeOrArrayItems: hiddenFormItems,
   setFoldedObjectAttributeOrArrayItems: setHiddenFormItems,
   maxRenderDepth,
+  readOnly,
 }) => {
   const isTestMode = process.env.VITE_TEST_MODE === 'true';
   // const [isRendered, setIsRendered] = useState(false);
@@ -200,24 +202,29 @@ const ProgressiveArrayItem: React.FC<ProgressiveArrayItemProps> = ({
           </div>
         ) : (
           <>
-            <JzodArrayEditorMoveButton
-              direction="down"
-              index={index}
-              itemsOrder={itemsOrder as number[]}
-              listKey={listKey}
-              rootLessListKey={rootLessListKey}
-              formik={formik}
-              currentValue={currentValue}
-            />
-            <JzodArrayEditorMoveButton
-              direction="up"
-              index={index}
-              itemsOrder={itemsOrder as number[]}
-              listKey={listKey}
-              rootLessListKey={rootLessListKey}
-              formik={formik}
-              currentValue={currentValue}
-            />
+            {/* Only show move buttons in edit mode */}
+            {!readOnly && (
+              <>
+                <JzodArrayEditorMoveButton
+                  direction="down"
+                  index={index}
+                  itemsOrder={itemsOrder as number[]}
+                  listKey={listKey}
+                  rootLessListKey={rootLessListKey}
+                  formik={formik}
+                  currentValue={currentValue}
+                />
+                <JzodArrayEditorMoveButton
+                  direction="up"
+                  index={index}
+                  itemsOrder={itemsOrder as number[]}
+                  listKey={listKey}
+                  rootLessListKey={rootLessListKey}
+                  formik={formik}
+                  currentValue={currentValue}
+                />
+              </>
+            )}
             <ErrorBoundary
               FallbackComponent={({ error, resetErrorBoundary }) => (
                 <ErrorFallbackComponent
@@ -266,6 +273,7 @@ const ProgressiveArrayItem: React.FC<ProgressiveArrayItemProps> = ({
                 setFoldedObjectAttributeOrArrayItems={setHiddenFormItems}
                 insideAny={insideAny}
                 maxRenderDepth={maxRenderDepth}
+                readOnly={readOnly}
                 // parentType={parentUnfoldedRawSchema.type}
               />
             </ErrorBoundary>
@@ -303,6 +311,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
     insideAny,
     displayAsStructuredElementSwitch,
     maxRenderDepth,
+    readOnly,
     // setItemsOrder,
   }
 ) => {
@@ -606,6 +615,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
               foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
               setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
               maxRenderDepth={maxRenderDepth}
+              readOnly={readOnly}
             />
           );
         })}
@@ -652,49 +662,54 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
             </span>
           </span>
           <span id={rootLessListKey + "head"} key={rootLessListKey + "head"}>
-            <FoldUnfoldObjectOrArray
-              foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
-              setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
-              listKey={listKey}
-              currentValue={currentValue}
-              unfoldingDepth={unfoldingDepth}
-            ></FoldUnfoldObjectOrArray>
-            <FoldUnfoldObjectOrArray
-              foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
-              setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
-              listKey={listKey}
-              currentValue={currentValue}
-              unfoldingDepth={Infinity}
-            ></FoldUnfoldObjectOrArray>
-            {!foldedObjectAttributeOrArrayItems || !foldedObjectAttributeOrArrayItems[listKey]  ? 
-            (
+            {/* Only show controls in edit mode */}
+            {!readOnly && (
               <>
-              {
-                itemsOrder.length >= 2 && foldableItemsCount > 1?(
-                    <FoldUnfoldAllObjectAttributesOrArrayItems
-                      foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
-                      setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
-                      listKey={listKey}
-                      itemsOrder={itemsOrder.map(i => i.toString())}
-                      maxDepth={maxRenderDepth ?? 1}
-                    ></FoldUnfoldAllObjectAttributesOrArrayItems>
-                ): <></>
-              }
-                <ThemedSizedButton
-                  aria-label={rootLessListKey + ".add"}
-                  name={rootLessListKey + ".add"}
-                  onClick={addNewArrayItem}
-                  title="Add new array item"
-                  style={{ 
-                    flexShrink: 0,
-                    marginLeft: "1em",
-                  }}
-                >
-                  <ThemedAddIcon />
-                </ThemedSizedButton>
+                <FoldUnfoldObjectOrArray
+                  foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
+                  setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
+                  listKey={listKey}
+                  currentValue={currentValue}
+                  unfoldingDepth={unfoldingDepth}
+                ></FoldUnfoldObjectOrArray>
+                <FoldUnfoldObjectOrArray
+                  foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
+                  setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
+                  listKey={listKey}
+                  currentValue={currentValue}
+                  unfoldingDepth={Infinity}
+                ></FoldUnfoldObjectOrArray>
+                {!foldedObjectAttributeOrArrayItems || !foldedObjectAttributeOrArrayItems[listKey]  ? 
+                (
+                  <>
+                  {
+                    itemsOrder.length >= 2 && foldableItemsCount > 1?(
+                        <FoldUnfoldAllObjectAttributesOrArrayItems
+                          foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
+                          setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
+                          listKey={listKey}
+                          itemsOrder={itemsOrder.map(i => i.toString())}
+                          maxDepth={maxRenderDepth ?? 1}
+                        ></FoldUnfoldAllObjectAttributesOrArrayItems>
+                    ): <></>
+                  }
+                    <ThemedSizedButton
+                      aria-label={rootLessListKey + ".add"}
+                      name={rootLessListKey + ".add"}
+                      onClick={addNewArrayItem}
+                      title="Add new array item"
+                      style={{ 
+                        flexShrink: 0,
+                        marginLeft: "1em",
+                      }}
+                    >
+                      <ThemedAddIcon />
+                    </ThemedSizedButton>
+                  </>
+                ) : (
+                  <></>
+                )}
               </>
-            ) : (
-              <></>
             )}
           </span>
           <span
@@ -708,7 +723,8 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
               alignItems: "center",
             }}
           >
-            {displayAsStructuredElementSwitch ?? <></>}
+            {/* Only show switch in edit mode */}
+            {!readOnly && (displayAsStructuredElementSwitch ?? <></>)}
           </span>
         </span>
         <div

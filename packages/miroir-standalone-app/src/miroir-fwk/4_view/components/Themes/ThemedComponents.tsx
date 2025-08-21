@@ -11,7 +11,7 @@ import {
   Select,
   SelectProps,
 } from "@mui/material";
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useMiroirTheme } from '../../contexts/MiroirThemeContext';
 
 // ################################################################################################
@@ -1554,9 +1554,173 @@ export const ThemedMenuItemOption: React.FC<ThemedComponentProps & {
   );
 };
 
-// ##############################################################################################
+// ################################################################################################
+// Read-Only Display Components
+// These components are used to display values in read-only mode without any editing capabilities
+// ################################################################################################
+
+export const ThemedDisplayValue: React.FC<ThemedComponentProps & {
+  value: any;
+  type?: string;
+  isNull?: boolean;
+  isUndefined?: boolean;
+}> = ({ 
+  value, 
+  type, 
+  isNull = false,
+  isUndefined = false,
+  className, 
+  style 
+}) => {
+  const { currentTheme } = useMiroirTheme();
+  
+  const displayValue = useMemo(() => {
+    if (isNull || value === null) return 'null';
+    if (isUndefined || value === undefined) return 'undefined';
+    if (type === 'boolean') return value ? 'true' : 'false';
+    if (type === 'bigint') return value.toString();
+    if (typeof value === 'object') return JSON.stringify(value, null, 2);
+    return String(value);
+  }, [value, type, isNull, isUndefined]);
+
+  const displayStyles = css({
+    padding: `${currentTheme.spacing.xs} ${currentTheme.spacing.sm}`,
+    backgroundColor: currentTheme.colors.surfaceVariant || '#f5f5f5',
+    borderRadius: currentTheme.borderRadius.sm,
+    fontFamily: 'monospace',
+    fontSize: currentTheme.typography.fontSize.sm,
+    color: currentTheme.colors.text,
+    border: `1px solid ${currentTheme.colors.border}`,
+    whiteSpace: 'pre-wrap',
+    wordBreak: 'break-word',
+    minHeight: '1.5em',
+    display: 'inline-block',
+    verticalAlign: 'baseline',
+  });
+
+  return (
+    <span css={displayStyles} className={className} style={style}>
+      {displayValue}
+    </span>
+  );
+};
+
+export const ThemedDisplayLabel: React.FC<ThemedComponentProps> = ({ 
+  children, 
+  className, 
+  style 
+}) => {
+  const { currentTheme } = useMiroirTheme();
+  
+  const labelStyles = css({
+    fontWeight: 'medium',
+    color: currentTheme.colors.text,
+    marginRight: currentTheme.spacing.sm,
+    fontSize: currentTheme.typography.fontSize.md,
+  });
+
+  return (
+    <span css={labelStyles} className={className} style={style}>
+      {children}
+    </span>
+  );
+};
+
+export const ThemedDisplayArray: React.FC<ThemedComponentProps & {
+  items: any[];
+  maxDisplayItems?: number;
+}> = ({ 
+  items, 
+  maxDisplayItems = 5,
+  className, 
+  style 
+}) => {
+  const { currentTheme } = useMiroirTheme();
+  
+  const displayStyles = css({
+    padding: currentTheme.spacing.sm,
+    backgroundColor: currentTheme.colors.surface,
+    borderRadius: currentTheme.borderRadius.sm,
+    border: `1px solid ${currentTheme.colors.border}`,
+    color: currentTheme.colors.text,
+  });
+
+  const itemCount = items?.length || 0;
+  const hasMoreItems = itemCount > maxDisplayItems;
+  const displayItems = hasMoreItems ? items.slice(0, maxDisplayItems) : items;
+
+  return (
+    <div css={displayStyles} className={className} style={style}>
+      <div style={{ fontSize: currentTheme.typography.fontSize.sm, marginBottom: currentTheme.spacing.xs }}>
+        Array ({itemCount} items)
+      </div>
+      {displayItems?.map((item, index) => (
+        <div key={index} style={{ marginLeft: currentTheme.spacing.md, marginBottom: currentTheme.spacing.xs }}>
+          [{index}]: <ThemedDisplayValue value={item} />
+        </div>
+      ))}
+      {hasMoreItems && (
+        <div style={{ 
+          marginLeft: currentTheme.spacing.md, 
+          fontStyle: 'italic',
+          color: currentTheme.colors.textSecondary 
+        }}>
+          ... and {itemCount - maxDisplayItems} more items
+        </div>
+      )}
+    </div>
+  );
+};
+
+export const ThemedDisplayObject: React.FC<ThemedComponentProps & {
+  object: Record<string, any>;
+  maxDisplayProperties?: number;
+}> = ({ 
+  object, 
+  maxDisplayProperties = 5,
+  className, 
+  style 
+}) => {
+  const { currentTheme } = useMiroirTheme();
+  
+  const displayStyles = css({
+    padding: currentTheme.spacing.sm,
+    backgroundColor: currentTheme.colors.surface,
+    borderRadius: currentTheme.borderRadius.sm,
+    border: `1px solid ${currentTheme.colors.border}`,
+    color: currentTheme.colors.text,
+  });
+
+  const properties = Object.entries(object || {});
+  const hasMoreProperties = properties.length > maxDisplayProperties;
+  const displayProperties = hasMoreProperties ? properties.slice(0, maxDisplayProperties) : properties;
+
+  return (
+    <div css={displayStyles} className={className} style={style}>
+      <div style={{ fontSize: currentTheme.typography.fontSize.sm, marginBottom: currentTheme.spacing.xs }}>
+        Object ({properties.length} properties)
+      </div>
+      {displayProperties.map(([key, value]) => (
+        <div key={key} style={{ marginLeft: currentTheme.spacing.md, marginBottom: currentTheme.spacing.xs }}>
+          <span style={{ fontWeight: 'bold' }}>{key}</span>: <ThemedDisplayValue value={value} />
+        </div>
+      ))}
+      {hasMoreProperties && (
+        <div style={{ 
+          marginLeft: currentTheme.spacing.md, 
+          fontStyle: 'italic',
+          color: currentTheme.colors.textSecondary 
+        }}>
+          ... and {properties.length - maxDisplayProperties} more properties
+        </div>
+      )}
+    </div>
+  );
+};
+
+// ################################################################################################
 // Missing Themed Components for JzodElementEditor
-// ##############################################################################################
+// ################################################################################################
 
 export const ThemedCard: React.FC<ThemedComponentProps & {
   elevation?: number;

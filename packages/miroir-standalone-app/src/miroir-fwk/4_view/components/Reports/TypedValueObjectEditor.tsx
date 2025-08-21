@@ -445,6 +445,7 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
                     foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
                     setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
                     maxRenderDepth={maxRenderDepth}
+                    readOnly={true}
                     submitButton={
                       <button
                         type="submit"
