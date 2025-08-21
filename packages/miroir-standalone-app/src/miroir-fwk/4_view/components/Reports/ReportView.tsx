@@ -181,7 +181,7 @@ export const ReportView = (props: ReportViewProps) => {
     deploymentEntityStateFetchQueryParams
   );
 
-  // log.info("deploymentEntityStateQueryResults", deploymentEntityStateQueryResults);
+  log.info("deploymentEntityStateQueryResults", deploymentEntityStateQueryResults);
 
 
   const jzodSchemaSelectorMap: QueryRunnerMapForJzodSchema<ReduxDeploymentsState> = useMemo(
@@ -308,7 +308,7 @@ export const ReportView = (props: ReportViewProps) => {
                     <div>ReportView renders: {navigationCount} (total: {totalCount})</div>
                   )}
                   <ReportSectionView
-                    queryResults={deploymentEntityStateQueryResults}
+                    reportQueriesResultsRecord={deploymentEntityStateQueryResults}
                     fetchedDataJzodSchema={fetchedDataJzodSchema}
                     reportSection={props.reportDefinition?.section}
                     rootReport={props.reportDefinition}

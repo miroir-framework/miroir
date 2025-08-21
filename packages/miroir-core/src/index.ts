@@ -972,6 +972,7 @@ const entitySelfApplicationModelBranch = require("./assets/miroir_model/16dbfe28
 const entityStoreBasedConfiguration = require("./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/7990c0c9-86c3-40a1-a121-036c91b55ed7.json");
 const entityQueryVersion = require("./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/e4320b9e-ab45-4abe-85d8-359604b3c62f.json");
 const entityTest = require("./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/c37625c7-0b35-4d6a-811d-8181eb978301.json");
+const entityTransformerDefinition = require("./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/a557419d-a288-4fb8-8a1e-971c86c113b8.json");
 const entityTransformerTest = require("./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/681be9ca-c593-45f5-b45a-5f1d4969e91e.json");
 
 const entityDefinitionAdminApplication = require("../src/assets/admin_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/3fb6203e-f639-4b2a-afe1-e1fb45d6b2ea.json");

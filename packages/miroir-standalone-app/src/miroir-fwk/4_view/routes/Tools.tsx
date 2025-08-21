@@ -27,12 +27,15 @@ import {
   defaultMiroirModelEnviroment,
   displayTestSuiteResultsDetails,
   entityApplicationForAdmin,
+  entityBook,
+  entityDefinitionTransformerDefinition,
   entityDeployment,
   entityMenu,
   entitySelfApplication,
   entityTransformerTest,
   expect,
   jzodTypeCheck,
+  selfApplicationDeploymentLibrary,
   testSuitesResults,
   transformerTest_resolveConditionalSchema,
   type Domain2QueryReturnType,
@@ -48,7 +51,6 @@ import { getMemoizedReduxDeploymentsStateSelectorMap, type ReduxStateWithUndoRed
 //   TestSuiteResult
 // } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { adminConfigurationDeploymentParis, applicationParis, packageName } from "../../../constants.js";
-import { usePageConfiguration } from "../services/index.js";
 import { getTestSuitesForBuildPlusRuntimeCompositeAction } from "../../4-tests/applicative.Library.BuildPlusRuntimeCompositeAction.js";
 import { testOnLibrary_deleteLibraryDeployment } from "../../4-tests/tests-utils-testOnLibrary.js";
 import { runTestOrTestSuite } from "../../4-tests/tests-utils.js";
@@ -61,9 +63,11 @@ import {
 import { useCurrentModel } from "../ReduxHooks.js";
 import { EndpointActionCaller } from "../components/EndpointActionCaller";
 import { cleanLevel } from "../constants.js";
+import { usePageConfiguration } from "../services/index.js";
 
 import { RunTransformerTestSuiteButton } from "../components/Buttons/RunTransformerTestSuiteButton";
 import { EntityInstanceGrid } from "../components/Grids/EntityInstanceGrid";
+import { TransformerEditor } from "../components/TransformerEditor/TransformerEditor";
 
 // ################################################################################################
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -437,6 +441,17 @@ export const ToolsPage: React.FC<any> = (
   return (
     <PageContainer>
       <div>
+        {/* Transformer Editor */}
+        <div style={{ margin: "20px 0" }}>
+          <TransformerEditor
+            // deploymentUuid={context.deploymentUuid}
+            deploymentUuid={selfApplicationDeploymentLibrary.uuid}
+            // entityUuid="e8ba151b-d68e-4cc3-9a83-3459d309ccf5" // Book entity UUID
+            // entityUuid={entityBook.uuid}
+            entityUuid={entityDefinitionTransformerDefinition.entityUuid}
+          />
+        </div>
+
         <EndpointActionCaller
           key={"aaaa"}
           // currentDeploymentUuid={displayedDeploymentUuid}
