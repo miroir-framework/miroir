@@ -150,8 +150,34 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
 
   // TransformerDefinition schema based on the provided JSON - simplified for now
   const transformerEntityUuid = entityDefinitionTransformerDefinition.entityUuid;
+  
+  // Get the transformerForBuildPlusRuntime schema from the fundamental schema
   const transformerDefinitionSchema: JzodElement =
     entityDefinitionTransformerDefinition.jzodSchema.definition.transformerImplementation;
+  // const transformerForBuildPlusRuntimeSchema: JzodElement = useMemo(() => {
+  //   if (miroirFundamentalJzodSchema?.definition?.context?.transformerForBuildPlusRuntime) {
+  //     return miroirFundamentalJzodSchema.definition.context.transformerForBuildPlusRuntime as JzodElement;
+  //   }
+  //   // Fallback to a basic schema if not found
+  //   return {
+  //     type: "object",
+  //     definition: {
+  //       interpolation: {
+  //         type: "enum",
+  //         definition: ["runtime", "build"]
+  //       },
+  //       transformerType: {
+  //         type: "enum",
+  //         definition: ["constant", "contextReference", "mustacheStringTemplate"]
+  //       }
+  //     }
+  //   };
+  // }, [miroirFundamentalJzodSchema]);
+
+  log.info(
+    "TransformerEditor transformerDefinitionSchema",
+    transformerDefinitionSchema
+  );
       // const defaultFormValuesObject =
       //   currentReportTargetEntity &&
       //   currentReportTargetEntityDefinition &&
@@ -189,7 +215,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
   log.info(
     "TransformerEditor initialized with currentTransformerDefinition",
     currentTransformerDefinition,
-    "TransformerDefinition schema",
+    "transformerDefinitionSchema schema",
     transformerDefinitionSchema
   );
   const [foldedObjectAttributeOrArrayItems, setFoldedObjectAttributeOrArrayItems] = useState<{
@@ -215,7 +241,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
       <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
         {/* Top Pane: Transformer Definition Editor */}
         <TypedValueObjectEditor
-          labelElement={<>label</>}
+          labelElement={<>Transformer Definition</>}
           valueObject={currentTransformerDefinition}
           valueObjectMMLSchema={transformerDefinitionSchema}
           deploymentUuid={deploymentUuid}
@@ -252,12 +278,9 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
               <ThemedTitle>Transformation Result</ThemedTitle>
             </ThemedHeaderSection>
             <ThemedCodeBlock>
-              {currentTransformerDefinition?.transformerImplementation?.definition
-                ? safeStringify(
-                    currentTransformerDefinition.transformerImplementation.definition,
-                    2
-                  )
-                : "No transformer implementation defined"}
+              {currentTransformerDefinition
+                ? safeStringify(currentTransformerDefinition, 2)
+                : "No transformer definition"}
             </ThemedCodeBlock>
           </ThemedContainer>
         </div>

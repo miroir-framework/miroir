@@ -2689,7 +2689,7 @@ export type Transformer = {
 } | RecordOfTransformers;
 export type JzodUnion_RecursivelyUnfold_ReturnTypeOK = {
     status: "ok";
-    result: JzodObject[];
+    result: JzodElement[];
     expandedReferences: Set<string>;
     discriminator?: (string | string[]) | undefined;
 };
@@ -2701,59 +2701,67 @@ export type JzodUnion_RecursivelyUnfold_ReturnTypeError = {
 export type JzodUnion_RecursivelyUnfold_ReturnType = JzodUnion_RecursivelyUnfold_ReturnTypeOK | JzodUnion_RecursivelyUnfold_ReturnTypeError;
 export type KeyMapEntry = {
     rawSchema: JzodElement;
-    jzodObjectFlattenedSchema: JzodObject;
-    recursivelyUnfoldedUnionSchema: JzodUnion_RecursivelyUnfold_ReturnTypeOK;
+    jzodObjectFlattenedSchema?: JzodObject | undefined;
+    recursivelyUnfoldedUnionSchema?: JzodUnion_RecursivelyUnfold_ReturnTypeOK | undefined;
     resolvedSchema: JzodElement;
     chosenUnionBranchRawSchema?: JzodElement | undefined;
-    discriminatorValues: string[];
-    discriminator: string | string[];
+    discriminatorValues?: string[][] | undefined;
+    discriminator?: (string | string[]) | undefined;
+    valuePath: (string | number)[];
+    typePath: (string | number)[];
 };
 export type ResolvedJzodSchemaReturnTypeOK = {
     status: "ok";
-    valuePath: string[];
-    typePath: string[];
+    valuePath: (string | number)[];
+    typePath: (string | number)[];
     rawSchema: JzodElement;
     resolvedSchema: JzodElement;
-    subschemas?: ResolvedJzodSchemaReturnType | ResolvedJzodSchemaReturnType[] | {
-        [x: string]: ResolvedJzodSchemaReturnType;
+    keyMap?: {
+        [x: string]: KeyMapEntry;
     } | undefined;
+    subSchemas?: (ResolvedJzodSchemaReturnType | ResolvedJzodSchemaReturnType[] | {
+        [x: string]: ResolvedJzodSchemaReturnType;
+    } | undefined) | undefined;
 };
 export type ResolvedJzodSchemaReturnTypeError = {
     status: "error";
     error: string;
-    rawJzodSchemaType: string;
-    valuePath: string[];
-    typePath: string[];
+    rawJzodSchemaType?: string | undefined;
+    valuePath: (string | number)[];
+    typePath: (string | number)[];
     value?: any;
-    rawSchema: JzodElement;
-    errorOnValueAttributes: string[];
-    errorOnSchemaAttributes: string[];
-    innerError?: JzodUnion_RecursivelyUnfold_ReturnTypeError | ResolvedJzodSchemaReturnTypeError | {
+    rawSchema?: JzodElement | undefined;
+    errorOnValueAttributes?: string[] | undefined;
+    errorOnSchemaAttributes?: string[] | undefined;
+    innerError?: (JzodUnion_RecursivelyUnfold_ReturnTypeError | ResolvedJzodSchemaReturnTypeError | {
         [x: string]: ResolvedJzodSchemaReturnTypeError;
-    } | undefined;
+    } | undefined) | undefined;
 };
 export type ResolvedJzodSchemaReturnType = {
     status: "ok";
-    valuePath: string[];
-    typePath: string[];
+    valuePath: (string | number)[];
+    typePath: (string | number)[];
     rawSchema: JzodElement;
     resolvedSchema: JzodElement;
-    subschemas?: ResolvedJzodSchemaReturnType | ResolvedJzodSchemaReturnType[] | {
-        [x: string]: ResolvedJzodSchemaReturnType;
+    keyMap?: {
+        [x: string]: KeyMapEntry;
     } | undefined;
+    subSchemas?: (ResolvedJzodSchemaReturnType | ResolvedJzodSchemaReturnType[] | {
+        [x: string]: ResolvedJzodSchemaReturnType;
+    } | undefined) | undefined;
 } | {
     status: "error";
     error: string;
-    rawJzodSchemaType: string;
-    valuePath: string[];
-    typePath: string[];
+    rawJzodSchemaType?: string | undefined;
+    valuePath: (string | number)[];
+    typePath: (string | number)[];
     value?: any;
-    rawSchema: JzodElement;
-    errorOnValueAttributes: string[];
-    errorOnSchemaAttributes: string[];
-    innerError?: JzodUnion_RecursivelyUnfold_ReturnTypeError | ResolvedJzodSchemaReturnTypeError | {
+    rawSchema?: JzodElement | undefined;
+    errorOnValueAttributes?: string[] | undefined;
+    errorOnSchemaAttributes?: string[] | undefined;
+    innerError?: (JzodUnion_RecursivelyUnfold_ReturnTypeError | ResolvedJzodSchemaReturnTypeError | {
         [x: string]: ResolvedJzodSchemaReturnTypeError;
-    } | undefined;
+    } | undefined) | undefined;
 };
 export type ZodParseErrorIssueInvalidUnion = {
     code: "invalid_union";
@@ -13753,13 +13761,13 @@ export const transformerForBuildPlusRuntime_dataflowSequence: z.ZodType<Transfor
 export const transformerForBuildOrRuntime: z.ZodType<TransformerForBuildOrRuntime> = z.union([z.lazy(() =>transformerForBuild), z.lazy(() =>transformerForRuntime)]);
 export const recordOfTransformers: z.ZodType<RecordOfTransformers> = z.object({transformerType:z.literal("recordOfTransformers"), definition:z.record(z.string(),z.lazy(() =>transformer))}).strict();
 export const transformer: z.ZodType<Transformer> = z.union([z.object({transformerType:z.literal("objectTransformer"), attributeName:z.string()}).strict(), z.lazy(() =>recordOfTransformers)]);
-export const jzodUnion_RecursivelyUnfold_ReturnTypeOK: z.ZodType<JzodUnion_RecursivelyUnfold_ReturnTypeOK> = z.object({status:z.literal("ok"), result:z.array(z.lazy(() =>jzodObject)), expandedReferences:z.set(z.string()), discriminator:z.union([z.string(), z.array(z.string())]).optional()}).strict();
+export const jzodUnion_RecursivelyUnfold_ReturnTypeOK: z.ZodType<JzodUnion_RecursivelyUnfold_ReturnTypeOK> = z.object({status:z.literal("ok"), result:z.array(z.lazy(() =>jzodElement)), expandedReferences:z.set(z.string()), discriminator:z.union([z.string(), z.array(z.string())]).optional()}).strict();
 export const jzodUnion_RecursivelyUnfold_ReturnTypeError: z.ZodType<JzodUnion_RecursivelyUnfold_ReturnTypeError> = z.object({status:z.literal("error"), error:z.string(), innerError:z.lazy(() =>jzodUnion_RecursivelyUnfold_ReturnTypeError).optional()}).strict();
 export const jzodUnion_RecursivelyUnfold_ReturnType: z.ZodType<JzodUnion_RecursivelyUnfold_ReturnType> = z.union([z.lazy(() =>jzodUnion_RecursivelyUnfold_ReturnTypeOK), z.lazy(() =>jzodUnion_RecursivelyUnfold_ReturnTypeError)]);
-export const keyMapEntry: z.ZodType<KeyMapEntry> = z.object({rawSchema:z.lazy(() =>jzodElement), jzodObjectFlattenedSchema:z.lazy(() =>jzodObject), recursivelyUnfoldedUnionSchema:z.lazy(() =>jzodUnion_RecursivelyUnfold_ReturnTypeOK), resolvedSchema:z.lazy(() =>jzodElement), chosenUnionBranchRawSchema:z.lazy(() =>jzodElement).optional(), discriminatorValues:z.array(z.string()), discriminator:z.union([z.string(), z.array(z.string())])}).strict();
-export const resolvedJzodSchemaReturnTypeOK: z.ZodType<ResolvedJzodSchemaReturnTypeOK> = z.object({status:z.literal("ok"), valuePath:z.array(z.string()), typePath:z.array(z.string()), rawSchema:z.lazy(() =>jzodElement), resolvedSchema:z.lazy(() =>jzodElement), subschemas:z.union([z.lazy(() =>resolvedJzodSchemaReturnType), z.array(z.lazy(() =>resolvedJzodSchemaReturnType)), z.record(z.string(),z.lazy(() =>resolvedJzodSchemaReturnType)), z.undefined()])}).strict();
-export const resolvedJzodSchemaReturnTypeError: z.ZodType<ResolvedJzodSchemaReturnTypeError> = z.object({status:z.literal("error"), error:z.string(), rawJzodSchemaType:z.string(), valuePath:z.array(z.string()), typePath:z.array(z.string()), value:z.any(), rawSchema:z.lazy(() =>jzodElement), errorOnValueAttributes:z.array(z.string()), errorOnSchemaAttributes:z.array(z.string()), innerError:z.union([z.lazy(() =>jzodUnion_RecursivelyUnfold_ReturnTypeError), z.lazy(() =>resolvedJzodSchemaReturnTypeError), z.record(z.string(),z.lazy(() =>resolvedJzodSchemaReturnTypeError)), z.undefined()])}).strict();
-export const resolvedJzodSchemaReturnType: z.ZodType<ResolvedJzodSchemaReturnType> = z.union([z.object({status:z.literal("ok"), valuePath:z.array(z.string()), typePath:z.array(z.string()), rawSchema:z.lazy(() =>jzodElement), resolvedSchema:z.lazy(() =>jzodElement), subschemas:z.union([z.lazy(() =>resolvedJzodSchemaReturnType), z.array(z.lazy(() =>resolvedJzodSchemaReturnType)), z.record(z.string(),z.lazy(() =>resolvedJzodSchemaReturnType)), z.undefined()])}).strict(), z.object({status:z.literal("error"), error:z.string(), rawJzodSchemaType:z.string(), valuePath:z.array(z.string()), typePath:z.array(z.string()), value:z.any(), rawSchema:z.lazy(() =>jzodElement), errorOnValueAttributes:z.array(z.string()), errorOnSchemaAttributes:z.array(z.string()), innerError:z.union([z.lazy(() =>jzodUnion_RecursivelyUnfold_ReturnTypeError), z.lazy(() =>resolvedJzodSchemaReturnTypeError), z.record(z.string(),z.lazy(() =>resolvedJzodSchemaReturnTypeError)), z.undefined()])}).strict()]);
+export const keyMapEntry: z.ZodType<KeyMapEntry> = z.object({rawSchema:z.lazy(() =>jzodElement), jzodObjectFlattenedSchema:z.lazy(() =>jzodObject).optional(), recursivelyUnfoldedUnionSchema:z.lazy(() =>jzodUnion_RecursivelyUnfold_ReturnTypeOK).optional(), resolvedSchema:z.lazy(() =>jzodElement), chosenUnionBranchRawSchema:z.lazy(() =>jzodElement).optional(), discriminatorValues:z.array(z.array(z.string())).optional(), discriminator:z.union([z.string(), z.array(z.string())]).optional(), valuePath:z.array(z.union([z.string(), z.number()])), typePath:z.array(z.union([z.string(), z.number()]))}).strict();
+export const resolvedJzodSchemaReturnTypeOK: z.ZodType<ResolvedJzodSchemaReturnTypeOK> = z.object({status:z.literal("ok"), valuePath:z.array(z.union([z.string(), z.number()])), typePath:z.array(z.union([z.string(), z.number()])), rawSchema:z.lazy(() =>jzodElement), resolvedSchema:z.lazy(() =>jzodElement), keyMap:z.record(z.string(),z.lazy(() =>keyMapEntry)).optional(), subSchemas:z.union([z.lazy(() =>resolvedJzodSchemaReturnType), z.array(z.lazy(() =>resolvedJzodSchemaReturnType)), z.record(z.string(),z.lazy(() =>resolvedJzodSchemaReturnType)), z.undefined()]).optional()}).strict();
+export const resolvedJzodSchemaReturnTypeError: z.ZodType<ResolvedJzodSchemaReturnTypeError> = z.object({status:z.literal("error"), error:z.string(), rawJzodSchemaType:z.string().optional(), valuePath:z.array(z.union([z.string(), z.number()])), typePath:z.array(z.union([z.string(), z.number()])), value:z.any(), rawSchema:z.lazy(() =>jzodElement).optional(), errorOnValueAttributes:z.array(z.string()).optional(), errorOnSchemaAttributes:z.array(z.string()).optional(), innerError:z.union([z.lazy(() =>jzodUnion_RecursivelyUnfold_ReturnTypeError), z.lazy(() =>resolvedJzodSchemaReturnTypeError), z.record(z.string(),z.lazy(() =>resolvedJzodSchemaReturnTypeError)), z.undefined()]).optional()}).strict();
+export const resolvedJzodSchemaReturnType: z.ZodType<ResolvedJzodSchemaReturnType> = z.union([z.object({status:z.literal("ok"), valuePath:z.array(z.union([z.string(), z.number()])), typePath:z.array(z.union([z.string(), z.number()])), rawSchema:z.lazy(() =>jzodElement), resolvedSchema:z.lazy(() =>jzodElement), keyMap:z.record(z.string(),z.lazy(() =>keyMapEntry)).optional(), subSchemas:z.union([z.lazy(() =>resolvedJzodSchemaReturnType), z.array(z.lazy(() =>resolvedJzodSchemaReturnType)), z.record(z.string(),z.lazy(() =>resolvedJzodSchemaReturnType)), z.undefined()]).optional()}).strict(), z.object({status:z.literal("error"), error:z.string(), rawJzodSchemaType:z.string().optional(), valuePath:z.array(z.union([z.string(), z.number()])), typePath:z.array(z.union([z.string(), z.number()])), value:z.any(), rawSchema:z.lazy(() =>jzodElement).optional(), errorOnValueAttributes:z.array(z.string()).optional(), errorOnSchemaAttributes:z.array(z.string()).optional(), innerError:z.union([z.lazy(() =>jzodUnion_RecursivelyUnfold_ReturnTypeError), z.lazy(() =>resolvedJzodSchemaReturnTypeError), z.record(z.string(),z.lazy(() =>resolvedJzodSchemaReturnTypeError)), z.undefined()]).optional()}).strict()]);
 export const zodParseErrorIssueInvalidUnion: z.ZodType<ZodParseErrorIssueInvalidUnion> = z.object({code:z.literal("invalid_union"), path:z.array(z.union([z.string(), z.number()])), message:z.string(), unionErrors:z.array(z.lazy(() =>zodParseError))}).strict();
 export const zodParseErrorIssueUnrecognizedKeys: z.ZodType<ZodParseErrorIssueUnrecognizedKeys> = z.object({code:z.literal("unrecognized_keys"), keys:z.array(z.string()), path:z.array(z.union([z.string(), z.number()])), message:z.string()}).strict();
 export const zodParseErrorIssueInvalidLiteral: z.ZodType<ZodParseErrorIssueInvalidLiteral> = z.object({code:z.literal("invalid_literal"), expected:z.string(), path:z.array(z.union([z.string(), z.number()])), message:z.string()}).strict();

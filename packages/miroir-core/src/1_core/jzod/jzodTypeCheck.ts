@@ -11,7 +11,11 @@ import {
   JzodSchema,
   JzodTuple,
   JzodUnion,
-  MetaModel
+  MetaModel,
+  type ResolvedJzodSchemaReturnTypeOK,
+  type ResolvedJzodSchemaReturnType,
+  type ResolvedJzodSchemaReturnTypeError,
+  KeyMapEntry,
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { LoggerInterface } from "../../0_interfaces/4-services/LoggerInterface";
 import { MiroirLoggerFactory } from "../../4_services/LoggerFactory";
@@ -34,10 +38,6 @@ import type {
   JzodUnionResolvedTypeForArrayReturnTypeOK,
   JzodUnionResolvedTypeReturnTypeError,
   JzodUnionResolvedTypeForObjectReturnTypeOK,
-  KeyMapEntry,
-  ResolvedJzodSchemaReturnType,
-  ResolvedJzodSchemaReturnTypeError,
-  ResolvedJzodSchemaReturnTypeOK,
 } from "../../0_interfaces/1_core/jzodTypeCheckInterface";
 import type { MiroirModelEnvironment } from "../../0_interfaces/1_core/Transformer";
 
@@ -580,9 +580,6 @@ export function jzodUnionResolvedTypeForObject<T extends MiroirModelEnvironment>
   currentValuePath: (string | number)[],
   currentTypePath: (string | number)[],
   modelEnvironment: T,
-  // miroirFundamentalJzodSchema: JzodSchema,
-  // currentModel: MetaModel,
-  // miroirMetaModel: MetaModel,
   relativeReferenceJzodContext: { [k: string]: JzodElement }
 ): JzodUnionResolvedTypeForObjectReturnTypeOK
   | JzodUnionResolvedTypeReturnTypeError
@@ -590,9 +587,6 @@ export function jzodUnionResolvedTypeForObject<T extends MiroirModelEnvironment>
   const objectUnionChoices: JzodObject[] = unionObjectChoices(
     concreteUnrolledJzodSchemas,
     modelEnvironment,
-    // miroirFundamentalJzodSchema,
-    // currentModel,
-    // miroirMetaModel,
     relativeReferenceJzodContext
   ) as any;
   if (objectUnionChoices.length == 1) {
@@ -620,11 +614,7 @@ export function jzodUnionResolvedTypeForObject<T extends MiroirModelEnvironment>
     valueObject,
     currentValuePath,
     currentTypePath, // typePath
-    // to resolve the extend clause of the object schema:
     modelEnvironment,
-    // miroirFundamentalJzodSchema,
-    // currentModel,
-    // miroirMetaModel,
     relativeReferenceJzodContext
   );
   
@@ -706,6 +696,7 @@ export function jzodTypeCheck(
   // ) => EntityInstancesUuidIndex,
   deploymentUuid?: string,
   rootObject?: any // Optional parameter for backward compatibility
+// ): ResolvedJzodSchemaReturnType {
 ): ResolvedJzodSchemaReturnType {
   // log.info(
   //   "jzodTypeCheck called for valuePath=." + 
@@ -847,9 +838,13 @@ export function jzodTypeCheck(
             ...(typeCheck.keyMap??{})[currentValuePath.join(".")], // useful for unions, where the keyMap is a map of value paths to sub-schemas
             rawSchema: effectiveRawSchema,
             resolvedSchema: typeCheck.resolvedSchema,
+            valuePath: currentValuePath,
+            typePath: currentTypePath,
           }:{
             rawSchema: effectiveRawSchema,
             resolvedSchema: typeCheck.resolvedSchema,
+            valuePath: currentValuePath,
+            typePath: currentTypePath,
           }, // map the current value path to the resolved schema
         },
       };
@@ -979,17 +974,23 @@ export function jzodTypeCheck(
           ])
         ),
       } as JzodObject;
-      const objecAttributeskeyMap: { [k: string]: KeyMapEntry } = resolvedObjectEntries.reduce(
+      const objecAttributeskeyMap: { [k: string]: KeyMapEntry } = (resolvedObjectEntries
+      .filter((e) => e[1].status === "ok")  as [string, ResolvedJzodSchemaReturnTypeOK][])
+      .filter((e) => e[1].keyMap !== undefined)
+      .reduce(
         (acc, [key, value]) => {
-          if (value.status === "ok") {
-            return { ...acc, ...value.keyMap };
+          // if (value.status === "ok") {
+          if (value.keyMap) {
+            return { ...acc, ...value.keyMap } as any;
+            // return { ...acc, [key]:value.keyMap };
           }
           // return acc;
-          throw new Error(
-            `jzodTypeCheck object schema keyMap should only contain "ok" entries, but found error for key "${key}": ${value.error}`
-          );
+          // throw new Error(
+          //   `jzodTypeCheck object schema keyMap should only contain "ok" entries, but found error for key "${key}": ${value.error}`
+          // );
         },
-        {} as { [k: string]: { rawSchema: JzodElement; resolvedSchema: JzodElement } }
+        // {} as { [k: string]: { rawSchema: JzodElement; resolvedSchema: JzodElement } }
+        {} as { [k: string]: KeyMapEntry }
       );
 
       return {
@@ -1005,6 +1006,8 @@ export function jzodTypeCheck(
             rawSchema: effectiveRawSchema,
             resolvedSchema: resultResolvedJzodSchema,
             jzodObjectFlattenedSchema: jzodObjectFlattenedSchema,
+            valuePath: currentValuePath,
+            typePath: currentTypePath,
           }, // map the current value path to the resolved schema
         },
       };
@@ -1081,6 +1084,8 @@ export function jzodTypeCheck(
                   recursivelyUnfoldedUnionSchema: recursivelyUnfoldedUnionSchema,
                   resolvedSchema: resultJzodSchema,
                   chosenUnionBranchRawSchema: resultJzodSchema,
+                  valuePath: currentValuePath,
+                  typePath: currentTypePath,
                 }, // map the current value path to the resolved schema
               },
             };
@@ -1123,6 +1128,8 @@ export function jzodTypeCheck(
                   recursivelyUnfoldedUnionSchema: recursivelyUnfoldedUnionSchema,
                   resolvedSchema: resultJzodSchema,
                   chosenUnionBranchRawSchema: resultJzodSchema,
+                  valuePath: currentValuePath,
+                  typePath: currentTypePath,
                 }, // map the current value path to the resolved schema
               },
             };
@@ -1226,12 +1233,14 @@ export function jzodTypeCheck(
               rawSchema: effectiveRawSchema,
               resolvedSchema,
               keyMap: {
-                ...arrayItemSchema.keyMap??{},
+                ...(arrayItemSchema.keyMap ?? {}),
                 [currentValuePath.join(".")]: {
                   rawSchema: effectiveRawSchema,
                   recursivelyUnfoldedUnionSchema: recursivelyUnfoldedUnionSchema,
                   chosenUnionBranchRawSchema: resolveUnionResult.resolvedJzodObjectSchema,
                   resolvedSchema,
+                  valuePath: currentValuePath,
+                  typePath: currentTypePath,
                 }, // map the current value path to the resolved schema
               },
             };
@@ -1416,19 +1425,20 @@ export function jzodTypeCheck(
       // );
       const recordEntrieskeyMap: { [k: string]: KeyMapEntry } = Object.entries(
         resolvedRecordEntries
-      ).reduce((acc, [key, value]) => {
-        if (value.status === "ok") {
+      ).reduce((acc, [key, value]): {[k: string]: KeyMapEntry} => {
+        if (value.status === "ok" && value.keyMap) {
           // all entries have status "ok", per foundErrors.length == 0, this is just a type-safety check
-          return {
+          return value.keyMap !== undefined?{
             ...acc,
             ...value.keyMap,
-          };
+          }: acc;
         }
         throw new Error(
           `jzodTypeCheck record schema keyMap should only contain "ok" entries,
-            but found error for key "${key}": ${value.error}`
+            but found error for key "${key}": ${value}`
         );
-      }, {} as { [k: string]: { rawSchema: JzodElement; resolvedSchema: JzodElement } });
+      // }, {} as { [k: string]: { rawSchema: JzodElement; resolvedSchema: JzodElement } });
+      }, {} as { [k: string]: KeyMapEntry });
       // log.info(
       //   "jzodTypeCheck recordEntrieskeyMap",
       //   "done"  );
@@ -1444,6 +1454,8 @@ export function jzodTypeCheck(
           [currentValuePath.join(".")]: {
             rawSchema: effectiveRawSchema,
             resolvedSchema,
+            valuePath: currentValuePath,
+            typePath: currentTypePath,
           }, // map the current value path to the resolved schema
         },
       };
@@ -1469,6 +1481,8 @@ export function jzodTypeCheck(
             [currentValuePath.join(".")]: {
               rawSchema: effectiveRawSchema,
               resolvedSchema: effectiveRawSchema,
+              valuePath: currentValuePath,
+              typePath: currentTypePath,
             }, // map the current value path to the resolved schema
           },
         };
@@ -1504,6 +1518,8 @@ export function jzodTypeCheck(
           [currentValuePath.join(".")]: {
             rawSchema: effectiveRawSchema,
             resolvedSchema: effectiveRawSchema,
+            valuePath: currentValuePath,
+            typePath: currentTypePath,
           }, // map the current value path to the resolved schema
         },
       };
@@ -1596,13 +1612,16 @@ export function jzodTypeCheck(
             throw new Error(
               `jzodTypeCheck tuple schema keyMap should only contain "ok" entries, but found error for index ${index}: ${e.error}`
             );
-          }, {} as { [k: string]: { rawSchema: JzodElement; resolvedSchema: JzodElement } }),
+          // }, {} as { [k: string]: { rawSchema: JzodElement; resolvedSchema: JzodElement } }),
+          }, {} as { [k: string]: KeyMapEntry }),
           [currentValuePath.join(".")]: {
             // ...((resolvedInnerSchemas.length > 0 && resolvedInnerSchemas[0].status == "ok"
             //   ? resolvedInnerSchemas[0].keyMap ?? {}
             //   : {})[currentValuePath.join(".")] ?? {}), // useful for unions, where the keyMap is a map of value paths to sub-schemas
             rawSchema: effectiveRawSchema,
             resolvedSchema,
+            valuePath: currentValuePath,
+            typePath: currentTypePath,
           }, // map the current value path to the resolved schema
         },
       };
@@ -1693,13 +1712,16 @@ export function jzodTypeCheck(
               };
             }
             return acc;
-          }, {} as { [k: string]: { rawSchema: JzodElement; resolvedSchema: JzodElement } }),
+          // }, {} as { [k: string]: { rawSchema: JzodElement; resolvedSchema: JzodElement } }),
+          }, {} as { [k: string]: KeyMapEntry }),
           [currentValuePath.join(".")]: {
             ...((subSchemas.length > 0 && subSchemas[0].status == "ok"
               ? subSchemas[0].keyMap ?? {}
               : {})[currentValuePath.join(".")] ?? {}), // useful for unions, where the keyMap is a map of value paths to sub-schemas
             rawSchema: effectiveRawSchema,
             resolvedSchema,
+            valuePath: currentValuePath,
+            typePath: currentTypePath,
           },
         },
       };
@@ -1718,6 +1740,8 @@ export function jzodTypeCheck(
             rawSchema: effectiveRawSchema,
             // resolvedSchema: effectiveSchema
             resolvedSchema: valueToJzod(valueObject) as JzodElement,
+            valuePath: currentValuePath,
+            typePath: currentTypePath,
           }, // map the current value path to the resolved schema
         },
       };
@@ -1745,6 +1769,8 @@ export function jzodTypeCheck(
           [currentValuePath.join(".")]: {
             rawSchema: effectiveRawSchema,
             resolvedSchema: effectiveRawSchema,
+            valuePath: currentValuePath,
+            typePath: currentTypePath,
           }, // map the current value path to the resolved schema
         },
         // resolvedSchema: { ...effectiveSchema, type: "string" }, // TODO: this is a shortcut assuming that all items in the array are of the same type, which is not always true
@@ -1773,6 +1799,8 @@ export function jzodTypeCheck(
           [currentValuePath.join(".")]: {
             rawSchema: effectiveRawSchema,
             resolvedSchema: effectiveRawSchema,
+            valuePath: currentValuePath,
+            typePath: currentTypePath,
           }, // map the current value path to the resolved schema
         },
       };
@@ -1799,6 +1827,8 @@ export function jzodTypeCheck(
           [currentValuePath.join(".")]: {
             rawSchema: effectiveRawSchema,
             resolvedSchema: effectiveRawSchema,
+            valuePath: currentValuePath,
+            typePath: currentTypePath,
           }, // map the current value path to the resolved schema
         },
       };
@@ -1825,6 +1855,8 @@ export function jzodTypeCheck(
           [currentValuePath.join(".")]: {
             rawSchema: effectiveRawSchema,
             resolvedSchema: effectiveRawSchema,
+            valuePath: currentValuePath,
+            typePath: currentTypePath,
           }, // map the current value path to the resolved schema
         },
       };
@@ -1851,6 +1883,8 @@ export function jzodTypeCheck(
           [currentValuePath.join(".")]: {
             rawSchema: effectiveRawSchema,
             resolvedSchema: effectiveRawSchema,
+            valuePath: currentValuePath,
+            typePath: currentTypePath,
           }, // map the current value path to the resolved schema
         },
       };
@@ -1868,6 +1902,8 @@ export function jzodTypeCheck(
               [currentValuePath.join(".")]: {
                 rawSchema: effectiveRawSchema,
                 resolvedSchema: effectiveRawSchema,
+                valuePath: currentValuePath,
+                typePath: currentTypePath,
               }, // map the current value path to the resolved schema
             },
           };
@@ -1918,6 +1954,8 @@ export function jzodTypeCheck(
           [currentValuePath.join(".")]: {
             rawSchema: effectiveRawSchema,
             resolvedSchema: effectiveRawSchema,
+            valuePath: currentValuePath,
+            typePath: currentTypePath,
             // resolvedSchema: valueToJzod(valueObject) as JzodElement
           }, // map the current value path to the resolved schema
         },

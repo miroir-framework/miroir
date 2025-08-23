@@ -30,100 +30,230 @@ export function getObjectUniondiscriminatorValuesFromResolvedSchema(
   unfoldedRawSchema: JzodElement | undefined, // is it needed?
   recursivelyUnfoldedRawSchemaList: JzodElement[],
   // recursivelyUnfoldedRawSchemaDiscriminator?: (string | string[]) | undefined
-): string[] {
+): string[][] {
+// ): string[] {
   if (
     resolvedElementJzodSchema?.type == "object"
     //  &&
     // recursivelyUnfoldedRawSchemaDiscriminator
   ) {
-    const discriminator = (unfoldedRawSchema as any).discriminator;
-    const result = [
-      ...new Set(
-        // recursivelyUnfoldedRawSchema.result.flatMap((branch: any /** JzodObject */) => {
-        recursivelyUnfoldedRawSchemaList
-        .filter((branch: any /** JzodObject */) => {
-          // filter branches that have a discriminator
-          // return branch && branch.definition && branch.definition[discriminator];
-          return branch && branch.definition;
-        })
-        .flatMap((branch: any /** JzodObject */) => {
-          // return (a.definition as any)[(unfoldedRawSchema as any).discriminator].definition}
-          if (!branch || !branch.definition || !branch.definition[discriminator]) {
-            // ATTENTION:
-            // there can be one object branch without discriminator, the one that will be chosen
-            //  when the value does not include any discriminator attribute
-
-            // throw new Error(
-            //   "getObjectUniondiscriminatorValuesFromResolvedSchema found object branch without discriminator '" +
-            //     discriminator +
-            //     "': " +
-            //     safeStringify(branch, 500) +
-            //     " in recursivelyUnfoldedRawSchemaList: " +
-            //     safeStringify(recursivelyUnfoldedRawSchemaList, 1000)
-            // );
-            return [];
-          }
-          switch (
-            // typeof branch.definition[discriminator] == "string"
-            (typeof branch.definition[discriminator]) == "object"
-              ? "literal"
-              : branch.definition[discriminator]?.type
-          ) {
-            case "literal": {
-              return branch.definition[discriminator].definition;
-              break;
+    const discriminator: string | string[] = (unfoldedRawSchema as any).discriminator;
+    if (!discriminator) {
+      throw new Error(
+        "getObjectUniondiscriminatorValuesFromResolvedSchema could not find discriminator in unfoldedRawSchema: " +
+          safeStringify(unfoldedRawSchema, 500) +
+          ", for union " +
+          safeStringify(recursivelyUnfoldedRawSchemaList, 1000)
+      );
+    }
+    if (typeof discriminator !== "string" && !Array.isArray(discriminator)) {
+      throw new Error(
+        "getObjectUniondiscriminatorValuesFromResolvedSchema could not handle non string or string[] discriminator: " +
+          safeStringify(discriminator, 200) +
+          ", for unfoldedRawSchema " +
+          safeStringify(unfoldedRawSchema, 500) +
+          ", for union " +
+          safeStringify(recursivelyUnfoldedRawSchemaList, 1000)
+      );
+    }
+    if (Array.isArray(discriminator) && discriminator.length == 0) {
+      throw new Error(
+        "getObjectUniondiscriminatorValuesFromResolvedSchema could not handle empty array discriminator: " +
+          safeStringify(discriminator, 200) +
+          ", for unfoldedRawSchema " +
+          safeStringify(unfoldedRawSchema, 500) +
+          ", for union " +
+          safeStringify(recursivelyUnfoldedRawSchemaList, 1000)
+      );
+    }
+    if (typeof discriminator == "string") {
+      const result: string[][] = [[
+        ...new Set(
+          // recursivelyUnfoldedRawSchema.result.flatMap((branch: any /** JzodObject */) => {
+          recursivelyUnfoldedRawSchemaList
+          .filter((branch: any /** JzodObject */) => {
+            // filter branches that have a discriminator
+            // return branch && branch.definition && branch.definition[discriminator];
+            return branch && branch.definition;
+          })
+          .flatMap((branch: any /** JzodObject */) => {
+            // return (a.definition as any)[(unfoldedRawSchema as any).discriminator].definition}
+            if (!branch || !branch.definition || !branch.definition[discriminator]) {
+              // ATTENTION:
+              // there can be one object branch without discriminator, the one that will be chosen
+              //  when the value does not include any discriminator attribute
+  
+              // throw new Error(
+              //   "getObjectUniondiscriminatorValuesFromResolvedSchema found object branch without discriminator '" +
+              //     discriminator +
+              //     "': " +
+              //     safeStringify(branch, 500) +
+              //     " in recursivelyUnfoldedRawSchemaList: " +
+              //     safeStringify(recursivelyUnfoldedRawSchemaList, 1000)
+              // );
+              return [];
             }
-            case "enum": {
-              return branch.definition[discriminator].definition;
+            switch (
+              // typeof branch.definition[discriminator] == "string"
+              (typeof branch.definition[discriminator]) == "object"
+                ? "literal"
+                : branch.definition[discriminator]?.type
+            ) {
+              case "literal": {
+                return branch.definition[discriminator].definition;
+                break;
+              }
+              case "enum": {
+                return branch.definition[discriminator].definition;
+              }
+              case "object":
+              case "string":
+              case "number":
+              case "bigint":
+              case "boolean":
+              case "undefined":
+              case "function":
+              case "array":
+              // case "simpleType":
+              case "any":
+              case "date":
+              case "never":
+              case "null":
+              case "uuid":
+              case "unknown":
+              case "void":
+              case "lazy":
+              case "intersection":
+              case "map":
+              case "promise":
+              case "record":
+              case "schemaReference":
+              case "set":
+              case "tuple":
+              case "union":
+              default: {
+                throw new Error(
+                  "getObjectUniondiscriminatorValuesFromResolvedSchema could not handle union branch object:" +
+                  " discriminator " +
+                    discriminator +
+                  // " discriminator type " +
+                  //   branch.definition[discriminator]?.type +
+                    ", found branch discriminator " +
+                    safeStringify(branch.definition[discriminator], 200) +
+                    ", for branch " +
+                    safeStringify(branch, 500) +
+                    ", for union " +
+                    safeStringify(recursivelyUnfoldedRawSchemaList, 1000)
+                );
+                // return [];
+                break;
+              }
             }
-            case "object":
-            case "string":
-            case "number":
-            case "bigint":
-            case "boolean":
-            case "undefined":
-            case "function":
-            case "array":
-            // case "simpleType":
-            case "any":
-            case "date":
-            case "never":
-            case "null":
-            case "uuid":
-            case "unknown":
-            case "void":
-            case "lazy":
-            case "intersection":
-            case "map":
-            case "promise":
-            case "record":
-            case "schemaReference":
-            case "set":
-            case "tuple":
-            case "union":
-            default: {
-              throw new Error(
-                "getObjectUniondiscriminatorValuesFromResolvedSchema could not handle union branch object:" +
-                " discriminator " +
-                  discriminator +
-                // " discriminator type " +
-                //   branch.definition[discriminator]?.type +
-                  ", found branch discriminator " +
-                  safeStringify(branch.definition[discriminator], 200) +
-                  ", for branch " +
-                  safeStringify(branch, 500) +
-                  ", for union " +
-                  safeStringify(recursivelyUnfoldedRawSchemaList, 1000)
-              );
-              // return [];
-              break;
-            }
-          }
-        })
-      ),
-    ];
-    // log.info("getObjectUniondiscriminatorValuesFromResolvedSchema found ", result);
-    return result;
+          })
+        ),
+      ]];
+      // log.info("getObjectUniondiscriminatorValuesFromResolvedSchema found ", result);
+      return result;
+    }
+    if (typeof discriminator == "object" && Array.isArray(discriminator)) {
+      const result: string[][] = discriminator.map((disc: string) => {
+        return [
+          ...new Set(
+            // recursivelyUnfoldedRawSchema.result.flatMap((branch: any /** JzodObject */) => {
+            recursivelyUnfoldedRawSchemaList
+            .filter((branch: any /** JzodObject */) => {
+              // filter branches that have a discriminator
+              // return branch && branch.definition && branch.definition[discriminator];
+              return branch && branch.definition;
+            })
+            .flatMap((branch: any /** JzodObject */) => {
+              // return (a.definition as any)[(unfoldedRawSchema as any).discriminator].definition}
+              if (!branch || !branch.definition || !branch.definition[disc]) {
+                // ATTENTION:
+                // there can be one object branch without discriminator, the one that will be chosen
+                //  when the value does not include any discriminator attribute
+    
+                // throw new Error(
+                //   "getObjectUniondiscriminatorValuesFromResolvedSchema found object branch without discriminator '" +
+                //     discriminator +
+                //     "': " +
+                //     safeStringify(branch, 500) +
+                //     " in recursivelyUnfoldedRawSchemaList: " +
+                //     safeStringify(recursivelyUnfoldedRawSchemaList, 1000)
+                // );
+                return [];
+              }
+              switch (
+                // typeof branch.definition[discriminator] == "string"
+                (typeof branch.definition[disc]) == "object"
+                  ? "literal"
+                  : branch.definition[disc]?.type
+              ) {
+                case "literal": {
+                  return branch.definition[disc].definition;
+                  break;
+                }
+                case "enum": {
+                  return branch.definition[disc].definition;
+                }
+                case "object":
+                case "string":
+                case "number":
+                case "bigint":
+                case "boolean":
+                case "undefined":
+                case "function":
+                case "array":
+                // case "simpleType":
+                case "any":
+                case "date":
+                case "never":
+                case "null":
+                case "uuid":
+                case "unknown":
+                case "void":
+                case "lazy":
+                case "intersection":
+                case "map":
+                case "promise":
+                case "record":
+                case "schemaReference":
+                case "set":
+                case "tuple":
+                case "union":
+                default: {
+                  throw new Error(
+                    "getObjectUniondiscriminatorValuesFromResolvedSchema could not handle union branch object:" +
+                    " discriminator " +
+                      disc +
+                    // " discriminator type " +
+                    //   branch.definition[discriminator]?.type +
+                      ", found branch discriminator " +
+                      safeStringify(branch.definition[disc], 200) +
+                      ", for branch " +
+                      safeStringify(branch, 500) +
+                      ", for union " +
+                      safeStringify(recursivelyUnfoldedRawSchemaList, 1000)
+                  );
+                  // return [];
+                  break;
+                }
+              }
+            })
+          ),
+        ];
+      });
+      // log.info("getObjectUniondiscriminatorValuesFromResolvedSchema found ", result);
+      return result;
+    }
+    throw new Error(
+      "getObjectUniondiscriminatorValuesFromResolvedSchema could not handle non string or string[] discriminator: " +
+        safeStringify(discriminator, 200) +
+        ", for unfoldedRawSchema " +
+        safeStringify(unfoldedRawSchema, 500) +
+        ", for union " +
+        safeStringify(recursivelyUnfoldedRawSchemaList, 1000)
+    );
   } else {
     return [];
   }

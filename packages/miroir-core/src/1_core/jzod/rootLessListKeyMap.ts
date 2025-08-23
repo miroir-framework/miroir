@@ -1,9 +1,10 @@
-import type { ResolvedJzodSchemaReturnType } from "../../0_interfaces/1_core/jzodTypeCheckInterface";
+// import type { ResolvedJzodSchemaReturnType } from "../../0_interfaces/1_core/jzodTypeCheckInterface";
 import {
   JzodElement,
   JzodObject,
   JzodSchema,
   MetaModel,
+  ResolvedJzodSchemaReturnType,
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { LoggerInterface } from "../../0_interfaces/4-services/LoggerInterface";
 import { MiroirLoggerFactory } from "../../4_services/LoggerFactory";

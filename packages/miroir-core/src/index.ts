@@ -450,6 +450,14 @@ export {
   JzodUnion_RecursivelyUnfold_ReturnTypeError,
   JzodUnion_RecursivelyUnfold_ReturnTypeOK,
   JzodUnion_RecursivelyUnfold_ReturnType,
+  KeyMapEntry,
+  keyMapEntry,
+  ResolvedJzodSchemaReturnType,
+  resolvedJzodSchemaReturnType,
+  ResolvedJzodSchemaReturnTypeError,
+  resolvedJzodSchemaReturnTypeError,
+  ResolvedJzodSchemaReturnTypeOK,
+  resolvedJzodSchemaReturnTypeOK,
   // those are zod schemas, not imported. Importing MLS with the same name.
   // jzodUnion_RecursivelyUnfold_ReturnType,
   // jzodUnion_RecursivelyUnfold_ReturnTypeError,
@@ -521,15 +529,9 @@ export {
   JzodUnionResolvedTypeReturnTypeError,
   JzodUnionResolvedTypeForObjectReturnTypeOK,
   JzodUnionResolvedTypeReturnType,
-  KeyMapEntry,
   SelectUnionBranchFromDiscriminatorReturnType,
-  ResolvedJzodSchemaReturnType,
-  ResolvedJzodSchemaReturnTypeError,
-  ResolvedJzodSchemaReturnTypeOK,
   SelectUnionBranchFromDiscriminatorReturnTypeError,
   SelectUnionBranchFromDiscriminatorReturnTypeOK,
-  resolvedJzodSchemaReturnType,
-  resolvedJzodSchemaReturnTypeOK,
 } from "./0_interfaces/1_core/jzodTypeCheckInterface";
 export {
   EntityDefinitionEntityDefinition,
@@ -693,16 +695,8 @@ export {
   getDefaultValueForJzodSchemaWithResolutionNonHook,
 } from "./1_core/jzod/getDefaultValueForJzodSchema.js";
 export {
-  // KeyMapEntry,
-  // ResolvedJzodSchemaReturnType,
-  // ResolvedJzodSchemaReturnTypeError,
-  // ResolvedJzodSchemaReturnTypeOK,
-  // getReportSectionTargetEntityUuid,
   jzodTypeCheck,
   jzodUnionResolvedTypeForObject,
-  // JzodUnionResolvedTypeReturnType,
-  // JzodUnionResolvedTypeForObjectReturnTypeOK,
-  // JzodUnionResolvedTypeReturnTypeError as JzodUnionResolvedTypeForObjectReturnTypeError,
   unionObjectChoices,
   selectUnionBranchFromDiscriminator,
 } from "./1_core/jzod/jzodTypeCheck.js";

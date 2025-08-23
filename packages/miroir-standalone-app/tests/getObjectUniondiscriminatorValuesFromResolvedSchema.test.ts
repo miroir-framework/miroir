@@ -15,16 +15,24 @@ import currentModel from "./currentModel.json";
 import { JzodUnion_RecursivelyUnfold_ReturnType } from "miroir-core";
 import { ResolvedJzodSchemaReturnType } from "miroir-core";
 import { jzodTypeCheck } from "miroir-core";
+import type { MiroirModelEnvironment } from "miroir-core";
 
 function local_test(schema: JzodElement, instance: any): string[] {
+  const modelEnvironment: MiroirModelEnvironment =     {
+      miroirFundamentalJzodSchema: miroirFundamentalJzodSchema as JzodSchema,
+      currentModel: currentModel as any as MetaModel,
+      miroirMetaModel: currentMiroirModel as any as MetaModel
+    };
+
   const resolvedElementJzodSchema: ResolvedJzodSchemaReturnType | undefined = jzodTypeCheck(
     schema,
     instance,
     [], // currentValuePath
     [], // currentTypePath
-    miroirFundamentalJzodSchema as JzodSchema,
-    currentModel as any as MetaModel,
-    currentMiroirModel as any as MetaModel,
+    modelEnvironment, // modelEnvironment
+    // miroirFundamentalJzodSchema as JzodSchema,
+    // currentModel as any as MetaModel,
+    // currentMiroirModel as any as MetaModel,
     {}
   )
 
@@ -51,9 +59,10 @@ function local_test(schema: JzodElement, instance: any): string[] {
   const recursivelyUnfoldedSchema: JzodUnion_RecursivelyUnfold_ReturnType = jzodUnion_recursivelyUnfold(
     unfoldedRawSchema.element as JzodUnion,
     new Set(),
-    miroirFundamentalJzodSchema as JzodSchema,
-    currentModel as any as MetaModel,
-    currentMiroirModel as any as MetaModel,
+    modelEnvironment, // modelEnvironment
+    // miroirFundamentalJzodSchema as JzodSchema,
+    // currentModel as any as MetaModel,
+    // currentMiroirModel as any as MetaModel,
     {} // relativeReferenceJzodContext
   );
   if (recursivelyUnfoldedSchema.status === "error") {
@@ -63,7 +72,7 @@ function local_test(schema: JzodElement, instance: any): string[] {
     resolvedElementJzodSchema.resolvedSchema,
     unfoldedRawSchema.element,
     recursivelyUnfoldedSchema.result,
-    (unfoldedRawSchema.element as JzodUnion).discriminator
+    // (unfoldedRawSchema.element as JzodUnion).discriminator
   );
 }
 

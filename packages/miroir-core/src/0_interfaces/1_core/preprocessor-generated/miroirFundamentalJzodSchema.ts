@@ -2110,7 +2110,7 @@ export const miroirFundamentalJzodSchema = {
               "type": "schemaReference",
               "definition": {
                 "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                "relativePath": "jzodObject"
+                "relativePath": "jzodElement"
               }
             }
           },
@@ -2188,6 +2188,7 @@ export const miroirFundamentalJzodSchema = {
           },
           "jzodObjectFlattenedSchema": {
             "type": "schemaReference",
+            "optional": true,
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "jzodObject"
@@ -2195,6 +2196,7 @@ export const miroirFundamentalJzodSchema = {
           },
           "recursivelyUnfoldedUnionSchema": {
             "type": "schemaReference",
+            "optional": true,
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "jzodUnion_RecursivelyUnfold_ReturnTypeOK"
@@ -2217,12 +2219,17 @@ export const miroirFundamentalJzodSchema = {
           },
           "discriminatorValues": {
             "type": "array",
+            "optional": true,
             "definition": {
-              "type": "string"
+              "type": "array",
+              "definition": {
+                "type": "string"
+              }
             }
           },
           "discriminator": {
             "type": "union",
+            "optional": true,
             "definition": [
               {
                 "type": "string"
@@ -2234,6 +2241,34 @@ export const miroirFundamentalJzodSchema = {
                 }
               }
             ]
+          },
+          "valuePath": {
+            "type": "array",
+            "definition": {
+              "type": "union",
+              "definition": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                }
+              ]
+            }
+          },
+          "typePath": {
+            "type": "array",
+            "definition": {
+              "type": "union",
+              "definition": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                }
+              ]
+            }
           }
         }
       },
@@ -2247,13 +2282,29 @@ export const miroirFundamentalJzodSchema = {
           "valuePath": {
             "type": "array",
             "definition": {
-              "type": "string"
+              "type": "union",
+              "definition": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                }
+              ]
             }
           },
           "typePath": {
             "type": "array",
             "definition": {
-              "type": "string"
+              "type": "union",
+              "definition": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                }
+              ]
             }
           },
           "rawSchema": {
@@ -2270,8 +2321,20 @@ export const miroirFundamentalJzodSchema = {
               "relativePath": "jzodElement"
             }
           },
-          "subschemas": {
+          "keyMap": {
+            "type": "record",
+            "optional": true,
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "keyMapEntry"
+              }
+            }
+          },
+          "subSchemas": {
             "type": "union",
+            "optional": true,
             "definition": [
               {
                 "type": "schemaReference",
@@ -2318,18 +2381,35 @@ export const miroirFundamentalJzodSchema = {
             "type": "string"
           },
           "rawJzodSchemaType": {
-            "type": "string"
+            "type": "string",
+            "optional": true
           },
           "valuePath": {
             "type": "array",
             "definition": {
-              "type": "string"
+              "type": "union",
+              "definition": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                }
+              ]
             }
           },
           "typePath": {
             "type": "array",
             "definition": {
-              "type": "string"
+              "type": "union",
+              "definition": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                }
+              ]
             }
           },
           "value": {
@@ -2337,6 +2417,7 @@ export const miroirFundamentalJzodSchema = {
           },
           "rawSchema": {
             "type": "schemaReference",
+            "optional": true,
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "jzodElement"
@@ -2344,18 +2425,21 @@ export const miroirFundamentalJzodSchema = {
           },
           "errorOnValueAttributes": {
             "type": "array",
+            "optional": true,
             "definition": {
               "type": "string"
             }
           },
           "errorOnSchemaAttributes": {
             "type": "array",
+            "optional": true,
             "definition": {
               "type": "string"
             }
           },
           "innerError": {
             "type": "union",
+            "optional": true,
             "definition": [
               {
                 "type": "schemaReference",
@@ -2401,13 +2485,29 @@ export const miroirFundamentalJzodSchema = {
               "valuePath": {
                 "type": "array",
                 "definition": {
-                  "type": "string"
+                  "type": "union",
+                  "definition": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "number"
+                    }
+                  ]
                 }
               },
               "typePath": {
                 "type": "array",
                 "definition": {
-                  "type": "string"
+                  "type": "union",
+                  "definition": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "number"
+                    }
+                  ]
                 }
               },
               "rawSchema": {
@@ -2424,8 +2524,20 @@ export const miroirFundamentalJzodSchema = {
                   "relativePath": "jzodElement"
                 }
               },
-              "subschemas": {
+              "keyMap": {
+                "type": "record",
+                "optional": true,
+                "definition": {
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "keyMapEntry"
+                  }
+                }
+              },
+              "subSchemas": {
                 "type": "union",
+                "optional": true,
                 "definition": [
                   {
                     "type": "schemaReference",
@@ -2472,18 +2584,35 @@ export const miroirFundamentalJzodSchema = {
                 "type": "string"
               },
               "rawJzodSchemaType": {
-                "type": "string"
+                "type": "string",
+                "optional": true
               },
               "valuePath": {
                 "type": "array",
                 "definition": {
-                  "type": "string"
+                  "type": "union",
+                  "definition": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "number"
+                    }
+                  ]
                 }
               },
               "typePath": {
                 "type": "array",
                 "definition": {
-                  "type": "string"
+                  "type": "union",
+                  "definition": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "number"
+                    }
+                  ]
                 }
               },
               "value": {
@@ -2491,6 +2620,7 @@ export const miroirFundamentalJzodSchema = {
               },
               "rawSchema": {
                 "type": "schemaReference",
+                "optional": true,
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                   "relativePath": "jzodElement"
@@ -2498,18 +2628,21 @@ export const miroirFundamentalJzodSchema = {
               },
               "errorOnValueAttributes": {
                 "type": "array",
+                "optional": true,
                 "definition": {
                   "type": "string"
                 }
               },
               "errorOnSchemaAttributes": {
                 "type": "array",
+                "optional": true,
                 "definition": {
                   "type": "string"
                 }
               },
               "innerError": {
                 "type": "union",
+                "optional": true,
                 "definition": [
                   {
                     "type": "schemaReference",

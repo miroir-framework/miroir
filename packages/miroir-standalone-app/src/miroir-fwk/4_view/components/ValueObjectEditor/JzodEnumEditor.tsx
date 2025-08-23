@@ -69,8 +69,18 @@ export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
 
   const isDiscriminator =
     parentKeyMap?.discriminator &&
-    parentKeyMap?.discriminatorValues &&
-    name === parentKeyMap?.discriminator;
+    parentKeyMap?.discriminatorValues;
+
+  const discriminatorIndex: number = !parentKeyMap?.discriminator
+    ? -1
+    : typeof parentKeyMap?.discriminator == "string"
+    ? 0
+    : parentKeyMap?.discriminator?.findIndex((d: string) => d === name);
+  if (isDiscriminator && discriminatorIndex === -1) {
+    throw new Error(
+      `JzodLiteralEditor: isDiscriminator is true but could not find discriminator index for name "${name}" in parentKeyMap.discriminator ${parentKeyMap?.discriminator}`
+    );
+  }
 
   // Handler for discriminator select change (using common function)
   const handleSelectEnumChange = useCallback((event: any) => {
@@ -89,10 +99,15 @@ export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
     );
   }, [parentKeyMap, rootLessListKey, rootLessListKeyArray, currentDeploymentUuid, currentMiroirFundamentalJzodSchema, currentModel, miroirMetaModel, formik]);
 
+    const currentDiscriminatorValues =
+      parentKeyMap?.discriminatorValues && discriminatorIndex !== -1
+        ? parentKeyMap.discriminatorValues[discriminatorIndex]
+        : [];
+
   // Memoize the menu items for better performance
   const menuItems = useMemo(() => {
-    if (isDiscriminator) {
-      return (parentKeyMap?.discriminatorValues ?? []).map((v, index) => (
+    if (isDiscriminator && parentKeyMap?.discriminatorValues) {
+      return currentDiscriminatorValues.sort().map((v, index) => (
         <option key={v} value={v} aria-label={rootLessListKey + "." + index}>
           {v}
         </option>

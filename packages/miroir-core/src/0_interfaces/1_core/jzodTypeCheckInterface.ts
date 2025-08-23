@@ -73,7 +73,7 @@ export interface KeyMapEntry {
   recursivelyUnfoldedUnionSchema?: JzodUnion_RecursivelyUnfold_ReturnTypeOK;
   resolvedSchema: JzodElement;
   chosenUnionBranchRawSchema?: JzodElement; // for unions, this is the raw schema of the chosen branch
-  discriminatorValues?: string[]; // for unions, this is the list of possible discriminator values
+  discriminatorValues?: string[][]; // for unions, this is the list of possible discriminator values
   discriminator?: string | string[]; // for unions, this is the discriminator used to select the branch
 }
 export const keyMapEntry: JzodElement = {
@@ -88,6 +88,7 @@ export const keyMapEntry: JzodElement = {
     }, // the raw schema that was checked
     jzodObjectFlattenedSchema: {
       type: "schemaReference",
+      optional: true,
       definition: {
         absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
         relativePath: "jzodObject",
@@ -95,6 +96,7 @@ export const keyMapEntry: JzodElement = {
     }, // the flattened schema of the object
     recursivelyUnfoldedUnionSchema: {
       type: "schemaReference",
+      optional: true,
       definition: {
         absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
         relativePath: "jzodUnion_RecursivelyUnfold_ReturnTypeOK",
@@ -115,8 +117,24 @@ export const keyMapEntry: JzodElement = {
         relativePath: "jzodElement",
       },
     }, // for unions, this is the raw schema of the chosen branch
-    discriminatorValues: { type: "array", definition: { type: "string" } }, // for unions, this is the list of possible discriminator values
-    discriminator: { type: "union", definition: [{ type: "string" }, { type: "array", definition: { type: "string" } }] }, // for unions, this is the discriminator used to select the branch
+    discriminatorValues: {
+      type: "array",
+      optional: true,
+      definition: { type: "array", definition: { type: "string" } },
+    }, // for unions, this is the list of possible discriminator values
+    discriminator: {
+      type: "union",
+      optional: true,
+      definition: [{ type: "string" }, { type: "array", definition: { type: "string" } }],
+    }, // for unions, this is the discriminator used to select the branch
+        valuePath: {
+      type: "array",
+      definition: { type: "union", definition: [{ type: "string" }, { type: "number" }] },
+    },
+    typePath: {
+      type: "array",
+      definition: { type: "union", definition: [{ type: "string" }, { type: "number" }] },
+    }
   },
 };
 
@@ -137,8 +155,16 @@ export const resolvedJzodSchemaReturnTypeOK: JzodElement = {
   type: "object",
   definition: {
     status: { type: "literal", definition: "ok" },
-    valuePath: { type: "array", definition: { type: "string" } },
-    typePath: { type: "array", definition: { type: "string" } },
+    // valuePath: { type: "array", definition: { type: "string" } },
+    // typePath: { type: "array", definition: { type: "string" } },
+    valuePath: {
+      type: "array",
+      definition: { type: "union", definition: [{ type: "string" }, { type: "number" }] },
+    },
+    typePath: {
+      type: "array",
+      definition: { type: "union", definition: [{ type: "string" }, { type: "number" }] },
+    },
     rawSchema: {
       type: "schemaReference",
       definition: {
@@ -153,8 +179,21 @@ export const resolvedJzodSchemaReturnTypeOK: JzodElement = {
         relativePath: "jzodElement",
       },
     }, // the resolved schema that was checked
-    subschemas: {
+    keyMap: {
+      type: "record",
+      optional: true,
+      definition: {
+        type: "schemaReference",
+        // optional: true,
+        definition: {
+          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          relativePath: "keyMapEntry",
+        },
+      }, // the resolved schema that was checked
+    },
+    subSchemas: {
       type: "union",
+      optional: true,
       definition: [
         {
           type: "schemaReference",
@@ -185,7 +224,7 @@ export const resolvedJzodSchemaReturnTypeOK: JzodElement = {
         },
         {
           type: "undefined",
-        }
+        },
       ],
     }, // for unions, this is the list of sub-schemas that were resolved
   },
@@ -211,12 +250,14 @@ export const resolvedJzodSchemaReturnTypeError: JzodElement = {
   definition: {
     status: { type: "literal", definition: "error" },
     error: { type: "string" },
-    rawJzodSchemaType: { type: "string" }, // the raw schema type that was checked
-    valuePath: { type: "array", definition: { type: "string" } },
-    typePath: { type: "array", definition: { type: "string" } },
+    rawJzodSchemaType: { type: "string", optional: true }, // the raw schema type that was checked
+    valuePath: { type: "array", definition: { type: "union", definition: [{ type: "string" }, { type: "number" }] } },
+    typePath: { type: "array", definition: { type: "union", definition: [{ type: "string" }, { type: "number" }] } },
+    // typePath: { type: "array", definition: { type: "string" } },
     value: { type: "any" }, // the value that was checked
     rawSchema: {
       type: "schemaReference",
+      optional: true,
       definition: {
         absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
         relativePath: "jzodElement",
@@ -224,14 +265,17 @@ export const resolvedJzodSchemaReturnTypeError: JzodElement = {
     }, // the raw schema that was checked
     errorOnValueAttributes: {
       type: "array",
+      optional: true,
       definition: { type: "string" },
     }, // the attributes that failed to check, if relevant
     errorOnSchemaAttributes: {
       type: "array",
+      optional: true,
       definition: { type: "string" },
     }, // the attributes that failed to check, if relevant
     innerError: {
       type: "union",
+      optional: true,
       definition: [
         {
           type: "schemaReference",
