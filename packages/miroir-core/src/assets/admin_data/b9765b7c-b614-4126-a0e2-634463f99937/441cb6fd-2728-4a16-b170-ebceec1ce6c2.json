@@ -5,7 +5,7 @@
   "name": "Default ViewParams",
   "defaultLabel": "Default ViewParams",
   "description": "Default ViewParams for any application / local deployment",
-  "sidebarWidth": 308,
+  "sidebarWidth": 332,
   "gridType": "ag-grid",
   "tableTheme": "default",
   "appTheme": "material"

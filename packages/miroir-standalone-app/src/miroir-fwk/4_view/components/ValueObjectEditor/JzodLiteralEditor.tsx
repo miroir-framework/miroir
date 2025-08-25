@@ -34,19 +34,13 @@ import {
 
 // Common function to handle discriminator changes
 const handleDiscriminatorChange = (
-  currentObjectValue: any,
   selectedValue: string,
   discriminatorType: "enum" | "literal" | "schemaReference",
   parentKeyMap: KeyMapEntry,
   rootLessListKey: string,
   rootLessListKeyArray: (string | number)[],
-  // currentValuePath: (string | number)[],
-  // currentTypePath: (string | number)[],
   currentDeploymentUuid: string | undefined,
   modelEnvironment: MiroirModelEnvironment,
-  // currentMiroirFundamentalJzodSchema: any,
-  // currentModel: MetaModel,
-  // miroirMetaModel: MetaModel,
   formik: any,
   log: LoggerInterface
 ) => {
@@ -109,16 +103,33 @@ const handleDiscriminatorChange = (
         `handleDiscriminatorChange discriminator type mismatch: expected ${discriminatorType} but found ${discriminatorTypeLocal} for discriminator ${discriminator} in ${JSON.stringify(parentKeyMap.resolvedSchema)}`
       );
     }
+    const newParentValue = {
+      ...resolvePathOnObject(formik.values, parentKeyMap.valuePath),
+      [rootLessListKeyArray[rootLessListKeyArray.length - 1]]: selectedValue,
+    };
+    log.info(
+      "handleDiscriminatorChange newParentValue",
+      newParentValue,
+      "parentKeyMap",
+      parentKeyMap,
+      rootLessListKeyArray[rootLessListKeyArray.length - 1],
+      "selectedValue",
+      selectedValue
+    );
     const resolveUnionResult = jzodUnionResolvedTypeForObject(
       parentKeyMap.recursivelyUnfoldedUnionSchema.result,
       parentKeyMap.discriminator,
-      currentObjectValue,
+      newParentValue,
       parentKeyMap.valuePath,
       parentKeyMap.typePath,
       modelEnvironment,
       {}, // relativeReferenceJzodContext
     );
 
+    log.info(
+      `handleDiscriminatorChange (${discriminatorType}) jzodUnionResolvedTypeForObject result`,
+      resolveUnionResult,
+    );
     if (resolveUnionResult.status === "error") {
       throw new Error(
         `handleDiscriminatorChange jzodUnionResolvedTypeForObject error: ${resolveUnionResult.error}`
@@ -189,6 +200,7 @@ const handleDiscriminatorChange = (
       }
     : newJzodSchema;
 
+  log.info(`handleDiscriminatorChange (${discriminatorType})`, "newJzodSchema", JSON.stringify(newJzodSchema, null, 2));
   const defaultValue = modelEnvironment
     ? getDefaultValueForJzodSchemaWithResolutionNonHook(
         newJzodSchemaWithOptional,
@@ -200,29 +212,23 @@ const handleDiscriminatorChange = (
         true,
         currentDeploymentUuid,
         modelEnvironment
-        // {
-        //   miroirFundamentalJzodSchema: currentMiroirFundamentalJzodSchema,
-        //   currentModel,
-        //   miroirMetaModel,
-        // }
       )
     : undefined;
 
   const targetRootLessListKey = rootLessListKeyArray.slice(0, rootLessListKeyArray.length - 1).join(".")??"";
-  // const targetRootLessListKey = rootLessListKey;
   log.info(
     `handleDiscriminatorChange (${discriminatorType})`,
     "targetRootLessListKey",
     targetRootLessListKey,
     "defaultValue",
-    defaultValue,
+    JSON.stringify(defaultValue, null, 2),
     "formik.values",
-    JSON.stringify(formik.values, null, 2)
+    // JSON.stringify(formik.values, null, 2)
+    formik.values
   );
   if (targetRootLessListKey.length === 0) {
     // If the target key is empty, we set the value directly on formik.values
     formik.setValues(
-      // ...formik.values,
       defaultValue,
     );
   } else {
@@ -338,14 +344,11 @@ export const JzodLiteralEditor: FC<JzodLiteralEditorProps> =  (
         );
       }
       handleDiscriminatorChange(
-        currentValue, // object value
         event.target.value,
         "literal",
         parentKeyMap,
         rootLessListKey,
         rootLessListKeyArray,
-        // currentKeyMap?.currentValuePath??[],
-        // currentKeyMap?.currentTypePath??[],
         currentDeploymentUuid,
         currentMiroirModelEnvironment,
         formik,
@@ -360,7 +363,8 @@ export const JzodLiteralEditor: FC<JzodLiteralEditorProps> =  (
       currentMiroirFundamentalJzodSchema,
       currentModel,
       miroirMetaModel,
-      formik,
+      formik.values,
+      currentValue
     ]
   );
 

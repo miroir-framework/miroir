@@ -149,10 +149,14 @@ const runtimeReferenceMap: Record<string, string> = {
 const buildReferenceMap: Record<string, string> = {
   transformer: "transformerForBuild",
   transformer_InnerReference: "transformerForBuild_InnerReference",
-  transformer_freeObjectTemplate: "transformerForBuildPlusRuntime_freeObjectTemplate",
-  transformer_contextReference: "transformerForBuildPlusRuntime_contextReference",
-  transformer_objectDynamicAccess: "transformerForBuildPlusRuntime_objectDynamicAccess",
+  transformer_freeObjectTemplate: "transformerForBuild_freeObjectTemplate",
+  // transformer_contextReference: "transformerForBuild_contextReference",
+  transformer_objectDynamicAccess: "transformerForBuild_objectDynamicAccess",
   transformer_mustacheStringTemplate: "transformerForBuild_mustacheStringTemplate", // TODO: rename to transformer_mustacheStringTemplate
+  // transformer_freeObjectTemplate: "transformerForBuildPlusRuntime_freeObjectTemplate",
+  transformer_contextReference: "transformerForBuildPlusRuntime_contextReference",
+  // transformer_objectDynamicAccess: "transformerForBuildPlusRuntime_objectDynamicAccess",
+  // transformer_mustacheStringTemplate: "transformerForBuild_mustacheStringTemplate", // TODO: rename to transformer_mustacheStringTemplate
 };
 
 const buildPlusRuntimeReferenceMap: Record<string, string> = {

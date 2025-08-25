@@ -69,7 +69,7 @@ export function transformerInterfaceFromDefinition(
       throw new Error(`Unknown target: ${target}`);
   }
 
-  const newApplyTo: JzodElement = (
+  const newApplyTo: JzodElement = (// allow using a transformer in place of a value for applyTo
     transformerDefinition.transformerInterface.transformerParameterSchema
       .transformerDefinition.definition as any
   ).applyTo?{

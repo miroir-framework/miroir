@@ -138,13 +138,10 @@ function isValidUUID(uuid: string): boolean {
 export function unionObjectChoices<T extends MiroirModelEnvironment> (
   concreteUnrolledJzodSchemas: JzodElement[],
   modelEnvironment: T,
-  // miroirFundamentalJzodSchema: JzodSchema,
-  // currentModel: MetaModel,
-  // miroirMetaModel: MetaModel,
   relativeReferenceJzodContext: { [k: string]: JzodElement }
 ) {
   return concreteUnrolledJzodSchemas
-    .filter((j) => j.type == "object")
+    .filter((j) => j.type == "object" || j.type == "record")
     .concat(
       (
         concreteUnrolledJzodSchemas.filter(
@@ -154,13 +151,9 @@ export function unionObjectChoices<T extends MiroirModelEnvironment> (
         (j: JzodUnion): JzodObject[] =>
           (j.definition.filter((k: JzodElement) => k.type == "object") as JzodObject[]).map(
             (k: JzodObject): JzodObject =>
-              // resolveObjectExtendClauseAndDefinition(
               jzodObjectFlatten(
                 k,
                 modelEnvironment,
-                // miroirFundamentalJzodSchema,
-                // currentModel,
-                // miroirMetaModel,
                 relativeReferenceJzodContext
               )
           ) as JzodObject[]
@@ -180,9 +173,6 @@ export function unionObjectChoices<T extends MiroirModelEnvironment> (
                 k,
                 { ...relativeReferenceJzodContext, ...k.context },
                 modelEnvironment,
-                // miroirFundamentalJzodSchema,
-                // currentModel,
-                // miroirMetaModel,
               )
             )
             .filter((j) => j.type == "object") as JzodObject[]
@@ -191,9 +181,6 @@ export function unionObjectChoices<T extends MiroirModelEnvironment> (
               jzodObjectFlatten(
                 k,
                 modelEnvironment,
-                // miroirFundamentalJzodSchema,
-                // currentModel,
-                // miroirMetaModel,
                 relativeReferenceJzodContext
               )
           ) as JzodObject[]
@@ -308,9 +295,6 @@ export function selectUnionBranchFromDiscriminator<T extends MiroirModelEnvironm
           jzodObjectSchema.extend,
           relativeReferenceJzodContext,
           modelEnvironment,
-          // miroirFundamentalJzodSchema,
-          // currentModel,
-          // miroirMetaModel,
         )
         if (extension.type == "object") {
           extendedJzodSchema = {
@@ -346,19 +330,24 @@ export function selectUnionBranchFromDiscriminator<T extends MiroirModelEnvironm
 
   // Extract successful results
   const flattenedUnionChoices:JzodObject[] = flatteningResults.map(r => (r as any).result) as JzodObject[];
-  // log.info(
-  //   "selectUnionBranchFromDiscriminator called for union-type value object with discriminator(s)=",
-  //   discriminators,
-  //   "valueObject[discriminator]=",
-  //   discriminators??[].map(d => valueObject[d]),
-  //   "relativeReferenceJzodContext=",
-  //   // JSON.stringify(relativeReferenceJzodContext, null, 2),
-  //   relativeReferenceJzodContext,
-  //   "flattenedUnionChoices=",
-  //   // JSON.stringify(flattenedUnionChoices, null, 2),
-  //   flattenedUnionChoices
-  //   // JSON.stringify(objectUnionChoices.map((e:any) => [e?.definition['transformerType'], e?.definition ]), null, 2),
-  // );
+  log.info(
+    "selectUnionBranchFromDiscriminator called",
+    "valueObjectPath",
+    valueObjectPath.join("."),
+    "discriminator(s)=",
+    discriminators,
+    "valueObject=",
+    valueObject,
+    "valueObject[discriminator]=",
+    discriminators??[].map(d => valueObject[d]),
+    "relativeReferenceJzodContext=",
+    // JSON.stringify(relativeReferenceJzodContext, null, 2),
+    relativeReferenceJzodContext,
+    "flattenedUnionChoices=",
+    // JSON.stringify(flattenedUnionChoices, null, 2),
+    flattenedUnionChoices
+    // JSON.stringify(objectUnionChoices.map((e:any) => [e?.definition['transformerType'], e?.definition ]), null, 2),
+  );
   const discriminatorValues = discriminators.map((d) => valueObject[d]);
 
   let i = 0;
@@ -378,7 +367,6 @@ export function selectUnionBranchFromDiscriminator<T extends MiroirModelEnvironm
     });
   } else {
     const hasDiscriminatorValues = discriminators.some(d => valueObject[d] !== undefined);
-
     if (!hasDiscriminatorValues) {
       const choiceWithNoDiscriminator: JzodObject[] = flattenedUnionChoices.filter(
         (objectChoice: any) => // TODO: typing!
@@ -589,6 +577,19 @@ export function jzodUnionResolvedTypeForObject<T extends MiroirModelEnvironment>
     modelEnvironment,
     relativeReferenceJzodContext
   ) as any;
+  log.info(
+    "jzodUnionResolvedTypeForObject called for",
+    "valuePath=" + currentValuePath.join("."),
+    "valueObject=",
+    valueObject,
+    "discriminator=",
+    discriminator,
+    "concreteUnrolledJzodSchemas",
+    concreteUnrolledJzodSchemas,
+    "objectUnionChoices",
+    objectUnionChoices,
+  );
+  
   if (objectUnionChoices.length == 1) {
     return {
       status: "ok",
@@ -1018,9 +1019,6 @@ export function jzodTypeCheck(
         effectiveRawSchema as JzodUnion,
         new Set(),
         modelEnvironment,
-        // miroirFundamentalJzodSchema,
-        // currentModel,
-        // miroirMetaModel,
         relativeReferenceJzodContext
       );
 
@@ -1163,9 +1161,6 @@ export function jzodTypeCheck(
               currentValuePath,
               currentTypePath,
               modelEnvironment,
-              // miroirFundamentalJzodSchema,
-              // currentModel,
-              // miroirMetaModel,
               relativeReferenceJzodContext
             );
             if (resolveUnionResult.status === "error") {
@@ -1198,13 +1193,9 @@ export function jzodTypeCheck(
               currentValuePath,
               [...currentTypePath, "0"],
               modelEnvironment,
-              // miroirFundamentalJzodSchema,
-              // currentModel,
-              // miroirMetaModel,
               relativeReferenceJzodContext,
               currentDefaultValue,
               reduxDeploymentsState,
-              // getEntityInstancesUuidIndex,
               deploymentUuid,
               rootObject
             );
@@ -1270,7 +1261,14 @@ export function jzodTypeCheck(
           }
 
           const discriminatedSchemaForObject = resolveUnionResult.resolvedJzodObjectSchema;
-
+          log.info(
+            "jzodTypeCheck union for object at",
+            currentValuePath.join("."),
+            "discriminator:",
+            effectiveRawSchema.discriminator,
+            "resolveUnionResult:",
+            resolveUnionResult,
+          );
           const subResolvedSchemas = jzodTypeCheck(
             discriminatedSchemaForObject,
             valueObject,

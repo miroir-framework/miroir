@@ -157,7 +157,7 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
   deploymentUuid,
   applicationSection,
   // functions
-  onSubmit: onEditFormObject,
+  onSubmit,
   foldedObjectAttributeOrArrayItems,
   setFoldedObjectAttributeOrArrayItems,
   // zoom
@@ -227,23 +227,11 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
   const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> =
     getMemoizedReduxDeploymentsStateSelectorMap();
   
-  // const deploymentEntityState: ReduxDeploymentsState = useSelector(selectCurrentReduxDeploymentsStateFromReduxState);
   const reduxDeploymentsState: ReduxDeploymentsState = useSelector(
     (state: ReduxStateWithUndoRedo) =>
       deploymentEntityStateSelectorMap.extractState(state.presentModelSnapshot.current, () => ({}), defaultMiroirModelEnviroment)
   );
 
-  // Create a function to get entity instances for conditional schema resolution
-  // const getEntityInstancesUuidIndex = useMemo(() => {
-  //   return (targetDeploymentUuid: Uuid, entityUuid: Uuid, sortBy?: string): EntityInstancesUuidIndex => {
-  //     return getEntityInstancesUuidIndexNonHook(
-  //       reduxDeploymentsState,
-  //       targetDeploymentUuid,
-  //       entityUuid,
-  //       sortBy
-  //     );
-  //   };
-  // }, [reduxDeploymentsState]);
 
   // log.info(
   //   "TypedValueObjectEditor render",
@@ -273,7 +261,7 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
             ? setValueAtPath(valueObject, zoomInPath!, values)
             : values;
             
-          await onEditFormObject(finalValues);
+          await onSubmit(finalValues);
         } catch (e) {
           log.error(e);
         } finally {
@@ -285,49 +273,40 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
     >
       {(formik: FormikProps<Record<string, any>>) => {
         let typeError: JSX.Element | undefined = undefined;
-        const typeCheckKeyMap: ResolvedJzodSchemaReturnType | undefined =
-          useMemo(() => {
-            let result: ResolvedJzodSchemaReturnType | undefined = undefined;
-            try {
-              result =
-                context.miroirFundamentalJzodSchema &&
-                displaySchema &&
-                formik.values &&
-                currentModel
-                  ? jzodTypeCheck(
-                      displaySchema,
-                      formik.values,
-                      [],
-                      [],
-                      // defaultMiroirModelEnviroment,
-                      {
-                        miroirFundamentalJzodSchema: context.miroirFundamentalJzodSchema,
-                        currentModel,
-                        miroirMetaModel: currentMiroirModel,
-                      },
-                      {}, // relativeReferenceJzodContext
-                      formik.values, // currentDefaultValue
-                      reduxDeploymentsState,
-                      // getEntityInstancesUuidIndex, // Now passing the actual function
-                      deploymentUuid, // Now passing the actual deploymentUuid
-                      hasZoomPath ? valueObject : formik.values // rootObject - use full object for context, but validate the subset
-                    )
-                  : undefined;
-            } catch (e) {
-              log.error(
-                "TypedValueObjectEditor useMemo error",
-                e,
-                context
-              );
-              result = {
-                status: "error",
-                valuePath: [],
-                typePath: [],
-                error: JSON.stringify(e, Object.getOwnPropertyNames(e)),
-              };
-            }
-            return result;
-          }, [displaySchema, displayValueObject, formik.values, context, hasZoomPath, valueObject]);
+        const typeCheckKeyMap: ResolvedJzodSchemaReturnType | undefined = useMemo(() => {
+          let result: ResolvedJzodSchemaReturnType | undefined = undefined;
+          try {
+            result =
+              context.miroirFundamentalJzodSchema && displaySchema && formik.values && currentModel
+                ? jzodTypeCheck(
+                    displaySchema,
+                    formik.values,
+                    [],
+                    [],
+                    // defaultMiroirModelEnviroment,
+                    {
+                      miroirFundamentalJzodSchema: context.miroirFundamentalJzodSchema,
+                      currentModel,
+                      miroirMetaModel: currentMiroirModel,
+                    },
+                    {}, // relativeReferenceJzodContext
+                    formik.values, // currentDefaultValue
+                    reduxDeploymentsState,
+                    deploymentUuid, // Now passing the actual deploymentUuid
+                    hasZoomPath ? valueObject : formik.values // rootObject - use full object for context, but validate the subset
+                  )
+                : undefined;
+          } catch (e) {
+            log.error("TypedValueObjectEditor useMemo error", e, context);
+            result = {
+              status: "error",
+              valuePath: [],
+              typePath: [],
+              error: JSON.stringify(e, Object.getOwnPropertyNames(e)),
+            };
+          }
+          return result;
+        }, [displaySchema, displayValueObject, formik.values, context, hasZoomPath, valueObject]);
         // log.info(
         //   "TypedValueObjectEditor jzodTypeCheck done for render",
         //   navigationCount,
@@ -445,7 +424,6 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
                     foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
                     setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
                     maxRenderDepth={maxRenderDepth}
-                    // readOnly={true}
                     submitButton={
                       <button
                         type="submit"

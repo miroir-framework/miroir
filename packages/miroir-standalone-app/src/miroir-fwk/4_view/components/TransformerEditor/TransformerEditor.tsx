@@ -126,76 +126,17 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
     selectedEntityInstance
   );
 
-  // Initial transformer definition based on the actual TransformerDefinition schema
-  // const [currentTransformerDefinition, setCurrentTransformerDefinition] = useState<any>({
-  //   uuid: "new-transformer-" + Math.random().toString(36).substr(2, 9),
-  //   parentName: "TransformerDefinition",
-  //   parentUuid: deploymentUuid,
-  //   classification: "test",
-  //   name: "NewTransformer",
-  //   defaultLabel: "New Transformer",
-  //   description: "A new transformer definition",
-  //   transformerImplementation: {
-  //     transformerImplementationType: "transformer",
-  //     definition: {
-  //       interpolation: "runtime",
-  //       transformerType: "constant",
-  //       value: "Hello World"
-  //     }
-  //   }
-  // });
-
-  // State for folding management
-  // const [foldedItems, setFoldedItems] = useState<{ [k: string]: boolean }>({});
-
   // TransformerDefinition schema based on the provided JSON - simplified for now
   const transformerEntityUuid = entityDefinitionTransformerDefinition.entityUuid;
   
   // Get the transformerForBuildPlusRuntime schema from the fundamental schema
   const transformerDefinitionSchema: JzodElement =
     entityDefinitionTransformerDefinition.jzodSchema.definition.transformerImplementation;
-  // const transformerForBuildPlusRuntimeSchema: JzodElement = useMemo(() => {
-  //   if (miroirFundamentalJzodSchema?.definition?.context?.transformerForBuildPlusRuntime) {
-  //     return miroirFundamentalJzodSchema.definition.context.transformerForBuildPlusRuntime as JzodElement;
-  //   }
-  //   // Fallback to a basic schema if not found
-  //   return {
-  //     type: "object",
-  //     definition: {
-  //       interpolation: {
-  //         type: "enum",
-  //         definition: ["runtime", "build"]
-  //       },
-  //       transformerType: {
-  //         type: "enum",
-  //         definition: ["constant", "contextReference", "mustacheStringTemplate"]
-  //       }
-  //     }
-  //   };
-  // }, [miroirFundamentalJzodSchema]);
 
   log.info(
     "TransformerEditor transformerDefinitionSchema",
     transformerDefinitionSchema
   );
-      // const defaultFormValuesObject =
-      //   currentReportTargetEntity &&
-      //   currentReportTargetEntityDefinition &&
-      //   currentReportTargetEntityDefinition?.jzodSchema &&
-      //   context.miroirFundamentalJzodSchema
-      //     ? getDefaultValueForJzodSchemaWithResolutionNonHook(
-      //         currentReportTargetEntityDefinition?.jzodSchema,
-      //         undefined, // rootObject
-      //         "", // rootLessListKey,
-      //         undefined, // No need to pass currentDefaultValue here
-      //         [], // currentPath on value is root
-      //         deploymentEntityState,
-      //         false, // forceOptional
-      //         props.deploymentUuid,
-      //         currentMiroirModelEnvironment,
-      //         {}, // relativeReferenceJzodContext
-      //       )
-      //     : undefined;
 
   const [currentTransformerDefinition, setCurrentTransformerDefinition] = useState<any>(
     getDefaultValueForJzodSchemaWithResolutionNonHook(
@@ -248,11 +189,9 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
           applicationSection={"model"}
           //
           formLabel={"Transformer Definition Editor"}
-          // onSubmit={onEditValueObjectFormSubmit}
           onSubmit={async ()=>{}}
           foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
           setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
-          // zoomInPath={props.zoomInPath}
           maxRenderDepth={Infinity} // Always render fully for editor
         />
 
