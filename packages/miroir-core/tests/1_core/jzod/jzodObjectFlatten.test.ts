@@ -6,6 +6,12 @@ import { defaultMiroirMetaModel } from "../../test_assets/defaultMiroirMetaModel
 
 const castMiroirFundamentalJzodSchema = miroirFundamentalJzodSchema as JzodSchema;
 
+const defaultModelEnvironment = {
+  miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+  currentModel: defaultMiroirMetaModel,
+  miroirMetaModel: defaultMiroirMetaModel
+} as const satisfies { miroirFundamentalJzodSchema: JzodSchema; currentModel: any; miroirMetaModel: any; };
+
 describe("jzodObjectFlatten", () => {
   // ##############################################################################################
   it("returns the same object if there is no extend", () => {
@@ -18,9 +24,7 @@ describe("jzodObjectFlatten", () => {
     expect(
       jzodObjectFlatten(
         obj,
-        castMiroirFundamentalJzodSchema,
-        defaultMiroirMetaModel,
-        defaultMiroirMetaModel
+        defaultModelEnvironment,
       )
     ).toEqual(obj);
   });
@@ -45,9 +49,7 @@ describe("jzodObjectFlatten", () => {
     expect(
       jzodObjectFlatten(
         obj,
-        castMiroirFundamentalJzodSchema,
-        defaultMiroirMetaModel,
-        defaultMiroirMetaModel
+        defaultModelEnvironment,
       )
     ).toEqual({
       type: "object",
@@ -84,9 +86,7 @@ describe("jzodObjectFlatten", () => {
     expect(
       jzodObjectFlatten(
         obj,
-        castMiroirFundamentalJzodSchema,
-        defaultMiroirMetaModel,
-        defaultMiroirMetaModel
+        defaultModelEnvironment,
       )
     ).toEqual({
       type: "object",
@@ -122,9 +122,7 @@ describe("jzodObjectFlatten", () => {
     expect(
       jzodObjectFlatten(
         obj,
-        castMiroirFundamentalJzodSchema,
-        defaultMiroirMetaModel,
-        defaultMiroirMetaModel
+        defaultModelEnvironment,
       )
     ).toEqual({
       type: "object",
@@ -158,9 +156,7 @@ describe("jzodObjectFlatten", () => {
     expect(
       jzodObjectFlatten(
         obj,
-        castMiroirFundamentalJzodSchema,
-        defaultMiroirMetaModel,
-        defaultMiroirMetaModel,
+        defaultModelEnvironment,
         { SomeRef: { type: "object", definition: { a: { type: "number" } } } }
       )
     ).toEqual({
@@ -193,9 +189,7 @@ describe("jzodObjectFlatten", () => {
     expect(
       jzodObjectFlatten(
         obj,
-        castMiroirFundamentalJzodSchema,
-        defaultMiroirMetaModel,
-        defaultMiroirMetaModel
+        defaultModelEnvironment,
       )
     ).toEqual({
       type: "object",
@@ -244,9 +238,7 @@ describe("jzodObjectFlatten", () => {
     expect(
       jzodObjectFlatten(
         obj,
-        castMiroirFundamentalJzodSchema,
-        defaultMiroirMetaModel,
-        defaultMiroirMetaModel,
+        defaultModelEnvironment,
         context
       )
     ).toEqual({
@@ -286,9 +278,7 @@ describe("jzodObjectFlatten", () => {
     expect(() =>
       jzodObjectFlatten(
         obj,
-        castMiroirFundamentalJzodSchema,
-        defaultMiroirMetaModel,
-        defaultMiroirMetaModel,
+        defaultModelEnvironment,
         context
       )
     ).toThrow(/Circular reference detected/);

@@ -16,6 +16,7 @@ import {
   type ResolvedJzodSchemaReturnType,
   type ResolvedJzodSchemaReturnTypeError,
   KeyMapEntry,
+  type JzodRecord,
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { LoggerInterface } from "../../0_interfaces/4-services/LoggerInterface";
 import { MiroirLoggerFactory } from "../../4_services/LoggerFactory";
@@ -139,54 +140,47 @@ export function unionObjectChoices<T extends MiroirModelEnvironment> (
   concreteUnrolledJzodSchemas: JzodElement[],
   modelEnvironment: T,
   relativeReferenceJzodContext: { [k: string]: JzodElement }
-) {
-  return concreteUnrolledJzodSchemas
-    .filter((j) => j.type == "object" || j.type == "record")
-    .concat(
-      (
-        concreteUnrolledJzodSchemas.filter(
-          (j: JzodElement): boolean => j.type == "union"
-        ) as JzodUnion[]
-      ).flatMap( // for sub-unions, return the sub-objects clauses, with their extend clauses resolved
-        (j: JzodUnion): JzodObject[] =>
-          (j.definition.filter((k: JzodElement) => k.type == "object") as JzodObject[]).map(
-            (k: JzodObject): JzodObject =>
-              jzodObjectFlatten(
-                k,
-                modelEnvironment,
-                relativeReferenceJzodContext
-              )
-          ) as JzodObject[]
-      ),
-      (
-        concreteUnrolledJzodSchemas.filter((j: JzodElement) => j.type == "union") as JzodUnion[]
-      ).flatMap( // if schemaReferences are found, we resolve them, squashing the extend clause for objects
-        (j: JzodUnion) =>
-          (
-            (
-              j.definition.filter(
-                (k: JzodElement) => k.type == "schemaReference"
-              ) as JzodReference[]
-            )
+): (JzodObject | JzodRecord)[] {
+  return (
+    concreteUnrolledJzodSchemas.filter((j) => j.type == "record") as (JzodObject | JzodRecord)[]
+  ).concat(
+    (concreteUnrolledJzodSchemas.filter((j) => j.type == "object") as JzodObject[]).map(
+      (k: JzodObject): JzodObject =>
+        jzodObjectFlatten(k, modelEnvironment, relativeReferenceJzodContext)
+    ) as JzodObject[],
+    (
+      concreteUnrolledJzodSchemas.filter(
+        (j: JzodElement): boolean => j.type == "union"
+      ) as JzodUnion[]
+    ).flatMap(
+      // for sub-unions, return the sub-objects clauses, with their extend clauses resolved
+      (j: JzodUnion): JzodObject[] =>
+        (j.definition.filter((k: JzodElement) => k.type == "object") as JzodObject[]).map(
+          (k: JzodObject): JzodObject =>
+            jzodObjectFlatten(k, modelEnvironment, relativeReferenceJzodContext)
+        ) as JzodObject[]
+    ),
+    (
+      concreteUnrolledJzodSchemas.filter((j: JzodElement) => j.type == "union") as JzodUnion[]
+    ).flatMap(
+      // if schemaReferences are found, we resolve them, squashing the extend clause for objects
+      (j: JzodUnion) =>
+        (
+          (j.definition.filter((k: JzodElement) => k.type == "schemaReference") as JzodReference[])
             .map((k: JzodReference) =>
               resolveJzodSchemaReferenceInContext(
                 k,
                 { ...relativeReferenceJzodContext, ...k.context },
-                modelEnvironment,
+                modelEnvironment
               )
             )
             .filter((j) => j.type == "object") as JzodObject[]
-          ).map(
-            (k: JzodObject): JzodObject =>
-              jzodObjectFlatten(
-                k,
-                modelEnvironment,
-                relativeReferenceJzodContext
-              )
-          ) as JzodObject[]
-      )
+        ).map(
+          (k: JzodObject): JzodObject =>
+            jzodObjectFlatten(k, modelEnvironment, relativeReferenceJzodContext)
+        ) as JzodObject[]
     )
-  ;
+  );
 }
 ;
 
@@ -203,9 +197,6 @@ export function unionObjectChoices<T extends MiroirModelEnvironment> (
 export function unionArrayChoices<T extends MiroirModelEnvironment> (
   concreteUnrolledJzodSchemas: JzodElement[],
   modelEnvironment: T,
-  // miroirFundamentalJzodSchema: JzodSchema,
-  // currentModel: MetaModel,
-  // miroirMetaModel: MetaModel,
   relativeReferenceJzodContext: { [k: string]: JzodElement }
 ): (JzodArray | JzodTuple)[] {
   return (
@@ -236,9 +227,6 @@ export function unionArrayChoices<T extends MiroirModelEnvironment> (
               k,
               { ...relativeReferenceJzodContext, ...k.context },
               modelEnvironment,
-              // miroirFundamentalJzodSchema,
-              // currentModel,
-              // miroirMetaModel,
             )
           )
           .filter((j) => j.type == "array" || j.type == "tuple") as (JzodArray | JzodTuple)[]
@@ -281,7 +269,8 @@ export function selectUnionBranchFromDiscriminator<T extends MiroirModelEnvironm
     ? discriminator
     : [discriminator];
 
-
+  // TODO: remove, object union choices should already be flattened in unionObjectChoices
+  // WHY CAN objectUnionChoices NOT be flattened already?
   // "flatten" object hierarchy, if there is an extend clause, we resolve it
   const flatteningResults = objectUnionChoices.map(
     (jzodObjectSchema) => {
@@ -678,23 +667,12 @@ export function jzodTypeCheck(
   currentValuePath: (string | number)[],
   currentTypePath: (string | number)[],
   modelEnvironment: MiroirModelEnvironment,
-  // miroirFundamentalJzodSchema: JzodSchema,
-  // currentModel: MetaModel,
-  // miroirMetaModel: MetaModel,
   relativeReferenceJzodContext: {[k:string]: JzodElement},
   // 
-  // 
   currentDefaultValue?: any,
-  // currentValuePath: string[],
   reduxDeploymentsState: ReduxDeploymentsState | undefined = undefined,
-  // getEntityInstancesUuidIndex?: (
-  //   deploymentUuid: Uuid,
-  //   entityUuid: Uuid,
-  //   sortBy?: string
-  // ) => EntityInstancesUuidIndex,
   deploymentUuid?: string,
   rootObject?: any // Optional parameter for backward compatibility
-// ): ResolvedJzodSchemaReturnType {
 ): ResolvedJzodSchemaReturnType {
   // log.info(
   //   "jzodTypeCheck called for valuePath=." + 
@@ -1303,6 +1281,7 @@ export function jzodTypeCheck(
             subResolvedSchemas.resolvedSchema,
             effectiveRawSchema,
             recursivelyUnfoldedUnionSchema?.result ?? [],
+            resolveUnionResult.objectUnionChoices
           );
 
           return {

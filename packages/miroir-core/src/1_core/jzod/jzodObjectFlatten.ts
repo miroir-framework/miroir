@@ -24,9 +24,6 @@ import equal from "fast-deep-equal";
 export function jzodObjectFlatten<T extends MiroirModelEnvironment>(
   obj: JzodObject,
   modelEnvironment: T,
-  // miroirFundamentalJzodSchema: JzodSchema,
-  // currentModel: MetaModel,
-  // miroirMetaModel: MetaModel,
   relativeReferenceJzodContext?: { [k: string]: JzodElement }
 ): JzodObject {
   // If there's no extend property, just return the object as is
@@ -72,9 +69,6 @@ export function jzodObjectFlatten<T extends MiroirModelEnvironment>(
         parent,
         relativeReferenceJzodContext || {},
         modelEnvironment,
-        // miroirFundamentalJzodSchema,
-        // currentModel,
-        // miroirMetaModel,
       );
 
       // Add current reference to the chain for circular detection

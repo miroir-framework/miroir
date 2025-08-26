@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo, useEffect } from 'react';
+import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import {
   LoggerInterface,
   MiroirLoggerFactory,
@@ -49,19 +49,116 @@ MiroirLoggerFactory.registerLoggerToStart(
 });
 
 // ################################################################################################
-// Safe stringify function that prevents "Invalid string length" errors
+// Safe stringify function that prevents "Invalid string length" errors with memoization
 // ################################################################################################
+const stringifyCache = new WeakMap<object, string>();
+
 function safeStringify(obj: any, maxLength: number = 2000): string {
   try {
-    const str = JSON.stringify(obj, null, 2);
-    if (str && str.length > maxLength) {
-      return str.substring(0, maxLength) + "... [truncated]";
+    // Use cache for objects to avoid re-stringifying the same object
+    if (obj && typeof obj === 'object' && stringifyCache.has(obj)) {
+      return stringifyCache.get(obj)!;
     }
-    return str || "[unable to stringify]";
+    
+    const str = JSON.stringify(obj, null, 2);
+    const result = str && str.length > maxLength 
+      ? str.substring(0, maxLength) + "... [truncated]" 
+      : str || "[unable to stringify]";
+    
+    // Cache the result for objects
+    if (obj && typeof obj === 'object') {
+      stringifyCache.set(obj, result);
+    }
+    
+    return result;
   } catch (error) {
     return `[stringify error: ${error instanceof Error ? error.message : 'unknown'}]`;
   }
 }
+
+// ################################################################################################
+// Memoized sub-components for better performance
+// ################################################################################################
+const EntityInstancePanel = React.memo<{
+  entityInstances: EntityInstance[];
+  selectedEntityInstance: EntityInstance | undefined;
+}>(({ entityInstances, selectedEntityInstance }) => (
+  <ThemedContainer style={{ flex: 1 }}>
+    <ThemedHeaderSection>
+      <ThemedTitle>
+        Entity Instance ({entityInstances.length} instances available)
+      </ThemedTitle>
+    </ThemedHeaderSection>
+    <ThemedCodeBlock>
+      {selectedEntityInstance
+        ? safeStringify(selectedEntityInstance)
+        : "No entity instances found"}
+    </ThemedCodeBlock>
+  </ThemedContainer>
+));
+
+const TransformationResultPanel = React.memo<{
+  transformationResult: any;
+  transformationError: string | null;
+  selectedEntityInstance: EntityInstance | undefined;
+}>(({ transformationResult, transformationError, selectedEntityInstance }) => (
+  <ThemedContainer style={{ flex: 1 }}>
+    <ThemedHeaderSection>
+      <ThemedTitle>
+        Transformation Result
+        {transformationError && (
+          <span style={{ color: 'red', marginLeft: '10px', fontSize: '0.9em' }}>
+            ⚠️ Error
+          </span>
+        )}
+      </ThemedTitle>
+    </ThemedHeaderSection>
+    
+    {transformationError ? (
+      <ThemedCodeBlock>
+        {typeof transformationError === 'string' 
+          ? transformationError 
+          : safeStringify(transformationError)
+        }
+      </ThemedCodeBlock>
+    ) : transformationResult !== null ? (
+      <ThemedCodeBlock>
+        {safeStringify(transformationResult)}
+      </ThemedCodeBlock>
+    ) : selectedEntityInstance ? (
+      <div>
+        <div style={{ marginBottom: '12px', padding: '12px', background: '#f5f5f5', borderRadius: '4px' }}>
+          <div style={{ marginBottom: '8px', fontWeight: 'bold' }}>No transformation result yet.</div>
+          <div style={{ marginBottom: '8px' }}>Create a transformer to see the result here.</div>
+          <div style={{ fontSize: '0.9em', color: '#666' }}>
+            <div style={{ marginBottom: '4px' }}>Tip: Use contextReference to access the entity instance:</div>
+          </div>
+        </div>
+        <ThemedCodeBlock>
+          {JSON.stringify({ 
+            "transformerType": "contextReference", 
+            "referenceName": "applyTo" 
+          }, null, 2)}
+        </ThemedCodeBlock>
+      </div>
+    ) : (
+      <div style={{ padding: '12px', background: '#f5f5f5', borderRadius: '4px' }}>
+        No entity instance available for transformation.
+      </div>
+    )}
+  </ThemedContainer>
+));
+
+const DebugPanel = React.memo<{
+  currentTransformerDefinition: any;
+}>(({ currentTransformerDefinition }) => (
+  <ThemedContainer style={{ marginTop: "20px" }}>
+    <ThemedHeaderSection>
+      <ThemedTitle>Current Transformer Definition (Debug)</ThemedTitle>
+    </ThemedHeaderSection>
+    <ThemedCodeBlock>{safeStringify(currentTransformerDefinition, 2)}</ThemedCodeBlock>
+  </ThemedContainer>
+));
 
 // ################################################################################################
 /**
@@ -92,7 +189,7 @@ export interface TransformerEditorProps {
 }
 
 // ################################################################################################
-export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
+export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((props) => {
   const { deploymentUuid, entityUuid } = props;
   const context = useMiroirContextService();
   const currentModel = useCurrentModel(deploymentUuid);
@@ -110,19 +207,21 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
     context.miroirFundamentalJzodSchema,
   ]);
 
-  const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> =
-      getMemoizedReduxDeploymentsStateSelectorMap();
+  const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> = useMemo(
+    () => getMemoizedReduxDeploymentsStateSelectorMap(),
+    []
+  );
 
   const deploymentEntityState: ReduxDeploymentsState = useSelector(
-    (state: ReduxStateWithUndoRedo) =>
+    useCallback((state: ReduxStateWithUndoRedo) =>
       deploymentEntityStateSelectorMap.extractState(
         state.presentModelSnapshot.current,
         () => ({}),
         currentMiroirModelEnvironment
-      )
+      ), [deploymentEntityStateSelectorMap, currentMiroirModelEnvironment])
   );
 
-  // Fetch all instances of the target entity
+  // Fetch all instances of the target entity with stable reference
   const entityInstances: EntityInstance[] = useMemo(() => {
     try {
       return getEntityInstancesUuidIndexNonHook(
@@ -138,38 +237,22 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
     }
   }, [deploymentEntityState, currentMiroirModelEnvironment, deploymentUuid, entityUuid]);
 
-  // Select the first instance for display
+  // Select the first instance for display with stable reference
   const selectedEntityInstance: EntityInstance | undefined = useMemo(() => {
     return entityInstances.length > 0 ? entityInstances[0] : undefined;
   }, [entityInstances]);
 
-  log.info(
-    "TransformerEditor entityInstances",
-    entityInstances,
-    "selectedEntityInstance",
-    selectedEntityInstance
-  );
-
-  // TransformerDefinition schema based on the provided JSON - simplified for now
-  const transformerEntityUuid = entityDefinitionTransformerDefinition.entityUuid;
-  
-  // Get the transformerForBuildPlusRuntime schema from the fundamental schema
-  const transformerDefinitionSchema: JzodElement = {
+  // TransformerDefinition schema - memoized to avoid recalculation
+  const transformerDefinitionSchema: JzodElement = useMemo(() => ({
     type: "schemaReference",
     definition: {
       absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
       relativePath: "transformerForBuildPlusRuntime",
     },
-  };
-  // const transformerDefinitionSchema: JzodElement =
-  //   entityDefinitionTransformerDefinition.jzodSchema.definition.transformerImplementation;
+  }), []);
 
-  log.info(
-    "TransformerEditor transformerDefinitionSchema",
-    transformerDefinitionSchema
-  );
-
-  const [currentTransformerDefinition, setCurrentTransformerDefinition] = useState<any>(
+  // Initialize transformer definition only once
+  const [currentTransformerDefinition, setCurrentTransformerDefinition] = useState<any>(() =>
     getDefaultValueForJzodSchemaWithResolutionNonHook(
       transformerDefinitionSchema,
       undefined, // rootObject
@@ -184,28 +267,36 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
     )
   );
 
-  log.info(
-    "TransformerEditor initialized with currentTransformerDefinition",
-    currentTransformerDefinition,
-    "transformerDefinitionSchema schema",
-    transformerDefinitionSchema
-  );
   const [foldedObjectAttributeOrArrayItems, setFoldedObjectAttributeOrArrayItems] = useState<{
       [k: string]: boolean;
-      // }>({"ROOT": true}); // Initialize with empty key to handle root object folding
     }>({});
   
   // State for transformation result
   const [transformationResult, setTransformationResult] = useState<any>(null);
   const [transformationError, setTransformationError] = useState<string | null>(null);
   
-  // Handle transformer definition changes
+  // Debouncing for transformer execution
+  const transformerTimeoutRef = useRef<NodeJS.Timeout>();
+  
+  // Handle transformer definition changes with debouncing
   const handleTransformerDefinitionChange = useCallback(async (newTransformerDefinition: any) => {
     log.info("handleTransformerDefinitionChange", newTransformerDefinition);
     setCurrentTransformerDefinition(newTransformerDefinition);
   }, []);
 
-  // Apply transformer to selected entity instance
+  // Memoized context results to avoid recreating on every execution
+  const contextResults = useMemo(() => {
+    if (!selectedEntityInstance) return {};
+    
+    return {
+      entityInstance: selectedEntityInstance,
+      instance: selectedEntityInstance,
+      target: selectedEntityInstance,
+      ...selectedEntityInstance
+    };
+  }, [selectedEntityInstance]);
+
+  // Apply transformer to selected entity instance with debouncing
   const applyTransformerToInstance = useCallback(async () => {
     if (!currentTransformerDefinition || !selectedEntityInstance) {
       setTransformationResult(null);
@@ -213,55 +304,60 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
       return;
     }
 
-    try {
-      log.info("Applying transformer to instance", {
-        transformer: currentTransformerDefinition,
-        instance: selectedEntityInstance
-      });
-
-      // Provide multiple context keys for different transformer reference patterns
-      const contextResults = {
-        // Standard keys that transformers commonly use
-        // applyTo: selectedEntityInstance,
-        entityInstance: selectedEntityInstance,
-        instance: selectedEntityInstance,
-        target: selectedEntityInstance,
-        // Also provide the actual entity instance data directly
-        ...selectedEntityInstance
-      };
-
-      const result: Domain2QueryReturnType<any> = transformer_extended_apply_wrapper(
-        "runtime", // step
-        "TransformerEditor", // label
-        // currentTransformerDefinition.definition, // transformer
-        currentTransformerDefinition, // transformer
-        {...currentMiroirModelEnvironment, ...contextResults}, // transformerParams
-        contextResults, // contextResults - pass the instance to transform
-        "value" // resolveBuildTransformersTo
-      );
-      log.info("Transformer application result", result);
-
-      // Check for Domain2ElementFailed pattern
-      if (result && typeof result === 'object' && 'queryFailure' in result) {
-        setTransformationError(`Transformation failed: ${JSON.stringify(result, null, 2)}`);
-        setTransformationResult(null);
-      } else {
-        setTransformationResult(result);
-        setTransformationError(null);
-        log.info("Transformation successful", { result });
-      }
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
-      log.error("Error applying transformer:", error);
-      setTransformationError(`Error: ${errorMessage}`);
-      setTransformationResult(null);
+    // Clear existing timeout
+    if (transformerTimeoutRef.current) {
+      clearTimeout(transformerTimeoutRef.current);
     }
-  }, [currentTransformerDefinition, selectedEntityInstance, currentMiroirModelEnvironment]);
+
+    // Debounce transformer execution
+    transformerTimeoutRef.current = setTimeout(async () => {
+      try {
+        log.info("Applying transformer to instance", {
+          transformer: currentTransformerDefinition,
+          instance: selectedEntityInstance
+        });
+
+        const result: Domain2QueryReturnType<any> = transformer_extended_apply_wrapper(
+          "runtime", // step
+          "TransformerEditor", // label
+          currentTransformerDefinition, // transformer
+          {...currentMiroirModelEnvironment, ...contextResults}, // transformerParams
+          contextResults, // contextResults - pass the instance to transform
+          "value" // resolveBuildTransformersTo
+        );
+
+        // Check for Domain2ElementFailed pattern
+        if (result && typeof result === 'object' && 'queryFailure' in result) {
+          setTransformationError(`Transformation failed: ${safeStringify(result)}`);
+          setTransformationResult(null);
+        } else {
+          setTransformationResult(result);
+          setTransformationError(null);
+          log.info("Transformation successful", { result });
+        }
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        log.error("Error applying transformer:", error);
+        setTransformationError(`Error: ${errorMessage}`);
+        setTransformationResult(null);
+      }
+    }, 300); // 300ms debounce
+  }, [currentTransformerDefinition, selectedEntityInstance, currentMiroirModelEnvironment, contextResults]);
 
   // Apply transformer whenever definition or instance changes
   useEffect(() => {
     applyTransformerToInstance();
+    
+    // Cleanup timeout on unmount
+    return () => {
+      if (transformerTimeoutRef.current) {
+        clearTimeout(transformerTimeoutRef.current);
+      }
+    };
   }, [applyTransformerToInstance]);
+
+  // Memoized transformer entity UUID to avoid recalculation
+  const transformerEntityUuid = useMemo(() => entityDefinitionTransformerDefinition.entityUuid, []);
 
   return (
     <ThemedContainer>
@@ -280,7 +376,6 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
           valueObjectMMLSchema={transformerDefinitionSchema}
           deploymentUuid={deploymentUuid}
           applicationSection={"model"}
-          //
           formLabel={"Transformer Definition Editor"}
           onSubmit={handleTransformerDefinitionChange}
           foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
@@ -290,76 +385,19 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
 
         {/* Bottom Panes: Side by side */}
         <div style={{ display: "flex", gap: "20px", minHeight: "300px" }}>
-          {/* Left Pane: Entity Instance */}
-          <ThemedContainer style={{ flex: 1 }}>
-            <ThemedHeaderSection>
-              <ThemedTitle>
-                Entity Instance ({entityInstances.length} instances available)
-              </ThemedTitle>
-            </ThemedHeaderSection>
-            <ThemedCodeBlock>
-              {selectedEntityInstance
-                ? JSON.stringify(selectedEntityInstance, null, 2)
-                : "No entity instances found"}
-            </ThemedCodeBlock>
-          </ThemedContainer>
-
-          {/* Right Pane: Transformation Result */}
-          <ThemedContainer style={{ flex: 1 }}>
-            <ThemedHeaderSection>
-              <ThemedTitle>
-                Transformation Result
-                {transformationError && (
-                  <span style={{ color: 'red', marginLeft: '10px', fontSize: '0.9em' }}>
-                    ⚠️ Error
-                  </span>
-                )}
-              </ThemedTitle>
-            </ThemedHeaderSection>
-            
-            {transformationError ? (
-              <ThemedCodeBlock>
-                {typeof transformationError === 'string' 
-                  ? transformationError 
-                  : JSON.stringify(transformationError, null, 2)
-                }
-              </ThemedCodeBlock>
-            ) : transformationResult !== null ? (
-              <ThemedCodeBlock>
-                {safeStringify(transformationResult)}
-              </ThemedCodeBlock>
-            ) : selectedEntityInstance ? (
-              <div>
-                <div style={{ marginBottom: '12px', padding: '12px', background: '#f5f5f5', borderRadius: '4px' }}>
-                  <div style={{ marginBottom: '8px', fontWeight: 'bold' }}>No transformation result yet.</div>
-                  <div style={{ marginBottom: '8px' }}>Create a transformer to see the result here.</div>
-                  <div style={{ fontSize: '0.9em', color: '#666' }}>
-                    <div style={{ marginBottom: '4px' }}>Tip: Use contextReference to access the entity instance:</div>
-                  </div>
-                </div>
-                <ThemedCodeBlock>
-                  {JSON.stringify({ 
-                    "transformerType": "contextReference", 
-                    "referenceName": "applyTo" 
-                  }, null, 2)}
-                </ThemedCodeBlock>
-              </div>
-            ) : (
-              <div style={{ padding: '12px', background: '#f5f5f5', borderRadius: '4px' }}>
-                No entity instance available for transformation.
-              </div>
-            )}
-          </ThemedContainer>
+          <EntityInstancePanel
+            entityInstances={entityInstances}
+            selectedEntityInstance={selectedEntityInstance}
+          />
+          <TransformationResultPanel
+            transformationResult={transformationResult}
+            transformationError={transformationError}
+            selectedEntityInstance={selectedEntityInstance}
+          />
         </div>
       </div>
 
-      {/* Debug Panel */}
-      <ThemedContainer style={{ marginTop: "20px" }}>
-        <ThemedHeaderSection>
-          <ThemedTitle>Current Transformer Definition (Debug)</ThemedTitle>
-        </ThemedHeaderSection>
-        <ThemedCodeBlock>{safeStringify(currentTransformerDefinition, 2)}</ThemedCodeBlock>
-      </ThemedContainer>
+      <DebugPanel currentTransformerDefinition={currentTransformerDefinition} />
     </ThemedContainer>
   );
-};
+});

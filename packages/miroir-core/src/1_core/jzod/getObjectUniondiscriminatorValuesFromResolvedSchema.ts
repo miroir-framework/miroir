@@ -1,4 +1,4 @@
-import { JzodElement } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { JzodElement, type JzodObject, type JzodRecord } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { LoggerInterface } from "../../0_interfaces/4-services/LoggerInterface";
 import { MiroirLoggerFactory } from "../../4_services/LoggerFactory";
 import { packageName } from "../../constants";
@@ -29,6 +29,7 @@ export function getObjectUniondiscriminatorValuesFromResolvedSchema(
   resolvedElementJzodSchema: JzodElement | undefined, // is it needed?
   unfoldedRawSchema: JzodElement | undefined, // is it needed?
   recursivelyUnfoldedRawSchemaList: JzodElement[],
+  unionObjectChoices: (JzodObject | JzodRecord)[],
 ): string[][] {
   if (
     resolvedElementJzodSchema?.type == "object"
@@ -152,17 +153,34 @@ export function getObjectUniondiscriminatorValuesFromResolvedSchema(
       return result;
     }
     if (Array.isArray(discriminator)) {
+      log.info(
+        "getObjectUniondiscriminatorValuesFromResolvedSchema processing array discriminator",
+        discriminator,
+        "unionObjectChoices",
+        unionObjectChoices.length
+      );
       const result: string[][] = discriminator.map((disc: string) => {
         return [
           ...new Set(
             // recursivelyUnfoldedRawSchema.result.flatMap((branch: any /** JzodObject */) => {
-            recursivelyUnfoldedRawSchemaList
-            .filter((branch: any /** JzodObject */) => {
+            // recursivelyUnfoldedRawSchemaList
+            unionObjectChoices
+            .filter((branch: any /** JzodObject */, index) => {
               // filter branches that have a discriminator
               // return branch && branch.definition && branch.definition[discriminator];
+              log.info(
+                "getObjectUniondiscriminatorValuesFromResolvedSchema filter processing",
+                index,
+                "disc",
+                disc,
+                "on branch",
+                branch
+              );
+
               return branch && branch.definition;
             })
-            .flatMap((branch: any /** JzodObject */) => {
+            .flatMap((branch: any /** JzodObject */, index) => {
+              if (index == 1) log.info("getObjectUniondiscriminatorValuesFromResolvedSchema flatmap processing disc", disc, "on branch", branch);
               if (!branch || !branch.definition || !branch.definition[disc]) {
                 // ATTENTION:
                 // there can be one object branch without discriminator, the one that will be chosen
@@ -237,6 +255,18 @@ export function getObjectUniondiscriminatorValuesFromResolvedSchema(
         ];
       });
       // log.info("getObjectUniondiscriminatorValuesFromResolvedSchema found ", result);
+      log.info(
+        "getObjectUniondiscriminatorValuesFromResolvedSchema called with resolvedElementJzodSchema:",
+        resolvedElementJzodSchema,
+        "unfoldedRawSchema:",
+        unfoldedRawSchema,
+        // "recursivelyUnfoldedRawSchemaList:",
+        // recursivelyUnfoldedRawSchemaList,
+        "unionObjectChoices",
+        unionObjectChoices,
+        "result:", result
+      );
+
       return result;
     }
     throw new Error(
