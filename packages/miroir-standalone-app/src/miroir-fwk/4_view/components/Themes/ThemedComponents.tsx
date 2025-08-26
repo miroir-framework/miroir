@@ -236,42 +236,22 @@ export const ThemedCodeBlock: React.FC<ThemedComponentProps> = ({
     }
   }, [children, currentTheme.typography.fontSize.sm, currentTheme.spacing.md]);
 
-  // If children is a React element, render it directly with a themed container
-  if (React.isValidElement(children)) {
-    const containerStyles = css({
-      backgroundColor: currentTheme.colors.surface,
-      color: currentTheme.colors.text,
-      border: `1px solid ${currentTheme.colors.border}`,
-      borderRadius: currentTheme.borderRadius.md,
-      overflow: 'hidden',
-      // '& .cm-editor': {
-      //   backgroundColor: `${currentTheme.colors.surface} !important`,
-      //   color: `${currentTheme.colors.text} !important`,
-      // },
-      // '& .cm-content': {
-      //   backgroundColor: `${currentTheme.colors.surface} !important`,
-      //   color: `${currentTheme.colors.text} !important`,
-      //   fontFamily: 'monospace !important',
-      // },
-      // '& .cm-line': {
-      //   color: `${currentTheme.colors.text} !important`,
-      // },
-      // '& .cm-gutters': {
-      //   backgroundColor: `${currentTheme.colors.surface} !important`,
-      //   borderRight: `1px solid ${currentTheme.colors.border} !important`,
-      //   color: `${currentTheme.colors.textSecondary || currentTheme.colors.text} !important`,
-      // },
-      // '& .cm-lineNumbers .cm-gutterElement': {
-      //   color: `${currentTheme.colors.textSecondary || currentTheme.colors.text} !important`,
-      // }
-    });
+  // // If children is a React element, render it directly with a themed container
+  // if (React.isValidElement(children)) {
+  //   const containerStyles = css({
+  //     backgroundColor: currentTheme.colors.surface,
+  //     color: currentTheme.colors.text,
+  //     border: `1px solid ${currentTheme.colors.border}`,
+  //     borderRadius: currentTheme.borderRadius.md,
+  //     overflow: 'hidden',
+  //   });
 
-    return (
-      <div ref={containerRef} css={containerStyles} className={className} style={style}>
-        {children}
-      </div>
-    );
-  }
+  //   return (
+  //     <div ref={containerRef} css={containerStyles} className={className} style={style}>
+  //       {children}
+  //     </div>
+  //   );
+  // }
   
   // For text content, use the original pre-based approach
   const codeStyles = css({

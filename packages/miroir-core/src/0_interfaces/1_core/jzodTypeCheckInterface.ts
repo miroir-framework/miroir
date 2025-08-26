@@ -34,6 +34,7 @@ export interface SelectUnionBranchFromDiscriminatorReturnTypeError {
 export type SelectUnionBranchFromDiscriminatorReturnType = 
   SelectUnionBranchFromDiscriminatorReturnTypeOK | SelectUnionBranchFromDiscriminatorReturnTypeError;
 
+// ################################################################################################
 export interface JzodUnionResolvedTypeForObjectReturnTypeOK {
   status: "ok";
   resolvedJzodObjectSchema: JzodObject;

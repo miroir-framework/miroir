@@ -313,7 +313,7 @@ export type TransformerForBuildPlusRuntime =
         [P in "transformerType" | "interpolation"]?: never;
       }
     )
-  // | TransformerForBuild
+  | TransformerForBuild
   | TransformerForBuildPlusRuntime_menu_addItem
   | TransformerForBuildPlusRuntime_constant
   | TransformerForBuildPlusRuntime_constantArray

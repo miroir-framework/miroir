@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import {
   LoggerInterface,
   MiroirLoggerFactory,
@@ -18,6 +18,8 @@ import {
   type MetaModel,
   type MiroirModelEnvironment,
   getEntityInstancesUuidIndexNonHook,
+  transformer_extended_apply_wrapper,
+  type Domain2QueryReturnType,
 } from 'miroir-core';
 import { Formik, FormikProps } from 'formik';
 
@@ -62,6 +64,28 @@ function safeStringify(obj: any, maxLength: number = 2000): string {
 }
 
 // ################################################################################################
+/**
+ * TransformerEditor allows users to create and test transformers on entity instances.
+ * 
+ * To reference the entity instance in your transformer, use contextReference with one of these names:
+ * - "applyTo" - the standard reference name
+ * - "entityInstance" - explicit entity instance reference
+ * - "instance" - short reference name
+ * - "target" - alternative reference name
+ * - Or use any property name from the entity instance directly (e.g., "uuid", "name", etc.)
+ * 
+ * Example transformer that copies the name field:
+ * {
+ *   "transformerType": "contextReference",
+ *   "referenceName": "applyTo"
+ * }
+ * 
+ * Example transformer that gets the name field specifically:
+ * {
+ *   "transformerType": "contextReference",
+ *   "referenceName": "name"
+ * }
+ */
 export interface TransformerEditorProps {
   deploymentUuid: Uuid;
   entityUuid: Uuid;
@@ -130,8 +154,15 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
   const transformerEntityUuid = entityDefinitionTransformerDefinition.entityUuid;
   
   // Get the transformerForBuildPlusRuntime schema from the fundamental schema
-  const transformerDefinitionSchema: JzodElement =
-    entityDefinitionTransformerDefinition.jzodSchema.definition.transformerImplementation;
+  const transformerDefinitionSchema: JzodElement = {
+    type: "schemaReference",
+    definition: {
+      absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+      relativePath: "transformerForBuildPlusRuntime",
+    },
+  };
+  // const transformerDefinitionSchema: JzodElement =
+  //   entityDefinitionTransformerDefinition.jzodSchema.definition.transformerImplementation;
 
   log.info(
     "TransformerEditor transformerDefinitionSchema",
@@ -164,11 +195,73 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
       // }>({"ROOT": true}); // Initialize with empty key to handle root object folding
     }>({});
   
+  // State for transformation result
+  const [transformationResult, setTransformationResult] = useState<any>(null);
+  const [transformationError, setTransformationError] = useState<string | null>(null);
+  
   // Handle transformer definition changes
-  const handleTransformerDefinitionChange = useCallback((newTransformerDefinition: any) => {
+  const handleTransformerDefinitionChange = useCallback(async (newTransformerDefinition: any) => {
     log.info("handleTransformerDefinitionChange", newTransformerDefinition);
     setCurrentTransformerDefinition(newTransformerDefinition);
   }, []);
+
+  // Apply transformer to selected entity instance
+  const applyTransformerToInstance = useCallback(async () => {
+    if (!currentTransformerDefinition || !selectedEntityInstance) {
+      setTransformationResult(null);
+      setTransformationError(null);
+      return;
+    }
+
+    try {
+      log.info("Applying transformer to instance", {
+        transformer: currentTransformerDefinition,
+        instance: selectedEntityInstance
+      });
+
+      // Provide multiple context keys for different transformer reference patterns
+      const contextResults = {
+        // Standard keys that transformers commonly use
+        // applyTo: selectedEntityInstance,
+        entityInstance: selectedEntityInstance,
+        instance: selectedEntityInstance,
+        target: selectedEntityInstance,
+        // Also provide the actual entity instance data directly
+        ...selectedEntityInstance
+      };
+
+      const result: Domain2QueryReturnType<any> = transformer_extended_apply_wrapper(
+        "runtime", // step
+        "TransformerEditor", // label
+        // currentTransformerDefinition.definition, // transformer
+        currentTransformerDefinition, // transformer
+        {...currentMiroirModelEnvironment, ...contextResults}, // transformerParams
+        contextResults, // contextResults - pass the instance to transform
+        "value" // resolveBuildTransformersTo
+      );
+      log.info("Transformer application result", result);
+
+      // Check for Domain2ElementFailed pattern
+      if (result && typeof result === 'object' && 'queryFailure' in result) {
+        setTransformationError(`Transformation failed: ${JSON.stringify(result, null, 2)}`);
+        setTransformationResult(null);
+      } else {
+        setTransformationResult(result);
+        setTransformationError(null);
+        log.info("Transformation successful", { result });
+      }
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      log.error("Error applying transformer:", error);
+      setTransformationError(`Error: ${errorMessage}`);
+      setTransformationResult(null);
+    }
+  }, [currentTransformerDefinition, selectedEntityInstance, currentMiroirModelEnvironment]);
+
+  // Apply transformer whenever definition or instance changes
+  useEffect(() => {
+    applyTransformerToInstance();
+  }, [applyTransformerToInstance]);
 
   return (
     <ThemedContainer>
@@ -189,7 +282,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
           applicationSection={"model"}
           //
           formLabel={"Transformer Definition Editor"}
-          onSubmit={async ()=>{}}
+          onSubmit={handleTransformerDefinitionChange}
           foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
           setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
           maxRenderDepth={Infinity} // Always render fully for editor
@@ -214,13 +307,48 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
           {/* Right Pane: Transformation Result */}
           <ThemedContainer style={{ flex: 1 }}>
             <ThemedHeaderSection>
-              <ThemedTitle>Transformation Result</ThemedTitle>
+              <ThemedTitle>
+                Transformation Result
+                {transformationError && (
+                  <span style={{ color: 'red', marginLeft: '10px', fontSize: '0.9em' }}>
+                    ⚠️ Error
+                  </span>
+                )}
+              </ThemedTitle>
             </ThemedHeaderSection>
-            <ThemedCodeBlock>
-              {currentTransformerDefinition
-                ? safeStringify(currentTransformerDefinition, 2)
-                : "No transformer definition"}
-            </ThemedCodeBlock>
+            
+            {transformationError ? (
+              <ThemedCodeBlock>
+                {typeof transformationError === 'string' 
+                  ? transformationError 
+                  : JSON.stringify(transformationError, null, 2)
+                }
+              </ThemedCodeBlock>
+            ) : transformationResult !== null ? (
+              <ThemedCodeBlock>
+                {safeStringify(transformationResult)}
+              </ThemedCodeBlock>
+            ) : selectedEntityInstance ? (
+              <div>
+                <div style={{ marginBottom: '12px', padding: '12px', background: '#f5f5f5', borderRadius: '4px' }}>
+                  <div style={{ marginBottom: '8px', fontWeight: 'bold' }}>No transformation result yet.</div>
+                  <div style={{ marginBottom: '8px' }}>Create a transformer to see the result here.</div>
+                  <div style={{ fontSize: '0.9em', color: '#666' }}>
+                    <div style={{ marginBottom: '4px' }}>Tip: Use contextReference to access the entity instance:</div>
+                  </div>
+                </div>
+                <ThemedCodeBlock>
+                  {JSON.stringify({ 
+                    "transformerType": "contextReference", 
+                    "referenceName": "applyTo" 
+                  }, null, 2)}
+                </ThemedCodeBlock>
+              </div>
+            ) : (
+              <div style={{ padding: '12px', background: '#f5f5f5', borderRadius: '4px' }}>
+                No entity instance available for transformation.
+              </div>
+            )}
           </ThemedContainer>
         </div>
       </div>

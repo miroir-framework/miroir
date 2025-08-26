@@ -112,7 +112,7 @@ export type { ResolveBuildTransformersTo, Step } from "./Transformers";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "Transformer")
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "TransformerForRuntime")
 ).then((logger: LoggerInterface) => {log = logger});
 
 // TODO: keep this??
@@ -725,54 +725,42 @@ function resolveApplyTo<T extends MiroirModelEnvironment>(
       return transformer.applyTo;
     }
     case 'object': {
-      if (Array.isArray(transformer.applyTo) || !Object.hasOwn(transformer.applyTo, "referenceType")) {
+      if (Array.isArray(transformer.applyTo) || !Object.hasOwn(transformer.applyTo, "transformerType")) {
         return transformer.applyTo;
       }
-      if (transformer.applyTo.referenceType == "referencedExtractor") {
-        // throw new Error("resolveApplyTo_legacy can not handle referencedExtractor");
-        return new Domain2ElementFailed({
-          queryFailure: "QueryNotExecutable",
-          failureOrigin: ["resolveApplyTo_legacy"],
-          failureMessage: "resolveApplyTo_legacy can not handle referencedExtractor",
-          queryContext: JSON.stringify(transformer),
-          queryParameters: queryParams as any,
-        });
-      }
+      // if (transformer.applyTo.referenceType == "referencedExtractor") {
+      //   // throw new Error("resolveApplyTo_legacy can not handle referencedExtractor");
+      //   return new Domain2ElementFailed({
+      //     queryFailure: "QueryNotExecutable",
+      //     failureOrigin: ["resolveApplyTo_legacy"],
+      //     failureMessage: "resolveApplyTo_legacy can not handle referencedExtractor",
+      //     queryContext: JSON.stringify(transformer),
+      //     queryParameters: queryParams as any,
+      //   });
+      // }
     
-      const transformerReference = transformer.applyTo.reference;
+      // const transformerReference = transformer.applyTo.reference;
     
-      const resolvedReference =
-        typeof transformerReference == "string"
-          ? defaultTransformers.transformer_InnerReference_resolve(
-              step,
-              {
-                transformerType: "contextReference",
-                interpolation: "runtime",
-                referenceName: transformerReference,
-              }, // TODO: there's a bug, count can not be used at build time, although it should be usable at build time
-              resolveBuildTransformersTo,
-              queryParams,
-              contextResults
-            )
-          : defaultTransformers.transformer_extended_apply(
-              step,
-              label,
-              transformerReference,
-              resolveBuildTransformersTo,
-              queryParams,
-              contextResults
-            );
-            // log.info("resolveApplyTo_legacy resolvedReference", resolvedReference);
-      // log.info(
-      //   "resolveApplyTo_legacy resolved for transformer",
-      //   transformer,
-      //   "step",
-      //   step,
-      //   "label",
-      //   label,
-      //   "resolvedReference",
-      //   resolvedReference
-      // );
+      const resolvedReference = defaultTransformers.transformer_extended_apply(
+        step,
+        label,
+        transformer.applyTo,
+        resolveBuildTransformersTo,
+        queryParams,
+        contextResults
+      );
+      log.info(
+        "resolveApplyTo resolved for transformer",
+        transformer,
+        "step",
+        step,
+        "label",
+        label,
+        "resolvedReference",
+        resolvedReference,
+        "contextResults",
+        contextResults
+      );
       return resolvedReference;
       break;
     }
@@ -847,17 +835,17 @@ export function resolveApplyTo_legacy<T extends MiroirModelEnvironment>(
   contextResults: Record<string, any> | undefined,
   label: string | undefined
 ) {
-  // log.info(
-  //   "resolveApplyTo_legacy",
-  //   "label",
-  //   label,
-  //   "called for transformer",
-  //   JSON.stringify(transformer, null, 2),
-  //   "step",
-  //   step,
-  //   "resolveBuildTransformersTo",
-  //   resolveBuildTransformersTo
-  // );
+  log.info(
+    "resolveApplyTo_legacy",
+    "label",
+    label,
+    "called for transformer",
+    JSON.stringify(transformer, null, 2),
+    "step",
+    step,
+    "resolveBuildTransformersTo",
+    resolveBuildTransformersTo
+  );
   switch (typeof transformer.applyTo) {
     case 'string':
     case 'number':
@@ -867,54 +855,41 @@ export function resolveApplyTo_legacy<T extends MiroirModelEnvironment>(
       return transformer.applyTo;
     }
     case 'object': {
-      if (Array.isArray(transformer.applyTo) || !Object.hasOwn(transformer.applyTo, "referenceType")) {
+      if (Array.isArray(transformer.applyTo) || !Object.hasOwn(transformer.applyTo, "transformerType")) {
         return transformer.applyTo;
       }
-      if (transformer.applyTo.referenceType == "referencedExtractor") {
-        // throw new Error("resolveApplyTo_legacy can not handle referencedExtractor");
-        return new Domain2ElementFailed({
-          queryFailure: "QueryNotExecutable",
-          failureOrigin: ["resolveApplyTo_legacy"],
-          failureMessage: "resolveApplyTo_legacy can not handle referencedExtractor",
-          queryContext: JSON.stringify(transformer),
-          queryParameters: queryParams as any,
-        });
-      }
+      // if (transformer.applyTo.referenceType == "referencedExtractor") {
+      //   // throw new Error("resolveApplyTo_legacy can not handle referencedExtractor");
+      //   return new Domain2ElementFailed({
+      //     queryFailure: "QueryNotExecutable",
+      //     failureOrigin: ["resolveApplyTo_legacy"],
+      //     failureMessage: "resolveApplyTo_legacy can not handle referencedExtractor",
+      //     queryContext: JSON.stringify(transformer),
+      //     queryParameters: queryParams as any,
+      //   });
+      // }
     
-      const transformerReference = transformer.applyTo.reference;
+      // const transformerReference = transformer.applyTo.reference;
     
-      const resolvedReference =
-        typeof transformerReference == "string"
-          ? defaultTransformers.transformer_InnerReference_resolve(
-              step,
-              {
-                transformerType: "contextReference",
-                interpolation: "runtime",
-                referenceName: transformerReference,
-              }, // TODO: there's a bug, count can not be used at build time, although it should be usable at build time
-              resolveBuildTransformersTo,
-              queryParams,
-              contextResults
-            )
-          : defaultTransformers.transformer_extended_apply(
-              step,
-              label,
-              transformerReference,
-              resolveBuildTransformersTo,
-              queryParams,
-              contextResults
-            );
+      const resolvedReference = defaultTransformers.transformer_extended_apply(
+        step,
+        label,
+        transformer.applyTo,
+        resolveBuildTransformersTo,
+        queryParams,
+        contextResults
+      );
             // log.info("resolveApplyTo_legacy resolvedReference", resolvedReference);
-      // log.info(
-      //   "resolveApplyTo_legacy resolved for transformer",
-      //   transformer,
-      //   "step",
-      //   step,
-      //   "label",
-      //   label,
-      //   "resolvedReference",
-      //   resolvedReference
-      // );
+      log.info(
+        "resolveApplyTo_legacy resolved for transformer",
+        transformer,
+        "step",
+        step,
+        "label",
+        label,
+        "resolvedReference",
+        resolvedReference
+      );
       return resolvedReference;
       break;
     }
@@ -2512,7 +2487,6 @@ export function innerTransformer_array_apply<T extends MiroirModelEnvironment>(
 export function transformer_extended_apply<T extends MiroirModelEnvironment>(
   step: Step,
   label: string | undefined,
-  // transformer: TransformerForBuild | TransformerForRuntime | ExtendedTransformerForRuntime | undefined,
   transformer:
     | TransformerForBuild
     | TransformerForRuntime
@@ -2520,11 +2494,9 @@ export function transformer_extended_apply<T extends MiroirModelEnvironment>(
     | TransformerForBuildPlusRuntime
     | undefined,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
-  // queryParams: Record<string, any>,
   transformerParams: T,
   contextResults?: Record<string, any>
 ): Domain2QueryReturnType<any> {
-  // ): Domain2QueryReturnType<DomainElementSuccess> {
   log.info(
     "transformer_extended_apply called for label",
     label,
@@ -2933,12 +2905,13 @@ export function transformer_extended_apply_wrapper<T extends MiroirModelEnvironm
       transformerParams,
       contextResults,
     );
-    // log.info(
-    //   "transformer_extended_apply_wrapper called for",
-    //   label,
-    //   "transformer_extended_apply result",
-    //   JSON.stringify(result, null, 2),
-    // );  
+    log.info(
+      "transformer_extended_apply_wrapper called for",
+      label,
+      "transformer_extended_apply result",
+      result
+      // JSON.stringify(result, null, 2),
+    );  
     if (result instanceof Domain2ElementFailed) {
       log.error(
         "transformer_extended_apply_wrapper failed for",

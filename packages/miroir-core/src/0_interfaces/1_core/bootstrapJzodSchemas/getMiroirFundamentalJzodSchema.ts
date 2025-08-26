@@ -761,7 +761,7 @@ export function getMiroirFundamentalJzodSchema(
         transformerForBuild_constantArray: miroirTransformersForBuild.transformer_constantArray,
         transformerForBuild_constantAsExtractor:
           miroirTransformersForBuild.transformer_constantAsExtractor,
-        // transformerForBuild_contextReference: miroirTransformersForBuild.transformer_contextReference,
+        transformerForBuild_contextReference: miroirTransformersForBuild.transformer_contextReference,
         transformerForBuild_count: miroirTransformersForBuild.transformer_count,
         transformerForBuild_dataflowObject: miroirTransformersForBuild.transformer_dataflowObject,
         transformerForBuild_mapperListToList:

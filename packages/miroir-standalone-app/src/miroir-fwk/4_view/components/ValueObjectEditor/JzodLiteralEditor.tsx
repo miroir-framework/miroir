@@ -32,6 +32,13 @@ import {
   ThemedDisplayValue
 } from "../Themes/ThemedComponents";
 
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "JzodLiteralEditor")
+).then((logger: LoggerInterface) => {
+  log = logger;
+});
+
 // Common function to handle discriminator changes
 const handleDiscriminatorChange = (
   selectedValue: string,
@@ -240,12 +247,6 @@ const handleDiscriminatorChange = (
   }
 };
 
-let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "JzodLiteralEditor")
-).then((logger: LoggerInterface) => {
-  log = logger;
-});
 
 // ################################################################################################
 // ################################################################################################
@@ -379,18 +380,18 @@ export const JzodLiteralEditor: FC<JzodLiteralEditorProps> =  (
   const currentDiscriminatorValues = parentKeyMap?.discriminatorValues && discriminatorIndex !== -1
     ? parentKeyMap.discriminatorValues[discriminatorIndex]
     : [];
-  log.info(
-    "JzodLiteralEditor render",
-    JzodLiteralEditorRenderCount,
-    "rootLessListKey",
-    rootLessListKey,
-    "parentKeyMap?.discriminator",
-    parentKeyMap?.discriminator,
-    "parentKeyMap?.discriminatorValues",
-    parentKeyMap?.discriminatorValues,
-    "currentDiscriminatorValues",
-    currentDiscriminatorValues,
-  );
+  // log.info(
+  //   "JzodLiteralEditor render",
+  //   JzodLiteralEditorRenderCount,
+  //   "rootLessListKey",
+  //   rootLessListKey,
+  //   "parentKeyMap?.discriminator",
+  //   parentKeyMap?.discriminator,
+  //   "parentKeyMap?.discriminatorValues",
+  //   parentKeyMap?.discriminatorValues,
+  //   "currentDiscriminatorValues",
+  //   currentDiscriminatorValues,
+  // );
   // Memoize discriminator values for better rendering performance
   const discriminatorMenuItems = useMemo(() => {
     if (isDiscriminator && parentKeyMap?.discriminatorValues) {

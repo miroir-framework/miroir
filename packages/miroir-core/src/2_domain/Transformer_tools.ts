@@ -51,19 +51,25 @@ export function transformerInterfaceFromDefinition(
   optionalInterpolation: boolean = false
 ): JzodElement {
   let innerReferenceRelativePath:
-    | "transformer_inner_referenced_transformerForBuild"
-    | "transformer_inner_referenced_transformerForRuntime"
-    | "transformer_inner_referenced_transformerForBuildPlusRuntime"
+    | "transformerForBuild"
+    | "transformerForRuntime"
+    | "transformerForBuildPlusRuntime"
+    // | "transformer_inner_referenced_transformerForBuild"
+    // | "transformer_inner_referenced_transformerForRuntime"
+    // | "transformer_inner_referenced_transformerForBuildPlusRuntime"
     | undefined = undefined;
   switch (target) {
     case "build":
-      innerReferenceRelativePath = "transformer_inner_referenced_transformerForBuild";
+      // innerReferenceRelativePath = "transformer_inner_referenced_transformerForBuild";
+      innerReferenceRelativePath = "transformerForBuild";
       break;
     case "runtime":
-      innerReferenceRelativePath = "transformer_inner_referenced_transformerForRuntime";
+      // innerReferenceRelativePath = "transformer_inner_referenced_transformerForRuntime";
+      innerReferenceRelativePath = "transformerForRuntime";
       break;
     case "buildPlusRuntime":
-      innerReferenceRelativePath = "transformer_inner_referenced_transformerForBuildPlusRuntime";
+      // innerReferenceRelativePath = "transformer_inner_referenced_transformerForBuildPlusRuntime";
+      innerReferenceRelativePath = "transformerForBuildPlusRuntime";
       break;
     default:
       throw new Error(`Unknown target: ${target}`);
@@ -73,22 +79,22 @@ export function transformerInterfaceFromDefinition(
     transformerDefinition.transformerInterface.transformerParameterSchema
       .transformerDefinition.definition as any
   ).applyTo?{
-    type: "union",
-    discriminator: "referenceType",
-    definition: [
-      (
-        transformerDefinition.transformerInterface.transformerParameterSchema
-          .transformerDefinition.definition as any
-      ).applyTo,
-      {
-        type: "schemaReference",
-        definition: {
-          relativePath: innerReferenceRelativePath,
-          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-        },
-        context: {},
-      },
-    ],
+    // type: "union",
+    // discriminator: "referenceType",
+    // definition: [
+    //   (
+    //     transformerDefinition.transformerInterface.transformerParameterSchema
+    //       .transformerDefinition.definition as any
+    //   ).applyTo,
+    //   {
+    type: "schemaReference",
+    definition: {
+      relativePath: innerReferenceRelativePath,
+      absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+    },
+    context: {}
+      // },
+    // ],
   }: { type: "never"};
 
   const newDefinition = substituteTransformerReferencesInJzodElement<JzodObject>(
