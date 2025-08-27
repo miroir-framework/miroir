@@ -201,6 +201,47 @@ export const ThemedSelect: React.FC<ThemedComponentProps & {
       }
     }, [isOpen, updateDropdownPosition]);
 
+    // Handle input text changes
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const newFilterText = e.target.value;
+      setFilterText(newFilterText);
+      
+      // If the dropdown isn't open, open it
+      if (!isOpen) {
+        setIsOpen(true);
+        updateDropdownPosition();
+      }
+      
+      // Reset highlighted index when filter changes
+      setHighlightedIndex(-1);
+    };
+
+    // Handle input focus
+    const handleInputFocus = () => {
+      if (!isOpen) {
+        openDropdown();
+        // Select all text if there's a current value to make it easy to replace
+        if (inputRef.current && displayText) {
+          setTimeout(() => {
+            inputRef.current?.select();
+          }, 0);
+        }
+      }
+    };
+
+    // Handle input click
+    const handleInputClick = () => {
+      if (!isOpen) {
+        openDropdown();
+        // Select all text if there's a current value to make it easy to replace
+        if (inputRef.current && displayText) {
+          setTimeout(() => {
+            inputRef.current?.select();
+          }, 0);
+        }
+      }
+    };
+
     // Get display text for selected value
     const selectedOption = options.find(opt => opt.value === value);
     const displayText = selectedOption ? selectedOption.label : value || '';
@@ -275,6 +316,22 @@ export const ThemedSelect: React.FC<ThemedComponentProps & {
             setTimeout(() => setHighlightedIndex(filteredOptions.length - 1), 0);
           }
         }
+      } else if (event.key === 'Backspace' || event.key === 'Delete') {
+        // Allow editing by opening dropdown when user tries to delete
+        if (!isOpen) {
+          setIsOpen(true);
+          setFilterText('');
+          updateDropdownPosition();
+        }
+      } else if (event.key.length === 1 && !event.ctrlKey && !event.altKey && !event.metaKey) {
+        // User is typing a character - open dropdown and start filtering
+        if (!isOpen) {
+          setIsOpen(true);
+          setFilterText(event.key);
+          setHighlightedIndex(-1);
+          updateDropdownPosition();
+          event.preventDefault(); // Prevent double character
+        }
       }
     };
 
@@ -307,15 +364,22 @@ export const ThemedSelect: React.FC<ThemedComponentProps & {
       line-height: 1.4;
       
       cursor: pointer;
+      user-select: text;
       
       &:focus {
         border-color: ${currentTheme.colors.primary} !important;
         outline: none !important;
         box-shadow: 0 0 0 2px ${currentTheme.colors.primary}20 !important;
+        cursor: text;
       }
       
       &:hover {
         background-color: ${currentTheme.colors.hover || currentTheme.colors.surfaceVariant} !important;
+      }
+      
+      &::selection {
+        background-color: ${currentTheme.colors.primary}40;
+        color: ${currentTheme.colors.text};
       }
     `;
 
@@ -389,11 +453,18 @@ export const ThemedSelect: React.FC<ThemedComponentProps & {
           css={inputStyles}
           type="text"
           value={isOpen ? filterText : displayText}
-          onChange={(e) => setFilterText(e.target.value)}
-          onFocus={openDropdown}
+          onChange={handleInputChange}
+          onFocus={handleInputFocus}
+          onClick={handleInputClick}
           onKeyDown={handleInputKeyDown}
           placeholder={isOpen ? filterPlaceholder : placeholder}
           autoComplete="off"
+          spellCheck={false}
+          autoCorrect="off"
+          autoCapitalize="off"
+          role="combobox"
+          aria-expanded={isOpen}
+          aria-haspopup="listbox"
           {...props}
         />
         
