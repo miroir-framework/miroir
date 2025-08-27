@@ -46,6 +46,7 @@ export const ThemedSelect: React.FC<ThemedComponentProps & {
   placeholder?: string;
   filterPlaceholder?: string;
   allowCustomValue?: boolean;
+  navigateWithoutOpening?: boolean;
 }> = ({ 
   children, 
   className, 
@@ -60,6 +61,7 @@ export const ThemedSelect: React.FC<ThemedComponentProps & {
   placeholder = 'Select an option...',
   filterPlaceholder = 'Type to filter...',
   allowCustomValue = false,
+  navigateWithoutOpening = false,
   ...props 
 }) => {
   const { currentTheme } = useMiroirTheme();
@@ -69,9 +71,11 @@ export const ThemedSelect: React.FC<ThemedComponentProps & {
     const [isOpen, setIsOpen] = useState(false);
     const [filterText, setFilterText] = useState('');
     const [filteredOptions, setFilteredOptions] = useState(options);
+    const [highlightedIndex, setHighlightedIndex] = useState(-1);
     const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0, width: 0 });
     const containerRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
+    const dropdownRef = useRef<HTMLDivElement>(null);
 
     // Calculate dropdown position when opening
     const updateDropdownPosition = useCallback(() => {
@@ -89,6 +93,7 @@ export const ThemedSelect: React.FC<ThemedComponentProps & {
     const openDropdown = useCallback(() => {
       setIsOpen(true);
       setFilterText('');
+      setHighlightedIndex(-1);
       updateDropdownPosition();
     }, [updateDropdownPosition]);
 
@@ -131,20 +136,44 @@ export const ThemedSelect: React.FC<ThemedComponentProps & {
         );
         setFilteredOptions(filtered);
       }
+      // Reset highlighted index when options change
+      setHighlightedIndex(-1);
     }, [filterText, options]);
+
+    // Scroll highlighted option into view
+    useEffect(() => {
+      if (highlightedIndex >= 0 && dropdownRef.current) {
+        const optionElements = dropdownRef.current.querySelectorAll('[data-dropdown-option="true"]');
+        const highlightedElement = optionElements[highlightedIndex] as HTMLElement;
+        if (highlightedElement) {
+          highlightedElement.scrollIntoView({
+            block: 'nearest',
+            behavior: 'smooth'
+          });
+        }
+      }
+    }, [highlightedIndex]);
 
     // Close dropdown when clicking outside
     useEffect(() => {
       const handleClickOutside = (event: MouseEvent) => {
         if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-          setIsOpen(false);
-          setFilterText('');
+          // Check if the click was on a dropdown option (which is portaled to body)
+          const target = event.target as Element;
+          const isDropdownOption = target.closest('[data-dropdown-option]');
+          
+          if (!isDropdownOption) {
+            setIsOpen(false);
+            setFilterText('');
+          }
         }
       };
 
-      document.addEventListener('mousedown', handleClickOutside);
-      return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, []);
+      if (isOpen) {
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+      }
+    }, [isOpen]);
 
     // Update position when dropdown opens
     useEffect(() => {
@@ -176,8 +205,11 @@ export const ThemedSelect: React.FC<ThemedComponentProps & {
     const selectedOption = options.find(opt => opt.value === value);
     const displayText = selectedOption ? selectedOption.label : value || '';
 
-    const handleOptionClick = (optionValue: string) => {
+    const handleOptionClick = (optionValue: string, event?: React.MouseEvent) => {
+      // console.log('ThemedSelect: Option clicked:', optionValue, event?.type);
+      
       if (onChange) {
+        // console.log('ThemedSelect: Calling onChange with value:', optionValue);
         const syntheticEvent = {
           target: { value: optionValue },
           currentTarget: { value: optionValue }
@@ -186,12 +218,17 @@ export const ThemedSelect: React.FC<ThemedComponentProps & {
       }
       setIsOpen(false);
       setFilterText('');
+      setHighlightedIndex(-1);
     };
 
     const handleInputKeyDown = (event: React.KeyboardEvent) => {
       if (event.key === 'Enter') {
         event.preventDefault();
-        if (filteredOptions.length > 0) {
+        if (highlightedIndex >= 0 && highlightedIndex < filteredOptions.length) {
+          // Select the highlighted option
+          handleOptionClick(filteredOptions[highlightedIndex].value);
+        } else if (filteredOptions.length > 0) {
+          // Select the first option if nothing is highlighted
           handleOptionClick(filteredOptions[0].value);
         } else if (allowCustomValue && filterText.trim()) {
           handleOptionClick(filterText.trim());
@@ -199,10 +236,44 @@ export const ThemedSelect: React.FC<ThemedComponentProps & {
       } else if (event.key === 'Escape') {
         setIsOpen(false);
         setFilterText('');
+        setHighlightedIndex(-1);
       } else if (event.key === 'ArrowDown') {
         event.preventDefault();
         if (!isOpen) {
-          openDropdown();
+          if (navigateWithoutOpening) {
+            // Navigate through options without opening dropdown
+            const currentIndex = filteredOptions.findIndex(opt => opt.value === value);
+            const nextIndex = currentIndex < filteredOptions.length - 1 ? currentIndex + 1 : 0;
+            if (filteredOptions[nextIndex]) {
+              handleOptionClick(filteredOptions[nextIndex].value);
+            }
+          } else {
+            openDropdown();
+          }
+        } else {
+          // Navigate down in the options list
+          const nextIndex = highlightedIndex < filteredOptions.length - 1 ? highlightedIndex + 1 : 0;
+          setHighlightedIndex(nextIndex);
+        }
+      } else if (event.key === 'ArrowUp') {
+        event.preventDefault();
+        if (isOpen) {
+          // Navigate up in the options list
+          const prevIndex = highlightedIndex > 0 ? highlightedIndex - 1 : filteredOptions.length - 1;
+          setHighlightedIndex(prevIndex);
+        } else {
+          if (navigateWithoutOpening) {
+            // Navigate through options without opening dropdown
+            const currentIndex = filteredOptions.findIndex(opt => opt.value === value);
+            const prevIndex = currentIndex > 0 ? currentIndex - 1 : filteredOptions.length - 1;
+            if (filteredOptions[prevIndex]) {
+              handleOptionClick(filteredOptions[prevIndex].value);
+            }
+          } else {
+            // If closed, open the dropdown and will highlight the last option
+            openDropdown();
+            setTimeout(() => setHighlightedIndex(filteredOptions.length - 1), 0);
+          }
         }
       }
     };
@@ -284,6 +355,25 @@ export const ThemedSelect: React.FC<ThemedComponentProps & {
       }
     `;
 
+    const getOptionStyles = (isHighlighted: boolean) => css`
+      padding: ${currentTheme.spacing.sm};
+      cursor: pointer;
+      font-family: ${currentTheme.typography.fontFamily};
+      font-size: ${currentTheme.typography.fontSize.md};
+      color: ${currentTheme.colors.text};
+      white-space: nowrap;
+      background-color: ${isHighlighted ? (currentTheme.colors.hover || currentTheme.colors.surfaceVariant) : 'transparent'};
+      
+      &:hover {
+        background-color: ${currentTheme.colors.hover || currentTheme.colors.surfaceVariant};
+      }
+      
+      &:active {
+        background-color: ${currentTheme.colors.selected || currentTheme.colors.primary};
+        color: ${currentTheme.colors.background};
+      }
+    `;
+
     const noResultsStyles = css`
       padding: ${currentTheme.spacing.sm};
       color: ${currentTheme.colors.textSecondary || currentTheme.colors.text};
@@ -308,13 +398,19 @@ export const ThemedSelect: React.FC<ThemedComponentProps & {
         />
         
         {isOpen && createPortal(
-          <div css={dropdownStyles}>
+          <div ref={dropdownRef} css={dropdownStyles}>
             {filteredOptions.length > 0 ? (
-              filteredOptions.map((option) => (
+              filteredOptions.map((option, index) => (
                 <div
                   key={option.value}
-                  css={optionStyles}
-                  onClick={() => handleOptionClick(option.value)}
+                  css={getOptionStyles(index === highlightedIndex)}
+                  data-dropdown-option="true"
+                  onMouseDown={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleOptionClick(option.value, e);
+                  }}
+                  onMouseEnter={() => setHighlightedIndex(index)}
                 >
                   {option.label}
                 </div>

@@ -535,9 +535,6 @@ export function getDefaultValueForJzodSchemaWithResolutionNonHook<T extends Miro
   forceOptional: boolean = false,
   deploymentUuid: Uuid | undefined,
   miroirEnvironment: T,
-  // miroirFundamentalJzodSchema: JzodSchema,
-  // currentModel?: MetaModel,
-  // miroirMetaModel?: MetaModel,
   relativeReferenceJzodContext?: { [k: string]: JzodElement },
 ): any {
   log.info(
@@ -570,9 +567,6 @@ export function getDefaultValueForJzodSchemaWithResolutionNonHook<T extends Miro
       forceOptional,
       undefined,
       miroirEnvironment,
-      // miroirFundamentalJzodSchema,
-      // currentModel,
-      // miroirMetaModel,
       relativeReferenceJzodContext,
     );
   }
@@ -587,9 +581,6 @@ export function getDefaultValueForJzodSchemaWithResolutionNonHook<T extends Miro
     forceOptional,
     deploymentUuid,
     miroirEnvironment,
-    // miroirFundamentalJzodSchema,
-    // currentModel,
-    // miroirMetaModel,
     relativeReferenceJzodContext,
   );
 }
@@ -600,7 +591,6 @@ export function defaultValueForMLSchemaTransformer<T extends MiroirModelEnvironm
   transformer: TransformerForRuntime_defaultValueForMLSchema,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   transformerParams: T,
-  // queryParams: Record<string, any>,
   contextResults?: Record<string, any>
 ): any {
   const result = getDefaultValueForJzodSchemaWithResolutionNonHook(
@@ -616,16 +606,16 @@ export function defaultValueForMLSchemaTransformer<T extends MiroirModelEnvironm
     undefined, // relativeReferenceJzodContext
     // miroirFundamentalJzodSchema as JzodSchema,
   );
-  log.info(
-    "defaultValueForMLSchemaTransformer called with",
-    "step", step,
-    "label", label,
-    "transformer", transformer,
-    "resolveBuildTransformersTo", resolveBuildTransformersTo,
-    "transformerParams", transformerParams,
-    "contextResults", contextResults,
-    "result", result
-  );
+  // log.info(
+  //   "defaultValueForMLSchemaTransformer called with",
+  //   "step", step,
+  //   "label", label,
+  //   "transformer", transformer,
+  //   "resolveBuildTransformersTo", resolveBuildTransformersTo,
+  //   "transformerParams", transformerParams,
+  //   "contextResults", contextResults,
+  //   "result", result
+  // );
   return result;
 }
 

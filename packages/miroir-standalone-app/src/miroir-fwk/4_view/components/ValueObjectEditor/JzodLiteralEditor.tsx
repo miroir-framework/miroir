@@ -1,15 +1,13 @@
 import { useFormikContext } from "formik";
-import React, { FC, useCallback, useMemo, type Key } from "react";
+import React, { FC, useCallback, useMemo } from "react";
 
 
 import {
   adminConfigurationDeploymentMiroir,
-  getDefaultValueForJzodSchemaWithResolution,
   getDefaultValueForJzodSchemaWithResolutionNonHook,
   JzodElement,
   JzodEnum,
   JzodLiteral,
-  JzodObject,
   jzodUnionResolvedTypeForObject,
   LoggerInterface,
   MetaModel,
@@ -18,19 +16,19 @@ import {
   resolvePathOnObject,
   type JzodSchema,
   type KeyMapEntry,
-  type MiroirModelEnvironment,
+  type MiroirModelEnvironment
 } from "miroir-core";
 
 import { packageName } from "../../../../constants";
 import { cleanLevel } from "../../constants";
 import { useMiroirContextService } from "../../MiroirContextReactProvider";
 import { useCurrentModel } from "../../ReduxHooks";
-import { JzodLiteralEditorProps } from "./JzodElementEditorInterface";
-import { 
-  ThemedLabeledEditor, 
-  ThemedSelect,
-  ThemedDisplayValue
+import {
+  ThemedDisplayValue,
+  ThemedLabeledEditor,
+  ThemedSelect
 } from "../Themes/index";
+import { JzodLiteralEditorProps } from "./JzodElementEditorInterface";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -463,20 +461,20 @@ export const JzodLiteralEditor: FC<JzodLiteralEditorProps> =  (
     }
     return [];
   }, [isDiscriminator, currentDiscriminatorValues]);
-  log.info(
-    "JzodLiteralEditor render",
-    JzodLiteralEditorRenderCount,
-    "rootLessListKey",
-    rootLessListKey,
-    readOnly ? "readOnly" : "editable",
-    isDiscriminator ? "discriminator" : "not discriminator",
-    "currentValue",
-    currentValue,
-    "parentKeyMap.discriminator",
-    parentKeyMap?.discriminator,
-    "parentKeyMap.discriminatorValues",
-    parentKeyMap?.discriminatorValues,
-  );
+  // log.info(
+  //   "JzodLiteralEditor render",
+  //   JzodLiteralEditorRenderCount,
+  //   "rootLessListKey",
+  //   rootLessListKey,
+  //   readOnly ? "readOnly" : "editable",
+  //   isDiscriminator ? "discriminator" : "not discriminator",
+  //   "currentValue",
+  //   currentValue,
+  //   "parentKeyMap.discriminator",
+  //   parentKeyMap?.discriminator,
+  //   "parentKeyMap.discriminatorValues",
+  //   parentKeyMap?.discriminatorValues,
+  // );
   return (
     <ThemedLabeledEditor
       labelElement={labelElement ?? <></>}
