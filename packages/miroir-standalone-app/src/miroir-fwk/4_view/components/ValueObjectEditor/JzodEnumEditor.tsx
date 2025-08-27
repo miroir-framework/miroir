@@ -121,6 +121,44 @@ export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
     }
   }, [isDiscriminator, parentKeyMap, rawJzodSchema, rootLessListKey]);
 
+  // Memoize the select options for the filterable select
+  const selectOptions = useMemo(() => {
+    if (isDiscriminator && parentKeyMap?.discriminatorValues) {
+      return currentDiscriminatorValues.sort().map((v) => ({
+        value: v,
+        label: v
+      }));
+    } else {
+      return (currentEnumSchema?.type == "enum" ? currentEnumSchema.definition : []).map((v) => ({
+        value: v,
+        label: v
+      }));
+    }
+  }, [isDiscriminator, parentKeyMap, currentEnumSchema, currentDiscriminatorValues]);
+
+  // Handler for the new filterable select component
+  const handleFilterableSelectEnumChange = useCallback((event: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedValue = event.target.value;
+    if (isDiscriminator) {
+      handleDiscriminatorChange(
+        selectedValue,
+        "enum",
+        parentKeyMap,
+        rootLessListKey,
+        rootLessListKeyArray,
+        currentDeploymentUuid,
+        currentMiroirFundamentalJzodSchema,
+        currentModel,
+        miroirMetaModel,
+        formik,
+        log
+      );
+    } else {
+      // For non-discriminator enums, just set the field value
+      formik.setFieldValue(rootLessListKey, selectedValue);
+    }
+  }, [isDiscriminator, parentKeyMap, rootLessListKey, rootLessListKeyArray, currentDeploymentUuid, currentMiroirFundamentalJzodSchema, currentModel, miroirMetaModel, formik]);
+
   const editor = useMemo(() => {
     if (readOnly) {
       const currentValue = formik.getFieldProps(rootLessListKey).value;
@@ -128,32 +166,33 @@ export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
     }
     
     if (currentEnumSchema?.type === "enum") {
+      const currentValue = formik.getFieldProps(rootLessListKey).value;
+      
       return (
         <div>
           {isDiscriminator ? (
             <>
               <ThemedSelect
-                id={rootLessListKey}
-                aria-label={rootLessListKey}
-                variant="standard"
-                {...formik.getFieldProps(rootLessListKey)}
-                name={rootLessListKey}
-                onChange={handleSelectEnumChange}
-              >
-                {menuItems}
-              </ThemedSelect>
-              (enum discriminator)
+                filterable={true}
+                options={selectOptions}
+                value={currentValue}
+                onChange={handleFilterableSelectEnumChange}
+                placeholder={`Select ${name}...`}
+                filterPlaceholder="Type to filter options..."
+                minWidth="200px"
+              />
+              <span style={{ fontSize: '1.2em', color: '#696969' }} title="Enum discriminator">★</span>
             </>
           ) : (
             <ThemedSelect
-              id={rootLessListKey}
-              aria-label={rootLessListKey}
-              variant="standard"
-              {...formik.getFieldProps(rootLessListKey)}
-              name={rootLessListKey}
-            >
-              {menuItems}
-            </ThemedSelect>
+              filterable={true}
+              options={selectOptions}
+              value={currentValue}
+              onChange={handleFilterableSelectEnumChange}
+              placeholder={`Select ${name}...`}
+              filterPlaceholder="Type to filter options..."
+              minWidth="200px"
+            />
           )}
           {forceTestingMode ? (
             <div>enumValues={JSON.stringify((rawJzodSchema as JzodEnum).definition)}</div>

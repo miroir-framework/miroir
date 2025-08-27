@@ -296,7 +296,6 @@ const ProgressiveAttribute: FC<{
             rootLessListKeyArray={[...rootLessListKeyArray, attribute[0]]}
             indentLevel={usedIndentLevel + 1}
             currentDeploymentUuid={currentDeploymentUuid}
-            // rawJzodSchema={attributeRawJzodSchema}
             typeCheckKeyMap={typeCheckKeyMap}
             currentApplicationSection={currentApplicationSection}
             resolvedElementJzodSchema={currentAttributeDefinition}

@@ -23,6 +23,7 @@ import {
   miroirFundamentalJzodSchema,
   type JzodSchema,
   type MiroirModelEnvironment,
+  type KeyMapEntry,
   // unfoldJzodSchemaOnce,
   // UnfoldJzodSchemaOnceReturnType,
   // UnfoldJzodSchemaOnceReturnTypeOK
@@ -129,14 +130,12 @@ interface ProgressiveArrayItemProps {
   // currentArrayElementRawDefinition: UnfoldJzodSchemaOnceReturnTypeOK;
   currentArrayElementRawDefinition: JzodElement | undefined;
   resolvedElementJzodSchema: JzodElement | undefined;
-  typeCheckKeyMap?: Record<string, { rawSchema: JzodElement; resolvedSchema: JzodElement }>;
+  typeCheckKeyMap?: Record<string, KeyMapEntry>;
   usedIndentLevel: number;
   currentDeploymentUuid: string | undefined;
   currentApplicationSection: string | undefined;
-  // localRootLessListKeyMap: any;
   foreignKeyObjects: any;
   insideAny: boolean | undefined;
-  // parentUnfoldedRawSchema: any;
   itemsOrder: number[];
   formik: FormikContextType<Record<string, any>>;
   currentValue: any;

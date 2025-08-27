@@ -369,6 +369,44 @@ export const JzodLiteralEditor: FC<JzodLiteralEditorProps> =  (
     ]
   );
 
+  // Handler for the new filterable select component
+  const handleFilterableSelectChange = useCallback(
+    (event: React.ChangeEvent<HTMLSelectElement>) => {
+      if (!isDiscriminator) {
+        throw new Error(
+          "handleFilterableSelectChange called but this literal is not a discriminator!"
+        );
+      }
+      if (!parentKeyMap) {
+        throw new Error(
+          "handleFilterableSelectChange called but current object does not have information about the discriminated union type it must be part of!"
+        );
+      }
+      handleDiscriminatorChange(
+        event.target.value,
+        "literal",
+        parentKeyMap,
+        rootLessListKey,
+        rootLessListKeyArray,
+        currentDeploymentUuid,
+        currentMiroirModelEnvironment,
+        formik,
+        log
+      );
+    },
+    [
+      parentKeyMap,
+      rootLessListKey,
+      rootLessListKeyArray,
+      currentDeploymentUuid,
+      currentMiroirFundamentalJzodSchema,
+      currentModel,
+      miroirMetaModel,
+      formik.values,
+      currentValue
+    ]
+  );
+
   // log.info(
   //   "JzodLiteralEditor render",
   //   JzodLiteralEditorRenderCount,
@@ -404,6 +442,17 @@ export const JzodLiteralEditor: FC<JzodLiteralEditorProps> =  (
     }
     return null;
   }, [isDiscriminator, currentKeyMap]);
+
+  // Memoize discriminator options for the filterable select
+  const discriminatorSelectOptions = useMemo(() => {
+    if (isDiscriminator && parentKeyMap?.discriminatorValues) {
+      return currentDiscriminatorValues.sort().map((v) => ({
+        value: v,
+        label: v
+      }));
+    }
+    return [];
+  }, [isDiscriminator, currentDiscriminatorValues]);
   log.info(
     "JzodLiteralEditor render",
     JzodLiteralEditorRenderCount,
@@ -430,15 +479,15 @@ export const JzodLiteralEditor: FC<JzodLiteralEditorProps> =  (
         ) : isDiscriminator ? (
           <>
             <ThemedSelect
-              id={rootLessListKey}
-              label={name}
-              variant="standard"
-              {...formik.getFieldProps(rootLessListKey)}
-              onChange={handleSelectLiteralChange}
-            >
-              {discriminatorMenuItems}
-            </ThemedSelect>
-            (literal discriminator)
+              filterable={true}
+              options={discriminatorSelectOptions}
+              value={currentValue}
+              onChange={handleFilterableSelectChange}
+              placeholder={`Select ${name}...`}
+              filterPlaceholder="Type to filter options..."
+              minWidth="200px"
+            />
+            <span style={{ fontSize: '1.2em', color: '#87CEEB' }} title="Literal discriminator">★</span>
           </>
         ) : (
           <>

@@ -477,24 +477,7 @@ function sqlStringForApplyTo(
             "sqlStringForRuntimeTransformer sqlStringForApplyTo implemented only for contextReference type: " + JSON.stringify(actionRuntimeTransformer.applyTo),
         });
       }
-      const referenceQuery =
-        // typeof actionRuntimeTransformer.applyTo.reference == "string"
-        //   ? sqlStringForRuntimeTransformer(
-        //       // shouldn't this be a contextReference instead?
-        //       {
-        //         transformerType: "constant",
-        //         interpolation: "runtime",
-        //         value: actionRuntimeTransformer.applyTo.reference as any,
-        //       },
-        //       preparedStatementParametersIndex,
-        //       indentLevel,
-        //       queryParams,
-        //       definedContextEntries,
-        //       useAccessPathForContextReference,
-        //       topLevelTransformer
-        //     )
-          // : 
-          sqlStringForRuntimeTransformer(
+      const referenceQuery = sqlStringForRuntimeTransformer(
               actionRuntimeTransformer.applyTo,
               preparedStatementParametersIndex,
               indentLevel,
@@ -2784,104 +2767,77 @@ export function sqlStringForRuntimeTransformer(
       topLevelTransformer
     )
   }
-  // switch (actionRuntimeTransformer.transformerType) {
-  //   case "dataflowSequence": {
-  //     throw new Error("sqlStringForRuntimeTransformer dataflowSequence not implemented");
-  //     break;
-  //   }
-  //   // case "constantUuid":
-  //   // case "constantBoolean":
-  //   // case "constantBigint":
-  //   // case "constantNumber":
-  //   // case "constantObject":
-  //   case "constantString": {
-  //     return sqlStringForConstantAnyTransformer(
-  //       actionRuntimeTransformer as any,
-  //       preparedStatementParametersCount,
-  //       indentLevel,
-  //       queryParams,
-  //       definedContextEntries,
-  //       useAccessPathForContextReference,
-  //       topLevelTransformer,
-  //       withClauseColumnName,
-  //       iterateOn,
-  //     );
-  //     break;
-  //   }
-    // default: {
-      const castTransformer = actionRuntimeTransformer as any;
-      const foundApplicationTransformer = applicationTransformerDefinitions[castTransformer.transformerType];
+  const castTransformer = actionRuntimeTransformer as any;
+  const foundApplicationTransformer =
+    applicationTransformerDefinitions[castTransformer.transformerType];
 
-      if (!foundApplicationTransformer) {
+  if (!foundApplicationTransformer) {
+    return new Domain2ElementFailed({
+      queryFailure: "QueryNotExecutable",
+      query: actionRuntimeTransformer as any,
+      failureMessage:
+        "sqlStringForRuntimeTransformer transformerType not found in applicationTransformerDefinitions: " +
+        castTransformer.transformerType,
+    });
+  }
+  switch (foundApplicationTransformer.transformerImplementation.transformerImplementationType) {
+    case "libraryImplementation": {
+      if (
+        !foundApplicationTransformer.transformerImplementation.sqlImplementationFunctionName ||
+        !sqlTransformerImplementations[
+          foundApplicationTransformer.transformerImplementation.sqlImplementationFunctionName
+        ]
+      ) {
         return new Domain2ElementFailed({
           queryFailure: "QueryNotExecutable",
           query: actionRuntimeTransformer as any,
           failureMessage:
-            "sqlStringForRuntimeTransformer transformerType not found in applicationTransformerDefinitions: " +
-            castTransformer.transformerType,
+            "sqlStringForRuntimeTransformer transformerType not found in sqlTransformerImplementations: " +
+            foundApplicationTransformer.transformerImplementation.sqlImplementationFunctionName,
         });
       }
-      switch (foundApplicationTransformer.transformerImplementation.transformerImplementationType) {
-        case "libraryImplementation": {
-          if (
-            !foundApplicationTransformer.transformerImplementation.sqlImplementationFunctionName ||
-            !sqlTransformerImplementations[
-              foundApplicationTransformer.transformerImplementation.sqlImplementationFunctionName
-            ]
-          ) {
-            return new Domain2ElementFailed({
-              queryFailure: "QueryNotExecutable",
-              query: actionRuntimeTransformer as any,
-              failureMessage:
-                "sqlStringForRuntimeTransformer transformerType not found in sqlTransformerImplementations: " +
-                foundApplicationTransformer.transformerImplementation.sqlImplementationFunctionName,
-            });
-          }
-          const transformerSql = sqlTransformerImplementations[
-            foundApplicationTransformer.transformerImplementation.sqlImplementationFunctionName
-          ](
-            castTransformer,
-            preparedStatementParametersCount,
-            indentLevel,
-            queryParams,
-            definedContextEntries,
-            useAccessPathForContextReference,
-            topLevelTransformer,
-            withClauseColumnName,
-            iterateOn,
-          );
-          return transformerSql;
-          break;
-        }
-        case "transformer":{
-          const applicationTransformerSql = sqlStringForRuntimeTransformer(
-            foundApplicationTransformer.transformerImplementation.definition as TransformerForRuntime,
-            preparedStatementParametersCount,
-            indentLevel,
-            {
-              ...queryParams,
-              ...castTransformer,
-            },
-            definedContextEntries,
-            useAccessPathForContextReference,
-            topLevelTransformer,
-            withClauseColumnName,
-            iterateOn,
-          );
-          return applicationTransformerSql;
-          break;
-      }
-        default:{
-          throw new Error(
-            "sqlStringForRuntimeTransformer transformerType not implemented: " +
-              JSON.stringify(foundApplicationTransformer.transformerImplementation)
-          );
-          break;
-        }
-      }
-      // break;
-    // }
-  // }
+      const transformerSql = sqlTransformerImplementations[
+        foundApplicationTransformer.transformerImplementation.sqlImplementationFunctionName
+      ](
+        castTransformer,
+        preparedStatementParametersCount,
+        indentLevel,
+        queryParams,
+        definedContextEntries,
+        useAccessPathForContextReference,
+        topLevelTransformer,
+        withClauseColumnName,
+        iterateOn,
+      );
+      return transformerSql;
+      break;
+    }
+    case "transformer":{
+      const applicationTransformerSql = sqlStringForRuntimeTransformer(
+        foundApplicationTransformer.transformerImplementation.definition as TransformerForRuntime,
+        preparedStatementParametersCount,
+        indentLevel,
+        {
+          ...queryParams,
+          ...castTransformer,
+        },
+        definedContextEntries,
+        useAccessPathForContextReference,
+        topLevelTransformer,
+        withClauseColumnName,
+        iterateOn,
+      );
+      return applicationTransformerSql;
+      break;
+  }
+    default:{
+      throw new Error(
+        "sqlStringForRuntimeTransformer transformerType not implemented: " +
+          JSON.stringify(foundApplicationTransformer.transformerImplementation)
+      );
+      break;
+    }
+  }
 }
 
 // ################################################################################################
