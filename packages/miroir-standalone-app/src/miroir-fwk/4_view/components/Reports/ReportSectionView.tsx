@@ -22,7 +22,7 @@ import { cleanLevel } from '../../constants.js';
 import { ReportSectionEntityInstance } from './ReportSectionEntityInstance.js';
 import { ReportSectionListDisplay } from './ReportSectionListDisplay.js';
 import { useRenderTracker } from '../../tools/renderCountTracker.js';
-import { ThemedBox } from '../Themes/ThemedComponents.js';
+import { ThemedBox } from '../Themes/index.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

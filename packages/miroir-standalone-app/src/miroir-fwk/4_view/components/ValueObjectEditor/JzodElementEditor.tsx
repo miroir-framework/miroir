@@ -34,7 +34,7 @@ import {
   ThemedSwitch,
   ThemedTextField,
   ThemedDisplayValue
-} from "../Themes/ThemedComponents.js";
+} from "../Themes/index"
 import { JzodAnyEditor } from "./JzodAnyEditor.js";
 import { JzodArrayEditor } from "./JzodArrayEditor.js";
 import { useJzodElementEditorHooks } from "./JzodElementEditorHooks.js";

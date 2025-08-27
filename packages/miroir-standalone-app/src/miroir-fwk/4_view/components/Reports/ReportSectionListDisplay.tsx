@@ -62,7 +62,7 @@ import { noValue } from "../ValueObjectEditor/JzodElementEditorInterface.js";
 import { EntityInstanceGrid } from "../Grids/EntityInstanceGrid.js";
 import { TableComponentType, TableComponentTypeSchema } from "../Grids/EntityInstanceGridInterface.js";
 import { useRenderTracker } from "../../tools/renderCountTracker.js";
-import { ThemedBox, ThemedButton, ThemedSpan } from "../Themes/ThemedComponents.js";
+import { ThemedBox, ThemedButton, ThemedSpan } from "../Themes/index.js";
 import { useSelector } from "react-redux";
 
 

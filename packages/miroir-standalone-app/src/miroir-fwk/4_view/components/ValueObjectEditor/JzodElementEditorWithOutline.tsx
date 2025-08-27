@@ -7,7 +7,7 @@ import {
   ThemedBox,
   ThemedTooltip,
   ThemedSmallIconButton
-} from '../Themes/ThemedComponents.js';
+} from "../Themes/index"
 import { useMiroirTheme } from '../../contexts/MiroirThemeContext.js';
 
 export interface JzodElementEditorWithOutlineProps extends JzodElementEditorProps {

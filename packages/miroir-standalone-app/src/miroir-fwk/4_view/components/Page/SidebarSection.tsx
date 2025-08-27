@@ -8,7 +8,7 @@ import {
   ThemedListItemIcon,
   ThemedListItemText,
   ThemedIcon
-} from "../Themes/ThemedComponents.js";
+} from "../Themes/index"
 import { useMiroirTheme } from '../../contexts/MiroirThemeContext.js';
 import AutoStories from '@mui/icons-material/AutoStories';
 import { CSSObject, styled, Theme, useTheme } from '@mui/material/styles';

@@ -30,7 +30,7 @@ import {
   ThemedLabeledEditor, 
   ThemedSelect,
   ThemedDisplayValue
-} from "../Themes/ThemedComponents";
+} from "../Themes/index";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -51,6 +51,13 @@ const handleDiscriminatorChange = (
   formik: any,
   log: LoggerInterface
 ) => {
+  console.log("handleDiscriminatorChange called with:", {
+    selectedValue,
+    discriminatorType,
+    rootLessListKey,
+    rootLessListKeyArray
+  });
+  
   if (!parentKeyMap) {
     throw new Error(
       "handleDiscriminatorChange called but current object does not have information about the discriminated union type it must be part of!"
@@ -372,6 +379,11 @@ export const JzodLiteralEditor: FC<JzodLiteralEditorProps> =  (
   // Handler for the new filterable select component
   const handleFilterableSelectChange = useCallback(
     (event: React.ChangeEvent<HTMLSelectElement>) => {
+      console.log("handleFilterableSelectChange called with event:", event);
+      console.log("event.target.value:", event.target.value);
+      console.log("isDiscriminator:", isDiscriminator);
+      console.log("parentKeyMap:", parentKeyMap);
+      
       if (!isDiscriminator) {
         throw new Error(
           "handleFilterableSelectChange called but this literal is not a discriminator!"
@@ -399,9 +411,7 @@ export const JzodLiteralEditor: FC<JzodLiteralEditorProps> =  (
       rootLessListKey,
       rootLessListKeyArray,
       currentDeploymentUuid,
-      currentMiroirFundamentalJzodSchema,
-      currentModel,
-      miroirMetaModel,
+      currentMiroirModelEnvironment,
       formik.values,
       currentValue
     ]

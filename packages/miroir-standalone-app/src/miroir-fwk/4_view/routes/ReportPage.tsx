@@ -28,7 +28,7 @@ import { RenderPerformanceMetrics } from '../tools/renderPerformanceMeasure.js';
 import { useDocumentOutlineContext } from '../components/Page/RootComponent.js';
 import { useRenderTracker } from '../tools/renderCountTracker.js';
 import { PageContainer } from '../components/Page/PageContainer.js';
-import { ThemedBox, ThemedSpan } from '../components/Themes/ThemedComponents.js';
+import { ThemedBox, ThemedSpan } from '../components/Themes/index.js';
 import { useMiroirTheme } from '../contexts/MiroirThemeContext.js';
 import { usePageConfiguration } from '../services/index.js';
 
@@ -262,8 +262,7 @@ export const ReportPage = () => {
               </>
             ) : (
               <ThemedSpan 
-                style={{ color: theme.currentTheme.colors.error }} 
-                padding="16px"
+                style={{ color: theme.currentTheme.colors.error, padding: "16px" }}
               >
                 ReportDisplay: no report to display, deploymentUuid={pageParams.deploymentUuid}, applicationSection=
                 {pageParams.applicationSection}, reportUuid={pageParams.reportUuid}

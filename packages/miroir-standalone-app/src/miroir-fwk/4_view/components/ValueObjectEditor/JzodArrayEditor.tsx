@@ -42,7 +42,7 @@ import {
   ThemedSizedButton, 
   ThemedAddIcon,
   ThemedStyledButton 
-} from "../Themes/ThemedComponents";
+} from "../Themes/index"
 import { useMiroirTheme } from '../../contexts/MiroirThemeContext';
 import { getMemoizedReduxDeploymentsStateSelectorMap, ReduxStateWithUndoRedo } from "miroir-localcache-redux";
 import { useSelector } from "react-redux";
@@ -109,7 +109,6 @@ export const JzodArrayEditorMoveButton: React.FC<JzodArrayMoveButtonProps> = ({
   return (
     <ThemedStyledButton
       variant="transparent"
-      type="button"
       role={`${listKey}.button.${direction}`}
       disabled={isDisabled}
       onClick={handleClick}

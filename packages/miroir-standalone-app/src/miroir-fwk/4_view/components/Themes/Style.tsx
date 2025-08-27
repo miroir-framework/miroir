@@ -2,7 +2,7 @@
 // DEPRECATED: This file contains legacy styled components using @emotion/styled
 // 
 // These components have been superseded by the unified MiroirTheme system.
-// Please migrate to the new themed components from ThemedComponents.tsx
+// Please migrate to the new themed components from "../Themes/index"
 //
 // Migration guide:
 // - SizedButton -> ThemedButton with size="sm"
@@ -11,11 +11,11 @@
 // - SmallIconButton -> ThemedButton with variant="outlined" and size="sm"
 // - LineIconButton -> Use useThemedStyles().lineIconButton
 // - StyledSelect -> Use useThemedStyles().styledSelect
-// - LabeledEditor -> Import from ThemedComponents.tsx
+// - LabeledEditor -> Import from "../Themes/index"
 //
 // For new development, use the MiroirTheme system:
 // import { useMiroirTheme, useThemedStyles } from '../contexts/MiroirThemeContext';
-// import { ThemedButton, ThemedInput, ThemedContainer } from './ThemedComponents';
+// import { ThemedButton, ThemedInput, ThemedContainer } from "../Themes/index"
 // ################################################################################################
 
 import styled from "@emotion/styled";
@@ -38,7 +38,7 @@ export const SizedButton = styled(Button)(({ theme }) => ({
   padding: "0px",
 }));
 
-// ⚠️ DEPRECATED: Use themed icon from ThemedComponents instead
+// ⚠️ DEPRECATED: Use themed icon from "../Themes/index"
 export const SizedAddBox = styled(AddBox)(({ theme }) => ({ height: "1em", width: "1em" }));
 
 // ⚠️ DEPRECATED: Use themed icon styling instead
@@ -71,7 +71,7 @@ const labelStyle = {
   paddingRight: "10px",
 };
 
-// ⚠️ DEPRECATED: Use StyledLabel from ThemedComponents instead
+// ⚠️ DEPRECATED: Use StyledLabel from "../Themes/index"
 const StyledLabel = styled("label")(({ theme }) => ({
   ...theme,
   paddingRight: "10px",
@@ -89,7 +89,7 @@ export function getItemsOrder(currentValue: any, jzodSchema: JzodElement | undef
     : [];
 }
 
-// ⚠️ DEPRECATED: Use LabeledEditor from ThemedComponents instead
+// ⚠️ DEPRECATED: Use LabeledEditor from "../Themes/index"
 export const LabeledEditor: React.FC<{
   labelElement: JSX.Element;
   editor: JSX.Element;
