@@ -228,19 +228,56 @@ export const ThemedIcon: React.FC<ThemedComponentProps> = ({
 }) => {
   const { currentTheme } = useMiroirTheme();
   
+  // Map common icon name variations to valid Material Icons names
+  const iconNameMap: Record<string, string> = {
+    'savedSearch': 'saved_search',
+    'SavedSearch': 'saved_search',
+    'autoStories': 'auto_stories',
+    'AutoStories': 'auto_stories',
+    'Interests': 'interests',
+    'Book': 'book',
+    'book': 'menu_book',
+    'Books': 'menu_book',
+    'books': 'menu_book',
+    'south': 'south',
+    'error': 'error',
+    'category': 'category',
+    'list': 'list',
+    'location_on': 'location_on',
+    // Common fallback icons
+    'default': 'menu',
+    'fallback': 'menu',
+    // Add more mappings as needed
+  };
+  
+  // Get the mapped icon name or use the original if no mapping exists
+  const iconName = typeof children === 'string' ? (iconNameMap[children] || children || 'menu') : children;
+  
   const iconStyles = css({
-    color: currentTheme.colors.text,
-    display: 'inline-flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    fontSize: currentTheme.typography.fontSize.md,
+    fontFamily: 'Material Icons',
+    fontWeight: 'normal',
+    fontStyle: 'normal',
+    fontSize: currentTheme.typography.fontSize.lg,
     lineHeight: 1,
-    verticalAlign: 'middle',
+    letterSpacing: 'normal',
+    textTransform: 'none',
+    display: 'inline-block',
+    whiteSpace: 'nowrap',
+    wordWrap: 'normal',
+    direction: 'ltr',
+    color: currentTheme.colors.text,
+    // Support for ligatures
+    fontFeatureSettings: '"liga"',
+    WebkitFontFeatureSettings: '"liga"',
+    WebkitFontSmoothing: 'antialiased',
+    // Make sure icon is visible
+    minWidth: '24px',
+    textAlign: 'center',
   });
 
   return (
-    <span css={iconStyles} className={className} style={style}>
-      {children}
+    <span css={iconStyles} className={`material-icons ${className || ''}`} style={style}>
+      {iconName}
     </span>
   );
 };

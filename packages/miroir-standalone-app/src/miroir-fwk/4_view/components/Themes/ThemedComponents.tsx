@@ -2542,11 +2542,24 @@ export const ThemedIcon: React.FC<ThemedComponentProps> = ({
     'SavedSearch': 'saved_search',
     'autoStories': 'auto_stories',
     'AutoStories': 'auto_stories',
+    'Interests': 'interests',
+    'Book': 'book',
+    'book': 'menu_book',
+    'Books': 'menu_book',
+    'books': 'menu_book',
+    'south': 'south',
+    'error': 'error',
+    'category': 'category',
+    'list': 'list',
+    'location_on': 'location_on',
+    // Common fallback icons
+    'default': 'menu',
+    'fallback': 'menu',
     // Add more mappings as needed
   };
   
   // Get the mapped icon name or use the original if no mapping exists
-  const iconName = typeof children === 'string' ? (iconNameMap[children] || children) : children;
+  const iconName = typeof children === 'string' ? (iconNameMap[children] || children || 'menu') : children;
   
   const iconStyles = css({
     fontFamily: 'Material Icons',
