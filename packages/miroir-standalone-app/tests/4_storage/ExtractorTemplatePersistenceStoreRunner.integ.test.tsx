@@ -475,12 +475,9 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                     transformerType: "unique",
                     interpolation: "runtime",
                     applyTo: {
-                      referenceType: "referencedTransformer",
-                      reference: {
-                        transformerType: "contextReference",
-                        interpolation: "runtime",
-                        referenceName: "books",
-                      },
+                      transformerType: "contextReference",
+                      interpolation: "runtime",
+                      referenceName: "books",
                     },
                     attribute: "author",
                     orderBy: "author",
@@ -541,12 +538,9 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                   interpolation: "runtime",
                   transformerType: "count",
                   applyTo: {
-                    referenceType: "referencedTransformer",
-                    reference: {
-                      transformerType: "contextReference",
-                      interpolation: "runtime",
-                      referenceName: "books",
-                    },
+                    transformerType: "contextReference",
+                    interpolation: "runtime",
+                    referenceName: "books",
                   },
                 },
               },
@@ -601,12 +595,9 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                   interpolation: "runtime",
                   groupBy: "author",
                   applyTo: {
-                    referenceType: "referencedTransformer",
-                    reference: {
-                      transformerType: "contextReference",
-                      interpolation: "runtime",
-                      referenceName: "books",
-                    },
+                    transformerType: "contextReference",
+                    interpolation: "runtime",
+                    referenceName: "books",
                   },
                   // orderBy: "author",
                 },

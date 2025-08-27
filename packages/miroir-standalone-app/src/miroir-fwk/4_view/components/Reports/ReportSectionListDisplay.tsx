@@ -383,12 +383,9 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
               transformerType: "listReducerToIndexObject",
               interpolation: "runtime",
               applyTo: {
-                referenceType: "referencedTransformer",
-                reference: {
-                  transformerType: "contextReference",
-                  interpolation: "runtime",
-                  referenceName: e[1].tag?.value?.selectorParams?.targetEntity + "_extractor",
-                },
+                transformerType: "contextReference",
+                interpolation: "runtime",
+                referenceName: e[1].tag?.value?.selectorParams?.targetEntity + "_extractor",
               },
               indexAttribute: "uuid",
             },

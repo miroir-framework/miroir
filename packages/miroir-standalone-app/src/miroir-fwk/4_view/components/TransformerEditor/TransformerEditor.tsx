@@ -1,9 +1,11 @@
 import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
+import { Formik, FormikProps } from 'formik';
+
 import {
   LoggerInterface,
   MiroirLoggerFactory,
   EntityInstance,
-  JzodElement,
+  type JzodElement,
   TransformerForRuntime,
   Uuid,
   jzodTypeCheck,
@@ -20,8 +22,12 @@ import {
   getEntityInstancesUuidIndexNonHook,
   transformer_extended_apply_wrapper,
   type Domain2QueryReturnType,
+  type Entity,
+  type EntityDefinition,
+  type EntityDefinitionEntityDefinition,
 } from 'miroir-core';
-import { Formik, FormikProps } from 'formik';
+import { valueToJzod } from '@miroir-framework/jzod';
+
 
 import { packageName } from '../../../../constants';
 import { cleanLevel } from '../../constants';
@@ -77,77 +83,154 @@ function safeStringify(obj: any, maxLength: number = 2000): string {
 }
 
 // ################################################################################################
+// Helper function to create a generic "any" schema for displaying arbitrary objects
+// ################################################################################################
+function createGenericObjectSchema(): JzodElement {
+  return {
+    type: "any"
+  };
+}
+
+// ################################################################################################
 // Memoized sub-components for better performance
 // ################################################################################################
 const EntityInstancePanel = React.memo<{
   entityInstances: EntityInstance[];
   selectedEntityInstance: EntityInstance | undefined;
-}>(({ entityInstances, selectedEntityInstance }) => (
-  <ThemedContainer style={{ flex: 1 }}>
-    <ThemedHeaderSection>
-      <ThemedTitle>
-        Entity Instance ({entityInstances.length} instances available)
-      </ThemedTitle>
-    </ThemedHeaderSection>
-    <ThemedCodeBlock>
-      {selectedEntityInstance
-        ? safeStringify(selectedEntityInstance)
-        : "No entity instances found"}
-    </ThemedCodeBlock>
-  </ThemedContainer>
-));
+  selectedEntityInstanceDefinition: EntityDefinition | undefined;
+  deploymentUuid: Uuid;
+  foldedObjectAttributeOrArrayItems: { [k: string]: boolean };
+  setFoldedObjectAttributeOrArrayItems: React.Dispatch<
+    React.SetStateAction<{ [k: string]: boolean }>
+  >;
+}>(
+  ({
+    entityInstances,
+    selectedEntityInstance,
+    selectedEntityInstanceDefinition,
+    deploymentUuid,
+    foldedObjectAttributeOrArrayItems,
+    setFoldedObjectAttributeOrArrayItems,
+  }) => (
+    <ThemedContainer style={{ flex: 1 }}>
+      <ThemedHeaderSection>
+        <ThemedTitle>Entity Instance ({entityInstances.length} instances available)</ThemedTitle>
+      </ThemedHeaderSection>
+      {selectedEntityInstance ? (
+        <TypedValueObjectEditor
+          labelElement={<></>}
+          valueObject={selectedEntityInstance}
+          // valueObjectMMLSchema={createGenericObjectSchema()}
+          valueObjectMMLSchema={
+            selectedEntityInstanceDefinition?.jzodSchema ?? createGenericObjectSchema()
+          }
+          deploymentUuid={deploymentUuid}
+          applicationSection={"data"}
+          formLabel={"Entity Instance Viewer"}
+          onSubmit={async () => {}} // No-op for readonly
+          foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
+          setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
+          maxRenderDepth={3}
+          readonly={true}
+        />
+      ) : (
+        <div style={{ padding: "12px", background: "#f5f5f5", borderRadius: "4px" }}>
+          No entity instances found
+        </div>
+      )}
+    </ThemedContainer>
+  )
+);
 
 const TransformationResultPanel = React.memo<{
   transformationResult: any;
+  transformationResultSchema?: JzodElement;
   transformationError: string | null;
   selectedEntityInstance: EntityInstance | undefined;
-}>(({ transformationResult, transformationError, selectedEntityInstance }) => (
-  <ThemedContainer style={{ flex: 1 }}>
-    <ThemedHeaderSection>
-      <ThemedTitle>
-        Transformation Result
-        {transformationError && (
-          <span style={{ color: 'red', marginLeft: '10px', fontSize: '0.9em' }}>
-            ⚠️ Error
-          </span>
-        )}
-      </ThemedTitle>
-    </ThemedHeaderSection>
-    
-    {transformationError ? (
-      <ThemedCodeBlock>
-        {typeof transformationError === 'string' 
-          ? transformationError 
-          : safeStringify(transformationError)
-        }
-      </ThemedCodeBlock>
-    ) : transformationResult !== null ? (
-      <ThemedCodeBlock>
-        {safeStringify(transformationResult)}
-      </ThemedCodeBlock>
-    ) : selectedEntityInstance ? (
-      <div>
-        <div style={{ marginBottom: '12px', padding: '12px', background: '#f5f5f5', borderRadius: '4px' }}>
-          <div style={{ marginBottom: '8px', fontWeight: 'bold' }}>No transformation result yet.</div>
-          <div style={{ marginBottom: '8px' }}>Create a transformer to see the result here.</div>
-          <div style={{ fontSize: '0.9em', color: '#666' }}>
-            <div style={{ marginBottom: '4px' }}>Tip: Use contextReference to access the entity instance:</div>
-          </div>
-        </div>
+  deploymentUuid: Uuid;
+  foldedObjectAttributeOrArrayItems: { [k: string]: boolean };
+  setFoldedObjectAttributeOrArrayItems: React.Dispatch<
+    React.SetStateAction<{ [k: string]: boolean }>
+  >;
+}>(
+  ({
+    transformationResult,
+    transformationResultSchema,
+    transformationError,
+    selectedEntityInstance,
+    deploymentUuid,
+    foldedObjectAttributeOrArrayItems,
+    setFoldedObjectAttributeOrArrayItems,
+  }) => (
+    <ThemedContainer style={{ flex: 1 }}>
+      <ThemedHeaderSection>
+        <ThemedTitle>
+          Transformation Result
+          {transformationError && (
+            <span style={{ color: "red", marginLeft: "10px", fontSize: "0.9em" }}>⚠️ Error</span>
+          )}
+        </ThemedTitle>
+      </ThemedHeaderSection>
+
+      {transformationError ? (
         <ThemedCodeBlock>
-          {JSON.stringify({ 
-            "transformerType": "contextReference", 
-            "referenceName": "applyTo" 
-          }, null, 2)}
+          {typeof transformationError === "string"
+            ? transformationError
+            : safeStringify(transformationError)}
         </ThemedCodeBlock>
-      </div>
-    ) : (
-      <div style={{ padding: '12px', background: '#f5f5f5', borderRadius: '4px' }}>
-        No entity instance available for transformation.
-      </div>
-    )}
-  </ThemedContainer>
-));
+      ) : transformationResult !== null ? (
+        <TypedValueObjectEditor
+          labelElement={<div>target:</div>}
+          valueObject={transformationResult}
+          valueObjectMMLSchema={transformationResultSchema??createGenericObjectSchema()}
+          deploymentUuid={deploymentUuid}
+          applicationSection={"data"}
+          formLabel={"Transformation Result Viewer"}
+          onSubmit={async () => {}} // No-op for readonly
+          foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
+          setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
+          maxRenderDepth={3}
+          readonly={true}
+        />
+      ) : selectedEntityInstance ? (
+        <div>
+          <div
+            style={{
+              marginBottom: "12px",
+              padding: "12px",
+              background: "#f5f5f5",
+              borderRadius: "4px",
+            }}
+          >
+            <div style={{ marginBottom: "8px", fontWeight: "bold" }}>
+              No transformation result yet.
+            </div>
+            <div style={{ marginBottom: "8px" }}>Create a transformer to see the result here.</div>
+            <div style={{ fontSize: "0.9em", color: "#666" }}>
+              <div style={{ marginBottom: "4px" }}>
+                Tip: Use contextReference to access the entity instance:
+              </div>
+            </div>
+          </div>
+          <ThemedCodeBlock>
+            {JSON.stringify(
+              {
+                transformerType: "contextReference",
+                referenceName: "applyTo",
+              },
+              null,
+              2
+            )}
+          </ThemedCodeBlock>
+        </div>
+      ) : (
+        <div style={{ padding: "12px", background: "#f5f5f5", borderRadius: "4px" }}>
+          No entity instance available for transformation.
+        </div>
+      )}
+    </ThemedContainer>
+  )
+);
 
 const DebugPanel = React.memo<{
   currentTransformerDefinition: any;
@@ -206,6 +289,18 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
     currentModel,
     context.miroirFundamentalJzodSchema,
   ]);
+
+  const currentReportDeploymentSectionEntities: Entity[] = currentModel.entities; // Entities are always defined in the 'model' section
+  const currentReportDeploymentSectionEntityDefinitions: EntityDefinition[] =
+    currentModel.entityDefinitions; // EntityDefinitions are always defined in the 'model' section
+
+  const currentReportTargetEntity: Entity | undefined =
+    currentReportDeploymentSectionEntities?.find((e) => e?.uuid === entityUuid);
+
+  const currentReportTargetEntityDefinition: EntityDefinition | undefined =
+    currentReportDeploymentSectionEntityDefinitions?.find(
+      (e) => e?.entityUuid === currentReportTargetEntity?.uuid
+    );
 
   const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> = useMemo(
     () => getMemoizedReduxDeploymentsStateSelectorMap(),
@@ -275,9 +370,22 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
   const [transformationResult, setTransformationResult] = useState<any>(null);
   const [transformationError, setTransformationError] = useState<string | null>(null);
   
+  // Separate fold state management for each panel
+  const [foldedEntityInstanceItems, setFoldedEntityInstanceItems] = useState<{ [k: string]: boolean }>({});
+  const [foldedTransformationResultItems, setFoldedTransformationResultItems] = useState<{ [k: string]: boolean }>({});
+  
   // Debouncing for transformer execution
   const transformerTimeoutRef = useRef<NodeJS.Timeout>();
   
+  // ################################################################################################
+  const transformationResultSchema: JzodElement = useMemo(() => {
+    if (!currentTransformerDefinition) {
+      return { type: "any" } as JzodElement;
+    }
+    return (valueToJzod(transformationResult)??{ type: "any" }) as JzodElement;
+  }, [transformationResult]);
+  
+  // ################################################################################################
   // Handle transformer definition changes with debouncing
   const handleTransformerDefinitionChange = useCallback(async (newTransformerDefinition: any) => {
     log.info("handleTransformerDefinitionChange", newTransformerDefinition);
@@ -296,6 +404,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
     };
   }, [selectedEntityInstance]);
 
+  // ################################################################################################
   // Apply transformer to selected entity instance with debouncing
   const applyTransformerToInstance = useCallback(async () => {
     if (!currentTransformerDefinition || !selectedEntityInstance) {
@@ -388,11 +497,19 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
           <EntityInstancePanel
             entityInstances={entityInstances}
             selectedEntityInstance={selectedEntityInstance}
+            selectedEntityInstanceDefinition={currentReportTargetEntityDefinition}
+            deploymentUuid={deploymentUuid}
+            foldedObjectAttributeOrArrayItems={foldedEntityInstanceItems}
+            setFoldedObjectAttributeOrArrayItems={setFoldedEntityInstanceItems}
           />
           <TransformationResultPanel
             transformationResult={transformationResult}
+            transformationResultSchema={transformationResultSchema}
             transformationError={transformationError}
             selectedEntityInstance={selectedEntityInstance}
+            deploymentUuid={deploymentUuid}
+            foldedObjectAttributeOrArrayItems={foldedTransformationResultItems}
+            setFoldedObjectAttributeOrArrayItems={setFoldedTransformationResultItems}
           />
         </div>
       </div>

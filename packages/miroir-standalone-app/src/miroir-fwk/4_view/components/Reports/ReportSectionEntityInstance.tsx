@@ -20,7 +20,6 @@ import {
   useMiroirContextService
 } from "../../MiroirContextReactProvider.js";
 
-import { javascript } from '@codemirror/lang-javascript';
 import { Toc } from '@mui/icons-material';
 import { packageName } from '../../../../constants.js';
 import { cleanLevel } from '../../constants.js';
@@ -29,8 +28,11 @@ import {
 } from "../../ReduxHooks.js";
 import { useRenderTracker } from '../../tools/renderCountTracker.js';
 import { RenderPerformanceMetrics } from '../../tools/renderPerformanceMeasure.js';
+import { RunTransformerTestSuiteButton } from '../Buttons/RunTransformerTestSuiteButton.js';
+import { ValueObjectGrid } from '../Grids/ValueObjectGrid.js';
 import { useDocumentOutlineContext } from '../Page/RootComponent.js';
 import {
+  ThemedCodeBlock,
   // ThemedCodeBlock,
   ThemedContainer,
   ThemedHeaderSection,
@@ -40,17 +42,12 @@ import {
   ThemedStatusText,
   ThemedSwitch,
   ThemedText,
-  ThemedTextField,
   ThemedTitle,
-  ThemedTooltip,
-  ThemedButton,
-  ThemedFlexRow,
+  ThemedTooltip
 } from "../Themes/ThemedComponents.js";
-import { TypedValueObjectEditor } from './TypedValueObjectEditor.js';
-import { RunTransformerTestSuiteButton } from '../Buttons/RunTransformerTestSuiteButton.js';
-import { ValueObjectGrid } from '../Grids/ValueObjectGrid.js';
 import { TestCellWithDetails } from './TestCellWithDetails.js';
 import { TestResultCellWithActualValue } from './TestResultCellWithActualValue.js';
+import { TypedValueObjectEditor } from './TypedValueObjectEditor.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

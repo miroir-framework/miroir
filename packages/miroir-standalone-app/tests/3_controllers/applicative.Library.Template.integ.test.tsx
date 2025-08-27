@@ -1311,12 +1311,9 @@ const testTemplateSuitesDEFUNCT: Record<string, TestCompositeActionParams> = {
         //                 transformerType: "listPickElement",
         //                 interpolation: "runtime",
         //                 applyTo: {
-        //                   referenceType: "referencedTransformer",
-        //                   reference: {
-        //                     transformerType: "contextReference",
-        //                     interpolation: "runtime",
-        //                     referenceName: "menuList",
-        //                   },
+      //                     transformerType: "contextReference",
+      //                     interpolation: "runtime",
+      //                     referenceName: "menuList",
         //                 },
         //                 index: 0,
         //               },

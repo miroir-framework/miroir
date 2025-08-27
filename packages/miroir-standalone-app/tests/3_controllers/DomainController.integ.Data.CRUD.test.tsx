@@ -299,12 +299,9 @@ const testActions: Record<string, TestCompositeActionParams> = {
                     transformerType: "count",
                     interpolation: "runtime",
                     applyTo: {
-                      referenceType: "referencedTransformer",
-                      reference: {
-                        transformerType: "contextReference",
-                        interpolation: "runtime",
-                        referencePath: ["entityBookList", "books"],
-                      },
+                      transformerType: "contextReference",
+                      interpolation: "runtime",
+                      referencePath: ["entityBookList", "books"],
                     },
                     // referencedTransformer: {
                     //     transformerType: "contextReference",
@@ -432,12 +429,9 @@ const testActions: Record<string, TestCompositeActionParams> = {
                     transformerType: "count",
                     interpolation: "runtime",
                     applyTo: {
-                      referenceType: "referencedTransformer",
-                      reference: {
-                        transformerType: "contextReference",
-                        interpolation: "runtime",
-                        referencePath: ["entityBookList", "books"],
-                      }
+                      transformerType: "contextReference",
+                      interpolation: "runtime",
+                      referencePath: ["entityBookList", "books"],
                     },
                   },
                   expectedValue: { count: 6 },
@@ -553,12 +547,9 @@ const testActions: Record<string, TestCompositeActionParams> = {
                     transformerType: "count",
                     interpolation: "runtime",
                     applyTo: {
-                      referenceType: "referencedTransformer",
-                      reference: {
-                        transformerType: "contextReference",
-                        interpolation: "runtime",
-                        referencePath: ["entityBookList", "books"],
-                      }
+                      transformerType: "contextReference",
+                      interpolation: "runtime",
+                      referencePath: ["entityBookList", "books"],
                     },
                   },
                   expectedValue: { count: 6 },
@@ -673,12 +664,9 @@ const testActions: Record<string, TestCompositeActionParams> = {
                     transformerType: "count",
                     interpolation: "runtime",
                     applyTo: {
-                      referenceType: "referencedTransformer",
-                      reference: {
-                        transformerType: "contextReference",
-                        interpolation: "runtime",
-                        referencePath: ["entityBookList", "books"],
-                      }
+                      transformerType: "contextReference",
+                      interpolation: "runtime",
+                      referencePath: ["entityBookList", "books"],
                     },
                   },
                   expectedValue: { count: 4 },
@@ -807,12 +795,9 @@ const testActions: Record<string, TestCompositeActionParams> = {
                     transformerType: "count",
                     interpolation: "runtime",
                     applyTo: {
-                      referenceType: "referencedTransformer",
-                      reference: {
-                        transformerType: "contextReference",
-                        interpolation: "runtime",
-                        referencePath: ["entityBookList", "books"],
-                      }
+                      transformerType: "contextReference",
+                      interpolation: "runtime",
+                      referencePath: ["entityBookList", "books"],
                     },
                   },
                   expectedValue: { count: 4 },
@@ -939,12 +924,9 @@ const testActions: Record<string, TestCompositeActionParams> = {
                     transformerType: "count",
                     interpolation: "runtime",
                     applyTo: {
-                      referenceType: "referencedTransformer",
-                      reference: {
-                        transformerType: "contextReference",
-                        interpolation: "runtime",
-                        referencePath: ["entityBookList", "books"],
-                      }
+                      transformerType: "contextReference",
+                      interpolation: "runtime",
+                      referencePath: ["entityBookList", "books"],
                     },
                   },
                   expectedValue: { count: 5 },

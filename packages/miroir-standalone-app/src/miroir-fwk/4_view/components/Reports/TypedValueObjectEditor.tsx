@@ -145,6 +145,8 @@ interface TypedValueObjectEditorProps {
   zoomInPath?: string; // Optional path like "x.y.z" to zoom into a subset of the instance
   // depth control
   maxRenderDepth?: number; // Optional max depth for initial rendering, default 1
+  // readonly mode
+  readonly?: boolean; // Whether the editor should be readonly (no submit button, no editing)
   // navigationCount: number;
 }
 
@@ -164,6 +166,8 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
   zoomInPath, // display only a subset of the valueObject, like "x.y.z"
   // depth control
   maxRenderDepth = 1,
+  // readonly mode
+  readonly = false,
   // 
   formLabel: pageLabel, // TODO: remove
 }) => {
@@ -253,6 +257,10 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
       enableReinitialize={true}
       initialValues={displayValueObject}
       onSubmit={async (values, { setSubmitting, setErrors }) => {
+        if (readonly) {
+          setSubmitting(false);
+          return;
+        }
         try {
           log.info("onSubmit formik values", values);
           
@@ -378,7 +386,8 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
             <div>
               {typeError ? "typeError: " : ""}{typeError}
             </div>
-            <form id={"form." + pageLabel} onSubmit={formik.handleSubmit}>
+            {readonly ? (
+              // Readonly mode: just display the editor without form
               <div>
                 <ErrorBoundary
                   FallbackComponent={({ error, resetErrorBoundary }) => (
@@ -424,20 +433,73 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
                     foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
                     setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
                     maxRenderDepth={maxRenderDepth}
-                    submitButton={
-                      <button
-                        type="submit"
-                        role="form"
-                        name={pageLabel}
-                        form={"form." + pageLabel}
-                      >
-                        submit form.{pageLabel}
-                      </button>
-                    }
+                    readOnly={true}
                   />
                 </ErrorBoundary>
               </div>
-            </form>
+            ) : (
+              // Editable mode: wrap in form
+              <form id={"form." + pageLabel} onSubmit={formik.handleSubmit}>
+                <div>
+                  <ErrorBoundary
+                    FallbackComponent={({ error, resetErrorBoundary }) => (
+                      <ErrorFallbackComponent
+                        error={error}
+                        resetErrorBoundary={resetErrorBoundary}
+                        context={{
+                          origin: "TypedValueObjectEditor",
+                          objectType: "root_editor",
+                          rootLessListKey: "ROOT",
+                          currentValue: displayValueObject,
+                          formikValues: undefined,
+                          rawJzodSchema: displaySchema,
+                          localResolvedElementJzodSchemaBasedOnValue:
+                            typeCheckKeyMap?.status == "ok"
+                              ? typeCheckKeyMap.resolvedSchema
+                              : undefined,
+                        }}
+                      />
+                    )}
+                  >
+                    <JzodElementEditor
+                      name={"ROOT"}
+                      listKey={"ROOT"}
+                      rootLessListKey=""
+                      rootLessListKeyArray={[]}
+                      labelElement={labelElement}
+                      indentLevel={0}
+                      currentDeploymentUuid={deploymentUuid}
+                      currentApplicationSection={applicationSection}
+                      resolvedElementJzodSchema={
+                        typeCheckKeyMap?.status == "ok"
+                          ? typeCheckKeyMap.resolvedSchema
+                          : undefined
+                      }
+                      hasTypeError={typeError != undefined}
+                      typeCheckKeyMap={
+                        typeCheckKeyMap?.status == "ok"
+                          ? typeCheckKeyMap.keyMap
+                          : {}
+                      }
+                      foreignKeyObjects={foreignKeyObjects}
+                      foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
+                      setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
+                      maxRenderDepth={maxRenderDepth}
+                      submitButton={
+                        <button
+                          type="submit"
+                          role="form"
+                          name={pageLabel}
+                          form={"form." + pageLabel}
+                        >
+                          submit form.{pageLabel}
+                        </button>
+                      }
+                    />
+                  </ErrorBoundary>
+                </div>
+              </form>
+            )}
           </>
         );
       }}

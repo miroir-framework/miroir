@@ -63,6 +63,7 @@ import {
   SyncQueryRunner,
   SyncQueryTemplateRunner,
 } from "../../dist";
+import { defaultMiroirModelEnviroment } from "../../src";
 
 const domainState: DomainState = domainStateImport as DomainState;
 const deploymentEntityState: ReduxDeploymentsState = domainStateToReduxDeploymentsState(domainState);
@@ -1074,8 +1075,8 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
           transformerType: "unique",
           interpolation: "runtime",
           applyTo: {
-            referenceType: "referencedTransformer",
-            reference: "books",
+            transformerType: "contextReference",
+            referenceName: "books",
           },
           attribute: "publisher",
         },
@@ -1101,8 +1102,8 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
           transformerType: "unique",
           interpolation: "runtime",
           applyTo: {
-            referenceType: "referencedTransformer",
-            reference: "books",
+            transformerType: "contextReference",
+            referenceName: "books",
           },
           attribute: "publisher",
         },
@@ -1152,7 +1153,8 @@ describe("queries.unit", () => {
       if (testParams.runQueryFromDomainState && testParams.getQueryRunnerParamsForDomainState) {
         const preResult = testParams.runQueryFromDomainState(
           domainState,
-          testParams.getQueryRunnerParamsForDomainState(testParams.query)
+          testParams.getQueryRunnerParamsForDomainState(testParams.query),
+          defaultMiroirModelEnviroment,
           // getExtractorRunnerParamsForDomainState(testParams.query)
         );
         for (const [testAssertionName, testAssertionParams] of Object.entries(testParams.testAssertions)) {
@@ -1169,7 +1171,8 @@ describe("queries.unit", () => {
       if (testParams.runQueryFromReduxDeploymentsState && testParams.getQueryRunnerParamsForReduxDeploymentsState) {
         const preResult = testParams.runQueryFromReduxDeploymentsState(
           deploymentEntityState,
-          testParams.getQueryRunnerParamsForReduxDeploymentsState(testParams.query)
+          testParams.getQueryRunnerParamsForReduxDeploymentsState(testParams.query),
+          defaultMiroirModelEnviroment,
         );
         for (const [testAssertionName, testAssertionParams] of Object.entries(testParams.testAssertions)) {
         console.log(`############################################## running query for DEPLOYMENT ENTITY STATE test assertion: ${currentTestName} ${testAssertionName}`);
@@ -1189,7 +1192,8 @@ describe("queries.unit", () => {
       ) {
         const preTemplateResult = testParams.runQueryTemplateFromDomainState(
           domainState,
-          testParams.getQueryTemplateRunnerParamsForDomainState(testParams.queryTemplate)
+          testParams.getQueryTemplateRunnerParamsForDomainState(testParams.queryTemplate),
+          defaultMiroirModelEnviroment,
         ) as any;
         for (const [testAssertionName, testAssertionParams] of Object.entries(testParams.testAssertions)) {
           console.log(`############################################## running query TEMPLATE for DOMAIN STATE test assertion: ${currentTestName} ${testAssertionName}`);
@@ -1206,7 +1210,8 @@ describe("queries.unit", () => {
       ) {
         const preTemplateResult = testParams.runQueryTemplateFromReduxDeploymentsState(
           deploymentEntityState,
-          testParams.getQueryTemplateRunnerParamsForReduxDeploymentsState(testParams.queryTemplate)
+          testParams.getQueryTemplateRunnerParamsForReduxDeploymentsState(testParams.queryTemplate),
+          defaultMiroirModelEnviroment,
         ) as any;
         for (const [testAssertionName, testAssertionParams] of Object.entries(testParams.testAssertions)) {
           console.log(`############################################## running query TEMPLATE for DEPLOYMENT ENTITY STATE test assertion: ${currentTestName} ${testAssertionName}`);
