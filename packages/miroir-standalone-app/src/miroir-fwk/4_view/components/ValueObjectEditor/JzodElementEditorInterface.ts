@@ -1,4 +1,5 @@
 
+import { FormikProps } from "formik";
 import {
   ApplicationSection,
   EntityInstance,
@@ -29,8 +30,7 @@ export interface JzodEditorPropsRoot {
   currentDeploymentUuid?: Uuid,
   currentApplicationSection?: ApplicationSection;
   initialFormState?: any;
-  // rawJzodSchema: JzodElement | undefined;
-  resolvedElementJzodSchema: JzodElement | undefined;
+  resolvedElementJzodSchema: JzodElement | undefined; // TODO: remove (?) this is included in typeCheckKeyMap
   typeCheckKeyMap: Record<string, KeyMapEntry> | undefined;
   // objects
   foreignKeyObjects: Record<string, EntityInstancesUuidIndex>; // prop drilling: for uuid / objects only
@@ -42,6 +42,7 @@ export interface JzodEditorPropsRoot {
   // parentType?: string; // used to control the parent type of the element, used for record elements. TODO: accept real type enum
   deleteButtonElement?: JSX.Element; // used to display a delete button in the editor
   hasTypeError?: boolean; // used to control if the editor has a type error or not
+  readOnly?: boolean; // used to switch between editable and read-only display modes
 }
 
 // ################################################################################################
@@ -56,6 +57,7 @@ export interface JzodElementEditorProps extends JzodEditorPropsRoot {
       [k: string]: boolean;
     }>
   >;
+  maxRenderDepth?: number; // Optional max depth for initial rendering, default 1
 }
 
 // ################################################################################################
@@ -74,6 +76,7 @@ export interface JzodArrayEditorProps extends JzodEditorPropsRoot {
   // setItemsOrder: React.Dispatch<React.SetStateAction<any[]>>
   itemsOrder: any[];
   displayAsStructuredElementSwitch?: JSX.Element; // used to display switches in the editor
+  maxRenderDepth?: number; // Optional max depth for initial rendering, default 1
 }
 
 // #################################################################################################
@@ -109,6 +112,7 @@ export interface JzodObjectEditorProps extends JzodEditorPropsRoot {
       [k: string]: boolean;
     }>
   >;
+  maxRenderDepth?: number; // Optional max depth for initial rendering, default 1
 }
 
 // #####################################################################################################
@@ -127,6 +131,7 @@ export type JzodElementEditorReactCodeMirrorProps = {
   insideAny?: boolean; // used to control visibility of the editor
   displayAsStructuredElementSwitch?: JSX.Element;
   jzodSchemaTooltip?: JSX.Element; // used to display the actual raw jzod schema as a tooltip
+  readOnly?: boolean; // NEW: if true, display as read-only code block
   // displayAsCode?: boolean; // used to display the editor as a structured element, not as code editor  
 };
 

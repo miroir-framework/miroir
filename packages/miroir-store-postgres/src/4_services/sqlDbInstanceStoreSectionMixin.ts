@@ -454,7 +454,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
           const sequelizeModel = this.sqlSchemaTableAccess[parentUuid]?.sequelizeModel;
           rawResult = (await sequelizeModel?.findAll()) as unknown as EntityInstance[];
           cleanResult = rawResult.map((i) => i["dataValues"]);
-          log.info("getInstances result", JSON.stringify(cleanResult, null, 2));
+          // log.info("getInstances result", JSON.stringify(cleanResult, null, 2));
         } else {
           log.warn(
             this.logHeader,
@@ -485,7 +485,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
         return Promise.resolve(
           new Action2Error(
             "FailedToGetInstances",
-            `could not get instances for entity ${parentUuid}`
+            `sqlDbStoreName ${this.sqlDbStoreName} could not get instances for entity ${parentUuid}`
           )
         );
       }

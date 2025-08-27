@@ -1,30 +1,35 @@
+import type { MiroirModelEnvironment } from "miroir-core";
 import {
+  getObjectUniondiscriminatorValuesFromResolvedSchema,
   JzodElement,
   JzodSchema,
+  jzodTypeCheck,
   JzodUnion,
   jzodUnion_recursivelyUnfold,
+  JzodUnion_RecursivelyUnfold_ReturnType,
   MetaModel,
   miroirFundamentalJzodSchema,
+  ResolvedJzodSchemaReturnType,
   unfoldJzodSchemaOnce,
   UnfoldJzodSchemaOnceReturnType,
 } from "miroir-core";
 import { describe, expect, it } from "vitest";
-import { getObjectUniondiscriminatorValuesFromResolvedSchema } from "miroir-core/src/1_core/jzod/getObjectUniondiscriminatorValuesFromResolvedSchema";
 import currentMiroirModel from "./currentMiroirModel.json";
 import currentModel from "./currentModel.json";
-import { JzodUnion_RecursivelyUnfold_ReturnType } from "miroir-core";
-import { ResolvedJzodSchemaReturnType } from "miroir-core";
-import { jzodTypeCheck } from "miroir-core";
 
-function local_test(schema: JzodElement, instance: any): string[] {
+function local_test(schema: JzodElement, instance: any): string[][] {
+  const modelEnvironment: MiroirModelEnvironment =     {
+      miroirFundamentalJzodSchema: miroirFundamentalJzodSchema as JzodSchema,
+      currentModel: currentModel as any as MetaModel,
+      miroirMetaModel: currentMiroirModel as any as MetaModel
+    };
+
   const resolvedElementJzodSchema: ResolvedJzodSchemaReturnType | undefined = jzodTypeCheck(
     schema,
     instance,
     [], // currentValuePath
     [], // currentTypePath
-    miroirFundamentalJzodSchema as JzodSchema,
-    currentModel as any as MetaModel,
-    currentMiroirModel as any as MetaModel,
+    modelEnvironment, // modelEnvironment
     {}
   )
 
@@ -51,9 +56,10 @@ function local_test(schema: JzodElement, instance: any): string[] {
   const recursivelyUnfoldedSchema: JzodUnion_RecursivelyUnfold_ReturnType = jzodUnion_recursivelyUnfold(
     unfoldedRawSchema.element as JzodUnion,
     new Set(),
-    miroirFundamentalJzodSchema as JzodSchema,
-    currentModel as any as MetaModel,
-    currentMiroirModel as any as MetaModel,
+    modelEnvironment, // modelEnvironment
+    // miroirFundamentalJzodSchema as JzodSchema,
+    // currentModel as any as MetaModel,
+    // currentMiroirModel as any as MetaModel,
     {} // relativeReferenceJzodContext
   );
   if (recursivelyUnfoldedSchema.status === "error") {
@@ -63,7 +69,7 @@ function local_test(schema: JzodElement, instance: any): string[] {
     resolvedElementJzodSchema.resolvedSchema,
     unfoldedRawSchema.element,
     recursivelyUnfoldedSchema.result,
-    (unfoldedRawSchema.element as JzodUnion).discriminator
+    // (unfoldedRawSchema.element as JzodUnion).discriminator
   );
 }
 
@@ -92,7 +98,36 @@ describe("getObjectUniondiscriminatorValuesFromResolvedSchema", () => {
     const instance = { objectType: "A", value: "test" };
     const result = local_test(schema, instance);
     console.log("Result for simple union:", JSON.stringify(result, null, 2));
-    expect(result).toEqual(["A", "B"]);
+    expect(result).toEqual([["A", "B"]]);
+  });
+
+  it("composite discriminator", () => {
+    const schema: JzodUnion = {
+      type: "union",
+      discriminator: ["objectType", "interpolation"],
+      definition: [
+        {
+          type: "object",
+          definition: {
+            objectType: { type: "literal", definition: "A" },
+            interpolation: { type: "literal", definition: "build" },
+            value: { type: "string" },
+          },
+        },
+        {
+          type: "object",
+          definition: {
+            objectType: { type: "literal", definition: "B" },
+            interpolation: { type: "literal", definition: "runtime" },
+            value: { type: "number" },
+          },
+        },
+      ],
+    };
+    const instance = { objectType: "A", interpolation: "build", value: "test" };
+    const result = local_test(schema, instance);
+    console.log("Result for simple union:", JSON.stringify(result, null, 2));
+    expect(result).toEqual([["A", "B"], ["build", "runtime"]]);
   });
 
 });

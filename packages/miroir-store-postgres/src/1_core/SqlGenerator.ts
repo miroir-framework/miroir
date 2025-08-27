@@ -30,7 +30,8 @@ import {
   TransformerForRuntime_objectDynamicAccess,
   TransformerForRuntime_objectEntries,
   TransformerForRuntime_objectValues,
-  TransformerForRuntime_unique
+  TransformerForRuntime_unique,
+  defaultMiroirModelEnviroment,
 } from "miroir-core";
 import { RecursiveStringRecords } from "../4_services/SqlDbQueryTemplateRunner";
 import { cleanLevel } from "../4_services/constants";
@@ -452,7 +453,8 @@ function sqlStringForApplyTo(
       break;
     }
     case "object": {
-      if (Array.isArray(actionRuntimeTransformer.applyTo) || !Object.hasOwn(actionRuntimeTransformer.applyTo, "referenceType")) {
+      if (Array.isArray(actionRuntimeTransformer.applyTo) || !Object.hasOwn(actionRuntimeTransformer.applyTo, "transformerType")) {
+        // simple constant: object or array
         return sqlStringForRuntimeTransformer(
           {
             transformerType: "constant",
@@ -467,32 +469,16 @@ function sqlStringForApplyTo(
           topLevelTransformer
         );
       }
-      if (actionRuntimeTransformer.applyTo.referenceType == "referencedExtractor") {
+      if (actionRuntimeTransformer.applyTo.transformerType != "contextReference") {
         return new Domain2ElementFailed({
           queryFailure: "QueryNotExecutable",
           query: actionRuntimeTransformer as any,
           failureMessage:
-            "sqlStringForRuntimeTransformer listPickElement not implemented for referencedExtractor",
+            "sqlStringForRuntimeTransformer sqlStringForApplyTo implemented only for contextReference type: " + JSON.stringify(actionRuntimeTransformer.applyTo),
         });
       }
-      const referenceQuery =
-        typeof actionRuntimeTransformer.applyTo.reference == "string"
-          ? sqlStringForRuntimeTransformer(
-              // shouldn't this be a contextReference instead?
-              {
-                transformerType: "constant",
-                interpolation: "runtime",
-                value: actionRuntimeTransformer.applyTo.reference as any,
-              },
-              preparedStatementParametersIndex,
-              indentLevel,
-              queryParams,
-              definedContextEntries,
-              useAccessPathForContextReference,
-              topLevelTransformer
-            )
-          : sqlStringForRuntimeTransformer(
-              actionRuntimeTransformer.applyTo.reference,
+      const referenceQuery = sqlStringForRuntimeTransformer(
+              actionRuntimeTransformer.applyTo,
               preparedStatementParametersIndex,
               indentLevel,
               queryParams,
@@ -1067,7 +1053,7 @@ function sqlStringForMapperListToListTransformer(
               "build", // TODO: resolve for runtime transformer. Does it make sense?
               undefined,
               actionRuntimeTransformer.elementTransformer,
-              queryParams,
+              {...defaultMiroirModelEnviroment, ...queryParams},
               {}, // contextResults, we are evaluating a build transformer here, not a runtime transformer
               "value"
             ),
@@ -2781,104 +2767,77 @@ export function sqlStringForRuntimeTransformer(
       topLevelTransformer
     )
   }
-  // switch (actionRuntimeTransformer.transformerType) {
-  //   case "dataflowSequence": {
-  //     throw new Error("sqlStringForRuntimeTransformer dataflowSequence not implemented");
-  //     break;
-  //   }
-  //   // case "constantUuid":
-  //   // case "constantBoolean":
-  //   // case "constantBigint":
-  //   // case "constantNumber":
-  //   // case "constantObject":
-  //   case "constantString": {
-  //     return sqlStringForConstantAnyTransformer(
-  //       actionRuntimeTransformer as any,
-  //       preparedStatementParametersCount,
-  //       indentLevel,
-  //       queryParams,
-  //       definedContextEntries,
-  //       useAccessPathForContextReference,
-  //       topLevelTransformer,
-  //       withClauseColumnName,
-  //       iterateOn,
-  //     );
-  //     break;
-  //   }
-    // default: {
-      const castTransformer = actionRuntimeTransformer as any;
-      const foundApplicationTransformer = applicationTransformerDefinitions[castTransformer.transformerType];
+  const castTransformer = actionRuntimeTransformer as any;
+  const foundApplicationTransformer =
+    applicationTransformerDefinitions[castTransformer.transformerType];
 
-      if (!foundApplicationTransformer) {
+  if (!foundApplicationTransformer) {
+    return new Domain2ElementFailed({
+      queryFailure: "QueryNotExecutable",
+      query: actionRuntimeTransformer as any,
+      failureMessage:
+        "sqlStringForRuntimeTransformer transformerType not found in applicationTransformerDefinitions: " +
+        castTransformer.transformerType,
+    });
+  }
+  switch (foundApplicationTransformer.transformerImplementation.transformerImplementationType) {
+    case "libraryImplementation": {
+      if (
+        !foundApplicationTransformer.transformerImplementation.sqlImplementationFunctionName ||
+        !sqlTransformerImplementations[
+          foundApplicationTransformer.transformerImplementation.sqlImplementationFunctionName
+        ]
+      ) {
         return new Domain2ElementFailed({
           queryFailure: "QueryNotExecutable",
           query: actionRuntimeTransformer as any,
           failureMessage:
-            "sqlStringForRuntimeTransformer transformerType not found in applicationTransformerDefinitions: " +
-            castTransformer.transformerType,
+            "sqlStringForRuntimeTransformer transformerType not found in sqlTransformerImplementations: " +
+            foundApplicationTransformer.transformerImplementation.sqlImplementationFunctionName,
         });
       }
-      switch (foundApplicationTransformer.transformerImplementation.transformerImplementationType) {
-        case "libraryImplementation": {
-          if (
-            !foundApplicationTransformer.transformerImplementation.sqlImplementationFunctionName ||
-            !sqlTransformerImplementations[
-              foundApplicationTransformer.transformerImplementation.sqlImplementationFunctionName
-            ]
-          ) {
-            return new Domain2ElementFailed({
-              queryFailure: "QueryNotExecutable",
-              query: actionRuntimeTransformer as any,
-              failureMessage:
-                "sqlStringForRuntimeTransformer transformerType not found in sqlTransformerImplementations: " +
-                foundApplicationTransformer.transformerImplementation.sqlImplementationFunctionName,
-            });
-          }
-          const transformerSql = sqlTransformerImplementations[
-            foundApplicationTransformer.transformerImplementation.sqlImplementationFunctionName
-          ](
-            castTransformer,
-            preparedStatementParametersCount,
-            indentLevel,
-            queryParams,
-            definedContextEntries,
-            useAccessPathForContextReference,
-            topLevelTransformer,
-            withClauseColumnName,
-            iterateOn,
-          );
-          return transformerSql;
-          break;
-        }
-        case "transformer":{
-          const applicationTransformerSql = sqlStringForRuntimeTransformer(
-            foundApplicationTransformer.transformerImplementation.definition as TransformerForRuntime,
-            preparedStatementParametersCount,
-            indentLevel,
-            {
-              ...queryParams,
-              ...castTransformer,
-            },
-            definedContextEntries,
-            useAccessPathForContextReference,
-            topLevelTransformer,
-            withClauseColumnName,
-            iterateOn,
-          );
-          return applicationTransformerSql;
-          break;
-      }
-        default:{
-          throw new Error(
-            "sqlStringForRuntimeTransformer transformerType not implemented: " +
-              JSON.stringify(foundApplicationTransformer.transformerImplementation)
-          );
-          break;
-        }
-      }
-      // break;
-    // }
-  // }
+      const transformerSql = sqlTransformerImplementations[
+        foundApplicationTransformer.transformerImplementation.sqlImplementationFunctionName
+      ](
+        castTransformer,
+        preparedStatementParametersCount,
+        indentLevel,
+        queryParams,
+        definedContextEntries,
+        useAccessPathForContextReference,
+        topLevelTransformer,
+        withClauseColumnName,
+        iterateOn,
+      );
+      return transformerSql;
+      break;
+    }
+    case "transformer":{
+      const applicationTransformerSql = sqlStringForRuntimeTransformer(
+        foundApplicationTransformer.transformerImplementation.definition as TransformerForRuntime,
+        preparedStatementParametersCount,
+        indentLevel,
+        {
+          ...queryParams,
+          ...castTransformer,
+        },
+        definedContextEntries,
+        useAccessPathForContextReference,
+        topLevelTransformer,
+        withClauseColumnName,
+        iterateOn,
+      );
+      return applicationTransformerSql;
+      break;
+  }
+    default:{
+      throw new Error(
+        "sqlStringForRuntimeTransformer transformerType not implemented: " +
+          JSON.stringify(foundApplicationTransformer.transformerImplementation)
+      );
+      break;
+    }
+  }
 }
 
 // ################################################################################################

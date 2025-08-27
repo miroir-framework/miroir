@@ -58,46 +58,34 @@ export const transformer_spreadSheetToJzodSchema: TransformerDefinition = {
         firstLine: {
           transformerType: "listPickElement",
           applyTo: {
-            referenceType: "referencedTransformer",
-            reference: {
-              transformerType: "contextReference",
-              interpolation: "runtime",
-              referenceName: "spreadsheetContents",
-            },
+            transformerType: "contextReference",
+            interpolation: "runtime",
+            referenceName: "spreadsheetContents",
           },
           index: 0,
         },
         attributeNames: {
           transformerType: "objectValues",
           applyTo: {
-            referenceType: "referencedTransformer",
-            reference: {
-              transformerType: "contextReference",
-              interpolation: "runtime",
-              referencePath: ["firstLine"],
-            },
+            transformerType: "contextReference",
+            interpolation: "runtime",
+            referencePath: ["firstLine"],
           },
         },
         splitAttributeDefinitions: {
           transformerType: "mapperListToList",
           applyTo: {
-            referenceType: "referencedTransformer",
-            reference: {
-              transformerType: "contextReference",
-              interpolation: "runtime",
-              referencePath: ["attributeNames"],
-            },
+            transformerType: "contextReference",
+            interpolation: "runtime",
+            referencePath: ["attributeNames"],
           },
           referenceToOuterObject: "attributeName",
           elementTransformer: {
             transformerType: "object_fullTemplate",
             applyTo: {
-              referenceType: "referencedTransformer",
-              reference: {
-                transformerType: "contextReference",
-                interpolation: "runtime",
-                referencePath: ["attributeName"],
-              },
+              transformerType: "contextReference",
+              interpolation: "runtime",
+              referencePath: ["attributeName"],
             },
             referenceToOuterObject: "attributeName",
             definition: [
@@ -118,23 +106,17 @@ export const transformer_spreadSheetToJzodSchema: TransformerDefinition = {
         mergedAttributeDefinitions: {
           transformerType: "listReducerToSpreadObject",
           applyTo: {
-            referenceType: "referencedTransformer",
-            reference: {
-              transformerType: "contextReference",
-              interpolation: "runtime",
-              referencePath: ["splitAttributeDefinitions"],
-            },
+            transformerType: "contextReference",
+            interpolation: "runtime",
+            referencePath: ["splitAttributeDefinitions"],
           },
         },
         completeAttributeDefinitions: {
           transformerType: "objectAlter",
           applyTo: {
-            referenceType: "referencedTransformer",
-            reference: {
-              transformerType: "contextReference",
-              interpolation: "runtime",
-              referenceName: "mergedAttributeDefinitions",
-            },
+            transformerType: "contextReference",
+            interpolation: "runtime",
+            referenceName: "mergedAttributeDefinitions",
           },
           referenceToOuterObject: "mergedAttributeDefinitions",
           definition: {

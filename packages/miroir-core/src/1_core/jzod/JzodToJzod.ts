@@ -5,6 +5,7 @@ import {
   JzodReference,
   JzodUnion,
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { log } from "console";
 
 export type JzodReferenceResolutionFunction = (schema: JzodReference) => JzodElement | undefined;
 
@@ -115,6 +116,16 @@ export function applyLimitedCarryOnSchemaOnLevel(
    *
    *
    */
+  // console.log(
+  //   "############# applyLimitedCarryOnSchemaOnLevel",
+  //   "baseSchema",
+  //   JSON.stringify(baseSchema),
+  //   "carryOnSchema",
+  //   JSON.stringify(carryOnSchema),
+  //   "alwaysPropagate",
+  //   alwaysPropagate,
+  // );
+
   // console.log("############# applyLimitedCarryOnSchemaOnLevel", "suffixForReferences", suffixForReferences);
   // const convertedExtra: JzodElement | undefined = baseSchema.extra
   //   ? applyCarryOnSchema(
@@ -136,32 +147,45 @@ export function applyLimitedCarryOnSchemaOnLevel(
   //     resolvedReferences: convertedReferences,
   //   }
   // }
-  const convertedTag =
-    castTag && castTag.schema && castTag.schema.valueSchema
-      ? {
-          ...castTag,
-          schema: {
-            ...castTag.schema,
-            valueSchema: applyLimitedCarryOnSchemaOnLevel(
-              castTag.schema.valueSchema, // hard-coded type for jzodBaseSchema.extra is "any", it is replaced in any "concrete" jzodSchema definition
-              carryOnSchema,
-              carryOnSchemaDiscriminator,
-              alwaysPropagate,
-              false, // applyOnFirstLevel
-              carryOnPrefix,
-              localReferencePrefix,
-              suffixForReferences,
-              resolveJzodReference,
-              convertedReferences
-            ).resultSchema,
-          },
-        } // TODO: what about resolvedReferences for extra? They are ignored, is it about right?
-      : castTag;
+  let convertedTag:JzodElement = castTag;
+  if (castTag && castTag.schema && castTag.schema.valueSchema) {    
+    // Check if this tag references a transformer schema - if so, skip carryOn application
+    // to prevent infinite recursion since transformers are already complete types
+    const isTransformerReference = castTag.value && 
+      castTag.value.conditionalMMLS && 
+      castTag.value.conditionalMMLS.mmlsReference && 
+      castTag.value.conditionalMMLS.mmlsReference.relativePath &&
+      (castTag.value.conditionalMMLS.mmlsReference.relativePath.startsWith("transformerForBuild") ||
+       castTag.value.conditionalMMLS.mmlsReference.relativePath.startsWith("transformerForRuntime"));
+    
+    if (isTransformerReference) {
+      // Don't apply carryOn to transformer references to prevent infinite recursion
+      convertedTag = castTag;
+    } else {
+      convertedTag = {
+        ...castTag,
+        schema: {
+          ...castTag.schema,
+          valueSchema: applyLimitedCarryOnSchemaOnLevel(
+            castTag.schema.valueSchema, // hard-coded type for jzodBaseSchema.extra is "any", it is replaced in any "concrete" jzodSchema definition
+            carryOnSchema,
+            carryOnSchemaDiscriminator,
+            alwaysPropagate,
+            false, // applyOnFirstLevel
+            carryOnPrefix,
+            localReferencePrefix,
+            suffixForReferences,
+            resolveJzodReference,
+            convertedReferences
+          ).resultSchema,
+        },
+      }; // TODO: what about resolvedReferences for extra? They are ignored, is it about right?
+    }
+  }
 
   // if (baseSchema.tag && baseSchema.tag.schema && baseSchema.tag.schema.valueSchema) {
   //   console.log("############# applyCarryOnSchema", "convertedTag", convertedTag)
   // }
-  // console.log("############# applyLimitedCarryOnSchemaOnLevel", "baseSchema", JSON.stringify(baseSchema))
 
   switch (baseSchema.type) {
     case "any":
@@ -649,6 +673,18 @@ export function applyLimitedCarryOnSchemaOnLevel(
       const convertedContextSubSchemasReferences: Record<string, JzodElement> = {};
       const convertedAbosulteReferences: Record<string, JzodElement> = {};
       let resultReferenceDefinition = undefined;
+
+      /**
+       * the transformer references must not be converted, since it is implied the carryOnSchema is a tranformer reference
+       * 
+       */
+      if (["transformerForBuild", "transformerForRuntime", "transformerForBuildPlusRuntime"].includes(baseSchema?.definition?.relativePath??"")) {
+        return {
+          resultSchema: baseSchema,
+          hasBeenApplied: false,
+        };
+      }
+
       /**
        * absolute references have to be converted for carryOn, then enclosed and pushed-up as a local context reference/definition.
        * this creates a new local reference/context, and the absolute reference has to be replaced by a local reference.
@@ -657,6 +693,7 @@ export function applyLimitedCarryOnSchemaOnLevel(
        * relative references of converted absolute references must be referred to by their CONVERTED reference name!
        *
        */
+
       if (baseSchema.definition.absolutePath) {
         // lookup a locally-defined converted version of the reference
         const localReferenceName = forgeCarryOnReferenceName(

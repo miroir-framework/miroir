@@ -1,4 +1,4 @@
-// A minimal "expect" function with a Vitest-like interface, returning {result:boolean, message?:string}
+import equal from "fast-deep-equal";// A minimal "expect" function with a Vitest-like interface, returning {result:boolean, message?:string}
 
 type ExpectResult = { result: boolean; message?: string };
 type Expect = (actual: any, testName?: string) => {
@@ -13,7 +13,85 @@ function formatMessage(testName: string | undefined, message: string) {
   return testName ? `[${testName}] ${message}` : message;
 }
 
+type DescribeEachFunction = (data: any[]) => (template: string, testFn: (item: any) => void | Promise<void>, timeout?: number) => Promise<void>;
+type Describe = {
+  (title: string, testFn: () => void | Promise<void>): void | Promise<void>;
+  each: DescribeEachFunction;
+};
+
+export function describe(title: string, testFn: () => void | Promise<void>): void | Promise<void> {
+  console.log(`Describe: ${title}`);
+  return testFn();
+}
+
+describe.each = function(data: any[]): (template: string, testFn: (item: any) => void | Promise<void>, timeout?: number) => Promise<void> {
+  return async function(template: string, testFn: (item: any) => void | Promise<void>, timeout?: number): Promise<void> {
+    console.log(`Describe.each with template: ${template}`);
+    const promises = data.map(async (item, index) => {
+      const testTitle = template.replace('$currentTestSuiteName', item.transformerTestLabel || `Item ${index}`);
+      console.log(`Running test: ${testTitle}`);
+      try {
+        await testFn(item);
+      } catch (error) {
+        console.error(`Test failed: ${testTitle}`, error);
+        throw error;
+      }
+    });
+    await Promise.all(promises);
+  };
+} as DescribeEachFunction;
+
+// ################################################################################################
+export function jsonify(value: any): any {
+  if (value instanceof Map) {
+    const obj: any = {};
+    for (const [k, v] of value.entries()) {
+      obj[k] = jsonify(v);
+    }
+    return obj;
+  } else if (value instanceof Set) {
+    return Array.from(value).map(jsonify);
+  } else if (Array.isArray(value)) {
+    return value.map(jsonify);
+  } else if (value && typeof value === 'object') {
+    const obj: any = {};
+    for (const k in value) {
+      if (Object.prototype.hasOwnProperty.call(value, k)) {
+        obj[k] = jsonify(value[k]);
+      }
+    }
+    return obj;
+  } else {
+    return value;
+  }
+}
+
+function findFirstDiffPath(a: any, b: any, path: string[] = []): string[] | null {
+  if (a === b) return null;
+  if (typeof a !== typeof b) return path;
+  if (typeof a !== 'object' || a === null || b === null) return path;
+  if (Array.isArray(a) && Array.isArray(b)) {
+    const len = Math.max(a.length, b.length);
+    for (let i = 0; i < len; i++) {
+      if (i >= a.length || i >= b.length) return path.concat([i.toString()]);
+      const sub = findFirstDiffPath(a[i], b[i], path.concat([i.toString()]));
+      if (sub) return sub;
+    }
+    return null;
+  }
+  const aKeys = Object.keys(a);
+  const bKeys = Object.keys(b);
+  for (const key of new Set([...aKeys, ...bKeys])) {
+    if (!(key in a) || !(key in b)) return path.concat([key]);
+    const sub = findFirstDiffPath(a[key], b[key], path.concat([key]));
+    if (sub) return sub;
+  }
+  return null;
+}
+
+// ################################################################################################
 export function expect(actual: any, testName?: string) {
+  // console.log(`@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Expect called with actual: ${actual}, testName: ${testName}`);
   const matchers = {
     toBe(expected: any): ExpectResult {
       const pass = Object.is(actual, expected);
@@ -22,13 +100,20 @@ export function expect(actual: any, testName?: string) {
         : { result: false, message: formatMessage(testName, `Expected ${actual} to be ${expected}`) };
     },
     toEqual(expected: any): ExpectResult {
-      const pass = JSON.stringify(actual) === JSON.stringify(expected);
-      return pass
-        ? { result: true }
-        : { result: false, message: formatMessage(testName, `Expected ${JSON.stringify(actual)} to equal ${JSON.stringify(expected)}`) };
+      const pass = typeof actual == "object" && typeof expected == "object"? equal(actual,expected): actual == expected;
+      if (pass) {
+        return { result: true };
+      } else {
+        let diffPath = findFirstDiffPath(actual, expected);
+        return {
+          result: false,
+          message: formatMessage(testName, `Expected ${JSON.stringify(actual)} to equal ${JSON.stringify(expected)}. First difference at path: ${diffPath ? JSON.stringify(diffPath) : 'unknown'}`)
+        };
+      }
     },
     toStrictEqual(expected: any): ExpectResult {
-      const pass = JSON.stringify(actual) === JSON.stringify(expected);
+      // const pass = JSON.stringify(actual) === JSON.stringify(expected);
+      const pass = actual === expected;
       return pass
         ? { result: true }
         : { result: false, message: formatMessage(testName, `Expected ${JSON.stringify(actual)} to strictly equal ${JSON.stringify(expected)}`) };
@@ -181,3 +266,4 @@ export function expect(actual: any, testName?: string) {
   }
   return { ...matchers, not };
 }
+

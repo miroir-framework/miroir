@@ -5,13 +5,13 @@ import { DomainState } from "../../src/0_interfaces/2_domain/DomainControllerInt
 // import {
 //   BoxedQueryTemplateWithExtractorCombinerTransformer,
 //   BoxedQueryWithExtractorCombinerTransformer,
-//   DeploymentEntityState,
-//   getQueryRunnerParamsForDeploymentEntityState,
-//   GetQueryRunnerParamsForDeploymentEntityState,
-//   runQueryFromDeploymentEntityState,
-//   GetQueryTemplateRunnerParamsForDeploymentEntityState,
-//   getQueryTemplateRunnerParamsForDeploymentEntityState,
-//   runQueryTemplateFromDeploymentEntityState,
+//   ReduxDeploymentsState,
+//   getQueryRunnerParamsForReduxDeploymentsState,
+//   GetQueryRunnerParamsForReduxDeploymentsState,
+//   runQueryFromReduxDeploymentsState,
+//   GetQueryTemplateRunnerParamsForReduxDeploymentsState,
+//   getQueryTemplateRunnerParamsForReduxDeploymentsState,
+//   runQueryTemplateFromReduxDeploymentsState,
 //   SyncQueryRunner,
 //   SyncQueryTemplateRunner,
 //   GetQueryRunnerParamsForDomainState,
@@ -20,7 +20,7 @@ import { DomainState } from "../../src/0_interfaces/2_domain/DomainControllerInt
 //   getQueryTemplateRunnerParamsForDomainState,
 //   GetSelectorParamsForQueryTemplateOnDomainStateType,
 //   runQueryTemplateFromDomainState,
-//   domainStateToDeploymentEntityState,
+//   domainStateToReduxDeploymentsState,
 //   resolvePathOnObject,
 //   Domain2ElementFailed, Domain2QueryReturnType,
 //   ignorePostgresExtraAttributes,
@@ -30,8 +30,8 @@ import { DomainState } from "../../src/0_interfaces/2_domain/DomainControllerInt
 import domainStateImport from "./domainState.json";
 // import adminConfigurationDeploymentLibrary from "../../src/assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/f714bb2f-a12d-4e71-a03b-74dcedea6eb4.json" with { type: "json" };
 import adminConfigurationDeploymentLibrary from "../../src/assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/f714bb2f-a12d-4e71-a03b-74dcedea6eb4.json";
-import { DeploymentEntityState } from '../../src/0_interfaces/2_domain/DeploymentStateInterface.js';
-import { domainStateToDeploymentEntityState, resolvePathOnObject } from '../../src/tools.js';
+import { ReduxDeploymentsState } from '../../src/0_interfaces/2_domain/ReduxDeploymentsStateInterface';
+import { domainStateToReduxDeploymentsState, resolvePathOnObject } from '../../src/tools.js';
 import {
   getQueryTemplateRunnerParamsForDomainState,
   GetSelectorParamsForQueryTemplateOnDomainStateType,
@@ -43,15 +43,15 @@ import {
   runQueryFromDomainState,
 } from "../../src/2_domain/DomainStateQuerySelectors.js";
 import {
-  GetQueryTemplateRunnerParamsForDeploymentEntityState,
-  getQueryTemplateRunnerParamsForDeploymentEntityState,
-  runQueryTemplateFromDeploymentEntityState,
-} from "../../src/2_domain/DeploymentEntityStateQueryTemplateSelectors.js";
+  GetQueryTemplateRunnerParamsForReduxDeploymentsState,
+  getQueryTemplateRunnerParamsForReduxDeploymentsState,
+  runQueryTemplateFromReduxDeploymentsState,
+} from "../../src/2_domain/ReduxDeploymentsStateQueryTemplateSelectors.js";
 import {
-  GetQueryRunnerParamsForDeploymentEntityState,
-  getQueryRunnerParamsForDeploymentEntityState,
-  runQueryFromDeploymentEntityState,
-} from "../../src/2_domain/DeploymentEntityStateQuerySelectors.js";
+  GetQueryRunnerParamsForReduxDeploymentsState,
+  getQueryRunnerParamsForReduxDeploymentsState,
+  runQueryFromReduxDeploymentsState,
+} from "../../src/2_domain/ReduxDeploymentsStateQuerySelectors.js";
 import {
   Domain2ElementFailed,
   Domain2QueryReturnType,
@@ -63,9 +63,10 @@ import {
   SyncQueryRunner,
   SyncQueryTemplateRunner,
 } from "../../dist";
+import { defaultMiroirModelEnviroment } from "../../src";
 
 const domainState: DomainState = domainStateImport as DomainState;
-const deploymentEntityState: DeploymentEntityState = domainStateToDeploymentEntityState(domainState);
+const deploymentEntityState: ReduxDeploymentsState = domainStateToReduxDeploymentsState(domainState);
 
 const ignoreFailureAttributes:string[] = [
   "applicationSection",
@@ -100,25 +101,25 @@ export interface TestExtractorParams {
   >
   // ##############################################################################################
   // Deployment Entity State
-  getQueryRunnerParamsForDeploymentEntityState?: GetQueryRunnerParamsForDeploymentEntityState,
-  runQueryFromDeploymentEntityState?: SyncQueryRunner<
-    DeploymentEntityState,
+  getQueryRunnerParamsForReduxDeploymentsState?: GetQueryRunnerParamsForReduxDeploymentsState,
+  runQueryFromReduxDeploymentsState?: SyncQueryRunner<
+    ReduxDeploymentsState,
     Domain2QueryReturnType<Record<string,any>>
   >
 
-  getQueryTemplateRunnerParamsForDeploymentEntityState?: GetQueryTemplateRunnerParamsForDeploymentEntityState;
-  runQueryTemplateFromDeploymentEntityState:SyncQueryTemplateRunner<
-    DeploymentEntityState,
+  getQueryTemplateRunnerParamsForReduxDeploymentsState?: GetQueryTemplateRunnerParamsForReduxDeploymentsState;
+  runQueryTemplateFromReduxDeploymentsState:SyncQueryTemplateRunner<
+    ReduxDeploymentsState,
     Domain2QueryReturnType<Record<string,any>>
   >
 
-  // extractorRunnerForDeploymentEntityState?: ExtractWithExtractorType<DeploymentEntityState>;
-  // extractorTemplateRunnerForDeploymentEntityState?: SyncBoxedExtractorTemplateRunner<
+  // extractorRunnerForReduxDeploymentsState?: ExtractWithExtractorType<ReduxDeploymentsState>;
+  // extractorTemplateRunnerForReduxDeploymentsState?: SyncBoxedExtractorTemplateRunner<
   //   BoxedExtractorTemplateReturningObjectOrObjectList,
-  //   DeploymentEntityState,
+  //   ReduxDeploymentsState,
   //   DomainElement
   // >;
-  // getExtractorTemplateRunnerParamsForDeploymentEntityState?: GetExtractorTemplateRunnerParamsForDeploymentEntityState
+  // getExtractorTemplateRunnerParamsForReduxDeploymentsState?: GetExtractorTemplateRunnerParamsForReduxDeploymentsState
   //
   testAssertions: Record<
     string,
@@ -129,7 +130,7 @@ export interface TestExtractorParams {
   >;
 }
 
-const testExtractorTools = {
+const testExtractorTools: TestExtractorParams = {
     // Domain State
     getQueryTemplateRunnerParamsForDomainState: getQueryTemplateRunnerParamsForDomainState,
     runQueryTemplateFromDomainState: runQueryTemplateFromDomainState,
@@ -139,16 +140,16 @@ const testExtractorTools = {
 
     // ############################################################################################
     // Deployment Entity State
-    getQueryTemplateRunnerParamsForDeploymentEntityState: getQueryTemplateRunnerParamsForDeploymentEntityState,
-    runQueryTemplateFromDeploymentEntityState:runQueryTemplateFromDeploymentEntityState,
+    getQueryTemplateRunnerParamsForReduxDeploymentsState: getQueryTemplateRunnerParamsForReduxDeploymentsState,
+    runQueryTemplateFromReduxDeploymentsState:runQueryTemplateFromReduxDeploymentsState,
     
-    getQueryRunnerParamsForDeploymentEntityState: getQueryRunnerParamsForDeploymentEntityState,
-    runQueryFromDeploymentEntityState: runQueryFromDeploymentEntityState,
+    getQueryRunnerParamsForReduxDeploymentsState: getQueryRunnerParamsForReduxDeploymentsState,
+    runQueryFromReduxDeploymentsState: runQueryFromReduxDeploymentsState,
 
     // extractors
-    // extractorRunnerForDeploymentEntityState: extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList<DeploymentEntityState>,
-    // extractorTemplateRunnerForDeploymentEntityState: extractWithBoxedExtractorTemplate<DeploymentEntityState>,
-    // getExtractorTemplateRunnerParamsForDeploymentEntityState: getExtractorTemplateRunnerParamsForDeploymentEntityState,
+    // extractorRunnerForReduxDeploymentsState: extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList<ReduxDeploymentsState>,
+    // extractorTemplateRunnerForReduxDeploymentsState: extractWithBoxedExtractorTemplate<ReduxDeploymentsState>,
+    // getExtractorTemplateRunnerParamsForReduxDeploymentsState: getExtractorTemplateRunnerParamsForReduxDeploymentsState,
 }
 
 const testExtractorParams: Record<string, TestExtractorParams> = {
@@ -1074,8 +1075,8 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
           transformerType: "unique",
           interpolation: "runtime",
           applyTo: {
-            referenceType: "referencedTransformer",
-            reference: "books",
+            transformerType: "contextReference",
+            referenceName: "books",
           },
           attribute: "publisher",
         },
@@ -1101,8 +1102,8 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
           transformerType: "unique",
           interpolation: "runtime",
           applyTo: {
-            referenceType: "referencedTransformer",
-            reference: "books",
+            transformerType: "contextReference",
+            referenceName: "books",
           },
           attribute: "publisher",
         },
@@ -1152,7 +1153,8 @@ describe("queries.unit", () => {
       if (testParams.runQueryFromDomainState && testParams.getQueryRunnerParamsForDomainState) {
         const preResult = testParams.runQueryFromDomainState(
           domainState,
-          testParams.getQueryRunnerParamsForDomainState(testParams.query)
+          testParams.getQueryRunnerParamsForDomainState(testParams.query),
+          defaultMiroirModelEnviroment,
           // getExtractorRunnerParamsForDomainState(testParams.query)
         );
         for (const [testAssertionName, testAssertionParams] of Object.entries(testParams.testAssertions)) {
@@ -1166,10 +1168,11 @@ describe("queries.unit", () => {
         }
       }
       // Deployment Entity State
-      if (testParams.runQueryFromDeploymentEntityState && testParams.getQueryRunnerParamsForDeploymentEntityState) {
-        const preResult = testParams.runQueryFromDeploymentEntityState(
+      if (testParams.runQueryFromReduxDeploymentsState && testParams.getQueryRunnerParamsForReduxDeploymentsState) {
+        const preResult = testParams.runQueryFromReduxDeploymentsState(
           deploymentEntityState,
-          testParams.getQueryRunnerParamsForDeploymentEntityState(testParams.query)
+          testParams.getQueryRunnerParamsForReduxDeploymentsState(testParams.query),
+          defaultMiroirModelEnviroment,
         );
         for (const [testAssertionName, testAssertionParams] of Object.entries(testParams.testAssertions)) {
         console.log(`############################################## running query for DEPLOYMENT ENTITY STATE test assertion: ${currentTestName} ${testAssertionName}`);
@@ -1189,7 +1192,8 @@ describe("queries.unit", () => {
       ) {
         const preTemplateResult = testParams.runQueryTemplateFromDomainState(
           domainState,
-          testParams.getQueryTemplateRunnerParamsForDomainState(testParams.queryTemplate)
+          testParams.getQueryTemplateRunnerParamsForDomainState(testParams.queryTemplate),
+          defaultMiroirModelEnviroment,
         ) as any;
         for (const [testAssertionName, testAssertionParams] of Object.entries(testParams.testAssertions)) {
           console.log(`############################################## running query TEMPLATE for DOMAIN STATE test assertion: ${currentTestName} ${testAssertionName}`);
@@ -1201,12 +1205,13 @@ describe("queries.unit", () => {
       }
       // Deployment Entity State
       if (
-        testParams.getQueryTemplateRunnerParamsForDeploymentEntityState &&
-        testParams.runQueryTemplateFromDeploymentEntityState
+        testParams.getQueryTemplateRunnerParamsForReduxDeploymentsState &&
+        testParams.runQueryTemplateFromReduxDeploymentsState
       ) {
-        const preTemplateResult = testParams.runQueryTemplateFromDeploymentEntityState(
+        const preTemplateResult = testParams.runQueryTemplateFromReduxDeploymentsState(
           deploymentEntityState,
-          testParams.getQueryTemplateRunnerParamsForDeploymentEntityState(testParams.queryTemplate)
+          testParams.getQueryTemplateRunnerParamsForReduxDeploymentsState(testParams.queryTemplate),
+          defaultMiroirModelEnviroment,
         ) as any;
         for (const [testAssertionName, testAssertionParams] of Object.entries(testParams.testAssertions)) {
           console.log(`############################################## running query TEMPLATE for DEPLOYMENT ENTITY STATE test assertion: ${currentTestName} ${testAssertionName}`);

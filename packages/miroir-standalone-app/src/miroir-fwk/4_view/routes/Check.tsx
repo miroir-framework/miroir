@@ -9,6 +9,7 @@ import {
 import { useState } from "react";
 import { z } from "zod";
 import { PageContainer } from "../components/Page/PageContainer.js";
+import { usePageConfiguration } from "../services/index.js";
 
 let count = 0;
 
@@ -31,6 +32,14 @@ export const CheckPage: React.FC<any> = (
   props: any // TODO: give a type to props!!!
 ) => {
   count++;
+  
+  // Auto-fetch configurations when the page loads
+  const { fetchConfigurations } = usePageConfiguration({
+    autoFetchOnMount: true,
+    successMessage: "Check page configurations loaded successfully",
+    actionName: "check page configuration fetch"
+  });
+  
   const [testInput, setTestInput] = useState<string>("");
   const [testResult, setTestResult] = useState<JSX.Element>(<></>);
 

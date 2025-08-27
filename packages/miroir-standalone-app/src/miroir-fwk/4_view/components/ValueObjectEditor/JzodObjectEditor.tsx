@@ -1,58 +1,52 @@
-import { ErrorBoundary } from "react-error-boundary";
-import React, { FC, useCallback, useMemo, useState, useRef, useEffect } from "react";
 import Clear from "@mui/icons-material/Clear";
-import InfoOutlined from "@mui/icons-material/InfoOutlined";
+import React, { FC, useCallback, useEffect, useMemo, useState } from "react";
+import { ErrorBoundary } from "react-error-boundary";
 
 import {
+  alterObjectAtPath,
+  deleteObjectAtPath,
+  ReduxDeploymentsState,
+  foldableElementTypes,
+  getDefaultValueForJzodSchemaWithResolutionNonHook,
   JzodElement,
   JzodObject,
-  JzodLiteral,
-  JzodEnum,
-  unfoldJzodSchemaOnce,
+  JzodRecord,
+  KeyMapEntry,
   LoggerInterface,
   MiroirLoggerFactory,
-  getDefaultValueForJzodSchemaWithResolution,
-  JzodRecord,
   resolvePathOnObject,
-  deleteObjectAtPath,
-  alterObjectAtPath,
-  ResolvedJzodSchemaReturnType,
-  UnfoldJzodSchemaOnceReturnType,
-  KeyMapEntry,
-  foldableElementTypes,
+  SyncBoxedExtractorOrQueryRunnerMap,
+  defaultMiroirModelEnviroment
 } from "miroir-core";
 
-import { indentShift } from "./JzodArrayEditor";
-import { FoldUnfoldObjectOrArray, FoldUnfoldAllObjectAttributesOrArrayItems, JzodElementEditor } from "./JzodElementEditor";
-import { useJzodElementEditorHooks } from "./JzodElementEditorHooks";
-import { JzodObjectEditorProps } from "./JzodElementEditorInterface";
-import { getItemsOrder } from "../Themes/Style";
-import { 
-  ThemedSmallIconButton,
-  ThemedSizedButton, 
-  ThemedAddIcon,
-  ThemedEditableInput,
-  ThemedLoadingCard,
-  ThemedFoldedValueDisplay,
-  ThemedAttributeLabel,
-  ThemedFlexRow,
-  ThemedFlexColumn,
-  ThemedOptionalAttributeContainer,
-  ThemedOptionalAttributeItem,
-  ThemedAttributeName,
-  ThemedDeleteButtonContainer,
-  ThemedIndentedContainer
-} from "../Themes/ThemedComponents";
-import { useMiroirTheme } from '../../contexts/MiroirThemeContext';
-import { ErrorFallbackComponent } from "../ErrorFallbackComponent";
+import { getMemoizedReduxDeploymentsStateSelectorMap, ReduxStateWithUndoRedo } from "miroir-localcache-redux";
+import { useSelector } from "react-redux";
 import { packageName } from "../../../../constants";
 import { cleanLevel } from "../../constants";
 import {
-  measuredGetDefaultValueForJzodSchemaWithResolution,
-  measuredUnfoldJzodSchemaOnce,
-  measuredUseJzodElementEditorHooks,
+  measuredUnfoldJzodSchemaOnce
 } from "../../tools/hookPerformanceMeasure";
-import { keymap } from "@uiw/react-codemirror";
+import { ErrorFallbackComponent } from "../ErrorFallbackComponent";
+import { getItemsOrder } from "../Themes/Style";
+import {
+  ThemedAddIcon,
+  ThemedAttributeLabel,
+  ThemedAttributeName,
+  ThemedDeleteButtonContainer,
+  ThemedEditableInput,
+  ThemedFlexRow,
+  ThemedFoldedValueDisplay,
+  ThemedIndentedContainer,
+  ThemedLoadingCard,
+  ThemedOptionalAttributeContainer,
+  ThemedOptionalAttributeItem,
+  ThemedSizedButton,
+  ThemedSmallIconButton
+} from "../Themes/ThemedComponents";
+import { indentShift } from "./JzodArrayEditor";
+import { FoldUnfoldAllObjectAttributesOrArrayItems, FoldUnfoldObjectOrArray, JzodElementEditor } from "./JzodElementEditor";
+import { useJzodElementEditorHooks } from "./JzodElementEditorHooks";
+import { JzodObjectEditorProps } from "./JzodElementEditorInterface";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -302,7 +296,6 @@ const ProgressiveAttribute: FC<{
             rootLessListKeyArray={[...rootLessListKeyArray, attribute[0]]}
             indentLevel={usedIndentLevel + 1}
             currentDeploymentUuid={currentDeploymentUuid}
-            // rawJzodSchema={attributeRawJzodSchema}
             typeCheckKeyMap={typeCheckKeyMap}
             currentApplicationSection={currentApplicationSection}
             resolvedElementJzodSchema={currentAttributeDefinition}
@@ -311,18 +304,24 @@ const ProgressiveAttribute: FC<{
             setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
             insideAny={insideAny}
             optional={definedOptionalAttributes.has(attribute[0])}
+            maxRenderDepth={props.maxRenderDepth}
+            readOnly={props.readOnly}
             // parentType={currentKeyMap?.rawSchema?.type}
             deleteButtonElement={
-              <>
-                <ThemedSmallIconButton
-                  id={attributeRootLessListKey + "-removeOptionalAttributeOrRecordEntry"}
-                  aria-label={attributeRootLessListKey + "-removeOptionalAttributeOrRecordEntry"}
-                  onClick={deleteElement(attributeRootLessListKeyArray)}
-                  visible={isRecordType || definedOptionalAttributes.has(attribute[0])}
-                >
-                  <Clear />
-                </ThemedSmallIconButton>
-              </>
+              !props.readOnly ? (
+                <>
+                  <ThemedSmallIconButton
+                    id={attributeRootLessListKey + "-removeOptionalAttributeOrRecordEntry"}
+                    aria-label={attributeRootLessListKey + "-removeOptionalAttributeOrRecordEntry"}
+                    onClick={deleteElement(attributeRootLessListKeyArray)}
+                    visible={isRecordType || definedOptionalAttributes.has(attribute[0])}
+                  >
+                    <Clear />
+                  </ThemedSmallIconButton>
+                </>
+              ) : (
+                <></>
+              )
             }
           />
         </ErrorBoundary>
@@ -374,7 +373,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
   //   rootLessListKey,
   //   "rawJzodSchema",
   //   JSON.stringify(rawJzodSchema, null, 2),
-  //   "rootLessListKeyMap",
+  //   "rootLessListKeyMapDEFUNCT",
   //   JSON.stringify(localRootLessListKeyMap, null, 2),
   // );
   const {
@@ -415,12 +414,55 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
     [formik.values, rootLessListKeyArray]
   );
 
+  const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> =
+      getMemoizedReduxDeploymentsStateSelectorMap();
+
+  const deploymentEntityState: ReduxDeploymentsState = useSelector(
+    (state: ReduxStateWithUndoRedo) =>
+      deploymentEntityStateSelectorMap.extractState(
+        state.presentModelSnapshot.current,
+        () => ({}),
+        currentMiroirFundamentalJzodSchema?{
+          miroirFundamentalJzodSchema: currentMiroirFundamentalJzodSchema,
+          currentModel,
+          miroirMetaModel,
+        }: defaultMiroirModelEnviroment
+      )
+  );
+
   const foldableItemsCount = useMemo(() => {
     return currentTypeCheckKeyMap?.resolvedSchema.type === "object" // for record / object type, the resolvedSchema is a JzodObject
       ? Object.values(currentTypeCheckKeyMap.resolvedSchema.definition).filter(
         (item: JzodElement) => foldableElementTypes.includes(item.type)
       ).length : 0
   }, [currentTypeCheckKeyMap?.resolvedSchema]);
+
+  // ##############################################################################################
+  // Get unfoldingDepth from schema tag or default to 1
+  const unfoldingDepth = useMemo(() => {
+    // log.info(
+    //   "JzodObjectEditor computing unfoldingDepth",
+    //   "rootLessListKey",
+    //   rootLessListKey,
+    //   (currentTypeCheckKeyMap?.resolvedSchema?.tag?.value?.display as any)?.unfoldSubLevels,
+    // );
+    return (currentTypeCheckKeyMap?.resolvedSchema?.tag?.value?.display as any)?.unfoldSubLevels ?? 1;
+  }, [currentTypeCheckKeyMap?.resolvedSchema?.tag?.value?.display]);
+
+  // if (
+  //   ["jzodSchema", "jzodSchema.definition.definition.context.transformerTest"].includes(rootLessListKey)
+  // ) {
+  //   log.info(
+  //     "JzodObjectEditor computed for type tag unfoldingDepth",
+  //     currentTypeCheckKeyMap?.resolvedSchema?.tag?.value?.display,
+  //     "rootLessListKey",
+  //     rootLessListKey,
+  //     "unfoldingDepth",
+  //     unfoldingDepth,
+  //     "currentTypeCheckKeyMap",
+  //     currentTypeCheckKeyMap,
+  //   );
+  // }
 
   // ##############################################################################################
   // JzodSchemaTooltip
@@ -523,12 +565,22 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
     const newAttributeType: JzodElement = (currentTypeCheckKeyMap.rawSchema as JzodRecord)?.definition;
     // log.info("addExtraRecordEntry newAttributeType", JSON.stringify(newAttributeType, null, 2));
     const newAttributeValue = currentMiroirFundamentalJzodSchema
-      ? measuredGetDefaultValueForJzodSchemaWithResolution(
+      ? getDefaultValueForJzodSchemaWithResolutionNonHook(
           currentTypeCheckKeyMap?.rawSchema.definition,
+          formik.values, // rootObject
+          rootLessListKey,
+          undefined, // currentDefaultValue is not known yet, this is what this call will determine
+          [], // currentPath on value is root
+          deploymentEntityState,
           true, // force optional attributes to receive a default value
-          currentMiroirFundamentalJzodSchema,
-          currentModel,
-          miroirMetaModel
+          currentDeploymentUuid,
+          {
+            miroirFundamentalJzodSchema: currentMiroirFundamentalJzodSchema,
+            currentModel,
+            miroirMetaModel,
+          },
+          {}
+          // Object.hasOwn(formik.values,"")?formik.values[""]:{}, // rootObject
         )
       : undefined;
 
@@ -585,12 +637,21 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
         ["definition", attributeName]
       );
       const newAttributeValue = !!currentMiroirFundamentalJzodSchema
-        ? getDefaultValueForJzodSchemaWithResolution(
+        ? getDefaultValueForJzodSchemaWithResolutionNonHook(
             newAttributeType,
+            formik.values,
+            rootLessListKey,
+            undefined, // currentDefaultValue is not known yet, this is what this call will determine
+            [], // currentPath on value is root
+            deploymentEntityState,
             true, // force optional attributes to receive a default value
-            currentMiroirFundamentalJzodSchema,
-            currentModel,
-            miroirMetaModel,
+            currentDeploymentUuid,
+            {
+              miroirFundamentalJzodSchema: currentMiroirFundamentalJzodSchema,
+              currentModel,
+              miroirMetaModel,
+            },
+            {} // relativeReferenceJzodContext
           )
         : undefined;
 
@@ -609,7 +670,9 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
       );
       const newItemsOrder = getItemsOrder(
         newObjectValue,
-        currentTypeCheckKeyMap?.chosenUnionBranchRawSchema ?? currentTypeCheckKeyMap?.jzodObjectFlattenedSchema ?? currentTypeCheckKeyMap?.rawSchema
+        currentTypeCheckKeyMap?.chosenUnionBranchRawSchema ??
+          currentTypeCheckKeyMap?.jzodObjectFlattenedSchema ??
+          currentTypeCheckKeyMap?.rawSchema
       );
 
       // log.info(
@@ -789,6 +852,15 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
               foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
               setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
               listKey={listKey}
+              currentValue={currentValue}
+              unfoldingDepth={unfoldingDepth}
+            ></FoldUnfoldObjectOrArray>
+            <FoldUnfoldObjectOrArray
+              foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
+              setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
+              listKey={listKey}
+              currentValue={currentValue}
+              unfoldingDepth={Infinity}
             ></FoldUnfoldObjectOrArray>
             {(!foldedObjectAttributeOrArrayItems || !foldedObjectAttributeOrArrayItems[listKey]) &&
             itemsOrder.length >= 2 &&
@@ -798,6 +870,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
                 setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
                 listKey={listKey}
                 itemsOrder={itemsOrder}
+                maxDepth={props.maxRenderDepth ?? 1}
               ></FoldUnfoldAllObjectAttributesOrArrayItems>
             ) : (
               <></>
@@ -805,7 +878,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
           </span>
           <span>
             {/* add record attribute button for records */}
-            {currentTypeCheckKeyMap?.rawSchema.type == "record" &&
+            {!props.readOnly && currentTypeCheckKeyMap?.rawSchema.type == "record" &&
             !foldedObjectAttributeOrArrayItems[listKey] ? (
               <ThemedSizedButton
                 id={rootLessListKey + ".addRecordAttribute"}
@@ -821,7 +894,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
           </span>
           <span>
             {/* add optional attributes buttons */}
-            {currentTypeCheckKeyMap?.rawSchema.type != "record" &&
+            {!props.readOnly && currentTypeCheckKeyMap?.rawSchema.type != "record" &&
             undefinedOptionalAttributes.length > 0 &&
             (!foldedObjectAttributeOrArrayItems || !foldedObjectAttributeOrArrayItems[listKey]) ? (
               <ThemedOptionalAttributeContainer>

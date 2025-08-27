@@ -48,6 +48,7 @@ import entityDefinitionJzodSchema from '../../../src/assets/miroir_model/54b9c72
 import entityDefinitionMenu from '../../../src/assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/0f421b2f-2fdc-47ee-8232-62121ea46350.json';
 import entityDefinitionReport from '../../../src/assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/952d2c65-4da2-45c2-9394-a0920ceedfb6.json';
 import entityDefinitionStoreBasedConfiguration from '../../../src/assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/f93af951-ea13-4815-a2e3-ec0cab1fadd2.json';
+import entityDefinitionTransformerTest from "../../../src/assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/405bb1fc-a20f-4def-9d3a-206f72350633.json";
 import entityDefinitionQuery from '../../../src/assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/359f1f9b-7260-4d76-a864-72c839b9711b.json';
 
 import reportApplicationList from '../../../src/assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/0e4cf674-3a26-422a-8618-09e32302ac0c.json';
@@ -250,6 +251,7 @@ describe(
           entityDefinitionReport as EntityDefinition,
           entityDefinitionSelfApplicationDeploymentConfiguration as EntityDefinition,
           entityDefinitionTest as EntityDefinition,
+          entityDefinitionTransformerTest as EntityDefinition,
           entityDefinitionTransformerDefinition as EntityDefinition,
           entityDefinitionEndpoint as EntityDefinition,
           // jzodSchemajzodMiroirBootstrapSchema as any,

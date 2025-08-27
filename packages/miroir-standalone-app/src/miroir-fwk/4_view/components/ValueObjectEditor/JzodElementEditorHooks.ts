@@ -3,7 +3,7 @@ import { useMemo, useState } from "react";
 
 
 import {
-  DeploymentEntityState,
+  ReduxDeploymentsState,
   Domain2QueryReturnType,
   DomainElementSuccess,
   EntityInstance,
@@ -19,15 +19,15 @@ import {
   adminConfigurationDeploymentMiroir,
   dummyDomainManyQueryWithDeploymentUuid,
   getApplicationSection,
-  getQueryRunnerParamsForDeploymentEntityState,
+  getQueryRunnerParamsForReduxDeploymentsState,
   resolvePathOnObject
 } from "miroir-core";
 import { JzodObject } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import { getMemoizedDeploymentEntityStateSelectorMap } from "miroir-localcache-redux";
+import { getMemoizedReduxDeploymentsStateSelectorMap } from "miroir-localcache-redux";
 import { packageName } from "../../../../constants";
 import { cleanLevel } from "../../constants";
 import { MiroirReactContext, useMiroirContextService } from "../../MiroirContextReactProvider";
-import { useCurrentModel, useDeploymentEntityStateQuerySelectorForCleanedResult } from "../../ReduxHooks";
+import { useCurrentModel, useReduxDeploymentsStateQuerySelectorForCleanedResult } from "../../ReduxHooks";
 import { JzodEditorPropsRoot, noValue } from "./JzodElementEditorInterface";
 import { getItemsOrder } from "../Themes/Style";
 
@@ -45,7 +45,7 @@ export interface JzodElementEditorHooks {
   currentModel: MetaModel;
   miroirMetaModel: MetaModel;
   // ??
-  deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<DeploymentEntityState>;
+  deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState>;
   // state
   formik: FormikProps<Record<string, any>>;
   currentValue: any; // current value of the jzod element
@@ -126,54 +126,46 @@ export function useJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
   // ################################################################################################
   // value schema
   // const localResolvedElementJzodSchemaBasedOnValue: JzodElement | undefined = useMemo(() => {
-  const localResolvedElementJzodSchemaBasedOnValue: JzodElement | undefined =
+    const localResolvedElementJzodSchemaBasedOnValue: JzodElement | undefined =
     props.typeCheckKeyMap && props.typeCheckKeyMap[props.rootLessListKey]
-      ? props.typeCheckKeyMap[props.rootLessListKey]?.resolvedSchema
-      : undefined;
-
-  const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<DeploymentEntityState> =
-    useMemo(() => getMemoizedDeploymentEntityStateSelectorMap(), []);
-
-  // ##############################################################################################
-  // ##############################################################################################
-  // ##############################################################################################
-  // ##############################################################################################
-  // ##############################################################################################
-  // ########################## unionInformation #########################
-
-  // hiddenFormItems state moved to parent component
-  const itemsOrder: any[] = useMemo(
-    () => getItemsOrder(currentValue, localResolvedElementJzodSchemaBasedOnValue),
-    [localResolvedElementJzodSchemaBasedOnValue, currentValue]
-  );
+    ? props.typeCheckKeyMap[props.rootLessListKey]?.resolvedSchema
+    : undefined;
+    // for objects, records
+    const itemsOrder: any[] = useMemo(
+      () => getItemsOrder(currentValue, localResolvedElementJzodSchemaBasedOnValue),
+      [localResolvedElementJzodSchemaBasedOnValue, currentValue]
+    );
+    
+  const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> =
+    useMemo(() => getMemoizedReduxDeploymentsStateSelectorMap(), []);
 
   // ######################### foreignKeyObjects #########################
-  const foreignKeyObjectsFetchQueryParams: SyncQueryRunnerParams<DeploymentEntityState> = useMemo(
+  const foreignKeyObjectsFetchQueryParams: SyncQueryRunnerParams<ReduxDeploymentsState> = useMemo(
     () =>
-      getQueryRunnerParamsForDeploymentEntityState(
+      getQueryRunnerParamsForReduxDeploymentsState(
         props.currentDeploymentUuid &&
         currentTypecheckKeyMap &&
         currentTypecheckKeyMap.rawSchema &&
         currentTypecheckKeyMap.rawSchema.type == "uuid" &&
-        currentTypecheckKeyMap.rawSchema.tag?.value?.targetEntity
+        currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetEntity
           ? {
               queryType: "boxedQueryWithExtractorCombinerTransformer",
-              deploymentUuid: props.currentDeploymentUuid,
+              deploymentUuid: currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetDeploymentUuid??props.currentDeploymentUuid,
               pageParams: {},
               queryParams: {},
               contextResults: {},
               extractors: {
-                [currentTypecheckKeyMap.rawSchema.tag?.value?.targetEntity]: {
+                [currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetEntity]: {
                   extractorOrCombinerType: "extractorByEntityReturningObjectList",
                   applicationSection: getApplicationSection(
-                    props.currentDeploymentUuid,
-                    currentTypecheckKeyMap.rawSchema.tag?.value?.targetEntity
+                    currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetDeploymentUuid??props.currentDeploymentUuid,
+                    currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetEntity
                   ),
                   parentName: "",
-                  parentUuid: currentTypecheckKeyMap.rawSchema.tag?.value?.targetEntity,
+                  parentUuid: currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetEntity,
                   orderBy: {
                     attributeName:
-                      currentTypecheckKeyMap.rawSchema.tag?.value?.targetEntityOrderInstancesBy ?? "name",
+                      currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetEntityOrderInstancesBy ?? "name",
                   },
                 },
               },
@@ -185,9 +177,9 @@ export function useJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
   );
 
   const foreignKeyObjects: Record<string, EntityInstancesUuidIndex> =
-    useDeploymentEntityStateQuerySelectorForCleanedResult(
+    useReduxDeploymentsStateQuerySelectorForCleanedResult(
       deploymentEntityStateSelectorMap.runQuery as SyncQueryRunner<
-        DeploymentEntityState,
+        ReduxDeploymentsState,
         Domain2QueryReturnType<DomainElementSuccess>
       >,
       foreignKeyObjectsFetchQueryParams
@@ -259,12 +251,12 @@ export function useJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
   const stringSelectList = useMemo(() => {
     if (
       localResolvedElementJzodSchemaBasedOnValue?.type == "uuid" &&
-      localResolvedElementJzodSchemaBasedOnValue.tag?.value?.targetEntity
+      localResolvedElementJzodSchemaBasedOnValue.tag?.value?.selectorParams?.targetEntity
     ) {
       return [
         [noValue.uuid, noValue] as [string, EntityInstance],
         ...Object.entries(
-          foreignKeyObjects[localResolvedElementJzodSchemaBasedOnValue.tag.value?.targetEntity] ??
+          foreignKeyObjects[localResolvedElementJzodSchemaBasedOnValue.tag.value?.selectorParams?.targetEntity] ??
             {}
         ),
       ];

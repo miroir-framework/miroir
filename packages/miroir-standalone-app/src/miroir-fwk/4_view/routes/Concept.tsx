@@ -43,6 +43,7 @@ import { useCurrentModel } from "../ReduxHooks.js";
 import { JzodElementEditor } from "../components/ValueObjectEditor/JzodElementEditor.js";
 import { PageContainer } from "../components/Page/PageContainer.js";
 import { cleanLevel } from "../constants.js";
+import { usePageConfiguration } from "../services/index.js";
 
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -147,6 +148,13 @@ export const ConceptPage: React.FC<any> = (
   count++;
   const [dialogOuterFormObject, setdialogOuterFormObject] = useMiroirContextInnerFormOutput();
   const [formHelperState, setformHelperState] = useMiroirContextformHelperState();
+
+  // Auto-fetch configurations when the page loads
+  const { fetchConfigurations } = usePageConfiguration({
+    autoFetchOnMount: true,
+    successMessage: "Concept page configurations loaded successfully",
+    actionName: "concept page configuration fetch"
+  });
 
   const errorLog = useErrorLogService();
   const context = useMiroirContextService();
@@ -294,13 +302,15 @@ export const ConceptPage: React.FC<any> = (
           formState,
           [], // currentValuePath
           [], // currentTypePath
-          context.miroirFundamentalJzodSchema,
-          currentModel,
-          currentMiroirModel,
-          emptyObject,
-        )
+          {
+            miroirFundamentalJzodSchema: context.miroirFundamentalJzodSchema,
+            currentModel,
+            miroirMetaModel: currentMiroirModel,
+          },
+          emptyObject
+        );
 
-        return configuration.status == "ok"? configuration.element : defaultObject;
+        return configuration.status == "ok"? configuration.resolvedSchema : defaultObject;
       }
     },
     [context.miroirFundamentalJzodSchema, rawSchema, formState]
@@ -732,30 +742,30 @@ export const ConceptPage: React.FC<any> = (
                     :<></>
                   } */}
                   {
-                    resolvedJzodSchema === defaultObject?
-                    <div>no object definition found!</div>
-                    :
-                    <>
-                      <JzodElementEditor
-                        name={'ROOT'}
-                        listKey={'ROOT'}
-                        rootLessListKey={emptyString}
-                        rootLessListKeyArray={emptyList}
-                        labelElement={pageLabel}
-                        currentDeploymentUuid={emptyString}
-                        currentApplicationSection={dataSection}
-                        // resolvedJzodSchema={actionsJzodSchema}
-                        rawJzodSchema={rawSchema}
-                        resolvedElementJzodSchema={resolvedJzodSchema}
-                        foreignKeyObjects={emptyObject}
-                        indentLevel={ 0 }
-                        // handleChange={formik.handleChange as any}
-                        // formik={formik}
-                        // setFormState={setFormState}
-                        // formState={formState}
-                      />
-                      <button type="submit" name={pageLabel} form={"form." + pageLabel}>submit form.{pageLabel}</button>
-                    </>
+                    // resolvedJzodSchema === defaultObject?
+                    // <div>no object definition found!</div>
+                    // :
+                    // <>
+                    //   <JzodElementEditor
+                    //     name={'ROOT'}
+                    //     listKey={'ROOT'}
+                    //     rootLessListKey={emptyString}
+                    //     rootLessListKeyArray={emptyList}
+                    //     // labelElement={pageLabel}
+                    //     currentDeploymentUuid={emptyString}
+                    //     currentApplicationSection={dataSection}
+                    //     // resolvedJzodSchema={actionsJzodSchema}
+                    //     // rawJzodSchema={rawSchema}
+                    //     resolvedElementJzodSchema={resolvedJzodSchema}
+                    //     foreignKeyObjects={emptyObject}
+                    //     indentLevel={ 0 }
+                    //     // handleChange={formik.handleChange as any}
+                    //     // formik={formik}
+                    //     // setFormState={setFormState}
+                    //     // formState={formState}
+                    //   />
+                    //   <button type="submit" name={pageLabel} form={"form." + pageLabel}>submit form.{pageLabel}</button>
+                    // </>
                   }
                 </form>
               </>

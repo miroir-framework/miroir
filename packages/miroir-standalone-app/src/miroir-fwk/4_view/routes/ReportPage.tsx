@@ -30,6 +30,7 @@ import { useRenderTracker } from '../tools/renderCountTracker.js';
 import { PageContainer } from '../components/Page/PageContainer.js';
 import { ThemedBox, ThemedSpan } from '../components/Themes/ThemedComponents.js';
 import { useMiroirTheme } from '../contexts/MiroirThemeContext.js';
+import { usePageConfiguration } from '../services/index.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -63,6 +64,13 @@ export const ReportPage = () => {
   const pageParams: Params<ReportUrlParamKeys> = useParams<ReportUrlParamKeys>();
   const context = useMiroirContextService();
   const theme = useMiroirTheme();
+  
+  // Auto-fetch configurations when the page loads
+  const { fetchConfigurations } = usePageConfiguration({
+    autoFetchOnMount: true,
+    successMessage: `Report page configurations loaded for ${pageParams.deploymentUuid}`,
+    actionName: "report page configuration fetch"
+  });
   
   // Track render counts with centralized tracker
   // Use deployment-level key to maintain consistency across all navigation within same deployment

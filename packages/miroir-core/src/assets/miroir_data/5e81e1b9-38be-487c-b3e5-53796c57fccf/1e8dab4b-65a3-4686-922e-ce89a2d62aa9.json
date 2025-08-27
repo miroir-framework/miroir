@@ -56,8 +56,75 @@
                   "optional": true
                 },
                 "initializeTo": {
-                  "type": "any",
-                  "optional": true
+                  "type": "union",
+                  "discriminator": "initializeToType",
+                  "optional": true,
+                  "definition": [
+                    {
+                      "type": "object",
+                      "optional": true,
+                      "definition": {
+                        "initializeToType": {
+                          "type": "literal",
+                          "definition": "value"
+                        },
+                        "value": {
+                          "type": "any",
+                          "optional": true
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "optional": true,
+                      "definition": {
+                        "initializeToType": {
+                          "type": "literal",
+                          "definition": "transformer"
+                        },
+                        "transformer": {
+                          "type": "any",
+                          "tag": {
+                            "value": {
+                              "conditionalMMLS": {
+                                "mmlsReference": {
+                                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                  "relativePath": "transformerForBuild"
+                                }
+                              }
+                            }
+                          },
+                          "optional": true
+                        }
+                      }
+                    }
+                  ]
+                },
+                "selectorParams": {
+                  "type": "object",
+                  "optional": true,
+                  "definition": {
+                    "targetApplicationUuid": {
+                      "type": "uuid",
+                      "optional": true
+                    },
+                    "targetDeploymentUuid": {
+                      "type": "uuid",
+                      "optional": true
+                    },
+                    "targetEntityApplicationSection": {
+                      "type": "enum",
+                      "optional": true,
+                      "definition": ["model", "data", "metaModel"]
+                    },
+                    "targetEntity": {
+                      "type": "uuid"
+                    },
+                    "targetEntityOrderInstancesBy": {
+                      "type": "string",
+                      "optional": true
+                    }
+                  }
                 },
                 "targetEntity": {
                   "type": "string",
@@ -79,6 +146,56 @@
                 "canBeTemplate": {
                   "type": "boolean",
                   "optional": true
+                },
+                "conditionalMMLS": {
+                  "type": "object",
+                  "optional": true,
+                  "definition": {
+                    "parentUuid": {
+                      "type": "union",
+                      "optional": true,
+                      "definition": [
+                        { "type": "string" },
+                        {
+                          "type": "object",
+                          "definition": {
+                            "path": {
+                              "type": "union",
+                              "definition": [
+                                {
+                                  "type": "string"
+                                },
+                                {
+                                  "type": "object",
+                                  "definition": {
+                                    "defaultValuePath": {
+                                      "type": "string"
+                                    },
+                                    "typeCheckPath": {
+                                      "type": "string"
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    "mmlsReference": {
+                      "type": "object",
+                      "optional": true,
+                      "definition": {
+                        "absolutePath": {
+                          "type": "string",
+                          "optional": true
+                        },
+                        "relativePath": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
                 },
                 "display": {
                   "type": "object",
@@ -124,8 +241,76 @@
                     "optional": true
                   },
                   "initializeTo": {
-                    "type": "any",
-                    "optional": true
+                    "type": "union",
+                    "discriminator": "initializeToType",
+                    "optional": true,
+                    "definition": [
+                      {
+                        "type": "object",
+                        "optional": true,
+                        "definition": {
+                          "initializeToType": {
+                            "type": "literal",
+                            "definition": "value"
+                          },
+                          "value": {
+                            "type": "any",
+                            "optional": true
+                          }
+                        }
+                      },
+                      {
+                        "type": "object",
+                        "optional": true,
+                        "definition": {
+                          "initializeToType": {
+                            "type": "literal",
+                            "definition": "transformer"
+                          },
+                          "transformer": {
+                            "type": "any",
+                            "tag": {
+                              "value": {
+                                "conditionalMMLS": {
+                                  "mmlsReference": {
+                                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                    "relativePath": "transformerForBuild"
+                                  }
+                                }
+                              }
+                            },
+                            "optional": true
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "selectorParams": {
+                    "type": "object",
+                    "optional": true,
+                    "definition": {
+                      "targetApplicationUuid": {
+                        "type": "uuid",
+                        "optional": true
+                      },
+                      "targetDeploymentUuid": {
+                        "type": "uuid",
+                        "optional": true
+                      },
+                      "targetEntityApplicationSection": {
+                        "type": "enum",
+                        "optional": true,
+                        "definition": ["model", "data", "metaModel"]
+                      },
+                      "targetEntity": {
+                        "type": "uuid",
+                        "optional": true
+                      },
+                      "targetEntityOrderInstancesBy": {
+                        "type": "string",
+                        "optional": true
+                      }
+                    }
                   },
                   "targetEntity": {
                     "type": "string",
@@ -148,12 +333,66 @@
                     "type": "boolean",
                     "optional": true
                   },
+                  "conditionalMMLS": {
+                    "type": "object",
+                    "optional": true,
+                    "definition": {
+                      "parentUuid": {
+                        "type": "union",
+                        "optional": true,
+                        "definition": [
+                          { "type": "string" },
+                          {
+                            "type": "object",
+                            "definition": {
+                              "path": {
+                                "type": "union",
+                                "definition": [
+                                  {
+                                    "type": "string"
+                                  },
+                                  {
+                                    "type": "object",
+                                    "definition": {
+                                      "defaultValuePath": {
+                                        "type": "string"
+                                      },
+                                      "typeCheckPath": {
+                                        "type": "string"
+                                      }
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "mmlsReference": {
+                        "type": "object",
+                        "optional": true,
+                        "definition": {
+                          "absolutePath": {
+                            "type": "string",
+                            "optional": true
+                          },
+                          "relativePath": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  },
                   "display": {
                     "type": "object",
                     "optional": true,
                     "definition": {
                       "displayedAttributeValueWhenFolded": {
                         "type": "string",
+                        "optional": true
+                      },
+                      "unfoldSubLevels":{
+                        "type": "number",
                         "optional": true
                       }
                     }
@@ -745,6 +984,11 @@
             "relativePath": "jzodBaseObject"
           }
         },
+        "tag": {
+          "value": {
+            "unfoldSubLevels": 2
+          }
+        },
         "definition": {
           "extend": {
             "type": "union",
@@ -808,27 +1052,6 @@
           "partial": {
             "type": "boolean",
             "optional": true
-          },
-          "carryOn": {
-            "type": "union",
-            "discriminator": "type",
-            "optional": true,
-            "definition": [
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                  "relativePath": "jzodObject"
-                }
-              },
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                  "relativePath": "jzodUnion"
-                }
-              }
-            ]
           },
           "definition": {
             "type": "record",
@@ -916,27 +1139,6 @@
               }
             }
           },
-          "carryOn": {
-            "type": "union",
-            "optional": true,
-            "discriminator":"type",
-            "definition": [
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                  "relativePath": "jzodObject"
-                }
-              },
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                  "relativePath": "jzodUnion"
-                }
-              }
-            ]
-          },
           "definition": {
             "type": "object",
             "definition": {
@@ -949,8 +1151,7 @@
                 "optional": true
               },
               "relativePath": {
-                "type": "string",
-                "optional": true
+                "type": "string"
               },
               "absolutePath": {
                 "type": "string",
@@ -1073,14 +1274,6 @@
                 }
               }
             ]
-          },
-          "carryOn": {
-            "optional": true,
-            "type": "schemaReference",
-            "definition": {
-              "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-              "relativePath": "jzodObject"
-            }
           },
           "definition": {
             "type": "array",

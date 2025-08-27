@@ -12,6 +12,7 @@ import {
 
 import {
   ConfigurationService,
+  expect,
   LoggerInterface,
   MiroirConfigClient,
   MiroirContext,
@@ -41,10 +42,9 @@ import miroirConfigRealServerFilesystemTmp from "./assets/miroirConfig-realServe
 import miroirConfigRealServerIndexedDb from "./assets/miroirConfig-realServer-indexedDb.json" assert { type: "json" };
 import miroirConfigRealServerSql from "./assets/miroirConfig-realServer-sql.json" assert { type: "json" };
 import miroirConfig from "./assets/miroirConfig.json" assert { type: "json" };
+import { CheckPage } from "./miroir-fwk/4_view/routes/Check.js";
 import { ConceptPage } from "./miroir-fwk/4_view/routes/Concept.js";
 import { ToolsPage } from "./miroir-fwk/4_view/routes/Tools.js";
-import { expect } from "./miroir-fwk/4-tests/test-expect.js";
-import { CheckPage } from "./miroir-fwk/4_view/routes/Check.js";
 
 const specificLoggerOptions: SpecificLoggerOptionsMap = {
   // "5_miroir-core_DomainController": {level:defaultLevels.INFO, template:"[{{time}}] {{level}} ({{name}}) BBBBB-"},

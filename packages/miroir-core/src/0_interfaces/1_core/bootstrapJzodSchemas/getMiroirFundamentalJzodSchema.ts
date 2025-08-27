@@ -20,6 +20,7 @@ import {
   miroirTransformersForBuild,
   miroirTransformersForBuildPlusRuntime,
   miroirTransformersForRuntime,
+  mmlsTransformers,
   transformerForBuildNames,
   transformerForBuildPlusRuntimeNames,
   transformerForRuntimeNames
@@ -27,9 +28,11 @@ import {
 import { MiroirLoggerFactory } from "../../../4_services/LoggerFactory";
 import { packageName } from "../../../constants";
 import { LoggerInterface } from "../../4-services/LoggerInterface";
-import { testSuitesResultsSchema } from "../../4-services/TestInterface";
+import { testSuitesResults } from "../../4-services/TestInterface";
 import { zodParseErrorJzodSchema, zodParseErrorIssueJzodSchema } from "../zodParseError";
 import { JzodElement, JzodReference } from "../preprocessor-generated/miroirFundamentalType";
+import { keyMapEntry, resolvedJzodSchemaReturnType, resolvedJzodSchemaReturnTypeError, resolvedJzodSchemaReturnTypeOK } from "../jzodTypeCheckInterface";
+import { jzodUnion_RecursivelyUnfold_ReturnType, jzodUnion_RecursivelyUnfold_ReturnTypeError, jzodUnion_RecursivelyUnfold_ReturnTypeOK } from "../jzodUnion_RecursivelyUnfoldInterface";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -37,6 +40,7 @@ MiroirLoggerFactory.registerLoggerToStart(
 ).then((logger: LoggerInterface) => {
   log = logger;
 });
+const customChalk = new Chalk({level: 1})
 
 export const miroirFundamentalJzodSchemaUuid = "fe9b7d99-f216-44de-bb6e-60e1a1ebb739";
 
@@ -410,7 +414,6 @@ function createLocalizedInnerResolutionStoreForExtendedSchemas(
   alwaysPropagate: boolean = false,
 ): Record<string, any> {
 
-  const customChalk = new Chalk({level: 1})
 
   return Object.fromEntries(
     extendedSchemas.map((e) => {
@@ -475,8 +478,20 @@ function createLocalizedInnerResolutionStoreWithCarryOn(
   prefix: string = "carryOn_",
   alwaysPropagate: boolean = true,
 ): Record<string, any> {
+  log.info(
+    "createLocalizedInnerResolutionStoreWithCarryOn: localizedResolutionStore.context",
+    Object.keys(localizedResolutionStore.context ?? {}).length,
+    JSON.stringify(Object.keys(localizedResolutionStore.context ?? {}), null, 2)
+  );
   return Object.fromEntries(
       Object.entries(localizedResolutionStore.context ?? {}).map((f) => {
+        log.info(
+          customChalk.blue("createLocalizedInnerResolutionStoreWithCarryOn: localizedResolutionStore.context"),
+          customChalk.green(f[0]),
+          customChalk.yellow(f[1] && f[1].type),
+          // customChalk.magenta(f[1] && f[1].definition && f[1].definition.relativePath)
+          customChalk.magenta(f[1] && (f[1] as any).definition && (f[1] as any).definition?.relativePath)
+        );
         const schemaWithCarryOn = applyLimitedCarryOnSchemaOnLevel(
           f[1] as any,
           carryOnSchemaReference as any,
@@ -657,6 +672,7 @@ export function getMiroirFundamentalJzodSchema(
   // entityDefinitionSelfApplication: any,
   entityDefinitionSelfApplicationDeploymentConfiguration: any,
   entityDefinitionTest: any,
+  entityDefinitionTransformerTest: any,
   entityDefinitionTransformerDefinition: any,
   entityDefinitionEndpointDefinition: any,
 // ): JzodReference {
@@ -664,6 +680,10 @@ export function getMiroirFundamentalJzodSchema(
   ): any /** JzodSchema, avoiding reference to ensure proper compilation */ {
   // TODO: not really a JzodReference!!
   console.log("getMiroirFundamentalJzodSchema called!");
+  console.log(
+    "getMiroirFundamentalJzodSchema entityDefinitionTransformerTest.jzodSchema.definition.definition.context",
+    entityDefinitionTransformerTest.jzodSchema.definition.definition.context
+  );
   const entityDefinitionQueryVersionV1WithAbsoluteReferences = makeReferencesAbsolute(
     entityDefinitionQueryVersionV1.jzodSchema.definition.definition,
     miroirFundamentalJzodSchemaUuid
@@ -705,6 +725,15 @@ export function getMiroirFundamentalJzodSchema(
           miroirFundamentalJzodSchemaUuid,
           true
         ).context, // gives "transformerForBuild_InnerReference", "transformerForBuild", "actionHandler"
+        // jzodTypeCheck
+        jzodUnion_RecursivelyUnfold_ReturnTypeOK: jzodUnion_RecursivelyUnfold_ReturnTypeOK,
+        jzodUnion_RecursivelyUnfold_ReturnTypeError: jzodUnion_RecursivelyUnfold_ReturnTypeError,
+        jzodUnion_RecursivelyUnfold_ReturnType: jzodUnion_RecursivelyUnfold_ReturnType,
+        keyMapEntry: keyMapEntry,
+        resolvedJzodSchemaReturnTypeOK: resolvedJzodSchemaReturnTypeOK,
+        resolvedJzodSchemaReturnTypeError: resolvedJzodSchemaReturnTypeError,
+        resolvedJzodSchemaReturnType: resolvedJzodSchemaReturnType,
+        // ########################################################################################
         ...Object.fromEntries(
           miroirTransformersJzodSchemas.map((e: any) => [
             e.name,
@@ -732,7 +761,7 @@ export function getMiroirFundamentalJzodSchema(
         transformerForBuild_constantArray: miroirTransformersForBuild.transformer_constantArray,
         transformerForBuild_constantAsExtractor:
           miroirTransformersForBuild.transformer_constantAsExtractor,
-        // transformerForBuild_contextReference: miroirTransformersForBuild.transformer_contextReference,
+        transformerForBuild_contextReference: miroirTransformersForBuild.transformer_contextReference,
         transformerForBuild_count: miroirTransformersForBuild.transformer_count,
         transformerForBuild_dataflowObject: miroirTransformersForBuild.transformer_dataflowObject,
         transformerForBuild_mapperListToList:
@@ -757,6 +786,11 @@ export function getMiroirFundamentalJzodSchema(
         transformerForBuild_parameterReference:
           miroirTransformersForBuild.transformer_parameterReference,
         transformerForBuild_unique: miroirTransformersForBuild.transformer_unique,
+        // MLS
+        ...Object.fromEntries(Object.entries(mmlsTransformers).map(([key, value]) => [
+          key.replace("transformer_", "transformerForBuild_"),
+          miroirTransformersForBuild[key as keyof typeof miroirTransformersForBuild]])),
+        // 
         transformerForBuild: {
           type: "union",
           discriminator: ["transformerType", "interpolation"],
@@ -830,6 +864,10 @@ export function getMiroirFundamentalJzodSchema(
         transformerForRuntime_object_fullTemplate:
           miroirTransformersForRuntime.transformer_object_fullTemplate,
         transformerForRuntime_unique: miroirTransformersForRuntime.transformer_unique,
+        // MLS
+        ...Object.fromEntries(Object.entries(mmlsTransformers).map(([key, value]) => [
+          key.replace("transformer_", "transformerForRuntime_"),
+          miroirTransformersForBuild[key as keyof typeof miroirTransformersForRuntime]])),
         // extendedTransformerForRuntime: {
         //   type: "schemaReference",
         //   definition: {
@@ -941,18 +979,22 @@ export function getMiroirFundamentalJzodSchema(
           miroirTransformersForBuildPlusRuntime.transformer_object_fullTemplate,
         transformerForBuildPlusRuntime_unique:
           miroirTransformersForBuildPlusRuntime.transformer_unique,
+        // MLS
+        ...Object.fromEntries(Object.entries(mmlsTransformers).map(([key, value]) => [
+          key.replace("transformer_", "transformerForBuildPlusRuntime_"),
+          miroirTransformersForBuild[key as keyof typeof miroirTransformersForBuildPlusRuntime]])),
         transformerForBuildPlusRuntime: {
           type: "union",
           optInDiscriminator: true,
           discriminator: ["transformerType", "interpolation"],
           definition: [
-            {
-              type: "schemaReference",
-              definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                relativePath: "transformerForBuild",
-              },
-            },
+            // {
+            //   type: "schemaReference",
+            //   definition: {
+            //     absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            //     relativePath: "transformerForBuild",
+            //   },
+            // },
             // {
             //   type: "schemaReference",
             //   definition: {
@@ -1124,29 +1166,19 @@ export function getMiroirFundamentalJzodSchema(
           },
         },
         applicationSection: {
-          type: "union",
+          type: "enum",
+          tag: { value: { defaultLabel: "Application Section", initializeTo: {"initializeToType": "value", "value": "data"} } },
           definition: [
-            {
-              type: "literal",
-              definition: "model",
-            },
-            {
-              type: "literal",
-              definition: "data",
-            },
+            "model",
+            "data",
           ],
         },
         dataStoreApplicationType: {
-          type: "union",
+          type: "enum",
+          tag: { value: { defaultLabel: "DataStore Appication Type", initializeTo: {"initializeToType": "value", "value": "app"} } },
           definition: [
-            {
-              type: "literal",
-              definition: "miroir",
-            },
-            {
-              type: "literal",
-              definition: "app",
-            },
+            "miroir",
+            "app",
           ],
         },
         storeBasedConfiguration: {
@@ -1291,15 +1323,18 @@ export function getMiroirFundamentalJzodSchema(
           {
             type: "never",
           },
-        ...makeReferencesAbsolute(testSuitesResultsSchema, miroirFundamentalJzodSchemaUuid, true)
+        ...makeReferencesAbsolute(testSuitesResults, miroirFundamentalJzodSchemaUuid, true)
           .context,
         testSuitesResults: {
           type: "schemaReference",
           definition: {
             absolutePath: miroirFundamentalJzodSchemaUuid,
-            relativePath: testSuitesResultsSchema.definition.relativePath,
+            relativePath: testSuitesResults.definition.relativePath,
           },
         },
+        ...makeReferencesAbsolute(entityDefinitionTransformerTest.jzodSchema.definition.definition, miroirFundamentalJzodSchemaUuid, true)
+          .context,
+        transformerTestDefinition: entityDefinitionTransformerTest.jzodSchema as any,
         ______________________________________________entities_____________________________________________:
           {
             type: "never",
@@ -3682,7 +3717,10 @@ export function getMiroirFundamentalJzodSchema(
       },
     },
   };
-  // console.log("################## miroirFundamentalJzodSchema", JSON.stringify(Object.keys(miroirFundamentalJzodSchema.definition.context), null, 2))
+  console.log(
+    "################## miroirFundamentalJzodSchema",
+    JSON.stringify(Object.keys(miroirFundamentalJzodSchema.definition.context), null, 2)
+  );
 
   // ##############################################################################################
   // ##############################################################################################
@@ -3715,11 +3753,11 @@ export function getMiroirFundamentalJzodSchema(
     oldCompositeActionDependencySet.add(key);
   });
 
-  // console.log(
-  //   "oldCompositeActionDependencySet",
-  //   Array.from(oldCompositeActionDependencySet.keys()).length,
-  //   JSON.stringify(Array.from(oldCompositeActionDependencySet.keys()), null, 2),
-  // );
+  console.log(
+    "oldCompositeActionDependencySet",
+    Array.from(oldCompositeActionDependencySet.keys()).length,
+    JSON.stringify(Array.from(oldCompositeActionDependencySet.keys()), null, 2),
+  );
   const oldCompositeActionDependenciesJzodReference: JzodReference = {
     type: "schemaReference",
     context: Object.fromEntries(
@@ -3740,11 +3778,11 @@ export function getMiroirFundamentalJzodSchema(
     },
   };
 
-  // console.log(
-  //   "getMiroirFundamentalJzodSchema oldCompositeActionDependenciesInnerResolutionStore keys:",
-  //   Object.keys(oldCompositeActionDependenciesJzodReference.context??{}).length,
-  //   JSON.stringify(Object.keys(oldCompositeActionDependenciesJzodReference.context??{}), null, 2)
-  // );
+  console.log(
+    "getMiroirFundamentalJzodSchema oldCompositeActionDependenciesInnerResolutionStore keys:",
+    Object.keys(oldCompositeActionDependenciesJzodReference.context??{}).length,
+    JSON.stringify(Object.keys(oldCompositeActionDependenciesJzodReference.context??{}), null, 2)
+  );
 
 
   const transformerForBuildCarryOnSchema: any = miroirFundamentalJzodSchema.definition.context
@@ -3762,11 +3800,11 @@ export function getMiroirFundamentalJzodSchema(
 
   const extendedSchemas: string[] = getExtendedSchemas(jzodSchemajzodMiroirBootstrapSchema);
 
-  // console.log(
-  //   "getMiroirFundamentalJzodSchema extendedSchemas",
-  //   extendedSchemas.length,
-  //   JSON.stringify(extendedSchemas, null, 2)
-  // );
+  console.log(
+    "getMiroirFundamentalJzodSchema extendedSchemas",
+    extendedSchemas.length,
+    JSON.stringify(extendedSchemas, null, 2)
+  );
 
   const oldCompositeActionLocalizedInnerResolutionStoreForExtendedSchemas =
     createLocalizedInnerResolutionStoreForExtendedSchemas(
@@ -3784,10 +3822,10 @@ export function getMiroirFundamentalJzodSchema(
       true, // alwaysPropagate
     );
 
-  // console.log(
-  //   "oldCompositeActionLocalizedInnerResolutionStoreForExtendedSchemas",
-  //   JSON.stringify(Object.keys(oldCompositeActionLocalizedInnerResolutionStoreForExtendedSchemas), null, 2)
-  // );
+  console.log(
+    "oldCompositeActionLocalizedInnerResolutionStoreForExtendedSchemas",
+    JSON.stringify(Object.keys(oldCompositeActionLocalizedInnerResolutionStoreForExtendedSchemas), null, 2)
+  );
 
   const oldCompositeActionLocalizedInnerResolutionStorePlainReferences =
     createLocalizedInnerResolutionStoreWithCarryOn(
@@ -3801,11 +3839,11 @@ export function getMiroirFundamentalJzodSchema(
       "carryOn_", // prefix
       true, // alwaysPropagate
     );
-  // console.log(
-  //   "getMiroirFundamentalJzodSchema oldCompositeActionLocalizedInnerResolutionStorePlainReferences",
-  //   Object.keys(oldCompositeActionLocalizedInnerResolutionStorePlainReferences).length,
-  //   JSON.stringify(Object.keys(oldCompositeActionLocalizedInnerResolutionStorePlainReferences), null, 2)
-  // );
+  console.log(
+    "getMiroirFundamentalJzodSchema oldCompositeActionLocalizedInnerResolutionStorePlainReferences",
+    Object.keys(oldCompositeActionLocalizedInnerResolutionStorePlainReferences).length,
+    JSON.stringify(Object.keys(oldCompositeActionLocalizedInnerResolutionStorePlainReferences), null, 2)
+  );
 
   const localizedInnerResolutionStoreReferences = Object.assign(
     {},
@@ -3837,11 +3875,11 @@ export function getMiroirFundamentalJzodSchema(
     domainActionDependencySet.add(key);
   });
   
-  // console.log(
-  //   "domainActionDependencySet",
-  //   Array.from(domainActionDependencySet.keys()).length,
-  //   JSON.stringify(Array.from(domainActionDependencySet.keys()), null, 2),
-  // );
+  console.log(
+    "domainActionDependencySet",
+    Array.from(domainActionDependencySet.keys()).length,
+    JSON.stringify(Array.from(domainActionDependencySet.keys()), null, 2),
+  );
 
 
   const {
@@ -3952,7 +3990,7 @@ export function getMiroirFundamentalJzodSchema(
       } as Record<string, any /**JzodElement */>,
     } as any /** JzodObjectOrReference */,
   };
-  // console.log("entityDefinitionQueryVersionV1WithAbsoluteReferences=",JSON.stringify(entityDefinitionQueryVersionV1WithAbsoluteReferences))
+  console.log("entityDefinitionQueryVersionV1WithAbsoluteReferences=",JSON.stringify(entityDefinitionQueryVersionV1WithAbsoluteReferences))
 
   return miroirFundamentalJzodSchemaWithActionTemplate;
 

@@ -19,12 +19,12 @@ import { Link } from 'react-router-dom';
 import {
   adminConfigurationDeploymentAdmin,
   adminConfigurationDeploymentMiroir,
-  DeploymentEntityState,
+  ReduxDeploymentsState,
   Domain2QueryReturnType,
   dummyDomainManyQueryWithDeploymentUuid,
   entityMenu,
   getApplicationSection,
-  getQueryRunnerParamsForDeploymentEntityState,
+  getQueryRunnerParamsForReduxDeploymentsState,
   LoggerInterface,
   MetaModel,
   MiroirLoggerFactory,
@@ -32,9 +32,9 @@ import {
   SyncQueryRunnerParams,
   Uuid
 } from "miroir-core";
-import { getMemoizedDeploymentEntityStateSelectorMap } from 'miroir-localcache-redux';
+import { getMemoizedReduxDeploymentsStateSelectorMap } from 'miroir-localcache-redux';
 import { packageName } from '../../../../constants.js';
-import { useCurrentModel, useDeploymentEntityStateQuerySelector } from '../../ReduxHooks.js';
+import { useCurrentModel, useReduxDeploymentsStateQuerySelector } from '../../ReduxHooks.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -111,6 +111,7 @@ const muiIcons = {
 //    const Icon = icon && MUIcon[icon];
 //    return ({Icon && <Icon />})
 // }
+// ################################################################################################
 export interface SidebarSectionProps {deploymentUuid: Uuid, menuUuid: Uuid, open:boolean, setOpen: (v:boolean)=>void};
 export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProps) => {
   count++;
@@ -123,14 +124,14 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
     adminConfigurationDeploymentAdmin.uuid
   );
 
-  const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<DeploymentEntityState> = useMemo(
-    () => getMemoizedDeploymentEntityStateSelectorMap(),
+  const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> = useMemo(
+    () => getMemoizedReduxDeploymentsStateSelectorMap(),
     []
   )
 
-  const fetchDeploymentMenusQueryParams: SyncQueryRunnerParams<DeploymentEntityState> = useMemo(
+  const fetchDeploymentMenusQueryParams: SyncQueryRunnerParams<ReduxDeploymentsState> = useMemo(
     () =>
-      getQueryRunnerParamsForDeploymentEntityState(
+      getQueryRunnerParamsForReduxDeploymentsState(
         currentModel?.entities?.length > 0? 
         {
               queryType: "boxedQueryWithExtractorCombinerTransformer",
@@ -155,23 +156,28 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
     [deploymentEntityStateSelectorMap, currentModel, props.deploymentUuid, props.menuUuid]
   );
 
-  // log.info("fetchDeploymentMenusQueryParams",fetchDeploymentMenusQueryParams)
+  log.info("SidebarSection fetchDeploymentMenusQueryParams",fetchDeploymentMenusQueryParams)
   const miroirMenusDomainElementObject: Domain2QueryReturnType<
     Domain2QueryReturnType<Record<string, any>>
-  > = useDeploymentEntityStateQuerySelector(
+  > = useReduxDeploymentsStateQuerySelector(
     deploymentEntityStateSelectorMap.runQuery,
     fetchDeploymentMenusQueryParams
   );
 
-  // log.info("deploymentEntityStateDomainElementObject",miroirMenusDomainElementObject)
-  // console.log(
-  //   "SidebarSection refresh",
-  //   count++,
-  //   "found miroir menu:",
-  //   miroirMenusDomainElementObject,
-  //   // miroirMenusDomainElementObject?.elementValue
-  // );
-  const drawerSx = useMemo(()=>({flexDirection:'column'}),[])
+  log.info("SidebarSection deploymentEntityStateDomainElementObject",miroirMenusDomainElementObject)
+  console.log(
+    "SidebarSection refresh",
+    count++,
+    "props.deploymentUuid",
+    props.deploymentUuid,
+    "props.menuUuid",
+    props.menuUuid,
+    "found miroir menu miroirMenusDomainElementObject result",
+    miroirMenusDomainElementObject.elementType == "failure",
+    miroirMenusDomainElementObject,
+    // miroirMenusDomainElementObject?.elementValue
+  );
+  // const drawerSx = useMemo(()=>({flexDirection:'column'}),[])
   return (
     <>
       {

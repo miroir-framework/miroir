@@ -35,7 +35,7 @@ MiroirLoggerFactory.registerLoggerToStart(
 export interface ReportSectionViewProps {
   applicationSection: ApplicationSection,
   deploymentUuid: Uuid,
-  queryResults: Domain2QueryReturnType<Record<string,any>>,
+  reportQueriesResultsRecord: Domain2QueryReturnType<Record<string,any>>,
   fetchedDataJzodSchema: RecordOfJzodObject | undefined,
   paramsAsdomainElements: Domain2QueryReturnType<Record<string,any>>,
   reportSection: ReportSection,
@@ -128,8 +128,8 @@ export const ReportSectionView = (props: ReportSectionViewProps) => {
       (e: EntityDefinition) => e?.entityUuid === currentListReportTargetEntity?.uuid
     );
 
-  const entityInstance = props.queryResults && props.reportSection.type == "objectInstanceReportSection"
-  ? (props.queryResults as any)[
+  const entityInstance = props.reportQueriesResultsRecord && props.reportSection.type == "objectInstanceReportSection"
+  ? (props.reportQueriesResultsRecord as any)[
       props.reportSection.definition.fetchedDataReference ?? ""
     ]
   : undefined
@@ -190,7 +190,7 @@ export const ReportSectionView = (props: ReportSectionViewProps) => {
                           <td>
                             <ReportSectionView
                               applicationSection={props.applicationSection}
-                              queryResults={props.queryResults}
+                              reportQueriesResultsRecord={props.reportQueriesResultsRecord}
                               deploymentUuid={props.deploymentUuid}
                               fetchedDataJzodSchema={props.fetchedDataJzodSchema}
                               paramsAsdomainElements={props.paramsAsdomainElements}
@@ -211,16 +211,16 @@ export const ReportSectionView = (props: ReportSectionViewProps) => {
             {props.reportSection.type == "objectListReportSection" ? (
               <div>
                 {/* {JSON.stringify(props.domainElementObject, circularReplacer(), 2)} */}
-                {(currentListReportTargetEntity && currentListReportTargetEntityDefinition) || props.queryResults ? (
+                {(currentListReportTargetEntity && currentListReportTargetEntityDefinition) || props.reportQueriesResultsRecord ? (
                   <ReportSectionListDisplay
                     tableComponentReportType="EntityInstance"
                     label={"EntityInstance-" + currentListReportTargetEntity?.name}
-                    defaultlabel={interpolateExpression(props.reportSection.definition?.label, props.queryResults, "report label")}
+                    defaultlabel={interpolateExpression(props.reportSection.definition?.label, props.reportQueriesResultsRecord, "report label")}
                     styles={styles}
                     deploymentUuid={props.deploymentUuid}
                     chosenApplicationSection={props.applicationSection as ApplicationSection}
                     displayedDeploymentDefinition={displayedDeploymentDefinition}
-                    domainElementObject={props.queryResults}
+                    domainElementObject={props.reportQueriesResultsRecord}
                     fetchedDataJzodSchema={props.fetchedDataJzodSchema}
                     section={props.reportSection}
                     paramsAsdomainElements={props.paramsAsdomainElements}
@@ -235,7 +235,7 @@ export const ReportSectionView = (props: ReportSectionViewProps) => {
             {props.reportSection.type == "objectInstanceReportSection" ? (
               <div>
                 <ReportSectionEntityInstance
-                  domainElement={props.queryResults}
+                  domainElement={props.reportQueriesResultsRecord}
                   instance={entityInstance}
                   applicationSection={props.applicationSection as ApplicationSection}
                   deploymentUuid={props.deploymentUuid}

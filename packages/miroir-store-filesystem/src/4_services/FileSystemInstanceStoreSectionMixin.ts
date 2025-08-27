@@ -210,10 +210,23 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
     upsertInstance(entityUuid: string, instance: EntityInstance): Promise<Action2VoidReturnType> {
       try {
         const filePath = path.join(this.directory, entityUuid, fullName(instance.uuid));
+        log.info(
+          this.logHeader,
+          "upsertInstance called",
+          "entityUuid", entityUuid,
+          "instance", instance,
+          "filePath", filePath
+        );
         fs.writeFileSync(filePath, JSON.stringify(instance, undefined, 2), { encoding: "utf-8" });
-  
         return Promise.resolve(ACTION_OK);
       } catch (error) {
+        log.error(
+          this.logHeader,
+          "upsertInstance failed",
+          "entityUuid", entityUuid,
+          "instance", instance,
+          "error", error
+        );
         return Promise.resolve(new Action2Error(
           "FailedToUpdateInstance",
           `failed to upsert instance ${instance.uuid} of entity ${entityUuid}`

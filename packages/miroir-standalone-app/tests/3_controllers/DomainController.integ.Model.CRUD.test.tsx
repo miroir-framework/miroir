@@ -302,12 +302,9 @@ const testActions: Record<string, TestCompositeActionParams> = {
                     transformerType: "count",
                     interpolation: "runtime",
                     applyTo: {
-                      referenceType: "referencedTransformer",
-                      reference: {
-                        transformerType: "contextReference",
-                        interpolation: "runtime",
-                        referencePath: ["libraryEntityList", "entities"],
-                      }
+                      transformerType: "contextReference",
+                      interpolation: "runtime",
+                      referencePath: ["libraryEntityList", "entities"],
                     },
                   },
                   expectedValue: { count: 1 },
@@ -413,12 +410,9 @@ const testActions: Record<string, TestCompositeActionParams> = {
                     transformerType: "count",
                     interpolation: "runtime",
                     applyTo: {
-                      referenceType: "referencedTransformer",
-                      reference: {
-                        transformerType: "contextReference",
-                        interpolation: "runtime",
-                        referencePath: ["libraryEntityList", "entities"],
-                      }
+                      transformerType: "contextReference",
+                      interpolation: "runtime",
+                      referencePath: ["libraryEntityList", "entities"],
                     },
                   },
                   expectedValue: { count: 2 },
@@ -434,7 +428,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                 testLabel: "checkEntityBooks",
                 definition: {
                   resultAccessPath: ["libraryEntityList", "entities"],
-                  ignoreAttributes: ["author"],
+                  ignoreAttributes: ["author", "storageAccess"],
                   expectedValue: [entityAuthor, entityPublisher],
                 },
               },
@@ -537,12 +531,9 @@ const testActions: Record<string, TestCompositeActionParams> = {
                     transformerType: "count",
                     interpolation: "runtime",
                     applyTo: {
-                      referenceType: "referencedTransformer",
-                      reference: {
-                        transformerType: "contextReference",
-                        interpolation: "runtime",
-                        referencePath: ["libraryEntityList", "entities"],
-                      }
+                      transformerType: "contextReference",
+                      interpolation: "runtime",
+                      referencePath: ["libraryEntityList", "entities"],
                     },
                   },
                   expectedValue: { count: 1 },
@@ -677,12 +668,9 @@ const testActions: Record<string, TestCompositeActionParams> = {
                     transformerType: "count",
                     interpolation: "runtime",
                     applyTo: {
-                      referenceType: "referencedTransformer",
-                      reference: {
-                        transformerType: "contextReference",
-                        interpolation: "runtime",
-                        referencePath: ["libraryEntityListFromLocalCache", "entities"],
-                      }
+                      transformerType: "contextReference",
+                      interpolation: "runtime",
+                      referencePath: ["libraryEntityListFromLocalCache", "entities"],
                     },
                   },
                   expectedValue: { count: 2 },
@@ -698,7 +686,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                 testLabel: "checkEntitiesAreAuthorAndPublisher",
                 definition: {
                   resultAccessPath: ["libraryEntityListFromLocalCache", "entities"],
-                  ignoreAttributes: ["author"],
+                  ignoreAttributes: ["author", "storageAccess"],
                   expectedValue: [entityAuthor, entityPublisher],
                 },
               },
@@ -716,12 +704,9 @@ const testActions: Record<string, TestCompositeActionParams> = {
                     transformerType: "count",
                     interpolation: "runtime",
                     applyTo: {
-                      referenceType: "referencedTransformer",
-                      reference: {
-                        transformerType: "contextReference",
-                        interpolation: "runtime",
-                        referencePath: ["libraryEntityListFromPersistentStore", "entities"],
-                      }
+                      transformerType: "contextReference",
+                      interpolation: "runtime",
+                      referencePath: ["libraryEntityListFromPersistentStore", "entities"],
                     },
                   },
                   expectedValue: { count: 1 },
@@ -737,7 +722,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                 testLabel: "checkEntityFromPersistentStore",
                 definition: {
                   resultAccessPath: ["libraryEntityListFromPersistentStore", "entities"],
-                  ignoreAttributes: ["author"],
+                  ignoreAttributes: ["author", "storageAccess"],
                   expectedValue: [entityPublisher],
                 },
               },
@@ -838,12 +823,9 @@ const testActions: Record<string, TestCompositeActionParams> = {
                     transformerType: "count",
                     interpolation: "runtime",
                     applyTo: {
-                      referenceType: "referencedTransformer",
-                      reference: {
-                        transformerType: "contextReference",
-                        interpolation: "runtime",
-                        referencePath: ["libraryEntityList", "entities"],
-                      }
+                      transformerType: "contextReference",
+                      interpolation: "runtime",
+                      referencePath: ["libraryEntityList", "entities"],
                     },
                   },
                   expectedValue: { count: 0 },
@@ -966,12 +948,9 @@ const testActions: Record<string, TestCompositeActionParams> = {
                     transformerType: "count",
                     interpolation: "runtime",
                     applyTo: {
-                      referenceType: "referencedTransformer",
-                      reference: {
-                        transformerType: "contextReference",
-                        interpolation: "runtime",
-                        referencePath: ["libraryEntityList", "entities"],
-                      }
+                      transformerType: "contextReference",
+                      interpolation: "runtime",
+                      referencePath: ["libraryEntityList", "entities"],
                     },
                     // referencedTransformer: {
                     //   transformerType: "contextReference",
@@ -992,7 +971,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                 testLabel: "checkEntityBooks",
                 definition: {
                   resultAccessPath: ["libraryEntityList", "entities"],
-                  ignoreAttributes: ["author"],
+                  ignoreAttributes: ["author", "storageAccess"],
                   expectedValue: [{ ...entityPublisher, name: "Publishers" }],
                 },
               },
@@ -1137,12 +1116,9 @@ const testActions: Record<string, TestCompositeActionParams> = {
                     transformerType: "count",
                     interpolation: "runtime",
                     applyTo: {
-                      referenceType: "referencedTransformer",
-                      reference: {
-                        transformerType: "contextReference",
-                        interpolation: "runtime",
-                        referencePath: ["libraryEntityDefinitionListFromPersistentStore", "entityDefinitions"],
-                      }
+                      transformerType: "contextReference",
+                      interpolation: "runtime",
+                      referencePath: ["libraryEntityDefinitionListFromPersistentStore", "entityDefinitions"],
                     },
                   },
                   expectedValue: { count: 1 },
@@ -1162,12 +1138,9 @@ const testActions: Record<string, TestCompositeActionParams> = {
                     transformerType: "count",
                     interpolation: "runtime",
                     applyTo: {
-                      referenceType: "referencedTransformer",
-                      reference: {
-                        transformerType: "contextReference",
-                        interpolation: "runtime",
-                        referencePath: ["libraryEntityDefinitionListFromLocalCache", "entityDefinitions"],
-                      }
+                      transformerType: "contextReference",
+                      interpolation: "runtime",
+                      referencePath: ["libraryEntityDefinitionListFromLocalCache", "entityDefinitions"],
                     },
                   },
                   expectedValue: { count: 1 },
@@ -1183,7 +1156,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
             //     testLabel: "checkEntityBooks",
             //     definition: {
             //       resultAccessPath: ["libraryEntityDefinitionListFromLocalCache", "entityDefinitions"],
-            //       ignoreAttributes: ["author"],
+            //       ignoreAttributes: ["author", "storageAccess"],
             //       expectedValue: [
             //         {
             //           ...entityDefinitionPublisher,
@@ -1208,7 +1181,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
             //     testLabel: "checkEntityBooks",
             //     definition: {
             //       resultAccessPath: ["libraryEntityDefinitionListFromPersistentStore", "entityDefinitions"],
-            //       ignoreAttributes: ["author"],
+            //       ignoreAttributes: ["author", "storageAccess"],
             //       expectedValue: [
             //         {
             //           ...entityDefinitionPublisher,

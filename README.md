@@ -112,31 +112,16 @@ RUN_TEST=transformers.integ.test npm run testByFile -w miroir-core -- 'transform
 ```
 
 
-to run all the miroir-core unit tests:
+to run all the miroir-core unit tests (except the two transformer tests above):
 
 ```sh
-npm run testNode -w miroir-core
+npm run test -w miroir-core -- ''
 ```
 
 
 
 
-### Miroir-standalone-app: Automated Tests
-
-#### Unit tests
-
-To test the DomainSelector, first compile miroir-core:
-
-```sh
-npm run preTestNodeNext -w miroir-core
-```
-
-then run the test:
-
-```sh
-npm run testNode -w miroir-core -- domainSelector
-```
-
+### Miroir-standalone-app
 
 #### Persistence store integration tests
 
@@ -205,16 +190,6 @@ Using a real server running on nodejs, the "miroir" and "library" schemas are NO
 
 ```sh
 VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-realServer-sql VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug npm run testByFile -w miroir-standalone-app -- DomainController.integ
-```
-
-#### automated unit / integration tests for Transformers
-
-```sh
-RUN_TEST=transformers.integ.test npm run testByFile -w miroir-core -- transformers.integ
-```
-or
-```sh
-RUN_TEST=transformers.unit.test npm run testByFile -w miroir-core -- transformers.unit
 ```
 
 #### integration tests for Applicative CompositeActions

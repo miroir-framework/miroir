@@ -5,14 +5,14 @@ import {
   JzodSchema,
   MetaModel,
 } from "../../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import { rootLessListKeyMap } from "../../../src/1_core/jzod/rootLessListKeyMap";
+import { rootLessListKeyMapDEFUNCT } from "../../../src/1_core/jzod/rootLessListKeyMapDEFUNCT";
 
 import { miroirFundamentalJzodSchema } from "../../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalJzodSchema";
 
 
 const castMiroirFundamentalJzodSchema = miroirFundamentalJzodSchema as JzodSchema;
 
-describe("rootLessListKeyMap", () => {
+describe("rootLessListKeyMapDEFUNCT", () => {
   const mockMiroirFundamentalJzodSchema = {} as JzodSchema;
   const mockCurrentModel = {} as MetaModel;
   const mockMiroirMetaModel = {} as MetaModel;
@@ -31,7 +31,7 @@ describe("rootLessListKeyMap", () => {
 
     // Assert
     expect(() =>
-      rootLessListKeyMap(
+      rootLessListKeyMapDEFUNCT(
         rootLessListKey,
         rawJzodSchema,
         undefined, // No resolved schema based on value
@@ -55,7 +55,7 @@ describe("rootLessListKeyMap", () => {
     const currentValue = {};
 
     // Execute function
-    const result = rootLessListKeyMap(
+    const result = rootLessListKeyMapDEFUNCT(
       rootLessListKey,
       rawJzodSchema,
       undefined, // No resolved schema based on value
@@ -82,7 +82,7 @@ describe("rootLessListKeyMap", () => {
     };
     const currentValue: any[] = [];
     // Execute function
-    const result = rootLessListKeyMap(
+    const result = rootLessListKeyMapDEFUNCT(
       rootLessListKey,
       rawJzodSchema,
       undefined, // No resolved schema based on value
@@ -115,7 +115,7 @@ describe("rootLessListKeyMap", () => {
     const currentValue = { name: "John", age: 30 };
 
     // Execute function
-    const result = rootLessListKeyMap(
+    const result = rootLessListKeyMapDEFUNCT(
       rootLessListKey,
       rawJzodSchema,
       undefined, // No resolved schema based on value
@@ -175,7 +175,7 @@ describe("rootLessListKeyMap", () => {
     };
 
     // Execute function
-    const result = rootLessListKeyMap(
+    const result = rootLessListKeyMapDEFUNCT(
       rootLessListKey,
       rawJzodSchema,
       undefined, // No resolved schema based on value
@@ -218,7 +218,7 @@ describe("rootLessListKeyMap", () => {
     const currentValue: string[] = ["apple", "banana", "cherry"];
 
     // Execute function
-    const result = rootLessListKeyMap(
+    const result = rootLessListKeyMapDEFUNCT(
       rootLessListKey,
       rawJzodSchema,
       undefined, // No resolved schema based on value
@@ -265,7 +265,7 @@ describe("rootLessListKeyMap", () => {
     const currentValue: [string, number] = ["apple", 1];
 
     // Execute function
-    const result = rootLessListKeyMap(
+    const result = rootLessListKeyMapDEFUNCT(
       rootLessListKey,
       rawJzodSchema,
       undefined, // No resolved schema based on value
@@ -308,7 +308,7 @@ describe("rootLessListKeyMap", () => {
     ];
 
     // Execute function
-    const result = rootLessListKeyMap(
+    const result = rootLessListKeyMapDEFUNCT(
       rootLessListKey,
       rawJzodSchema,
       undefined, // No resolved schema based on value
@@ -419,7 +419,7 @@ describe("rootLessListKeyMap", () => {
         },
       ],
     };
-    const result = rootLessListKeyMap(
+    const result = rootLessListKeyMapDEFUNCT(
       // rootLessListKey,
       "",
       rawJzodSchema,
@@ -702,7 +702,7 @@ describe("rootLessListKeyMap", () => {
 
   //   // Assert
   //   expect(() =>
-  //     rootLessListKeyMap(
+  //     rootLessListKeyMapDEFUNCT(
   //       rootLessListKey,
   //       rawJzodSchema,
   //       mockCurrentModel,
@@ -730,7 +730,7 @@ describe("rootLessListKeyMap", () => {
 
   //   // Assert
   //   expect(() =>
-  //     rootLessListKeyMap(
+  //     rootLessListKeyMapDEFUNCT(
   //       rootLessListKey,
   //       rawJzodSchema,
   //       mockCurrentModel,
@@ -749,7 +749,7 @@ describe("rootLessListKeyMap", () => {
 
   //   // Assert
   //   expect(() =>
-  //     rootLessListKeyMap(
+  //     rootLessListKeyMapDEFUNCT(
   //       rootLessListKey,
   //       rawJzodSchema,
   //       mockCurrentModel,

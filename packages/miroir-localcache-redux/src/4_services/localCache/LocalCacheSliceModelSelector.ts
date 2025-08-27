@@ -2,7 +2,7 @@ import { createSelector } from "@reduxjs/toolkit";
 import {
   ApplicationSection,
   ApplicationVersion,
-  DeploymentEntityState,
+  ReduxDeploymentsState,
   EntityDefinition,
   EntityInstancesUuidIndex,
   JzodSchemaDefinition,
@@ -27,8 +27,8 @@ import {
 import { packageName } from "../../constants.js";
 import { cleanLevel } from "../constants.js";
 import {
-  selectCurrentDeploymentEntityStateFromReduxState,
-  selectEntityInstanceUuidIndexFromLocalCacheQueryAndDeploymentEntityState,
+  selectCurrentReduxDeploymentsStateFromReduxState,
+  selectEntityInstanceUuidIndexFromLocalCacheQueryAndReduxDeploymentsState,
   selectMiroirSelectorQueryParams,
 } from "./LocalCacheSliceSelectors.js";
 import { ReduxStateWithUndoRedo } from "./localCacheReduxSliceInterface.js";
@@ -40,13 +40,13 @@ MiroirLoggerFactory.registerLoggerToStart(
 
 
 // ################################################################################################
-function selectEntityInstancesFromDeploymentEntityState(
-  reduxState: DeploymentEntityState,
+function selectEntityInstancesFromReduxDeploymentsState(
+  reduxState: ReduxDeploymentsState,
   deploymentUuid: Uuid | undefined,
   applicationSection:ApplicationSection | undefined,
   entityUuid: Uuid | undefined
 ) {
-  const result = selectEntityInstanceUuidIndexFromLocalCacheQueryAndDeploymentEntityState(reduxState, {
+  const result = selectEntityInstanceUuidIndexFromLocalCacheQueryAndReduxDeploymentsState(reduxState, {
     queryType: "localCacheEntityInstancesExtractor",
     definition: {
       deploymentUuid,
@@ -60,9 +60,9 @@ function selectEntityInstancesFromDeploymentEntityState(
 // ################################################################################################
 // const selectEntities = (reduxState: ReduxStateWithUndoRedo, params:  ) => {
 const selectEntitiesFromReduxState = createSelector(
-  [selectCurrentDeploymentEntityStateFromReduxState,selectMiroirSelectorQueryParams],
-  (reduxState: DeploymentEntityState, params: MiroirQueryTemplate) => {
-    return selectEntityInstancesFromDeploymentEntityState(
+  [selectCurrentReduxDeploymentsStateFromReduxState,selectMiroirSelectorQueryParams],
+  (reduxState: ReduxDeploymentsState, params: MiroirQueryTemplate) => {
+    return selectEntityInstancesFromReduxDeploymentsState(
       reduxState,
       params.queryType == "localCacheEntityInstancesExtractor" ? params.definition.deploymentUuid??"undefined" : "undefined",
       "model",
@@ -73,9 +73,9 @@ const selectEntitiesFromReduxState = createSelector(
 
 // ################################################################################################
 const selectEntityDefinitionsFromReduxState = createSelector(
-  [selectCurrentDeploymentEntityStateFromReduxState,selectMiroirSelectorQueryParams],
-  (reduxState: DeploymentEntityState, params: MiroirQueryTemplate) => {
-    return selectEntityInstancesFromDeploymentEntityState(
+  [selectCurrentReduxDeploymentsStateFromReduxState,selectMiroirSelectorQueryParams],
+  (reduxState: ReduxDeploymentsState, params: MiroirQueryTemplate) => {
+    return selectEntityInstancesFromReduxDeploymentsState(
       reduxState,
       params.queryType == "localCacheEntityInstancesExtractor" ? params.definition.deploymentUuid??"undefined" : "undefined",
       "model",
@@ -86,9 +86,9 @@ const selectEntityDefinitionsFromReduxState = createSelector(
 
 // ################################################################################################
 const selectJzodSchemasFromReduxState = createSelector(
-  [selectCurrentDeploymentEntityStateFromReduxState,selectMiroirSelectorQueryParams],
-  (reduxState: DeploymentEntityState, params: MiroirQueryTemplate) => {
-    return selectEntityInstancesFromDeploymentEntityState(
+  [selectCurrentReduxDeploymentsStateFromReduxState,selectMiroirSelectorQueryParams],
+  (reduxState: ReduxDeploymentsState, params: MiroirQueryTemplate) => {
+    return selectEntityInstancesFromReduxDeploymentsState(
       reduxState,
       params.queryType == "localCacheEntityInstancesExtractor" ? params.definition.deploymentUuid??"undefined" : "undefined",
       params.queryType == "localCacheEntityInstancesExtractor"
@@ -98,15 +98,15 @@ const selectJzodSchemasFromReduxState = createSelector(
             : undefined,
       entityJzodSchema.uuid
     )
-    // return selectEntityInstancesFromDeploymentEntityState(reduxState,params, entityJzodSchema.uuid)
+    // return selectEntityInstancesFromReduxDeploymentsState(reduxState,params, entityJzodSchema.uuid)
   }
 );
 
 // ################################################################################################
 const selectMenusFromReduxState = createSelector(
-  [selectCurrentDeploymentEntityStateFromReduxState,selectMiroirSelectorQueryParams],
-  (reduxState: DeploymentEntityState, params: MiroirQueryTemplate) => {
-    return selectEntityInstancesFromDeploymentEntityState(
+  [selectCurrentReduxDeploymentsStateFromReduxState,selectMiroirSelectorQueryParams],
+  (reduxState: ReduxDeploymentsState, params: MiroirQueryTemplate) => {
+    return selectEntityInstancesFromReduxDeploymentsState(
       reduxState,
       params.queryType == "localCacheEntityInstancesExtractor" ? params.definition.deploymentUuid??"undefined" : "undefined",
       params.queryType == "localCacheEntityInstancesExtractor"
@@ -121,9 +121,9 @@ const selectMenusFromReduxState = createSelector(
 
 // ################################################################################################
 const selectReportsFromReduxState = createSelector(
-  [selectCurrentDeploymentEntityStateFromReduxState,selectMiroirSelectorQueryParams],
-  (reduxState: DeploymentEntityState, params: MiroirQueryTemplate) => {
-    return selectEntityInstancesFromDeploymentEntityState(
+  [selectCurrentReduxDeploymentsStateFromReduxState,selectMiroirSelectorQueryParams],
+  (reduxState: ReduxDeploymentsState, params: MiroirQueryTemplate) => {
+    return selectEntityInstancesFromReduxDeploymentsState(
       reduxState,
       params.queryType == "localCacheEntityInstancesExtractor" ? params.definition.deploymentUuid??"undefined" : "undefined",
       params.queryType == "localCacheEntityInstancesExtractor"
@@ -138,9 +138,9 @@ const selectReportsFromReduxState = createSelector(
 
 // ################################################################################################
 const selectConfigurationsFromReduxState = createSelector(
-  [selectCurrentDeploymentEntityStateFromReduxState,selectMiroirSelectorQueryParams],
-  (reduxState: DeploymentEntityState, params: MiroirQueryTemplate) => {
-    return selectEntityInstancesFromDeploymentEntityState(
+  [selectCurrentReduxDeploymentsStateFromReduxState,selectMiroirSelectorQueryParams],
+  (reduxState: ReduxDeploymentsState, params: MiroirQueryTemplate) => {
+    return selectEntityInstancesFromReduxDeploymentsState(
       reduxState,
       params.queryType == "localCacheEntityInstancesExtractor" ? params.definition.deploymentUuid??"undefined" : "undefined",
       params.queryType == "localCacheEntityInstancesExtractor"
@@ -150,15 +150,15 @@ const selectConfigurationsFromReduxState = createSelector(
             : undefined,
       entityStoreBasedConfiguration.uuid
     )
-    // return selectEntityInstancesFromDeploymentEntityState(reduxState,params, entityStoreBasedConfiguration.uuid)
+    // return selectEntityInstancesFromReduxDeploymentsState(reduxState,params, entityStoreBasedConfiguration.uuid)
   }
 );
 
 // ################################################################################################
 const selectApplicationVersionsFromReduxState = createSelector(
-  [selectCurrentDeploymentEntityStateFromReduxState,selectMiroirSelectorQueryParams],
-  (reduxState: DeploymentEntityState, params: MiroirQueryTemplate) => {
-    return selectEntityInstancesFromDeploymentEntityState(
+  [selectCurrentReduxDeploymentsStateFromReduxState,selectMiroirSelectorQueryParams],
+  (reduxState: ReduxDeploymentsState, params: MiroirQueryTemplate) => {
+    return selectEntityInstancesFromReduxDeploymentsState(
       reduxState,
       params.queryType == "localCacheEntityInstancesExtractor" ? params.definition.deploymentUuid??"undefined" : "undefined",
       params.queryType == "localCacheEntityInstancesExtractor"

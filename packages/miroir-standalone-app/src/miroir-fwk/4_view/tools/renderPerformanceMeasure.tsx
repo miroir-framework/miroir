@@ -1,4 +1,8 @@
+/** @jsxImportSource @emotion/react */
+import { css } from '@emotion/react';
 import * as React from 'react';
+import { DraggableContainer } from '../components/DraggableContainer.js';
+import { useMiroirTheme } from '../contexts/MiroirThemeContext.js';
 
 // Performance tracking for JzodElementEditor renders
 export interface RenderPerformanceMetricsElement {
@@ -32,7 +36,7 @@ export class RenderPerformanceMetrics {
   }
 
   static removeChangeCallback(callback: () => void) {
-    this.changeCallbacks = this.changeCallbacks.filter(cb => cb !== callback);
+    this.changeCallbacks = this.changeCallbacks.filter((cb) => cb !== callback);
   }
 
   static notifyCallbacks() {
@@ -40,10 +44,10 @@ export class RenderPerformanceMetrics {
     if (this.notifyTimer) {
       return;
     }
-    
+
     this.notifyTimer = setTimeout(() => {
       // console.log('RenderPerformanceMetrics notifying callbacks, count:', this.changeCallbacks.length);
-      this.changeCallbacks.forEach(callback => callback());
+      this.changeCallbacks.forEach((callback) => callback());
       this.notifyTimer = null;
     }, 100); // Throttle to 100ms
   }
@@ -54,7 +58,7 @@ export class RenderPerformanceMetrics {
       clearTimeout(this.notifyTimer);
       this.notifyTimer = null;
     }
-    
+
     this.renderMetrics = this.renderMetrics
       ? Object.fromEntries(
           Object.keys(this.renderMetrics).map((k) => [
@@ -91,7 +95,7 @@ export class RenderPerformanceMetrics {
     metrics.maxRenderTime = Math.max(metrics.maxRenderTime, renderTime);
     metrics.minRenderTime = Math.min(metrics.minRenderTime, renderTime);
     metrics.averageRenderTime = metrics.totalRenderTime / metrics.renderCount;
-    
+
     this.notifyCallbacks();
     return metrics;
   }
@@ -104,24 +108,25 @@ export class RenderPerformanceMetrics {
     componentKey: string;
     indentLevel?: number;
   }) => {
+    const { currentTheme } = useMiroirTheme();
     const metrics = this.renderMetrics[componentKey];
 
     if (!metrics) return null;
 
+    const displayStyles = css({
+      fontSize: currentTheme.typography.fontSize.xs,
+      color: currentTheme.colors.textSecondary,
+      backgroundColor: currentTheme.colors.successSurface,
+      padding: currentTheme.spacing.xs,
+      margin: '1px 0',
+      border: `1px solid ${currentTheme.colors.borderLight}`,
+      borderRadius: currentTheme.borderRadius.sm,
+      fontFamily: 'monospace',
+      marginLeft: `${(indentLevel || 0) * 10}px`,
+    });
+
     return (
-      <div
-        style={{
-          fontSize: "0.7rem",
-          color: "#666",
-          backgroundColor: "rgba(255, 255, 0, 0.1)",
-          padding: "2px 4px",
-          margin: "1px 0",
-          border: "1px solid #ddd",
-          borderRadius: "3px",
-          fontFamily: "monospace",
-          marginLeft: `${(indentLevel || 0) * 10}px`,
-        }}
-      >
+      <div css={displayStyles}>
         <strong>{componentKey}:</strong> #{metrics.renderCount} | Last:{" "}
         {metrics.lastRenderTime.toFixed(2)}ms | Total: {metrics.totalRenderTime.toFixed(2)}ms | Avg:{" "}
         {metrics.averageRenderTime.toFixed(2)}ms | Min/Max: {metrics.minRenderTime.toFixed(2)}ms/
@@ -129,139 +134,99 @@ export class RenderPerformanceMetrics {
       </div>
     );
   };
-  // Global performance summary display
-  static GlobalRenderPerformanceDisplay = (props: {
-    renderMetrics: Record<string, RenderPerformanceMetricsElement>;
-  }) => {
-    const [position, setPosition] = React.useState(() => {
-      // Load position from sessionStorage
-      const saved = sessionStorage.getItem('performanceStatsPosition');
-      return saved ? JSON.parse(saved) : { x: 10, y: 10 };
-    });
-    const [isDragging, setIsDragging] = React.useState(false);
-    const [dragStart, setDragStart] = React.useState({ x: 0, y: 0 });
-    const dragRef = React.useRef<HTMLDivElement>(null);
 
-    const handleMouseDown = React.useCallback((e: React.MouseEvent) => {
-      if (e.target === dragRef.current || (e.target as HTMLElement)?.closest('.drag-handle')) {
-        setIsDragging(true);
-        setDragStart({
-          x: e.clientX - position.x,
-          y: e.clientY - position.y
-        });
-        e.preventDefault();
-      }
-    }, [position]);
+  // Global performance summary display - now uses the standalone DraggableContainer
+  static GlobalRenderPerformanceDisplay = DraggableContainer;
 
-    const handleMouseMove = React.useCallback((e: MouseEvent) => {
-      if (isDragging) {
-        const newPosition = {
-          x: e.clientX - dragStart.x,
-          y: e.clientY - dragStart.y
-        };
-        setPosition(newPosition);
-        // Save position to sessionStorage
-        sessionStorage.setItem('performanceStatsPosition', JSON.stringify(newPosition));
-      }
-    }, [isDragging, dragStart]);
-
-    const handleMouseUp = React.useCallback(() => {
-      setIsDragging(false);
-    }, []);
+  // Specific render metrics display component
+  static RenderMetricsContent: React.FC = () => {
+    const { currentTheme } = useMiroirTheme();
+    const [, forceUpdate] = React.useReducer(x => x + 1, 0);
 
     React.useEffect(() => {
-      if (isDragging) {
-        document.addEventListener('mousemove', handleMouseMove);
-        document.addEventListener('mouseup', handleMouseUp);
-        return () => {
-          document.removeEventListener('mousemove', handleMouseMove);
-          document.removeEventListener('mouseup', handleMouseUp);
-        };
-      }
-    }, [isDragging, handleMouseMove, handleMouseUp]);
+      // Subscribe to metrics changes
+      RenderPerformanceMetrics.addChangeCallback(forceUpdate);
+      
+      return () => {
+        // Cleanup subscription
+        RenderPerformanceMetrics.removeChangeCallback(forceUpdate);
+      };
+    }, []);
 
-    const totalRenders = Object.values(props.renderMetrics).reduce(
+    // Read directly from the static renderMetrics
+    const renderMetrics = RenderPerformanceMetrics.renderMetrics;
+
+    const totalRenders = Object.values(renderMetrics).reduce(
       (sum, metrics) => sum + metrics.renderCount,
       0
     );
-    const totalTime = Object.values(props.renderMetrics).reduce(
+    const totalTime = Object.values(renderMetrics).reduce(
       (sum, metrics) => sum + metrics.totalRenderTime,
       0
     );
     const averageTime = totalRenders > 0 ? totalTime / totalRenders : 0;
 
-    // if (totalRenders === 0) return null;
-    if (totalRenders === 0) return <div>No stats yet!</div>;
+    if (totalRenders === 0) return <div key="no-stats">No stats yet!</div>;
+
+    // Create a unique key based on current metrics to ensure React re-renders parent naturally
+    const metricsKey = `metrics-${totalRenders}-${totalTime.toFixed(2)}`;
+
+    const summaryStyles = css({
+      marginBottom: currentTheme.spacing.sm,
+      padding: `${currentTheme.spacing.xs} 0`,
+      borderBottom: `1px solid ${currentTheme.colors.divider}`,
+      color: currentTheme.colors.text,
+      fontSize: currentTheme.typography.fontSize.sm,
+    });
+
+    const metricsListStyles = css({
+      display: 'flex',
+      flexDirection: 'column',
+      gap: currentTheme.spacing.xs,
+    });
+
+    const metricItemStyles = css({
+      padding: currentTheme.spacing.xs,
+      backgroundColor: currentTheme.colors.surface,
+      border: `1px solid ${currentTheme.colors.borderLight}`,
+      borderRadius: currentTheme.borderRadius.sm,
+      lineHeight: currentTheme.typography.lineHeight.normal,
+    });
+
+    const componentNameStyles = css({
+      fontWeight: currentTheme.typography.fontWeight.bold,
+      color: currentTheme.colors.primary,
+      fontSize: currentTheme.typography.fontSize.sm,
+    });
+
+    const metricsDetailStyles = css({
+      fontSize: currentTheme.typography.fontSize.xs,
+      color: currentTheme.colors.textSecondary,
+      fontFamily: 'monospace',
+    });
 
     return (
-      <div
-        ref={dragRef}
-        onMouseDown={handleMouseDown}
-        style={{
-          fontSize: "0.7rem",
-          color: "#333",
-          backgroundColor: "rgba(255, 255, 255, 0.95)",
-          padding: "8px",
-          border: "2px solid #007acc",
-          borderRadius: "4px",
-          fontFamily: "monospace",
-          position: "fixed",
-          top: `${position.y}px`,
-          left: `${position.x}px`,
-          zIndex: 9999,
-          maxWidth: "500px",
-          maxHeight: "80vh",
-          overflow: "hidden",
-          boxShadow: "0 4px 8px rgba(0,0,0,0.2)",
-          cursor: isDragging ? 'grabbing' : 'grab',
-          userSelect: 'none',
-        }}
-      >
-        <div
-          className="drag-handle"
-          style={{
-            fontWeight: "bold",
-            borderBottom: "1px solid #ddd",
-            marginBottom: "8px",
-            padding: "4px 0",
-            cursor: 'grab',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px'
-          }}
-        >
-          <span style={{ fontSize: '12px', opacity: 0.7 }}>⋮⋮</span>
-          ReportPage Performance Stats
-        </div>
-        <div style={{ marginBottom: "8px", padding: "4px 0", borderBottom: "1px solid #eee" }}>
+      <div key={metricsKey}>
+        <div css={summaryStyles}>
           <div>
             Total Renders: {totalRenders} | Total Time: {totalTime.toFixed(2)}ms | Avg:{" "}
             {averageTime.toFixed(2)}ms
           </div>
-          <div>Active Components: {Object.keys(props.renderMetrics).length}</div>
+          <div>Active Components: {Object.keys(renderMetrics).length}</div>
         </div>
-        <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
-          {Object.entries(props.renderMetrics)
-            .sort(([, a], [, b]) => b.totalRenderTime - a.totalRenderTime)
+        <div css={metricsListStyles}>
+          {Object.entries(renderMetrics)
+            .sort(([, a], [, b]) => (b as RenderPerformanceMetricsElement).totalRenderTime - (a as RenderPerformanceMetricsElement).totalRenderTime)
             .map(([componentKey, metrics]) => (
-              <div
-                key={componentKey}
-                style={{
-                  padding: "4px 6px",
-                  backgroundColor: "rgba(0, 122, 204, 0.05)",
-                  border: "1px solid #ddd",
-                  borderRadius: "3px",
-                  lineHeight: "1.3",
-                }}
-              >
-                <div style={{ fontWeight: "bold", color: "#007acc", fontSize: "0.75rem" }}>
+              <div key={componentKey} css={metricItemStyles}>
+                <div css={componentNameStyles}>
                   {componentKey}
                 </div>
-                <div style={{ fontSize: "0.65rem", color: "#666" }}>
-                  #{metrics.renderCount} renders | Last: {metrics.lastRenderTime.toFixed(2)}ms |
-                  Total: {metrics.totalRenderTime.toFixed(2)}ms | Avg:{" "}
-                  {metrics.averageRenderTime.toFixed(2)}ms | Min/Max:{" "}
-                  {metrics.minRenderTime.toFixed(2)}ms/{metrics.maxRenderTime.toFixed(2)}ms
+                <div css={metricsDetailStyles}>
+                  #{(metrics as RenderPerformanceMetricsElement).renderCount} renders | Last: {(metrics as RenderPerformanceMetricsElement).lastRenderTime.toFixed(2)}ms |
+                  Total: {(metrics as RenderPerformanceMetricsElement).totalRenderTime.toFixed(2)}ms | Avg:{" "}
+                  {(metrics as RenderPerformanceMetricsElement).averageRenderTime.toFixed(2)}ms | Min/Max:{" "}
+                  {(metrics as RenderPerformanceMetricsElement).minRenderTime.toFixed(2)}ms/{(metrics as RenderPerformanceMetricsElement).maxRenderTime.toFixed(2)}ms
                 </div>
               </div>
             ))}
@@ -270,5 +235,105 @@ export class RenderPerformanceMetrics {
     );
   };
 }
+
+// ################################################################################################
+// Themed Performance Components
+// ################################################################################################
+
+// Themed draggable performance display container
+export const ThemedPerformanceDisplay: React.FC<{
+  title?: string;
+  storageKey?: string;
+  defaultPosition?: { x: number; y: number };
+}> = ({ 
+  title = "Performance Stats",
+  storageKey = "performanceStatsPosition",
+  defaultPosition = { x: 10, y: 10 }
+}) => {
+  return (
+    <DraggableContainer 
+      title={title}
+      storageKey={storageKey}
+      defaultPosition={defaultPosition}
+    >
+      <RenderPerformanceMetrics.RenderMetricsContent />
+    </DraggableContainer>
+  );
+};
+
+// Themed individual performance metric card
+export const ThemedPerformanceMetricCard: React.FC<{
+  componentKey: string;
+  metrics: RenderPerformanceMetricsElement;
+  indentLevel?: number;
+}> = ({ componentKey, metrics, indentLevel = 0 }) => {
+  const { currentTheme } = useMiroirTheme();
+
+  const cardStyles = css({
+    padding: currentTheme.spacing.sm,
+    marginLeft: `${indentLevel * 12}px`,
+    marginBottom: currentTheme.spacing.xs,
+    backgroundColor: currentTheme.colors.surface,
+    border: `1px solid ${currentTheme.colors.borderLight}`,
+    borderRadius: currentTheme.borderRadius.md,
+    boxShadow: currentTheme.elevation.low,
+    transition: 'all 0.2s ease',
+    '&:hover': {
+      backgroundColor: currentTheme.colors.hover,
+      boxShadow: currentTheme.elevation.medium,
+    },
+  });
+
+  const titleStyles = css({
+    fontWeight: currentTheme.typography.fontWeight.bold,
+    color: currentTheme.colors.primary,
+    fontSize: currentTheme.typography.fontSize.md,
+    marginBottom: currentTheme.spacing.xs,
+  });
+
+  const metricsRowStyles = css({
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    gap: currentTheme.spacing.xs,
+  });
+
+  const metricStyles = css({
+    fontSize: currentTheme.typography.fontSize.xs,
+    color: currentTheme.colors.textSecondary,
+    fontFamily: 'monospace',
+  });
+
+  const badgeStyles = css({
+    backgroundColor: currentTheme.colors.primaryLight,
+    color: currentTheme.colors.background,
+    padding: `2px ${currentTheme.spacing.xs}`,
+    borderRadius: currentTheme.borderRadius.sm,
+    fontSize: currentTheme.typography.fontSize.xs,
+    fontWeight: currentTheme.typography.fontWeight.bold,
+  });
+
+  return (
+    <div css={cardStyles}>
+      <div css={titleStyles}>{componentKey}</div>
+      <div css={metricsRowStyles}>
+        <span css={badgeStyles}>#{metrics.renderCount}</span>
+        <span css={metricStyles}>
+          Last: {metrics.lastRenderTime.toFixed(2)}ms
+        </span>
+        <span css={metricStyles}>
+          Avg: {metrics.averageRenderTime.toFixed(2)}ms
+        </span>
+        <span css={metricStyles}>
+          Total: {metrics.totalRenderTime.toFixed(2)}ms
+        </span>
+        <span css={metricStyles}>
+          Range: {metrics.minRenderTime.toFixed(2)}-{metrics.maxRenderTime.toFixed(2)}ms
+        </span>
+      </div>
+    </div>
+  );
+};
 
 

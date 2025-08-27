@@ -45,6 +45,7 @@ import {
 } from "../MiroirContextReactProvider.js";
 import { useCurrentModel } from "../ReduxHooks.js";
 import { PageContainer } from "../components/Page/PageContainer.js";
+import { usePageConfiguration } from "../services/index.js";
 
 
 // import entityPublisher from "../../assets/library_model/";
@@ -88,6 +89,13 @@ export const HomePage = (props: RootComponentProps) => {
   const transactions: ReduxStateChanges[] = useLocalCacheTransactions();
   const errorLog = useErrorLogService();
   const domainController: DomainControllerInterface = useDomainControllerService();
+  
+  // Auto-fetch configurations when the page loads
+  const { fetchConfigurations } = usePageConfiguration({
+    autoFetchOnMount: true,
+    successMessage: "Home page configurations loaded successfully",
+    actionName: "home page configuration fetch"
+  });
   
   // log.info("RootComponent deployments",deployments);
 

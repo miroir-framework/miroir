@@ -1,5 +1,6 @@
 import express, { Request } from 'express';
 import bodyParser from 'body-parser';
+import cors from 'cors';
 // import {bodyParser} from 'body-parser';
 import { readFileSync } from 'fs';
 import log from 'loglevelnext'; // TODO: use this? or plain "console" log?
@@ -152,7 +153,7 @@ for (const op of restServerDefaultHandlers) {
     op.url,
     // jsonParser,
     // urlencodedParser,
-    async (request: Request<{}, any, any, any, Record<string, any>>, response: any, context: any) => {
+    async (request: CustomRequest, response: any, context: any) => {
       const body = request.body;
       // myLogger.info("server received request", op.method, request.originalUrl, JSON.stringify(request, circularReplacer, 2));
       // myLogger.info("server received body", op.method, request.originalUrl, body);
@@ -186,3 +187,10 @@ app.get('/', (req: any,res: any) => {
 app.listen(portFromConfig, () => {
     myLogger.info(`Server listening on the port::${portFromConfig}`);
 });
+
+// Adjust Request type
+interface CustomRequest extends Request {
+  body: any;
+  originalUrl: string;
+  params: Record<string, any>;
+}

@@ -1670,11 +1670,11 @@ describe("unionObjectChoices", () => {
   //   const concreteJzodSchemas: JzodElement[] = jzodSchema.definition.map((a: JzodElement) =>
   //     a.type == "schemaReference"
   //       ? resolveJzodSchemaReferenceInContext(
-  //           miroirFundamentalJzodSchema as any,
   //           a,
+  //           a.context,
+  //           miroirFundamentalJzodSchema as any,
   //           currentModel as any,
   //           currentMiroirModel as any,
-  //           a.context
   //         )
   //       : a
   //   );

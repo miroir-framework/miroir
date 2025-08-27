@@ -62,6 +62,7 @@ import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { ACTION_OK } from "../1_core/constants";
 import { defaultMiroirMetaModel, metaModelEntities, miroirModelEntities } from "../1_core/Model";
 import { resolveCompositeActionTemplate } from "../2_domain/ResolveCompositeActionTemplate";
+import { type MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import { transformer_extended_apply, transformer_extended_apply_wrapper } from "../2_domain/TransformersForRuntime.js";
 import { LoggerGlobalContext } from '../4_services/LoggerContext.js';
 import { MiroirLoggerFactory } from "../4_services/LoggerFactory";
@@ -88,6 +89,7 @@ import {
 } from "../0_interfaces/2_domain/DomainElement.js";
 import { ignorePostgresExtraAttributesOnList, ignorePostgresExtraAttributesOnObject } from '../4_services/otherTools.js';
 import { ConfigurationService } from './ConfigurationService.js';
+import { miroirFundamentalJzodSchema } from '../0_interfaces/1_core/preprocessor-generated/miroirFundamentalJzodSchema.js';
 
 
 
@@ -170,7 +172,7 @@ export class DomainController implements DomainControllerInterface {
     private endpoint: Endpoint
   ) {
     this.callUtil = new CallUtils(miroirContext.errorLogService, persistenceStoreLocalOrRemote);
-    const boundRemotePersistenceAction = this.callUtil.callRemotePersistenceAction.bind(
+    const boundRemotePersistenceAction = this.callUtil.callPersistenceAction.bind(
       this.callUtil
     );
     // actionType -> actionName -> actionHandlerKind -> handler
@@ -181,7 +183,7 @@ export class DomainController implements DomainControllerInterface {
           local: this.persistenceStoreLocalOrRemote.handleStoreOrBundleActionForLocalStore.bind(
             this.persistenceStoreLocalOrRemote
           ),
-          // remote: this.callUtil.callRemotePersistenceAction.bind(this.callUtil),
+          // remote: this.callUtil.callPersistenceAction.bind(this.callUtil),
           remote: boundRemotePersistenceAction,
         },
       },
@@ -307,7 +309,7 @@ export class DomainController implements DomainControllerInterface {
     );
     try {
       await this.callUtil
-        .callRemotePersistenceAction(
+        .callPersistenceAction(
           {}, // context
           {
             addResultToContextAsName: "dataEntitiesFromModelSection",
@@ -413,7 +415,7 @@ export class DomainController implements DomainControllerInterface {
               "DomainController loadConfigurationFromPersistenceStore fetching instances from server for entity",
               JSON.stringify(e, undefined, 2)
             );
-            return this.callUtil.callRemotePersistenceAction(
+            return this.callUtil.callPersistenceAction(
               {}, // context
               {
                 addResultToContextAsName: "entityInstanceCollection",
@@ -586,7 +588,7 @@ export class DomainController implements DomainControllerInterface {
               await this.persistenceStoreLocalOrRemote.handlePersistenceActionForRemoteStore(
                 runBoxedExtractorOrQueryAction
               );
-            // const result = await this.callUtil.callRemotePersistenceAction(
+            // const result = await this.callUtil.callPersistenceAction(
             //   // what if it is a REAL persistence store?? exception?
             //   {}, // context
             //   {
@@ -683,7 +685,7 @@ export class DomainController implements DomainControllerInterface {
         // JSON.stringify(runBoxedQueryTemplateOrBoxedExtractorTemplateAction)
         runBoxedQueryTemplateAction
       );
-      const result = await this.callUtil.callRemotePersistenceAction(
+      const result = await this.callUtil.callPersistenceAction(
         // what if it is a REAL persistence store?? exception?
         {}, // context
         {
@@ -750,7 +752,7 @@ export class DomainController implements DomainControllerInterface {
         // JSON.stringify(runBoxedQueryTemplateOrBoxedExtractorTemplateAction)
         runBoxedExtractorTemplateAction
       );
-      const result = await this.callUtil.callRemotePersistenceAction(
+      const result = await this.callUtil.callPersistenceAction(
         // what if it is a REAL persistence store?? exception?
         {}, // context
         {
@@ -824,7 +826,7 @@ export class DomainController implements DomainControllerInterface {
         // JSON.stringify(runBoxedQueryTemplateOrBoxedExtractorTemplateAction)
         runBoxedQueryTemplateOrBoxedExtractorTemplateAction
       );
-      const result = await this.callUtil.callRemotePersistenceAction(
+      const result = await this.callUtil.callPersistenceAction(
         // what if it is a REAL persistence store?? exception?
         {}, // context
         {
@@ -855,29 +857,44 @@ export class DomainController implements DomainControllerInterface {
     instanceAction: InstanceAction
   ): Promise<Action2VoidReturnType> {
     log.info(
-      "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleDomainNonTransactionalInstanceAction deployment",
+      "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleInstanceAction deployment",
       deploymentUuid,
       "instanceAction",
       instanceAction
-      // domainDataNonTransactionalCUDAction.actionName,
-      // domainDataNonTransactionalCUDAction.objects
     );
+
     // non-transactional modification: perform the changes immediately on the remote datastore (thereby commited)
-
     // The same action is performed on the local cache and on the remote store for Data Instances.
-    await this.callUtil.callRemotePersistenceAction(
+    const handleActionResult = await this.callUtil.callPersistenceAction(
       {}, // context
       {}, // context update
-      // deploymentUuid,
       instanceAction
     );
     log.info(
       "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController deployment",
       deploymentUuid,
-      "handleDomainNonTransactionalInstanceAction done calling handleRemoteStoreRestCRUDAction",
+      "handleInstanceAction done calling handleRemoteStoreRestCRUDAction",
+      instanceAction,
+      "handleActionResult",
+      handleActionResult
+    );
+    if (handleActionResult instanceof Action2Error) {
+      log.error(
+        "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController deployment",
+        deploymentUuid,
+        "handleInstanceAction error calling handleRemoteStoreRestCRUDAction",
+        instanceAction,
+        handleActionResult
+      );
+      return Promise.resolve(handleActionResult);
+    }
+    log.info(
+      "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController deployment",
+      deploymentUuid,
+      "handleInstanceAction done calling handleRemoteStoreRestCRUDAction",
       instanceAction
     );
-    await this.callUtil.callLocalCacheAction(
+    const result = await this.callUtil.callLocalCacheAction(
       {}, // context
       {}, // context update
       instanceAction
@@ -886,10 +903,13 @@ export class DomainController implements DomainControllerInterface {
     log.info(
       "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController deployment",
       deploymentUuid,
-      "handleDomainNonTransactionalInstanceAction end",
-      instanceAction
+      "handleInstanceAction end",
+      instanceAction,
+      "result",
+      result
     );
     return Promise.resolve(ACTION_OK);
+    // return Promise.resolve(result);
   }
 
   // ##############################################################################################
@@ -922,7 +942,7 @@ export class DomainController implements DomainControllerInterface {
             );
           } else {
             // if the domain controller is deployed on the client, we send the "remoteLocalCacheRollback" action to the server
-            await this.callUtil.callRemotePersistenceAction(
+            await this.callUtil.callPersistenceAction(
               {}, // context
               {}, // context update
               modelAction
@@ -941,7 +961,7 @@ export class DomainController implements DomainControllerInterface {
           if (modelAction.payload.transactional == false) {
             // the modelAction is not transactional, we update the persistentStore directly
             log.warn("handleModelAction running for non-transactional action!");
-            await this.callUtil.callRemotePersistenceAction(
+            await this.callUtil.callPersistenceAction(
               {}, // context
               {}, // context update
               modelAction
@@ -959,7 +979,7 @@ export class DomainController implements DomainControllerInterface {
         case "resetData":
         case "initModel": {
           // await this.callAsyncActionHandler(modelAction, "*", currentModel, {}, {}, modelAction);
-          await this.callUtil.callRemotePersistenceAction(
+          await this.callUtil.callPersistenceAction(
             {}, // context
             {}, // context update
             modelAction
@@ -1011,7 +1031,7 @@ export class DomainController implements DomainControllerInterface {
             };
 
             // in the case of the Miroir app, this should be done in the 'data' section
-            await this.callUtil.callRemotePersistenceAction(
+            await this.callUtil.callPersistenceAction(
               {}, // context
               {}, // context update
               // deploymentUuid,
@@ -1040,7 +1060,7 @@ export class DomainController implements DomainControllerInterface {
                 case "transactionalInstanceAction": {
                   // const localReplayAction: LocalCacheTransactionalInstanceActionWithDeployment = replayAction;
                   //  log.warn("handleModelAction commit ignored transactional action" + replayAction)
-                  const replayActionResult = await this.callUtil.callRemotePersistenceAction(
+                  const replayActionResult = await this.callUtil.callPersistenceAction(
                     {}, // context
                     {}, // context update
                     {
@@ -1050,7 +1070,7 @@ export class DomainController implements DomainControllerInterface {
                       endpoint: "a93598b3-19b6-42e8-828c-f02042d212d4",
                       deploymentUuid,
                       // payload: {
-                        section: replayAction.instanceAction.payload.applicationSection,
+                        section: replayAction.instanceAction.payload.applicationSection??"data",
                         parentName: replayAction.instanceAction.payload.objects[0].parentName,
                         parentUuid: replayAction.instanceAction.payload.objects[0].parentUuid,
                         objects: replayAction.instanceAction.payload.objects[0].instances,
@@ -1071,7 +1091,7 @@ export class DomainController implements DomainControllerInterface {
                 case 'createEntity':
                 case 'dropEntity':
                 case 'renameEntity': {
-                  const replayActionResult = await this.callUtil.callRemotePersistenceAction(
+                  const replayActionResult = await this.callUtil.callPersistenceAction(
                     {}, // context
                     {}, // context update
                     {
@@ -1130,6 +1150,7 @@ export class DomainController implements DomainControllerInterface {
                     deploymentUuid: modelAction.deploymentUuid,
                     payload: {
                       applicationSection: "model",
+                      parentUuid: newModelVersion.parentUuid,
                       objects: [
                         {
                           parentUuid: newModelVersion.parentUuid,
@@ -1163,7 +1184,7 @@ export class DomainController implements DomainControllerInterface {
               //     objects: [updatedConfiguration],
               //   };
               //   // TODO: in the case of the Miroir app, this should be in the 'data'section
-              //   return this.callUtil.callRemotePersistenceAction(
+              //   return this.callUtil.callPersistenceAction(
               //     {}, // context
               //     {}, // context update
               //     newStoreBasedConfiguration
@@ -1211,7 +1232,36 @@ export class DomainController implements DomainControllerInterface {
   }
 
   // ##############################################################################################
+  private async trackAction<T>(
+    actionType: string,
+    actionLabel: string | undefined,
+    actionFn: () => Promise<T>
+  ): Promise<T> {
+    const trackingId = this.miroirContext.runActionTracker.startAction(actionType, actionLabel);
+    try {
+      const result = await actionFn();
+      this.miroirContext.runActionTracker.endAction(trackingId);
+      return result;
+    } catch (error) {
+      this.miroirContext.runActionTracker.endAction(trackingId, error instanceof Error ? error.message : String(error));
+      throw error;
+    }
+  }
+
+  // ##############################################################################################
   async handleAction(
+    domainAction: DomainAction,
+    currentModel?: MetaModel
+  ): Promise<Action2VoidReturnType> {
+    return this.trackAction(
+      domainAction.actionType,
+      (domainAction as any).actionLabel,
+      async () => this.handleActionInternal(domainAction, currentModel)
+    );
+  }
+
+  // ##############################################################################################
+  private async handleActionInternal(
     domainAction: DomainAction,
     currentModel?: MetaModel
   ): Promise<Action2VoidReturnType> {
@@ -1230,17 +1280,6 @@ export class DomainController implements DomainControllerInterface {
 
     if (
       // !(
-      //   domainAction.actionType == "initModel" ||
-      //   domainAction.actionType == "commit" ||
-      //   domainAction.actionType == "rollback" ||
-      //   domainAction.actionType == "remoteLocalCacheRollback" ||
-      //   domainAction.actionType == "resetModel" ||
-      //   domainAction.actionType == "resetData" ||
-      //   domainAction.actionType == "alterEntityAttribute" ||
-      //   domainAction.actionType == "renameEntity" ||
-      //   domainAction.actionType == "createEntity" ||
-      //   domainAction.actionType == "dropEntity"
-      // ) ||
       domainAction.actionType != "initModel") {
       log.debug(
         "DomainController handleAction domainAction",
@@ -1264,16 +1303,16 @@ export class DomainController implements DomainControllerInterface {
           break;
         }
         // case "modelAction":
-        case 'initModel':
-        case 'commit':
-        case 'rollback':
-        case 'remoteLocalCacheRollback':
-        case 'resetModel':
-        case 'resetData':
-        case 'alterEntityAttribute':
-        case 'renameEntity':
-        case 'createEntity':
-        case 'dropEntity': {
+        case "initModel":
+        case "commit":
+        case "rollback":
+        case "remoteLocalCacheRollback":
+        case "resetModel":
+        case "resetData":
+        case "alterEntityAttribute":
+        case "renameEntity":
+        case "createEntity":
+        case "dropEntity": {
           if (!currentModel) {
             throw new Error(
               "DomainController handleAction for modelAction needs a currentModel argument"
@@ -1282,23 +1321,25 @@ export class DomainController implements DomainControllerInterface {
           return this.handleModelAction(domainAction.deploymentUuid, domainAction, currentModel);
         }
         // case "instanceAction": {
-        case 'createInstance':
-        case 'deleteInstance':
-        case 'deleteInstanceWithCascade':
-        case 'updateInstance':
-        case 'loadNewInstancesInLocalCache':
-        case 'getInstance':
-        case 'getInstances': {
+        case "createInstance":
+        case "deleteInstance":
+        case "deleteInstanceWithCascade":
+        case "updateInstance":
+        case "loadNewInstancesInLocalCache":
+        case "getInstance":
+        case "getInstances": {
           return this.handleInstanceAction(domainAction.deploymentUuid, domainAction);
         }
         // case "storeManagementAction": {
-          case "storeManagementAction_createStore":
-          case "storeManagementAction_deleteStore":
-          case "storeManagementAction_resetAndInitApplicationDeployment":
-          case "storeManagementAction_openStore":
-          case "storeManagementAction_closeStore": {
+        case "storeManagementAction_createStore":
+        case "storeManagementAction_deleteStore":
+        case "storeManagementAction_resetAndInitApplicationDeployment":
+        case "storeManagementAction_openStore":
+        case "storeManagementAction_closeStore": {
           // if (domainAction.actionName == "storeManagementAction_resetAndInitApplicationDeployment") {
-          if (domainAction.actionType == "storeManagementAction_resetAndInitApplicationDeployment") {
+          if (
+            domainAction.actionType == "storeManagementAction_resetAndInitApplicationDeployment"
+          ) {
             await resetAndInitApplicationDeployment(
               this,
               domainAction.deployments as any as SelfApplicationDeploymentConfiguration[]
@@ -1315,7 +1356,7 @@ export class DomainController implements DomainControllerInterface {
                   break;
                 }
                 case "remote": {
-                  await this.callUtil.callRemotePersistenceAction(
+                  await this.callUtil.callPersistenceAction(
                     {}, // context
                     {}, // context update
                     domainAction
@@ -1354,7 +1395,7 @@ export class DomainController implements DomainControllerInterface {
         case "bundleAction": {
           // TODO: create a test for this!
           try {
-            await this.callUtil.callRemotePersistenceAction(
+            await this.callUtil.callPersistenceAction(
               {}, // context
               {}, // context update
               // deploymentUuid,
@@ -1433,11 +1474,24 @@ export class DomainController implements DomainControllerInterface {
   // TODO: used in tests only?!
   async handleCompositeAction(
     compositeAction: CompositeAction,
-    actionParamValues: Record<string, any>,
-    currentModel: MetaModel
+    actionParamValues: MiroirModelEnvironment & Record<string, any>,
+    currentModel: MetaModel // TODO: redundant with actionParamValues, remove it?
+  ): Promise<Action2VoidReturnType> {
+    return this.trackAction(
+      "compositeAction",
+      compositeAction.actionLabel,
+      async () => this.handleCompositeActionInternal(compositeAction, actionParamValues, currentModel)
+    );
+  }
+
+  // ##############################################################################################
+  private async handleCompositeActionInternal(
+    compositeAction: CompositeAction,
+    actionParamValues: MiroirModelEnvironment & Record<string, any>,
+    currentModel: MetaModel // TODO: redundant with actionParamValues, remove it?
   ): Promise<Action2VoidReturnType> {
     const localActionParams = { ...actionParamValues };
-    let localContext: Record<string, any> = { ...actionParamValues };
+    let localContext: MiroirModelEnvironment & Record<string, any> = { ...actionParamValues };
 
     log.info(
       "handleCompositeAction compositeAction",
@@ -1630,11 +1684,11 @@ export class DomainController implements DomainControllerInterface {
     // runtimeCompositeAction: RuntimeCompositeAction,
     runtimeCompositeAction: BuildPlusRuntimeCompositeAction,
     // runtimeCompositeAction: BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction,
-    actionParamValues: Record<string, any>,
+    actionParamValues: MiroirModelEnvironment & Record<string, any>,
     currentModel: MetaModel
   ): Promise<Action2VoidReturnType> {
     const localActionParams = { ...actionParamValues };
-    let localContext: Record<string, any> = { ...actionParamValues };
+    let localContext: MiroirModelEnvironment & Record<string, any> = { ...actionParamValues };
 
     log.info(
       "handleRuntimeCompositeAction compositeAction",
@@ -1937,8 +1991,8 @@ export class DomainController implements DomainControllerInterface {
   // ##############################################################################################
   async handleBuildPlusRuntimeCompositeAction(
     buildPlusRuntimeCompositeAction: BuildPlusRuntimeCompositeAction,
-    actionParamValues: Record<string, any>,
-    currentModel: MetaModel
+    actionParamValues: MiroirModelEnvironment & Record<string, any>,
+    currentModel: MetaModel // TODO: redundant with actionParamValues, remove it?
   ): Promise<Action2VoidReturnType> {
     const localActionParams = { ...actionParamValues };
     let localContext: Record<string, any> = { ...actionParamValues };
@@ -1956,7 +2010,14 @@ export class DomainController implements DomainControllerInterface {
         // log.info("handleBuildPlusRuntimeCompositeAction resolving templates", buildPlusRuntimeCompositeAction.templates);
 
         for (const t of Object.entries(buildPlusRuntimeCompositeAction.templates)) {
-          const newLocalParameters: Record<string,any> = { ...localActionParams, ...resolvedCompositeActionTemplates };
+          // const newLocalParameters: Record<string,any> = { ...localActionParams, ...resolvedCompositeActionTemplates };
+          const newLocalParameters: MiroirModelEnvironment & Record<string, any> = {
+            // miroirFundamentalJzodSchema: miroirFundamentalJzodSchema as JzodSchema,
+            // TODO: missing miroirMetaModel: MetaModel
+            currentModel,
+            ...localActionParams,
+            ...resolvedCompositeActionTemplates,
+          };
           // log.info(
           //   "buildPlusRuntimeCompositeAction",
           //   buildPlusRuntimeCompositeAction.actionLabel,
@@ -2071,7 +2132,7 @@ export class DomainController implements DomainControllerInterface {
       nameGivenToResult: string;
       testAssertion: TestAssertion;
     },
-    localContext: Record<string, any>,
+    localContext: MiroirModelEnvironment & Record<string, any>,
     actionResult: Action2ReturnType | undefined
   ) {
     if (!ConfigurationService.testImplementation) {
@@ -2090,8 +2151,8 @@ export class DomainController implements DomainControllerInterface {
             undefined /**WHAT?? */,
             currentAction.testAssertion.definition.resultTransformer,
             "value",
-            {},
-            localContext
+            localContext,
+            localContext // TODO: should be {}?
           )
         : localContext;
 
@@ -2376,7 +2437,7 @@ export class DomainController implements DomainControllerInterface {
   // ##############################################################################################
   async handleCompositeActionTemplate(
     compositeAction: CompositeActionTemplate,
-    actionParamValues: Record<string, any>,
+    actionParamValues: MiroirModelEnvironment & Record<string, any>,
     currentModel: MetaModel
   ): Promise<Action2VoidReturnType> {
     const localActionParams = { ...actionParamValues };
@@ -2634,7 +2695,7 @@ export class DomainController implements DomainControllerInterface {
     // testAction: TestAction_runTestCompositeAction,
     testAction: TestCompositeAction | TestRuntimeCompositeAction | TestBuildPlusRuntimeCompositeAction,
     // testAction: TestCompositeAction,
-    actionParamValues: Record<string, any>,
+    actionParamValues: MiroirModelEnvironment & Record<string, any>,
     currentModel: MetaModel
   ): Promise<Action2VoidReturnType> {
     const localActionParams = { ...actionParamValues };
@@ -2730,7 +2791,7 @@ export class DomainController implements DomainControllerInterface {
   async handleTestCompositeActionSuite(
     // testAction: TestCompositeActionSuite,
     testAction: TestCompositeActionSuite | TestRuntimeCompositeActionSuite | TestBuildPlusRuntimeCompositeActionSuite,
-    actionParamValues: Record<string, any>,
+    actionParamValues: MiroirModelEnvironment & Record<string, any>,
     currentModel: MetaModel
     // ): Promise<Action2VoidReturnType> {
     // ): Promise<Action2ReturnType> {
@@ -3044,7 +3105,7 @@ export class DomainController implements DomainControllerInterface {
   // ##############################################################################################
   async handleTestCompositeActionTemplateSuite(
     testAction: TestCompositeActionTemplateSuite,
-    actionParamValues: Record<string, any>,
+    actionParamValues: MiroirModelEnvironment & Record<string, any>,
     currentModel: MetaModel
   ): Promise<Action2VoidReturnType> {
     const localActionParams = { ...actionParamValues };

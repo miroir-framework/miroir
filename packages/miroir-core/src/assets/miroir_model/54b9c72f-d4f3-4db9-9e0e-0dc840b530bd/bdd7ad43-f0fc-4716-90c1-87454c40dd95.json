@@ -141,6 +141,32 @@
           }
         }
       },
+      "display": {
+        "type": "object",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 13,
+            "defaultLabel": "Display Options",
+            "editable": true
+          }
+        },
+        "definition": {
+          "foldSubLevels": {
+            "type": "record",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Unfold Sub Levels",
+                "editable": true
+              }
+            },
+            "definition": {
+              "type": "boolean"
+            }
+          }
+        }
+      },
       "jzodSchema": {
         "type": "schemaReference",
         "definition": {

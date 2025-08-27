@@ -12,13 +12,13 @@
 // Usage Examples:
 // 
 // // Use default theme
-// <MTableComponent {...props} />
+// <EntityInstanceGrid {...props} />
 //
 // // Use a predefined theme variant
-// <MTableComponent {...props} theme={darkTableTheme} />
+// <EntityInstanceGrid {...props} theme={darkTableTheme} />
 //
 // // Custom theme with overrides
-// <MTableComponent {...props} theme={{
+// <EntityInstanceGrid {...props} theme={{
 //   colors: { primary: '#ff0000' },
 //   typography: { fontSize: '16px' }
 // }} />
@@ -30,7 +30,7 @@
 //     header: { background: '#lightgray' }
 //   }
 // });
-// <MTableComponent {...props} theme={customTheme} />
+// <EntityInstanceGrid {...props} theme={customTheme} />
 //
 // The system automatically generates appropriate styles for both grid types,
 // ensuring visual consistency regardless of which grid implementation is used.

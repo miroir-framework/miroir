@@ -1,0 +1,126 @@
+{
+  "uuid": "d5c9f2e3-8741-4b9a-a1d2-4e5f6789abcd",
+  "name": "unfoldSchemaOnce",
+  "defaultLabel": "Unfold Schema Once",
+  "description": "Unfolds a jzod schema by one level, resolving immediate schema references",
+  "parentUuid": "a557419d-a288-4fb8-8a1e-971c86c113b8",
+  "parentDefinitionVersionUuid": "54a16d69-c1f0-4dd7-aba4-a2cda883586c",
+  "parentName": "TransformerDefinition",
+  "classification": "MLS",
+  "runnableAsSql" : false,
+  "transformerInterface": {
+    "transformerParameterSchema": {
+      "transformerType": {
+        "type": "literal",
+        "definition": "unfoldSchemaOnce"
+      },
+      "transformerDefinition": {
+        "type": "object",
+        "definition": {
+          "jzodSchema": {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "jzodElement"
+            }
+          },
+          "path": {
+            "type": "array",
+            "definition": {
+              "type": "string"
+            }
+          },
+          "unfoldingReference": {
+            "type": "array",
+            "definition": {
+              "type": "string"
+            }
+          },
+          "rootSchema": {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "jzodElement"
+            },
+            "optional": true
+          },
+          "depth": {
+            "type": "number"
+          },
+          "miroirFundamentalJzodSchema": {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "jzodSchema"
+            }
+          },
+          "currentModel": {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "metaModel"
+            },
+            "optional": true
+          },
+          "miroirMetaModel": {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "metaModel"
+            },
+            "optional": true
+          },
+          "relativeReferenceJzodContext": {
+            "type": "record",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "jzodElement"
+              }
+            },
+            "optional": true
+          }
+        }
+      }
+    },
+    "transformerResultSchema": {
+      "type": "union",
+      "definition": [
+        {
+          "type": "object",
+          "definition": {
+            "status": {
+              "type": "literal",
+              "definition": "ok"
+            },
+            "element": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "jzodElement"
+              }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "definition": {
+            "status": {
+              "type": "literal",
+              "definition": "error"
+            },
+            "error": {
+              "type": "string"
+            }
+          }
+        }
+      ]
+    }
+  },
+  "transformerImplementation": {
+    "transformerImplementationType": "libraryImplementation",
+    "inMemoryImplementationFunctionName": "transformer_unfoldSchemaOnce",
+    "sqlImplementationFunctionName": "N/A"
+  }
+}

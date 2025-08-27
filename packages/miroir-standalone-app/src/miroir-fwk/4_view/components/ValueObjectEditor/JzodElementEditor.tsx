@@ -1,25 +1,40 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { ErrorBoundary, withErrorBoundary } from "react-error-boundary";
 
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
 import UnfoldLess from "@mui/icons-material/UnfoldLess";
 import UnfoldMore from "@mui/icons-material/UnfoldMore";
+import KeyboardDoubleArrowUp from "@mui/icons-material/KeyboardDoubleArrowUp";
+import KeyboardDoubleArrowDown from "@mui/icons-material/KeyboardDoubleArrowDown";
 
 import {
   EntityAttribute,
   EntityInstance,
   EntityInstanceWithName,
-  JzodElement,
-  JzodLiteral,
   LoggerInterface,
-  measurePerformance,
   MiroirLoggerFactory,
   mStringify
 } from "miroir-core";
 
 import { packageName } from "../../../../constants.js";
 import { cleanLevel } from "../../constants.js";
+import {
+  useMiroirNestingBorderColor,
+  useMiroirNestingColor
+} from "../../contexts/MiroirThemeContext.js";
+import { RenderPerformanceMetrics } from "../../tools/renderPerformanceMeasure.js";
+import { ErrorFallbackComponent } from "../ErrorFallbackComponent.js";
+import {
+  ThemedCard,
+  ThemedCardContent,
+  ThemedLabeledEditor,
+  ThemedLineIconButton,
+  ThemedMenuItemOption,
+  ThemedSelect,
+  ThemedSwitch,
+  ThemedTextField,
+  ThemedDisplayValue
+} from "../Themes/ThemedComponents.js";
 import { JzodAnyEditor } from "./JzodAnyEditor.js";
 import { JzodArrayEditor } from "./JzodArrayEditor.js";
 import { useJzodElementEditorHooks } from "./JzodElementEditorHooks.js";
@@ -28,23 +43,6 @@ import { JzodElementEditorReactCodeMirror } from "./JzodElementEditorReactCodeMi
 import { JzodEnumEditor } from "./JzodEnumEditor.js";
 import { JzodLiteralEditor } from "./JzodLiteralEditor.js";
 import { JzodObjectEditor } from "./JzodObjectEditor.js";
-import { 
-  ThemedLabeledEditor, 
-  ThemedLineIconButton, 
-  ThemedSelect,
-  ThemedCard,
-  ThemedCardContent,
-  ThemedSwitch,
-  ThemedTextField,
-  ThemedMenuItemOption
-} from "../Themes/ThemedComponents.js";
-import {
-  useMiroirTheme,
-  useMiroirNestingColor,
-  useMiroirNestingBorderColor,
-} from "../../contexts/MiroirThemeContext.js";
-import { ErrorFallbackComponent } from "../ErrorFallbackComponent.js";
-import { RenderPerformanceMetrics } from "../../tools/renderPerformanceMeasure.js";
 
 
 
@@ -100,26 +98,131 @@ export const FoldUnfoldObjectOrArray = (props: {
     }>
   >;
   listKey: string;
+  currentValue: EntityInstance | Array<any>;
+  unfoldingDepth?: number; // Optional depth limit for unfolding (default: no limit)
 }): JSX.Element => {
-  const handleClick = useCallback((e: React.MouseEvent) => {
-    e.stopPropagation();
-    e.preventDefault();
-    props.setFoldedObjectAttributeOrArrayItems((prev) => ({
-      ...prev,
-      [props.listKey]: !prev[props.listKey],
-    }));
-  }, [props.listKey, props.setFoldedObjectAttributeOrArrayItems]);
+  /**
+   * Handles the click event for folding or unfolding an object attribute or array item in a hierarchical editor.
+   *
+   * This function manages the folding state of a tree-like structure, allowing users to expand or collapse nodes
+   * (object attributes or array items) with support for unfolding to a specific depth. The folding state is tracked
+   * in a map where keys represent the hierarchical path (listKey) of each node.
+   *
+   * Behavior:
+   * - If folding (collapsing a node):
+   *   - With `unfoldingDepth === Infinity`: Sets the folding state for the current node to `true` and removes the folding state for all descendants.
+   *   - With `unfoldingDepth !== Infinity`: Sets the folding state for the current node to `true` and leaves the folding state for all descendants unchanged.
+   * - If unfolding (expanding a node):
+   *   - With `unfoldingDepth === Infinity`: Removes the folding state for the current node and all its descendants.
+   *   - With `unfoldingDepth !== Infinity`: Removes the folding state for the current node. For direct children, if they have no folding state for any of their children, sets their folding state to `true`; otherwise, leaves them unchanged.
+   *
+   * The function also logs actions for debugging purposes.
+   *
+   * @param e - The React mouse event triggered by the user interaction.
+   */
+  const handleClick = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation();
+      e.preventDefault();
+
+      const isCurrentlyFolded =
+        (props.foldedObjectAttributeOrArrayItems &&
+          props.foldedObjectAttributeOrArrayItems[props.listKey]) ||
+        false;
+      // log.info(
+      //   "FoldUnfoldObjectOrArray",
+      //   props.listKey,
+      //   "isCurrentlyFolded",
+      //   isCurrentlyFolded,
+      //   "unfoldingDepth",
+      //   props.unfoldingDepth,
+      //   "foldedObjectAttributeOrArrayItems",
+      //   props.foldedObjectAttributeOrArrayItems
+      // );
+      if (isCurrentlyFolded) {
+        // Unfolding
+        props.setFoldedObjectAttributeOrArrayItems((prev) => {
+          const newState = { ...prev };
+          delete newState[props.listKey];
+
+          if (props.unfoldingDepth === Infinity) {
+            // Remove folding state for all descendants
+            Object.keys(prev).forEach((key) => {
+              if (key.startsWith(props.listKey + ".")) {
+                delete newState[key];
+              }
+            });
+          } else {
+            const prevKeys = Object.keys(prev);
+            // For finite depth, only unfold current item (children remain as is)
+            // If currentValue is an array, we can fold all items
+            if (Array.isArray(props.currentValue)) {
+              props.currentValue.forEach((_, index) => {
+                const childKey = `${props.listKey}.${index}`;
+                if (!prevKeys.some((key) => key.startsWith(childKey))) {
+                  // Only fold if it has no children already folded
+                  newState[childKey] = true; // unfold this item
+                }
+              });
+            } else {
+              // If currentValue is an object, fold all attributes
+              Object.keys(props.currentValue).forEach((attributeName) => {
+                const childKey = `${props.listKey}.${attributeName}`;
+                if (!prevKeys.some((key) => key.startsWith(childKey))) {
+                  // Only fold if it has no children already folded
+                  newState[childKey] = true; // unfold this attribute
+                }
+              });
+            }
+          }
+
+          // For finite depth, only unfold current item (children remain as is)
+          return newState;
+        });
+      } else {
+        // Folding
+        props.setFoldedObjectAttributeOrArrayItems((prev) => {
+          const newState = { ...prev };
+          newState[props.listKey] = true;
+          if (props.unfoldingDepth === Infinity) {
+            // Remove folding state for all descendants
+            Object.keys(prev).forEach((key) => {
+              if (key.startsWith(props.listKey + ".")) {
+                delete newState[key];
+              }
+            });
+          }
+          return newState;
+        });
+      }
+    },
+    [
+      props.listKey,
+      props.foldedObjectAttributeOrArrayItems,
+      props.setFoldedObjectAttributeOrArrayItems,
+      props.unfoldingDepth,
+    ]
+  );
 
   const isFolded = props.foldedObjectAttributeOrArrayItems && props.foldedObjectAttributeOrArrayItems[props.listKey];
+  const isInfiniteDepth = props.unfoldingDepth === Infinity;
 
   return (
     <ThemedLineIconButton
       onClick={handleClick}
     >
       {isFolded ? (
-        <ExpandMore sx={{ color: "darkgreen" }} />
+        isInfiniteDepth ? (
+          <KeyboardDoubleArrowDown sx={{ color: "darkgreen" }} />
+        ) : (
+          <ExpandMore sx={{ color: "darkgreen" }} />
+        )
       ) : (
-        <ExpandLess />
+        isInfiniteDepth ? (
+          <KeyboardDoubleArrowUp />
+        ) : (
+          <ExpandLess />
+        )
       )}
     </ThemedLineIconButton>
   );
@@ -136,31 +239,72 @@ export const FoldUnfoldAllObjectAttributesOrArrayItems = (props: {
   >;
   listKey: string;
   itemsOrder: Array<string>;
+  maxDepth?: number; // Optional: how many levels deep to unfold (default: 1)
 }): JSX.Element => {
-  const handleClick = useCallback((e: React.MouseEvent) => {
-    e.stopPropagation();
-    e.preventDefault();
-    
-    // Generate list keys for all child attributes
-    const childKeys = props.itemsOrder.map(attributeName => `${props.listKey}.${attributeName}`);
-    
-    // Check if any child is currently unfolded (visible)
-    const hasUnfoldedChildren = childKeys.some(
-      (key) =>
-        !props.foldedObjectAttributeOrArrayItems || !props.foldedObjectAttributeOrArrayItems[key]
-    );
-    
-    // If any child is unfolded, fold all; otherwise unfold all
-    const shouldFoldAll = hasUnfoldedChildren;
-    
-    props.setFoldedObjectAttributeOrArrayItems((prev) => {
-      const newState = { ...prev };
-      childKeys.forEach(key => {
-        newState[key] = shouldFoldAll;
+  const maxDepthToUnfold = props.maxDepth ?? 1;
+
+  const handleClick = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation();
+      e.preventDefault();
+
+      // Generate list keys for all child attributes at the first level
+      const childKeys = props.itemsOrder.map(
+        (attributeName) => `${props.listKey}.${attributeName}`
+      );
+
+      // Check if any child is currently unfolded (visible)
+      const hasUnfoldedChildren = childKeys.some(
+        (key) =>
+          !props.foldedObjectAttributeOrArrayItems || !props.foldedObjectAttributeOrArrayItems[key]
+      );
+
+      // If any child is unfolded, fold all; otherwise unfold to the specified depth
+      const shouldFoldAll = hasUnfoldedChildren;
+
+      props.setFoldedObjectAttributeOrArrayItems((prev) => {
+        const newState = { ...prev };
+        
+        if (shouldFoldAll) {
+          // Fold all children
+          childKeys.forEach((key) => {
+            newState[key] = true;
+          });
+        } else {
+          // Unfold to the specified depth
+          const unfoldToDepth = (currentKeys: string[], depth: number) => {
+            if (depth <= 0) return;
+            
+            currentKeys.forEach((key) => {
+              newState[key] = false; // Unfold this level
+              
+              // If there's more depth to go, recursively unfold children
+              if (depth > 1) {
+                // This is a simplified approach - in a real implementation, 
+                // you'd need to inspect the actual data structure to find child keys
+                // For now, we'll just unfold direct children
+                props.itemsOrder.forEach((childAttr) => {
+                  const childKey = `${key}.${childAttr}`;
+                  unfoldToDepth([childKey], depth - 1);
+                });
+              }
+            });
+          };
+          
+          unfoldToDepth(childKeys, maxDepthToUnfold);
+        }
+        
+        return newState;
       });
-      return newState;
-    });
-  }, [props.listKey, props.itemsOrder, props.foldedObjectAttributeOrArrayItems, props.setFoldedObjectAttributeOrArrayItems]);
+    },
+    [
+      props.listKey,
+      props.itemsOrder,
+      props.foldedObjectAttributeOrArrayItems,
+      props.setFoldedObjectAttributeOrArrayItems,
+      maxDepthToUnfold,
+    ]
+  );
 
   // Check if all children are folded
   const childKeys = props.itemsOrder.map(attributeName => `${props.listKey}.${attributeName}`);
@@ -171,10 +315,14 @@ export const FoldUnfoldAllObjectAttributesOrArrayItems = (props: {
         props.foldedObjectAttributeOrArrayItems && props.foldedObjectAttributeOrArrayItems[key]
     );
 
+  const title = allChildrenFolded 
+    ? `Unfold all attributes (${maxDepthToUnfold} level${maxDepthToUnfold !== 1 ? 's' : ''})` 
+    : "Fold all attributes";
+
   return (
     <ThemedLineIconButton
       onClick={handleClick}
-      title={allChildrenFolded ? "Unfold all attributes" : "Fold all attributes"}
+      title={title}
     >
       {allChildrenFolded ? (
         <UnfoldMore sx={{ color: "darkblue" }} />
@@ -228,35 +376,14 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
     setDisplayAsStructuredElement,
     currentValue,
     localResolvedElementJzodSchemaBasedOnValue,
-    // unfoldedRawSchema,
-    // recursivelyUnfoldedRawSchema,
     foreignKeyObjects,
-    // Array / Object fold / unfold state
-    // hiddenFormItems,  // Now comes from props
-    // setHiddenFormItems,  // Now comes from props
     itemsOrder,
     stringSelectList,
-    // object
-    definedOptionalAttributes,
   } = useJzodElementEditorHooks(props, count, "JzodElementEditor");
-  // } = measuredUseJzodElementEditorHooks(props, count, "JzodElementEditor");
-  // } = measurePerformance("useJzodElementEditorHooks", useJzodElementEditorHooks)(props, count, "JzodElementEditor");
   
   // Extract hiddenFormItems and setHiddenFormItems from props
   const { foldedObjectAttributeOrArrayItems, setFoldedObjectAttributeOrArrayItems } = props;
   
-  // const localResolvedElementJzodSchemaBasedOnValue: JzodElement | undefined = 
-  // // useMemo(() => {
-  //   props.typeCheckKeyMap && props.typeCheckKeyMap[props.rootLessListKey]
-  //     ? props.typeCheckKeyMap[props.rootLessListKey]?.resolvedSchema
-  //     : undefined;
-  //     // return result;
-  // // }, [
-  // //   props.typeCheckKeyMap,
-  // //   props.rootLessListKey,
-  // // ])
-  // ;
-
   // Handle switch for structured element display
   const handleDisplayAsStructuredElementSwitchChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -311,7 +438,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
   const displayAsStructuredElementSwitch: JSX.Element = useMemo(
     () => (
       <>
-        {objectOrArrayOrAny ? (
+        {!props.readOnly && objectOrArrayOrAny ? (
           <ThemedSwitch
             checked={displayAsStructuredElement}
             id={`displayAsStructuredElementSwitch-${props.rootLessListKey}`}
@@ -325,19 +452,23 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
       </>
     ),
     [
+      props.readOnly,
       objectOrArrayOrAny,
       displayAsStructuredElement,
       handleDisplayAsStructuredElementSwitchChange,
       codeMirrorIsValidJson,
     ]
   );
+  // const displayCodeEditor = true;
   const displayCodeEditor =
-    props.hasTypeError ||
+    !props.typeCheckKeyMap ||
+    !currentKeyMap ||
     !localResolvedElementJzodSchemaBasedOnValue || // same as props.hasTypeError?
     !displayAsStructuredElement ||
     currentKeyMap?.rawSchema?.type == "any" ||
     ["undefined", "any"].includes(localResolvedElementJzodSchemaBasedOnValue.type);
 
+  // const hideSubJzodEditor = false; 
   const hideSubJzodEditor = useMemo(() => 
     props.hidden || props.insideAny || displayCodeEditor, 
     [props.hidden, props.insideAny, props.hasTypeError]
@@ -358,6 +489,8 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
   //   displayCodeEditor,
   //   "currentValue",
   //   currentValue,
+  //   "props.typeCheckKeyMap",
+  //   props.typeCheckKeyMap, 
   //   "localResolvedElementJzodSchemaBasedOnValue",
   //   localResolvedElementJzodSchemaBasedOnValue,
   // )
@@ -365,18 +498,20 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
   // Check if we should show code editor
   const shouldShowCodeEditor = useMemo(() => 
     !isUnderTest &&
-    displayCodeEditor &&
-    (
-      props.resolvedElementJzodSchema?.type == "object" ||
-      props.resolvedElementJzodSchema?.type == "record" ||
-      props.resolvedElementJzodSchema?.type == "array" ||
-      props.resolvedElementJzodSchema?.type == "tuple" ||
-      props.resolvedElementJzodSchema?.type == "any"
-    ),
+    displayCodeEditor
+    // (
+    //   currentKeyMap?.resolvedSchema?.type == "object" ||
+    //   currentKeyMap?.resolvedSchema?.type == "record" ||
+    //   currentKeyMap?.resolvedSchema?.type == "array" ||
+    //   currentKeyMap?.resolvedSchema?.type == "tuple" ||
+    //   currentKeyMap?.resolvedSchema?.type == "any"
+    // )
+    ,
     [
       isUnderTest,
       displayCodeEditor,
-      props.resolvedElementJzodSchema?.type
+      currentKeyMap?.resolvedSchema?.type,
+      // props.resolvedElementJzodSchema?.type
     ]
   );
 
@@ -410,6 +545,22 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
         return null;
       }
 
+      // DEBUG: Log for boolean fields specifically
+      // if (
+      //     props.rootLessListKey.includes("foldSubLevels") &&
+      //     (currentValue === true || currentValue === false ||
+      //     localResolvedElementJzodSchemaBasedOnValue?.type === "boolean")) {
+      //   console.log("=== BOOLEAN DEBUG ===");
+      //   console.log("rootLessListKey:", props.rootLessListKey);
+      //   console.log("currentValue:", currentValue, "type:", typeof currentValue);
+      //   console.log("localResolvedElementJzodSchemaBasedOnValue:", localResolvedElementJzodSchemaBasedOnValue);
+      //   console.log("currentKeyMap:", currentKeyMap);
+      //   // console.log("isSimpleType:", isSimpleType);
+      //   // console.log("shouldShowCodeEditorForThisElement:", shouldShowCodeEditorForThisElement);
+      //   console.log("hideSubJzodEditor:", hideSubJzodEditor);
+      //   console.log("===================");
+      // }
+
       // if (!localResolvedElementJzodSchemaBasedOnValue || !props.rawJzodSchema) {
       if (!localResolvedElementJzodSchemaBasedOnValue) {
         return (
@@ -418,7 +569,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
             <br />
             {/* value {formik.values[props.rootLessListKey]} */}
             {/* value <pre>{safeStringify(currentValue, 500)}</pre> */}
-            value <pre>{JSON.stringify(currentValue)}</pre>
+            {/* value <pre>{JSON.stringify(currentValue)}</pre> */}
             <br />
             {/* raw Jzod schema: {safeStringify(currentKeyMap?.rawSchema, 500)} */}
             raw Jzod schema: {JSON.stringify(currentKeyMap?.rawSchema, undefined, 2)}
@@ -432,37 +583,23 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
       // Handle "any" type
       if (currentKeyMap?.rawSchema?.type === "any" && !props.insideAny) {
         return (
-          <JzodAnyEditor
-            name={props.name}
-            labelElement={props.labelElement}
-            listKey={props.listKey}
-            rootLessListKey={props.rootLessListKey}
-            rootLessListKeyArray={props.rootLessListKeyArray}
-            // localRootLessListKeyMap={props.localRootLessListKeyMap}
-            // rawJzodSchema={props.rawJzodSchema}
-            foldedObjectAttributeOrArrayItems={props.foldedObjectAttributeOrArrayItems}
-            setFoldedObjectAttributeOrArrayItems={props.setFoldedObjectAttributeOrArrayItems}
-            currentDeploymentUuid={props.currentDeploymentUuid}
-            currentApplicationSection={props.currentApplicationSection}
-            resolvedElementJzodSchema={localResolvedElementJzodSchemaBasedOnValue}
-            typeCheckKeyMap={ props.typeCheckKeyMap }
-            foreignKeyObjects={props.foreignKeyObjects}
-          />
+            <JzodAnyEditor
+              name={props.name}
+              labelElement={props.labelElement}
+              listKey={props.listKey}
+              rootLessListKey={props.rootLessListKey}
+              rootLessListKeyArray={props.rootLessListKeyArray}
+              foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
+              setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
+              currentDeploymentUuid={props.currentDeploymentUuid}
+              currentApplicationSection={props.currentApplicationSection}
+              resolvedElementJzodSchema={localResolvedElementJzodSchemaBasedOnValue}
+              typeCheckKeyMap={ props.typeCheckKeyMap }
+              foreignKeyObjects={props.foreignKeyObjects}
+              readOnly={props.readOnly}
+            />
         );
       }
-      // log.info(
-      //   "JzodElementEditor",
-      //   count,
-      //   "Rendering main element for listKey",
-      //   props.listKey,
-      //   "with value",
-      //   currentValue,
-      //   "and resolved schema",
-      //   localResolvedElementJzodSchemaBasedOnValue,
-      //   // JSON.stringify(localResolvedElementJzodSchemaBasedOnValue, null, 2),
-      //   // "and props.localRootLessListKeyMap",
-      //   // JSON.stringify(props.localRootLessListKeyMap, null, 2)
-      // );
       // Generate element based on schema type
       switch (localResolvedElementJzodSchemaBasedOnValue.type) {
         case "object": {
@@ -474,7 +611,6 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               indentLevel={props.indentLevel + 1}
               rootLessListKey={props.rootLessListKey}
               rootLessListKeyArray={props.rootLessListKeyArray}
-              // rawJzodSchema={props.rawJzodSchema}
               resolvedElementJzodSchema={localResolvedElementJzodSchemaBasedOnValue}
               typeCheckKeyMap={ props.typeCheckKeyMap }
               currentDeploymentUuid={props.currentDeploymentUuid}
@@ -484,8 +620,9 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               displayAsStructuredElementSwitch={displayAsStructuredElementSwitch}
               foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
               setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
-              // parentType={props.parentType} // used to control the parent type of the element, used for record elements
               deleteButtonElement={props.deleteButtonElement}
+              maxRenderDepth={props.maxRenderDepth}
+              readOnly={props.readOnly}
             />
           );
         }
@@ -493,16 +630,12 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
         case "array": {
           return (
             <JzodArrayEditor
-              // {...props}
               listKey={props.listKey}
               name={props.name}
               labelElement={props.labelElement}
               key={props.rootLessListKey}
               rootLessListKeyArray={props.rootLessListKeyArray}
               rootLessListKey={props.rootLessListKey}
-              // localRootLessListKeyMap={props.localRootLessListKeyMap}
-              // rawJzodSchema={props.rawJzodSchema}
-              // unfoldedRawSchema={unfoldedRawSchema as any}
               resolvedElementJzodSchema={localResolvedElementJzodSchemaBasedOnValue}
               typeCheckKeyMap={ props.typeCheckKeyMap }
               indentLevel={props.indentLevel + 1}
@@ -515,8 +648,9 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               insideAny={props.insideAny}
               hidden={hideSubJzodEditor}
               displayAsStructuredElementSwitch={displayAsStructuredElementSwitch}
-              // parentType={props.parentType} // used to control the parent type of the element, used for record elements
               deleteButtonElement={props.deleteButtonElement}
+              maxRenderDepth={props.maxRenderDepth}
+              readOnly={props.readOnly}
             />
           );
           break;
@@ -527,17 +661,21 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
             <ThemedLabeledEditor
               labelElement={props.labelElement ?? <></>}
               editor={
-                <ThemedSwitch
-                  id={props.rootLessListKey}
-                  key={props.rootLessListKey}
-                  aria-label={props.rootLessListKey}
-                  {...fieldProps}
-                  name={props.rootLessListKey}
-                  checked={fieldProps.value}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                    formik.setFieldValue(props.rootLessListKey, e.target.checked);
-                  }}
-                />
+                props.readOnly ? (
+                  <ThemedDisplayValue value={currentValue} type="boolean" />
+                ) : (
+                  <ThemedSwitch
+                    id={props.rootLessListKey}
+                    key={props.rootLessListKey}
+                    aria-label={props.rootLessListKey}
+                    {...fieldProps}
+                    name={props.rootLessListKey}
+                    checked={currentValue}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                      formik.setFieldValue(props.rootLessListKey, e.target.checked);
+                    }}
+                  />
+                )
               }
             />
           );
@@ -547,17 +685,21 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
             <ThemedLabeledEditor
               labelElement={props.labelElement ?? <></>}
               editor={
-                <ThemedTextField
-                  variant="standard"
-                  data-testid="miroirInput"
-                  id={props.rootLessListKey}
-                  key={props.rootLessListKey}
-                  type="number"
-                  role="textbox"
-                  fullWidth={true}
-                  {...formik.getFieldProps(props.rootLessListKey)}
-                  name={props.rootLessListKey}
-                />
+                props.readOnly ? (
+                  <ThemedDisplayValue value={currentValue} type="number" />
+                ) : (
+                  <ThemedTextField
+                    variant="standard"
+                    data-testid="miroirInput"
+                    id={props.rootLessListKey}
+                    key={props.rootLessListKey}
+                    type="number"
+                    role="textbox"
+                    fullWidth={true}
+                    {...formik.getFieldProps(props.rootLessListKey)}
+                    name={props.rootLessListKey}
+                  />
+                )
               }
             />
           );
@@ -567,22 +709,26 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
             <ThemedLabeledEditor
               labelElement={props.labelElement ?? <></>}
               editor={
-                <ThemedTextField
-                  variant="standard"
-                  data-testid="miroirInput"
-                  id={props.rootLessListKey}
-                  key={props.rootLessListKey}
-                  type="text"
-                  role="textbox"
-                  fullWidth={true}
-                  {...formik.getFieldProps(props.rootLessListKey)}
-                  value={currentValue.toString()}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                    const value = e.target.value;
-                    formik.setFieldValue(props.rootLessListKey, value ? BigInt(value) : BigInt(0));
-                  }}
-                  name={props.rootLessListKey}
-                />
+                props.readOnly ? (
+                  <ThemedDisplayValue value={currentValue} type="bigint" />
+                ) : (
+                  <ThemedTextField
+                    variant="standard"
+                    data-testid="miroirInput"
+                    id={props.rootLessListKey}
+                    key={props.rootLessListKey}
+                    type="text"
+                    role="textbox"
+                    fullWidth={true}
+                    {...formik.getFieldProps(props.rootLessListKey)}
+                    value={currentValue.toString()}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                      const value = e.target.value;
+                      formik.setFieldValue(props.rootLessListKey, value ? BigInt(value) : BigInt(0));
+                    }}
+                    name={props.rootLessListKey}
+                  />
+                )
               }
             />
           );
@@ -592,48 +738,67 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
             <ThemedLabeledEditor
               labelElement={props.labelElement ?? <></>}
               editor={
-                <ThemedTextField
-                  variant="standard"
-                  data-testid="miroirInput"
-                  id={props.rootLessListKey}
-                  key={props.rootLessListKey}
-                  {...formik.getFieldProps(props.rootLessListKey)}
-                  name={props.rootLessListKey}
-                />
+                props.readOnly ? (
+                  <ThemedDisplayValue value={currentValue} type="string" />
+                ) : (
+                  <ThemedTextField
+                    variant="standard"
+                    data-testid="miroirInput"
+                    id={props.rootLessListKey}
+                    key={props.rootLessListKey}
+                    {...formik.getFieldProps(props.rootLessListKey)}
+                    name={props.rootLessListKey}
+                  />
+                )
               }
             />
           );
         }
         case "uuid": {
-          if (localResolvedElementJzodSchemaBasedOnValue.tag?.value?.targetEntity) {
+          // log.info(
+          //   "JzodElementEditor: Rendering UUID input for listKey",
+          //   props.listKey,
+          //   "with value",
+          //   currentValue,
+          //   "MLS tag",
+          //   localResolvedElementJzodSchemaBasedOnValue.tag,
+          //   "foreignKeyObjects",
+          //   foreignKeyObjects
+          // );
+          if (localResolvedElementJzodSchemaBasedOnValue.tag?.value?.selectorParams?.targetEntity) {
             return (
               <ThemedLabeledEditor
                 labelElement={props.labelElement ?? <></>}
                 editor={
-                  <ThemedSelect
-                    id={props.rootLessListKey}
-                    key={props.rootLessListKey}
-                    data-testid="miroirInput"
-                    aria-label={props.rootLessListKey}
-                    labelId="demo-simple-select-label"
-                    variant="standard"
-                    width="auto"
-                    minWidth="200px"
-                    maxWidth="400px"
-                    role="textbox"
-                    {...formik.getFieldProps(props.rootLessListKey)}
-                    name={props.rootLessListKey}
-                  >
-                    {stringSelectList.map((e: [string, EntityInstance], index: number) => (
-                      <ThemedMenuItemOption
-                        id={props.rootLessListKey + "." + index}
-                        key={e[1].uuid}
-                        value={e[1].uuid}
-                      >
-                        {(e[1] as EntityInstanceWithName).name}
-                      </ThemedMenuItemOption>
-                    ))}
-                  </ThemedSelect>
+                  props.readOnly ? (
+                    <ThemedDisplayValue value={currentValue} type="uuid" />
+                  ) : (
+                    <ThemedSelect
+                      id={props.rootLessListKey}
+                      key={props.rootLessListKey}
+                      data-testid="miroirInput"
+                      aria-label={props.rootLessListKey}
+                      variant="standard"
+                      width="auto"
+                      minWidth="200px"
+                      maxWidth="400px"
+                      role="textbox"
+                      {...formik.getFieldProps(props.rootLessListKey)}
+                      name={props.rootLessListKey}
+                    >
+                      {stringSelectList.map((e: [string, EntityInstance], index: number) => (
+                        <ThemedMenuItemOption
+                          id={props.rootLessListKey + "." + index}
+                          key={e[1].uuid}
+                          value={e[1].uuid}
+                        >
+                          {/* {(e[1] as EntityInstanceWithName).name} */}
+                          {/* {(e[1] as any).defaultLabel || (e[1] as EntityInstanceWithName).name} */}
+                          {(e[1] as any).description || (e[1] as any).defaultLabel || (e[1] as EntityInstanceWithName).name}
+                        </ThemedMenuItemOption>
+                      ))}
+                    </ThemedSelect>
+                  )
                 }
               />
             );
@@ -645,22 +810,26 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                 <ThemedLabeledEditor
                   labelElement={props.labelElement ?? <></>}
                   editor={
-                    <ThemedTextField
-                      variant="standard"
-                      data-testid="miroirInput"
-                      id={props.rootLessListKey}
-                      key={props.rootLessListKey}
-                      aria-label={props.rootLessListKey}
-                      type="text"
-                      style={{
-                        width: `${estimatedWidth}px`,
-                        minWidth: "200px",
-                        maxWidth: "400px",
-                        boxSizing: "border-box",
-                      }}
-                      {...formik.getFieldProps(props.rootLessListKey)}
-                      name={props.rootLessListKey}
-                    />
+                    props.readOnly ? (
+                      <ThemedDisplayValue value={currentValue} type="uuid" />
+                    ) : (
+                      <ThemedTextField
+                        variant="standard"
+                        data-testid="miroirInput"
+                        id={props.rootLessListKey}
+                        key={props.rootLessListKey}
+                        aria-label={props.rootLessListKey}
+                        type="text"
+                        style={{
+                          width: `${estimatedWidth}px`,
+                          minWidth: "200px",
+                          maxWidth: "400px",
+                          boxSizing: "border-box",
+                        }}
+                        {...formik.getFieldProps(props.rootLessListKey)}
+                        name={props.rootLessListKey}
+                      />
+                    )
                   }
                 />
               );
@@ -683,6 +852,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                 typeCheckKeyMap={ props.typeCheckKeyMap }
                 // localRootLessListKeyMap={props.localRootLessListKeyMap}
                 insideAny={props.insideAny}
+                readOnly={props.readOnly}
               />
             // </div>
           );
@@ -712,6 +882,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                 enumValues={enumValues}
                 forceTestingMode={props.forceTestingMode}
                 insideAny={props.insideAny}
+                readOnly={props.readOnly}
               />
             // </div>
           );
@@ -731,10 +902,9 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               currentDeploymentUuid={props.currentDeploymentUuid}
               foldedObjectAttributeOrArrayItems={props.foldedObjectAttributeOrArrayItems}
               setFoldedObjectAttributeOrArrayItems={props.setFoldedObjectAttributeOrArrayItems}
-              // rawJzodSchema={props.rawJzodSchema as JzodLiteral}
               resolvedElementJzodSchema={localResolvedElementJzodSchemaBasedOnValue}
               typeCheckKeyMap={ props.typeCheckKeyMap }
-              // parentType={props.parentType}
+              readOnly={props.readOnly}
             />
           );
         }
@@ -759,19 +929,23 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
             <ThemedLabeledEditor
               labelElement={props.labelElement ?? <></>}
               editor={
-                <input
-                  type="date"
-                  id={props.rootLessListKey}
-                  key={props.rootLessListKey}
-                  role="textbox"
-                  style={{ width: "100%" }}
-                  {...formik.getFieldProps(props.rootLessListKey)}
-                  value={formattedDate}
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    formik.setFieldValue(props.rootLessListKey, value ? new Date(value) : null);
-                  }}
-                />
+                props.readOnly ? (
+                  <ThemedDisplayValue value={currentValue} type="date" />
+                ) : (
+                  <input
+                    type="date"
+                    id={props.rootLessListKey}
+                    key={props.rootLessListKey}
+                    role="textbox"
+                    style={{ width: "100%" }}
+                    {...formik.getFieldProps(props.rootLessListKey)}
+                    value={formattedDate}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      formik.setFieldValue(props.rootLessListKey, value ? new Date(value) : null);
+                    }}
+                  />
+                )
               }
             />
           );
@@ -888,137 +1062,143 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
   // });
 
   return (
-    <span>
-      {props.rootLessListKey === "" && (
-        <RenderPerformanceMetrics.RenderPerformanceDisplay
-          componentKey={componentKey}
-          indentLevel={props.indentLevel}
-        />
-      )}
-      {objectOrArrayOrAny ? (
-        <ThemedCard
-          id={props.rootLessListKey}
-          key={props.rootLessListKey}
-          style={{
-            padding: "1px",
-            width: "calc(100% - 10px)",
-            margin: "5px 10px 5px 0",
-            position: "relative",
-            // Apply nesting background colors for visual hierarchy (Prettier-like effect)
-            backgroundColor: backgroundColor,
-            border: `1px solid ${borderColor}`,
-            // Enhanced left border for nested containers to show depth
-            borderLeft: isNestableType ? `3px solid ${leftBorderColor}` : `1px solid ${borderColor}`,
-            justifyContent: "space-between",
-            boxShadow: "none",
-          }}
-        >
-          <ThemedCardContent
+    <div>
+      {/* JzodElementEditor displayCodeEditor: {displayCodeEditor ? "yes" : "no"}{" "}
+      JzodElementEditor hideSubJzodEditor: {hideSubJzodEditor ? "hidden" : "visible"}{" "} */}
+      <span>
+        {props.rootLessListKey === "" && (
+          <RenderPerformanceMetrics.RenderPerformanceDisplay
+            componentKey={componentKey}
+            indentLevel={props.indentLevel}
+          />
+        )}
+        {objectOrArrayOrAny ? (
+          <ThemedCard
+            id={props.rootLessListKey}
+            key={props.rootLessListKey}
             style={{
-              // Pass the background color to the content component to ensure it's visible
+              padding: "1px",
+              width: "calc(100% - 10px)",
+              margin: "5px 10px 5px 0",
+              position: "relative",
+              // Apply nesting background colors for visual hierarchy (Prettier-like effect)
               backgroundColor: backgroundColor,
+              border: `1px solid ${borderColor}`,
+              // Enhanced left border for nested containers to show depth
+              borderLeft: isNestableType
+                ? `3px solid ${leftBorderColor}`
+                : `1px solid ${borderColor}`,
+              justifyContent: "space-between",
+              boxShadow: "none",
             }}
           >
-            <div>
-              {/* indentLevel: {props.indentLevel} backgroundColor: {backgroundColor} */}
-              <span
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
-              >
-                <span>{props.submitButton}</span>
-              </span>
-              <span>
-                <span style={{ display: "flex" }}>
-                  <span
-                    style={{
-                      display: !displayCodeEditor ? "none" : "inline-block",
-                    }}
-                  >
-                    code editor:
-                    {shouldShowCodeEditor && (
-                      <JzodElementEditorReactCodeMirror
-                        // initialValue={safeStringify(currentValue)}
-                        initialValue={JSON.stringify(currentValue, null, 2)}
-                        codeMirrorValue={codeMirrorValue}
-                        setCodeMirrorValue={setCodeMirrorValue}
-                        codeMirrorIsValidJson={codeMirrorIsValidJson}
-                        setCodeMirrorIsValidJson={setCodeMirrorIsValidJson}
-                        rootLessListKey={props.rootLessListKey}
-                        rootLessListKeyArray={props.rootLessListKeyArray}
-                        hidden={!displayCodeEditor}
-                        insideAny={props.insideAny}
-                        isUnderTest={isUnderTest}
-                        displayAsStructuredElementSwitch={displayAsStructuredElementSwitch}
-                      />
-                    )}
-                  </span>
-                </span>
+            <ThemedCardContent
+              style={{
+                // Pass the background color to the content component to ensure it's visible
+                backgroundColor: backgroundColor,
+              }}
+            >
+              <div>
+                {/* indentLevel: {props.indentLevel} backgroundColor: {backgroundColor} */}
                 <span
                   style={{
-                    display: hideSubJzodEditor ? "none" : "block",
-                    margin: "2px 5px 5px 5px",
-                    width: "calc(100% - 15px)",
-                    flexGrow: 1,
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
                   }}
                 >
-                  {mainElement}
+                  <span>{props.submitButton}</span>
                 </span>
-              </span>
-            </div>
-          </ThemedCardContent>
-        </ThemedCard>
-      ) : (
-        // simple type value / attribute
-        <span
-          style={{
-            display: "flex",
-            alignItems: "center",
-            width: "100%",
-          }}
-        >
-          <span>{props.deleteButtonElement ?? <></>}</span>
-          {/* {props.labelElement} */}
+                <span>
+                  <span style={{ display: "flex" }}>
+                    <span
+                      style={{
+                        display: !displayCodeEditor ? "none" : "inline-block",
+                      }}
+                    >
+                      {/* code editor: {shouldShowCodeEditor ? "yes" : "no"}{" hideSubJzodEditor "}{hideSubJzodEditor ? "hidden" : "visible"}{" "} */}
+                      {props.labelElement ?? <></>}
+                      {shouldShowCodeEditor && (
+                        <JzodElementEditorReactCodeMirror
+                          // initialValue={safeStringify(currentValue)}
+                          initialValue={JSON.stringify(currentValue, null, 2)}
+                          codeMirrorValue={codeMirrorValue}
+                          setCodeMirrorValue={setCodeMirrorValue}
+                          codeMirrorIsValidJson={codeMirrorIsValidJson}
+                          setCodeMirrorIsValidJson={setCodeMirrorIsValidJson}
+                          rootLessListKey={props.rootLessListKey}
+                          rootLessListKeyArray={props.rootLessListKeyArray}
+                          hidden={!displayCodeEditor}
+                          insideAny={props.insideAny}
+                          isUnderTest={isUnderTest}
+                          displayAsStructuredElementSwitch={displayAsStructuredElementSwitch}
+                        />
+                      )}
+                    </span>
+                  </span>
+                  <span
+                    style={{
+                      display: hideSubJzodEditor ? "none" : "block",
+                      margin: "2px 5px 5px 5px",
+                      width: "calc(100% - 15px)",
+                      flexGrow: 1,
+                    }}
+                  >
+                    {mainElement}
+                  </span>
+                </span>
+              </div>
+            </ThemedCardContent>
+          </ThemedCard>
+        ) : (
+          // simple type value / attribute
           <span
             style={{
-              // display: !hideSubJzodEditor ? "none" : "inline-block",
-              display: !displayCodeEditor ? "none" : "inline-block",
-              flexGrow: 1,
+              display: "flex",
+              alignItems: "center",
+              width: "100%",
             }}
           >
-            code editor
+            <span>{props.deleteButtonElement ?? <></>}</span>
             {/* {props.labelElement} */}
-            {shouldShowCodeEditor && (
-              <JzodElementEditorReactCodeMirror
-                // initialValue={safeStringify(currentValue)}
-                initialValue={JSON.stringify(currentValue, null, 2)}
-                codeMirrorValue={codeMirrorValue}
-                setCodeMirrorValue={setCodeMirrorValue}
-                codeMirrorIsValidJson={codeMirrorIsValidJson}
-                setCodeMirrorIsValidJson={setCodeMirrorIsValidJson}
-                rootLessListKey={props.rootLessListKey}
-                rootLessListKeyArray={props.rootLessListKeyArray}
-                hidden={!displayCodeEditor}
-                insideAny={props.insideAny}
-                isUnderTest={isUnderTest}
-                displayAsStructuredElementSwitch={displayAsStructuredElementSwitch}
-              />
-            )}
+            <span
+              style={{
+                // display: !hideSubJzodEditor ? "none" : "inline-block",
+                display: !displayCodeEditor ? "none" : "inline-block",
+                flexGrow: 1,
+              }}
+            >
+              {/* code editor */}
+              {props.labelElement}
+              {shouldShowCodeEditor && (
+                <JzodElementEditorReactCodeMirror
+                  initialValue={JSON.stringify(currentValue, null, 2)}
+                  codeMirrorValue={codeMirrorValue}
+                  setCodeMirrorValue={setCodeMirrorValue}
+                  codeMirrorIsValidJson={codeMirrorIsValidJson}
+                  setCodeMirrorIsValidJson={setCodeMirrorIsValidJson}
+                  rootLessListKey={props.rootLessListKey}
+                  rootLessListKeyArray={props.rootLessListKeyArray}
+                  hidden={!displayCodeEditor}
+                  insideAny={props.insideAny}
+                  isUnderTest={isUnderTest}
+                  displayAsStructuredElementSwitch={displayAsStructuredElementSwitch}
+                />
+              )}
+            </span>
+            <span
+              style={{
+                display: hideSubJzodEditor ? "none" : "inline-block",
+                margin: "2px 0 2px 0",
+                flexGrow: 1,
+              }}
+            >
+              {mainElement}
+            </span>
           </span>
-          <span
-            style={{
-              display: hideSubJzodEditor ? "none" : "inline-block",
-              margin: "2px 0 2px 0",
-              flexGrow: 1,
-            }}
-          >
-            {mainElement}
-          </span>
-        </span>
-      )}
-      {/* <div>{count}</div> */}
-    </span>
+        )}
+        {/* <div>{count}</div> */}
+      </span>
+    </div>
   );
 }

@@ -1,7 +1,7 @@
 import { ZodTypeAny } from "zod";
 import { DomainState } from "./0_interfaces/2_domain/DomainControllerInterface";
-import { DeploymentEntityState } from "./0_interfaces/2_domain/DeploymentStateInterface";
-import { getDeploymentEntityStateIndex } from "./2_domain/DeploymentEntityState";
+import { ReduxDeploymentsState } from "./0_interfaces/2_domain/ReduxDeploymentsStateInterface";
+import { getReduxDeploymentsStateIndex } from "./2_domain/ReduxDeploymentsState";
 import { ApplicationSection } from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 export function stringTuple<T extends [string] | string[]>(...data: T): T {
@@ -22,16 +22,16 @@ export const circularReplacer = () => {
 };
 
 // ################################################################################################
-export function domainStateToDeploymentEntityState(
-  domainState: DomainState): DeploymentEntityState {
-  const result = {} as DeploymentEntityState;
+export function domainStateToReduxDeploymentsState(
+  domainState: DomainState): ReduxDeploymentsState {
+  const result = {} as ReduxDeploymentsState;
   for (const deploymentUuid in domainState) {
     const deploymentSection = domainState[deploymentUuid];
     for (const section in deploymentSection) {
       const entities = deploymentSection[section];
       for (const entityUuid in entities) {
         const entityInstances = entities[entityUuid];
-        result[getDeploymentEntityStateIndex(deploymentUuid,section as ApplicationSection, entityUuid)] = {
+        result[getReduxDeploymentsStateIndex(deploymentUuid,section as ApplicationSection, entityUuid)] = {
           ids: Object.keys(entityInstances),
           entities: entityInstances,
         };
@@ -42,7 +42,19 @@ export function domainStateToDeploymentEntityState(
 }
 
 // ################################################################################################
-export type ResultAccessPath = (string | number | {
+type NotHashString = Exclude<string, "#">;
+export type AbsolutePath = (
+  // | (string & { __notHash?: true })
+  | NotHashString
+  | number
+  | {
+      type: "map",
+      key: string | number
+    }
+)[];
+// Helper type to exclude "#" from string
+
+export type RelativePath = (string | number | "#" | {
   type: "map",
   key: string | number
 })[];
@@ -50,7 +62,7 @@ export type ResultAccessPath = (string | number | {
 
 // ################################################################################################
 // TODO: unit tests!
-export function safeResolvePathOnObject(valueObject: any, path: ResultAccessPath) {
+export function safeResolvePathOnObject(valueObject: any, path: AbsolutePath) {
   if (path.length === 0 || valueObject === undefined) {
     return valueObject;
   }
@@ -79,7 +91,7 @@ export function safeResolvePathOnObject(valueObject: any, path: ResultAccessPath
 }
 
 // ################################################################################################
-export function resolvePathOnObject(valueObject:any, path: ResultAccessPath) {
+export function resolvePathOnObject(valueObject:any, path: AbsolutePath) {
   // console.log("resolvePathOnObject called with", valueObject, "path", path);
   return path.reduce((acc, curr, index) => {
     if (typeof curr === "object") {
@@ -128,6 +140,88 @@ export function resolvePathOnObject(valueObject:any, path: ResultAccessPath) {
       }
     }
   }, valueObject);
+}
+
+// ################################################################################################
+export type ResolveRelativePathError =
+  | { error: 'INITIAL_PATH_NON_ARRAY_MAP_SEGMENT', segment: any, current: any }
+  | { error: 'INITIAL_PATH_NOT_OBJECT', segment: any, current: any }
+  | { error: 'INITIAL_PATH_ARRAY_INDEX_OUT_OF_BOUNDS', segment: any, current: any }
+  | { error: 'INITIAL_PATH_SEGMENT_NOT_FOUND', segment: any, current: any }
+  | { error: 'NO_PARENT_TO_GO_UP', parentIndex: number, stack: any[] }
+  | { error: 'MAP_SEGMENT_ON_NON_ARRAY', segment: any, acc: any }
+  | { error: 'PATH_NOT_OBJECT', segment: any, acc: any }
+  | { error: 'PATH_ARRAY_INDEX_OUT_OF_BOUNDS', segment: any, acc: any }
+  | { error: 'PATH_SEGMENT_NOT_FOUND', segment: any, acc: any };
+
+export type ResolveRelativePathResult = any | ResolveRelativePathError;
+
+export function resolveRelativePath(
+  valueObject: any,
+  initialPath: AbsolutePath,
+  path: RelativePath
+): ResolveRelativePathResult {
+  // Stack to keep track of parent objects at each step of initialPath
+  const stack: any[] = [];
+  let current = valueObject;
+
+  // Traverse initialPath to set up stack
+  for (const segment of initialPath) {
+    stack.push(current);
+    if (typeof segment === "object") {
+      if (!Array.isArray(current)) {
+        return { error: 'INITIAL_PATH_NON_ARRAY_MAP_SEGMENT', segment, current };
+      }
+      current = current.map((item: any) => item[segment.key]);
+    } else {
+      if (typeof current !== "object") {
+        return { error: 'INITIAL_PATH_NOT_OBJECT', segment, current };
+      }
+      if (Array.isArray(current) && (Number(segment) >= current.length || Number(segment) < 0)) {
+        return { error: 'INITIAL_PATH_ARRAY_INDEX_OUT_OF_BOUNDS', segment, current };
+      }
+      if (!Array.isArray(current) && !Object.hasOwn(current, segment)) {
+        return { error: 'INITIAL_PATH_SEGMENT_NOT_FOUND', segment, current };
+      }
+      current = current[segment];
+    }
+  }
+
+  // Now traverse path, interpreting "#" as parent
+  let acc = current;
+  let parentIndex = stack.length - 1;
+  for (const segment of path) {
+    // console.log("resolveRelativePath: segment", segment, "acc", acc, "stack", stack);
+    if (segment === "#") {
+      if (parentIndex < 0) {
+        return { error: 'NO_PARENT_TO_GO_UP', parentIndex, stack };
+      }
+      // console.log("resolveRelativePath: going up to parent", parentIndex, "of stack", stack, "resulting in", stack[parentIndex]);
+      acc = stack[parentIndex];
+      parentIndex--;
+      continue;
+    } else {
+      if (typeof segment === "object") {
+        if (!Array.isArray(acc)) {
+          return { error: 'MAP_SEGMENT_ON_NON_ARRAY', segment, acc };
+        }
+        acc = acc.map((item: any) => item[segment.key]);
+      } else {
+        if (typeof acc !== "object") {
+          return { error: 'PATH_NOT_OBJECT', segment, acc };
+        }
+        if (Array.isArray(acc) && (Number(segment) >= acc.length || Number(segment) < 0)) {
+          return { error: 'PATH_ARRAY_INDEX_OUT_OF_BOUNDS', segment, acc };
+        }
+        if (!Array.isArray(acc) && !Object.hasOwn(acc, segment)) {
+          return { error: 'PATH_SEGMENT_NOT_FOUND', segment, acc };
+        }
+        acc = acc[segment];
+      }
+    }
+  }
+
+  return acc;
 }
 
 // ################################################################################################

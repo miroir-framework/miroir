@@ -4,7 +4,13 @@ import * as vitest from 'vitest';
 import { Domain2QueryReturnType } from "../../src/0_interfaces/2_domain/DomainElement";
 import { handleTransformer_menu_AddItem } from "../../src/1_core/Menu";
 import { defaultTransformers } from "../../src/2_domain/TransformersForRuntime";
-import { ignoreFailureAttributes, runTransformerTestInMemory, runTransformerTestSuite, TransformerTestSuite } from "../../src/4_services/TestTools";
+import {
+  ignoreFailureAttributes,
+  runTransformerTestInMemory,
+  runTransformerTestSuite,
+} from "../../src/4_services/TestTools";
+import type { TransformerTestSuite } from '../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType';
+import { defaultMiroirModelEnviroment } from '../../src/1_core/Model';
 // const env:any = (import.meta as any).env
 // console.log("@@@@@@@@@@@@@@@@@@ env", env);
 
@@ -172,7 +178,13 @@ describe("menu.unit.test", () => {
 
       // console.log("################################ result", JSON.stringify(result,null,2))
       // console.log("################################ expectedResult", JSON.stringify(expectedResult,null,2))
-      await runTransformerTestSuite(vitest, [], transformerTestSuite_applicativeTransformers, runTransformerTestInMemory);
+      await runTransformerTestSuite(
+        vitest,
+        [],
+        transformerTestSuite_applicativeTransformers,
+        runTransformerTestInMemory,
+        defaultMiroirModelEnviroment
+      );
 
       // expect(result).toEqual(expectedResult);
 

@@ -100,9 +100,13 @@
         "tag": {
           "value": {
             "id": 9,
+            "editable": false,
             "defaultLabel": "SelfApplication",
             "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
-            "editable": false
+            "selectorParams": {
+              "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
+              "targetEntityOrderInstancesBy": "name"
+            }
           }
         }
       },
@@ -111,10 +115,14 @@
         "tag": {
           "value": {
             "id": 10,
+            "editable": false,
             "defaultLabel": "Branch",
             "description": "The Branch of this SelfApplication Version",
             "targetEntity": "cdb0aec6-b848-43ac-a058-fe2dbe5811f1",
-            "editable": false
+            "selectorParams": {
+              "targetEntity": "cdb0aec6-b848-43ac-a058-fe2dbe5811f1",
+              "targetEntityOrderInstancesBy": "name"
+            }
           }
         }
       },
@@ -124,10 +132,14 @@
         "tag": {
           "value": {
             "id": 11,
+            "editable": false,
             "defaultLabel": "Previous SelfApplication Version",
             "description": "Previous version of the selfApplication on this Branch.",
             "targetEntity": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
-            "editable": false
+            "selectorParams": {
+              "targetEntity": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
+              "targetEntityOrderInstancesBy": "name"
+            }
           }
         }
       },

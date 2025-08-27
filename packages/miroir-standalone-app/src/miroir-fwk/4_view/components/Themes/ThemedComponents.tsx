@@ -11,7 +11,9 @@ import {
   Select,
   SelectProps,
 } from "@mui/material";
-import React from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import { createPortal } from 'react-dom';
+
 import { useMiroirTheme } from '../../contexts/MiroirThemeContext';
 
 // ################################################################################################
@@ -192,13 +194,68 @@ export const ThemedStatusText: React.FC<ThemedComponentProps> = ({
   );
 };
 
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
 export const ThemedCodeBlock: React.FC<ThemedComponentProps> = ({ 
   children, 
   className, 
   style 
 }) => {
   const { currentTheme } = useMiroirTheme();
+  const containerRef = React.useRef<HTMLDivElement>(null);
+  const preRef = React.useRef<HTMLPreElement>(null);
+  const [dynamicHeight, setDynamicHeight] = React.useState<number | undefined>(undefined);
+
+  React.useEffect(() => { // TODO:uselessy complicated, isn't it?
+    if (children) {
+      // If children is a React element (like ReactCodeMirror), don't try to calculate height
+      // as it will manage its own dimensions
+      if (React.isValidElement(children)) {
+        setDynamicHeight(undefined);
+        return;
+      }
+      
+      // Count the number of lines in the content for text content
+      const textContent = typeof children === 'string' ? children : String(children);
+      const lineCount = textContent.split('\n').length;
+      
+      // Calculate height based on line height and font size
+      // Approximate line height calculation: fontSize * 1.4 (typical line-height ratio)
+      const fontSize = parseFloat(currentTheme.typography.fontSize.sm.replace('px', '')) || 14;
+      const lineHeight = fontSize * 1.4;
+      const padding = parseFloat(currentTheme.spacing.md.replace('px', '')) || 16;
+      
+      // Calculate content height with padding
+      const calculatedHeight = (lineCount * lineHeight) + (padding * 2);
+      
+      // Set height proportional to content, but clamped to max 400px
+      const finalHeight = Math.min(calculatedHeight, 400);
+      setDynamicHeight(finalHeight);
+    }
+  }, [children, currentTheme.typography.fontSize.sm, currentTheme.spacing.md]);
+
+  // // If children is a React element, render it directly with a themed container
+  // if (React.isValidElement(children)) {
+  //   const containerStyles = css({
+  //     backgroundColor: currentTheme.colors.surface,
+  //     color: currentTheme.colors.text,
+  //     border: `1px solid ${currentTheme.colors.border}`,
+  //     borderRadius: currentTheme.borderRadius.md,
+  //     overflow: 'hidden',
+  //   });
+
+  //   return (
+  //     <div ref={containerRef} css={containerStyles} className={className} style={style}>
+  //       {children}
+  //     </div>
+  //   );
+  // }
   
+  // For text content, use the original pre-based approach
   const codeStyles = css({
     backgroundColor: currentTheme.colors.surface,
     color: currentTheme.colors.text,
@@ -208,17 +265,25 @@ export const ThemedCodeBlock: React.FC<ThemedComponentProps> = ({
     fontFamily: 'monospace',
     fontSize: currentTheme.typography.fontSize.sm,
     whiteSpace: 'pre-wrap',
-    overflow: 'hidden',
+    overflow: dynamicHeight === 400 ? 'auto' : 'hidden',
+    height: dynamicHeight ? `${dynamicHeight}px` : 'auto',
     maxHeight: '400px',
+    lineHeight: 1.4,
   });
 
   return (
-    <pre css={codeStyles} className={className} style={style}>
+    <pre ref={preRef} css={codeStyles} className={className} style={style}>
       {children}
     </pre>
   );
 };
 
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
 export const ThemedPreformattedText: React.FC<ThemedComponentProps> = ({ 
   children, 
   className, 
@@ -400,6 +465,11 @@ export const ThemedSelect: React.FC<ThemedComponentProps & {
   minWidth?: string;
   maxWidth?: string;
   width?: string;
+  filterable?: boolean;
+  options?: Array<{ value: string; label: string }>;
+  placeholder?: string;
+  filterPlaceholder?: string;
+  allowCustomValue?: boolean;
 }> = ({ 
   children, 
   className, 
@@ -409,9 +479,306 @@ export const ThemedSelect: React.FC<ThemedComponentProps & {
   minWidth,
   maxWidth,
   width,
+  filterable = true,
+  options = [],
+  placeholder = 'Select an option...',
+  filterPlaceholder = 'Type to filter...',
+  allowCustomValue = false,
   ...props 
 }) => {
   const { currentTheme } = useMiroirTheme();
+  
+  // If filterable is true and options are provided, use the filterable implementation
+  if (filterable && options.length > 0) {
+    const [isOpen, setIsOpen] = useState(false);
+    const [filterText, setFilterText] = useState('');
+    const [filteredOptions, setFilteredOptions] = useState(options);
+    const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0, width: 0 });
+    const containerRef = useRef<HTMLDivElement>(null);
+    const inputRef = useRef<HTMLInputElement>(null);
+
+    // Calculate dropdown position when opening
+    const updateDropdownPosition = useCallback(() => {
+      if (containerRef.current) {
+        const rect = containerRef.current.getBoundingClientRect();
+        // For position: fixed, we use the viewport coordinates directly
+        // No need to add window.scrollY/scrollX since fixed positioning is relative to viewport
+        setDropdownPosition({
+          top: rect.bottom,
+          left: rect.left,
+          width: rect.width
+        });
+      }
+    }, []);
+
+    // Open dropdown and calculate position
+    const openDropdown = useCallback(() => {
+      setIsOpen(true);
+      setFilterText('');
+      // Calculate position immediately when opening
+      updateDropdownPosition();
+    }, [updateDropdownPosition]);
+
+    // Calculate the width needed to fit the longest option
+    const calculateOptimalWidth = useMemo(() => {
+      if (options.length === 0) return minWidth || '200px';
+      
+      // Create a temporary canvas to measure text width
+      const canvas = document.createElement('canvas');
+      const context = canvas.getContext('2d');
+      if (!context) return minWidth || '200px';
+      
+      // Use the same font as the component
+      context.font = `${currentTheme.typography.fontSize.md} ${currentTheme.typography.fontFamily}`;
+      
+      // Find the longest text (including placeholder)
+      const allTexts = [
+        ...options.map(opt => opt.label),
+        placeholder,
+        filterPlaceholder
+      ];
+      
+      const maxWidth = Math.max(
+        ...allTexts.map(text => context.measureText(text || '').width)
+      );
+      
+      // Add padding and some extra space for the dropdown arrow/styling
+      const calculatedWidth = Math.max(
+        maxWidth + 40, // 40px for padding and arrow
+        parseInt(minWidth?.replace('px', '') || '200')
+      );
+      
+      return `${calculatedWidth}px`;
+    }, [options, placeholder, filterPlaceholder, minWidth, currentTheme]);
+
+    // Update filtered options when filter text or options change
+    useEffect(() => {
+      if (!filterText.trim()) {
+        setFilteredOptions(options);
+      } else {
+        const filtered = options.filter(option =>
+          option.label.toLowerCase().includes(filterText.toLowerCase()) ||
+          option.value.toLowerCase().includes(filterText.toLowerCase())
+        );
+        setFilteredOptions(filtered);
+      }
+    }, [filterText, options]);
+
+    // Close dropdown when clicking outside
+    useEffect(() => {
+      const handleClickOutside = (event: MouseEvent) => {
+        if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+          setIsOpen(false);
+          setFilterText('');
+        }
+      };
+
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
+    // Update position when dropdown opens
+    useEffect(() => {
+      if (isOpen) {
+        updateDropdownPosition();
+      }
+    }, [isOpen, updateDropdownPosition]);
+
+    // Update dropdown position on scroll/resize
+    useEffect(() => {
+      if (isOpen) {
+        const handlePositionUpdate = () => {
+          // Update position immediately on scroll/resize
+          updateDropdownPosition();
+        };
+        
+        // Listen to scroll events on all scrollable containers and the window
+        document.addEventListener('scroll', handlePositionUpdate, true);
+        window.addEventListener('scroll', handlePositionUpdate, true);
+        window.addEventListener('resize', handlePositionUpdate);
+        
+        return () => {
+          document.removeEventListener('scroll', handlePositionUpdate, true);
+          window.removeEventListener('scroll', handlePositionUpdate, true);
+          window.removeEventListener('resize', handlePositionUpdate);
+        };
+      }
+    }, [isOpen, updateDropdownPosition]);
+
+    // Get display text for selected value
+    const selectedOption = options.find(opt => opt.value === value);
+    const displayText = selectedOption ? selectedOption.label : value || '';
+
+    const handleOptionClick = (optionValue: string) => {
+      if (onChange) {
+        // Create synthetic event to maintain compatibility
+        const syntheticEvent = {
+          target: { value: optionValue },
+          currentTarget: { value: optionValue }
+        } as React.ChangeEvent<HTMLSelectElement>;
+        onChange(syntheticEvent);
+      }
+      setIsOpen(false);
+      setFilterText('');
+    };
+
+    const handleInputKeyDown = (event: React.KeyboardEvent) => {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        if (filteredOptions.length > 0) {
+          handleOptionClick(filteredOptions[0].value);
+        } else if (allowCustomValue && filterText.trim()) {
+          handleOptionClick(filterText.trim());
+        }
+      } else if (event.key === 'Escape') {
+        setIsOpen(false);
+        setFilterText('');
+        } else if (event.key === 'ArrowDown') {
+          event.preventDefault();
+          if (!isOpen) {
+            openDropdown();
+          }
+        }
+      };    const containerStyles = css`
+      position: relative;
+      display: inline-block;
+      min-width: ${minWidth || calculateOptimalWidth};
+      max-width: ${maxWidth || 'none'};
+      width: ${width || calculateOptimalWidth};
+    `;
+
+    const inputStyles = css`
+      min-height: 2.2em;
+      max-height: 2.5em;
+      height: auto;
+      width: 100%;
+      box-sizing: border-box;
+      
+      background-color: ${currentTheme.colors.surface} !important;
+      background: ${currentTheme.colors.surface} !important;
+      color: ${currentTheme.colors.text} !important;
+      
+      border: 1px solid ${currentTheme.colors.border} !important;
+      border-radius: ${currentTheme.borderRadius.sm};
+      padding: ${currentTheme.spacing.sm};
+      
+      font-family: ${currentTheme.typography.fontFamily};
+      font-size: ${currentTheme.typography.fontSize.md};
+      font-weight: normal;
+      line-height: 1.4;
+      
+      cursor: pointer;
+      
+      &:focus {
+        border-color: ${currentTheme.colors.primary} !important;
+        outline: none !important;
+        box-shadow: 0 0 0 2px ${currentTheme.colors.primary}20 !important;
+      }
+      
+      &:hover {
+        background-color: ${currentTheme.colors.hover || currentTheme.colors.surfaceVariant} !important;
+      }
+    `;
+
+    const dropdownStyles = css`
+      position: fixed;
+      z-index: 99999;
+      max-height: 200px;
+      overflow-y: auto;
+      background: ${currentTheme.colors.surface};
+      border: 1px solid ${currentTheme.colors.border};
+      border-radius: ${currentTheme.borderRadius.sm};
+      box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+      
+      /* Allow dropdown to extend beyond parent boundaries */
+      min-width: ${dropdownPosition.width}px;
+      width: max-content;
+      max-width: 400px;
+      
+      /* Dynamic positioning */
+      top: ${dropdownPosition.top}px;
+      left: ${dropdownPosition.left}px;
+    `;
+
+    const optionStyles = css`
+      padding: ${currentTheme.spacing.sm};
+      cursor: pointer;
+      font-family: ${currentTheme.typography.fontFamily};
+      font-size: ${currentTheme.typography.fontSize.md};
+      color: ${currentTheme.colors.text};
+      white-space: nowrap;
+      
+      &:hover {
+        background-color: ${currentTheme.colors.hover || currentTheme.colors.surfaceVariant};
+      }
+      
+      &:active {
+        background-color: ${currentTheme.colors.selected || currentTheme.colors.primary};
+        color: ${currentTheme.colors.background};
+      }
+    `;
+
+    const noResultsStyles = css`
+      padding: ${currentTheme.spacing.sm};
+      color: ${currentTheme.colors.textSecondary || currentTheme.colors.text};
+      font-style: italic;
+      text-align: center;
+      white-space: nowrap;
+    `;
+
+    return (
+      <div ref={containerRef} css={containerStyles} className={className} style={style}>
+        <input
+          ref={inputRef}
+          css={inputStyles}
+          type="text"
+          value={isOpen ? filterText : displayText}
+          onChange={(e) => setFilterText(e.target.value)}
+          onFocus={openDropdown}
+          onKeyDown={handleInputKeyDown}
+          placeholder={isOpen ? filterPlaceholder : placeholder}
+          autoComplete="off"
+          {...props}
+        />
+        
+        {isOpen && createPortal(
+          <div css={dropdownStyles}>
+            {filteredOptions.length > 0 ? (
+              filteredOptions.map((option) => (
+                <div
+                  key={option.value}
+                  css={optionStyles}
+                  onClick={() => handleOptionClick(option.value)}
+                >
+                  {option.label}
+                </div>
+              ))
+            ) : (
+              <div css={noResultsStyles}>
+                {allowCustomValue && filterText.trim() 
+                  ? `Press Enter to use "${filterText}"`
+                  : 'No matching options'
+                }
+              </div>
+            )}
+          </div>,
+          document.body
+        )}
+      </div>
+    );
+  }
+
+  // Fall back to standard select for non-filterable or legacy usage
+  const {
+    labelId,
+    variant,
+    label,
+    'data-testid': dataTestId,
+    'aria-label': ariaLabel,
+    role,
+    title,
+    ...validSelectProps
+  } = props;
   
   const selectStyles = css`
     /* Basic sizing and layout - increased min-height for better text visibility */
@@ -521,7 +888,18 @@ export const ThemedSelect: React.FC<ThemedComponentProps & {
   `;
 
   return (
-    <select css={selectStyles} className={className} style={style} value={value} onChange={onChange} {...props}>
+    <select 
+      css={selectStyles} 
+      className={className} 
+      style={style} 
+      value={value} 
+      onChange={onChange} 
+      data-testid={dataTestId}
+      aria-label={ariaLabel}
+      role={role}
+      title={title}
+      {...validSelectProps}
+    >
       {children}
     </select>
   );
@@ -532,7 +910,11 @@ export const ThemedSizedButton: React.FC<ThemedComponentProps> = ({
   children, 
   className, 
   style,
-  onClick 
+  onClick,
+  id,
+  name,
+  'aria-label': ariaLabel,
+  title
 }) => {
   const { currentTheme } = useMiroirTheme();
   
@@ -558,7 +940,16 @@ export const ThemedSizedButton: React.FC<ThemedComponentProps> = ({
   });
 
   return (
-    <button css={buttonStyles} className={className} style={style} onClick={onClick}>
+    <button 
+      css={buttonStyles} 
+      className={className} 
+      style={style} 
+      onClick={onClick}
+      id={id}
+      name={name}
+      aria-label={ariaLabel}
+      title={title}
+    >
       {children}
     </button>
   );
@@ -1448,9 +1839,173 @@ export const ThemedMenuItemOption: React.FC<ThemedComponentProps & {
   );
 };
 
-// ##############################################################################################
+// ################################################################################################
+// Read-Only Display Components
+// These components are used to display values in read-only mode without any editing capabilities
+// ################################################################################################
+
+export const ThemedDisplayValue: React.FC<ThemedComponentProps & {
+  value: any;
+  type?: string;
+  isNull?: boolean;
+  isUndefined?: boolean;
+}> = ({ 
+  value, 
+  type, 
+  isNull = false,
+  isUndefined = false,
+  className, 
+  style 
+}) => {
+  const { currentTheme } = useMiroirTheme();
+  
+  const displayValue = useMemo(() => {
+    if (isNull || value === null) return 'null';
+    if (isUndefined || value === undefined) return 'undefined';
+    if (type === 'boolean') return value ? 'true' : 'false';
+    if (type === 'bigint') return value.toString();
+    if (typeof value === 'object') return JSON.stringify(value, null, 2);
+    return String(value);
+  }, [value, type, isNull, isUndefined]);
+
+  const displayStyles = css({
+    padding: `${currentTheme.spacing.xs} ${currentTheme.spacing.sm}`,
+    backgroundColor: currentTheme.colors.surfaceVariant || '#f5f5f5',
+    borderRadius: currentTheme.borderRadius.sm,
+    fontFamily: 'monospace',
+    fontSize: currentTheme.typography.fontSize.sm,
+    color: currentTheme.colors.text,
+    border: `1px solid ${currentTheme.colors.border}`,
+    whiteSpace: 'pre-wrap',
+    wordBreak: 'break-word',
+    minHeight: '1.5em',
+    display: 'inline-block',
+    verticalAlign: 'baseline',
+  });
+
+  return (
+    <span css={displayStyles} className={className} style={style}>
+      {displayValue}
+    </span>
+  );
+};
+
+export const ThemedDisplayLabel: React.FC<ThemedComponentProps> = ({ 
+  children, 
+  className, 
+  style 
+}) => {
+  const { currentTheme } = useMiroirTheme();
+  
+  const labelStyles = css({
+    fontWeight: 'medium',
+    color: currentTheme.colors.text,
+    marginRight: currentTheme.spacing.sm,
+    fontSize: currentTheme.typography.fontSize.md,
+  });
+
+  return (
+    <span css={labelStyles} className={className} style={style}>
+      {children}
+    </span>
+  );
+};
+
+export const ThemedDisplayArray: React.FC<ThemedComponentProps & {
+  items: any[];
+  maxDisplayItems?: number;
+}> = ({ 
+  items, 
+  maxDisplayItems = 5,
+  className, 
+  style 
+}) => {
+  const { currentTheme } = useMiroirTheme();
+  
+  const displayStyles = css({
+    padding: currentTheme.spacing.sm,
+    backgroundColor: currentTheme.colors.surface,
+    borderRadius: currentTheme.borderRadius.sm,
+    border: `1px solid ${currentTheme.colors.border}`,
+    color: currentTheme.colors.text,
+  });
+
+  const itemCount = items?.length || 0;
+  const hasMoreItems = itemCount > maxDisplayItems;
+  const displayItems = hasMoreItems ? items.slice(0, maxDisplayItems) : items;
+
+  return (
+    <div css={displayStyles} className={className} style={style}>
+      <div style={{ fontSize: currentTheme.typography.fontSize.sm, marginBottom: currentTheme.spacing.xs }}>
+        Array ({itemCount} items)
+      </div>
+      {displayItems?.map((item, index) => (
+        <div key={index} style={{ marginLeft: currentTheme.spacing.md, marginBottom: currentTheme.spacing.xs }}>
+          [{index}]: <ThemedDisplayValue value={item} />
+        </div>
+      ))}
+      {hasMoreItems && (
+        <div style={{ 
+          marginLeft: currentTheme.spacing.md, 
+          fontStyle: 'italic',
+          color: currentTheme.colors.textSecondary 
+        }}>
+          ... and {itemCount - maxDisplayItems} more items
+        </div>
+      )}
+    </div>
+  );
+};
+
+export const ThemedDisplayObject: React.FC<ThemedComponentProps & {
+  object: Record<string, any>;
+  maxDisplayProperties?: number;
+}> = ({ 
+  object, 
+  maxDisplayProperties = 5,
+  className, 
+  style 
+}) => {
+  const { currentTheme } = useMiroirTheme();
+  
+  const displayStyles = css({
+    padding: currentTheme.spacing.sm,
+    backgroundColor: currentTheme.colors.surface,
+    borderRadius: currentTheme.borderRadius.sm,
+    border: `1px solid ${currentTheme.colors.border}`,
+    color: currentTheme.colors.text,
+  });
+
+  const properties = Object.entries(object || {});
+  const hasMoreProperties = properties.length > maxDisplayProperties;
+  const displayProperties = hasMoreProperties ? properties.slice(0, maxDisplayProperties) : properties;
+
+  return (
+    <div css={displayStyles} className={className} style={style}>
+      <div style={{ fontSize: currentTheme.typography.fontSize.sm, marginBottom: currentTheme.spacing.xs }}>
+        Object ({properties.length} properties)
+      </div>
+      {displayProperties.map(([key, value]) => (
+        <div key={key} style={{ marginLeft: currentTheme.spacing.md, marginBottom: currentTheme.spacing.xs }}>
+          <span style={{ fontWeight: 'bold' }}>{key}</span>: <ThemedDisplayValue value={value} />
+        </div>
+      ))}
+      {hasMoreProperties && (
+        <div style={{ 
+          marginLeft: currentTheme.spacing.md, 
+          fontStyle: 'italic',
+          color: currentTheme.colors.textSecondary 
+        }}>
+          ... and {properties.length - maxDisplayProperties} more properties
+        </div>
+      )}
+    </div>
+  );
+};
+
+// ################################################################################################
 // Missing Themed Components for JzodElementEditor
-// ##############################################################################################
+// ################################################################################################
 
 export const ThemedCard: React.FC<ThemedComponentProps & {
   elevation?: number;
@@ -1503,10 +2058,18 @@ export const ThemedSwitch: React.FC<ThemedComponentProps & {
   checked?: boolean;
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
   disabled?: boolean;
+  id?: string;
+  name?: string;
+  'aria-label'?: string;
+  title?: string;
 }> = ({ 
   checked = false,
   onChange,
   disabled = false,
+  id,
+  name,
+  'aria-label': ariaLabel,
+  title,
   className, 
   style 
 }) => {
@@ -1557,6 +2120,10 @@ export const ThemedSwitch: React.FC<ThemedComponentProps & {
         checked={checked} 
         onChange={onChange} 
         disabled={disabled}
+        id={id}
+        name={name}
+        aria-label={ariaLabel}
+        title={title}
       />
       <span css={sliderStyles}></span>
     </label>

@@ -245,6 +245,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
       payload: {
         applicationSection: "data",
+        parentUuid: entityMenu.uuid,
         objects: [
           {
             parentName: entityMenu.name,
@@ -388,6 +389,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
         endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
         payload: {
           applicationSection: "data",
+          parentUuid: entityMenu.uuid,
           objects: [
             {
               parentName: entityMenu.name,
@@ -639,6 +641,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
           deploymentUuid: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
           payload: {
             applicationSection: "data",
+            parentUuid: entityMenu.uuid,
             objects: [
               {
                 parentName: entityMenu.name,

@@ -2,7 +2,7 @@ import { PayloadAction, Store } from "@reduxjs/toolkit";
 import { Patch } from "immer";
 import {
   Commit,
-  DeploymentEntityState,
+  ReduxDeploymentsState,
   DomainElementSuccess,
   Domain2QueryReturnType,
   InstanceAction,
@@ -23,8 +23,8 @@ import {
 //   [DeploymentUuidSectionEntityUuid: string]: ZEntityState 
 // }; // TODO: check format of DeploymentUuidSectionEntityUuid?
 export type LocalCacheSliceState = { 
-  loading: DeploymentEntityState,
-  current: DeploymentEntityState
+  loading: ReduxDeploymentsState,
+  current: ReduxDeploymentsState
   status: {
     initialLoadDone: boolean,
   }

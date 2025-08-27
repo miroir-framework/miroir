@@ -436,6 +436,32 @@ export {
   compositeRunTestAssertion,
   EndpointDefinition,
   endpointDefinition,
+  TransformerTest,
+  transformerTest,
+  TransformerTestSuite,
+  transformerTestSuite,
+  TransformerTestDefinition,
+  transformerTestDefinition,
+  TestResult,
+  testResult,
+  TestSuiteResult,
+  testSuiteResult,
+  TestSuitesResults,
+  JzodUnion_RecursivelyUnfold_ReturnTypeError,
+  JzodUnion_RecursivelyUnfold_ReturnTypeOK,
+  JzodUnion_RecursivelyUnfold_ReturnType,
+  KeyMapEntry,
+  keyMapEntry,
+  ResolvedJzodSchemaReturnType,
+  resolvedJzodSchemaReturnType,
+  ResolvedJzodSchemaReturnTypeError,
+  resolvedJzodSchemaReturnTypeError,
+  ResolvedJzodSchemaReturnTypeOK,
+  resolvedJzodSchemaReturnTypeOK,
+  // those are zod schemas, not imported. Importing MLS with the same name.
+  // jzodUnion_RecursivelyUnfold_ReturnType,
+  // jzodUnion_RecursivelyUnfold_ReturnTypeError,
+  // jzodUnion_RecursivelyUnfold_ReturnTypeOK,
 } from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 export {
@@ -463,6 +489,14 @@ export {
   JzodSchemaDefinition,
   jzodSchemaDefinitionSchema,
 } from "./0_interfaces/1_core/JzodSchemaDefinition.js";
+export {
+  // JzodUnion_RecursivelyUnfold_ReturnType,
+  // JzodUnion_RecursivelyUnfold_ReturnTypeError,
+  // JzodUnion_RecursivelyUnfold_ReturnTypeOK,
+  jzodUnion_RecursivelyUnfold_ReturnType,
+  jzodUnion_RecursivelyUnfold_ReturnTypeError,
+  jzodUnion_RecursivelyUnfold_ReturnTypeOK,
+} from "./0_interfaces/1_core/jzodUnion_RecursivelyUnfoldInterface";
 export { DeploymentMode } from "./0_interfaces/1_core/MiroirConfig.js";
 export {
   DeploymentUuidToReportsEntitiesDefinitionsMapping,
@@ -491,6 +525,15 @@ export {
   TestImplementationExpect,
 } from "./0_interfaces/1_core/TestImplementation.js";
 export {
+  JzodUnionResolvedTypeForArrayReturnTypeOK,
+  JzodUnionResolvedTypeReturnTypeError,
+  JzodUnionResolvedTypeForObjectReturnTypeOK,
+  JzodUnionResolvedTypeReturnType,
+  SelectUnionBranchFromDiscriminatorReturnType,
+  SelectUnionBranchFromDiscriminatorReturnTypeError,
+  SelectUnionBranchFromDiscriminatorReturnTypeOK,
+} from "./0_interfaces/1_core/jzodTypeCheckInterface";
+export {
   EntityDefinitionEntityDefinition,
   EntityDefinitionEntityDefinitionAttribute,
   EntityDefinitionEntityDefinitionAttributeNew,
@@ -499,10 +542,14 @@ export {
   entityDefinitionEntityDefinitionSchema,
 } from "./0_interfaces/1_core/writtenByHandSchema.js";
 export {
-  DeploymentEntityState,
+  ITransformerHandler,
+  MiroirModelEnvironment
+} from "./0_interfaces/1_core/Transformer";
+export {
+  ReduxDeploymentsState,
   ZEntityState,
-  ZEntityStateSchema,
-} from "./0_interfaces/2_domain/DeploymentStateInterface.js";
+  zEntityStateSchema as ZEntityStateSchema,
+} from "./0_interfaces/2_domain/ReduxDeploymentsStateInterface.js";
 export {
   CRUDActionName,
   CRUDActionNamesArray,
@@ -584,6 +631,10 @@ export {
   MError,
 } from "./0_interfaces/3_controllers/ErrorLogServiceInterface.js";
 export { MiroirContextInterface } from "./0_interfaces/3_controllers/MiroirContextInterface.js";
+export { 
+  RunActionTrackerInterface,
+  ActionTrackingData,
+} from "./0_interfaces/3_controllers/RunActionTrackerInterface.js";
 export { LocalCacheInterface } from "./0_interfaces/4-services/LocalCacheInterface.js";
 export {
   ViewParams,
@@ -637,22 +688,15 @@ export { getApplicationSection } from "./1_core/AdminApplication.js";
 export { alterObjectAtPath, deleteObjectAtPath } from "./1_core/alterObjectAtPath.js";
 export { ACTION_OK } from "./1_core/constants.js";
 export { DomainInstanceUuidIndexToArray } from "./1_core/DomainState.js";
-export { rootLessListKeyMap } from "./1_core/jzod/rootLessListKeyMap";
+export { rootLessListKeyMapDEFUNCT } from "./1_core/jzod/rootLessListKeyMap";
 export {
-  getDefaultValueForJzodSchema,
+  // getDefaultValueForJzodSchemaDEFUNCT,
   getDefaultValueForJzodSchemaWithResolution,
+  getDefaultValueForJzodSchemaWithResolutionNonHook,
 } from "./1_core/jzod/getDefaultValueForJzodSchema.js";
 export {
-  KeyMapEntry,
-  ResolvedJzodSchemaReturnType,
-  ResolvedJzodSchemaReturnTypeError,
-  ResolvedJzodSchemaReturnTypeOK,
-  // getReportSectionTargetEntityUuid,
   jzodTypeCheck,
   jzodUnionResolvedTypeForObject,
-  JzodUnionResolvedTypeReturnType,
-  JzodUnionResolvedTypeForObjectReturnTypeOK,
-  JzodUnionResolvedTypeReturnTypeError as JzodUnionResolvedTypeForObjectReturnTypeError,
   unionObjectChoices,
   selectUnionBranchFromDiscriminator,
 } from "./1_core/jzod/jzodTypeCheck.js";
@@ -660,9 +704,6 @@ export {
   getObjectUniondiscriminatorValuesFromResolvedSchema
 } from "./1_core/jzod/getObjectUniondiscriminatorValuesFromResolvedSchema";
 export {
-  JzodUnion_RecursivelyUnfold_ReturnTypeError,
-  JzodUnion_RecursivelyUnfold_ReturnTypeOK,
-  JzodUnion_RecursivelyUnfold_ReturnType,
   jzodUnion_recursivelyUnfold,
 } from "./1_core/jzod/jzodUnion_RecursivelyUnfold";
 export {
@@ -677,13 +718,21 @@ export {
   unfoldJzodSchemaOnce,
 } from "./1_core/jzod/JzodUnfoldSchemaOnce.js";
 export {
+  getInnermostTypeCheckError,
+} from "./1_core/jzod/mlsTypeCheckError";
+export {
   applicationModelEntities,
   defaultMiroirMetaModel,
+  defaultMiroirModelEnviroment,
   // getCurrentEntityDefinition,
   getReportsAndEntitiesDefinitionsForDeploymentUuid,
   metaModelEntities,
   miroirModelEntities,
 } from "./1_core/Model.js";
+export {
+  describe,
+  expect,
+} from "./1_core/test-expect";
 export {} from "./1_core/Report";
 export {} from "./1_core/Report.js";
 export { zodErrorFirstIssueLeaf, zodErrorDeepestIssueLeaves } from "./1_core/zodParseErrorHandler";
@@ -700,33 +749,39 @@ export {
   getBasicStoreUnitConfiguration,
 } from "./2_domain/Deployment.js";
 export {
-  getDeploymentEntityStateIndex,
+  getReduxDeploymentsStateIndex,
   getLocalCacheIndexDeploymentSection,
   getLocalCacheIndexDeploymentUuid,
   getLocalCacheIndexEntityUuid,
-} from "./2_domain/DeploymentEntityState.js";
+} from "./2_domain/ReduxDeploymentsState.js";
 export {
-  extractEntityJzodSchemaFromDeploymentEntityState,
-  getDeploymentEntityStateJzodSchemaSelectorMap,
-  getDeploymentEntityStateSelectorMap,
-  GetExtractorRunnerParamsForDeploymentEntityState,
-  getExtractorRunnerParamsForDeploymentEntityState,
-  GetQueryRunnerParamsForDeploymentEntityState,
-  getQueryRunnerParamsForDeploymentEntityState,
-  runQueryFromDeploymentEntityState,
-  selectEntityInstanceFromDeploymentEntityState,
-  selectEntityInstanceListFromDeploymentEntityState,
-  selectEntityInstanceUuidIndexFromDeploymentEntityState,
-} from "./2_domain/DeploymentEntityStateQuerySelectors.js";
+  extractEntityJzodSchemaFromReduxDeploymentsState,
+  getReduxDeploymentsStateJzodSchemaSelectorMap,
+  getReduxDeploymentsStateSelectorMap,
+  GetExtractorRunnerParamsForReduxDeploymentsState,
+  getExtractorRunnerParamsForReduxDeploymentsState,
+  GetQueryRunnerParamsForReduxDeploymentsState,
+  getQueryRunnerParamsForReduxDeploymentsState,
+  runQueryFromReduxDeploymentsState,
+  selectEntityInstanceFromReduxDeploymentsState,
+  selectEntityInstanceListFromReduxDeploymentsState,
+  selectEntityInstanceUuidIndexFromReduxDeploymentsState,
+} from "./2_domain/ReduxDeploymentsStateQuerySelectors.js";
 export {
-  getDeploymentEntityStateJzodSchemaSelectorTemplateMap,
-  getDeploymentEntityStateSelectorTemplateMap,
-  getExtractorTemplateRunnerParamsForDeploymentEntityState,
-  GetExtractorTemplateRunnerParamsForDeploymentEntityState,
-  getQueryTemplateRunnerParamsForDeploymentEntityState,
-  GetQueryTemplateRunnerParamsForDeploymentEntityState,
-  runQueryTemplateFromDeploymentEntityState,
-} from "./2_domain/DeploymentEntityStateQueryTemplateSelectors.js";
+  createReduxDeploymentsStateSelectorMap,
+  executeReduxDeploymentsStateQuery,
+  getEntityInstancesUuidIndexNonHook,
+  getMultipleEntityInstancesUuidIndexNonHook,
+} from "./2_domain/ReduxDeploymentsStateQueryExecutor.js";
+export {
+  getReduxDeploymentsStateJzodSchemaSelectorTemplateMap,
+  getReduxDeploymentsStateSelectorTemplateMap,
+  getExtractorTemplateRunnerParamsForReduxDeploymentsState,
+  GetExtractorTemplateRunnerParamsForReduxDeploymentsState,
+  getQueryTemplateRunnerParamsForReduxDeploymentsState,
+  GetQueryTemplateRunnerParamsForReduxDeploymentsState,
+  runQueryTemplateFromReduxDeploymentsState,
+} from "./2_domain/ReduxDeploymentsStateQueryTemplateSelectors.js";
 export {
   selectCurrentDeploymentModel,
   selectEntityInstances,
@@ -805,7 +860,6 @@ export {
 } from "./2_domain/Templates";
 export { transformer_spreadSheetToJzodSchema } from "./2_domain/Transformer_Spreadsheet";
 export {
-  ActionTemplate,
   applicationTransformerDefinitions,
   resolveApplyTo_legacy,
   transformer_extended_apply,
@@ -837,6 +891,7 @@ export { ErrorDataStore } from "./3_controllers/ErrorHandling/ErrorDataStore.js"
 export { ErrorLogService } from "./3_controllers/ErrorHandling/ErrorLogService.js";
 export { ErrorModelStore } from "./3_controllers/ErrorHandling/ErrorModelStore.js";
 export { MiroirContext } from "./3_controllers/MiroirContext.js";
+export { RunActionTracker } from "./3_controllers/RunActionTracker.js";
 export { modelInitialize } from "./3_controllers/ModelInitializer.js";
 export { LoggerGlobalContext } from "./4_services/LoggerContext.js";
 export { MiroirLoggerFactory, testLogger } from "./4_services/LoggerFactory.js";
@@ -855,8 +910,6 @@ export { restServerDefaultHandlers } from "./4_services/RestServer.js";
 export { generateRestServiceResponse } from "./4_services/RestTools.js";
 export { TestSuiteContext } from "./4_services/TestSuiteContext.js";
 export {
-  TransformerTest,
-  TransformerTestSuite,
   displayTestSuiteResults,
   displayTestSuiteResultsDetails,
   runTransformerTestInMemory,
@@ -879,16 +932,16 @@ export {
 export { miroirCoreStartup } from "./startup.js";
 export {
   circularReplacer,
-  domainStateToDeploymentEntityState,
+  domainStateToReduxDeploymentsState,
   resolvePathOnObject,
-  ResultAccessPath,
+  AbsolutePath as ResultAccessPath,
   safeResolvePathOnObject,
   stringTuple,
   mStringify,
 } from "./tools";
 
 export {
-  testSuitesResultsSchema
+  testSuitesResults
 } from "./0_interfaces/4-services/TestInterface.js";
 
 console.log("miroir-core: DONE exports");
@@ -913,6 +966,8 @@ const entitySelfApplicationModelBranch = require("./assets/miroir_model/16dbfe28
 const entityStoreBasedConfiguration = require("./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/7990c0c9-86c3-40a1-a121-036c91b55ed7.json");
 const entityQueryVersion = require("./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/e4320b9e-ab45-4abe-85d8-359604b3c62f.json");
 const entityTest = require("./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/c37625c7-0b35-4d6a-811d-8181eb978301.json");
+const entityTransformerDefinition = require("./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/a557419d-a288-4fb8-8a1e-971c86c113b8.json");
+const entityTransformerTest = require("./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/681be9ca-c593-45f5-b45a-5f1d4969e91e.json");
 
 const entityDefinitionAdminApplication = require("../src/assets/admin_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/3fb6203e-f639-4b2a-afe1-e1fb45d6b2ea.json");
 const entityDefinitionEndpoint = require("./assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/e3c1cc69-066d-4f52-beeb-b659dc7a88b9.json");
@@ -927,6 +982,7 @@ const entityDefinitionSelfApplicationDeploymentConfiguration = require("./assets
 const entityDefinitionSelfApplicationVersion = require("./assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/27046fce-742f-4cc4-bb95-76b271f490a5.json");
 const entityDefinitionSelfApplicationModelBranch = require("./assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/69bf7c03-a1df-4d1c-88c1-44363feeea87.json");
 const entityDefinitionTest = require("./assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/d2842a84-3e66-43ee-ac58-7e13b95b01e8.json");
+const entityDefinitionTransformerTest = require("./assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/405bb1fc-a20f-4def-9d3a-206f72350633.json");
 
 const selfApplicationMiroir = require("./assets/miroir_data/a659d350-dd97-4da9-91de-524fa01745dc/21840247-b5b1-4344-baec-f818f4797d92.json");
 const selfApplicationDeploymentMiroir = require("./assets/miroir_data/35c5608a-7678-4f07-a4ec-76fc5bc35424/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json");
@@ -951,6 +1007,8 @@ const reportReportList = require("./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6
 const reportReportDetails = require("./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/ef57aada-6b77-4384-8007-12f13eddd337.json");
 const reportTestList = require("./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/683ba925-835e-4f9d-845b-7fae500316ad.json");
 const reportTestDetails = require("./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/d65d8dc8-2a7f-4111-81b1-0324e816c1a8.json");
+const reportTransformerTestList = require("./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/963f9cfb-1f26-4e9a-8031-7627151630ae.json");
+const reportTransformerTestDetails = require("./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/1c06268b-2ddb-433c-ae4f-46546908125d.json");
 
 const queryVersionBundleProducerV1 = require("./assets/miroir_data/e4320b9e-ab45-4abe-85d8-359604b3c62f/e8c15587-af5d-4c08-b5b7-22f959447690.json");
 
@@ -967,6 +1025,8 @@ const entityDefinitionTransformerDefinition = require("./assets/miroir_model/54b
 const miroirJzodSchemaBootstrap = require("./assets/miroir_data/5e81e1b9-38be-487c-b3e5-53796c57fccf/1e8dab4b-65a3-4686-922e-ce89a2d62aa9.json");
 const transformerJzodSchema = require("./assets/miroir_data/5e81e1b9-38be-487c-b3e5-53796c57fccf/a97756cf-dd93-42b9-a021-91a629b187b9.json");
 const test_createEntityAndReportFromSpreadsheetAndUpdateMenu = require("./assets/miroir_data/c37625c7-0b35-4d6a-811d-8181eb978301/ffe6ab3c-8296-4293-8aaf-ebbad1f0ac9a.json");
+
+const transformerTest_resolveConditionalSchema = require("./assets/miroir_data/681be9ca-c593-45f5-b45a-5f1d4969e91e/3f025c6c-982d-47ed-8061-50009788773a.json");
 
 // const entityDefinitionSelfApplicationV1 = require("../src/assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/9460420b-f176-4918-bd45-894ab195ffe9.json"); //assert { type: "json" };
 // const entityDefinitionSelfApplicationVersionV1 = require("../src/assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/27046fce-742f-4cc4-bb95-76b271f490a5.json"); //assert { type: "json" };
@@ -1025,6 +1085,7 @@ export {
   entityDefinitionSelfApplicationVersion,
   entityDefinitionStoreBasedConfiguration,
   entityDefinitionTest,
+  entityDefinitionTransformerTest,
   entityDefinitionTransformerDefinition,
   entityEndpointVersion,
   entityEntity,
@@ -1040,6 +1101,7 @@ export {
   entitySelfApplicationVersion,
   entityStoreBasedConfiguration,
   entityTest,
+  entityTransformerTest,
   instanceEndpointV1,
   instanceEndpointVersionV1,
   jzodSchemajzodMiroirBootstrapSchema,
@@ -1069,6 +1131,8 @@ export {
   reportReportDetails,
   reportTestDetails,
   reportTestList,
+  reportTransformerTestList,
+  reportTransformerTestDetails,
   selfApplicationDeploymentMiroir,
   selfApplicationMiroir,
   selfApplicationModelBranchMiroirMasterBranch,
@@ -1077,6 +1141,7 @@ export {
   storeManagementEndpoint,
   testEndpointVersionV1,
   test_createEntityAndReportFromSpreadsheetAndUpdateMenu,
+  transformerTest_resolveConditionalSchema,
   //
   transformerJzodSchema,
   transformerMenuV1,

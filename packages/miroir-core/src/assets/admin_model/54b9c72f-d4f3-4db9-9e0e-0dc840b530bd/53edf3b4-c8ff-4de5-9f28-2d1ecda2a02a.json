@@ -49,7 +49,18 @@
       },
       "adminApplication": {
         "type": "uuid",
-        "tag": { "value": {  "id":9, "defaultLabel": "SelfApplication", "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b", "editable": false }}
+        "tag": {
+          "value": {
+            "id": 9,
+            "editable": false,
+            "defaultLabel": "SelfApplication",
+            "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+            "selectorParams": {
+              "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+              "targetEntityOrderInstancesBy": "name"
+            }
+          }
+        }
       },
       "branch": {
         "type": "uuid",
@@ -60,10 +71,14 @@
         "optional": true,
         "tag": { "value": { 
           "id": 11,
+          "editable": false,
           "defaultLabel": "Previous SelfApplication Version",
           "description": "Previous version of the selfApplication on this Branch.",
           "targetEntity": "ff3d211b-7eb6-473a-afbf-503bb70a5c26",
-          "editable": false
+          "selectorParams": {
+            "targetEntity": "ff3d211b-7eb6-473a-afbf-503bb70a5c26",
+            "targetEntityOrderInstancesBy": "name"
+          }
         }}
       },
       "modelStructureMigration": {

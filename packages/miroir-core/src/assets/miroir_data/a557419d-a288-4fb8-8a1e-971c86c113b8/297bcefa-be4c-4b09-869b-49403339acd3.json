@@ -5,6 +5,7 @@
   "name":"transformer_mustacheStringTemplate",
   "defaultLabel": "The Mustache string template Transformer Definition.",
   "description": "This Transformer Definition enables the transformation of Entity Instances using a Mustache string template.",
+  "classification": "basic",
   "transformerInterface": {
     "parameterSchema": {
       "transformerType": {

@@ -41,7 +41,7 @@ import { cleanLevel } from '../../constants.js';
 import {
   TableComponentRow,
   TableComponentTypeSchema,
-} from "./MTableComponentInterface.js";
+} from "./EntityInstanceGridInterface.js";
 import { calculateAdaptiveColumnWidths, ColumnWidthSpec, ToolsColumnDefinition } from '../../adaptiveColumnWidths.js';
 import glideToolsCellRenderer, { ToolsCell, ToolsCellData } from './GlideToolsCellRenderer.js';
 
@@ -85,7 +85,7 @@ interface GlideDataGridComponentProps {
   type: string;
   currentEntityDefinition?: EntityDefinition;
   calculatedColumnWidths?: ColumnWidthSpec[];
-  containerWidth?: number; // Container width from parent MTableComponent
+  containerWidth?: number; // Container width from parent EntityInstanceGrid
   toolsColumnDefinition: ToolsColumnDefinition;
   maxRows?: number; // Maximum number of rows to show (controls table height)
   theme?: any; // Table theme for unified styling
@@ -438,10 +438,10 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
     let widthSpecs: ColumnWidthSpec[];
 
     if (calculatedColumnWidths && calculatedColumnWidths.length > 0) {
-      // Use pre-calculated widths from MTableComponent
+      // Use pre-calculated widths from EntityInstanceGrid
       widthSpecs = calculatedColumnWidths;
     } else {
-      // Defensive fallback: This should now rarely happen since MTableComponent always calculates widths
+      // Defensive fallback: This should now rarely happen since EntityInstanceGrid always calculates widths
       console.warn("GlideDataGridComponent: No calculated column widths provided, using simple fallback");
       
       widthSpecs = [

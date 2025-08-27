@@ -154,10 +154,10 @@ export function AppBar(props:AppBarProps) {
   }
   
   return (
-    <StyledAppBar 
-      open={props.open} 
-      width={props.width} 
-      outlineOpen={props.outlineOpen} 
+    <StyledAppBar
+      open={props.open}
+      width={props.width}
+      outlineOpen={props.outlineOpen}
       outlineWidth={props.outlineWidth}
       sx={{
         backgroundColor: miroirTheme.currentTheme.components.appBar.background,
@@ -168,19 +168,23 @@ export function AppBar(props:AppBarProps) {
     >
       <>
         <Toolbar disableGutters={false}>
-            {/* <Box sx={{display:"flex"}}> */}
-              <IconButton
-                  color="inherit"
-                  aria-label="open drawer"
-                  onClick={props.handleDrawerOpen}
-                  edge="start"
-                  sx={{ mr: 2, ...(props.open && { display: 'none' }), ...(!props.open && { display: 'flex' }) }}
-                >
-                <MenuIcon />
-              </IconButton>
-              {/* <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} /> */}
-            {/* </Box> */}
-              {/* <Typography
+          {/* <Box sx={{display:"flex"}}> */}
+          <IconButton
+            color="inherit"
+            aria-label="open drawer"
+            onClick={props.handleDrawerOpen}
+            edge="start"
+            sx={{
+              mr: 2,
+              ...(props.open && { display: "none" }),
+              ...(!props.open && { display: "flex" }),
+            }}
+          >
+            <MenuIcon />
+          </IconButton>
+          {/* <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} /> */}
+          {/* </Box> */}
+          {/* <Typography
                 variant="h6"
                 noWrap
                 component="a"
@@ -195,207 +199,267 @@ export function AppBar(props:AppBarProps) {
                   textDecoration: 'none',
                 }}
               > */}
-                <Link to={`/home`}>
-                  <Icon
-                    sx={{
-                      mr: 2,
-                      color: miroirTheme.currentTheme.components.appBar.textColor,
-                    }}
-                  >home</Icon>
-                </Link>
-
-                {/* open: {props.open?"true":"false"} */}
-              {/* </Typography> */}
-            
-            <Box sx={{ flexGrow: 0, display: { xs: 'flex', md: 'flex'} }}>
-              <IconButton
-                size="large"
-                aria-label="account of current user"
-                aria-controls="menu-appbar"
-                aria-haspopup="true"
-                onClick={handleOpenNavMenu}
-                color="inherit"
-              >
-                <MenuIcon />
-              </IconButton>
-              <Menu
-                id="menu-appbar"
-                anchorEl={anchorElNav}
-                anchorOrigin={{
-                  vertical: 'bottom',
-                  horizontal: 'left',
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'left',
-                }}
-                open={Boolean(anchorElNav)}
-                onClose={handleCloseNavMenu}
-                sx={{
-                  display: { xs: 'block', md: 'none' },
-                }}
-              >
-                {pages.map((page) => (
-                  <MenuItem key={page.label} onClick={(e:any)=>goToLabelPage(e,page.label)}>
-                      <Typography textAlign="center">{page.label}</Typography>
-                  </MenuItem>
-                ))}
-              </Menu>
-            </Box>
-            <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
-            <Typography
-              variant="h5"
-              noWrap
-              component="a"
-              href=""
+          <Link to={`/home`}>
+            <Icon
               sx={{
                 mr: 2,
-                display: { xs: 'flex', md: 'none' },
-                flexGrow: 1,
-                fontFamily: 'monospace',
-                fontWeight: 700,
-                letterSpacing: '.3rem',
-                color: 'inherit',
-                textDecoration: 'none',
+                color: miroirTheme.currentTheme.components.appBar.textColor,
               }}
             >
-              LOGO
-            </Typography>
-            <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-              {
-                pages.map(
-                  (page) => (
-                    <Button
-                      key={page.label}
-                      onClick={(e:any) =>goToLabelPage(e,page.label)}
-                      sx={{ my: 2, color: miroirTheme.currentTheme.components.appBar.textColor, display: 'block' }}
-                    >
-                      {page.label}
-                    </Button>
-                  )
-                )
-              }
-            </Box>
+              home
+            </Icon>
+          </Link>
 
-            <Box sx={{ flexGrow: 0, display: "flex" }}>
-              {/* App Theme Selector */}
-              <MiroirThemeSelector showDescription={false} label="Theme" />
+          {/* open: {props.open?"true":"false"} */}
+          {/* </Typography> */}
 
-              {/* Grid Type Toggle Button */}
-              {props.gridType && props.onGridTypeToggle && (
-                <Tooltip title={`Switch to ${props.gridType === 'ag-grid' ? 'Glide Data Grid' : 'AG-Grid'}`}>
-                  <Button
-                    onClick={props.onGridTypeToggle}
-                    sx={{
-                      mr: 2,
-                      px: 1,
-                      py: 0.5,
-                      backgroundColor: 'transparent',
-                      color: miroirTheme.currentTheme.components.appBar.textColor,
-                      opacity: 0.8,
-                      border: `1px solid ${miroirTheme.currentTheme.components.appBar.textColor}`,
-                      borderRadius: 1,
-                      transition: 'all 0.3s ease-in-out',
-                      fontSize: '0.875rem',
-                      fontWeight: 'normal',
-                      textTransform: 'none',
-                      minWidth: 'auto',
-                      cursor: 'pointer',
-                      '&:hover': {
-                        backgroundColor: miroirTheme.currentTheme.colors.hover,
-                        color: miroirTheme.currentTheme.colors.text,
-                        opacity: 1,
-                      }
-                    }}
-                  >
-                    Grid: {props.gridType === 'ag-grid' ? 'AG-Grid' : 'Glide Data Grid'}
-                  </Button>
-                </Tooltip>
-              )}
-              
-              
-            {/* Performance Monitor Indicator */}
-            {context.setShowPerformanceDisplay && (
-              <Tooltip title={context.showPerformanceDisplay ? "Performance Monitor: ON (click to disable)" : "Performance Monitor: OFF (click to enable)"}>
+          <Box sx={{ flexGrow: 0, display: { xs: "flex", md: "flex" } }}>
+            <IconButton
+              size="large"
+              aria-label="account of current user"
+              aria-controls="menu-appbar"
+              aria-haspopup="true"
+              onClick={handleOpenNavMenu}
+              color="inherit"
+            >
+              <MenuIcon />
+            </IconButton>
+            <Menu
+              id="menu-appbar"
+              anchorEl={anchorElNav}
+              anchorOrigin={{
+                vertical: "bottom",
+                horizontal: "left",
+              }}
+              keepMounted
+              transformOrigin={{
+                vertical: "top",
+                horizontal: "left",
+              }}
+              open={Boolean(anchorElNav)}
+              onClose={handleCloseNavMenu}
+              sx={{
+                display: { xs: "block", md: "none" },
+              }}
+            >
+              {pages.map((page) => (
+                <MenuItem key={page.label} onClick={(e: any) => goToLabelPage(e, page.label)}>
+                  <Typography textAlign="center">{page.label}</Typography>
+                </MenuItem>
+              ))}
+            </Menu>
+          </Box>
+          <AdbIcon sx={{ display: { xs: "flex", md: "none" }, mr: 1 }} />
+          <Typography
+            variant="h5"
+            noWrap
+            component="a"
+            href=""
+            sx={{
+              mr: 2,
+              display: { xs: "flex", md: "none" },
+              flexGrow: 1,
+              fontFamily: "monospace",
+              fontWeight: 700,
+              letterSpacing: ".3rem",
+              color: "inherit",
+              textDecoration: "none",
+            }}
+          >
+            LOGO
+          </Typography>
+          <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
+            {pages.map((page) => (
+              <Button
+                key={page.label}
+                onClick={(e: any) => goToLabelPage(e, page.label)}
+                sx={{
+                  my: 2,
+                  color: miroirTheme.currentTheme.components.appBar.textColor,
+                  display: "block",
+                }}
+              >
+                {page.label}
+              </Button>
+            ))}
+          </Box>
+
+          <Box sx={{ flexGrow: 0, display: "flex" }}>
+            {/* App Theme Selector */}
+            <MiroirThemeSelector showDescription={false} label="Theme" />
+            {/* Grid Type Toggle Button */}
+            {props.gridType && props.onGridTypeToggle && (
+              <Tooltip
+                title={`Switch to ${props.gridType === "ag-grid" ? "Glide Data Grid" : "AG-Grid"}`}
+              >
                 <Button
-                  onClick={() => context.setShowPerformanceDisplay?.(!context.showPerformanceDisplay)}
+                  onClick={props.onGridTypeToggle}
                   sx={{
                     mr: 2,
                     px: 1,
                     py: 0.5,
-                    backgroundColor: 'transparent',
-                    color: context.showPerformanceDisplay 
-                      ? miroirTheme.currentTheme.colors.success 
-                      : miroirTheme.currentTheme.components.appBar.textColor,
-                    border: `1px solid ${context.showPerformanceDisplay 
-                      ? miroirTheme.currentTheme.colors.success 
-                      : miroirTheme.currentTheme.components.appBar.textColor}`,
+                    backgroundColor: "transparent",
+                    color: miroirTheme.currentTheme.components.appBar.textColor,
+                    opacity: 0.8,
+                    border: `1px solid ${miroirTheme.currentTheme.components.appBar.textColor}`,
                     borderRadius: 1,
-                    textShadow: context.showPerformanceDisplay 
-                      ? `0 0 8px ${miroirTheme.currentTheme.colors.success}aa, 0 0 16px ${miroirTheme.currentTheme.colors.success}77, 0 0 24px ${miroirTheme.currentTheme.colors.success}55` 
-                      : 'none',
-                    transition: 'all 0.3s ease-in-out',
-                    fontSize: '0.875rem',
-                    fontWeight: 'bold',
-                    textTransform: 'none',
-                    minWidth: 'auto',
-                    cursor: 'pointer',
-                    '&:hover': {
+                    transition: "all 0.3s ease-in-out",
+                    fontSize: "0.875rem",
+                    fontWeight: "normal",
+                    textTransform: "none",
+                    minWidth: "auto",
+                    cursor: "pointer",
+                    "&:hover": {
                       backgroundColor: miroirTheme.currentTheme.colors.hover,
-                      color: context.showPerformanceDisplay 
-                        ? miroirTheme.currentTheme.colors.success 
+                      color: miroirTheme.currentTheme.colors.text,
+                      opacity: 1,
+                    },
+                  }}
+                >
+                  Grid: {props.gridType === "ag-grid" ? "AG-Grid" : "Glide Data Grid"}
+                </Button>
+              </Tooltip>
+            )}
+            {/* Performance Monitor Indicator */}
+            {context.setShowPerformanceDisplay && (
+              <Tooltip
+                title={
+                  context.showPerformanceDisplay
+                    ? "Performance Monitor: ON (click to disable)"
+                    : "Performance Monitor: OFF (click to enable)"
+                }
+              >
+                <Button
+                  onClick={() =>
+                    context.setShowPerformanceDisplay?.(!context.showPerformanceDisplay)
+                  }
+                  sx={{
+                    mr: 2,
+                    px: 1,
+                    py: 0.5,
+                    backgroundColor: "transparent",
+                    color: context.showPerformanceDisplay
+                      ? miroirTheme.currentTheme.colors.success
+                      : miroirTheme.currentTheme.components.appBar.textColor,
+                    border: `1px solid ${
+                      context.showPerformanceDisplay
+                        ? miroirTheme.currentTheme.colors.success
+                        : miroirTheme.currentTheme.components.appBar.textColor
+                    }`,
+                    borderRadius: 1,
+                    textShadow: context.showPerformanceDisplay
+                      ? `0 0 8px ${miroirTheme.currentTheme.colors.success}aa, 0 0 16px ${miroirTheme.currentTheme.colors.success}77, 0 0 24px ${miroirTheme.currentTheme.colors.success}55`
+                      : "none",
+                    transition: "all 0.3s ease-in-out",
+                    fontSize: "0.875rem",
+                    fontWeight: "bold",
+                    textTransform: "none",
+                    minWidth: "auto",
+                    cursor: "pointer",
+                    "&:hover": {
+                      backgroundColor: miroirTheme.currentTheme.colors.hover,
+                      color: context.showPerformanceDisplay
+                        ? miroirTheme.currentTheme.colors.success
                         : miroirTheme.currentTheme.colors.text,
-                      textShadow: context.showPerformanceDisplay 
-                        ? `0 0 12px ${miroirTheme.currentTheme.colors.success}, 0 0 20px ${miroirTheme.currentTheme.colors.success}cc, 0 0 32px ${miroirTheme.currentTheme.colors.success}99` 
-                        : 'none',
-                    }
+                      textShadow: context.showPerformanceDisplay
+                        ? `0 0 12px ${miroirTheme.currentTheme.colors.success}, 0 0 20px ${miroirTheme.currentTheme.colors.success}cc, 0 0 32px ${miroirTheme.currentTheme.colors.success}99`
+                        : "none",
+                    },
                   }}
                 >
                   Performance Monitor
                 </Button>
               </Tooltip>
-            )}              {/* Document Outline Toggle Button */}
-              {props.onOutlineToggle && (
-                <Tooltip title={props.outlineOpen ? "Hide Document Outline" : "Show Document Outline"}>
-                  <IconButton 
-                    color="inherit"
-                    onClick={props.onOutlineToggle}
-                    sx={{ mr: 1 }}
-                  >
-                    <TocIcon />
-                  </IconButton>
-                </Tooltip>
-              )}
-              
-              <Tooltip title="Open settings">
-                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <Avatar alt="AVATAR" src="/static/images/avatar/2.jpg" />
+            )}{" "}
+            {/* Action Timeline Indicator */}
+            {context.setShowActionTimeline && (
+              <Tooltip
+                title={
+                  context.showActionTimeline
+                    ? "Action Timeline: ON (click to disable)"
+                    : "Action Timeline: OFF (click to enable)"
+                }
+              >
+                <Button
+                  onClick={() =>
+                    context.setShowActionTimeline?.(!context.showActionTimeline)
+                  }
+                  sx={{
+                    mr: 2,
+                    px: 1,
+                    py: 0.5,
+                    backgroundColor: "transparent",
+                    color: context.showActionTimeline
+                      ? miroirTheme.currentTheme.colors.secondary
+                      : miroirTheme.currentTheme.components.appBar.textColor,
+                    border: `1px solid ${
+                      context.showActionTimeline
+                        ? miroirTheme.currentTheme.colors.secondary
+                        : miroirTheme.currentTheme.components.appBar.textColor
+                    }`,
+                    borderRadius: 1,
+                    textShadow: context.showActionTimeline
+                      ? `0 0 8px ${miroirTheme.currentTheme.colors.secondary}aa, 0 0 16px ${miroirTheme.currentTheme.colors.secondary}77, 0 0 24px ${miroirTheme.currentTheme.colors.secondary}55`
+                      : "none",
+                    transition: "all 0.3s ease-in-out",
+                    fontSize: "0.875rem",
+                    fontWeight: "bold",
+                    textTransform: "none",
+                    minWidth: "auto",
+                    cursor: "pointer",
+                    "&:hover": {
+                      backgroundColor: miroirTheme.currentTheme.colors.hover,
+                      color: context.showActionTimeline
+                        ? miroirTheme.currentTheme.colors.secondary
+                        : miroirTheme.currentTheme.colors.text,
+                      textShadow: context.showActionTimeline
+                        ? `0 0 12px ${miroirTheme.currentTheme.colors.secondary}, 0 0 20px ${miroirTheme.currentTheme.colors.secondary}cc, 0 0 32px ${miroirTheme.currentTheme.colors.secondary}99`
+                        : "none",
+                    },
+                  }}
+                >
+                  Action Timeline
+                </Button>
+              </Tooltip>
+            )}{" "}
+            {/* Document Outline Toggle Button */}
+            {props.onOutlineToggle && (
+              <Tooltip
+                title={props.outlineOpen ? "Hide Document Outline" : "Show Document Outline"}
+              >
+                <IconButton color="inherit" onClick={props.onOutlineToggle} sx={{ mr: 1 }}>
+                  <TocIcon />
                 </IconButton>
               </Tooltip>
-              <Menu
-                sx={{ mt: '45px' }}
-                id="menu-appbar"
-                anchorEl={anchorElUser}
-                anchorOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }}
-                open={Boolean(anchorElUser)}
-                onClose={handleCloseUserMenu}
-              >
-                {settings.map((setting) => (
-                  <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                    <Typography textAlign="center">{setting}</Typography>
-                  </MenuItem>
-                ))}
-              </Menu>
-            </Box>
+            )}
+            <Tooltip title="Open settings">
+              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                <Avatar alt="AVATAR" src="/static/images/avatar/2.jpg" />
+              </IconButton>
+            </Tooltip>
+            <Menu
+              sx={{ mt: "45px" }}
+              id="menu-appbar"
+              anchorEl={anchorElUser}
+              anchorOrigin={{
+                vertical: "top",
+                horizontal: "right",
+              }}
+              keepMounted
+              transformOrigin={{
+                vertical: "top",
+                horizontal: "right",
+              }}
+              open={Boolean(anchorElUser)}
+              onClose={handleCloseUserMenu}
+            >
+              {settings.map((setting) => (
+                <MenuItem key={setting} onClick={handleCloseUserMenu}>
+                  <Typography textAlign="center">{setting}</Typography>
+                </MenuItem>
+              ))}
+            </Menu>
+          </Box>
         </Toolbar>
       </>
     </StyledAppBar>

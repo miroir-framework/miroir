@@ -1,11 +1,15 @@
 import mustache from 'mustache';
+import { serializeError } from 'serialize-error';
 // import Mustache from "mustache";
 import { v4 as uuidv4 } from 'uuid';
+import { Uuid } from '../0_interfaces/1_core/EntityDefinition';
 import {
   DomainElementInstanceArray,
   DomainElementString,
   DomainElementSuccess,
+  EntityInstance,
   ExtendedTransformerForRuntime,
+  JzodElement,
   Transformer,
   Transformer_contextOrParameterReferenceTO_REMOVE,
   TransformerDefinition,
@@ -17,19 +21,20 @@ import {
   TransformerForBuild_dataflowObject,
   TransformerForBuild_freeObjectTemplate,
   TransformerForBuild_InnerReference,
+  TransformerForBuild_listPickElement,
+  TransformerForBuild_listReducerToIndexObject,
+  TransformerForBuild_listReducerToSpreadObject,
   TransformerForBuild_mapperListToList,
   TransformerForBuild_mustacheStringTemplate,
   TransformerForBuild_newUuid,
   TransformerForBuild_object_fullTemplate,
-  TransformerForBuild_listPickElement,
-  TransformerForBuild_listReducerToIndexObject,
-  TransformerForBuild_listReducerToSpreadObject,
   TransformerForBuild_objectAlter,
   TransformerForBuild_objectDynamicAccess,
   TransformerForBuild_objectEntries,
   TransformerForBuild_objectValues,
   TransformerForBuild_parameterReference,
   TransformerForBuild_unique,
+  TransformerForBuildPlusRuntime,
   TransformerForRuntime,
   TransformerForRuntime_constant,
   TransformerForRuntime_constantArray,
@@ -37,32 +42,40 @@ import {
   TransformerForRuntime_contextReference,
   TransformerForRuntime_count,
   TransformerForRuntime_dataflowObject,
+  TransformerForRuntime_defaultValueForMLSchema,
   TransformerForRuntime_freeObjectTemplate,
   // TransformerForRuntime_innerFullObjectTemplate,
   TransformerForRuntime_InnerReference,
-  TransformerForRuntime_mapperListToList,
   TransformerForRuntime_listPickElement,
-  TransformerForRuntime_mustacheStringTemplate,
-  TransformerForRuntime_newUuid,
-  TransformerForRuntime_objectAlter,
-  TransformerForRuntime_object_fullTemplate,
   TransformerForRuntime_listReducerToIndexObject,
   TransformerForRuntime_listReducerToSpreadObject,
+  TransformerForRuntime_mapperListToList,
+  TransformerForRuntime_mustacheStringTemplate,
+  TransformerForRuntime_newUuid,
+  TransformerForRuntime_object_fullTemplate,
+  TransformerForRuntime_objectAlter,
   TransformerForRuntime_objectDynamicAccess,
   TransformerForRuntime_objectEntries,
   TransformerForRuntime_objectValues,
-  TransformerForRuntime_unique,
-  TransformerForBuildPlusRuntime
+  TransformerForRuntime_unique
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import type { ITransformerHandler, MiroirModelEnvironment } from '../0_interfaces/1_core/Transformer';
 import { Action2Error, Domain2ElementFailed, Domain2QueryReturnType } from "../0_interfaces/2_domain/DomainElement";
+import { ReduxDeploymentsState } from '../0_interfaces/2_domain/ReduxDeploymentsStateInterface';
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
+import { resolveJzodSchemaReferenceInContext, resolveSchemaReferenceInContextTransformer } from "../1_core/jzod/jzodResolveSchemaReferenceInContext";
+import { jzodTypeCheckTransformer, resolveObjectExtendClauseAndDefinition } from "../1_core/jzod/jzodTypeCheck";
+import { unfoldSchemaOnceTransformer } from '../1_core/jzod/JzodUnfoldSchemaOnce';
+import { resolveConditionalSchema, resolveConditionalSchemaTransformer } from '../1_core/jzod/resolveConditionalSchema';
 import { handleTransformer_menu_AddItem } from "../1_core/Menu";
 import { MiroirLoggerFactory } from "../4_services/LoggerFactory";
 import { packageName } from "../constants";
 import { resolvePathOnObject } from "../tools";
 import { cleanLevel } from "./constants";
+import { getEntityInstancesUuidIndexNonHook } from './ReduxDeploymentsStateQueryExecutor';
 import { transformer_spreadSheetToJzodSchema } from "./Transformer_Spreadsheet";
 import {
+  mmlsTransformers,
   transformer_constant,
   transformer_constantArray,
   transformer_constantAsExtractor,
@@ -90,36 +103,24 @@ import {
   transformer_objectValues,
   transformer_parameterReference,
   transformer_unique,
+  type ResolveBuildTransformersTo,
+  type Step,
 } from "./Transformers";
+
+// Re-export types needed by other modules
+export type { ResolveBuildTransformersTo, Step } from "./Transformers";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "Transformer")
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "TransformerForRuntime")
 ).then((logger: LoggerInterface) => {log = logger});
 
-
+// TODO: keep this??
 (BigInt.prototype as any).toJSON = function () {
   return Number(this);
 };
 
-export type ActionTemplate = any;
-export type Step = "build" | "runtime";
-export type ResolveBuildTransformersTo = "value" | "constantTransformer";
 
-// ################################################################################################
-export type ITransformerHandler<
-  T extends
-    | TransformerForBuild
-    | TransformerForRuntime
-    // | TransformerForRuntime_innerFullObjectTemplate
-> = (
-  step: Step,
-  label: string | undefined,
-  transformer: T,
-  resolveBuildTransformersTo: ResolveBuildTransformersTo,
-  queryParams: Record<string, any>,
-  contextResults?: Record<string, any>
-) => Domain2QueryReturnType<any>;
 
 // ################################################################################################
 export const defaultTransformers = {
@@ -136,7 +137,499 @@ export const defaultTransformers = {
   handleTransformer_menu_AddItem: handleTransformer_menu_AddItem,
 }
 
-const inMemoryTransformerImplementations: Record<string, ITransformerHandler<any>> = {
+// ################################################################################################
+// Default value for Jzod Schema functions - moved here to avoid circular dependency
+// ################################################################################################
+export function getDefaultValueForJzodSchemaWithResolution<T extends MiroirModelEnvironment>(
+  jzodSchema: JzodElement,
+  rootObject: any | undefined, // Optional parameter for backward compatibility
+  rootLessListKey: string,
+  currentDefaultValue: any = undefined,
+  currentValuePath: string[] = [],
+  reduxDeploymentsState: ReduxDeploymentsState | undefined = undefined,
+  forceOptional: boolean = false,
+  deploymentUuid: Uuid | undefined = undefined,
+  miroirEnvironment: T,
+  // miroirFundamentalJzodSchema: JzodSchema,
+  // currentModel?: MetaModel,
+  // miroirMetaModel?: MetaModel,
+  relativeReferenceJzodContext?: { [k: string]: JzodElement },
+): any {
+
+
+  let effectiveSchemaOrError = resolveConditionalSchema(
+    jzodSchema,
+    rootObject || currentDefaultValue, // Use rootObject if provided, fallback to currentDefaultValue
+    currentValuePath,
+    miroirEnvironment,
+    reduxDeploymentsState,
+    // getEntityInstancesUuidIndex,
+    deploymentUuid,
+    'defaultValue' // Specify this is for default value generation
+  );
+
+  log.info(
+    "getDefaultValueForJzodSchemaWithResolution called with",
+    "jzodSchema", jzodSchema,
+    "rootObject", rootObject,
+    "currentValuePath", currentValuePath,
+    "reduxDeploymentsState", reduxDeploymentsState,
+    "deploymentUuid", deploymentUuid,
+    // "relativeReferenceJzodContext", relativeReferenceJzodContext
+    "effectiveSchemaOrError", effectiveSchemaOrError,
+  );
+  
+  if ('error' in effectiveSchemaOrError) {
+    log.error(
+      "getDefaultValueForJzodSchemaWithResolution: resolveConditionalSchema returned error",
+      effectiveSchemaOrError
+    );
+    return undefined; // or propagate error as needed
+  }
+  let effectiveSchema: JzodElement = effectiveSchemaOrError;
+
+  if (effectiveSchema.optional && !forceOptional) {
+    log.info(
+      "getDefaultValueForJzodSchemaWithResolution: effectiveSchema is optional and forceOptional is false",
+      "currentValuePath", currentValuePath,
+      "effectiveSchema", effectiveSchema
+    );
+    return undefined;
+  }
+
+  // handle initializeTo tag
+  if (
+    effectiveSchema.tag &&
+    effectiveSchema.tag.value &&
+    effectiveSchema.tag.value.initializeTo?.initializeToType == "value" &&
+    effectiveSchema.tag.value.initializeTo.value
+  ) {
+    const result = effectiveSchema.tag.value.initializeTo.value;
+    log.info(
+      "getDefaultValueForJzodSchemaWithResolutionWithResolution returning UUID from tag.value.initializeTo.value",
+      "currentValuePath",
+      currentValuePath,
+      "result",
+      result
+    );
+    return result;
+  }
+  if (
+    effectiveSchema.tag &&
+    effectiveSchema.tag.value &&
+    effectiveSchema.tag.value.initializeTo?.initializeToType == "transformer" &&
+    effectiveSchema.tag.value.initializeTo.transformer
+  ) {
+    log.info(
+      "getDefaultValueForJzodSchemaWithResolution calling transformer_extended_apply_wrapper",
+      "deploymentUuid",
+      deploymentUuid,
+      "rootObject",
+      rootObject,
+      "jzodSchema.tag.value.initializeTo.transformer",
+      effectiveSchema.tag.value.initializeTo.transformer
+    );
+    const result = transformer_extended_apply_wrapper(
+      "build",
+      undefined,
+      effectiveSchema.tag.value.initializeTo.transformer,
+      {
+        // miroirFundamentalJzodSchema,
+        // currentModel,
+        // miroirMetaModel,
+        ...miroirEnvironment,
+        deploymentUuid,
+        rootObject
+      }, // parameters
+      {}, // runtimeContext
+      "value"
+    );
+    log.info(
+      "getDefaultValueForJzodSchemaWithResolutionWithResolution returning",
+      "currentValuePath",
+      currentValuePath,
+      "result",
+      result
+    );
+    return result;
+  }
+  
+  log.info(
+    "getDefaultValueForJzodSchemaWithResolution called with",
+    "currentValuePath",
+    currentValuePath,
+    "effectiveSchema",
+    effectiveSchema,
+    "currentDefaultValue",
+    currentDefaultValue,
+    "forceOptional",
+    forceOptional,
+    "deploymentUuid",
+    deploymentUuid,
+  );
+
+  switch (effectiveSchema.type) {
+    case "object": {
+      const resolvedObjectType = resolveObjectExtendClauseAndDefinition(
+        effectiveSchema,
+        miroirEnvironment,
+        // miroirFundamentalJzodSchema,
+        // currentModel,
+        // miroirMetaModel,
+        relativeReferenceJzodContext
+      );
+      let result: Record<string, any> = {};
+
+      Object.entries(resolvedObjectType.definition)
+        .filter((a) => !a[1].optional)
+        .forEach((a) => {
+          const attributeName = a[0];
+          const attributeValue = getDefaultValueForJzodSchemaWithResolution(
+            a[1],
+            rootObject,
+            rootLessListKey,
+            result,
+            currentValuePath.concat([a[0]]),
+            reduxDeploymentsState,
+            forceOptional,
+            deploymentUuid,
+            miroirEnvironment,
+            // miroirFundamentalJzodSchema,
+            // currentModel,
+            // miroirMetaModel,
+            relativeReferenceJzodContext,
+          );
+          result[attributeName] = attributeValue;
+        });
+      return result;
+    }
+    case "string": {
+      log.info(
+        "getDefaultValueForJzodSchemaWithResolution called for string",
+        "effectiveSchema", effectiveSchema, "return empty string"
+      );
+      return "";
+    }
+    case "number":
+    case "bigint": {
+      return 0;
+    }
+    case "boolean": {
+      return false;
+    }
+    case "date": {
+      return new Date();
+    }
+    case "any":
+    case "undefined":
+    case "null": {
+      return undefined;
+    }
+    case "uuid": {
+      log.info(
+        "getDefaultValueForJzodSchemaWithResolutionWithResolution called for UUID",
+        "deploymentUuid", deploymentUuid,
+        "effectiveSchema", effectiveSchema,
+      );
+      if (
+        effectiveSchema.tag &&
+        effectiveSchema.tag.value &&
+        effectiveSchema.tag.value.initializeTo?.initializeToType == "value" &&
+        effectiveSchema.tag.value.initializeTo.value
+      ) {
+        const result = effectiveSchema.tag.value.initializeTo.value;
+        log.info(
+          "getDefaultValueForJzodSchemaWithResolutionWithResolution returning UUID from tag.value.initializeTo.value",
+          "currentValuePath", currentValuePath,
+          "result", result
+        );
+        return result;
+      }
+      if (
+        effectiveSchema.tag &&
+        effectiveSchema.tag.value &&
+        effectiveSchema.tag.value.initializeTo?.initializeToType == "transformer" &&
+        effectiveSchema.tag.value.initializeTo.transformer
+      ) {
+        log.info(
+          "getDefaultValueForJzodSchemaWithResolution calling transformer_extended_apply_wrapper for UUID",
+          "deploymentUuid", deploymentUuid,
+          "jzodSchema.tag.value.initializeTo.transformer",
+          effectiveSchema.tag.value.initializeTo.transformer
+        );
+        const result = transformer_extended_apply_wrapper(
+          "build",
+          undefined,
+          effectiveSchema.tag.value.initializeTo.transformer,
+          {
+            ...miroirEnvironment,
+            deploymentUuid
+          }, // parameters
+          {}, // runtimeContext
+          "value"
+        );
+        log.info(
+          "getDefaultValueForJzodSchemaWithResolutionWithResolution returning UUID from transformer",
+          "currentValuePath", currentValuePath,
+          "result", result
+        );
+        return result;
+      }
+      if (
+        effectiveSchema.tag &&
+        effectiveSchema.tag.value &&
+        effectiveSchema.tag.value.selectorParams &&
+        effectiveSchema.tag.value.selectorParams.targetEntity
+      ) {
+        if (!reduxDeploymentsState) {
+          throw new Error(
+            "getDefaultValueForJzodSchemaWithResolution called with UUID foreign key but no reduxDeploymentsState provided"
+          );
+        }
+        if (!deploymentUuid) {
+          throw new Error(
+            "getDefaultValueForJzodSchemaWithResolution called with UUID foreign key but no deploymentUuid provided"
+          );
+        }
+        const foreignKeyObjects: EntityInstance[] = getEntityInstancesUuidIndexNonHook(
+          reduxDeploymentsState,
+          miroirEnvironment,
+          deploymentUuid,
+          effectiveSchema.tag.value.selectorParams.targetEntity,
+          effectiveSchema.tag.value.selectorParams.targetEntityOrderInstancesBy
+        );
+
+        const result = Object.values(foreignKeyObjects)[0]?.uuid;
+        log.info(
+          "getDefaultValueForJzodSchemaWithResolution returning default UUID value from foreign key",
+          "currentValuePath",
+          currentValuePath,
+          "result",
+          result
+        );
+        return result;
+      }
+      const result = uuidv4();
+      log.info(
+        "getDefaultValueForJzodSchemaWithResolution returning random UUID value",
+        "currentValuePath", currentValuePath,
+        "result", result,
+      );
+      return result;
+    }
+    case "unknown":
+    case "never":
+    case "void": {
+      throw new Error(
+        "getDefaultValueForJzodSchemaWithResolution can not generate value for schema type " +
+          jzodSchema.type
+      );
+    }
+    case "literal": {
+      return effectiveSchema.definition;
+    }
+    case "array": {
+      return [];
+    }
+    case "map": {
+      return new Map();
+    }
+    case "set": {
+      return new Set();
+    }
+    case "record": {
+      return {};
+    }
+    case "schemaReference": {
+      const localContext = effectiveSchema.context?{...relativeReferenceJzodContext, ...effectiveSchema.context}:relativeReferenceJzodContext
+
+      const resolvedReference = resolveJzodSchemaReferenceInContext(
+        effectiveSchema,
+        localContext,
+        miroirEnvironment,
+        // miroirFundamentalJzodSchema,
+        // currentModel,
+        // miroirMetaModel,
+      );
+      return getDefaultValueForJzodSchemaWithResolution(
+        resolvedReference,
+        rootObject,
+        rootLessListKey,
+        currentDefaultValue,
+        currentValuePath,
+        reduxDeploymentsState,
+        forceOptional,
+        deploymentUuid,
+        miroirEnvironment,
+        // miroirFundamentalJzodSchema,
+        // currentModel,
+        // miroirMetaModel,
+        localContext,
+      );
+    }
+    case "union": {
+      if (effectiveSchema.definition.length == 0) {
+        throw new Error(
+          "getDefaultValueForJzodSchemaWithResolution union definition is empty for effectiveSchema=" +
+            JSON.stringify(effectiveSchema, null, 2)
+        );
+      }
+      if (jzodSchema.tag?.value?.initializeTo?.initializeToType == "value") {
+        return jzodSchema.tag?.value?.initializeTo.value;
+      } else {
+        return getDefaultValueForJzodSchemaWithResolution(
+          effectiveSchema.definition[0],
+          rootObject,
+          rootLessListKey,
+          currentDefaultValue,
+          currentValuePath,
+          reduxDeploymentsState,
+          forceOptional,
+          deploymentUuid,
+          miroirEnvironment,
+          // miroirFundamentalJzodSchema,
+          // currentModel,
+          // miroirMetaModel,
+          relativeReferenceJzodContext,
+        );
+      }
+    }
+    case "enum": {
+      if (effectiveSchema.tag?.value?.initializeTo?.initializeToType == "value") {
+        return effectiveSchema.tag?.value?.initializeTo.value;
+      } else {
+        throw new Error(
+          "getDefaultValueForJzodSchemaWithResolution enum definition does not have 'tag.value.initalizeTo' for effectiveSchema=" +
+            JSON.stringify(effectiveSchema, null, 2)
+        );
+      }
+    }
+    case "function":
+    case "lazy":
+    case "intersection":
+    case "promise":
+    case "tuple": {
+      throw new Error(
+        "getDefaultValueForJzodSchemaWithResolution does not handle type: " +
+          effectiveSchema.type +
+          " for effectiveSchema=" +
+          JSON.stringify(effectiveSchema, null, 2)
+      );
+    }
+    default: {
+      throw new Error(
+        "getDefaultValueForJzodSchemaWithResolution reached default case for type, this is a bug: " +
+          JSON.stringify(effectiveSchema, null, 2)
+      );
+    }
+  }
+}
+
+export function getDefaultValueForJzodSchemaWithResolutionNonHook<T extends MiroirModelEnvironment>(
+  jzodSchema: JzodElement,
+  rootObject: any = undefined, 
+  rootLessListKey: string,
+  currentDefaultValue: any = undefined,
+  currentValuePath: string[] = [],
+  reduxDeploymentsState: ReduxDeploymentsState | undefined = undefined,
+  forceOptional: boolean = false,
+  deploymentUuid: Uuid | undefined,
+  miroirEnvironment: T,
+  // miroirFundamentalJzodSchema: JzodSchema,
+  // currentModel?: MetaModel,
+  // miroirMetaModel?: MetaModel,
+  relativeReferenceJzodContext?: { [k: string]: JzodElement },
+): any {
+  log.info(
+    "getDefaultValueForJzodSchemaWithResolutionNonHook called with",
+    "rootLessListKey",
+    rootLessListKey,
+    "deploymentUuid",
+    deploymentUuid,
+    "rootObject",
+    rootObject,
+    "jzodSchema",
+    jzodSchema,
+    "forceOptional",
+    forceOptional,
+    "currentDefaultValue",
+    currentDefaultValue,
+    "currentValuePath",
+    currentValuePath,
+    "reduxDeploymentsState", reduxDeploymentsState,
+  );
+
+  if (deploymentUuid == undefined || deploymentUuid.length < 8 || !reduxDeploymentsState) {
+    return getDefaultValueForJzodSchemaWithResolution(
+      jzodSchema,
+      rootObject,
+      rootLessListKey,
+      currentDefaultValue,
+      currentValuePath,
+      undefined,
+      forceOptional,
+      undefined,
+      miroirEnvironment,
+      // miroirFundamentalJzodSchema,
+      // currentModel,
+      // miroirMetaModel,
+      relativeReferenceJzodContext,
+    );
+  }
+
+  return getDefaultValueForJzodSchemaWithResolution(
+    jzodSchema,
+    rootObject,
+    rootLessListKey,
+    currentDefaultValue,
+    currentValuePath,
+    reduxDeploymentsState,
+    forceOptional,
+    deploymentUuid,
+    miroirEnvironment,
+    // miroirFundamentalJzodSchema,
+    // currentModel,
+    // miroirMetaModel,
+    relativeReferenceJzodContext,
+  );
+}
+
+export function defaultValueForMLSchemaTransformer<T extends MiroirModelEnvironment>(
+  step: Step,
+  label: string | undefined,
+  transformer: TransformerForRuntime_defaultValueForMLSchema,
+  resolveBuildTransformersTo: ResolveBuildTransformersTo,
+  transformerParams: T,
+  // queryParams: Record<string, any>,
+  contextResults?: Record<string, any>
+): any {
+  const result = getDefaultValueForJzodSchemaWithResolutionNonHook(
+    transformer.mlSchema,
+    undefined, // rootObject
+    "", // rootLessListKey
+    undefined, // currentDefaultValue
+    [], // currentValuePath
+    undefined, // reduxDeploymentsState
+    false, // forceOptional
+    undefined, // deploymentUuid
+    transformerParams, // miroirEnvironment
+    undefined, // relativeReferenceJzodContext
+    // miroirFundamentalJzodSchema as JzodSchema,
+  );
+  log.info(
+    "defaultValueForMLSchemaTransformer called with",
+    "step", step,
+    "label", label,
+    "transformer", transformer,
+    "resolveBuildTransformersTo", resolveBuildTransformersTo,
+    "transformerParams", transformerParams,
+    "contextResults", contextResults,
+    "result", result
+  );
+  return result;
+}
+
+const inMemoryTransformerImplementations: Record<string, ITransformerHandler<any, MiroirModelEnvironment>> = {
   handleTransformer_menu_AddItem: defaultTransformers.handleTransformer_menu_AddItem,
   // 
   handleCountTransformer,
@@ -160,11 +653,19 @@ const inMemoryTransformerImplementations: Record<string, ITransformerHandler<any
   transformer_object_listReducerToSpreadObject_apply: defaultTransformers.transformer_object_listReducerToSpreadObject_apply,
   transformerForBuild_list_listMapperToList_apply:
     defaultTransformers.transformerForBuild_list_listMapperToList_apply,
+  // MLS
+  "transformer_defaultValueForMLSchema": defaultValueForMLSchemaTransformer,
+  "transformer_resolveConditionalSchema": resolveConditionalSchemaTransformer,
+  "transformer_resolveSchemaReferenceInContext": resolveSchemaReferenceInContextTransformer,
+  "transformer_unfoldSchemaOnce": unfoldSchemaOnceTransformer,
+  "transformer_jzodTypeCheck": jzodTypeCheckTransformer,
 };
 
+// transformer_defaultValueForMLSchema
+// transformer_defaultValueForMLSchema
 export const applicationTransformerDefinitions: Record<string, TransformerDefinition> = {
   transformer_menu_addItem: transformer_menu_addItem,
-  // 
+  //
   spreadSheetToJzodSchema: transformer_spreadSheetToJzodSchema,
   count: transformer_count,
   constant: transformer_constant,
@@ -192,10 +693,17 @@ export const applicationTransformerDefinitions: Record<string, TransformerDefini
   object_fullTemplate: transformer_object_fullTemplate,
   parameterReference: transformer_parameterReference,
   unique: transformer_unique,
+  // MLS
+  ...Object.fromEntries(
+    Object.entries(mmlsTransformers).map(([key, value]) => [
+      key.replace("transformer_", ""),
+      value as TransformerDefinition,
+    ])
+  ),
 };
 
 // ################################################################################################
-function resolveApplyTo(
+function resolveApplyTo<T extends MiroirModelEnvironment>(
   step: Step,
   label: string | undefined,
   transformer:
@@ -204,7 +712,8 @@ function resolveApplyTo(
     | TransformerForBuild_objectAlter
     | TransformerForRuntime_objectAlter,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
-  queryParams: Record<string, any>,
+  // queryParams: Record<string, any>,
+  queryParams: T,
   contextResults?: Record<string, any>
 ) {
   switch (typeof transformer.applyTo) {
@@ -216,54 +725,42 @@ function resolveApplyTo(
       return transformer.applyTo;
     }
     case 'object': {
-      if (Array.isArray(transformer.applyTo) || !Object.hasOwn(transformer.applyTo, "referenceType")) {
+      if (Array.isArray(transformer.applyTo) || !Object.hasOwn(transformer.applyTo, "transformerType")) {
         return transformer.applyTo;
       }
-      if (transformer.applyTo.referenceType == "referencedExtractor") {
-        // throw new Error("resolveApplyTo_legacy can not handle referencedExtractor");
-        return new Domain2ElementFailed({
-          queryFailure: "QueryNotExecutable",
-          failureOrigin: ["resolveApplyTo_legacy"],
-          failureMessage: "resolveApplyTo_legacy can not handle referencedExtractor",
-          queryContext: JSON.stringify(transformer),
-          queryParameters: queryParams as any,
-        });
-      }
+      // if (transformer.applyTo.referenceType == "referencedExtractor") {
+      //   // throw new Error("resolveApplyTo_legacy can not handle referencedExtractor");
+      //   return new Domain2ElementFailed({
+      //     queryFailure: "QueryNotExecutable",
+      //     failureOrigin: ["resolveApplyTo_legacy"],
+      //     failureMessage: "resolveApplyTo_legacy can not handle referencedExtractor",
+      //     queryContext: JSON.stringify(transformer),
+      //     queryParameters: queryParams as any,
+      //   });
+      // }
     
-      const transformerReference = transformer.applyTo.reference;
+      // const transformerReference = transformer.applyTo.reference;
     
-      const resolvedReference =
-        typeof transformerReference == "string"
-          ? defaultTransformers.transformer_InnerReference_resolve(
-              step,
-              {
-                transformerType: "contextReference",
-                interpolation: "runtime",
-                referenceName: transformerReference,
-              }, // TODO: there's a bug, count can not be used at build time, although it should be usable at build time
-              resolveBuildTransformersTo,
-              queryParams,
-              contextResults
-            )
-          : defaultTransformers.transformer_extended_apply(
-              step,
-              label,
-              transformerReference,
-              resolveBuildTransformersTo,
-              queryParams,
-              contextResults
-            );
-            // log.info("resolveApplyTo_legacy resolvedReference", resolvedReference);
-      // log.info(
-      //   "resolveApplyTo_legacy resolved for transformer",
-      //   transformer,
-      //   "step",
-      //   step,
-      //   "label",
-      //   label,
-      //   "resolvedReference",
-      //   resolvedReference
-      // );
+      const resolvedReference = defaultTransformers.transformer_extended_apply(
+        step,
+        label,
+        transformer.applyTo,
+        resolveBuildTransformersTo,
+        queryParams,
+        contextResults
+      );
+      log.info(
+        "resolveApplyTo resolved for transformer",
+        transformer,
+        "step",
+        step,
+        "label",
+        label,
+        "resolvedReference",
+        resolvedReference,
+        "contextResults",
+        contextResults
+      );
       return resolvedReference;
       break;
     }
@@ -311,7 +808,7 @@ function resolveApplyTo(
 
 // ################################################################################################
 // TODO: identical to resolveApplyTo, should be merged?
-export function resolveApplyTo_legacy(
+export function resolveApplyTo_legacy<T extends MiroirModelEnvironment>(
   transformer: 
   | TransformerForBuild_count
   | TransformerForBuild_mapperListToList
@@ -333,21 +830,22 @@ export function resolveApplyTo_legacy(
   ,
   step: Step,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
-  queryParams: Record<string, any>,
+  // queryParams: Record<string, any>,
+  queryParams: T,
   contextResults: Record<string, any> | undefined,
   label: string | undefined
 ) {
-  // log.info(
-  //   "resolveApplyTo_legacy",
-  //   "label",
-  //   label,
-  //   "called for transformer",
-  //   JSON.stringify(transformer, null, 2),
-  //   "step",
-  //   step,
-  //   "resolveBuildTransformersTo",
-  //   resolveBuildTransformersTo
-  // );
+  log.info(
+    "resolveApplyTo_legacy",
+    "label",
+    label,
+    "called for transformer",
+    JSON.stringify(transformer, null, 2),
+    "step",
+    step,
+    "resolveBuildTransformersTo",
+    resolveBuildTransformersTo
+  );
   switch (typeof transformer.applyTo) {
     case 'string':
     case 'number':
@@ -357,54 +855,41 @@ export function resolveApplyTo_legacy(
       return transformer.applyTo;
     }
     case 'object': {
-      if (Array.isArray(transformer.applyTo) || !Object.hasOwn(transformer.applyTo, "referenceType")) {
+      if (Array.isArray(transformer.applyTo) || !Object.hasOwn(transformer.applyTo, "transformerType")) {
         return transformer.applyTo;
       }
-      if (transformer.applyTo.referenceType == "referencedExtractor") {
-        // throw new Error("resolveApplyTo_legacy can not handle referencedExtractor");
-        return new Domain2ElementFailed({
-          queryFailure: "QueryNotExecutable",
-          failureOrigin: ["resolveApplyTo_legacy"],
-          failureMessage: "resolveApplyTo_legacy can not handle referencedExtractor",
-          queryContext: JSON.stringify(transformer),
-          queryParameters: queryParams as any,
-        });
-      }
+      // if (transformer.applyTo.referenceType == "referencedExtractor") {
+      //   // throw new Error("resolveApplyTo_legacy can not handle referencedExtractor");
+      //   return new Domain2ElementFailed({
+      //     queryFailure: "QueryNotExecutable",
+      //     failureOrigin: ["resolveApplyTo_legacy"],
+      //     failureMessage: "resolveApplyTo_legacy can not handle referencedExtractor",
+      //     queryContext: JSON.stringify(transformer),
+      //     queryParameters: queryParams as any,
+      //   });
+      // }
     
-      const transformerReference = transformer.applyTo.reference;
+      // const transformerReference = transformer.applyTo.reference;
     
-      const resolvedReference =
-        typeof transformerReference == "string"
-          ? defaultTransformers.transformer_InnerReference_resolve(
-              step,
-              {
-                transformerType: "contextReference",
-                interpolation: "runtime",
-                referenceName: transformerReference,
-              }, // TODO: there's a bug, count can not be used at build time, although it should be usable at build time
-              resolveBuildTransformersTo,
-              queryParams,
-              contextResults
-            )
-          : defaultTransformers.transformer_extended_apply(
-              step,
-              label,
-              transformerReference,
-              resolveBuildTransformersTo,
-              queryParams,
-              contextResults
-            );
+      const resolvedReference = defaultTransformers.transformer_extended_apply(
+        step,
+        label,
+        transformer.applyTo,
+        resolveBuildTransformersTo,
+        queryParams,
+        contextResults
+      );
             // log.info("resolveApplyTo_legacy resolvedReference", resolvedReference);
-      // log.info(
-      //   "resolveApplyTo_legacy resolved for transformer",
-      //   transformer,
-      //   "step",
-      //   step,
-      //   "label",
-      //   label,
-      //   "resolvedReference",
-      //   resolvedReference
-      // );
+      log.info(
+        "resolveApplyTo_legacy resolved for transformer",
+        transformer,
+        "step",
+        step,
+        "label",
+        label,
+        "resolvedReference",
+        resolvedReference
+      );
       return resolvedReference;
       break;
     }
@@ -425,12 +910,13 @@ export function resolveApplyTo_legacy(
 }
 
 // ################################################################################################
-function transformerForBuild_list_listMapperToList_apply(
+function transformerForBuild_list_listMapperToList_apply<T extends MiroirModelEnvironment>(
   step: Step,
   label: string | undefined,
   transformer: TransformerForRuntime_mapperListToList | TransformerForBuild_mapperListToList,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
-  queryParams: Record<string, any>,
+  // queryParams: Record<string, any>,
+  queryParams: T,
   contextResults?: Record<string, any>,
 ): Domain2QueryReturnType<any[]> {
   const resolvedApplyTo = resolveApplyTo_legacy(transformer, step, resolveBuildTransformersTo, queryParams, contextResults, label);
@@ -505,12 +991,13 @@ function transformerForBuild_list_listMapperToList_apply(
 }
 
 // ################################################################################################
-function transformer_object_listReducerToSpreadObject_apply(
+function transformer_object_listReducerToSpreadObject_apply<T extends MiroirModelEnvironment>(
   step: Step,
   label: string | undefined,
   transformer: TransformerForBuild_listReducerToSpreadObject | TransformerForRuntime_listReducerToSpreadObject,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
-  queryParams: Record<string, any>,
+  // queryParams: Record<string, any>,
+  queryParams: T,
   contextResults?: Record<string, any>,
 ): Domain2QueryReturnType<any> {
   // log.info(
@@ -561,14 +1048,15 @@ function transformer_object_listReducerToSpreadObject_apply(
 }
 
 // ################################################################################################
-function transformer_object_listReducerToIndexObject_apply(
+function transformer_object_listReducerToIndexObject_apply<T extends MiroirModelEnvironment>(
   step: Step,
   label: string | undefined,
   transformer:
     | TransformerForBuild_listReducerToIndexObject
     | TransformerForRuntime_listReducerToIndexObject,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
-  queryParams: Record<string, any>,
+  // queryParams: Record<string, any>,
+  queryParams: T,
   contextResults?: Record<string, any>
 ): Domain2QueryReturnType<any> {
   // log.info(
@@ -606,13 +1094,14 @@ function transformer_object_listReducerToIndexObject_apply(
  * 
  */
 // ################################################################################################
-function handleTransformer_object_fullTemplate(
+function handleTransformer_object_fullTemplate<T extends MiroirModelEnvironment>(
   step: Step,
   objectName: string | undefined,
   transformer: TransformerForBuild_object_fullTemplate
     | TransformerForRuntime_object_fullTemplate,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
-  queryParams: Record<string, any>,
+  // queryParams: Record<string, any>,
+  queryParams: T,
   contextResults?: Record<string, any>
 ): Domain2QueryReturnType<DomainElementString | DomainElementInstanceArray> {
   // log.info(
@@ -746,12 +1235,13 @@ function handleTransformer_object_fullTemplate(
 }
 
 // ################################################################################################
-function handleTransformer_objectAlter(
+function handleTransformer_objectAlter<T extends MiroirModelEnvironment>(
   step: Step,
   objectName: string | undefined,
   transformer: TransformerForBuild_objectAlter | TransformerForRuntime_objectAlter,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
-  queryParams: Record<string, any>,
+  // queryParams: Record<string, any>,
+  queryParams: T,
   contextResults?: Record<string, any>,
 ): Domain2QueryReturnType<any> {
   const resolvedApplyTo = resolveApplyTo(step, objectName, transformer, resolveBuildTransformersTo, queryParams, contextResults);
@@ -922,14 +1412,15 @@ export function transformer_resolveReference(
 // parameterReference<A> -> A
 // constantUuid -> Uuid
 // constantString -> string
-export function transformer_InnerReference_resolve(
+export function transformer_InnerReference_resolve<T extends MiroirModelEnvironment>(
   step: Step,
   transformerInnerReference:
     | TransformerForRuntime_constants
     | TransformerForBuild_InnerReference
     | TransformerForRuntime_InnerReference,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
-  queryParams: Record<string, any>,
+  transformerParams: T,
+  // queryParams: Record<string, any>,
   contextResults?: Record<string, any>
 ): Domain2QueryReturnType<any> {
   // TODO: copy / paste (almost?) from query parameter lookup!
@@ -941,7 +1432,7 @@ export function transformer_InnerReference_resolve(
   //   "contextResults=",
   //   Object.keys(contextResults ?? {})
   // );
-  const localQueryParams = queryParams ?? {};
+  const localQueryParams = transformerParams ?? {};
   const localContextResults = contextResults ?? {};
   if (step == "build" && (transformerInnerReference as any).interpolation == "runtime") {
     log.warn(
@@ -953,9 +1444,9 @@ export function transformer_InnerReference_resolve(
 
   let result: Domain2QueryReturnType<any> = undefined;
   switch (transformerInnerReference.transformerType) {
-    case "constant": 
-    case "constantUuid": 
-    case "constantObject": 
+    case "constant":
+    case "constantUuid":
+    case "constantObject":
     case "constantString": {
       result = transformerInnerReference.value;
       break;
@@ -1027,8 +1518,12 @@ export function transformer_InnerReference_resolve(
       return new Domain2ElementFailed({
         queryFailure: "QueryNotExecutable",
         failureOrigin: ["transformer_InnerReference_resolve"],
-        failureMessage: "transformer_InnerReference_resolve failed, unknown transformerType for transformer=" + transformerInnerReference,
-        queryContext: "transformer_InnerReference_resolve failed, unknown transformerType for transformer=" + transformerInnerReference,
+        failureMessage:
+          "transformer_InnerReference_resolve failed, unknown transformerType for transformer=" +
+          transformerInnerReference,
+        queryContext:
+          "transformer_InnerReference_resolve failed, unknown transformerType for transformer=" +
+          transformerInnerReference,
         queryParameters: transformerInnerReference as any,
       });
       break;
@@ -1092,12 +1587,13 @@ export function transformer_mustacheStringTemplate_apply(
 }
 
 // ################################################################################################
-export function transformer_dynamicObjectAccess_apply(
+export function transformer_dynamicObjectAccess_apply<T extends MiroirModelEnvironment>(
   step: Step,
   objectName: string | undefined,
   transformer: TransformerForRuntime_objectDynamicAccess | TransformerForBuild_objectDynamicAccess,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
-  queryParams: Record<string, any>,
+  transformerParams: T,
+  // queryParams: Record<string, any>,
   contextResults?: Record<string, any>,
 ): Domain2QueryReturnType<any> {
   const result = (transformer.objectAccessPath.reduce as any)( // triggers "error TS2349: This expression is not callable" in tsc. Not in eslint, though!
@@ -1151,7 +1647,7 @@ export function transformer_dynamicObjectAccess_apply(
             "NO NAME",
             currentPathElement,
             resolveBuildTransformersTo,
-            queryParams,
+            transformerParams,
             contextResults
           );
           if (key instanceof Domain2ElementFailed) {
@@ -1202,21 +1698,22 @@ export function transformer_dynamicObjectAccess_apply(
 }
 
 // ################################################################################################
-export function handleCountTransformer(
+export function handleCountTransformer<T extends MiroirModelEnvironment>(
   step: Step,
   label: string | undefined,
   transformer:
   | TransformerForBuild_count
   | TransformerForRuntime_count,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
-  queryParams: Record<string, any>,
+  transformerParams: T,
+  // queryParams: Record<string, any>,
   contextResults?: Record<string, any>
 ): Domain2QueryReturnType<any> {
   const resolvedReference = resolveApplyTo_legacy(
     transformer,
     step,
     resolveBuildTransformersTo,
-    queryParams,
+    transformerParams,
     contextResults,
     label
   );
@@ -1286,21 +1783,22 @@ export function handleCountTransformer(
   // break;
 }
 // ################################################################################################
-export function handleUniqueTransformer(
+export function handleUniqueTransformer<T extends MiroirModelEnvironment>(
   step: Step,
   label: string | undefined,
   transformer:
   | TransformerForBuild_unique
   | TransformerForRuntime_unique,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
-  queryParams: Record<string, any>,
+  transformerParams: T,
+  // queryParams: Record<string, any>,
   contextResults?: Record<string, any>
 ): Domain2QueryReturnType<any> {
   const resolvedReference = resolveApplyTo_legacy(
     transformer,
     step,
     resolveBuildTransformersTo,
-    queryParams,
+    transformerParams,
     contextResults,
     label
   );
@@ -1363,21 +1861,22 @@ export function handleUniqueTransformer(
 }
 
 // ################################################################################################
-export function handleListPickElementTransformer(
+export function handleListPickElementTransformer<T extends MiroirModelEnvironment>(
   step: Step,
   label: string | undefined,
   transformer:
   | TransformerForBuild_listPickElement
   | TransformerForRuntime_listPickElement,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
-  queryParams: Record<string, any>,
+  transformerParams: T,
+  // queryParams: Record<string, any>,
   contextResults?: Record<string, any>
 ): Domain2QueryReturnType<any> {
   const resolvedReference = resolveApplyTo_legacy(
     transformer,
     step,
     resolveBuildTransformersTo,
-    queryParams,
+    transformerParams,
     contextResults,
     label
   );
@@ -1457,14 +1956,15 @@ export function handleListPickElementTransformer(
 }
 
 // ################################################################################################
-export function handleTransformer_FreeObjectTemplate(
+export function handleTransformer_FreeObjectTemplate<T extends MiroirModelEnvironment>(
   step: Step,
   label: string | undefined,
   transformer:
   | TransformerForBuild_freeObjectTemplate
   | TransformerForRuntime_freeObjectTemplate,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
-  queryParams: Record<string, any>,
+  transformerParams: T,
+  // queryParams: Record<string, any>,
   contextResults?: Record<string, any>
 ): Domain2QueryReturnType<any> {
   // log.info("innerTransformer_apply freeObjectTemplate", JSON.stringify(transformer, null, 2));
@@ -1477,7 +1977,7 @@ export function handleTransformer_FreeObjectTemplate(
           objectTemplateEntry[0],
           objectTemplateEntry[1],
           resolveBuildTransformersTo,
-          queryParams,
+          transformerParams,
           contextResults
         ),
       ];
@@ -1505,21 +2005,22 @@ export function handleTransformer_FreeObjectTemplate(
 }
 
 // ################################################################################################
-export function handleTransformer_objectEntries(
+export function handleTransformer_objectEntries<T extends MiroirModelEnvironment>(
   step: Step,
   label: string | undefined,
   transformer:
   | TransformerForBuild_objectEntries
   | TransformerForRuntime_objectEntries,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
-  queryParams: Record<string, any>,
+  transformerParams: T,
+  // queryParams: Record<string, any>,
   contextResults?: Record<string, any>
 ): Domain2QueryReturnType<any> {
   const resolvedReference = resolveApplyTo_legacy(
     transformer,
     step,
     resolveBuildTransformersTo,
-    queryParams,
+    transformerParams,
     contextResults,
     label
   );
@@ -1561,21 +2062,22 @@ export function handleTransformer_objectEntries(
 }
 
 // ################################################################################################
-export function handleTransformer_objectValues(
+export function handleTransformer_objectValues<T extends MiroirModelEnvironment>(
   step: Step,
   label: string | undefined,
   transformer:
   | TransformerForBuild_objectValues
   | TransformerForRuntime_objectValues,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
-  queryParams: Record<string, any>,
+  transformerParams: T,
+  // queryParams: Record<string, any>,
   contextResults?: Record<string, any>
 ): Domain2QueryReturnType<any> {
   const resolvedReference = resolveApplyTo_legacy(
     transformer,
     step,
     resolveBuildTransformersTo,
-    queryParams,
+    transformerParams,
     contextResults,
     label
   );
@@ -1612,14 +2114,15 @@ export function handleTransformer_objectValues(
 }
 
 // ################################################################################################
-export function handleTransformer_dataflowObject(
+export function handleTransformer_dataflowObject<T extends MiroirModelEnvironment>(
   step: Step,
   label: string | undefined,
   transformer:
   | TransformerForBuild_dataflowObject
   | TransformerForRuntime_dataflowObject,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
-  queryParams: Record<string, any>,
+  transformerParams: T,
+  // queryParams: Record<string, any>,
   contextResults?: Record<string, any>
 ): Domain2QueryReturnType<any> {
   const resultObject: Record<string, any> = {};
@@ -1641,7 +2144,7 @@ export function handleTransformer_dataflowObject(
       key,
       value,
       resolveBuildTransformersTo,
-      queryParams,
+      transformerParams,
       currentContext
     );
   }
@@ -1724,19 +2227,20 @@ export function handleTransformer_constant(
 }
 
 // ################################################################################################
-export function handleTransformer_contextReference(
+export function handleTransformer_contextReference<T extends MiroirModelEnvironment>(
   step: Step,
   label: string | undefined,
   transformer: TransformerForRuntime_contextReference,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
-  queryParams: Record<string, any>,
+  transformerParams: T,
+  // queryParams: Record<string, any>,
   contextResults?: Record<string, any>
 ): Domain2QueryReturnType<any> {
   const rawValue = defaultTransformers.transformer_InnerReference_resolve(
     step,
     transformer,
     resolveBuildTransformersTo,
-    queryParams,
+    transformerParams,
     contextResults
   );
   const returnedValue: Domain2QueryReturnType<any> =
@@ -1747,19 +2251,20 @@ export function handleTransformer_contextReference(
 }
 
 // ################################################################################################
-export function handleTransformer_parameterReference(
+export function handleTransformer_parameterReference<T extends MiroirModelEnvironment>(
   step: Step,
   label: string | undefined,
   transformer: TransformerForBuild_parameterReference,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
-  queryParams: Record<string, any>,
+  transformerParams: T,
+  // queryParams: Record<string, any>,
   contextResults?: Record<string, any>
 ): Domain2QueryReturnType<any> {
   const rawValue = defaultTransformers.transformer_InnerReference_resolve(
     step,
     transformer,
     resolveBuildTransformersTo,
-    queryParams,
+    transformerParams,
     contextResults
   );
   const returnedValue: Domain2QueryReturnType<any> =
@@ -1782,19 +2287,20 @@ export function handleTransformer_constantAsExtractor(
 }
 
 // ################################################################################################
-export function handleTransformer_newUuid(
+export function handleTransformer_newUuid<T extends MiroirModelEnvironment>(
   step: Step,
   label: string | undefined,
   transformer: TransformerForBuild_newUuid | TransformerForRuntime_newUuid,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
-  queryParams: Record<string, any>,
+  transformerParams: T,
+  // queryParams: Record<string, any>,
   contextResults?: Record<string, any>
 ): Domain2QueryReturnType<any> {
   const rawValue = defaultTransformers.transformer_InnerReference_resolve(
     step,
     transformer,
     resolveBuildTransformersTo,
-    queryParams,
+    transformerParams,
     contextResults
   );
   const returnedValue: Domain2QueryReturnType<any> =
@@ -1812,12 +2318,13 @@ export function handleTransformer_newUuid(
 // <A>[] -> <A>[]
 // object -> object
 // innerFullObjectTemplate { a: A, b: B } -> object 
-export function innerTransformer_plainObject_apply(
+export function innerTransformer_plainObject_apply<T extends MiroirModelEnvironment>(
   step: Step,
   label: string | undefined,
   transformer: Record<string, any>,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
-  queryParams: Record<string, any>,
+  // queryParams: Record<string, any>,
+  transformerParams: T,
   contextResults?: Record<string, any>,
 ): Domain2QueryReturnType<any> {
   // log.info(
@@ -1846,7 +2353,7 @@ export function innerTransformer_plainObject_apply(
           objectTemplateEntry[0],
           objectTemplateEntry[1],
           resolveBuildTransformersTo,
-          queryParams,
+          transformerParams,
           contextResults
         ),
       ];
@@ -1893,12 +2400,13 @@ export function innerTransformer_plainObject_apply(
 // <A>[] -> <A>[]
 // object -> object
 // innerFullObjectTemplate { a: A, b: B } -> object 
-export function innerTransformer_array_apply(
+export function innerTransformer_array_apply<T extends MiroirModelEnvironment>(
   step: Step,
   objectName: string | undefined,
   transformer: any[],
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
-  queryParams: Record<string, any>,
+  // queryParams: Record<string, any>,
+  transformerParams: T,
   contextResults?: Record<string, any>,
 ): Domain2QueryReturnType<any> {
   // log.info(
@@ -1918,7 +2426,7 @@ export function innerTransformer_array_apply(
   //   JSON.stringify(Object.keys(contextResults??{}), null, 2)
   // );
   const subObject = transformer.map((e, index) =>
-    transformer_extended_apply(step, index.toString(), e, resolveBuildTransformersTo, queryParams, contextResults)
+    transformer_extended_apply(step, index.toString(), e, resolveBuildTransformersTo, transformerParams, contextResults)
   );
   const failureIndex = subObject.findIndex(
     (e) => typeof e == "object" && e != null && !Array.isArray(e) && e.elementType == "failure"
@@ -1976,34 +2484,37 @@ export function innerTransformer_array_apply(
 // <A>[] -> <A>[]
 // object -> object
 // innerFullObjectTemplate { a: A, b: B } -> object 
-export function transformer_extended_apply(
+export function transformer_extended_apply<T extends MiroirModelEnvironment>(
   step: Step,
   label: string | undefined,
-  // transformer: TransformerForBuild | TransformerForRuntime | ExtendedTransformerForRuntime | undefined,
-  transformer: TransformerForBuild | TransformerForRuntime | ExtendedTransformerForRuntime | TransformerForBuildPlusRuntime | undefined,
+  transformer:
+    | TransformerForBuild
+    | TransformerForRuntime
+    | ExtendedTransformerForRuntime
+    | TransformerForBuildPlusRuntime
+    | undefined,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
-  queryParams: Record<string, any>,
-  contextResults?: Record<string, any>,
+  transformerParams: T,
+  contextResults?: Record<string, any>
 ): Domain2QueryReturnType<any> {
-// ): Domain2QueryReturnType<DomainElementSuccess> {
-  // log.info(
-  //   "transformer_extended_apply called for",
-  //   label,
-  //   "step:",
-  //   step,
-  //   "transformer.interpolation:",
-  //   (transformer as any)?.interpolation??"build",
-  //   ((transformer as any)?.interpolation??"build") == step,
-  //   typeof transformer,
-  //   "transformer",
-  //   JSON.stringify(transformer, null, 2),
-  //   // "queryParams elements",
-  //   // Object.keys(queryParams??{}),
-  //   // // JSON.stringify(Object.keys(queryParams??{}), null, 2),
-  //   // "contextResults elements",
-  //   // Object.keys(contextResults??{})
-  //   // // JSON.stringify(Object.keys(contextResults??{}), null, 2)
-  // );
+  log.info(
+    "transformer_extended_apply called for label",
+    label,
+    "step:",
+    step,
+    "transformer.interpolation:",
+    (transformer as any)?.interpolation ?? "build",
+    ((transformer as any)?.interpolation ?? "build") == step,
+    typeof transformer,
+    "transformer",
+    JSON.stringify(transformer, null, 2),
+    "queryParams elements",
+    Object.keys(transformerParams ?? {})
+    // // JSON.stringify(Object.keys(queryParams??{}), null, 2),
+    // "contextResults elements",
+    // Object.keys(contextResults??{})
+    // // JSON.stringify(Object.keys(contextResults??{}), null, 2)
+  );
   let result: Domain2QueryReturnType<any> = undefined as any;
 
   if (typeof transformer == "object" && transformer != null) {
@@ -2013,7 +2524,7 @@ export function transformer_extended_apply(
         label,
         transformer,
         resolveBuildTransformersTo,
-        queryParams,
+        transformerParams,
         contextResults
       );
       // log.info(
@@ -2033,6 +2544,14 @@ export function transformer_extended_apply(
           let preResult;
           const foundApplicationTransformer =
             applicationTransformerDefinitions[(transformer as any).transformerType];
+          log.info(
+            "transformer_extended_apply foundApplicationTransformer",
+            foundApplicationTransformer,
+            "for transformer",
+            JSON.stringify(transformer, null, 2),
+            "applicationTransformerDefinitions",
+            Object.keys(applicationTransformerDefinitions)
+          );
           if (!foundApplicationTransformer) {
             log.error(
               "transformer_extended_apply failed for",
@@ -2043,7 +2562,8 @@ export function transformer_extended_apply(
               JSON.stringify(transformer, null, 2)
             );
             preResult = new Domain2ElementFailed({
-              queryFailure: "QueryNotExecutable",
+              // queryFailure: "QueryNotExecutable",
+              queryFailure: "TransformerNotFound",
               failureOrigin: ["transformer_extended_apply"],
               queryContext: "transformer " + (transformer as any).transformerType + " not found",
               queryParameters: JSON.stringify(transformer),
@@ -2080,6 +2600,42 @@ export function transformer_extended_apply(
             foundApplicationTransformer.transformerImplementation.transformerImplementationType
           ) {
             case "libraryImplementation": {
+              const transformerIndexName: string =
+                foundApplicationTransformer?.transformerImplementation
+                  ?.inMemoryImplementationFunctionName;
+              const transformerFunction: ITransformerHandler<any, MiroirModelEnvironment> =
+                inMemoryTransformerImplementations[transformerIndexName];
+              log.info(
+                "transformer_extended_apply libraryImplementation for",
+                "foundApplicationTransformer",
+                JSON.stringify(foundApplicationTransformer, null, 2),
+                "inMemoryTransformerImplementations",
+                Object.keys(inMemoryTransformerImplementations),
+                Object.hasOwn(inMemoryTransformerImplementations, transformerIndexName),
+                // "transformerIndexName",
+                // Object.keys(inMemoryTransformerImplementations).findIndex(
+                //   (e) => e == transformerIndexName),
+                JSON.stringify(
+                  Object.entries(inMemoryTransformerImplementations).find(
+                    (e) => e[0] == transformerIndexName
+                  ),
+                  null,
+                  2
+                ),
+                typeof inMemoryTransformerImplementations,
+                Array.isArray(inMemoryTransformerImplementations),
+                "transformerIndexName",
+                transformerIndexName,
+                "transformerFunction",
+                transformerFunction == undefined ? "undefined" : "defined",
+                transformerFunction.toString()
+                // JSON.stringify(transformerFunction, null, 2)
+                // foundApplicationTransformer?.transformerImplementation?.inMemoryImplementationFunctionName,
+                // JSON.stringify(inMemoryTransformerImplementations[
+                //   foundApplicationTransformer.transformerImplementation
+                //     .inMemoryImplementationFunctionName
+                // ], null, 2)
+              );
               if (
                 !foundApplicationTransformer.transformerImplementation
                   .inMemoryImplementationFunctionName ||
@@ -2097,27 +2653,36 @@ export function transformer_extended_apply(
                   JSON.stringify(transformer, null, 2)
                 );
                 preResult = new Domain2ElementFailed({
-                  queryFailure: "QueryNotExecutable",
+                  // queryFailure: "QueryNotExecutable",
+                  queryFailure: "TransformerNotFound",
                   failureOrigin: ["transformer_extended_apply"],
                   queryContext:
                     "transformerImplementation " +
-                    (transformer as any).transformerImplementation
+                    (foundApplicationTransformer as any).transformerImplementation
                       .inMemoryImplementationFunctionName +
                     " not found",
                   queryParameters: transformer as any,
                 });
               }
-              return inMemoryTransformerImplementations[
-                foundApplicationTransformer.transformerImplementation
-                  .inMemoryImplementationFunctionName
-              ](
+              // return inMemoryTransformerImplementations[
+              //   foundApplicationTransformer.transformerImplementation
+              //     .inMemoryImplementationFunctionName
+              // ](
+              log.info("transformer_extended_apply calling transformerFunction");
+              const result = transformerFunction(
                 step,
                 label,
                 transformer,
                 newResolveBuildTransformersTo,
-                queryParams,
+                transformerParams,
                 contextResults
               );
+              log.info(
+                "transformer_extended_apply called transformerFunction",
+                "result",
+                JSON.stringify(result, null, 2)
+              );
+              return result;
               // throw new Error(
               //   "transformer_extended_apply failed for " +
               //     label +
@@ -2164,7 +2729,7 @@ export function transformer_extended_apply(
                         label,
                         (transformer as any)[param],
                         resolveBuildTransformersTo,
-                        queryParams,
+                        transformerParams,
                         contextResults
                       ),
                     ];
@@ -2175,7 +2740,7 @@ export function transformer_extended_apply(
                   label,
                   foundApplicationTransformer.transformerImplementation.definition,
                   newResolveBuildTransformersTo,
-                  queryParams,
+                  transformerParams,
                   { ...contextResults, ...evaluatedParams }
                   // {...contextResults, ...(transformer as any)} // inner definitions do not have parameter references, only context references
                 );
@@ -2185,7 +2750,8 @@ export function transformer_extended_apply(
             }
             default: {
               return new Domain2ElementFailed({
-                queryFailure: "QueryNotExecutable",
+                // queryFailure: "QueryNotExecutable",
+                queryFailure: "FailedTransformer",
                 failureOrigin: ["transformer_extended_apply"],
                 queryContext:
                   "transformerImplementation " +
@@ -2247,7 +2813,7 @@ export function transformer_extended_apply(
             label,
             transformer,
             newResolveBuildTransformersTo,
-            queryParams,
+            transformerParams,
             contextResults
           );
           // log.info(
@@ -2264,7 +2830,7 @@ export function transformer_extended_apply(
           label,
           transformer,
           newResolveBuildTransformersTo,
-          queryParams,
+          transformerParams,
           contextResults
         );
         // log.info(
@@ -2319,59 +2885,14 @@ export function transformer_extended_apply(
 }
 
 // // ################################################################################################
-// export function transformer_apply_wrapper(
-//   step: Step,
-//   label: string | undefined,
-//   transformer: TransformerForBuild | TransformerForRuntime,
-//   queryParams: Record<string, any>,
-//   contextResults?: Record<string, any>,
-//   resolveBuildTransformersTo: ResolveBuildTransformersTo = "constantTransformer",
-// ): Domain2QueryReturnType<any> {
-//   // const result = transformer_extended_apply(step, label, transformer, queryParams, contextResults);
-//   const result = transformer_extended_apply(
-//     step,
-//     label,
-//     transformer,
-//     resolveBuildTransformersTo,
-//     queryParams,
-//     contextResults
-//   );
-//   log.info(
-//     "transformer_apply_wrapper called for",
-//     label,
-//     "transformer_extended_apply result",
-//     JSON.stringify(result, null, 2),
-//   );  
-
-//   if (result instanceof Domain2ElementFailed) {
-//     log.error(
-//       "transformer_apply_wrapper transformer_extended_apply failed for",
-//       label,
-//       "step",
-//       step,
-//       "transformer",
-//       JSON.stringify(transformer, null, 2),
-//       "result",
-//       JSON.stringify(result, null, 2)
-//     );
-//     return new Domain2ElementFailed({
-//       queryFailure: "QueryNotExecutable",
-//       failureOrigin: ["transformer_extended_apply"],
-//       innerError: result,
-//       queryContext: "failed to transform object attribute",
-//     });
-//   } else {
-//     return result;
-//   }
-// }
 
 // ################################################################################################
-export function transformer_extended_apply_wrapper(
+export function transformer_extended_apply_wrapper<T extends MiroirModelEnvironment>(
   step: Step,
   label: string | undefined,
-  // transformer: TransformerForBuild | TransformerForRuntime | ExtendedTransformerForRuntime,
   transformer: TransformerForBuild | TransformerForRuntime | ExtendedTransformerForRuntime | TransformerForBuildPlusRuntime,
-  queryParams: Record<string, any>,
+  // queryParams: Record<string, any>,
+  transformerParams: T,
   contextResults?: Record<string, any>,
   resolveBuildTransformersTo: ResolveBuildTransformersTo = "constantTransformer",
 ): Domain2QueryReturnType<any> {
@@ -2381,15 +2902,16 @@ export function transformer_extended_apply_wrapper(
       label,
       transformer,
       resolveBuildTransformersTo,
-      queryParams,
+      transformerParams,
       contextResults,
     );
-    // log.info(
-    //   "transformer_extended_apply_wrapper called for",
-    //   label,
-    //   "transformer_extended_apply result",
-    //   JSON.stringify(result, null, 2),
-    // );  
+    log.info(
+      "transformer_extended_apply_wrapper called for",
+      label,
+      "transformer_extended_apply result",
+      result
+      // JSON.stringify(result, null, 2),
+    );  
     if (result instanceof Domain2ElementFailed) {
       log.error(
         "transformer_extended_apply_wrapper failed for",
@@ -2402,11 +2924,14 @@ export function transformer_extended_apply_wrapper(
         JSON.stringify(result, null, 2)
       );
       return new Domain2ElementFailed({
-        queryFailure: "QueryNotExecutable",
+        // queryFailure: "QueryNotExecutable",
+        queryFailure: "FailedTransformer",
         // queryFailure: result.queryFailure,
         failureOrigin: ["transformer_extended_apply"],
         innerError: result,
         queryContext: "failed to transform object attribute",
+        // queryParameters: JSON.stringify(transformer),
+        queryParameters: transformer as any,
       });
     } else {
       // log.info(
@@ -2429,18 +2954,15 @@ export function transformer_extended_apply_wrapper(
       e
     );
     return new Domain2ElementFailed({
-      queryFailure: "QueryNotExecutable",
+      // queryFailure: "QueryNotExecutable",
+      queryFailure: "FailedTransformer",
       failureOrigin: ["transformer_extended_apply"],
-      innerError: e as any,
+      // innerError: e as any,
+      innerError: serializeError(e) as any,
       queryContext: "failed to transform object attribute",
     });
   }
 }
-// ################################################################################################
-// ################################################################################################
-// ################################################################################################
-// ################################################################################################
-// ################################################################################################
 // ################################################################################################
 export function applyTransformer(t: Transformer, o: any):any {
   switch (t.transformerType) {

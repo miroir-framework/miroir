@@ -17,7 +17,7 @@ import {
 } from "./components/SelectEntityInstanceEditor.js";
 import { cleanLevel } from "./constants.js";
 import { calculateAdaptiveColumnWidths, ColumnWidthSpec } from "./adaptiveColumnWidths.js";
-import { TableComponentRow } from "./components/Grids/MTableComponentInterface.js";
+import { TableComponentRow } from "./components/Grids/EntityInstanceGridInterface.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -35,7 +35,7 @@ export function getColumnDefinitionsFromEntityDefinitionAttribute(
   width?: number,
 ): ColDef<any> {
 
-  if (jzodSchema?.tag?.value?.targetEntity) {
+  if (jzodSchema?.tag?.value?.selectorParams?.targetEntity) {
     const result =  {
       // field: "publisher",
       field: name,
@@ -50,7 +50,7 @@ export function getColumnDefinitionsFromEntityDefinitionAttribute(
       cellRendererParams: {
         deploymentUuid,
         isFK: true,
-        entityUuid: jzodSchema?.tag?.value?.targetEntity,
+        entityUuid: jzodSchema?.tag?.value?.selectorParams?.targetEntity,
         entityDefinition
       },
       width: width,

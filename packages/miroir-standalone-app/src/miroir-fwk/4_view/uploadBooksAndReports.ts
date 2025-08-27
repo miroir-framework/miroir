@@ -95,13 +95,15 @@ export async function uploadBooksAndReports(
       actionType: "createEntity",
       deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-      entities: [
-        { entity: entityAuthor as Entity, entityDefinition: entityDefinitionAuthor as EntityDefinition },
-        { entity: entityBook as Entity, entityDefinition: entityDefinitionBook as EntityDefinition },
-        { entity: entityCountry as Entity, entityDefinition: entityDefinitionCountry as EntityDefinition },
-        { entity: entityPublisher as Entity, entityDefinition: entityDefinitionPublisher as EntityDefinition },
-        // { entity: entityTest as Entity, entityDefinition: entityDefinitionTest as EntityDefinition },
-      ],
+      payload: {
+        entities: [
+          { entity: entityAuthor as Entity, entityDefinition: entityDefinitionAuthor as EntityDefinition },
+          { entity: entityBook as Entity, entityDefinition: entityDefinitionBook as EntityDefinition },
+          { entity: entityCountry as Entity, entityDefinition: entityDefinitionCountry as EntityDefinition },
+          { entity: entityPublisher as Entity, entityDefinition: entityDefinitionPublisher as EntityDefinition },
+          // { entity: entityTest as Entity, entityDefinition: entityDefinitionTest as EntityDefinition },
+        ],
+      }
     },
     currentModel
   );
@@ -122,25 +124,27 @@ export async function uploadBooksAndReports(
       instanceAction: {
         // actionType: "instanceAction",
         actionType: "createInstance",
-        applicationSection: "model",
         deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
         endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-        objects: [
-          {
-            parentName: entityReport.name,
-            parentUuid: entityReport.uuid,
-            applicationSection: "model",
-            instances: [
-              reportAuthorDetails as EntityInstance,
-              reportAuthorList as EntityInstance,
-              reportBookDetails as EntityInstance,
-              reportBookList as EntityInstance,
-              reportCountryList as EntityInstance,
-              reportPublisherList as EntityInstance,
-              // reportTestList as EntityInstance,
-            ],
-          },
-        ],
+        payload: {
+          applicationSection: "model",
+          objects: [
+            {
+              parentName: entityReport.name,
+              parentUuid: entityReport.uuid,
+              applicationSection: "model",
+              instances: [
+                reportAuthorDetails as EntityInstance,
+                reportAuthorList as EntityInstance,
+                reportBookDetails as EntityInstance,
+                reportBookList as EntityInstance,
+                reportCountryList as EntityInstance,
+                reportPublisherList as EntityInstance,
+                // reportTestList as EntityInstance,
+              ],
+            },
+          ],
+        }
       }
     },
     currentModel
@@ -161,9 +165,11 @@ export async function uploadBooksAndReports(
   await domainController.handleAction({
     // actionType: "instanceAction",
     actionType: "createInstance",
-    applicationSection: "data",
     deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-    objects: libraryApplicationInstances,
+    payload: {
+      applicationSection: "data",
+      objects: libraryApplicationInstances,
+    }
   });
 }

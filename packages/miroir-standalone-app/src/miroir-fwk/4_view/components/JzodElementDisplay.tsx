@@ -93,14 +93,14 @@ export function JzodElementDisplay(props: JzodElementDisplayProps){
       return (
         <>
         array!
-          {/* <MTableComponent
+          {/* <EntityInstanceGrid
             type="JSON_ARRAY"
             styles={styles}
             columnDefs={{columnDefs:columnDefs}}
             rowData={props.element}
             displayTools={true}
           >
-          </MTableComponent> */}
+          </EntityInstanceGrid> */}
         </>
       )
       break;
@@ -241,11 +241,11 @@ export function JzodElementDisplay(props: JzodElementDisplayProps){
     case "number": 
     case "date": 
     case "string": {
-      const targetEntityUuid = targetJzodSchema.tag?.value?.targetEntity
+      const targetEntityUuid = targetJzodSchema.tag?.value?.selectorParams?.targetEntity
       if (
         context.applicationSection &&
         targetJzodSchema.type == "uuid" &&
-        targetJzodSchema?.tag?.value?.targetEntity &&
+        targetJzodSchema?.tag?.value?.selectorParams?.targetEntity &&
         targetEntityUuid
       ) {
         const targetEntity: Entity | undefined = props.currentReportDeploymentSectionEntities?.find(
@@ -262,7 +262,7 @@ export function JzodElementDisplay(props: JzodElementDisplayProps){
                 //   : props.deploymentUuid
               }
               applicationSection={context.applicationSection}
-              entityUuid={targetJzodSchema?.tag?.value?.targetEntity}
+              entityUuid={targetJzodSchema?.tag?.value?.selectorParams?.targetEntity}
               instanceUuid={props.element}
               key={props.name}
             />

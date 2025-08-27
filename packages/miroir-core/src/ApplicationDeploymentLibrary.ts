@@ -11,20 +11,20 @@ export const applicationDeploymentLibrary: SelfApplicationDeploymentConfiguratio
   "selfApplication":"5af03c98-fe5e-490b-b08f-e1230971c57f",
   "description": "The default Postgres Deployment for SelfApplication Library",
   // "applicationModelLevel": "model",
-  "model": {
-    "location": {
-      "type": "sql",
-      "side":"server",
-      "connectionString": "postgres://postgres:postgres@localhost:5432/postgres",
-      "schema": "library"
-    }
-  },
-  "data": {
-    "location": {
-      "type": "sql",
-      "side":"server",
-      "connectionString": "postgres://postgres:postgres@localhost:5432/postgres",
-      "schema": "library"
-    }
-  }
+  // "model": {
+  //   "location": {
+  //     "type": "sql",
+  //     "side":"server",
+  //     "connectionString": "postgres://postgres:postgres@localhost:5432/postgres",
+  //     "schema": "library"
+  //   }
+  // },
+  // "data": {
+  //   "location": {
+  //     "type": "sql",
+  //     "side":"server",
+  //     "connectionString": "postgres://postgres:postgres@localhost:5432/postgres",
+  //     "schema": "library"
+  //   }
+  // }
 }

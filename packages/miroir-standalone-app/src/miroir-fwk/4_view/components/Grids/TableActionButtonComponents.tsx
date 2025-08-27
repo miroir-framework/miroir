@@ -8,7 +8,7 @@ import { LoggerInterface, MiroirLoggerFactory } from "miroir-core";
 
 import { packageName } from '../../../../constants.js';
 import { cleanLevel } from '../../constants.js';
-import { TableComponentRow } from './MTableComponentInterface.js';
+import { TableComponentRow } from './EntityInstanceGridInterface.js';
 import { useMiroirTheme } from '../../contexts/MiroirThemeContext.js';
 import { ThemedSmallIconButton } from '../Themes/ThemedComponents.js';
 

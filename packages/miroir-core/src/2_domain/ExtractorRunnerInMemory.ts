@@ -43,6 +43,7 @@ import {
   selectJzodSchemaBySingleSelectQueryFromDomainStateNew,
 } from "./DomainStateQuerySelectors";
 import { handleBoxedExtractorAction, handleBoxedQueryAction } from "./QuerySelectors";
+import {  type MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import { transformer_InnerReference_resolve } from "./TransformersForRuntime";
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -55,15 +56,20 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
   private selectorMap: AsyncBoxedExtractorOrQueryRunnerMap;
 
   // ################################################################################################
-  constructor(private persistenceStoreController: PersistenceStoreInstanceSectionAbstractInterface) {
-    this.logHeader = "ExtractorRunnerInMemory for store=" + persistenceStoreController.getStoreName();
+  constructor(
+    private persistenceStoreController: PersistenceStoreInstanceSectionAbstractInterface
+  ) {
+    this.logHeader =
+      "ExtractorRunnerInMemory for store=" + persistenceStoreController.getStoreName();
     this.selectorMap = {
       extractorType: "async",
       extractEntityInstanceUuidIndex: this.extractEntityInstanceUuidIndex,
       extractEntityInstanceList: this.extractEntityInstanceList,
       extractEntityInstance: this.extractEntityInstance,
-      extractEntityInstanceUuidIndexWithObjectListExtractor: asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
-      extractEntityInstanceListWithObjectListExtractor: asyncExtractEntityInstanceListWithObjectListExtractor,
+      extractEntityInstanceUuidIndexWithObjectListExtractor:
+        asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
+      extractEntityInstanceListWithObjectListExtractor:
+        asyncExtractEntityInstanceListWithObjectListExtractor,
       runQuery: asyncRunQuery,
       extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList: asyncExtractWithExtractor,
       applyExtractorTransformer: asyncApplyExtractorTransformerInMemory,
@@ -73,12 +79,28 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
   }
 
   // ################################################################################################
-  async handleBoxedQueryAction(runBoxedQueryAction: RunBoxedQueryAction): Promise<Action2ReturnType> {
-    return handleBoxedQueryAction("ExtractorRunnerInMemory", runBoxedQueryAction, this.selectorMap);
+  async handleBoxedQueryAction(
+    runBoxedQueryAction: RunBoxedQueryAction,
+    modelEnvironment: MiroirModelEnvironment
+  ): Promise<Action2ReturnType> {
+    return handleBoxedQueryAction(
+      "ExtractorRunnerInMemory",
+      runBoxedQueryAction,
+      this.selectorMap,
+      modelEnvironment
+    );
   }
   // ################################################################################################
-  async handleBoxedExtractorAction(runBoxedExtractorAction: RunBoxedExtractorAction): Promise<Action2ReturnType> {
-    return handleBoxedExtractorAction("ExtractorRunnerInMemory", runBoxedExtractorAction, this.selectorMap);
+  async handleBoxedExtractorAction(
+    runBoxedExtractorAction: RunBoxedExtractorAction,
+    modelEnvironment: MiroirModelEnvironment
+  ): Promise<Action2ReturnType> {
+    return handleBoxedExtractorAction(
+      "ExtractorRunnerInMemory",
+      runBoxedExtractorAction,
+      this.selectorMap,
+      modelEnvironment
+    );
   }
 
   // ################################################################################################
@@ -86,16 +108,16 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
     BoxedExtractorOrCombinerReturningObject,
     Domain2QueryReturnType<EntityInstance>
   > = async (
-    selectorParams: AsyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObject>
+    selectorParams: AsyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObject>,
+    modelEnvironment: MiroirModelEnvironment
   ): Promise<Domain2QueryReturnType<EntityInstance>> => {
     const querySelectorParams: ExtractorOrCombinerReturningObject = selectorParams.extractor.select;
     const deploymentUuid = selectorParams.extractor.deploymentUuid;
     const applicationSection: ApplicationSection =
       selectorParams.extractor.select.applicationSection ??
-      ((selectorParams.extractor.pageParams?.applicationSection ??
-        "data") as ApplicationSection);
+      ((selectorParams.extractor.pageParams?.applicationSection ?? "data") as ApplicationSection);
 
-    const entityUuidReference = querySelectorParams.parentUuid // TODO: we assume this ia a constant here
+    const entityUuidReference = querySelectorParams.parentUuid; // TODO: we assume this ia a constant here
 
     log.info(
       "extractRunnerInMemory extractEntityInstance params",
@@ -116,17 +138,20 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
             referenceName: querySelectorParams.objectReference,
           },
           "value", // TODO: this is inconsistent with "build" evaluation, "build" evaluation should always yield a runtime transformer.
-          selectorParams.extractor.queryParams,
+          {...modelEnvironment, ...selectorParams.extractor.queryParams},
           selectorParams.extractor.contextResults
         );
-        log.info("extractEntityInstance combinerForObjectByRelation found referenceObject", JSON.stringify(referenceObject, null, 2));
-        if (
-          !querySelectorParams.AttributeOfObjectToCompareToReferenceUuid
-        ) {
+        log.info(
+          "extractEntityInstance combinerForObjectByRelation found referenceObject",
+          JSON.stringify(referenceObject, null, 2)
+        );
+        if (!querySelectorParams.AttributeOfObjectToCompareToReferenceUuid) {
           return new Domain2ElementFailed({
             queryFailure: "IncorrectParameters",
             queryParameters: JSON.stringify(selectorParams.extractor.pageParams),
-            queryContext: "extractRunnerInMemory extractEntityInstance query has no AttributeOfObjectToCompareToReferenceUuid, query=" + JSON.stringify(querySelectorParams),
+            queryContext:
+              "extractRunnerInMemory extractEntityInstance query has no AttributeOfObjectToCompareToReferenceUuid, query=" +
+              JSON.stringify(querySelectorParams),
           });
         }
 
@@ -136,21 +161,27 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
         );
 
         if (result instanceof Action2Error) {
-          const failureMessage = `could not find instance of Entity ${entityUuidReference} with uuid=${referenceObject[querySelectorParams.AttributeOfObjectToCompareToReferenceUuid]}`;
+          const failureMessage = `could not find instance of Entity ${entityUuidReference} with uuid=${
+            referenceObject[querySelectorParams.AttributeOfObjectToCompareToReferenceUuid]
+          }`;
           return new Domain2ElementFailed({
             queryFailure: "InstanceNotFound",
             deploymentUuid,
             applicationSection,
             entityUuid: entityUuidReference,
-            failureMessage: `could not find instance of Entity ${entityUuidReference} with uuid=${referenceObject[querySelectorParams.AttributeOfObjectToCompareToReferenceUuid]}`,
+            failureMessage: `could not find instance of Entity ${entityUuidReference} with uuid=${
+              referenceObject[querySelectorParams.AttributeOfObjectToCompareToReferenceUuid]
+            }`,
             errorStack:
               typeof result.errorStack == "string"
                 ? [failureMessage, result.errorStack]
-                : [failureMessage, ...(result.errorStack as any ?? [])],
+                : [failureMessage, ...((result.errorStack as any) ?? [])],
           });
         }
 
-        const failureMessage = `could not find instance of Entity ${entityUuidReference} with uuid=${referenceObject[querySelectorParams.AttributeOfObjectToCompareToReferenceUuid]}`;
+        const failureMessage = `could not find instance of Entity ${entityUuidReference} with uuid=${
+          referenceObject[querySelectorParams.AttributeOfObjectToCompareToReferenceUuid]
+        }`;
         if (result.returnedDomainElement instanceof Domain2ElementFailed) {
           return new Domain2ElementFailed({
             queryFailure: "InstanceNotFound",
@@ -158,7 +189,7 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
             applicationSection,
             entityUuid: entityUuidReference,
             failureMessage: failureMessage,
-            errorStack: [failureMessage, ...(result.returnedDomainElement.errorStack??[])],
+            errorStack: [failureMessage, ...(result.returnedDomainElement.errorStack ?? [])],
           });
         }
         // log.info(
@@ -201,7 +232,7 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
             errorStack:
               typeof result.errorStack == "string"
                 ? [failureMessage, result.errorStack]
-                : [failureMessage, ...(result.errorStack as any ?? [])],
+                : [failureMessage, ...((result.errorStack as any) ?? [])],
             innerError: result as any, // TODO: fix type
           });
         }
@@ -213,8 +244,8 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
             applicationSection,
             entityUuid: entityUuidReference,
             failureMessage: failureMessage,
-            errorStack: [failureMessage, ...(result.returnedDomainElement.errorStack??[])],
-            innerError: result.returnedDomainElement as any// todo: fix type
+            errorStack: [failureMessage, ...(result.returnedDomainElement.errorStack ?? [])],
+            innerError: result.returnedDomainElement as any, // todo: fix type
           });
         }
         log.info(
@@ -227,7 +258,7 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
           "######### queryParams",
           JSON.stringify(selectorParams.extractor.queryParams, undefined, 2),
           "######### contextResults",
-          JSON.stringify(selectorParams.extractor.contextResults, undefined, 2),
+          JSON.stringify(selectorParams.extractor.contextResults, undefined, 2)
         );
         return result.returnedDomainElement;
         break;
@@ -247,19 +278,19 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
     BoxedExtractorOrCombinerReturningObjectList,
     Domain2QueryReturnType<EntityInstancesUuidIndex>
   > = async (
-    extractorRunnerParams: AsyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList>
+    extractorRunnerParams: AsyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList>,
+    modelEnvironment: MiroirModelEnvironment
   ): Promise<Domain2QueryReturnType<EntityInstancesUuidIndex>> => {
-    return this.extractEntityInstanceList(extractorRunnerParams).then((result) => {
-      // if (result.elementType == "failure") {
-      if (result instanceof Domain2ElementFailed) {
-        return result;
-      } 
-      const entityInstanceUuidIndex = Object.fromEntries(
-        result.map((i: any) => [i.uuid, i])
-        );
-      return entityInstanceUuidIndex;
-    });
-
+    return this.extractEntityInstanceList(extractorRunnerParams, modelEnvironment).then(
+      (result) => {
+        // if (result.elementType == "failure") {
+        if (result instanceof Domain2ElementFailed) {
+          return result;
+        }
+        const entityInstanceUuidIndex = Object.fromEntries(result.map((i: any) => [i.uuid, i]));
+        return entityInstanceUuidIndex;
+      }
+    );
   };
 
   // ##############################################################################################
@@ -314,7 +345,7 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
     if (entityInstanceCollection.returnedDomainElement instanceof Domain2ElementFailed) {
       return entityInstanceCollection.returnedDomainElement;
     }
-    
+
     return entityInstanceCollection.returnedDomainElement.instances;
   };
 

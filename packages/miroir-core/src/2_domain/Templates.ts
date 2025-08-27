@@ -1,3 +1,4 @@
+import { miroirFundamentalJzodSchema } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalJzodSchema";
 import {
   BoxedExtractorOrCombinerReturningObjectOrObjectList,
   BoxedExtractorTemplateReturningObjectOrObjectList,
@@ -12,12 +13,14 @@ import {
   ExtractorTemplateReturningObjectOrObjectList,
   ExtractorWrapper,
   QueryFailed,
-  Transformer_contextOrParameterReferenceTO_REMOVE
+  Transformer_contextOrParameterReferenceTO_REMOVE,
+  type JzodSchema
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { MiroirLoggerFactory } from "../4_services/LoggerFactory";
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
+import { type MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import { transformer_extended_apply_wrapper, transformer_InnerReference_resolve } from "./TransformersForRuntime";
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -29,7 +32,7 @@ MiroirLoggerFactory.registerLoggerToStart(
 // ################################################################################################
 export function resolveExtractorTemplate(
   extractorOrCombinerTemplate: ExtractorOrCombinerTemplate,
-  queryParams: Record<string, any>,
+  queryParams: MiroirModelEnvironment & Record<string, any>,
   contextResults: Record<string, any>
 ): ExtractorOrCombiner | QueryFailed {
   const cleanQueryTemplate: any = { ...extractorOrCombinerTemplate }
@@ -240,7 +243,7 @@ export function resolveExtractorTemplate(
 // ################################################################################################
 export function resolveQueryTemplateSelectExtractorWrapper(
   queryTemplate: ExtractorTemplateByExtractorWrapper,
-  queryParams: Record<string, any>,
+  queryParams: MiroirModelEnvironment & Record<string, any>,
   contextResults: Record<string, any>
 ): ExtractorWrapper {
   const result = resolveExtractorTemplate(queryTemplate, queryParams, contextResults);
@@ -255,13 +258,18 @@ export function resolveQueryTemplateWithExtractorCombinerTransformer(
   queryTemplate: BoxedQueryTemplateWithExtractorCombinerTransformer,
 ): BoxedQueryWithExtractorCombinerTransformer {
 
-  const params = { ...queryTemplate.pageParams, ...queryTemplate.queryParams };
+  const params: MiroirModelEnvironment & Record<string, any> = {
+    miroirFundamentalJzodSchema: miroirFundamentalJzodSchema as JzodSchema,
+    ...queryTemplate.pageParams,
+    ...queryTemplate.queryParams,
+  };
 
   log.info(
     "resolveQueryTemplateWithExtractorCombinerTransformer converting queryTemplate:",
     JSON.stringify(queryTemplate.extractorTemplates, null, 2),
     "params:",
-    JSON.stringify(params, null, 2)
+    params
+    // JSON.stringify(params, null, 2)
   );
   
   const queries = Object.fromEntries(
@@ -318,7 +326,7 @@ export function resolveQueryTemplateWithExtractorCombinerTransformer(
 export function resolveExtractorTemplateForExtractorOrCombinerReturningObjectOrObjectList(
   extractorTemplateReturningObjectOrObjectList: ExtractorTemplateReturningObjectOrObjectList,
   pageParams: Record<string, any>,
-  queryParams: Record<string, any>,
+  queryParams: MiroirModelEnvironment & Record<string, any>,
   contextResults: Record<string, any>,
   deploymentUuid: string //?
 ): ExtractorOrCombinerReturningObjectOrObjectList {
@@ -341,7 +349,11 @@ export function resolveBoxedExtractorOrCombinerTemplateReturningObjectOrObjectLi
   boxedExtractorTemplateReturningObjectOrObjectList: BoxedExtractorTemplateReturningObjectOrObjectList,
 ): BoxedExtractorOrCombinerReturningObjectOrObjectList {
 
-  const params = { ...boxedExtractorTemplateReturningObjectOrObjectList.pageParams, ...boxedExtractorTemplateReturningObjectOrObjectList.queryParams };
+  const params: MiroirModelEnvironment & Record<string, any> = {
+    miroirFundamentalJzodSchema: miroirFundamentalJzodSchema as JzodSchema,
+    ...boxedExtractorTemplateReturningObjectOrObjectList.pageParams,
+    ...boxedExtractorTemplateReturningObjectOrObjectList.queryParams,
+  };
 
   // log.info("resolveQueryTemplateForBoxedExtractorOrCombinerReturningObjectOrObjectList converting extractorTemplates:", boxedExtractorTemplateReturningObject);
   
@@ -368,7 +380,7 @@ export function resolveBoxedExtractorOrCombinerTemplateReturningObjectOrObjectLi
 export function resolveExtractorOrQueryTemplate(
   extractorOrCombinerTemplate: ExtractorTemplateReturningObjectOrObjectList | BoxedQueryTemplateWithExtractorCombinerTransformer,
   pageParams: Record<string, any>,
-  queryParams: Record<string, any>,
+  queryParams: MiroirModelEnvironment & Record<string, any>,
   contextResults: Record<string, any>,
   deploymentUuid: string //?
 ): ExtractorOrCombinerReturningObjectOrObjectList | BoxedQueryWithExtractorCombinerTransformer {

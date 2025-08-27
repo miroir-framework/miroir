@@ -1,0 +1,113 @@
+import {serializeError} from 'serialize-error';
+import {
+  Action2Error,
+  Domain2ElementFailed,
+  Domain2QueryReturnType,
+} from "../0_interfaces/2_domain/DomainElement";
+import {
+  ExtendedTransformerForRuntime,
+  TransformerForBuild,
+  TransformerForBuildPlusRuntime,
+  TransformerForRuntime
+} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
+import { MiroirLoggerFactory } from "../4_services/LoggerFactory";
+import { packageName } from "../constants";
+import { cleanLevel } from "./constants";
+
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "TransformerUtils")
+).then((logger: LoggerInterface) => {log = logger});
+
+export type Step = "build" | "runtime";
+export type ResolveBuildTransformersTo = "value" | "constantTransformer";
+
+// Lazy-loaded transformer_extended_apply function to avoid circular dependency
+let transformer_extended_apply_impl: any = null;
+
+async function getTransformerExtendedApply() {
+  if (!transformer_extended_apply_impl) {
+    const module = await import("./Transformers");
+    transformer_extended_apply_impl = (module as any).transformer_extended_apply;
+  }
+  return transformer_extended_apply_impl;
+}
+
+// ################################################################################################
+export async function transformer_extended_apply_wrapper(
+  step: Step,
+  label: string | undefined,
+  transformer: TransformerForBuild | TransformerForRuntime | ExtendedTransformerForRuntime | TransformerForBuildPlusRuntime,
+  queryParams: Record<string, any>,
+  contextResults?: Record<string, any>,
+  resolveBuildTransformersTo: ResolveBuildTransformersTo = "constantTransformer",
+): Promise<Domain2QueryReturnType<any>> {
+  try {
+    const transformer_extended_apply = await getTransformerExtendedApply();
+    const result = transformer_extended_apply(
+      step,
+      label,
+      transformer,
+      resolveBuildTransformersTo,
+      queryParams,
+      contextResults
+    );
+    // log.info(
+    //   "transformer_extended_apply_wrapper called for",
+    //   label,
+    //   "transformer_extended_apply result",
+    //   JSON.stringify(result, null, 2),
+    // );  
+
+    if (result instanceof Domain2ElementFailed) {
+      log.error(
+        "transformer_extended_apply_wrapper failed for",
+        label??(transformer as any)["transformerType"],
+        "step",
+        step,
+        "transformer",
+        JSON.stringify(transformer, null, 2),
+        "result",
+        JSON.stringify(result, null, 2)
+      );
+      return new Domain2ElementFailed({
+        // queryFailure: "QueryNotExecutable",
+        queryFailure: "FailedTransformer",
+        // queryFailure: result.queryFailure,
+        failureOrigin: ["transformer_extended_apply"],
+        innerError: result,
+        queryContext: "failed to transform object attribute",
+        // queryParameters: JSON.stringify(transformer),
+        queryParameters: transformer as any,
+      });
+    } else {
+      // log.info(
+      //   "transformer_extended_apply_wrapper called for",
+      //   label,
+      //   "transformer_extended_apply result",
+      //   JSON.stringify(result, null, 2),
+      // );
+      return result;
+    }
+  } catch (e) {
+    log.error(
+      "transformer_extended_apply_wrapper failed for",
+      label,
+      "step",
+      step,
+      "transformer",
+      JSON.stringify(transformer, null, 2),
+      "error",
+      e
+    );
+    return new Domain2ElementFailed({
+      // queryFailure: "QueryNotExecutable",
+      queryFailure: "FailedTransformer",
+      failureOrigin: ["transformer_extended_apply"],
+      // innerError: e as any,
+      innerError: serializeError(e) as any,
+      queryContext: "failed to transform object attribute",
+    });
+  }
+}

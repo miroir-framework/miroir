@@ -13,26 +13,26 @@ export {
   selectModelForDeploymentFromReduxState,
 } from "./4_services/localCache/LocalCacheSliceModelSelector.js";
 export {
-  applyDeploymentEntityStateQuerySelector,
-  selectDeploymentEntityStateSelectorParams,
-  applyDeploymentEntityStateQueryTemplateSelector,
-  applyDeploymentEntityStateQueryTemplateSelectorForCleanedResult,
-  selectCurrentDeploymentEntityStateFromReduxState,
-  selectDeploymentEntityStateSelectorForQueryTemplateParams,
+  applyReduxDeploymentsStateQuerySelector,
+  selectReduxDeploymentsStateSelectorParams,
+  applyReduxDeploymentsStateQueryTemplateSelector,
+  applyReduxDeploymentsStateQueryTemplateSelectorForCleanedResult,
+  selectCurrentReduxDeploymentsStateFromReduxState,
+  selectReduxDeploymentsStateSelectorForQueryTemplateParams,
   selectDomainStateFromReduxState,
   selectMiroirSelectorQueryParams,
   selectJzodSchemaSelectorParamsForTemplate,
 
   applyDomainStateJzodSchemaSelector,
-  applyDeploymentEntityStateJzodSchemaSelectorTemplate,
-  applyDeploymentEntityStateJzodSchemaSelector,
-  applyDeploymentEntityStateQuerySelectorForCleanedResult,
+  applyReduxDeploymentsStateJzodSchemaSelectorTemplate,
+  applyReduxDeploymentsStateJzodSchemaSelector,
+  applyReduxDeploymentsStateQuerySelectorForCleanedResult,
   applyDomainStateQueryTemplateSelector,
   applyDomainStateQuerySelectorForCleanedResult,
   selectDomainStateJzodSchemaSelectorParams,
   selectDomainStateSelectorParams,
   selectEntityInstanceUuidIndexFromLocalCache,
-  selectEntityInstanceUuidIndexFromLocalCacheQueryAndDeploymentEntityState,
+  selectEntityInstanceUuidIndexFromLocalCacheQueryAndReduxDeploymentsState,
   selectInstanceArrayForDeploymentSectionEntity,
   selectMiroirQueryTemplateSelectorParams,
 } from "./4_services/localCache/LocalCacheSliceSelectors.js";
@@ -51,12 +51,12 @@ export {
   LocalCacheSliceStateZone,
 } from "./4_services/localCache/localCacheReduxSliceInterface.js";
 export {
-  getMemoizedDeploymentEntityStateSelectorForTemplateMap,
-  getMemoizedDeploymentEntityStateJzodSchemaSelectorTemplateMap,
+  getMemoizedReduxDeploymentsStateSelectorForTemplateMap,
+  getMemoizedReduxDeploymentsStateJzodSchemaSelectorTemplateMap,
 } from "./4_services/localCache/DomainStateMemoizedSelectorsForTemplate.js";
 export {
-  getMemoizedDeploymentEntityStateJzodSchemaSelectorMap,
-  getMemoizedDeploymentEntityStateSelectorMap
+  getMemoizedReduxDeploymentsStateJzodSchemaSelectorMap,
+  getMemoizedReduxDeploymentsStateSelectorMap
 } from "./4_services/localCache/DomainStateMemoizedSelectors.js";
 export {
   PersistenceReduxSaga,

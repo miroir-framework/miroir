@@ -4,9 +4,10 @@ import {
   JzodSchema
 } from "../../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
-import { jzodTypeCheck, ResolvedJzodSchemaReturnType } from "../../../src/1_core/jzod/jzodTypeCheck";
+import { jzodTypeCheck } from "../../../src/1_core/jzod/jzodTypeCheck";
 import { miroirFundamentalJzodSchema } from "../../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalJzodSchema";
 import { defaultMiroirMetaModel } from '../../test_assets/defaultMiroirMetaModel';
+import type { ResolvedJzodSchemaReturnType } from '../../../src/0_interfaces/1_core/jzodTypeCheckInterface';
 
 const castMiroirFundamentalJzodSchema = miroirFundamentalJzodSchema as JzodSchema;
 
@@ -39,10 +40,12 @@ function testResolve(
     testValueObject,
     [], // currentValuePath
     [], // currentTypePath
-    castMiroirFundamentalJzodSchema,
-    defaultMiroirMetaModel,
-    defaultMiroirMetaModel,
-    {}
+    {
+      miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
+      currentModel: defaultMiroirMetaModel,
+      miroirMetaModel: defaultMiroirMetaModel,
+    }, // context
+    {} // relativeReferenceJzodContext
   );
 
   console.log("test", testId, "has result", JSON.stringify(testResult, null, 2));

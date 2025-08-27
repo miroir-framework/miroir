@@ -1,58 +1,39 @@
-import { EditorView } from '@codemirror/view';
-import ReactCodeMirror from '@uiw/react-codemirror';
-import { Formik, FormikProps } from 'formik';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import {
   ApplicationSection,
-  DeploymentEntityState,
-  Domain2QueryReturnType,
   DomainControllerInterface,
-  DomainElementSuccess,
   Entity,
   EntityDefinition,
   EntityInstance,
-  EntityInstancesUuidIndex,
   InstanceAction,
   LoggerInterface,
   MetaModel,
   MiroirLoggerFactory,
-  ResolvedJzodSchemaReturnType,
-  SyncBoxedExtractorOrQueryRunnerMap,
-  SyncQueryRunner,
-  SyncQueryRunnerParams,
   Uuid,
   adminConfigurationDeploymentMiroir,
-  dummyDomainManyQueryWithDeploymentUuid,
-  getQueryRunnerParamsForDeploymentEntityState
+  entityTransformerTest
 } from "miroir-core";
-import { getMemoizedDeploymentEntityStateSelectorMap } from 'miroir-localcache-redux';
 
 import {
   useDomainControllerService,
   useMiroirContextService
 } from "../../MiroirContextReactProvider.js";
 
-import { javascript } from '@codemirror/lang-javascript';
 import { Toc } from '@mui/icons-material';
-import { ErrorBoundary } from "react-error-boundary";
 import { packageName } from '../../../../constants.js';
-import { JzodEnumSchemaToJzodElementResolver, getCurrentEnumJzodSchemaResolver } from '../../../JzodTools.js';
 import { cleanLevel } from '../../constants.js';
 import {
-  useCurrentModel,
-  useDeploymentEntityStateQuerySelectorForCleanedResult
+  useCurrentModel
 } from "../../ReduxHooks.js";
-import {
-  measuredGetApplicationSection,
-  measuredJzodTypeCheck
-} from "../../tools/hookPerformanceMeasure.js";
 import { useRenderTracker } from '../../tools/renderCountTracker.js';
 import { RenderPerformanceMetrics } from '../../tools/renderPerformanceMeasure.js';
-import { ErrorFallbackComponent } from '../ErrorFallbackComponent.js';
+import { RunTransformerTestSuiteButton } from '../Buttons/RunTransformerTestSuiteButton.js';
+import { ValueObjectGrid } from '../Grids/ValueObjectGrid.js';
 import { useDocumentOutlineContext } from '../Page/RootComponent.js';
 import {
   ThemedCodeBlock,
+  // ThemedCodeBlock,
   ThemedContainer,
   ThemedHeaderSection,
   ThemedIconButton,
@@ -64,15 +45,19 @@ import {
   ThemedTitle,
   ThemedTooltip
 } from "../Themes/ThemedComponents.js";
-import { JzodElementEditor } from '../ValueObjectEditor/JzodElementEditor.js';
-// import { GlobalRenderPerformanceDisplay, RenderPerformanceDisplay, trackRenderPerformance } from '../tools/renderPerformanceMeasure.js';
+import { TestCellWithDetails } from './TestCellWithDetails.js';
+import { TestResultCellWithActualValue } from './TestResultCellWithActualValue.js';
+import { TypedValueObjectEditor } from './TypedValueObjectEditor.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ReportSectionEntityInstance")
 ).then((logger: LoggerInterface) => {log = logger});
 
+// ################################################################################################
+// ################################################################################################
 // Safe stringify function that prevents "Invalid string length" errors
+// ################################################################################################
 function safeStringify(obj: any, maxLength: number = 2000): string {
   try {
     const str = JSON.stringify(obj, null, 2);
@@ -132,73 +117,90 @@ export interface ReportSectionEntityInstanceProps {
   entityUuid: Uuid,
   // Note: Outline props removed since using context now
   showPerformanceDisplay?: boolean;
+  zoomInPath?: string; // Optional path like "x.y.z" to zoom into a subset of the instance
+  maxRenderDepth?: number; // Optional max depth for initial rendering, default 1
 }
-
-const codeMirrorExtensions = [javascript()];
-
-// const label = { inputProps: { 'aria-label': 'Color switch demo' } };
 
 // ###############################################################################################################
 export const ReportSectionEntityInstance = (props: ReportSectionEntityInstanceProps) => {
   const renderStartTime = performance.now();
-  
+
   // const errorLog = useErrorLogService();
   const context = useMiroirContextService();
   const showPerformanceDisplay = context.showPerformanceDisplay;
   // const { currentTheme } = useMiroirTheme();
 
   const navigationKey = `${props.deploymentUuid}-${props.applicationSection}`;
-  const { navigationCount, totalCount } = useRenderTracker("ReportSectionEntityInstance", navigationKey);
+  const { navigationCount, totalCount } = useRenderTracker(
+    "ReportSectionEntityInstance",
+    navigationKey
+  );
 
   // Track performance immediately for initial render
   const componentKey = `ReportSectionEntityInstance-${props.instance?.uuid || props.entityUuid}`;
-  
+
   log.info(
     "++++++++++++++++++++++++++++++++ render",
-    "navigationCount", navigationCount,
-    "totalCount", totalCount,
+    "navigationCount",
+    navigationCount,
+    "totalCount",
+    totalCount,
     "with props",
     props
   );
 
   const [displayAsStructuredElement, setDisplayAsStructuredElement] = useState(true);
   const [displayEditor, setDisplayEditor] = useState(true);
-  const [foldedObjectAttributeOrArrayItems, setFoldedObjectAttributeOrArrayItems] = useState<{ [k: string]: boolean }>({});
+  // const [maxRenderDepth, setMaxRenderDepth] = useState<number>(props.maxRenderDepth ?? 1);
+  const [resolveConditionalSchemaResultsData, setResolveConditionalSchemaResultsData] = useState<
+    any[]
+  >([]); // TODO: use a precise type!
 
   // Use outline context for outline state management
   const outlineContext = useDocumentOutlineContext();
   const isOutlineOpen = outlineContext.isOutlineOpen;
   const handleToggleOutline = outlineContext.onToggleOutline;
 
-
   const instance: any = props.instance;
 
-  const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<DeploymentEntityState> =
-    useMemo(() => getMemoizedDeploymentEntityStateSelectorMap(), []);
-
   const currentModel: MetaModel = useCurrentModel(
-    context.applicationSection == "data" ? context.deploymentUuid : adminConfigurationDeploymentMiroir.uuid
+    context.applicationSection == "data"
+      ? context.deploymentUuid
+      : adminConfigurationDeploymentMiroir.uuid
   );
 
   const domainController: DomainControllerInterface = useDomainControllerService();
-  
+
   const currentReportDeploymentSectionEntities: Entity[] = currentModel.entities; // Entities are always defined in the 'model' section
-  const currentReportDeploymentSectionEntityDefinitions: EntityDefinition[] = currentModel.entityDefinitions; // EntityDefinitions are always defined in the 'model' section
+  const currentReportDeploymentSectionEntityDefinitions: EntityDefinition[] =
+    currentModel.entityDefinitions; // EntityDefinitions are always defined in the 'model' section
 
-  // log.info(
-  //   "ReportSectionEntityInstance currentReportDeploymentSectionEntities",
-  //   currentReportDeploymentSectionEntities
-  // );
-
-  const currentReportTargetEntity: Entity | undefined = currentReportDeploymentSectionEntities?.find(
-    (e) => e?.uuid === props.entityUuid
-  );
+  const currentReportTargetEntity: Entity | undefined =
+    currentReportDeploymentSectionEntities?.find((e) => e?.uuid === props.entityUuid);
 
   const currentReportTargetEntityDefinition: EntityDefinition | undefined =
-    currentReportDeploymentSectionEntityDefinitions?.find((e) => e?.entityUuid === currentReportTargetEntity?.uuid);
+    currentReportDeploymentSectionEntityDefinitions?.find(
+      (e) => e?.entityUuid === currentReportTargetEntity?.uuid
+    );
 
+  const [foldedObjectAttributeOrArrayItems, setFoldedObjectAttributeOrArrayItems] = useState<{
+    [k: string]: boolean;
+    // }>({"ROOT": true}); // Initialize with empty key to handle root object folding
+  }>(
+    currentReportTargetEntityDefinition?.display?.foldSubLevels
+      ? Object.fromEntries(
+          Object.entries(currentReportTargetEntityDefinition?.display?.foldSubLevels).map(
+            ([keyMapEntry, value]) => [keyMapEntry.replace("#", "."), value]
+          )
+        )
+      : {}
+  ); // Initialize with empty key to handle root object folding
 
-  const pageLabel: string = props.applicationSection + "." + currentReportTargetEntity?.name;
+  const formLabel: string =
+    props.applicationSection +
+    "." +
+    currentReportTargetEntity?.name +
+    (props.zoomInPath ? ` (${props.zoomInPath})` : "");
 
   // Update the outline title when the current entity changes
   useEffect(() => {
@@ -208,10 +210,10 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   }, [currentReportTargetEntity?.name, outlineContext.setOutlineTitle]);
 
   const labelElement = useMemo(() => {
-    return pageLabel ? <ThemedLabel id={"label." + pageLabel}>{pageLabel}</ThemedLabel> : undefined;
-  }, [pageLabel]);
+    return formLabel ? <ThemedLabel id={"label." + formLabel}>{formLabel}</ThemedLabel> : undefined;
+  }, [formLabel]);
 
-  const currentMiroirModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
+  // const currentMiroirModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
 
   // const currentEnumJzodSchemaResolver: JzodEnumSchemaToJzodElementResolver | undefined = useMemo(
   //   () =>
@@ -234,11 +236,14 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
     if (props.instance?.uuid) {
       const renderEndTime = performance.now();
       const renderDuration = renderEndTime - renderStartTime;
-      
+
       // Only track performance if render took longer than 5ms or every 100 renders
       if (renderDuration > 5) {
-        const currentMetrics = RenderPerformanceMetrics.trackRenderPerformance(componentKey, renderDuration);
-    
+        const currentMetrics = RenderPerformanceMetrics.trackRenderPerformance(
+          componentKey,
+          renderDuration
+        );
+
         // Log performance every 100 renders or if render took longer than 15ms
         if (currentMetrics.renderCount % 100 === 0 || renderDuration > 15) {
           log.info(
@@ -256,18 +261,20 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
     }
   }, [props.instance, props.entityUuid]);
   // });
-  
-  
+
   // ##############################################################################################
-  const handleDisplayEditorSwitchChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-    setDisplayEditor(event.target.checked);
-  },[setDisplayEditor]);
-  
+  const handleDisplayEditorSwitchChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      setDisplayEditor(event.target.checked);
+    },
+    [setDisplayEditor]
+  );
+
   // ##############################################################################################
-  const onEditFormObject = useCallback(
+  const onEditValueObjectFormSubmit = useCallback(
     async (data: any) => {
       // const newEntity:EntityInstance = Object.assign({...data as EntityInstance},{attributes:dialogFormObject?dialogFormObject['attributes']:[]});
-      log.info("ReportComponent onEditFormObject called with new object value", data);
+      log.info("onEditValueObjectFormSubmit called with new object value", data);
 
       if (props.deploymentUuid) {
         if (props.applicationSection == "model") {
@@ -288,7 +295,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                       instances: [data],
                     },
                   ],
-                }
+                },
               },
             },
             currentModel
@@ -299,44 +306,199 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
             deploymentUuid: props.deploymentUuid,
             endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
             payload: {
-              applicationSection: props.applicationSection
-                ? props.applicationSection
-                : "data",
+              applicationSection: props.applicationSection ? props.applicationSection : "data",
               objects: [
                 {
                   parentName: data.name,
                   parentUuid: data.parentUuid,
-                  applicationSection: props.applicationSection
-                    ? props.applicationSection
-                    : "data",
+                  applicationSection: props.applicationSection ? props.applicationSection : "data",
                   instances: [data],
                 },
               ],
-            }
+            },
           };
           await domainController.handleAction(updateAction);
         }
       } else {
-        throw new Error(
-          "ReportSectionEntityInstance onEditFormObject props.deploymentUuid is undefined."
-        );
+        throw new Error("onEditValueObjectFormSubmit props.deploymentUuid is undefined.");
       }
     },
     [domainController, props]
   );
-  
+
+  // ##############################################################################################
+  // Check if this is a TransformerTest entity instance
+  const isTransformerTestEntity = currentReportTargetEntity?.uuid === entityTransformerTest.uuid;
+  const isTransformerTest =
+    isTransformerTestEntity && instance?.parentUuid === entityTransformerTest.uuid;
+
+  // Log for debugging
+  log.info(
+    "ReportSectionEntityInstance - TransformerTest detection:",
+    "currentReportTargetEntity",
+    currentReportTargetEntity,
+    "entityUuid",
+    currentReportTargetEntity?.uuid,
+    "entityTransformerTest",
+    entityTransformerTest,
+    "instance",
+    instance,
+    "isTransformerTest",
+    isTransformerTest
+    //   {
+    //   transformerTestEntityUuid: entityTransformerTest.uuid,
+    //   isTransformerTestEntity,
+    //   instanceTransformerTestType: instance?.transformerTestType,
+    //   instanceName: instance?.name,
+    //   transformerTestLabel: instance?.transformerTestLabel
+    // }
+  );
+
   // ##############################################################################################
   if (instance) {
     return (
       <ThemedContainer>
         <div>
-          {/* <RenderPerformanceDisplay componentKey={componentKey} indentLevel={0} /> */}
-
           {showPerformanceDisplay && (
             <ThemedText>
               ReportSectionEntityInstance renders: {navigationCount} (total: {totalCount})
             </ThemedText>
           )}
+
+          {/* Show test button if this is a TransformerTest entity */}
+          {isTransformerTest && (
+            <div
+              style={{
+                marginBottom: "16px",
+                padding: "12px",
+                backgroundColor: "#e8f4fd",
+                borderRadius: "8px",
+                border: "1px solid #b3d9ff",
+                boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+              }}
+            >
+              <div style={{ marginBottom: "8px", fontWeight: "bold", color: "#1976d2" }}>
+                🧪 Transformer Test Available
+              </div>
+              <RunTransformerTestSuiteButton
+                transformerTestSuite={instance}
+                testSuiteKey={instance.transformerTestLabel || instance.name || "TransformerTest"}
+                useSnackBar={true}
+                onTestComplete={(testSuiteKey, structuredResults) => {
+                  setResolveConditionalSchemaResultsData(structuredResults);
+                  log.info(`Test completed for ${testSuiteKey}:`, structuredResults);
+                }}
+                label={`▶️ Run ${instance.transformerTestLabel || "Transformer Test"}`}
+                style={{
+                  backgroundColor: "#1976d2",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "6px",
+                  padding: "8px 16px",
+                  fontWeight: "bold",
+                }}
+              />
+              {/* Test Results Display */}
+              {resolveConditionalSchemaResultsData &&
+                resolveConditionalSchemaResultsData.length > 0 && (
+                  <div style={{ margin: "20px 0" }}>
+                    <h3>resolveConditionalSchema Test Results:</h3>
+                    <ValueObjectGrid
+                      valueObjects={resolveConditionalSchemaResultsData}
+                      jzodSchema={{
+                        type: "object",
+                        definition: {
+                          testName: { type: "string" },
+                          testResult: { type: "string" },
+                          status: { type: "string" },
+                          assertionCount: { type: "number" },
+                          assertions: { type: "string" },
+                          fullAssertionsResults: {
+                            type: "object",
+                            definition: {},
+                          },
+                        },
+                      }}
+                      columnDefs={{
+                        columnDefs: [
+                          {
+                            field: "testName",
+                            headerName: "Test Name",
+                            cellRenderer: (params: any) => (
+                              <TestCellWithDetails
+                                value={params.value}
+                                testData={params.data.rawValue}
+                                testName={params.data.rawValue.testName}
+                                type="testName"
+                              />
+                            ),
+                            width: 200,
+                          },
+                          {
+                            field: "status",
+                            headerName: "Status",
+                            cellRenderer: (params: any) => (
+                              <TestCellWithDetails
+                                value={params.value}
+                                testData={params.data.rawValue}
+                                testName={params.data.rawValue.testName}
+                                type="status"
+                              />
+                            ),
+                            width: 100,
+                          },
+                          {
+                            field: "testResult",
+                            headerName: "Result",
+                            cellRenderer: (params: any) => (
+                              <TestResultCellWithActualValue
+                                value={params.value}
+                                testData={params.data.rawValue}
+                                testName={params.data.rawValue.testName}
+                              />
+                            ),
+                            width: 100,
+                          },
+                          {
+                            field: "assertionCount",
+                            headerName: "Assertions",
+                            width: 100,
+                          },
+                          {
+                            field: "assertions",
+                            headerName: "Summary",
+                            cellRenderer: (params: any) => (
+                              <div
+                                style={{
+                                  maxWidth: "200px",
+                                  overflow: "hidden",
+                                  textOverflow: "ellipsis",
+                                  whiteSpace: "nowrap",
+                                  cursor: "pointer",
+                                }}
+                                title="Click test name or status for full details"
+                              >
+                                {params.value}
+                              </div>
+                            ),
+                            width: 250,
+                          },
+                        ],
+                      }}
+                      styles={{
+                        height: "400px",
+                        width: "100%",
+                      }}
+                      maxRows={20}
+                      sortByAttribute="testName"
+                      displayTools={false}
+                      gridType="ag-grid"
+                    />
+                  </div>
+                )}
+            </div>
+          )}
+
           <div>
             <label htmlFor="displayEditorSwitch">Display editor:</label>
             <ThemedSwitch
@@ -345,6 +507,65 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
               onChange={handleDisplayEditorSwitchChange}
             />
           </div>
+
+          {/* {displayEditor && (
+            <div style={{ marginTop: "12px", padding: "12px", backgroundColor: "#f5f5f5", borderRadius: "6px" }}>
+              <ThemedText style={{ fontWeight: "bold", marginBottom: "8px" }}>
+                🎛️ Rendering Depth Controls
+              </ThemedText>
+              
+              <ThemedFlexRow align="center" style={{ marginBottom: "8px" }}>
+                <ThemedLabel style={{ marginRight: "12px", minWidth: "120px" }}>
+                  Max Render Depth:
+                </ThemedLabel>
+                <ThemedTextField
+                  type="number"
+                  value={maxRenderDepth.toString()}
+                  onChange={handleMaxRenderDepthChange}
+                  style={{ width: "80px", marginRight: "12px" }}
+                  minWidth="80px"
+                  maxWidth="80px"
+                />
+                <ThemedText style={{ fontSize: "0.85em", color: "#666" }}>
+                  (1 = shallow, higher = deeper)
+                </ThemedText>
+              </ThemedFlexRow>
+              
+              <ThemedFlexRow align="center" style={{ gap: "8px" }}>
+                <ThemedText style={{ marginRight: "8px" }}>Quick expand to:</ThemedText>
+                <ThemedButton
+                  onClick={() => handleUnfoldToDepth(1)}
+                  style={{ fontSize: "0.8em", padding: "4px 8px" }}
+                >
+                  Depth 1
+                </ThemedButton>
+                <ThemedButton
+                  onClick={() => handleUnfoldToDepth(2)}
+                  style={{ fontSize: "0.8em", padding: "4px 8px" }}
+                >
+                  Depth 2
+                </ThemedButton>
+                <ThemedButton
+                  onClick={() => handleUnfoldToDepth(3)}
+                  style={{ fontSize: "0.8em", padding: "4px 8px" }}
+                >
+                  Depth 3
+                </ThemedButton>
+                <ThemedButton
+                  onClick={() => handleUnfoldToDepth(-1)}
+                  style={{ fontSize: "0.8em", fontWeight: "bold", padding: "4px 8px" }}
+                >
+                  Full ∞
+                </ThemedButton>
+                <ThemedButton
+                  onClick={handleCollapseAll}
+                  style={{ fontSize: "0.8em", padding: "4px 8px" }}
+                >
+                  Collapse
+                </ThemedButton>
+              </ThemedFlexRow>
+            </div>
+          )} */}
           <div>
             <ThemedStatusText>
               displayAsStructuredElement: {displayAsStructuredElement ? "true" : "false"}{" "}
@@ -355,6 +576,11 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
           <ThemedHeaderSection>
             <ThemedTitle>
               {currentReportTargetEntity?.name} details: {instance.name}{" "}
+              {props.zoomInPath && (
+                <span style={{ fontSize: "0.8em", fontStyle: "italic", color: "#666" }}>
+                  (viewing: {props.zoomInPath})
+                </span>
+              )}
             </ThemedTitle>
             {displayEditor && (
               <ThemedTooltip
@@ -371,64 +597,85 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
               </ThemedTooltip>
             )}
           </ThemedHeaderSection>
-          {
-            // currentReportTargetEntity &&
-            // currentEnumJzodSchemaResolver &&
-            currentReportTargetEntityDefinition && context.applicationSection ? (
-              // resolvedJzodSchema &&
-              // (resolvedJzodSchema as any)?.status == "ok"
-              displayEditor ? (
-                <FreeFormEditor
-                  instance={instance}
-                  pageLabel={pageLabel}
-                  onEditFormObject={onEditFormObject}
-                  currentReportTargetEntityDefinition={currentReportTargetEntityDefinition}
-                  context={context}
-                  currentModel={currentModel}
-                  currentMiroirModel={currentMiroirModel}
-                  navigationCount={navigationCount}
-                  deploymentEntityStateSelectorMap={deploymentEntityStateSelectorMap}
-                  deploymentUuid={props.deploymentUuid}
-                  applicationSection={props.applicationSection}
-                  // props={props}
-                  labelElement={labelElement}
-                  foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
-                  setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
-                />
-              ) : (
-                <div>
-                  {displayAsStructuredElement ? (
-                    <div>Can not display non-editor as structured element</div>
-                  ) : (
-                    <div>
-                      <ThemedCodeBlock>{safeStringify(instance)}</ThemedCodeBlock>
-                    </div>
-                  )}
-                </div>
-              )
+          {currentReportTargetEntityDefinition && context.applicationSection ? (
+            displayEditor ? (
+              <TypedValueObjectEditor
+                labelElement={labelElement}
+                valueObject={instance}
+                valueObjectMMLSchema={currentReportTargetEntityDefinition.jzodSchema}
+                deploymentUuid={props.deploymentUuid}
+                applicationSection={props.applicationSection}
+                //
+                formLabel={formLabel}
+                onSubmit={onEditValueObjectFormSubmit}
+                foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
+                setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
+                zoomInPath={props.zoomInPath}
+                maxRenderDepth={Infinity} // Always render fully for editor
+              />
             ) : (
               <div>
-                Oops, ReportSectionEntityInstance could not be displayed.
-                <p />
-                <div>props selfApplication section: {props.applicationSection}</div>
-                <div>context selfApplication section: {context.applicationSection}</div>
-                <div>
-                  target entity:{" "}
-                  {currentReportTargetEntity?.name ?? "report target entity not found!"}
-                </div>
-                {/* <div>resolved schema: {JSON.stringify(resolvedJzodSchema)}</div> */}
-                <ThemedPreformattedText>
-                  target entity definition:{" "}
-                  {currentReportTargetEntityDefinition?.name ??
-                    "report target entity definition not found!"}
-                </ThemedPreformattedText>
-                <div> ######################################## </div>
-                <ThemedPreformattedText>
-                  entity jzod schema: {safeStringify(instance?.jzodSchema)}
-                </ThemedPreformattedText>
+                {displayAsStructuredElement ? (
+                  <div>Can not display non-editor as structured element</div>
+                ) : (
+                  <div>
+                    {props.zoomInPath && (
+                      <div
+                        style={{
+                          marginBottom: "8px",
+                          fontSize: "0.9em",
+                          color: "#666",
+                          fontStyle: "italic",
+                        }}
+                      >
+                        Viewing path: {props.zoomInPath}
+                      </div>
+                    )}
+                    <ThemedCodeBlock>
+                      {safeStringify(
+                        props.zoomInPath
+                          ? (() => {
+                              const pathParts = props.zoomInPath.split(".");
+                              let current = instance;
+                              for (const part of pathParts) {
+                                if (current && typeof current === "object") {
+                                  current = current[part];
+                                } else {
+                                  return `Path "${props.zoomInPath}" not found`;
+                                }
+                              }
+                              return current;
+                            })()
+                          : instance
+                      )}
+                    </ThemedCodeBlock>
+                  </div>
+                )}
               </div>
             )
-          }
+          ) : (
+            <div>
+              Oops, ReportSectionEntityInstance could not be displayed.
+              <p />
+              <div>props selfApplication section: {props.applicationSection}</div>
+              <div>context selfApplication section: {context.applicationSection}</div>
+              <div>
+                target entity:{" "}
+                {currentReportTargetEntity?.name ?? "report target entity not found!"}
+              </div>
+              {props.zoomInPath && <div>zoom path: {props.zoomInPath}</div>}
+              {/* <div>resolved schema: {JSON.stringify(resolvedJzodSchema)}</div> */}
+              <ThemedPreformattedText>
+                target entity definition:{" "}
+                {currentReportTargetEntityDefinition?.name ??
+                  "report target entity definition not found!"}
+              </ThemedPreformattedText>
+              <div> ######################################## </div>
+              <ThemedPreformattedText>
+                entity jzod schema: {safeStringify(instance?.jzodSchema)}
+              </ThemedPreformattedText>
+            </div>
+          )}
         </div>
         {/* <PerformanceMetricsDisplay /> */}
       </ThemedContainer>
@@ -438,286 +685,3 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   }
 };
 
-// ################################################################################################
-// ################################################################################################
-// ################################################################################################
-// ################################################################################################
-// ################################################################################################
-// ################################################################################################
-// ################################################################################################
-// ################################################################################################
-// ################################################################################################
-// ################################################################################################
-// Extracted editor component for ReportSectionEntityInstance
-interface FreeFormEditorProps {
-  // instance?: EntityInstance,
-  instance?: any,
-  domainElement?: Record<string,any>,
-  applicationSection: ApplicationSection,
-  deploymentUuid: Uuid,
-  // entityUuid: Uuid,
-  // Note: Outline props removed since using context now
-  showPerformanceDisplay?: boolean;
-  pageLabel: string;
-  onEditFormObject: (data: any) => Promise<void>;
-  currentReportTargetEntityDefinition: EntityDefinition | undefined;
-  context: any;
-  currentModel: MetaModel;
-  currentMiroirModel: MetaModel;
-  navigationCount: number;
-  deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<DeploymentEntityState>;
-  // props: ReportSectionEntityInstanceProps;
-  labelElement: React.ReactElement | undefined;
-  foldedObjectAttributeOrArrayItems: { [k: string]: boolean };
-  setFoldedObjectAttributeOrArrayItems: React.Dispatch<React.SetStateAction<{ [k: string]: boolean }>>;
-}
-
-const FreeFormEditor: React.FC<FreeFormEditorProps> = ({
-  instance,
-  // Note: Outline props removed since using context now
-  // showPerformanceDisplay?: boolean;
-  pageLabel,
-  onEditFormObject,
-  currentReportTargetEntityDefinition,
-  deploymentUuid,
-  applicationSection,
-  // context,
-  // currentModel,
-  // currentMiroirModel,
-  navigationCount,
-  deploymentEntityStateSelectorMap,
-  // props,
-  labelElement,
-  foldedObjectAttributeOrArrayItems,
-  setFoldedObjectAttributeOrArrayItems,
-}) => {
-  // ...existing code...
-  const context = useMiroirContextService();
-  const currentModel: MetaModel = useCurrentModel(
-    context.applicationSection == "data" ? context.deploymentUuid : adminConfigurationDeploymentMiroir.uuid
-  );
-  const currentMiroirModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
-  log.info(
-    "ReportSectionEntityInstanceEditor render",
-    "navigationCount",
-    navigationCount,
-    "instance",
-    instance,
-    "currentReportTargetEntityDefinition",
-    currentReportTargetEntityDefinition
-  );
-  return (
-    <Formik
-      enableReinitialize={true}
-      initialValues={instance}
-      onSubmit={async (values, { setSubmitting, setErrors }) => {
-        try {
-          log.info("onSubmit formik values", values);
-          await onEditFormObject(values);
-        } catch (e) {
-          log.error(e);
-        } finally {
-          setSubmitting(false);
-        }
-      }}
-      validateOnChange={false}
-      validateOnBlur={false}
-    >
-      {(formik: FormikProps<Record<string, any>>) => {
-        let typeError: JSX.Element | undefined = undefined;
-        const resolvedJzodSchema: ResolvedJzodSchemaReturnType | undefined =
-          useMemo(() => {
-            let result: ResolvedJzodSchemaReturnType | undefined = undefined;
-            try {
-              result =
-                context.miroirFundamentalJzodSchema &&
-                currentReportTargetEntityDefinition?.jzodSchema &&
-                formik.values &&
-                currentModel
-                  ? measuredJzodTypeCheck(
-                      currentReportTargetEntityDefinition?.jzodSchema,
-                      formik.values,
-                      [],
-                      [],
-                      context.miroirFundamentalJzodSchema,
-                      currentModel,
-                      currentMiroirModel,
-                      {}
-                    )
-                  : undefined;
-            } catch (e) {
-              log.error(
-                "ReportSectionEntityInstance useMemo error",
-                e,
-                context
-              );
-              result = {
-                status: "error",
-                valuePath: [],
-                typePath: [],
-                error: JSON.stringify(e, Object.getOwnPropertyNames(e)),
-              };
-            }
-            return result;
-          }, [currentReportTargetEntityDefinition, instance, context]);
-        log.info(
-          "ReportSectionEntityInstance jzodTypeCheck done for render",
-          navigationCount,
-          "resolvedJzodSchema",
-          resolvedJzodSchema
-        );
-        if (!resolvedJzodSchema || resolvedJzodSchema.status != "ok") {
-          log.error(
-            "ReportSectionEntityInstance could not resolve jzod schema",
-            resolvedJzodSchema
-          );
-          const jsonString = JSON.stringify(resolvedJzodSchema, null, 2);
-          const lines = jsonString.split("\n");
-          const maxLineLength = Math.max(...lines.map((line) => line.length));
-          const fixedWidth = Math.min(Math.max(maxLineLength * 0.6, 1200), 1800);
-          typeError = (
-            <ReactCodeMirror
-              editable={false}
-              height="100ex"
-              style={{
-                width: `${fixedWidth}px`,
-                maxWidth: "90vw",
-              }}
-              value={jsonString}
-              extensions={[
-                ...codeMirrorExtensions,
-                EditorView.lineWrapping,
-                EditorView.theme({
-                  ".cm-editor": {
-                    width: `${fixedWidth}px`,
-                  },
-                  ".cm-scroller": {
-                    width: "100%",
-                    overflow: "hidden",
-                  },
-                  ".cm-content": {
-                    minWidth: `${fixedWidth}px`,
-                  },
-                }),
-              ]}
-              basicSetup={{
-                foldGutter: true,
-                lineNumbers: true,
-              }}
-            />
-          );
-        }
-
-        const foreignKeyObjectsFetchQueryParams: SyncQueryRunnerParams<DeploymentEntityState> =
-          useMemo(
-            () =>
-              getQueryRunnerParamsForDeploymentEntityState(
-                deploymentUuid &&
-                  resolvedJzodSchema &&
-                  resolvedJzodSchema.status == "ok" &&
-                  resolvedJzodSchema.resolvedSchema.type == "uuid" &&
-                  resolvedJzodSchema.resolvedSchema.tag?.value?.targetEntity
-                  ? {
-                      queryType: "boxedQueryWithExtractorCombinerTransformer",
-                      deploymentUuid: deploymentUuid,
-                      pageParams: {},
-                      queryParams: {},
-                      contextResults: {},
-                      extractors: {
-                        [resolvedJzodSchema.resolvedSchema.tag?.value?.targetEntity]: {
-                          extractorOrCombinerType: "extractorByEntityReturningObjectList",
-                          applicationSection: measuredGetApplicationSection(
-                            deploymentUuid,
-                            resolvedJzodSchema.resolvedSchema.tag?.value?.targetEntity
-                          ),
-                          parentName: "",
-                          parentUuid: resolvedJzodSchema.resolvedSchema.tag?.value?.targetEntity,
-                        },
-                      },
-                    }
-                  : dummyDomainManyQueryWithDeploymentUuid,
-                deploymentEntityStateSelectorMap
-              ),
-            [deploymentEntityStateSelectorMap, deploymentUuid, resolvedJzodSchema]
-          );
-
-        const foreignKeyObjects: Record<string, EntityInstancesUuidIndex> =
-          useDeploymentEntityStateQuerySelectorForCleanedResult(
-            deploymentEntityStateSelectorMap.runQuery as SyncQueryRunner<
-              DeploymentEntityState,
-              Domain2QueryReturnType<DomainElementSuccess>
-            >,
-            foreignKeyObjectsFetchQueryParams
-          );
-
-        return (
-          <>
-            <div>
-              {typeError ? "typeError: " : ""}
-              <ThemedCodeBlock>{typeError ?? <></>}</ThemedCodeBlock>
-            </div>
-            <form id={"form." + pageLabel} onSubmit={formik.handleSubmit}>
-              <div>
-                <ErrorBoundary
-                  FallbackComponent={({ error, resetErrorBoundary }) => (
-                    <ErrorFallbackComponent
-                      error={error}
-                      resetErrorBoundary={resetErrorBoundary}
-                      context={{
-                        origin: "ReportSectionEntityInstance",
-                        objectType: "root_editor",
-                        rootLessListKey: "ROOT",
-                        currentValue: instance,
-                        formikValues: undefined,
-                        rawJzodSchema: currentReportTargetEntityDefinition?.jzodSchema,
-                        localResolvedElementJzodSchemaBasedOnValue:
-                          resolvedJzodSchema?.status == "ok"
-                            ? resolvedJzodSchema.resolvedSchema
-                            : undefined,
-                      }}
-                    />
-                  )}
-                >
-                  <JzodElementEditor
-                    name={"ROOT"}
-                    listKey={"ROOT"}
-                    rootLessListKey=""
-                    rootLessListKeyArray={[]}
-                    labelElement={labelElement}
-                    indentLevel={0}
-                    currentDeploymentUuid={deploymentUuid}
-                    currentApplicationSection={applicationSection}
-                    resolvedElementJzodSchema={
-                      resolvedJzodSchema?.status == "ok"
-                        ? resolvedJzodSchema.resolvedSchema
-                        : undefined
-                    }
-                    hasTypeError={typeError != undefined}
-                    typeCheckKeyMap={
-                      resolvedJzodSchema?.status == "ok"
-                        ? resolvedJzodSchema.keyMap
-                        : {}
-                    }
-                    foreignKeyObjects={foreignKeyObjects}
-                    foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
-                    setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
-                    submitButton={
-                      <button
-                        type="submit"
-                        role="form"
-                        name={pageLabel}
-                        form={"form." + pageLabel}
-                      >
-                        submit form.{pageLabel}
-                      </button>
-                    }
-                  />
-                </ErrorBoundary>
-              </div>
-            </form>
-          </>
-        );
-      }}
-    </Formik>
-  );
-};

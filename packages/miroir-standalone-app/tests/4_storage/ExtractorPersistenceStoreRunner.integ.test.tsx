@@ -756,12 +756,9 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
                   transformerType: "unique",
                   interpolation: "runtime",
                   applyTo: {
-                    referenceType: "referencedTransformer",
-                    reference: {
-                      transformerType: "contextReference",
-                      interpolation: "runtime",
-                      referenceName: "books",
-                    }
+                    transformerType: "contextReference",
+                    interpolation: "runtime",
+                    referenceName: "books",
                   },
                   // referencedTransformer: "books",
                   attribute: "author",
@@ -819,12 +816,9 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
                   interpolation: "runtime",
                   transformerType: "count",
                   applyTo: {
-                    referenceType: "referencedTransformer",
-                    reference: {
-                      transformerType: "contextReference",
-                      interpolation: "runtime",
-                      referenceName: "books",
-                    }
+                    transformerType: "contextReference",
+                    interpolation: "runtime",
+                    referenceName: "books",
                   },
                   // referencedTransformer: "books",
                 },
@@ -877,12 +871,9 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
               runtimeTransformers: {
                 countBooksByAuthors: {
                   applyTo: {
-                    referenceType: "referencedTransformer",
-                    reference: {
-                      transformerType: "contextReference",
-                      interpolation: "runtime",
-                      referenceName: "books",
-                    },
+                    transformerType: "contextReference",
+                    interpolation: "runtime",
+                    referenceName: "books",
                   },
                   transformerType: "count",
                   interpolation: "runtime",
@@ -949,12 +940,9 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
                   transformerType: "object_fullTemplate",
                   interpolation: "runtime",
                   applyTo: {
-                    referenceType: "referencedTransformer",
-                    reference: {
-                      transformerType: "contextReference",
-                      interpolation: "runtime",
-                      referenceName: "book",
-                    }
+                    transformerType: "contextReference",
+                    interpolation: "runtime",
+                    referenceName: "book",
                   },
                   referenceToOuterObject: "book",
                   definition: [
@@ -1339,12 +1327,9 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
                   transformerType: "listPickElement",
                   interpolation: "runtime",
                   applyTo: {
-                    referenceType: "referencedTransformer",
-                    reference: {
-                      transformerType: "contextReference",
-                      interpolation: "runtime",
-                      referenceName: "books",
-                    }
+                    transformerType: "contextReference",
+                    interpolation: "runtime",
+                    referenceName: "books",
                   },
                   // referencedTransformer: "books",
                   index: 0,

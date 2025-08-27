@@ -1,11 +1,13 @@
 import { describe, it, expect } from "vitest";
+
+import { JzodElement } from "miroir-core";
+
 import {
   calculateAdaptiveColumnWidths,
   ColumnWidthSpec,
   ToolsColumnDefinition,
 } from "../../src/miroir-fwk/4_view/adaptiveColumnWidths";
-import { TableComponentRow } from "../../src/miroir-fwk/4_view/components/MTableComponentInterface";
-import { JzodElement } from "miroir-core";
+import { TableComponentRow } from "../../src/miroir-fwk/4_view/components/Grids/EntityInstanceGridInterface";
 
 const defaultToolsColumnDef: ToolsColumnDefinition = {
   field: "",
@@ -234,7 +236,7 @@ describe("calculateAdaptiveColumnWidths", () => {
       { field: "fk", headerName: "FK", cellRendererParams: { isFK: true, entityUuid: "entity1" } },
     ];
     const jzodSchema: Record<string, JzodElement> = {
-      fk: { type: "string", tag: { value: { targetEntity: "entity1" } } },
+      fk: { type: "string", tag: { value: { selectorParams: {targetEntity: "entity1"} } } },
     };
     const rows: TableComponentRow[] = [
       {

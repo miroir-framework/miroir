@@ -5,7 +5,7 @@ import {
   JzodObject,
   QueryByEntityUuidGetEntityDefinition
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import { DeploymentEntityState } from "../0_interfaces/2_domain/DeploymentStateInterface";
+import { ReduxDeploymentsState } from "../0_interfaces/2_domain/ReduxDeploymentsStateInterface";
 import { Domain2QueryReturnType } from "../0_interfaces/2_domain/DomainElement";
 import {
   ExtractorTemplateRunnerParamsForJzodSchema,
@@ -20,12 +20,12 @@ import { MiroirLoggerFactory } from "../4_services/LoggerFactory";
 const entityEntityDefinition = require("../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd.json");
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
-import { getDeploymentEntityStateIndex } from "./DeploymentEntityState";
+import { getReduxDeploymentsStateIndex } from "./ReduxDeploymentsState";
 import {
-  selectEntityInstanceFromDeploymentEntityState,
-  selectEntityInstanceListFromDeploymentEntityState,
-  selectEntityInstanceUuidIndexFromDeploymentEntityState,
-} from "./DeploymentEntityStateQuerySelectors";
+  selectEntityInstanceFromReduxDeploymentsState,
+  selectEntityInstanceListFromReduxDeploymentsState,
+  selectEntityInstanceUuidIndexFromReduxDeploymentsState,
+} from "./ReduxDeploymentsStateQuerySelectors";
 import {
   extractEntityInstanceListWithObjectListExtractorInMemory,
   extractEntityInstanceUuidIndexWithObjectListExtractorInMemory,
@@ -41,24 +41,25 @@ import {
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "DeploymentEntityStateQueryTemplateSelector")
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ReduxDeploymentsStateQueryTemplateSelector")
 ).then((logger: LoggerInterface) => {log = logger});
 
 // ################################################################################################
-export const runQueryTemplateFromDeploymentEntityState: SyncQueryTemplateRunner<
-  DeploymentEntityState,
+export const runQueryTemplateFromReduxDeploymentsState: SyncQueryTemplateRunner<
+  ReduxDeploymentsState,
   Domain2QueryReturnType<Record<string, any>>
-> = runQueryTemplateWithExtractorCombinerTransformer<DeploymentEntityState>;
+> = runQueryTemplateWithExtractorCombinerTransformer<ReduxDeploymentsState>;
 
 // ################################################################################################
 // #### selector Maps
 // ################################################################################################
-export function getDeploymentEntityStateSelectorTemplateMap(): SyncBoxedExtractorOrQueryRunnerMap<DeploymentEntityState> {
+export function getReduxDeploymentsStateSelectorTemplateMap(): SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> {
   return {
     extractorType: "sync",
-    extractEntityInstanceUuidIndex: selectEntityInstanceUuidIndexFromDeploymentEntityState,
-    extractEntityInstanceList: selectEntityInstanceListFromDeploymentEntityState,
-    extractEntityInstance: selectEntityInstanceFromDeploymentEntityState,
+    extractState: (deploymentEntityState: ReduxDeploymentsState, params: any) => deploymentEntityState,
+    extractEntityInstanceUuidIndex: selectEntityInstanceUuidIndexFromReduxDeploymentsState,
+    extractEntityInstanceList: selectEntityInstanceListFromReduxDeploymentsState,
+    extractEntityInstance: selectEntityInstanceFromReduxDeploymentsState,
     extractEntityInstanceUuidIndexWithObjectListExtractor:
       extractEntityInstanceUuidIndexWithObjectListExtractorInMemory,
     extractEntityInstanceListWithObjectListExtractor:
@@ -71,45 +72,45 @@ export function getDeploymentEntityStateSelectorTemplateMap(): SyncBoxedExtracto
 }
 
 // ################################################################################################
-export function getDeploymentEntityStateJzodSchemaSelectorTemplateMap(): QueryTemplateRunnerMapForJzodSchema<DeploymentEntityState> {
+export function getReduxDeploymentsStateJzodSchemaSelectorTemplateMap(): QueryTemplateRunnerMapForJzodSchema<ReduxDeploymentsState> {
   return {
     extractJzodSchemaForDomainModelQuery: extractJzodSchemaForDomainModelQueryTemplate,
-    extractEntityJzodSchema: extractEntityJzodSchemaFromDeploymentEntityStateForTemplate,
+    extractEntityJzodSchema: extractEntityJzodSchemaFromReduxDeploymentsStateForTemplate,
     extractFetchQueryJzodSchema: extractFetchQueryTemplateJzodSchema,
     extractzodSchemaForSingleSelectQuery: extractzodSchemaForSingleSelectQueryTemplate,
   };
 }
 
 // ################################################################################################
-export type GetExtractorTemplateRunnerParamsForDeploymentEntityState = <QueryType extends BoxedExtractorTemplateReturningObjectOrObjectList>(
+export type GetExtractorTemplateRunnerParamsForReduxDeploymentsState = <QueryType extends BoxedExtractorTemplateReturningObjectOrObjectList>(
   query: QueryType,
-  extractorRunnerMap?: SyncBoxedExtractorOrQueryRunnerMap<DeploymentEntityState>
-) => SyncBoxedExtractorTemplateRunnerParams<QueryType, DeploymentEntityState>;
-// ) => SyncExtractorOrQueryTemplateRunnerParams<QueryType, DeploymentEntityState>;
+  extractorRunnerMap?: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState>
+) => SyncBoxedExtractorTemplateRunnerParams<QueryType, ReduxDeploymentsState>;
+// ) => SyncExtractorOrQueryTemplateRunnerParams<QueryType, ReduxDeploymentsState>;
 
-export function getExtractorTemplateRunnerParamsForDeploymentEntityState<QueryType extends BoxedExtractorTemplateReturningObjectOrObjectList>(
+export function getExtractorTemplateRunnerParamsForReduxDeploymentsState<QueryType extends BoxedExtractorTemplateReturningObjectOrObjectList>(
   query: QueryType,
-  extractorRunnerMap?: SyncBoxedExtractorOrQueryRunnerMap<DeploymentEntityState>
-): SyncBoxedExtractorTemplateRunnerParams<QueryType, DeploymentEntityState> {
+  extractorRunnerMap?: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState>
+): SyncBoxedExtractorTemplateRunnerParams<QueryType, ReduxDeploymentsState> {
   return {
     extractorOrCombinerTemplate: query,
-    extractorRunnerMap: extractorRunnerMap ?? getDeploymentEntityStateSelectorTemplateMap(),
+    extractorRunnerMap: extractorRunnerMap ?? getReduxDeploymentsStateSelectorTemplateMap(),
   };
 }
 
 // ################################################################################################
-export type GetQueryTemplateRunnerParamsForDeploymentEntityState = (
+export type GetQueryTemplateRunnerParamsForReduxDeploymentsState = (
   query: BoxedQueryTemplateWithExtractorCombinerTransformer,
-  extractorRunnerMap?: SyncBoxedExtractorOrQueryRunnerMap<DeploymentEntityState>
-) => SyncQueryTemplateRunnerParams<DeploymentEntityState>;
+  extractorRunnerMap?: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState>
+) => SyncQueryTemplateRunnerParams<ReduxDeploymentsState>;
 
-export function getQueryTemplateRunnerParamsForDeploymentEntityState(
+export function getQueryTemplateRunnerParamsForReduxDeploymentsState(
   query: BoxedQueryTemplateWithExtractorCombinerTransformer,
-  extractorRunnerMap?: SyncBoxedExtractorOrQueryRunnerMap<DeploymentEntityState>
-): SyncQueryTemplateRunnerParams<DeploymentEntityState> {
+  extractorRunnerMap?: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState>
+): SyncQueryTemplateRunnerParams<ReduxDeploymentsState> {
   return {
     extractorOrCombinerTemplate: query,
-    extractorRunnerMap: extractorRunnerMap ?? getDeploymentEntityStateSelectorTemplateMap(),
+    extractorRunnerMap: extractorRunnerMap ?? getReduxDeploymentsStateSelectorTemplateMap(),
   };
 }
 
@@ -118,19 +119,19 @@ export function getQueryTemplateRunnerParamsForDeploymentEntityState(
 // JZOD SCHEMAs selectors
 // ################################################################################################
 // ACCESSES deploymentEntityState
-export const extractEntityJzodSchemaFromDeploymentEntityStateForTemplate = (
-  deploymentEntityState: DeploymentEntityState,
-  selectorParams: ExtractorTemplateRunnerParamsForJzodSchema<QueryByEntityUuidGetEntityDefinition, DeploymentEntityState>
+export const extractEntityJzodSchemaFromReduxDeploymentsStateForTemplate = (
+  deploymentEntityState: ReduxDeploymentsState,
+  selectorParams: ExtractorTemplateRunnerParamsForJzodSchema<QueryByEntityUuidGetEntityDefinition, ReduxDeploymentsState>
 ): JzodObject | undefined => {
   const localQuery: QueryByEntityUuidGetEntityDefinition = selectorParams.query;
 
-  const deploymentEntityStateIndex = getDeploymentEntityStateIndex(
+  const deploymentEntityStateIndex = getReduxDeploymentsStateIndex(
     localQuery.deploymentUuid,
     "model",
     entityEntityDefinition.uuid
   );
 
-  log.info("extractEntityJzodSchemaFromDeploymentEntityState called with selectorParams", selectorParams);
+  log.info("extractEntityJzodSchemaFromReduxDeploymentsState called with selectorParams", selectorParams);
 
   if (
     deploymentEntityState &&
@@ -144,7 +145,7 @@ export const extractEntityJzodSchemaFromDeploymentEntityStateForTemplate = (
     ).find((e: EntityDefinition) => e.entityUuid == selectorParams.query.entityUuid);
     if (!entityDefinition) {
       log.warn(
-        "extractEntityJzodSchemaFromDeploymentEntityState selectorParams",
+        "extractEntityJzodSchemaFromReduxDeploymentsState selectorParams",
         selectorParams,
         "could not find entity definition for index",
         deploymentEntityStateIndex,
@@ -162,12 +163,12 @@ export const extractEntityJzodSchemaFromDeploymentEntityStateForTemplate = (
     //   deploymentEntityState[deploymentEntityStateIndex].entities[selectorParams.query.entityUuid] as EntityDefinition
     // ).jzodSchema;
 
-    log.info("extractEntityJzodSchemaFromDeploymentEntityState selectorParams", selectorParams, "result", result);
+    log.info("extractEntityJzodSchemaFromReduxDeploymentsState selectorParams", selectorParams, "result", result);
 
     return result;
   } else {
     log.warn(
-      "extractEntityJzodSchemaFromDeploymentEntityState selectorParams",
+      "extractEntityJzodSchemaFromReduxDeploymentsState selectorParams",
       selectorParams,
       "could not find index",
       deploymentEntityStateIndex,
@@ -179,7 +180,7 @@ export const extractEntityJzodSchemaFromDeploymentEntityStateForTemplate = (
       localQuery.deploymentUuid
     );
     // throw new Error(
-    //   "DomainSelector extractEntityJzodSchemaFromDeploymentEntityState could not find entity " +
+    //   "DomainSelector extractEntityJzodSchemaFromReduxDeploymentsState could not find entity " +
     //     entityEntityDefinition.uuid +
     //     " in deployment " +
     //     localQuery.deploymentUuid +

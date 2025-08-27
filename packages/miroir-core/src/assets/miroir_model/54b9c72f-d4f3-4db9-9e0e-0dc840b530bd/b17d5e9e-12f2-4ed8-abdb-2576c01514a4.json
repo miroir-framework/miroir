@@ -44,17 +44,30 @@
       "preceding": {
         "type": "uuid",
         "optional": true,
-        "tag": { "value": {  "id":8, "defaultLabel": "Previous Commit", "targetEntity": "73bb0c69-e636-4e3b-a230-51f25469c089", "editable": false }}
+        "tag": {
+          "value": {
+            "id": 8,
+            "editable": false,
+            "defaultLabel": "Previous Commit",
+            "targetEntity": "73bb0c69-e636-4e3b-a230-51f25469c089",
+            "selectorParams": {
+              "targetEntity": "73bb0c69-e636-4e3b-a230-51f25469c089",
+              "targetEntityOrderInstancesBy": "name"
+            }
+          }
+        }
       },
       "branch": {
         "type": "uuid",
         "optional": true,
-        "tag": { "value": {  "id":9, "defaultLabel": "Author", "targetEntity": "", "editable": true }}
+        "tag": {
+          "value": { "id": 9, "defaultLabel": "Branch", "editable": true }
+        }
       },
       "author": {
         "type": "uuid",
         "optional": true,
-        "tag": { "value": {  "id":10, "defaultLabel": "Author", "targetEntity": "", "editable": true }}
+        "tag": { "value": { "id": 10, "defaultLabel": "Author", "editable": true } }
       },
       "description": {
         "type": "string",

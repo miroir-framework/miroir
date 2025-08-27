@@ -1,10 +1,10 @@
 import {
   getApplicationSection,
   getDefaultValueForJzodSchemaWithResolution,
-  getQueryRunnerParamsForDeploymentEntityState,
+  getQueryRunnerParamsForReduxDeploymentsState,
   jzodTypeCheck,
   measurePerformance,
-  rootLessListKeyMap,
+  rootLessListKeyMapDEFUNCT,
   unfoldJzodSchemaOnce,
 } from "miroir-core";
 import { useJzodElementEditorHooks } from "../components/ValueObjectEditor/JzodElementEditorHooks";
@@ -12,18 +12,18 @@ import { useJzodElementEditorHooks } from "../components/ValueObjectEditor/JzodE
 // Create measured versions of key functions used in this component
 export const measuredJzodTypeCheck = measurePerformance("jzodTypeCheck", jzodTypeCheck, 100);
 export const measuredRootLessListKeyMap = measurePerformance(
-  "rootLessListKeyMap",
-  rootLessListKeyMap,
+  "rootLessListKeyMapDEFUNCT",
+  rootLessListKeyMapDEFUNCT,
   100
 );
-export const measuredGetApplicationSection = measurePerformance(
-  "getApplicationSection",
-  getApplicationSection,
-  100
-);
-export const measuredGetQueryRunnerParamsForDeploymentEntityState = measurePerformance(
-  "getQueryRunnerParamsForDeploymentEntityState",
-  getQueryRunnerParamsForDeploymentEntityState,
+// export const measuredGetApplicationSection = measurePerformance(
+//   "getApplicationSection",
+//   getApplicationSection,
+//   100
+// );
+export const measuredGetQueryRunnerParamsForReduxDeploymentsState = measurePerformance(
+  "getQueryRunnerParamsForReduxDeploymentsState",
+  getQueryRunnerParamsForReduxDeploymentsState,
   100
 );
 

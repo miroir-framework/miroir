@@ -10,7 +10,7 @@ import { packageName } from "../../constants";
 import { mStringify } from "../../tools";
 import { cleanLevel } from "../constants";
 import { resolveJzodSchemaReferenceInContext } from "./jzodResolveSchemaReferenceInContext";
-import { ResolvedJzodSchemaReturnType, ResolvedJzodSchemaReturnTypeOK } from "./jzodTypeCheck";
+import type { ResolveBuildTransformersTo, Step } from "../../2_domain/Transformers";
 
 // export const miroirFundamentalJzodSchema2 = miroirFundamentalJzodSchema;
 // import { miroirFundamentalJzodSchema } from "../tmp/src/0_interfaces/1_core/bootstrapJzodSchemas/miroirFundamentalJzodSchema";
@@ -42,10 +42,6 @@ export function localizeJzodSchemaReferenceContext<T extends JzodElement>(
   miroirMetaModel?: MetaModel,
   relativeReferenceJzodContext?: {[k:string]: JzodElement},
 ): T {
-  // const absoluteReferences = (currentModel
-  //   ? [miroirFundamentalJzodSchema, ...(currentModel as any).jzodSchemas, ...(miroirMetaModel as any).jzodSchemas] // very inefficient!
-  //   : [miroirFundamentalJzodSchema]
-  // )
 
   switch (jzodElement.type) {
     case "object": {
@@ -223,12 +219,14 @@ export function unfoldJzodSchemaOnce(
       );
 
       const resolvedJzodSchema = resolveJzodSchemaReferenceInContext(
-        miroirFundamentalJzodSchema,
-        {type: "schemaReference", context: unfoldedReferenceJzodSchema.context, definition:jzodSchema.definition},
-        currentModel,
-        miroirMetaModel,
-        {...relativeReferenceJzodContext, ...unfoldedReferenceJzodSchema.context} // local context (unfoldedReferenceJzodSchema.context) is not taken into account by resolveJzodSchemaReferenceInContext
-      )
+        {
+          type: "schemaReference",
+          context: unfoldedReferenceJzodSchema.context,
+          definition: jzodSchema.definition,
+        },
+        { ...relativeReferenceJzodContext, ...unfoldedReferenceJzodSchema.context }, // local context (unfoldedReferenceJzodSchema.context) is not taken into account by resolveJzodSchemaReferenceInContext
+        { miroirFundamentalJzodSchema, currentModel, miroirMetaModel }
+      );
 
       // log.info("unfoldJzodSchemaOnce resolvedJzodSchema", resolvedJzodSchema);
       const resultJzodSchema = {...resolvedJzodSchema}
@@ -276,14 +274,11 @@ export function unfoldJzodSchemaOnce(
     case "object": {
       let extendedJzodSchema: JzodObject
       if (jzodSchema.extend) {
-        // const extension = resolveJzodSchemaReferenceInContext(
         const extension = resolveJzodSchemaReferenceInContext(
-          miroirFundamentalJzodSchema,
           jzodSchema.extend,
-          currentModel,
-          miroirMetaModel,
-          relativeReferenceJzodContext
-        )
+          relativeReferenceJzodContext,
+          { miroirFundamentalJzodSchema, currentModel, miroirMetaModel }
+        );
         if (extension.type == "object") {
           extendedJzodSchema = {
             // type: "object",
@@ -648,4 +643,26 @@ export function unfoldJzodSchemaOnce(
       break;
     }
   }
+}
+
+// ################################################################################################
+export function unfoldSchemaOnceTransformer(
+  step: Step,
+  label: string | undefined,
+  transformer: any, // TransformerForBuild_unfoldSchemaOnce | TransformerForRuntime_unfoldSchemaOnce | TransformerForBuildPlusRuntime_unfoldSchemaOnce,
+  resolveBuildTransformersTo: ResolveBuildTransformersTo,
+  queryParams: Record<string, any>,
+  contextResults?: Record<string, any>
+): UnfoldJzodSchemaOnceReturnType {
+  return unfoldJzodSchemaOnce(
+    transformer.miroirFundamentalJzodSchema,
+    transformer.jzodSchema,
+    transformer.path || [],
+    transformer.unfoldingReference || [],
+    transformer.rootSchema,
+    transformer.depth || 0,
+    transformer.currentModel,
+    transformer.miroirMetaModel,
+    transformer.relativeReferenceJzodContext
+  );
 }

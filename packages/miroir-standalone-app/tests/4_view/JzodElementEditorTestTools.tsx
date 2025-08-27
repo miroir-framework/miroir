@@ -44,10 +44,10 @@ import {
 } from "miroir-core";
 import { LocalCache, PersistenceReduxSaga } from "miroir-localcache-redux";
 
-import { rootLessListKeyMap } from "miroir-core";
+import { rootLessListKeyMapDEFUNCT } from "miroir-core";
 import { Container } from "react-dom";
-import { JzodElementEditor } from "../../src/miroir-fwk/4_view/components/JzodElementEditor";
-import { JzodEditorPropsRoot } from "../../src/miroir-fwk/4_view/components/JzodElementEditorInterface";
+import { JzodElementEditor } from "../../src/miroir-fwk/4_view/components/ValueObjectEditor/JzodElementEditor";
+import { JzodEditorPropsRoot } from "../../src/miroir-fwk/4_view/components/ValueObjectEditor/JzodElementEditorInterface";
 import { MiroirContextReactProvider, useMiroirContextService } from "../../src/miroir-fwk/4_view/MiroirContextReactProvider";
 import { useCurrentModel } from "../../src/miroir-fwk/4_view/ReduxHooks";
 import { emptyObject } from "../../src/miroir-fwk/4_view/routes/Tools";
@@ -464,15 +464,16 @@ export const getJzodElementEditorForTest: (pageLabel: string) => React.FC<JzodEl
                   effectiveRawJzodSchema &&
                   formik.values &&
                   currentModel
-                    // ? measuredJzodTypeCheck(
                     ? jzodTypeCheck(
                         effectiveRawJzodSchema,
                         formik.values,
                         [], // currentValuePath
                         [], // currentTypePath
-                        context.miroirFundamentalJzodSchema,
-                        currentModel,
-                        currentMiroirModel,
+                        {
+                          miroirFundamentalJzodSchema: context.miroirFundamentalJzodSchema,
+                          currentModel,
+                          miroirMetaModel: currentMiroirModel,
+                        },
                         {}
                       )
                     : undefined;
@@ -981,18 +982,22 @@ export function extractValuesFromRenderedElements(
   const allComboboxes = Array.from(searchRoot.querySelectorAll('[role="combobox"]'));
     // .filter((el) => !(el.id && el.id.startsWith("displayAsStructuredElementSwitch")));
   const allOptions = searchRoot.querySelectorAll('[role="option"]');
+  const allSelectOptions = searchRoot.querySelectorAll('option'); // Standard HTML option elements
+  const allSelects = Array.from(searchRoot.querySelectorAll("select[name], select[id]")).filter(
+    (el) => !(el.id && el.id.startsWith("displayAsStructuredElementSwitch"))
+  );
   
   console.log("extractValuesFromRenderedElements",
     "label", label,
     "step", step,
     "allInputs.length", allInputs.length,
-    // "allInputs", allInputs.map((el) => ({
-    //   id: el.id,
-    //   name: (el as any).name,
-    //   type: (el as HTMLInputElement).type,
-    //   value: (el as HTMLInputElement).value,
-    //   defaultValue: (el as HTMLInputElement).defaultValue,
-    // })),
+    "allInputs", allInputs.map((el) => ({
+      id: el.id,
+      name: (el as any).name,
+      type: (el as HTMLInputElement).type,
+      value: (el as HTMLInputElement).value,
+      defaultValue: (el as HTMLInputElement).defaultValue,
+    })),
   );
   console.log("extractValuesFromRenderedElements",
     "label", label,
@@ -1002,47 +1007,111 @@ export function extractValuesFromRenderedElements(
     "allCheckboxes.length", allCheckboxes.length,
     "allComboboxes.length", allComboboxes.length,
     "allOptions.length", allOptions.length,
+    "allSelectOptions.length", allSelectOptions.length,
+    "allSelects.length", allSelects.length,
   );
-  console.log("extractValuesFromRenderedElements",
-    "label", label,
-    "step", step,
-    "allCheckboxes.length", allCheckboxes.length,
-    // 'allCheckboxes', allCheckboxes.map((el) => ({
-    //   id: el.id,
-    //   name: (el as any).name,
-    //   checked: (el as HTMLInputElement).checked,
-    // })),
-  );
+  // console.log("extractValuesFromRenderedElements",
+  //   "label", label,
+  //   "step", step,
+  //   "allCheckboxes.length", allCheckboxes.length,
+  //   // 'allCheckboxes', allCheckboxes.map((el) => ({
+  //   //   id: el.id,
+  //   //   name: (el as any).name,
+  //   //   checked: (el as HTMLInputElement).checked,
+  //   // })),
+  // );
 
-  console.log("extractValuesFromRenderedElements",
-    "label", label,
-    "step", step,
-    "allComboboxes.length", allComboboxes.length,
-    // 'allComboboxes', allComboboxes.map((el) => ({
-    //   id: el.id,
-    //   name: (el as any).name,
-    //   value: (el as HTMLInputElement).value,
-    //   defaultValue: (el as HTMLInputElement).defaultValue,
-    // })),
-  );
+  // console.log("extractValuesFromRenderedElements",
+  //   "label", label,
+  //   "step", step,
+  //   "allComboboxes.length", allComboboxes.length,
+  //   // 'allComboboxes', allComboboxes.map((el) => ({
+  //   //   id: el.id,
+  //   //   name: (el as any).name,
+  //   //   value: (el as HTMLInputElement).value,
+  //   //   defaultValue: (el as HTMLInputElement).defaultValue,
+  //   // })),
+  // );
 
-  console.log("extractValuesFromRenderedElements",
-    "label", label,
-    "step", step,
-    "allOptions.length", allOptions.length,
-    // 'allOptions', Array.from(allOptions).map((el) => ({
-    //   id: el.id,
-    //   textContent: (el as HTMLOptionElement).textContent,
-    //   ariaLabel: el.getAttribute("aria-label"),
-    // })),
-  );
+  // console.log("extractValuesFromRenderedElements",
+  //   "label", label,
+  //   "step", step,
+  //   "allOptions.length", allOptions.length,
+  //   // 'allOptions', Array.from(allOptions).map((el) => ({
+  //   //   id: el.id,
+  //   //   textContent: (el as HTMLOptionElement).textContent,
+  //   //   ariaLabel: el.getAttribute("aria-label"),
+  //   // })),
+  // );
   // Process miroirInput elements first (these are the main form inputs)
   allTestIdElements.forEach((element: Element) => {
+    // Check if the element itself is an input
+    if (element.tagName === 'INPUT') {
+      const input = element as HTMLInputElement;
+      const elementName = input.id || input.name;
+      const name = removeLabelPrefix(elementName);
+
+      console.log("extractValuesFromRenderedElements: processing miroirInput (self)", {
+        elementName,
+        name,
+        inputId: input.id,
+        inputName: input.name,
+        labelRegex: labelRegex?.source,
+        value: input.value,
+        label
+      });
+      
+      if (!name) {
+        console.log("extractValuesFromRenderedElements: no name after label removal", elementName);
+        return;
+      }
+      
+      let value: any = input.value;
+      if (value === "" && input.defaultValue !== undefined) {
+        value = input.defaultValue;
+      }
+      if (input.type === "number") {
+        if (!isNaN(Number(value)) && value !== "") {
+          value = Number(value);
+        } else {
+          expect(false, "number textBox content is not a number for " + name).toBeTruthy();
+        }
+      }
+      values[name] = value;
+      console.log("extractValuesFromRenderedElements: set value", name, "=", value);
+      return;
+    }
+
+    // Otherwise, look for input child elements
     const input = element.querySelector('input') as HTMLInputElement;
-    if (!input) return;
+    if (!input) {
+      // console.log("extractValuesFromRenderedElements: miroirInput element has no input child!", element);
+      console.log("extractValuesFromRenderedElements: miroirInput element has no input child!", (element as any).value, element.outerHTML);
+      // return (element as any).value;
+      // const elementName = input?.id || input.name;
+      const name = removeLabelPrefix(element.id);
+      values[name] = (element as any).value;
+      return; 
+    }
+
+    console.log("extractValuesFromRenderedElements: miroirInput element input child:", input.outerHTML);
+    const elementName = input.id || input.name;
+    const name = removeLabelPrefix(elementName);
+
+    console.log("extractValuesFromRenderedElements: processing miroirInput", {
+      elementName,
+      name,
+      inputId: input.id,
+      inputName: input.name,
+      labelRegex: labelRegex?.source,
+      value: input.value,
+      label
+    });
     
-    const name = removeLabelPrefix(input.id || input.name);
-    if (!name) return;
+    if (!name) {
+      console.log("extractValuesFromRenderedElements: no name after label removal", elementName);
+      return;
+    }
     
     let value: any = input.value;
     if (value === "" && input.defaultValue !== undefined) {
@@ -1056,6 +1125,7 @@ export function extractValuesFromRenderedElements(
       }
     }
     values[name] = value;
+    console.log("extractValuesFromRenderedElements: set value", name, "=", value);
   });
 
   // Process all other input elements that might not have miroirInput testId
@@ -1113,7 +1183,7 @@ export function extractValuesFromRenderedElements(
     }
   });
 
-  // Process options
+  // Process options (role="option")
   allOptions.forEach((element: Element) => {
     const htmlElement = element as HTMLElement;
     const ariaLabel: string | null = htmlElement.getAttribute("aria-label");
@@ -1138,6 +1208,67 @@ export function extractValuesFromRenderedElements(
     }
   });
 
+  // Process HTML select options (only if dropdown is visually open)
+  // We'll use a more conservative approach - only extract options if we can find
+  // specific indicators that the dropdown is actually opened/expanded
+  
+  // Check for various dropdown open indicators
+  const hasListbox = !!searchRoot.querySelector('[role="listbox"]');
+  const hasPresentation = !!searchRoot.querySelector('[role="presentation"]:not([aria-hidden="true"])');
+  const hasAutocompletePopper = !!searchRoot.querySelector('.MuiAutocomplete-popper:not([style*="display: none"])');
+  const hasPopperPlacement = !!searchRoot.querySelector('[data-popper-placement]');
+  const hasMuiPaper = !!searchRoot.querySelector('.MuiPaper-root');
+  const hasExpandedSelect = !!searchRoot.querySelector('.MuiSelect-select[aria-expanded="true"]');
+  const hasPopover = !!searchRoot.querySelector('.MuiPopover-root');
+  const hasMenuList = !!searchRoot.querySelector('.MuiMenuList-root');
+  const hasVisibleMenu = !!searchRoot.querySelector('[role="menu"]');
+  
+  // Special case: if step indicates dropdown opening interaction (like "after mouseDown"), be more permissive
+  // But NOT for steps that indicate the dropdown should be closed (like "after selection change")
+  const isAfterDropdownOpeningInteraction = step && (
+    step.includes("mouseDown") || 
+    (step.includes("after") && !step.includes("selection change") && !step.includes("click"))
+  );
+  
+  const isAnyDropdownOpen = hasListbox || hasPresentation || hasAutocompletePopper || 
+                           hasPopperPlacement || hasMuiPaper || hasExpandedSelect || 
+                           hasPopover || hasMenuList || hasVisibleMenu ||
+                           isAfterDropdownOpeningInteraction; // Be permissive after dropdown opening interactions
+
+  if (isAnyDropdownOpen) {
+    allSelectOptions.forEach((element: Element) => {
+      const htmlElement = element as HTMLOptionElement;
+      const ariaLabel: string | null = htmlElement.getAttribute("aria-label");
+      if (!label || !ariaLabel || !ariaLabel.startsWith(label)) return;
+      
+      const optionValue = htmlElement.textContent;
+      const targetName = label + ".options";
+      if (optionValue) {
+        if (values[targetName] === undefined) {
+          values[targetName] = [];
+        }
+        values[targetName].push(optionValue);
+      }
+    });
+  }
+
+  // Process select elements
+  allSelects.forEach((element: Element) => {
+    const select = element as HTMLSelectElement;
+    if (!select.name && !select.id) return;
+    
+    const name = removeLabelPrefix(select.id || select.name);
+    if (!name || values[name] !== undefined) return; // Skip if already processed or no name
+    
+    // Skip if this select was already processed by miroirInput logic
+    const parentWithTestId = select.closest('[data-testid="miroirInput"]');
+    if (parentWithTestId) return;
+    
+    values[name] = select.value;
+    console.log("extractValuesFromRenderedElements: processed select", name, "=", select.value);
+  });
+
+  console.log("extractValuesFromRenderedElements: final values", values);
   return values;
 }
 

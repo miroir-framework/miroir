@@ -46,6 +46,7 @@ import {
   innerSelectDomainElementFromExtractorOrCombiner,
   runQuery,
 } from "./QuerySelectors";
+import {  type MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import { transformer_InnerReference_resolve } from "./TransformersForRuntime";
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -174,9 +175,14 @@ export const selectEntityInstanceListFromDomainState: SyncBoxedExtractorRunner<
   Domain2QueryReturnType<EntityInstance[]>
 > = (
   domainState: DomainState,
-  selectorParams: SyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList, DomainState>
+  selectorParams: SyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList, DomainState>,
+  modelEnvironment: MiroirModelEnvironment
 ): Domain2QueryReturnType<EntityInstance[]> => {
-  const result = selectEntityInstanceUuidIndexFromDomainState(domainState, selectorParams);
+  const result = selectEntityInstanceUuidIndexFromDomainState(
+    domainState,
+    selectorParams,
+    modelEnvironment
+  );
 
   if (result instanceof Domain2ElementFailed) {
     return result;
@@ -198,7 +204,8 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncBoxedExtract
   Domain2QueryReturnType<EntityInstance>
 > = (
   domainState: DomainState,
-  selectorParams: SyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObject, DomainState>
+  selectorParams: SyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObject, DomainState>,
+  modelEnvironment: MiroirModelEnvironment
 ): Domain2QueryReturnType<EntityInstance> => {
   const querySelectorParams: ExtractorOrCombinerReturningObject = selectorParams.extractor.select as ExtractorOrCombinerReturningObject;
   const deploymentUuid = selectorParams.extractor.deploymentUuid;
@@ -227,7 +234,7 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncBoxedExtract
           referenceName: querySelectorParams.objectReference,
         },
         "value", // TODO: not consistent with "runtime" evaluation, this has no influence on the result of "runtime" evaluations.
-        selectorParams.extractor.queryParams,
+        {...modelEnvironment,...selectorParams.extractor.queryParams},
         selectorParams.extractor.contextResults
       );
 
@@ -483,6 +490,7 @@ export const selectJzodSchemaByDomainModelQueryFromDomainStateNew = extractJzodS
 export function getDomainStateExtractorRunnerMap(): SyncBoxedExtractorOrQueryRunnerMap<DomainState> {
   return {
     extractorType: "sync",
+    extractState: (domainState: DomainState, params: any) => domainState,
     extractEntityInstanceUuidIndex: selectEntityInstanceUuidIndexFromDomainState,
     extractEntityInstanceList: selectEntityInstanceListFromDomainState,
     extractEntityInstance: selectEntityInstanceFromObjectQueryAndDomainState,

@@ -1,81 +1,99 @@
 import { createSelector } from "@reduxjs/toolkit";
 import {
-  DeploymentEntityState,
+  ReduxDeploymentsState,
   QueryTemplateRunnerMapForJzodSchema,
   SyncBoxedExtractorOrQueryRunnerMap,
   extractEntityInstanceListWithObjectListExtractorInMemory,
   extractEntityInstanceUuidIndexWithObjectListExtractorInMemory,
-  extractEntityJzodSchemaFromDeploymentEntityState,
+  extractEntityJzodSchemaFromReduxDeploymentsState,
   extractFetchQueryJzodSchema,
   extractJzodSchemaForDomainModelQuery,
   extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList,
   runQueryTemplateWithExtractorCombinerTransformer,
   runQuery,
   extractzodSchemaForSingleSelectQuery,
-  selectEntityInstanceFromDeploymentEntityState,
-  selectEntityInstanceListFromDeploymentEntityState,
-  selectEntityInstanceUuidIndexFromDeploymentEntityState
+  selectEntityInstanceFromReduxDeploymentsState,
+  selectEntityInstanceListFromReduxDeploymentsState,
+  selectEntityInstanceUuidIndexFromReduxDeploymentsState,
+  type MiroirModelEnvironment
 } from "miroir-core";
 
-const deploymentEntityStateSelector = (domainState: DeploymentEntityState, params: any) => domainState;
-const deploymentEntityStateSelectorParams = (domainState: DeploymentEntityState, params: any) => params;
+const deploymentEntityStateSelector = (
+  domainState: ReduxDeploymentsState,
+  params: any,
+  modelEnvironment: MiroirModelEnvironment
+) => domainState;
+const deploymentEntityStateSelectorParams = (
+  domainState: ReduxDeploymentsState,
+  params: any,
+  modelEnvironment: MiroirModelEnvironment
+) => params;
+const miroirModelEnvironmentSelectorParams = (
+  deploymentEntityState: ReduxDeploymentsState,
+  params: any,
+  modelEnvironment: MiroirModelEnvironment
+) => modelEnvironment;
 
-export function getMemoizedDeploymentEntityStateSelectorForTemplateMap(): SyncBoxedExtractorOrQueryRunnerMap<DeploymentEntityState> {
+export function getMemoizedReduxDeploymentsStateSelectorForTemplateMap(): SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> {
   return {
     extractorType: "sync",
+    extractState: createSelector(
+      [deploymentEntityStateSelector, deploymentEntityStateSelectorParams, miroirModelEnvironmentSelectorParams],
+      (deploymentEntityState, params) => deploymentEntityState
+    ),
     extractEntityInstance: createSelector(
-      [deploymentEntityStateSelector, deploymentEntityStateSelectorParams],
-      selectEntityInstanceFromDeploymentEntityState
+      [deploymentEntityStateSelector, deploymentEntityStateSelectorParams, miroirModelEnvironmentSelectorParams],
+      selectEntityInstanceFromReduxDeploymentsState
     ),
     extractEntityInstanceUuidIndex: createSelector(
-      [deploymentEntityStateSelector, deploymentEntityStateSelectorParams],
-      selectEntityInstanceUuidIndexFromDeploymentEntityState
+      [deploymentEntityStateSelector, deploymentEntityStateSelectorParams, miroirModelEnvironmentSelectorParams],
+      selectEntityInstanceUuidIndexFromReduxDeploymentsState
     ),
     extractEntityInstanceList: createSelector(
-      [deploymentEntityStateSelector, deploymentEntityStateSelectorParams],
-      selectEntityInstanceListFromDeploymentEntityState
+      [deploymentEntityStateSelector, deploymentEntityStateSelectorParams, miroirModelEnvironmentSelectorParams],
+      selectEntityInstanceListFromReduxDeploymentsState
     ),
     extractEntityInstanceUuidIndexWithObjectListExtractor: createSelector(
-      [deploymentEntityStateSelector, deploymentEntityStateSelectorParams],
+      [deploymentEntityStateSelector, deploymentEntityStateSelectorParams, miroirModelEnvironmentSelectorParams],
       extractEntityInstanceUuidIndexWithObjectListExtractorInMemory
     ),
     extractEntityInstanceListWithObjectListExtractor: createSelector(
-      [deploymentEntityStateSelector, deploymentEntityStateSelectorParams],
+      [deploymentEntityStateSelector, deploymentEntityStateSelectorParams, miroirModelEnvironmentSelectorParams],
       extractEntityInstanceListWithObjectListExtractorInMemory
     ),
     runQuery: createSelector(
-      [deploymentEntityStateSelector, deploymentEntityStateSelectorParams],
+      [deploymentEntityStateSelector, deploymentEntityStateSelectorParams, miroirModelEnvironmentSelectorParams],
       runQuery
     ),
     extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList: createSelector(
-      [deploymentEntityStateSelector, deploymentEntityStateSelectorParams],
+      [deploymentEntityStateSelector, deploymentEntityStateSelectorParams, miroirModelEnvironmentSelectorParams],
       extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList
     ),
 
     // 
     runQueryTemplateWithExtractorCombinerTransformer: createSelector(
-      [deploymentEntityStateSelector, deploymentEntityStateSelectorParams],
+      [deploymentEntityStateSelector, deploymentEntityStateSelectorParams, miroirModelEnvironmentSelectorParams],
       runQueryTemplateWithExtractorCombinerTransformer
     ),
   };
 }
 
-export function getMemoizedDeploymentEntityStateJzodSchemaSelectorTemplateMap(): QueryTemplateRunnerMapForJzodSchema<DeploymentEntityState> {
+export function getMemoizedReduxDeploymentsStateJzodSchemaSelectorTemplateMap(): QueryTemplateRunnerMapForJzodSchema<ReduxDeploymentsState> {
   return {
     extractJzodSchemaForDomainModelQuery: createSelector(
-      [deploymentEntityStateSelector, deploymentEntityStateSelectorParams],
+      [deploymentEntityStateSelector, deploymentEntityStateSelectorParams, miroirModelEnvironmentSelectorParams],
       extractJzodSchemaForDomainModelQuery
     ),
     extractEntityJzodSchema: createSelector(
-      [deploymentEntityStateSelector, deploymentEntityStateSelectorParams],
-      extractEntityJzodSchemaFromDeploymentEntityState
+      [deploymentEntityStateSelector, deploymentEntityStateSelectorParams, miroirModelEnvironmentSelectorParams],
+      extractEntityJzodSchemaFromReduxDeploymentsState
     ),
     extractFetchQueryJzodSchema: createSelector(
-      [deploymentEntityStateSelector, deploymentEntityStateSelectorParams],
+      [deploymentEntityStateSelector, deploymentEntityStateSelectorParams, miroirModelEnvironmentSelectorParams],
       extractFetchQueryJzodSchema
     ),
     extractzodSchemaForSingleSelectQuery: createSelector(
-      [deploymentEntityStateSelector, deploymentEntityStateSelectorParams],
+      [deploymentEntityStateSelector, deploymentEntityStateSelectorParams, miroirModelEnvironmentSelectorParams],
       extractzodSchemaForSingleSelectQuery
     ),
   };
