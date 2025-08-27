@@ -101,29 +101,26 @@ export const ThemedSelect: React.FC<ThemedComponentProps & {
     const calculateOptimalWidth = useMemo(() => {
       if (options.length === 0) return minWidth || '200px';
       
-      const canvas = document.createElement('canvas');
-      const context = canvas.getContext('2d');
-      if (!context) return minWidth || '200px';
-      
-      context.font = `${currentTheme.typography.fontSize.md} ${currentTheme.typography.fontFamily}`;
-      
       const allTexts = [
         ...options.map(opt => opt.label),
         placeholder,
         filterPlaceholder
       ];
       
-      const maxWidth = Math.max(
-        ...allTexts.map(text => context.measureText(text || '').width)
+      // Simple character-based width estimation
+      // This is more reliable across environments and sufficient for UI purposes
+      const maxCharacters = Math.max(
+        ...allTexts.map(text => (text || '').length)
       );
       
-      const calculatedWidth = Math.max(
-        maxWidth + 40, // 40px for padding and arrow
+      // Estimate width: ~8px per character + padding and dropdown arrow space
+      const estimatedWidth = Math.max(
+        maxCharacters * 8 + 40, // 40px for padding and arrow
         parseInt(minWidth?.replace('px', '') || '200')
       );
       
-      return `${calculatedWidth}px`;
-    }, [options, placeholder, filterPlaceholder, minWidth, currentTheme]);
+      return `${estimatedWidth}px`;
+    }, [options, placeholder, filterPlaceholder, minWidth]);
 
     // Update filtered options when filter text or options change
     useEffect(() => {

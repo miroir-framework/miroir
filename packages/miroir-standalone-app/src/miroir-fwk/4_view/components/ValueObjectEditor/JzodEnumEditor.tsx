@@ -265,22 +265,32 @@ export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
   }, [currentMiroirFundamentalJzodSchema, currentModel, miroirMetaModel]);
 
   // Handler for discriminator select change (using common function)
-  const handleSelectEnumChange = useCallback((event: any) => {
-    if (!parentKeyMap) {
-      throw new Error("handleSelectEnumChange called but parentKeyMap is undefined!");
-    }
-    handleDiscriminatorChange(
-      event.target.value,
-      "enum",
+  const handleSelectEnumChange = useCallback(
+    (event: any) => {
+      if (!parentKeyMap) {
+        throw new Error("handleSelectEnumChange called but parentKeyMap is undefined!");
+      }
+      handleDiscriminatorChange(
+        event.target.value,
+        "enum",
+        parentKeyMap,
+        rootLessListKey,
+        rootLessListKeyArray,
+        currentDeploymentUuid,
+        currentMiroirModelEnvironment,
+        formik,
+        log
+      );
+    },
+    [
       parentKeyMap,
       rootLessListKey,
       rootLessListKeyArray,
       currentDeploymentUuid,
       currentMiroirModelEnvironment,
       formik,
-      log
-    );
-  }, [parentKeyMap, rootLessListKey, rootLessListKeyArray, currentDeploymentUuid, currentMiroirModelEnvironment, formik]);
+    ]
+  );
 
     const currentDiscriminatorValues =
       parentKeyMap?.discriminatorValues && discriminatorIndex !== -1

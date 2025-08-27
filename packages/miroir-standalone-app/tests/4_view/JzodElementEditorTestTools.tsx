@@ -954,12 +954,125 @@ export function extractValuesFromRenderedElements(
   container?: Container,
   label: string = "",
   step?: string,
+  detectOptions: boolean = false,
 ): Record<string, any> {
   const values: Record<string, any> = {};
   
   // Pre-compile regex patterns to avoid recreating them
   const labelRegex = label ? new RegExp(`^${label}\\.`) : null;
   const removeLabelPrefix = (str: string) => labelRegex ? str.replace(labelRegex, "") : str;
+  
+  // Helper function to check for combobox options
+  const checkForComboboxOptions = (combobox: Element, fieldName: string, values: Record<string, any>) => {
+    console.log(`checkForComboboxOptions: checking for options for field ${fieldName}, detectOptions: ${detectOptions}`);
+    
+    // Only check for options if explicitly requested
+    if (!detectOptions) {
+      console.log(`checkForComboboxOptions: option detection disabled for this call`);
+      return;
+    }
+    
+    console.log(`checkForComboboxOptions: combobox element:`, combobox?.outerHTML?.substring(0, 200));
+    console.log(`checkForComboboxOptions: aria-expanded:`, combobox.getAttribute('aria-expanded'));
+    
+    // Look for dropdown options in various possible locations, including document.body for portaled content
+    const searchAreas = [
+      combobox.parentElement,
+      combobox.closest('[role="combobox"]')?.parentElement,
+      combobox.parentElement?.parentElement,  // One level higher
+      document.querySelector('[role="listbox"]'),  // Global dropdown
+      document.body  // Check entire document for portaled content
+    ].filter(Boolean);
+    
+    console.log(`checkForComboboxOptions: searching ${searchAreas.length} areas`);
+    
+    // Special logging for document.body when aria-expanded is true
+    const isDropdownOpen = combobox.getAttribute('aria-expanded') === 'true';
+    if (isDropdownOpen) {
+      console.log(`checkForComboboxOptions: DROPDOWN IS OPEN - Full document.body HTML:`, document.body.outerHTML);
+    }
+    
+    for (const [index, area] of searchAreas.entries()) {
+      if (!area) continue;
+      
+      const areaDescription = index === searchAreas.length - 1 ? 'document.body' : `area ${index + 1}`;
+      console.log(`checkForComboboxOptions: checking ${areaDescription}:`, area?.outerHTML?.substring(0, 300));
+      
+      // Look for listbox and options
+      const listbox = area.querySelector('[role="listbox"]');
+      console.log(`checkForComboboxOptions: listbox found in ${areaDescription}:`, listbox ? listbox.outerHTML?.substring(0, 200) : 'none');
+      
+      // Also look for CSS-based dropdown content that might not have proper ARIA roles
+      const dropdownCandidates = area.querySelectorAll('[class*="option"], [class*="dropdown"], [class*="menu"], [class*="list"], div[tabindex], [data-dropdown-option]');
+      console.log(`checkForComboboxOptions: dropdown candidate elements in ${areaDescription}: ${dropdownCandidates.length}`);
+      
+      if (listbox) {
+        const optionElements = listbox.querySelectorAll('[role="option"]');
+        console.log(`checkForComboboxOptions: found ${optionElements.length} option elements`);
+        
+        const options = Array.from(optionElements)
+          .map(option => {
+            const text = (option as HTMLElement).textContent?.trim();
+            console.log(`checkForComboboxOptions: option element text:`, text);
+            return text;
+          })
+          .filter(text => text);
+        
+        if (options.length > 0) {
+          console.log(`extractValuesFromRenderedElements: found options for ${fieldName}:`, options);
+          values[`${fieldName}.options`] = options;
+          return;
+        }
+      }
+      
+      // Check for data-dropdown-option elements (custom dropdown implementation)
+      const dataDropdownOptions = area.querySelectorAll('[data-dropdown-option="true"]');
+      console.log(`checkForComboboxOptions: data-dropdown-option elements in ${areaDescription}: ${dataDropdownOptions.length}`);
+      
+      if (dataDropdownOptions.length > 0) {
+        const options = Array.from(dataDropdownOptions)
+          .map(option => {
+            const text = (option as HTMLElement).textContent?.trim();
+            console.log(`checkForComboboxOptions: data-dropdown-option text:`, text);
+            return text;
+          })
+          .filter(text => text);
+        
+        if (options.length > 0) {
+          console.log(`extractValuesFromRenderedElements: found data-dropdown-option options for ${fieldName}:`, options);
+          values[`${fieldName}.options`] = options;
+          return;
+        }
+      }
+      
+      // Also check for any visible option elements in the area
+      const allOptions = area.querySelectorAll('[role="option"], [data-dropdown-option="true"]');
+      console.log(`checkForComboboxOptions: total option elements in area: ${allOptions.length}`);
+      
+      const visibleOptions = Array.from(allOptions)
+        .filter(option => {
+          const style = window.getComputedStyle(option);
+          const isVisible = style.display !== 'none' && style.visibility !== 'hidden';
+          console.log(`checkForComboboxOptions: option visibility check:`, {
+            text: option.textContent?.trim(),
+            display: style.display,
+            visibility: style.visibility,
+            isVisible
+          });
+          return isVisible;
+        })
+        .map(option => (option as HTMLElement).textContent?.trim())
+        .filter(text => text);
+        
+      if (visibleOptions.length > 0) {
+        console.log(`extractValuesFromRenderedElements: found visible options for ${fieldName}:`, visibleOptions);
+        values[`${fieldName}.options`] = visibleOptions;
+        return;
+      }
+    }
+    
+    console.log(`checkForComboboxOptions: no options found for ${fieldName}`);
+  };
   
   // Use container if provided, otherwise fall back to document
   // const searchRoot = container || document;
@@ -1171,7 +1284,103 @@ export function extractValuesFromRenderedElements(
 
   // Process comboboxes
   allComboboxes.forEach((element: Element) => {
-    const htmlElement = element as HTMLElement;
+    const htmlElement = element as HTMLInputElement;
+    
+    console.log("extractValuesFromRenderedElements: examining combobox", {
+      tagName: htmlElement.tagName,
+      name: htmlElement.name,
+      id: htmlElement.id,
+      value: htmlElement.value,
+      outerHTML: htmlElement.outerHTML
+    });
+    
+    // Check if combobox element itself is an input (most common case)
+    if (htmlElement.tagName === 'INPUT' && (htmlElement.name || htmlElement.id)) {
+      const elementName = htmlElement.name || htmlElement.id;
+      if (label && !elementName.startsWith(label)) return;
+      
+      const name = removeLabelPrefix(elementName);
+      if (name && values[name] === undefined) {
+        let value = htmlElement.value;
+        if (value === "" && htmlElement.defaultValue !== undefined) {
+          value = htmlElement.defaultValue;
+        }
+        values[name] = value;
+        console.log("extractValuesFromRenderedElements: processed combobox (self)", name, "=", value);
+        
+        // Check for options in dropdown
+        checkForComboboxOptions(htmlElement, name, values);
+        return;
+      }
+    }
+    
+    // Handle comboboxes without name/id by looking at DOM context
+    if (htmlElement.tagName === 'INPUT') {
+      console.log("extractValuesFromRenderedElements: combobox has value but no name/id, checking context");
+      
+      // Look for nearby label elements that might indicate the field name
+      // Search in parent and sibling elements for label with .label suffix
+      let currentElement: Element | null = htmlElement;
+      let labelElement: Element | null = null;
+      
+      // Search up the DOM tree for related label elements
+      while (currentElement && !labelElement) {
+        // Look for label elements in current container
+        labelElement = currentElement.querySelector('[id$=".label"]');
+        if (!labelElement) {
+          // Look for label elements in parent containers
+          const parentContainer = currentElement.parentElement;
+          if (parentContainer) {
+            labelElement = parentContainer.querySelector('[id$=".label"]');
+          }
+        }
+        currentElement = currentElement.parentElement;
+        
+        // Stop searching if we've gone too far up
+        if (currentElement && currentElement.id && !currentElement.id.includes('testField')) {
+          break;
+        }
+      }
+      
+      if (labelElement) {
+        const labelId = labelElement.id;
+        console.log("extractValuesFromRenderedElements: found label element", labelId);
+        
+        // Extract the field path from the label id (e.g., "testField.0.objectType.label" -> "0.objectType")
+        if (labelId.endsWith('.label')) {
+          const fieldPath = labelId.slice(0, -6); // Remove '.label'
+          const name = removeLabelPrefix(fieldPath);
+          console.log("extractValuesFromRenderedElements: extracted field name", name, "from label", labelId);
+          
+          // Check if dropdown is open
+          const ariaExpanded = htmlElement.getAttribute("aria-expanded");
+          const isDropdownOpen = ariaExpanded === "true";
+          
+          if (name && (values[name] === undefined || isDropdownOpen)) {
+            let value = htmlElement.value;
+            if (value === "" && htmlElement.defaultValue !== undefined) {
+              value = htmlElement.defaultValue;
+            }
+            
+            // For open dropdowns with empty value, don't overwrite existing field value
+            if (isDropdownOpen && !value && values[name] !== undefined) {
+              console.log("extractValuesFromRenderedElements: dropdown is open, preserving existing value for", name);
+            } else {
+              values[name] = value;
+              console.log("extractValuesFromRenderedElements: processed combobox (context)", name, "=", value);
+            }
+            
+            // Check for options in dropdown
+            checkForComboboxOptions(htmlElement, name, values);
+            return;
+          }
+        }
+      } else {
+        console.log("extractValuesFromRenderedElements: no label element found for combobox");
+      }
+    }
+    
+    // Fallback: look for input as next sibling (legacy case)
     if (label && !htmlElement.id.startsWith(label)) return;
     
     const input = htmlElement.nextElementSibling as HTMLInputElement;
@@ -1179,6 +1388,7 @@ export function extractValuesFromRenderedElements(
       const name = removeLabelPrefix(input.name);
       if (name && values[name] === undefined) {
         values[name] = input.value;
+        console.log("extractValuesFromRenderedElements: processed combobox (sibling)", name, "=", input.value);
       }
     }
   });

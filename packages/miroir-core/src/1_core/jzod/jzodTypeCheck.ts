@@ -1277,12 +1277,12 @@ export function jzodTypeCheck(
           //   "validates",
           //   JSON.stringify(valueObject, null, 2)
           // );
-          const objectUniondiscriminatorValues = getObjectUniondiscriminatorValuesFromResolvedSchema(
+          const objectUniondiscriminatorValues = effectiveRawSchema.discriminator?getObjectUniondiscriminatorValuesFromResolvedSchema(
             subResolvedSchemas.resolvedSchema,
             effectiveRawSchema,
             recursivelyUnfoldedUnionSchema?.result ?? [],
             resolveUnionResult.objectUnionChoices
-          );
+          ):[];
 
           return {
             status: "ok",
