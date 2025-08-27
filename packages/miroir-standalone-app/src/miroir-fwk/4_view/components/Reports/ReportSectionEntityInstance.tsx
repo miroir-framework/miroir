@@ -213,13 +213,13 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
 
   const currentMiroirModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
 
-  const currentEnumJzodSchemaResolver: JzodEnumSchemaToJzodElementResolver | undefined = useMemo(
-    () =>
-      context.miroirFundamentalJzodSchema
-        ? getCurrentEnumJzodSchemaResolver(currentMiroirModel, context.miroirFundamentalJzodSchema)
-        : undefined,
-    [context.miroirFundamentalJzodSchema, currentMiroirModel]
-  );
+  // const currentEnumJzodSchemaResolver: JzodEnumSchemaToJzodElementResolver | undefined = useMemo(
+  //   () =>
+  //     context.miroirFundamentalJzodSchema
+  //       ? getCurrentEnumJzodSchemaResolver(currentMiroirModel, context.miroirFundamentalJzodSchema)
+  //       : undefined,
+  //   [context.miroirFundamentalJzodSchema, currentMiroirModel]
+  // );
 
   // log.info("ReportSectionEntityInstance instance", instance);
   // log.info("ReportSectionEntityInstance entityJzodSchema", entityJzodSchemaDefinition);
