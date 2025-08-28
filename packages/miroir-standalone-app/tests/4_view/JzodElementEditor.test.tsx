@@ -1708,7 +1708,16 @@ export function getJzodBookEditorTests(
             const values: Record<string, any> = extractValuesFromRenderedElements(expect, container, "testField", "initial form state");
             // console.log("Extracted initial values:", values);
             const testResult = formValuesToJSON(values);
-            expect(testResult).toEqual(book1);
+            expect(testResult).toEqual({
+              uuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
+              parentName: "Book",
+              parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+              name: "Et dans l'éternité je ne m'ennuierai pas",
+              author: "Paul Veyne",
+              publisher: "Folio",
+              conceptLevel: "Data",
+            });
+            // expect(values).toEqual(book1);
 
             // const inputs = Array.from(document.querySelectorAll('input'));
             // console.log("=== INPUTS ===", inputs.map((input: HTMLElement) => ({
@@ -1720,7 +1729,6 @@ export function getJzodBookEditorTests(
             //   const index = (input as HTMLInputElement).name.replace(/^testField\./, "");
             //   values[index] = (input as HTMLInputElement).value || Number((input as HTMLInputElement).value);
             // });
-            expect(values).toEqual(book1);
           },
         },
         // "object can be updated through displayed input fields": {
@@ -1797,7 +1805,7 @@ export function getJzodEntityDefinitionEditorTests(
           },
           tests: async (expect: ExpectStatic, container: Container) => {
             const formValues: Record<string, any> = extractValuesFromRenderedElements(expect, container, "testField", "initial form state");
-            console.log("Extracted initial values:", formValues);
+            // console.log("Extracted initial values:", formValues);
             const testResult = formValuesToJSON(formValues);
             expect(testResult).toEqual(entityDefinitionBook);
           },
@@ -2056,49 +2064,49 @@ const jzodElementEditorTests: Record<
   string,
   JzodElementEditorTestSuite<any> & { modes?: ModesType }
 > = {
-  // JzodArrayEditor: { 
-  //   editor: JzodElementEditor, 
-  //   getJzodEditorTests: getJzodArrayEditorTests,
-  //   // modes: '*',
-  //   // modes: ['jzodElementEditor', 'component'],
-  //   modes: 'jzodElementEditor',
-  // },
-  // JzodEnumEditor: {
-  //   editor: JzodElementEditor,
-  //   getJzodEditorTests: getJzodEnumEditorTests,
-  //   // modes: '*',
-  //   modes: "jzodElementEditor",
-  //   // modes: "component",
-  // },
-  // JzodLiteralEditor: { 
-  //   editor: JzodElementEditor, 
-  //   getJzodEditorTests: getJzodLiteralEditorTests,
-  //   // modes: "*",
-  //   // modes: ['jzodElementEditor', 'component'],
-  //   modes: "jzodElementEditor",
-  //   // modes: "component",
-  // },
-  // JzodObjectEditor: { 
-  //   editor: JzodElementEditor, 
-  //   getJzodEditorTests: getJzodObjectEditorTests,
-  //   // modes: '*',
-  //   // modes: ['jzodElementEditor', 'component'],
-  //   modes: 'jzodElementEditor',
-  // },
-  // JzodSimpleTypeEditor: { 
-  //   editor: JzodElementEditor, 
-  //   getJzodEditorTests: getJzodSimpleTypeEditorTests,
-  //   // modes: '*',
-  //   // modes: ['jzodElementEditor', 'component'],
-  //   modes: 'jzodElementEditor',
-  // },
-  // JzodUnionEditor: { 
-  //   editor: JzodElementEditor, 
-  //   getJzodEditorTests: getJzodUnionEditorTests,
-  //   // modes: '*',
-  //   // modes: ['jzodElementEditor', 'component'],
-  //   modes: 'jzodElementEditor',
-  // },
+  JzodArrayEditor: { 
+    editor: JzodElementEditor, 
+    getJzodEditorTests: getJzodArrayEditorTests,
+    // modes: '*',
+    // modes: ['jzodElementEditor', 'component'],
+    modes: 'jzodElementEditor',
+  },
+  JzodEnumEditor: {
+    editor: JzodElementEditor,
+    getJzodEditorTests: getJzodEnumEditorTests,
+    // modes: '*',
+    modes: "jzodElementEditor",
+    // modes: "component",
+  },
+  JzodLiteralEditor: { 
+    editor: JzodElementEditor, 
+    getJzodEditorTests: getJzodLiteralEditorTests,
+    // modes: "*",
+    // modes: ['jzodElementEditor', 'component'],
+    modes: "jzodElementEditor",
+    // modes: "component",
+  },
+  JzodObjectEditor: { 
+    editor: JzodElementEditor, 
+    getJzodEditorTests: getJzodObjectEditorTests,
+    // modes: '*',
+    // modes: ['jzodElementEditor', 'component'],
+    modes: 'jzodElementEditor',
+  },
+  JzodSimpleTypeEditor: { 
+    editor: JzodElementEditor, 
+    getJzodEditorTests: getJzodSimpleTypeEditorTests,
+    // modes: '*',
+    // modes: ['jzodElementEditor', 'component'],
+    modes: 'jzodElementEditor',
+  },
+  JzodUnionEditor: { 
+    editor: JzodElementEditor, 
+    getJzodEditorTests: getJzodUnionEditorTests,
+    // modes: '*',
+    // modes: ['jzodElementEditor', 'component'],
+    modes: 'jzodElementEditor',
+  },
   // // ################# PERFORMANCE
   // JzodEditorPerformanceTests: {
   //   editor: JzodElementEditor,

@@ -29,7 +29,6 @@ import {
   ThemedCardContent,
   ThemedLabeledEditor,
   ThemedLineIconButton,
-  ThemedMenuItemOption,
   ThemedSelect,
   ThemedSwitch,
   ThemedTextField,
@@ -766,6 +765,12 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
           //   foreignKeyObjects
           // );
           if (localResolvedElementJzodSchemaBasedOnValue.tag?.value?.selectorParams?.targetEntity) {
+            // Convert stringSelectList to options format for ThemedSelect
+            const selectOptions = stringSelectList.map((e: [string, EntityInstance]) => ({
+              value: e[1].uuid,
+              label: (e[1] as any).description || (e[1] as any).defaultLabel || (e[1] as EntityInstanceWithName).name || e[1].uuid
+            }));
+
             return (
               <ThemedLabeledEditor
                 labelElement={props.labelElement ?? <></>}
@@ -779,25 +784,18 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                       data-testid="miroirInput"
                       aria-label={props.rootLessListKey}
                       variant="standard"
-                      width="auto"
                       minWidth="200px"
                       maxWidth="400px"
-                      role="textbox"
-                      {...formik.getFieldProps(props.rootLessListKey)}
+                      filterable={true}
+                      options={selectOptions}
+                      placeholder="Select an option..."
+                      filterPlaceholder="Type to filter..."
+                      value={currentValue || ""}
+                      onChange={(e) => {
+                        formik.setFieldValue(props.rootLessListKey, e.target.value);
+                      }}
                       name={props.rootLessListKey}
-                    >
-                      {stringSelectList.map((e: [string, EntityInstance], index: number) => (
-                        <ThemedMenuItemOption
-                          id={props.rootLessListKey + "." + index}
-                          key={e[1].uuid}
-                          value={e[1].uuid}
-                        >
-                          {/* {(e[1] as EntityInstanceWithName).name} */}
-                          {/* {(e[1] as any).defaultLabel || (e[1] as EntityInstanceWithName).name} */}
-                          {(e[1] as any).description || (e[1] as any).defaultLabel || (e[1] as EntityInstanceWithName).name}
-                        </ThemedMenuItemOption>
-                      ))}
-                    </ThemedSelect>
+                    />
                   )
                 }
               />
