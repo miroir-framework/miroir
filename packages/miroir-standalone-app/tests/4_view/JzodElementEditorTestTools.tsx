@@ -1241,6 +1241,61 @@ export function extractValuesFromRenderedElements(
     console.log("extractValuesFromRenderedElements: set value", name, "=", value);
   });
 
+  // Process HTML select elements (foreign key dropdowns)
+  const allSelectElements: any[] = Array.from((container as any).querySelectorAll('select[data-testid="miroirInput"]'));
+  console.log(`extractValuesFromRenderedElements: found ${allSelectElements.length} select elements`);
+  for (const selectElement of allSelectElements) {
+    const fieldName = selectElement.getAttribute('name') || selectElement.getAttribute('id') || '';
+    if (fieldName && fieldName.match(labelRegex)) {
+      const name = removeLabelPrefix(fieldName);
+      
+      // Look for the corresponding ThemedSelect state tracker
+      const stateTrackerSelector = `[data-testid="themed-select-state-${selectElement.getAttribute('name') || 'unnamed'}"]`;
+      const stateTracker = container ? container.querySelector(stateTrackerSelector) : null;
+      
+      let selectedValue = '';
+      if (stateTracker) {
+        selectedValue = stateTracker.getAttribute('data-test-selected-value') || '';
+        console.log(`extractValuesFromRenderedElements: found state tracker for ${fieldName} with value: "${selectedValue}"`);
+      } else {
+        // Fallback: try to get value directly from the select element
+        selectedValue = (selectElement as HTMLSelectElement).value || selectElement.getAttribute('value') || '';
+        console.log(`extractValuesFromRenderedElements: no state tracker found for ${fieldName}, select HTML value: "${selectedValue}"`);
+      }
+      
+      if (!selectedValue) {
+        // Check if any div options have selection styling or active class
+        const divOptions = Array.from(selectElement.querySelectorAll('div[data-value]'));
+        console.log(`extractValuesFromRenderedElements: select ${fieldName} has ${divOptions.length} div options`);
+        
+        const activeOption: any = divOptions.find((div: any) => 
+          div.classList.contains('selected') || 
+          div.classList.contains('active') ||
+          div.getAttribute('aria-selected') === 'true'
+        ) as any;
+        if (activeOption) {
+          selectedValue = activeOption.getAttribute('data-value') || '';
+          console.log(`extractValuesFromRenderedElements: found active option for ${fieldName}: ${selectedValue}`);
+        } else {
+          // Log all options for debugging
+          console.log(`extractValuesFromRenderedElements: select ${fieldName} options:`, 
+            divOptions.map((div: any) => ({
+              value: div.getAttribute('data-value'),
+              text: div.textContent,
+              classes: div.className
+            }))
+          );
+        }
+      }
+      
+      console.log(`extractValuesFromRenderedElements: processing select element ${fieldName} -> ${name} = ${selectedValue}`);
+      if (selectedValue) {
+        values[name] = selectedValue;
+        console.log(`extractValuesFromRenderedElements: set select value ${name} = ${selectedValue}`);
+      }
+    }
+  }
+
   // Process all other input elements that might not have miroirInput testId
   allInputs.forEach((input: Element) => {
     const htmlInput = input as HTMLInputElement;
@@ -1300,7 +1355,51 @@ export function extractValuesFromRenderedElements(
       
       // Special handling for array context comboboxes that don't have full path names
       if (htmlElement.name && label && htmlElement.name.indexOf('.') === -1 && !elementName.startsWith(label) && container) {
-        // This is a bare field name like "objectType" - need to find its array context
+        // This is a bare field name like "objectType" or "type" - need to find its array context
+        
+        // For "type" fields, we need special handling to find the correct parent schema element
+        if (htmlElement.name === 'type') {
+          // Find the nearest schema definition context by looking for nearby label elements
+          let currentElement: Element | null = htmlElement.parentElement;
+          let contextPath = '';
+          
+          // Walk up the DOM tree to find schema definition context
+          while (currentElement && !contextPath) {
+            // Look for labels that indicate which schema field this type belongs to
+            const labelElements = currentElement.querySelectorAll('[id$=".label"]') as any;
+            for (const labelEl of labelElements) {
+              const labelId = labelEl.id;
+              if (labelId.includes('.definition.') && labelId.endsWith('.type.label')) {
+                // Extract the field path from something like "testField.jzodSchema.definition.conceptLevel.type.label"
+                const fieldPath = labelId.replace('.type.label', '');
+                contextPath = removeLabelPrefix(fieldPath);
+                console.log(`extractValuesFromRenderedElements: found type field context for type combobox: ${contextPath}`);
+                break;
+              }
+            }
+            currentElement = currentElement.parentElement;
+            
+            // Stop searching if we've gone too far up
+            if (currentElement && currentElement.id && !currentElement.id.includes('testField')) {
+              break;
+            }
+          }
+          
+          if (contextPath) {
+            const name = `${contextPath}.type`;
+            let value = htmlElement.value;
+            if (value === "" && htmlElement.defaultValue !== undefined) {
+              value = htmlElement.defaultValue;
+            }
+            
+            values[name] = value;
+            console.log("extractValuesFromRenderedElements: processed type combobox with context", name, "=", value);
+            
+            // Check for options in dropdown
+            checkForComboboxOptions(htmlElement, name, values);
+            return;
+          }
+        }
         
         // Get all comboboxes with the same name to determine which index this one represents
         const allSameNameComboboxes = Array.from(container.querySelectorAll(`input[role="combobox"][name="${htmlElement.name}"]`));
@@ -1533,6 +1632,25 @@ export function extractValuesFromRenderedElements(
     console.log("extractValuesFromRenderedElements: processed select", name, "=", select.value);
   });
 
+  // Process select elements (for foreign key dropdowns)
+  allSelects.forEach((element: Element) => {
+    const select = element as HTMLSelectElement;
+    if (!select.name && !select.id) return;
+    
+    const elementName = select.id || select.name;
+    if (label && !elementName.startsWith(label)) return;
+    
+    const name = removeLabelPrefix(elementName);
+    if (!name || values[name] !== undefined) return; // Skip if already processed or no name
+    
+    // Skip if this select was already processed by miroirInput logic
+    const parentWithTestId = select.closest('[data-testid="miroirInput"]');
+    if (parentWithTestId) return;
+    
+    values[name] = select.value;
+    console.log("extractValuesFromRenderedElements: processed select", name, "=", select.value);
+  });
+
   // Clean up non-indexed duplicates when indexed versions exist
   const fieldsToRemove: string[] = [];
   for (const key in values) {
@@ -1550,6 +1668,8 @@ export function extractValuesFromRenderedElements(
   
   // Remove non-indexed duplicates
   fieldsToRemove.forEach(field => delete values[field]);
+
+  // No hardcoded foreign key handling - extract only what's actually rendered in the form
 
   console.log("extractValuesFromRenderedElements: final values", values);
   return values;
