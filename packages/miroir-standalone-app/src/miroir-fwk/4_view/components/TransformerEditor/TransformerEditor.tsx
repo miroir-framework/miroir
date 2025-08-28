@@ -100,6 +100,9 @@ const EntityInstancePanel = React.memo<{
   selectedEntityInstanceDefinition: EntityDefinition | undefined;
   currentInstanceIndex: number;
   deploymentUuid: Uuid;
+  availableEntities: Entity[];
+  selectedEntityUuid: Uuid;
+  onEntityChange: (entityUuid: Uuid) => void;
   foldedObjectAttributeOrArrayItems: { [k: string]: boolean };
   setFoldedObjectAttributeOrArrayItems: React.Dispatch<
     React.SetStateAction<{ [k: string]: boolean }>
@@ -113,59 +116,90 @@ const EntityInstancePanel = React.memo<{
     selectedEntityInstanceDefinition,
     currentInstanceIndex,
     deploymentUuid,
+    availableEntities,
+    selectedEntityUuid,
+    onEntityChange,
     foldedObjectAttributeOrArrayItems,
     setFoldedObjectAttributeOrArrayItems,
     onNavigateNext,
     onNavigatePrevious,
   }) => (
     <ThemedContainer style={{ flex: 1 }}>
-      <ThemedHeaderSection style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <ThemedTitle>
-          Entity Instance ({entityInstances.length} instances available)
-          {entityInstances.length > 0 && (
-            <span style={{ fontSize: '0.8em', marginLeft: '10px', color: '#666' }}>
-              (#{currentInstanceIndex + 1} of {entityInstances.length})
-            </span>
+      <ThemedHeaderSection style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <ThemedTitle>
+            Entity Instance ({entityInstances.length} instances available)
+            {entityInstances.length > 0 && (
+              <span style={{ fontSize: '0.8em', marginLeft: '10px', color: '#666' }}>
+                (#{currentInstanceIndex + 1} of {entityInstances.length})
+              </span>
+            )}
+          </ThemedTitle>
+          {entityInstances.length > 1 && (
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <button
+                onClick={onNavigatePrevious}
+                style={{
+                  padding: '4px 8px',
+                  fontSize: '14px',
+                  backgroundColor: '#f0f0f0',
+                  border: '1px solid #ccc',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '4px'
+                }}
+                title="Previous instance"
+              >
+                ↑ Prev
+              </button>
+              <button
+                onClick={onNavigateNext}
+                style={{
+                  padding: '4px 8px',
+                  fontSize: '14px',
+                  backgroundColor: '#f0f0f0',
+                  border: '1px solid #ccc',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '4px'
+                }}
+                title="Next instance"
+              >
+                Next ↓
+              </button>
+            </div>
           )}
-        </ThemedTitle>
-        {entityInstances.length > 1 && (
-          <div style={{ display: 'flex', gap: '8px' }}>
-            <button
-              onClick={onNavigatePrevious}
-              style={{
-                padding: '4px 8px',
-                fontSize: '14px',
-                backgroundColor: '#f0f0f0',
-                border: '1px solid #ccc',
-                borderRadius: '4px',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '4px'
-              }}
-              title="Previous instance"
-            >
-              ↑ Prev
-            </button>
-            <button
-              onClick={onNavigateNext}
-              style={{
-                padding: '4px 8px',
-                fontSize: '14px',
-                backgroundColor: '#f0f0f0',
-                border: '1px solid #ccc',
-                borderRadius: '4px',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '4px'
-              }}
-              title="Next instance"
-            >
-              Next ↓
-            </button>
-          </div>
-        )}
+        </div>
+        
+        {/* Entity Selector */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <label style={{ fontSize: '14px', fontWeight: 'bold', minWidth: '60px' }}>
+            Entity:
+          </label>
+          <select
+            value={selectedEntityUuid}
+            onChange={(e) => onEntityChange(e.target.value as Uuid)}
+            style={{
+              padding: '6px 12px',
+              fontSize: '14px',
+              border: '1px solid #ccc',
+              borderRadius: '4px',
+              backgroundColor: 'white',
+              cursor: 'pointer',
+              minWidth: '200px'
+            }}
+          >
+            {availableEntities.map((entity) => (
+              <option key={entity.uuid} value={entity.uuid}>
+                {entity.name || entity.uuid}
+              </option>
+            ))}
+          </select>
+        </div>
       </ThemedHeaderSection>
       {selectedEntityInstance ? (
         <TypedValueObjectEditor
@@ -324,10 +358,13 @@ export interface TransformerEditorProps {
 
 // ################################################################################################
 export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((props) => {
-  const { deploymentUuid, entityUuid } = props;
+  const { deploymentUuid, entityUuid: initialEntityUuid } = props;
   const context = useMiroirContextService();
   const currentModel = useCurrentModel(deploymentUuid);
   const miroirMetaModel: MetaModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
+
+  // State to track the currently selected entity (can be different from the initial one)
+  const [selectedEntityUuid, setSelectedEntityUuid] = useState<Uuid>(initialEntityUuid);
 
   const currentMiroirModelEnvironment: MiroirModelEnvironment = useMemo(() => {
     return {
@@ -341,12 +378,28 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
     context.miroirFundamentalJzodSchema,
   ]);
 
-  const currentReportDeploymentSectionEntities: Entity[] = currentModel.entities; // Entities are always defined in the 'model' section
+  // Entities are always defined in the 'model' section, sorted by name
+  const currentReportDeploymentSectionEntities: Entity[] = useMemo(() => {
+    return [...currentModel.entities].sort((a, b) => {
+      const nameA = a.name?.toLowerCase() ?? "";
+      const nameB = b.name?.toLowerCase() ?? "";
+      return nameA.localeCompare(nameB);
+    });
+  }, [currentModel.entities]);
   const currentReportDeploymentSectionEntityDefinitions: EntityDefinition[] =
     currentModel.entityDefinitions; // EntityDefinitions are always defined in the 'model' section
 
+  // Ensure selected entity is valid when available entities change
+  useEffect(() => {
+    const availableEntityUuids = currentReportDeploymentSectionEntities?.map(e => e.uuid) || [];
+    if (availableEntityUuids.length > 0 && !availableEntityUuids.includes(selectedEntityUuid)) {
+      // If current selection is not available, default to the first available entity
+      setSelectedEntityUuid(availableEntityUuids[0]);
+    }
+  }, [currentReportDeploymentSectionEntities, selectedEntityUuid]);
+
   const currentReportTargetEntity: Entity | undefined =
-    currentReportDeploymentSectionEntities?.find((e) => e?.uuid === entityUuid);
+    currentReportDeploymentSectionEntities?.find((e) => e?.uuid === selectedEntityUuid);
 
   const currentReportTargetEntityDefinition: EntityDefinition | undefined =
     currentReportDeploymentSectionEntityDefinitions?.find(
@@ -374,14 +427,14 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
         deploymentEntityState,
         currentMiroirModelEnvironment,
         deploymentUuid,
-        entityUuid,
+        selectedEntityUuid,
         "name" // Order by name if available
       );
     } catch (error) {
       log.error("Error fetching entity instances:", error);
       return [];
     }
-  }, [deploymentEntityState, currentMiroirModelEnvironment, deploymentUuid, entityUuid]);
+  }, [deploymentEntityState, currentMiroirModelEnvironment, deploymentUuid, selectedEntityUuid]);
 
   // State to track the current instance index
   const [currentInstanceIndex, setCurrentInstanceIndex] = useState<number>(0);
@@ -411,6 +464,16 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
   useEffect(() => {
     setCurrentInstanceIndex(0);
   }, [entityInstances.length]);
+
+  // Reset index when entity changes
+  useEffect(() => {
+    setCurrentInstanceIndex(0);
+  }, [selectedEntityUuid]);
+
+  // Handler for entity change
+  const handleEntityChange = useCallback((newEntityUuid: Uuid) => {
+    setSelectedEntityUuid(newEntityUuid);
+  }, []);
 
   // TransformerDefinition schema - memoized to avoid recalculation
   const transformerDefinitionSchema: JzodElement = useMemo(() => ({
@@ -547,7 +610,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
     <ThemedContainer>
       <ThemedHeaderSection>
         <ThemedTitle>
-          Transformer Editor for Entity {transformerEntityUuid} of deployment {deploymentUuid}
+          Transformer Editor for Entity "{currentReportTargetEntity?.name || selectedEntityUuid}" of deployment {deploymentUuid}
         </ThemedTitle>
       </ThemedHeaderSection>
 
@@ -575,6 +638,9 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
             selectedEntityInstanceDefinition={currentReportTargetEntityDefinition}
             currentInstanceIndex={currentInstanceIndex}
             deploymentUuid={deploymentUuid}
+            availableEntities={currentReportDeploymentSectionEntities || []}
+            selectedEntityUuid={selectedEntityUuid}
+            onEntityChange={handleEntityChange}
             foldedObjectAttributeOrArrayItems={foldedEntityInstanceItems}
             setFoldedObjectAttributeOrArrayItems={setFoldedEntityInstanceItems}
             onNavigateNext={navigateToNextInstance}
