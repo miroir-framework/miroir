@@ -242,12 +242,13 @@ const handleDiscriminatorChange = (
     // If the target key is empty, we set the value directly on formik.values
     formik.setValues(
       defaultValue,
+      false, // do not validate / refresh
     );
   } else {
     formik.setFieldValue(
       targetRootLessListKey,
       defaultValue,
-      false
+      false, // do not validate / refresh
     );
   }
 };
@@ -336,51 +337,14 @@ export const JzodLiteralEditor: FC<JzodLiteralEditorProps> =  (
     }, [formik.values, rootLessListKeyArray]);
   
   // ############################################################################################
-  // uses setFormState to update the formik state (updating the parent value)
-  const handleSelectLiteralChange = useCallback(
-    (event: any) => {
-      if (!isDiscriminator) {
-        throw new Error(
-          "handleSelectLiteralChange called but this literal is not a discriminator!"
-        );
-      }
-      if (!parentKeyMap) {
-        throw new Error(
-          "handleSelectLiteralChange called but current object does not have information about the discriminated union type it must be part of!"
-        );
-      }
-      handleDiscriminatorChange(
-        event.target.value,
-        "literal",
-        parentKeyMap,
-        rootLessListKey,
-        rootLessListKeyArray,
-        currentDeploymentUuid,
-        currentMiroirModelEnvironment,
-        formik,
-        log
-      );
-    },
-    [
-      parentKeyMap,
-      rootLessListKey,
-      rootLessListKeyArray,
-      currentDeploymentUuid,
-      currentMiroirFundamentalJzodSchema,
-      currentModel,
-      miroirMetaModel,
-      formik.values,
-      currentValue
-    ]
-  );
 
   // Handler for the new filterable select component
   const handleFilterableSelectChange = useCallback(
     (event: React.ChangeEvent<HTMLSelectElement>) => {
-      console.log("handleFilterableSelectChange called with event:", event);
-      console.log("event.target.value:", event.target.value);
-      console.log("isDiscriminator:", isDiscriminator);
-      console.log("parentKeyMap:", parentKeyMap);
+      log.info("handleFilterableSelectChange called with event:", event);
+      log.info("event.target.value:", event.target.value);
+      log.info("isDiscriminator:", isDiscriminator);
+      log.info("parentKeyMap:", parentKeyMap);
       
       if (!isDiscriminator) {
         throw new Error(
@@ -439,17 +403,6 @@ export const JzodLiteralEditor: FC<JzodLiteralEditorProps> =  (
   //   currentDiscriminatorValues,
   // );
   // Memoize discriminator values for better rendering performance
-  const discriminatorMenuItems = useMemo(() => {
-    if (isDiscriminator && parentKeyMap?.discriminatorValues) {
-      // return parentKeyMap.discriminatorValues[discriminatorIndex].sort().map((v) => (
-      return currentDiscriminatorValues.sort().map((v) => (
-        <option key={v} value={v}>
-          {v}
-        </option>
-      ));
-    }
-    return null;
-  }, [isDiscriminator, currentKeyMap]);
 
   // Memoize discriminator options for the filterable select
   const discriminatorSelectOptions = useMemo(() => {

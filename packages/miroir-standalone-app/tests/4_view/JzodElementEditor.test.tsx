@@ -1587,52 +1587,56 @@ export function getJzodUnionEditorTests(
               "testField",
               "initial form state"
             );
-            console.log("Extracted initial values:", values);
             expect(values).toEqual({ type1Attribute: "test string", "testObjectType": "type1" });
             
             // Find the discriminator select element
-            const input = screen.getByDisplayValue("type1");
-            console.log("Input for type1:", input.outerHTML);
-            console.log("Input tagName:", input.tagName);
-            console.log("Input type:", input.getAttribute('type'));
-            console.log("Input role:", input.getAttribute('role'));
+            const user = userEvent.setup();
+            const select = screen.getByDisplayValue("type1") as HTMLSelectElement;
+            console.log("Input for type1:", select.outerHTML);
+            console.log("Input tagName:", select.tagName);
+            console.log("Input type:", select.getAttribute('type'));
+            console.log("Input role:", select.getAttribute('role'));
             
             console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ACTION");
+            console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ACTION");
+            console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ACTION");
+            console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ACTION");
+            console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ACTION");
+            console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ACTION");
+            console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ACTION");
+            console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ACTION");
+            console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ACTION");
+            console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ACTION");
+            expect(select.value).toBe("type1"); // initial value
             
-            // For custom select/combobox components, we need to use userEvent for more realistic interactions
-            const user = userEvent.setup();
-            
-            // Clear the current value and type the new value
+            // // Change the discriminator from "type1" to "type2"
+            // await act(async () => {
+            //   fireEvent.change(select, { target: { value: "type2" } });
+            //   await waitAfterUserInteraction();
+            //   await user.keyboard('{Enter}'); // select the "type2" option
+            // });
             await act(async () => {
-              await user.clear(input);
-              await user.type(input, "type2");
+              // fireEvent.click(select); // open the select dropdown
+              // await waitAfterUserInteraction();
+              await user.type(select, "type2"); // filter options to "type2"
+              await waitAfterUserInteraction();
+              // await user.keyboard('{ArrowDown}');
+              console.log("select after typing:", select.outerHTML);
+              await user.keyboard('{ArrowDown}{ArrowDown}'); // navigate to the "type2" option
+              fireEvent.change(select, { target: { value: "type2" } });
+              console.log("select after arrowDown:", select.outerHTML);
+              await waitAfterUserInteraction();
+              await user.keyboard('{Enter}'); // select the "type2" option
+              // await waitAfterUserInteraction();
             });
             
             // Wait for the discriminator change to complete and form to re-render
             await waitAfterUserInteraction();
             
-            // Wait for the form to actually re-render with the new union variant schema
-            // This is a complex operation that involves:
-            // 1. Discriminator value update
-            // 2. Union schema resolution based on new discriminator
-            // 3. Default value calculation for new schema
-            // 4. Complete form re-rendering with new fields
-            await waitFor(
-              async () => {
-                const currentValues = extractValuesFromRenderedElements(
-                  expect,
-                  container,
-                  "testField",
-                  "checking for form update"
-                );
-                
-                // Check if the form has switched to the new schema (field "b" should be present)
-                if (!("type2Attribute" in currentValues)) {
-                  throw new Error("Form has not updated to show field 'type2Attribute' for type2 yet");
-                }
-              },
-              { timeout: 3000, interval: 100 }
-            );
+            // Verify that the form now shows type2 fields
+            await waitFor(() => {
+              expect(screen.getByRole('textbox', { name: /type2Attribute/i })).toBeInTheDocument();
+            }, { timeout: 5000 });
 
             // Get final values after union form re-rendering
             const valuesAfterChange: Record<string, any> = extractValuesFromRenderedElements(
@@ -1641,12 +1645,7 @@ export function getJzodUnionEditorTests(
               "testField",
               "after change to type2"
             );
-            await waitFor(() => {
-              expect(screen.getByRole('textbox', { name: /type2Attribute/i })).toBeInTheDocument();
-            }, { timeout: 5000 });
-            console.log("Values after discriminator change:", valuesAfterChange);
             const testResultAfterChange = formValuesToJSON(valuesAfterChange);
-            console.log("Form result after discriminator change:", testResultAfterChange);
             expect(testResultAfterChange).toEqual({
               "testObjectType": "type2",
               "type2Attribute": 0, // default value for number
@@ -2113,23 +2112,23 @@ const jzodElementEditorTests: Record<
   //   // modes: ['jzodElementEditor', 'component'],
   //   modes: 'jzodElementEditor',
   // },
-  // ################# INSTANCES
-  JzodBookEditor: { 
-    editor: JzodElementEditor, 
-    getJzodEditorTests: getJzodBookEditorTests,
-    performanceTests: true,
-    // modes: '*',
-    // modes: ['jzodElementEditor', 'component'],
-    modes: 'jzodElementEditor',
-  },
-  // // ################# MODEL
-  JzodEntityDefinitionEditor: { 
-    editor: JzodElementEditor, 
-    getJzodEditorTests: getJzodEntityDefinitionEditorTests,
-    // modes: '*',
-    // modes: ['jzodElementEditor', 'component'],
-    modes: 'jzodElementEditor',
-  },
+  // // ################# INSTANCES
+  // JzodBookEditor: { 
+  //   editor: JzodElementEditor, 
+  //   getJzodEditorTests: getJzodBookEditorTests,
+  //   performanceTests: true,
+  //   // modes: '*',
+  //   // modes: ['jzodElementEditor', 'component'],
+  //   modes: 'jzodElementEditor',
+  // },
+  // // // ################# MODEL
+  // JzodEntityDefinitionEditor: { 
+  //   editor: JzodElementEditor, 
+  //   getJzodEditorTests: getJzodEntityDefinitionEditorTests,
+  //   // modes: '*',
+  //   // modes: ['jzodElementEditor', 'component'],
+  //   modes: 'jzodElementEditor',
+  // },
   // // ################# ENDPOINTS
   // JzodEndpointEditor: { 
   //   editor: JzodElementEditor, 

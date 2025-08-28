@@ -168,16 +168,16 @@ export function getDefaultValueForJzodSchemaWithResolution<T extends MiroirModel
     'defaultValue' // Specify this is for default value generation
   );
 
-  log.info(
-    "getDefaultValueForJzodSchemaWithResolution called with",
-    "jzodSchema", jzodSchema,
-    "rootObject", rootObject,
-    "currentValuePath", currentValuePath,
-    "reduxDeploymentsState", reduxDeploymentsState,
-    "deploymentUuid", deploymentUuid,
-    // "relativeReferenceJzodContext", relativeReferenceJzodContext
-    "effectiveSchemaOrError", effectiveSchemaOrError,
-  );
+  // log.info(
+  //   "getDefaultValueForJzodSchemaWithResolution called with",
+  //   "jzodSchema", jzodSchema,
+  //   "rootObject", rootObject,
+  //   "currentValuePath", currentValuePath,
+  //   "reduxDeploymentsState", reduxDeploymentsState,
+  //   "deploymentUuid", deploymentUuid,
+  //   // "relativeReferenceJzodContext", relativeReferenceJzodContext
+  //   "effectiveSchemaOrError", effectiveSchemaOrError,
+  // );
   
   if ('error' in effectiveSchemaOrError) {
     log.error(
@@ -189,11 +189,11 @@ export function getDefaultValueForJzodSchemaWithResolution<T extends MiroirModel
   let effectiveSchema: JzodElement = effectiveSchemaOrError;
 
   if (effectiveSchema.optional && !forceOptional) {
-    log.info(
-      "getDefaultValueForJzodSchemaWithResolution: effectiveSchema is optional and forceOptional is false",
-      "currentValuePath", currentValuePath,
-      "effectiveSchema", effectiveSchema
-    );
+    // log.info(
+    //   "getDefaultValueForJzodSchemaWithResolution: effectiveSchema is optional and forceOptional is false",
+    //   "currentValuePath", currentValuePath,
+    //   "effectiveSchema", effectiveSchema
+    // );
     return undefined;
   }
 
@@ -205,13 +205,13 @@ export function getDefaultValueForJzodSchemaWithResolution<T extends MiroirModel
     effectiveSchema.tag.value.initializeTo.value
   ) {
     const result = effectiveSchema.tag.value.initializeTo.value;
-    log.info(
-      "getDefaultValueForJzodSchemaWithResolutionWithResolution returning UUID from tag.value.initializeTo.value",
-      "currentValuePath",
-      currentValuePath,
-      "result",
-      result
-    );
+    // log.info(
+    //   "getDefaultValueForJzodSchemaWithResolutionWithResolution returning UUID from tag.value.initializeTo.value",
+    //   "currentValuePath",
+    //   currentValuePath,
+    //   "result",
+    //   result
+    // );
     return result;
   }
   if (
@@ -220,15 +220,15 @@ export function getDefaultValueForJzodSchemaWithResolution<T extends MiroirModel
     effectiveSchema.tag.value.initializeTo?.initializeToType == "transformer" &&
     effectiveSchema.tag.value.initializeTo.transformer
   ) {
-    log.info(
-      "getDefaultValueForJzodSchemaWithResolution calling transformer_extended_apply_wrapper",
-      "deploymentUuid",
-      deploymentUuid,
-      "rootObject",
-      rootObject,
-      "jzodSchema.tag.value.initializeTo.transformer",
-      effectiveSchema.tag.value.initializeTo.transformer
-    );
+    // log.info(
+    //   "getDefaultValueForJzodSchemaWithResolution calling transformer_extended_apply_wrapper",
+    //   "deploymentUuid",
+    //   deploymentUuid,
+    //   "rootObject",
+    //   rootObject,
+    //   "jzodSchema.tag.value.initializeTo.transformer",
+    //   effectiveSchema.tag.value.initializeTo.transformer
+    // );
     const result = transformer_extended_apply_wrapper(
       "build",
       undefined,
@@ -244,29 +244,29 @@ export function getDefaultValueForJzodSchemaWithResolution<T extends MiroirModel
       {}, // runtimeContext
       "value"
     );
-    log.info(
-      "getDefaultValueForJzodSchemaWithResolutionWithResolution returning",
-      "currentValuePath",
-      currentValuePath,
-      "result",
-      result
-    );
+    // log.info(
+    //   "getDefaultValueForJzodSchemaWithResolutionWithResolution returning",
+    //   "currentValuePath",
+    //   currentValuePath,
+    //   "result",
+    //   result
+    // );
     return result;
   }
   
-  log.info(
-    "getDefaultValueForJzodSchemaWithResolution called with",
-    "currentValuePath",
-    currentValuePath,
-    "effectiveSchema",
-    effectiveSchema,
-    "currentDefaultValue",
-    currentDefaultValue,
-    "forceOptional",
-    forceOptional,
-    "deploymentUuid",
-    deploymentUuid,
-  );
+  // log.info(
+  //   "getDefaultValueForJzodSchemaWithResolution called with",
+  //   "currentValuePath",
+  //   currentValuePath,
+  //   "effectiveSchema",
+  //   effectiveSchema,
+  //   "currentDefaultValue",
+  //   currentDefaultValue,
+  //   "forceOptional",
+  //   forceOptional,
+  //   "deploymentUuid",
+  //   deploymentUuid,
+  // );
 
   switch (effectiveSchema.type) {
     case "object": {
@@ -294,9 +294,6 @@ export function getDefaultValueForJzodSchemaWithResolution<T extends MiroirModel
             forceOptional,
             deploymentUuid,
             miroirEnvironment,
-            // miroirFundamentalJzodSchema,
-            // currentModel,
-            // miroirMetaModel,
             relativeReferenceJzodContext,
           );
           result[attributeName] = attributeValue;
@@ -304,10 +301,10 @@ export function getDefaultValueForJzodSchemaWithResolution<T extends MiroirModel
       return result;
     }
     case "string": {
-      log.info(
-        "getDefaultValueForJzodSchemaWithResolution called for string",
-        "effectiveSchema", effectiveSchema, "return empty string"
-      );
+      // log.info(
+      //   "getDefaultValueForJzodSchemaWithResolution called for string",
+      //   "effectiveSchema", effectiveSchema, "return empty string"
+      // );
       return "";
     }
     case "number":
@@ -326,11 +323,11 @@ export function getDefaultValueForJzodSchemaWithResolution<T extends MiroirModel
       return undefined;
     }
     case "uuid": {
-      log.info(
-        "getDefaultValueForJzodSchemaWithResolutionWithResolution called for UUID",
-        "deploymentUuid", deploymentUuid,
-        "effectiveSchema", effectiveSchema,
-      );
+      // log.info(
+      //   "getDefaultValueForJzodSchemaWithResolutionWithResolution called for UUID",
+      //   "deploymentUuid", deploymentUuid,
+      //   "effectiveSchema", effectiveSchema,
+      // );
       if (
         effectiveSchema.tag &&
         effectiveSchema.tag.value &&
@@ -338,11 +335,11 @@ export function getDefaultValueForJzodSchemaWithResolution<T extends MiroirModel
         effectiveSchema.tag.value.initializeTo.value
       ) {
         const result = effectiveSchema.tag.value.initializeTo.value;
-        log.info(
-          "getDefaultValueForJzodSchemaWithResolutionWithResolution returning UUID from tag.value.initializeTo.value",
-          "currentValuePath", currentValuePath,
-          "result", result
-        );
+        // log.info(
+        //   "getDefaultValueForJzodSchemaWithResolutionWithResolution returning UUID from tag.value.initializeTo.value",
+        //   "currentValuePath", currentValuePath,
+        //   "result", result
+        // );
         return result;
       }
       if (
@@ -351,12 +348,12 @@ export function getDefaultValueForJzodSchemaWithResolution<T extends MiroirModel
         effectiveSchema.tag.value.initializeTo?.initializeToType == "transformer" &&
         effectiveSchema.tag.value.initializeTo.transformer
       ) {
-        log.info(
-          "getDefaultValueForJzodSchemaWithResolution calling transformer_extended_apply_wrapper for UUID",
-          "deploymentUuid", deploymentUuid,
-          "jzodSchema.tag.value.initializeTo.transformer",
-          effectiveSchema.tag.value.initializeTo.transformer
-        );
+        // log.info(
+        //   "getDefaultValueForJzodSchemaWithResolution calling transformer_extended_apply_wrapper for UUID",
+        //   "deploymentUuid", deploymentUuid,
+        //   "jzodSchema.tag.value.initializeTo.transformer",
+        //   effectiveSchema.tag.value.initializeTo.transformer
+        // );
         const result = transformer_extended_apply_wrapper(
           "build",
           undefined,
@@ -368,11 +365,11 @@ export function getDefaultValueForJzodSchemaWithResolution<T extends MiroirModel
           {}, // runtimeContext
           "value"
         );
-        log.info(
-          "getDefaultValueForJzodSchemaWithResolutionWithResolution returning UUID from transformer",
-          "currentValuePath", currentValuePath,
-          "result", result
-        );
+        // log.info(
+        //   "getDefaultValueForJzodSchemaWithResolutionWithResolution returning UUID from transformer",
+        //   "currentValuePath", currentValuePath,
+        //   "result", result
+        // );
         return result;
       }
       if (
@@ -400,21 +397,21 @@ export function getDefaultValueForJzodSchemaWithResolution<T extends MiroirModel
         );
 
         const result = Object.values(foreignKeyObjects)[0]?.uuid;
-        log.info(
-          "getDefaultValueForJzodSchemaWithResolution returning default UUID value from foreign key",
-          "currentValuePath",
-          currentValuePath,
-          "result",
-          result
-        );
+        // log.info(
+        //   "getDefaultValueForJzodSchemaWithResolution returning default UUID value from foreign key",
+        //   "currentValuePath",
+        //   currentValuePath,
+        //   "result",
+        //   result
+        // );
         return result;
       }
       const result = uuidv4();
-      log.info(
-        "getDefaultValueForJzodSchemaWithResolution returning random UUID value",
-        "currentValuePath", currentValuePath,
-        "result", result,
-      );
+      // log.info(
+      //   "getDefaultValueForJzodSchemaWithResolution returning random UUID value",
+      //   "currentValuePath", currentValuePath,
+      //   "result", result,
+      // );
       return result;
     }
     case "unknown":
@@ -537,24 +534,24 @@ export function getDefaultValueForJzodSchemaWithResolutionNonHook<T extends Miro
   miroirEnvironment: T,
   relativeReferenceJzodContext?: { [k: string]: JzodElement },
 ): any {
-  log.info(
-    "getDefaultValueForJzodSchemaWithResolutionNonHook called with",
-    "rootLessListKey",
-    rootLessListKey,
-    "deploymentUuid",
-    deploymentUuid,
-    "rootObject",
-    rootObject,
-    "jzodSchema",
-    jzodSchema,
-    "forceOptional",
-    forceOptional,
-    "currentDefaultValue",
-    currentDefaultValue,
-    "currentValuePath",
-    currentValuePath,
-    "reduxDeploymentsState", reduxDeploymentsState,
-  );
+  // log.info(
+  //   "getDefaultValueForJzodSchemaWithResolutionNonHook called with",
+  //   "rootLessListKey",
+  //   rootLessListKey,
+  //   "deploymentUuid",
+  //   deploymentUuid,
+  //   "rootObject",
+  //   rootObject,
+  //   "jzodSchema",
+  //   jzodSchema,
+  //   "forceOptional",
+  //   forceOptional,
+  //   "currentDefaultValue",
+  //   currentDefaultValue,
+  //   "currentValuePath",
+  //   currentValuePath,
+  //   "reduxDeploymentsState", reduxDeploymentsState,
+  // );
 
   if (deploymentUuid == undefined || deploymentUuid.length < 8 || !reduxDeploymentsState) {
     return getDefaultValueForJzodSchemaWithResolution(
