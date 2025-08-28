@@ -32,9 +32,20 @@
 import {
   createContext, useContext, useCallback, useEffect, useMemo, useState, startTransition 
 } from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
 import type { SelectChangeEvent, AppBarProps as MuiAppBarProps } from '@mui/material';
-import { AppBar as MuiAppBar, styled, Toolbar, Box, Grid, Snackbar, Alert } from '@mui/material';
+import { 
+  AppBar as MuiAppBar, 
+  styled, 
+  Toolbar, 
+  Box, 
+  Grid, 
+  Snackbar, 
+  Alert,
+  Typography,
+  Button
+} from '@mui/material';
+import { Error as ErrorIcon, BugReport as BugReportIcon } from '@mui/icons-material';
 import { 
   ThemedSelect,
   ThemedButton,
@@ -262,6 +273,7 @@ export const RootComponent = (props: RootComponentProps) => {
   
   const domainController: DomainControllerInterface = useDomainControllerService();
   const context = useMiroirContextService();
+  const navigate = useNavigate();
   // Get theme for theming the outline highlight colors
   const theme = useMiroirTheme();
   // Optimize transactions selector to avoid unnecessary re-renders during bulk operations
@@ -752,6 +764,61 @@ export const RootComponent = (props: RootComponentProps) => {
                         </ThemedMUISelect>
                       </ThemedFormControl>
                     </div>
+
+                    {/* Navigation Section */}
+                    <Box sx={{ my: 2, p: 2, border: '1px solid #e0e0e0', borderRadius: 1 }}>
+                      <Typography variant="h6" gutterBottom>
+                        Navigation
+                      </Typography>
+                      <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                        <Button
+                          variant="outlined"
+                          onClick={() => navigate('/home')}
+                          size="small"
+                        >
+                          Home
+                        </Button>
+                        <Button
+                          variant="outlined"
+                          onClick={() => navigate('/concept')}
+                          size="small"
+                        >
+                          Concept
+                        </Button>
+                        <Button
+                          variant="outlined"
+                          onClick={() => navigate('/tools')}
+                          size="small"
+                        >
+                          Tools
+                        </Button>
+                        <Button
+                          variant="outlined"
+                          onClick={() => navigate('/check')}
+                          size="small"
+                        >
+                          Check
+                        </Button>
+                        <Button
+                          variant="outlined"
+                          color="error"
+                          onClick={() => navigate('/error-logs')}
+                          size="small"
+                          startIcon={<ErrorIcon />}
+                        >
+                          Error Logs
+                        </Button>
+                        <Button
+                          variant="outlined"
+                          color="info"
+                          onClick={() => navigate('/action-logs')}
+                          size="small"
+                          startIcon={<BugReportIcon />}
+                        >
+                          Action Logs
+                        </Button>
+                      </Box>
+                    </Box>
 
                     <span>
                       {/* <ThemedButton

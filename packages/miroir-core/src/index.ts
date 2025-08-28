@@ -635,6 +635,12 @@ export {
   RunActionTrackerInterface,
   ActionTrackingData,
 } from "./0_interfaces/3_controllers/RunActionTrackerInterface.js";
+export {
+  ActionLogServiceInterface,
+  ActionLogEntry,
+  ActionLogs,
+  ActionLogFilter,
+} from "./3_controllers/ActionLogService.js";
 export { LocalCacheInterface } from "./0_interfaces/4-services/LocalCacheInterface.js";
 export {
   ViewParams,

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Box,
   Paper,
@@ -26,6 +27,7 @@ import {
   Refresh,
   Clear,
   FilterList,
+  Visibility,
 } from '@mui/icons-material';
 
 import { ActionTrackingData } from 'miroir-core';
@@ -52,6 +54,7 @@ export const RunActionTimeline: React.FC<RunActionTimelineProps> = ({
   style,
 }) => {
   const context = useMiroirContextService();
+  const navigate = useNavigate();
   const [actions, setActions] = useState<ActionTrackingData[]>([]);
   const [expanded, setExpanded] = useState<{ [key: string]: boolean }>({});
   const [showFilters, setShowFilters] = useState(false);
@@ -116,6 +119,10 @@ export const RunActionTimeline: React.FC<RunActionTimelineProps> = ({
       [actionId]: !prev[actionId]
     }));
   }, []);
+
+  const handleViewActionLogs = useCallback((actionId: string) => {
+    navigate(`/action-logs/${actionId}`);
+  }, [navigate]);
 
   const handleClearActions = useCallback(() => {
     context.miroirContext.runActionTracker.clear();
@@ -218,6 +225,19 @@ export const RunActionTimeline: React.FC<RunActionTimelineProps> = ({
               </Box>
             }
           />
+          
+          <Tooltip title="View Action Logs">
+            <IconButton
+              size="small"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleViewActionLogs(action.id);
+              }}
+              sx={{ mr: 1 }}
+            >
+              <Visibility />
+            </IconButton>
+          </Tooltip>
           
           {hasChildren && (
             <IconButton

@@ -1,3 +1,4 @@
+import { ActionLogServiceInterface } from "../../3_controllers/ActionLogService";
 import { ErrorLogServiceInterface } from "../../0_interfaces/3_controllers/ErrorLogServiceInterface";
 import { RunActionTrackerInterface } from "../../0_interfaces/3_controllers/RunActionTrackerInterface";
 import { MiroirConfigClient, MiroirConfigServer } from "../1_core/preprocessor-generated/miroirFundamentalType";
@@ -5,6 +6,7 @@ import { MiroirConfigClient, MiroirConfigServer } from "../1_core/preprocessor-g
 export interface MiroirContextInterface {
   errorLogService:ErrorLogServiceInterface,
   runActionTracker: RunActionTrackerInterface,
+  actionLogService: ActionLogServiceInterface,
   getMiroirConfig(): MiroirConfigClient | MiroirConfigServer | undefined,
 }
 

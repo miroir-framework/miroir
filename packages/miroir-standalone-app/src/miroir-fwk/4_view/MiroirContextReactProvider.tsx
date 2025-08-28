@@ -1,8 +1,11 @@
-import { ReactNode, createContext, useContext, useMemo, useState, startTransition } from "react";
+import { ReactNode, createContext, useContext, useMemo, useState, startTransition, useEffect } from "react";
 
 import { useSelector } from "react-redux";
+import { Alert, AlertColor, Snackbar } from "@mui/material";
 
 import {
+  Action2Error,
+  Action2ReturnType,
   ApplicationSection,
   DeploymentUuidToReportsEntitiesDefinitionsMapping,
   DomainControllerInterface,
@@ -24,6 +27,7 @@ import {
 
 import { packageName } from "../../constants.js";
 import { cleanLevel } from "./constants.js";
+import { ErrorLogService, ErrorLogEntry, logStartupError, logServerError, logClientError } from "./services/ErrorLogService.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -77,6 +81,8 @@ export interface MiroirReactContext {
   showSnackbar: (message: string, severity?: "success" | "error" | "info") => void,
   handleSnackbarClose: () => void,
   handleAsyncAction: (action: () => Promise<any>, successMessage: string, actionName: string) => Promise<void>,
+  // Error logging service access
+  errorLogService: typeof ErrorLogService,
 }
 
 const miroirReactContext = createContext<MiroirReactContext | undefined>(undefined);
@@ -171,7 +177,16 @@ export function MiroirContextReactProvider(props: {
       
       // Check if the result is an Action2Error (server error)
       if (result && typeof result === 'object' && result.status === 'error') {
-        // Handle server errors from DomainController
+        // Log server errors to global error service
+        const errorEntry = logServerError(
+          result.errorMessage || result.errorType || 'Unknown server error',
+          {
+            actionName,
+            errorDetails: result,
+            timestamp: new Date().toISOString()
+          }
+        );
+
         log.error(`Server error in ${actionName}:`, result);
         startTransition(() => {
           if (result.isServerError && result.errorMessage) {
@@ -190,6 +205,33 @@ export function MiroirContextReactProvider(props: {
     } catch (error) {
       log.error(`Error in ${actionName}:`, error);
       
+      // Determine error category based on error type and action name
+      let errorCategory: 'startup' | 'server' | 'client' | 'network' | 'validation' | 'unknown' = 'client';
+      if (actionName.toLowerCase().includes('config') || actionName.toLowerCase().includes('startup')) {
+        errorCategory = 'startup';
+      } else if (error && typeof error === 'object' && (error as any).isServerError) {
+        errorCategory = 'server';
+      } else if (error instanceof TypeError && error.message.includes('fetch')) {
+        errorCategory = 'network';
+      }
+
+      // Log error to global error service
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      const errorEntry = ErrorLogService.logError(error instanceof Error ? error : new Error(String(error)), {
+        category: errorCategory,
+        severity: errorCategory === 'startup' ? 'critical' : 'error',
+        context: {
+          actionName,
+          timestamp: new Date().toISOString(),
+          userAgent: navigator.userAgent,
+          url: window.location.href
+        },
+        showSnackbar: true,
+        userMessage: errorCategory === 'startup' 
+          ? 'Application startup failed. Please check your configuration and try again.'
+          : undefined
+      });
+      
       // Check if the error has structured server error data
       if (error && typeof error === 'object' && (error as any).isServerError) {
         startTransition(() => {
@@ -197,7 +239,10 @@ export function MiroirContextReactProvider(props: {
         });
       } else {
         startTransition(() => {
-          showSnackbar(`Error in ${actionName}: ${error}`, "error");
+          showSnackbar(
+            errorEntry.userMessage || `Error in ${actionName}: ${errorMessage}`, 
+            errorCategory === 'startup' ? "error" : "error"  // Use "error" instead of "warning"
+          );
         });
       }
     }
@@ -251,6 +296,8 @@ export function MiroirContextReactProvider(props: {
       showSnackbar,
       handleSnackbarClose,
       handleAsyncAction,
+      // Error logging service access
+      errorLogService: ErrorLogService,
     }),
     [
       deploymentUuid,
@@ -271,7 +318,45 @@ export function MiroirContextReactProvider(props: {
       snackbarSeverity,
     ]
   );
-  return <miroirReactContext.Provider value={value}>{props.children}</miroirReactContext.Provider>;
+
+  // Subscribe to global error notifications
+  useEffect(() => {
+    const unsubscribe = ErrorLogService.subscribe((errorEntry: ErrorLogEntry) => {
+      // Only show snackbar if the error indicates it should be shown
+      if (errorEntry.userMessage || errorEntry.severity === 'critical' || errorEntry.severity === 'error') {
+        startTransition(() => {
+          const message = errorEntry.userMessage || errorEntry.errorMessage;
+          const severity = errorEntry.severity === 'critical' ? 'error' : 
+                          errorEntry.severity === 'warning' ? 'error' : 'error';  // Map to valid types
+          showSnackbar(message, severity);
+        });
+      }
+    });
+
+    return unsubscribe;
+  }, [showSnackbar]);
+
+  return (
+    <miroirReactContext.Provider value={value}>
+      {props.children}
+      {/* Global Snackbar for error notifications */}
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleSnackbarClose}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert 
+          onClose={handleSnackbarClose} 
+          severity={snackbarSeverity}
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
+    </miroirReactContext.Provider>
+  );
 }
 
 // #############################################################################################
@@ -317,7 +402,7 @@ export const useErrorLogService = () => {
   if (!context) {
     throw new Error('useErrorLogService must be used within a MiroirContextReactProvider');
   }
-  return context.miroirContext.errorLogService.getErrorLog();
+  return context.errorLogService;
 };
 
 // #############################################################################################
