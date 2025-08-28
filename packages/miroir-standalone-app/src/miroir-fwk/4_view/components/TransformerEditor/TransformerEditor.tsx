@@ -536,6 +536,59 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
   const [foldedTransformationResultItems, setFoldedTransformationResultItems] = useState<{ [k: string]: boolean }>(
     persistedState?.foldedTransformationResultItems || {}
   );
+
+  // Copy-to-clipboard state for transformer definition
+  const [copiedToClipboard, setCopiedToClipboard] = useState<boolean>(false);
+
+  const copyTransformerDefinitionToClipboard = useCallback(async () => {
+    try {
+      // Try to stringify as nicely as possible; safeStringify accepts a large maxLength to avoid truncation
+      const text = safeStringify(currentTransformerDefinition, 1000000);
+
+      if (typeof navigator !== 'undefined' && navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(text);
+      } else if (typeof (window as any) !== 'undefined' && typeof (window as any).require === 'function') {
+        // Electron fallback
+        try {
+          const { clipboard } = (window as any).require('electron');
+          clipboard.writeText(text);
+        } catch (e) {
+          // ignore and fall through to legacy copy
+          throw e;
+        }
+      } else {
+        // Legacy fallback using execCommand
+        const el = document.createElement('textarea');
+        el.value = text;
+        document.body.appendChild(el);
+        el.select();
+        document.execCommand('copy');
+        document.body.removeChild(el);
+      }
+
+      setCopiedToClipboard(true);
+      setTimeout(() => setCopiedToClipboard(false), 2000);
+    } catch (error) {
+      log.error('Failed to copy transformer definition to clipboard', error);
+    }
+  }, [currentTransformerDefinition]);
+
+  const clearTransformerDefinition = useCallback(() => {
+    // Reasonable default: a constant transformer that returns an empty object.
+    // Assumption: a 'constant' transformer has shape { transformerType: 'constant', value: ... }
+    const defaultConstantTransformer: any = {
+      transformerType: 'constant',
+      // interpolation: "build",
+      interpolation: 'runtime',
+      value: "enter the wanted value here...", // Default to undefined value
+    };
+
+    setCurrentTransformerDefinition(defaultConstantTransformer);
+    context.updateTransformerEditorState({ currentTransformerDefinition: defaultConstantTransformer });
+    // Clear previous transformation outputs
+    setTransformationResult(null);
+    setTransformationError(null);
+  }, [context]);
   
   // Debouncing for transformer execution
   const transformerTimeoutRef = useRef<NodeJS.Timeout>();
@@ -660,10 +713,40 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
 
   return (
     <ThemedContainer>
-      <ThemedHeaderSection>
+      <ThemedHeaderSection style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <ThemedTitle>
           Transformer Editor for Entity "{currentReportTargetEntity?.name || selectedEntityUuid}" of deployment {deploymentUuid}
         </ThemedTitle>
+        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+          <button
+            onClick={copyTransformerDefinitionToClipboard}
+            title={copiedToClipboard ? 'Copied' : 'Copy transformer definition to clipboard'}
+            style={{
+              padding: '6px 10px',
+              fontSize: '13px',
+              borderRadius: '6px',
+              border: '1px solid #ccc',
+              background: copiedToClipboard ? '#e6ffe6' : '#f8f8f8',
+              cursor: 'pointer'
+            }}
+          >
+            {copiedToClipboard ? 'Copied' : 'Copy'}
+          </button>
+          <button
+            onClick={clearTransformerDefinition}
+            title={'Reset transformer to default constant transformer'}
+            style={{
+              padding: '6px 10px',
+              fontSize: '13px',
+              borderRadius: '6px',
+              border: '1px solid #ccc',
+              background: '#fff4e6',
+              cursor: 'pointer'
+            }}
+          >
+            Clear
+          </button>
+        </div>
       </ThemedHeaderSection>
 
       {/* 3-Pane Layout */}
