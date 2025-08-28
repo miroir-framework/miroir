@@ -1297,6 +1297,61 @@ export function extractValuesFromRenderedElements(
     // Check if combobox element itself is an input (most common case)
     if (htmlElement.tagName === 'INPUT' && (htmlElement.name || htmlElement.id)) {
       const elementName = htmlElement.name || htmlElement.id;
+      
+      // Special handling for array context comboboxes that don't have full path names
+      if (htmlElement.name && label && htmlElement.name.indexOf('.') === -1 && !elementName.startsWith(label) && container) {
+        // This is a bare field name like "objectType" - need to find its array context
+        
+        // Get all comboboxes with the same name to determine which index this one represents
+        const allSameNameComboboxes = Array.from(container.querySelectorAll(`input[role="combobox"][name="${htmlElement.name}"]`));
+        const currentComboboxIndex = allSameNameComboboxes.indexOf(htmlElement);
+        
+        console.log(`extractValuesFromRenderedElements: found ${allSameNameComboboxes.length} comboboxes with name "${htmlElement.name}", current is index ${currentComboboxIndex}`);
+        
+        // Find all array inputs to determine the mapping
+        const allArrayInputs = Array.from(container.querySelectorAll('input[id]')).filter(input => {
+          const inputId = input.getAttribute('id') || '';
+          return inputId.match(new RegExp(`^${label}\\.(\\d+)\\.`));
+        });
+        
+        // Group inputs by array index
+        const indexedInputGroups = allArrayInputs.reduce((groups, input) => {
+          const inputId = input.getAttribute('id') || '';
+          const match = inputId.match(new RegExp(`^${label}\\.(\\d+)\\.`));
+          if (match) {
+            const index = parseInt(match[1]);
+            if (!groups[index]) groups[index] = [];
+            groups[index].push(input);
+          }
+          return groups;
+        }, {} as Record<number, Element[]>);
+        
+        // Sort array indices to ensure consistent ordering
+        const sortedIndices = Object.keys(indexedInputGroups).map(k => parseInt(k)).sort((a, b) => a - b);
+        
+        console.log('extractValuesFromRenderedElements: array indices found:', sortedIndices);
+        
+        // Map this combobox to the correct array index based on its position
+        if (currentComboboxIndex < sortedIndices.length) {
+          const arrayIndex = sortedIndices[currentComboboxIndex];
+          const fieldName = `${arrayIndex}.${htmlElement.name}`;
+          const name = removeLabelPrefix(`testField.${fieldName}`);
+          console.log(`extractValuesFromRenderedElements: mapped combobox ${currentComboboxIndex} to array index ${arrayIndex}, field name: ${name}`);
+          
+          let value = htmlElement.value;
+          if (value === "" && htmlElement.defaultValue !== undefined) {
+            value = htmlElement.defaultValue;
+          }
+          
+          values[name] = value;
+          console.log("extractValuesFromRenderedElements: processed combobox (array context)", name, "=", value);
+          
+          // Check for options in dropdown
+          checkForComboboxOptions(htmlElement, name, values);
+          return;
+        }
+      }
+      
       if (label && !elementName.startsWith(label)) return;
       
       const name = removeLabelPrefix(elementName);
@@ -1477,6 +1532,24 @@ export function extractValuesFromRenderedElements(
     values[name] = select.value;
     console.log("extractValuesFromRenderedElements: processed select", name, "=", select.value);
   });
+
+  // Clean up non-indexed duplicates when indexed versions exist
+  const fieldsToRemove: string[] = [];
+  for (const key in values) {
+    // Check if this is a non-indexed field (no dots) that has indexed versions
+    if (!key.includes('.') && key !== 'testField') {
+      const hasIndexedVersions = Object.keys(values).some(otherKey => 
+        otherKey.includes('.') && otherKey.endsWith(`.${key}`)
+      );
+      if (hasIndexedVersions) {
+        fieldsToRemove.push(key);
+        console.log(`extractValuesFromRenderedElements: removing non-indexed field "${key}" because indexed versions exist`);
+      }
+    }
+  }
+  
+  // Remove non-indexed duplicates
+  fieldsToRemove.forEach(field => delete values[field]);
 
   console.log("extractValuesFromRenderedElements: final values", values);
   return values;

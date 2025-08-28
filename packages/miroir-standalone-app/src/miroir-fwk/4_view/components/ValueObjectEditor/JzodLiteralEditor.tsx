@@ -442,6 +442,7 @@ export const JzodLiteralEditor: FC<JzodLiteralEditorProps> =  (
         ) : isDiscriminator ? (
           <>
             <ThemedSelect
+              name={name}
               filterable={true}
               options={discriminatorSelectOptions}
               value={currentValue}

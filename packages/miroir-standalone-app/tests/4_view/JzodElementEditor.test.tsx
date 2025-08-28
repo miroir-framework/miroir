@@ -1589,61 +1589,49 @@ export function getJzodUnionEditorTests(
             );
             expect(values).toEqual({ type1Attribute: "test string", "testObjectType": "type1" });
             
-            // Find the discriminator select element
+            // Find the discriminator select element and state tracker
             const user = userEvent.setup();
             const select = screen.getByDisplayValue("type1") as HTMLSelectElement;
-            console.log("Input for type1:", select.outerHTML);
-            console.log("Input tagName:", select.tagName);
-            console.log("Input type:", select.getAttribute('type'));
-            console.log("Input role:", select.getAttribute('role'));
+            const stateTracker = screen.getByTestId("themed-select-state-testObjectType");
             
-            console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ACTION");
-            console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ACTION");
-            console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ACTION");
-            console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ACTION");
-            console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ACTION");
-            console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ACTION");
-            console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ACTION");
-            console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ACTION");
-            console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ACTION");
-            console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ACTION");
             expect(select.value).toBe("type1"); // initial value
+            expect(stateTracker.getAttribute("data-test-selected-value"), "data-test-selected-value").toBe("type1");
+            expect(stateTracker.getAttribute("data-test-is-open"), "data-test-is-open").toBe("false");
             
-            // // Change the discriminator from "type1" to "type2"
-            // await act(async () => {
-            //   fireEvent.change(select, { target: { value: "type2" } });
-            //   await waitAfterUserInteraction();
-            //   await user.keyboard('{Enter}'); // select the "type2" option
-            // });
+            // Change the discriminator from "type1" to "type2"
             await act(async () => {
-              fireEvent.click(select); // open the select dropdown
-              await new Promise((resolve) => setTimeout(resolve, 200)); // Wait for dropdown to open and protection delay to pass
-
-              // await waitAfterUserInteraction();
-              await user.type(select, "type2"); // filter options to "type2"
-              await waitAfterUserInteraction();
-              // await user.keyboard('{ArrowDown}');
-              await new Promise((resolve) => setTimeout(resolve, 200)); // Wait for dropdown to open and protection delay to pass
-              console.log("select after typing:", select.outerHTML);
-              fireEvent.change(select, { target: { value: "type2" } });
-              await waitAfterUserInteraction();
-              await new Promise((resolve) => setTimeout(resolve, 200)); // Wait for dropdown to open and protection delay to pass
-              console.log("select after change:", select.outerHTML);
-              await user.keyboard('{ArrowDown}{ArrowDown}'); // navigate to the "type2" option
-              await waitAfterUserInteraction();
-              console.log("select after arrowDown:", select.outerHTML);
-              await user.keyboard('{Enter}'); // select the "type2" option
-              await waitAfterUserInteraction();
-              console.log("select after enter:", select.outerHTML);
-              // await waitAfterUserInteraction();
+              // Click to open the dropdown
+              fireEvent.click(select);
+              
+              // Wait for dropdown to open
+              await waitFor(() => {
+                expect(stateTracker.getAttribute("data-test-is-open"), "data-test-is-open").toBe("true");
+              }, { timeout: 1000 });
+              
+              // Type "type2" to filter to the desired option
+              await user.clear(select);
+              await user.type(select, "type2");
+              
+              // Wait for filtering to complete
+              await waitFor(() => {
+                expect(stateTracker.getAttribute("data-test-filter-text"), "data-test-filter-text").toBe("type2");
+                expect(stateTracker.getAttribute("data-test-filtered-options-count"), "data-test-filtered-options-count").toBe("1");
+              }, { timeout: 1000 });
+              
+              // Press Enter to select the option
+              await user.keyboard('{Enter}');
+              
+              // Wait for selection to complete and dropdown to close
+              await waitFor(() => {
+                expect(stateTracker.getAttribute("data-test-is-open"), "data-test-is-open").toBe("false");
+                expect(stateTracker.getAttribute("data-test-selected-value"), "data-test-selected-value").toBe("type2");
+              }, { timeout: 2000 });
             });
             
-            // Wait for the discriminator change to complete and form to re-render
-            await waitAfterUserInteraction();
-            
             // Verify that the form now shows type2 fields
+            // screen.debug(undefined, Infinity); // Prints entire DOM with no size limit
             await waitFor(() => {
-              expect(screen.getByRole('textbox', { name: /type2Attribute/i })).toBeInTheDocument();
+              expect(screen.getAllByText("type2Attribute").length > 0).toBeTruthy();
             }, { timeout: 5000 });
 
             // Get final values after union form re-rendering
@@ -2068,42 +2056,42 @@ const jzodElementEditorTests: Record<
   string,
   JzodElementEditorTestSuite<any> & { modes?: ModesType }
 > = {
-  // JzodArrayEditor: { 
-  //   editor: JzodElementEditor, 
-  //   getJzodEditorTests: getJzodArrayEditorTests,
-  //   // modes: '*',
-  //   // modes: ['jzodElementEditor', 'component'],
-  //   modes: 'jzodElementEditor',
-  // },
-  // JzodEnumEditor: {
-  //   editor: JzodElementEditor,
-  //   getJzodEditorTests: getJzodEnumEditorTests,
-  //   // modes: '*',
-  //   modes: "jzodElementEditor",
-  //   // modes: "component",
-  // },
-  // JzodLiteralEditor: { 
-  //   editor: JzodElementEditor, 
-  //   getJzodEditorTests: getJzodLiteralEditorTests,
-  //   // modes: "*",
-  //   // modes: ['jzodElementEditor', 'component'],
-  //   modes: "jzodElementEditor",
-  //   // modes: "component",
-  // },
-  // JzodObjectEditor: { 
-  //   editor: JzodElementEditor, 
-  //   getJzodEditorTests: getJzodObjectEditorTests,
-  //   // modes: '*',
-  //   // modes: ['jzodElementEditor', 'component'],
-  //   modes: 'jzodElementEditor',
-  // },
-  // JzodSimpleTypeEditor: { 
-  //   editor: JzodElementEditor, 
-  //   getJzodEditorTests: getJzodSimpleTypeEditorTests,
-  //   // modes: '*',
-  //   // modes: ['jzodElementEditor', 'component'],
-  //   modes: 'jzodElementEditor',
-  // },
+  JzodArrayEditor: { 
+    editor: JzodElementEditor, 
+    getJzodEditorTests: getJzodArrayEditorTests,
+    // modes: '*',
+    // modes: ['jzodElementEditor', 'component'],
+    modes: 'jzodElementEditor',
+  },
+  JzodEnumEditor: {
+    editor: JzodElementEditor,
+    getJzodEditorTests: getJzodEnumEditorTests,
+    // modes: '*',
+    modes: "jzodElementEditor",
+    // modes: "component",
+  },
+  JzodLiteralEditor: { 
+    editor: JzodElementEditor, 
+    getJzodEditorTests: getJzodLiteralEditorTests,
+    // modes: "*",
+    // modes: ['jzodElementEditor', 'component'],
+    modes: "jzodElementEditor",
+    // modes: "component",
+  },
+  JzodObjectEditor: { 
+    editor: JzodElementEditor, 
+    getJzodEditorTests: getJzodObjectEditorTests,
+    // modes: '*',
+    // modes: ['jzodElementEditor', 'component'],
+    modes: 'jzodElementEditor',
+  },
+  JzodSimpleTypeEditor: { 
+    editor: JzodElementEditor, 
+    getJzodEditorTests: getJzodSimpleTypeEditorTests,
+    // modes: '*',
+    // modes: ['jzodElementEditor', 'component'],
+    modes: 'jzodElementEditor',
+  },
   JzodUnionEditor: { 
     editor: JzodElementEditor, 
     getJzodEditorTests: getJzodUnionEditorTests,
@@ -2120,23 +2108,23 @@ const jzodElementEditorTests: Record<
   //   // modes: ['jzodElementEditor', 'component'],
   //   modes: 'jzodElementEditor',
   // },
-  // // ################# INSTANCES
-  // JzodBookEditor: { 
-  //   editor: JzodElementEditor, 
-  //   getJzodEditorTests: getJzodBookEditorTests,
-  //   performanceTests: true,
-  //   // modes: '*',
-  //   // modes: ['jzodElementEditor', 'component'],
-  //   modes: 'jzodElementEditor',
-  // },
-  // // // ################# MODEL
-  // JzodEntityDefinitionEditor: { 
-  //   editor: JzodElementEditor, 
-  //   getJzodEditorTests: getJzodEntityDefinitionEditorTests,
-  //   // modes: '*',
-  //   // modes: ['jzodElementEditor', 'component'],
-  //   modes: 'jzodElementEditor',
-  // },
+  // ################# INSTANCES
+  JzodBookEditor: { 
+    editor: JzodElementEditor, 
+    getJzodEditorTests: getJzodBookEditorTests,
+    performanceTests: true,
+    // modes: '*',
+    // modes: ['jzodElementEditor', 'component'],
+    modes: 'jzodElementEditor',
+  },
+  // // ################# MODEL
+  JzodEntityDefinitionEditor: { 
+    editor: JzodElementEditor, 
+    getJzodEditorTests: getJzodEntityDefinitionEditorTests,
+    // modes: '*',
+    // modes: ['jzodElementEditor', 'component'],
+    modes: 'jzodElementEditor',
+  },
   // // ################# ENDPOINTS
   // JzodEndpointEditor: { 
   //   editor: JzodElementEditor, 

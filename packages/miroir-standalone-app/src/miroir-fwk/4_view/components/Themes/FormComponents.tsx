@@ -5,6 +5,16 @@ import { createPortal } from 'react-dom';
 
 import { useMiroirTheme } from '../../contexts/MiroirThemeContext';
 import { ThemedComponentProps } from './BaseTypes';
+import { type LoggerInterface, MiroirLoggerFactory } from 'miroir-core';
+import { packageName } from '../../../../constants';
+import { cleanLevel } from '../../constants';
+
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "FormComponents")
+).then((logger: LoggerInterface) => {
+  log = logger;
+});
 
 // ################################################################################################
 // Form-related Themed Components
@@ -68,15 +78,38 @@ export const ThemedSelect: React.FC<ThemedComponentProps & {
   
   // If filterable is true and options are provided, use the filterable implementation
   if (filterable && options.length > 0) {
+    const componentId = Math.random().toString(36).substring(7);
+    
     const [isOpen, setIsOpen] = useState(false);
     const [filterText, setFilterText] = useState('');
     const [filteredOptions, setFilteredOptions] = useState(options);
     const [highlightedIndex, setHighlightedIndex] = useState(-1);
     const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0, width: 0 });
     const [dropdownJustOpened, setDropdownJustOpened] = useState(false);
+    const [hasFocus, setHasFocus] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
     const dropdownRef = useRef<HTMLDivElement>(null);
+    const stateTrackerRef = useRef<HTMLDivElement>(null);
+
+    // Debug: Log when isOpen changes
+    useEffect(() => {
+      log.info('ThemedSelect: [' + componentId + '] isOpen state changed to:', isOpen);
+      // Update the data attribute directly on the DOM element
+      if (stateTrackerRef.current) {
+        stateTrackerRef.current.setAttribute('data-test-is-open', isOpen.toString());
+        log.info('ThemedSelect: [' + componentId + '] Updated DOM attribute to:', isOpen.toString());
+      }
+    }, [isOpen, componentId]);
+
+    // Helper function to update both state and DOM attribute immediately
+    const setIsOpenWithDOMUpdate = (newIsOpen: boolean) => {
+      setIsOpen(newIsOpen);
+      // Immediately update DOM attribute for test tracking
+      if (stateTrackerRef.current) {
+        stateTrackerRef.current.setAttribute('data-test-is-open', newIsOpen.toString());
+      }
+    };
 
     // Calculate dropdown position when opening
     const updateDropdownPosition = useCallback(() => {
@@ -92,7 +125,7 @@ export const ThemedSelect: React.FC<ThemedComponentProps & {
 
     // Open dropdown and calculate position
     const openDropdown = useCallback(() => {
-      setIsOpen(true);
+      setIsOpenWithDOMUpdate(true);
       setFilterText('');
       setHighlightedIndex(-1);
       setDropdownJustOpened(true);
@@ -102,7 +135,7 @@ export const ThemedSelect: React.FC<ThemedComponentProps & {
       setTimeout(() => {
         setDropdownJustOpened(false);
       }, 150);
-    }, [updateDropdownPosition]);
+    }, [updateDropdownPosition, setIsOpenWithDOMUpdate]);
 
     // Calculate the width needed to fit the longest option
     const calculateOptimalWidth = useMemo(() => {
@@ -133,12 +166,48 @@ export const ThemedSelect: React.FC<ThemedComponentProps & {
     useEffect(() => {
       if (!filterText.trim()) {
         setFilteredOptions(options);
+        
+        // Immediately update DOM attribute for test tracking
+        if (stateTrackerRef.current) {
+          stateTrackerRef.current.setAttribute('data-test-filtered-options-count', options.length.toString());
+        }
       } else {
+        const filterTextLower = filterText.toLowerCase();
         const filtered = options.filter(option =>
-          option.label.toLowerCase().includes(filterText.toLowerCase()) ||
-          option.value.toLowerCase().includes(filterText.toLowerCase())
+          option.label.toLowerCase().includes(filterTextLower) ||
+          option.value.toLowerCase().includes(filterTextLower)
         );
+        
+        // Sort filtered options to prioritize exact matches
+        filtered.sort((a, b) => {
+          const aLabelExact = a.label.toLowerCase() === filterTextLower;
+          const aValueExact = a.value.toLowerCase() === filterTextLower;
+          const bLabelExact = b.label.toLowerCase() === filterTextLower;
+          const bValueExact = b.value.toLowerCase() === filterTextLower;
+          
+          // Exact matches first
+          if ((aLabelExact || aValueExact) && !(bLabelExact || bValueExact)) return -1;
+          if (!(aLabelExact || aValueExact) && (bLabelExact || bValueExact)) return 1;
+          
+          // Then prioritize matches that start with the filter text
+          const aLabelStarts = a.label.toLowerCase().startsWith(filterTextLower);
+          const aValueStarts = a.value.toLowerCase().startsWith(filterTextLower);
+          const bLabelStarts = b.label.toLowerCase().startsWith(filterTextLower);
+          const bValueStarts = b.value.toLowerCase().startsWith(filterTextLower);
+          
+          if ((aLabelStarts || aValueStarts) && !(bLabelStarts || bValueStarts)) return -1;
+          if (!(aLabelStarts || aValueStarts) && (bLabelStarts || bValueStarts)) return 1;
+          
+          // Default alphabetical order
+          return a.label.localeCompare(b.label);
+        });
+        
         setFilteredOptions(filtered);
+        
+        // Immediately update DOM attribute for test tracking
+        if (stateTrackerRef.current) {
+          stateTrackerRef.current.setAttribute('data-test-filtered-options-count', filtered.length.toString());
+        }
       }
       // Reset highlighted index when options change
       setHighlightedIndex(-1);
@@ -161,13 +230,21 @@ export const ThemedSelect: React.FC<ThemedComponentProps & {
     // Close dropdown when clicking outside
     useEffect(() => {
       const handleClickOutside = (event: MouseEvent) => {
+        log.info('ThemedSelect: handleClickOutside triggered, isOpen:', isOpen);
+        log.info('ThemedSelect: containerRef.current:', !!containerRef.current);
+        // log.info('ThemedSelect: event.target:', event.target);
+        log.info('ThemedSelect: containerRef contains target:', containerRef.current?.contains(event.target as Node));
+        
         if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
           // Check if the click was on a dropdown option (which is portaled to body)
           const target = event.target as Element;
           const isDropdownOption = target.closest('[data-dropdown-option]');
           
+          log.info('ThemedSelect: click outside detected, isDropdownOption:', !!isDropdownOption);
+          
           if (!isDropdownOption) {
-            setIsOpen(false);
+            log.info('ThemedSelect: closing dropdown due to outside click');
+            setIsOpenWithDOMUpdate(false);
             setFilterText('');
             setDropdownJustOpened(false);
           }
@@ -175,8 +252,12 @@ export const ThemedSelect: React.FC<ThemedComponentProps & {
       };
 
       if (isOpen) {
+        log.info('ThemedSelect: adding mousedown listener');
         document.addEventListener('mousedown', handleClickOutside);
-        return () => document.removeEventListener('mousedown', handleClickOutside);
+        return () => {
+          log.info('ThemedSelect: removing mousedown listener');
+          document.removeEventListener('mousedown', handleClickOutside);
+        };
       }
     }, [isOpen]);
 
@@ -223,6 +304,7 @@ export const ThemedSelect: React.FC<ThemedComponentProps & {
 
     // Handle input focus
     const handleInputFocus = () => {
+      setHasFocus(true);
       if (!isOpen) {
         openDropdown();
         // Select all text if there's a current value to make it easy to replace
@@ -234,9 +316,16 @@ export const ThemedSelect: React.FC<ThemedComponentProps & {
       }
     };
 
+    // Handle input blur
+    const handleInputBlur = () => {
+      setHasFocus(false);
+    };
+
     // Handle input click
     const handleInputClick = () => {
+      log.info('ThemedSelect: [' + componentId + '] handleInputClick called, isOpen:', isOpen);
       if (!isOpen) {
+        log.info('ThemedSelect: [' + componentId + '] calling openDropdown()');
         openDropdown();
         // Select all text if there's a current value to make it easy to replace
         if (inputRef.current && displayText) {
@@ -252,42 +341,79 @@ export const ThemedSelect: React.FC<ThemedComponentProps & {
     const displayText = selectedOption ? selectedOption.label : value || '';
 
     const handleOptionClick = (optionValue: string, event?: React.MouseEvent) => {
-      console.log('ThemedSelect: Option clicked:', optionValue, 'event type:', event?.type, 'event:', event);
-      
       // Prevent accidental clicks right after dropdown opens
       if (dropdownJustOpened) {
-        console.log('ThemedSelect: Ignoring click because dropdown just opened');
         return;
       }
       
       if (onChange) {
-        console.log('ThemedSelect: Calling onChange with value:', optionValue);
         const syntheticEvent = {
           target: { value: optionValue },
           currentTarget: { value: optionValue }
         } as React.ChangeEvent<HTMLSelectElement>;
         onChange(syntheticEvent);
       }
-      setIsOpen(false);
+      
+      // Immediately update DOM attribute for test tracking
+      if (stateTrackerRef.current) {
+        stateTrackerRef.current.setAttribute('data-test-selected-value', optionValue);
+      }
+      
+      setIsOpenWithDOMUpdate(false);
       setFilterText('');
       setHighlightedIndex(-1);
       setDropdownJustOpened(false);
     };
 
-    const handleInputKeyDown = (event: React.KeyboardEvent) => {
+    const handleInputKeyDown = useCallback((event: React.KeyboardEvent) => {
       if (event.key === 'Enter') {
         event.preventDefault();
-        if (highlightedIndex >= 0 && highlightedIndex < filteredOptions.length) {
+        
+        // Force recalculate filtered options based on current filterText to ensure we have the latest
+        let actualFilteredOptions = filteredOptions;
+        if (filterText.trim()) {
+          const filterTextLower = filterText.toLowerCase();
+          const recalculatedFiltered = options.filter(option =>
+            option.label.toLowerCase().includes(filterTextLower) ||
+            option.value.toLowerCase().includes(filterTextLower)
+          );
+          actualFilteredOptions = recalculatedFiltered;
+        }
+        
+        let selectedValue: string | undefined;
+        
+        if (highlightedIndex >= 0 && highlightedIndex < actualFilteredOptions.length) {
           // Select the highlighted option
-          handleOptionClick(filteredOptions[highlightedIndex].value);
-        } else if (filteredOptions.length > 0) {
+          selectedValue = actualFilteredOptions[highlightedIndex].value;
+        } else if (actualFilteredOptions.length > 0) {
           // Select the first option if nothing is highlighted
-          handleOptionClick(filteredOptions[0].value);
+          selectedValue = actualFilteredOptions[0].value;
         } else if (allowCustomValue && filterText.trim()) {
-          handleOptionClick(filterText.trim());
+          selectedValue = filterText.trim();
+        }
+        
+        // If we have a value to select, do the selection bypassing dropdownJustOpened check
+        if (selectedValue !== undefined) {
+          if (onChange) {
+            const syntheticEvent = {
+              target: { value: selectedValue },
+              currentTarget: { value: selectedValue }
+            } as React.ChangeEvent<HTMLSelectElement>;
+            onChange(syntheticEvent);
+          }
+          
+          // Immediately update DOM attribute for test tracking
+          if (stateTrackerRef.current) {
+            stateTrackerRef.current.setAttribute('data-test-selected-value', selectedValue);
+          }
+          
+          setIsOpenWithDOMUpdate(false);
+          setFilterText('');
+          setHighlightedIndex(-1);
+          setDropdownJustOpened(false);
         }
       } else if (event.key === 'Escape') {
-        setIsOpen(false);
+        setIsOpenWithDOMUpdate(false);
         setFilterText('');
         setHighlightedIndex(-1);
         setDropdownJustOpened(false);
@@ -346,7 +472,7 @@ export const ThemedSelect: React.FC<ThemedComponentProps & {
           event.preventDefault(); // Prevent double character
         }
       }
-    };
+    }, [highlightedIndex, filteredOptions, handleOptionClick, allowCustomValue, filterText, isOpen, navigateWithoutOpening, value, openDropdown, setIsOpenWithDOMUpdate, updateDropdownPosition, options]);
 
     const containerStyles = css`
       position: relative;
@@ -468,6 +594,7 @@ export const ThemedSelect: React.FC<ThemedComponentProps & {
           value={isOpen ? filterText : displayText}
           onChange={handleInputChange}
           onFocus={handleInputFocus}
+          onBlur={handleInputBlur}
           onClick={handleInputClick}
           onKeyDown={handleInputKeyDown}
           placeholder={isOpen ? filterPlaceholder : placeholder}
@@ -480,6 +607,23 @@ export const ThemedSelect: React.FC<ThemedComponentProps & {
           aria-haspopup="listbox"
           {...props}
         />
+        
+        {/* Hidden element for test state tracking */}
+        <div
+          ref={stateTrackerRef}
+          data-testid={`themed-select-state-${props.name || 'unnamed'}`}
+          data-test-is-open={isOpen.toString()}
+          data-test-dropdown-just-opened={dropdownJustOpened}
+          data-test-has-focus={hasFocus}
+          data-test-highlighted-index={highlightedIndex}
+          data-test-filter-text={filterText}
+          data-test-selected-value={value}
+          data-test-filtered-options-count={filteredOptions.length}
+          style={{ display: 'none', visibility: 'hidden' }}
+          aria-hidden="true"
+        >
+          TEST_TRACKER_PRESENT_isOpen_{isOpen.toString()}_componentId_{componentId}
+        </div>
         
         {isOpen && createPortal(
           <div ref={dropdownRef} css={dropdownStyles}>
