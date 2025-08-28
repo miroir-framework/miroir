@@ -98,23 +98,74 @@ const EntityInstancePanel = React.memo<{
   entityInstances: EntityInstance[];
   selectedEntityInstance: EntityInstance | undefined;
   selectedEntityInstanceDefinition: EntityDefinition | undefined;
+  currentInstanceIndex: number;
   deploymentUuid: Uuid;
   foldedObjectAttributeOrArrayItems: { [k: string]: boolean };
   setFoldedObjectAttributeOrArrayItems: React.Dispatch<
     React.SetStateAction<{ [k: string]: boolean }>
   >;
+  onNavigateNext: () => void;
+  onNavigatePrevious: () => void;
 }>(
   ({
     entityInstances,
     selectedEntityInstance,
     selectedEntityInstanceDefinition,
+    currentInstanceIndex,
     deploymentUuid,
     foldedObjectAttributeOrArrayItems,
     setFoldedObjectAttributeOrArrayItems,
+    onNavigateNext,
+    onNavigatePrevious,
   }) => (
     <ThemedContainer style={{ flex: 1 }}>
-      <ThemedHeaderSection>
-        <ThemedTitle>Entity Instance ({entityInstances.length} instances available)</ThemedTitle>
+      <ThemedHeaderSection style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <ThemedTitle>
+          Entity Instance ({entityInstances.length} instances available)
+          {entityInstances.length > 0 && (
+            <span style={{ fontSize: '0.8em', marginLeft: '10px', color: '#666' }}>
+              (#{currentInstanceIndex + 1} of {entityInstances.length})
+            </span>
+          )}
+        </ThemedTitle>
+        {entityInstances.length > 1 && (
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <button
+              onClick={onNavigatePrevious}
+              style={{
+                padding: '4px 8px',
+                fontSize: '14px',
+                backgroundColor: '#f0f0f0',
+                border: '1px solid #ccc',
+                borderRadius: '4px',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px'
+              }}
+              title="Previous instance"
+            >
+              ↑ Prev
+            </button>
+            <button
+              onClick={onNavigateNext}
+              style={{
+                padding: '4px 8px',
+                fontSize: '14px',
+                backgroundColor: '#f0f0f0',
+                border: '1px solid #ccc',
+                borderRadius: '4px',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px'
+              }}
+              title="Next instance"
+            >
+              Next ↓
+            </button>
+          </div>
+        )}
       </ThemedHeaderSection>
       {selectedEntityInstance ? (
         <TypedValueObjectEditor
@@ -332,10 +383,34 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
     }
   }, [deploymentEntityState, currentMiroirModelEnvironment, deploymentUuid, entityUuid]);
 
-  // Select the first instance for display with stable reference
+  // State to track the current instance index
+  const [currentInstanceIndex, setCurrentInstanceIndex] = useState<number>(0);
+
+  // Select instance based on current index with stable reference
   const selectedEntityInstance: EntityInstance | undefined = useMemo(() => {
-    return entityInstances.length > 0 ? entityInstances[0] : undefined;
-  }, [entityInstances]);
+    if (entityInstances.length === 0) return undefined;
+    // Ensure index is within bounds (round-robin)
+    const validIndex = ((currentInstanceIndex % entityInstances.length) + entityInstances.length) % entityInstances.length;
+    return entityInstances[validIndex];
+  }, [entityInstances, currentInstanceIndex]);
+
+  // Navigation functions for round-robin instance selection
+  const navigateToNextInstance = useCallback(() => {
+    if (entityInstances.length > 0) {
+      setCurrentInstanceIndex(prev => (prev + 1) % entityInstances.length);
+    }
+  }, [entityInstances.length]);
+
+  const navigateToPreviousInstance = useCallback(() => {
+    if (entityInstances.length > 0) {
+      setCurrentInstanceIndex(prev => (prev - 1 + entityInstances.length) % entityInstances.length);
+    }
+  }, [entityInstances.length]);
+
+  // Reset index when entity instances change
+  useEffect(() => {
+    setCurrentInstanceIndex(0);
+  }, [entityInstances.length]);
 
   // TransformerDefinition schema - memoized to avoid recalculation
   const transformerDefinitionSchema: JzodElement = useMemo(() => ({
@@ -463,7 +538,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
         clearTimeout(transformerTimeoutRef.current);
       }
     };
-  }, [applyTransformerToInstance]);
+  }, [applyTransformerToInstance, selectedEntityInstance]);
 
   // Memoized transformer entity UUID to avoid recalculation
   const transformerEntityUuid = useMemo(() => entityDefinitionTransformerDefinition.entityUuid, []);
@@ -498,9 +573,12 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
             entityInstances={entityInstances}
             selectedEntityInstance={selectedEntityInstance}
             selectedEntityInstanceDefinition={currentReportTargetEntityDefinition}
+            currentInstanceIndex={currentInstanceIndex}
             deploymentUuid={deploymentUuid}
             foldedObjectAttributeOrArrayItems={foldedEntityInstanceItems}
             setFoldedObjectAttributeOrArrayItems={setFoldedEntityInstanceItems}
+            onNavigateNext={navigateToNextInstance}
+            onNavigatePrevious={navigateToPreviousInstance}
           />
           <TransformationResultPanel
             transformationResult={transformationResult}
