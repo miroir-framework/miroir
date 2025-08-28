@@ -94,11 +94,11 @@ export const ThemedSelect: React.FC<ThemedComponentProps & {
 
     // Debug: Log when isOpen changes
     useEffect(() => {
-      log.info('ThemedSelect: [' + componentId + '] isOpen state changed to:', isOpen);
+      // log.info('ThemedSelect: [' + componentId + '] isOpen state changed to:', isOpen);
       // Update the data attribute directly on the DOM element
       if (stateTrackerRef.current) {
         stateTrackerRef.current.setAttribute('data-test-is-open', isOpen.toString());
-        log.info('ThemedSelect: [' + componentId + '] Updated DOM attribute to:', isOpen.toString());
+        // log.info('ThemedSelect: [' + componentId + '] Updated DOM attribute to:', isOpen.toString());
       }
     }, [isOpen, componentId]);
 
@@ -230,20 +230,19 @@ export const ThemedSelect: React.FC<ThemedComponentProps & {
     // Close dropdown when clicking outside
     useEffect(() => {
       const handleClickOutside = (event: MouseEvent) => {
-        log.info('ThemedSelect: handleClickOutside triggered, isOpen:', isOpen);
-        log.info('ThemedSelect: containerRef.current:', !!containerRef.current);
-        // log.info('ThemedSelect: event.target:', event.target);
-        log.info('ThemedSelect: containerRef contains target:', containerRef.current?.contains(event.target as Node));
+        // log.info('ThemedSelect: handleClickOutside triggered, isOpen:', isOpen);
+        // log.info('ThemedSelect: containerRef.current:', !!containerRef.current);
+        // log.info('ThemedSelect: containerRef contains target:', containerRef.current?.contains(event.target as Node));
         
         if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
           // Check if the click was on a dropdown option (which is portaled to body)
           const target = event.target as Element;
           const isDropdownOption = target.closest('[data-dropdown-option]');
           
-          log.info('ThemedSelect: click outside detected, isDropdownOption:', !!isDropdownOption);
+          // log.info('ThemedSelect: click outside detected, isDropdownOption:', !!isDropdownOption);
           
           if (!isDropdownOption) {
-            log.info('ThemedSelect: closing dropdown due to outside click');
+            // log.info('ThemedSelect: closing dropdown due to outside click');
             setIsOpenWithDOMUpdate(false);
             setFilterText('');
             setDropdownJustOpened(false);
@@ -252,10 +251,10 @@ export const ThemedSelect: React.FC<ThemedComponentProps & {
       };
 
       if (isOpen) {
-        log.info('ThemedSelect: adding mousedown listener');
+        // log.info('ThemedSelect: adding mousedown listener');
         document.addEventListener('mousedown', handleClickOutside);
         return () => {
-          log.info('ThemedSelect: removing mousedown listener');
+          // log.info('ThemedSelect: removing mousedown listener');
           document.removeEventListener('mousedown', handleClickOutside);
         };
       }
@@ -323,9 +322,9 @@ export const ThemedSelect: React.FC<ThemedComponentProps & {
 
     // Handle input click
     const handleInputClick = () => {
-      log.info('ThemedSelect: [' + componentId + '] handleInputClick called, isOpen:', isOpen);
+      // log.info('ThemedSelect: [' + componentId + '] handleInputClick called, isOpen:', isOpen);
       if (!isOpen) {
-        log.info('ThemedSelect: [' + componentId + '] calling openDropdown()');
+        // log.info('ThemedSelect: [' + componentId + '] calling openDropdown()');
         openDropdown();
         // Select all text if there's a current value to make it easy to replace
         if (inputRef.current && displayText) {

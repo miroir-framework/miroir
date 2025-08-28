@@ -813,6 +813,29 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
           );
         } catch (e: any) {
           log.error("handlePersistenceAction exception", e, "for action", JSON.stringify(action, undefined, 2));
+          
+          // Handle structured errors from REST API
+          if (e.isStructuredError && e.errorData) {
+            log.info("Structured error received from server:", e.errorData);
+            // Dispatch snackbar action to show user-friendly error
+            // Note: This requires the snackbar system to be connected to Redux
+            // For now, we'll include the structured error in the result
+            const result: Action2ReturnType = new Action2Error(
+              e.errorData.error || "FailedToHandlePersistenceAction",
+              e.errorData.message || e.message,
+              e.errorData.error,
+              { 
+                status: "error", 
+                errorType: e.errorData.error,
+                errorMessage: "statuscode: " + e.statusCode + e.errorData.message,
+                // statusCode: e.statusCode,
+                errorStack: [e.errorData.message],
+                // isServerError: true
+              },
+            );
+            return result;
+          }
+          
           const result: Action2ReturnType = new Action2Error(
             "FailedToHandlePersistenceAction", // TODO: correct errorType!
             e["message"],

@@ -167,16 +167,39 @@ export function MiroirContextReactProvider(props: {
 
   const handleAsyncAction = useMemo(() => async (action: () => Promise<any>, successMessage: string, actionName: string) => {
     try {
-      await action();
+      const result = await action();
+      
+      // Check if the result is an Action2Error (server error)
+      if (result && typeof result === 'object' && result.status === 'error') {
+        // Handle server errors from DomainController
+        log.error(`Server error in ${actionName}:`, result);
+        startTransition(() => {
+          if (result.isServerError && result.errorMessage) {
+            showSnackbar(`Server error: ${result.errorMessage}`, "error");
+          } else {
+            showSnackbar(`Error in ${actionName}: ${result.errorMessage || result.errorType || 'Unknown error'}`, "error");
+          }
+        });
+        return;
+      }
+      
       // Use startTransition for non-urgent UI updates to allow React 18 batching
       startTransition(() => {
         showSnackbar(successMessage, "success");
       });
     } catch (error) {
       log.error(`Error in ${actionName}:`, error);
-      startTransition(() => {
-        showSnackbar(`Error in ${actionName}: ${error}`, "error");
-      });
+      
+      // Check if the error has structured server error data
+      if (error && typeof error === 'object' && (error as any).isServerError) {
+        startTransition(() => {
+          showSnackbar(`Server error: ${(error as any).errorMessage || (error as any).message || 'Unknown server error'}`, "error");
+        });
+      } else {
+        startTransition(() => {
+          showSnackbar(`Error in ${actionName}: ${error}`, "error");
+        });
+      }
     }
   }, [showSnackbar]);
 

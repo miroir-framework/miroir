@@ -42,7 +42,7 @@ import {
 import { Action } from 'miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js';
 import { FC, useMemo, useState } from 'react';
 import { deployments, packageName } from '../../../constants.js';
-import { useDomainControllerService, useMiroirContextService } from '../MiroirContextReactProvider.js';
+import { useDomainControllerService, useMiroirContextService, useSnackbar } from '../MiroirContextReactProvider.js';
 import { cleanLevel } from '../constants.js';
 import { TypedValueObjectEditor } from './Reports/TypedValueObjectEditor.js';
 import { ThemedFormControl, ThemedInputLabel, ThemedMUISelect, ThemedPaper } from './Themes/index.js';
@@ -106,6 +106,7 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
 
   const domainController: DomainControllerInterface = useDomainControllerService();
   const context = useMiroirContextService();
+  const { showSnackbar } = useSnackbar();
   const currentModel: MetaModel = useCurrentModel(
     context.applicationSection == "data" ? context.deploymentUuid : adminConfigurationDeploymentMiroir.uuid
   );
@@ -261,14 +262,27 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
       log.info('EndpointActionCaller: Action result', result);
       
       if (result.status === 'error') {
-        alert(`Action failed: ${result.errorMessage || 'Unknown error'}`);
+        // Handle server errors with snackbar
+        // if (result.isServerError && result.errorMessage) {
+        if (result.errorMessage) {
+          showSnackbar(`Server error: ${result.errorMessage}`, "error");
+        } else {
+          showSnackbar(`Action failed: ${result.errorMessage || 'Unknown error'}`, "error");
+        }
       } else {
+        showSnackbar('Action submitted successfully!', "success");
         log.info('Action submitted successfully! Check console for details.');
       }
       
     } catch (error) {
       log.error('EndpointActionCaller: Error submitting action', error);
-      alert('Error submitting action. Check console for details.');
+      
+      // Check if the error has structured server error data
+      if (error && typeof error === 'object' && (error as any).isServerError) {
+        showSnackbar(`Server error: ${(error as any).errorMessage || (error as any).message || 'Unknown server error'}`, "error");
+      } else {
+        showSnackbar('Error submitting action. Check console for details.', "error");
+      }
     }
   };
 

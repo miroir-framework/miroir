@@ -19,10 +19,12 @@ import {
   MiroirLoggerFactory,
   StoreOrBundleAction,
   StoreUnitConfiguration,
+  adminConfigurationDeploymentMiroir,
+  adminConfigurationDeploymentLibrary,
 } from "miroir-core";
 import type { Deployment } from 'miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType';
 
-import { packageName } from '../../../constants.js';
+import { adminConfigurationDeploymentParis, packageName } from '../../../constants.js';
 import { cleanLevel } from '../constants.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -145,7 +147,17 @@ export function fetchMiroirAndAppConfigurations(
       );
     }
 
-    const foundDeployments = adminDeployments.returnedDomainElement["deployments"];
+    // const foundDeployments = adminDeployments.returnedDomainElement["deployments"];
+    // const foundDeployments = [
+    //   adminConfigurationDeploymentAdmin,
+    //   adminConfigurationDeploymentMiroir,
+    //   // adminConfigurationDeploymentLibrary,
+    //   adminConfigurationDeploymentParis,
+    // ]
+    
+    const foundDeployments = adminDeployments.returnedDomainElement["deployments"].filter((dep: Deployment) => {
+      return dep.uuid !== adminConfigurationDeploymentParis.uuid;
+    });
     log.info("found adminDeployments", foundDeployments);
 
     // Build store opening actions first
