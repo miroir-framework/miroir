@@ -227,6 +227,7 @@ const EntityInstancePanel = React.memo<{
   )
 );
 
+// ################################################################################################
 const TransformationResultPanel = React.memo<{
   transformationResult: any;
   transformationResultSchema?: JzodElement;
@@ -363,8 +364,13 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
   const currentModel = useCurrentModel(deploymentUuid);
   const miroirMetaModel: MetaModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
 
-  // State to track the currently selected entity (can be different from the initial one)
-  const [selectedEntityUuid, setSelectedEntityUuid] = useState<Uuid>(initialEntityUuid);
+  // Get persisted state from context
+  const persistedState = context.toolsPageState.transformerEditor;
+
+  // State to track the currently selected entity (with persistence)
+  const [selectedEntityUuid, setSelectedEntityUuid] = useState<Uuid>(
+    persistedState?.selectedEntityUuid || initialEntityUuid
+  );
 
   const currentMiroirModelEnvironment: MiroirModelEnvironment = useMemo(() => {
     return {
@@ -436,8 +442,10 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
     }
   }, [deploymentEntityState, currentMiroirModelEnvironment, deploymentUuid, selectedEntityUuid]);
 
-  // State to track the current instance index
-  const [currentInstanceIndex, setCurrentInstanceIndex] = useState<number>(0);
+  // State to track the current instance index (with persistence)
+  const [currentInstanceIndex, setCurrentInstanceIndex] = useState<number>(
+    persistedState?.currentInstanceIndex || 0
+  );
 
   // Select instance based on current index with stable reference
   const selectedEntityInstance: EntityInstance | undefined = useMemo(() => {
@@ -450,15 +458,21 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
   // Navigation functions for round-robin instance selection
   const navigateToNextInstance = useCallback(() => {
     if (entityInstances.length > 0) {
-      setCurrentInstanceIndex(prev => (prev + 1) % entityInstances.length);
+      const newIndex = (currentInstanceIndex + 1) % entityInstances.length;
+      setCurrentInstanceIndex(newIndex);
+      // Persist to context
+      context.updateTransformerEditorState({ currentInstanceIndex: newIndex });
     }
-  }, [entityInstances.length]);
+  }, [entityInstances.length, currentInstanceIndex, context]);
 
   const navigateToPreviousInstance = useCallback(() => {
     if (entityInstances.length > 0) {
-      setCurrentInstanceIndex(prev => (prev - 1 + entityInstances.length) % entityInstances.length);
+      const newIndex = (currentInstanceIndex - 1 + entityInstances.length) % entityInstances.length;
+      setCurrentInstanceIndex(newIndex);
+      // Persist to context
+      context.updateTransformerEditorState({ currentInstanceIndex: newIndex });
     }
-  }, [entityInstances.length]);
+  }, [entityInstances.length, currentInstanceIndex, context]);
 
   // Reset index when entity instances change
   useEffect(() => {
@@ -470,10 +484,12 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
     setCurrentInstanceIndex(0);
   }, [selectedEntityUuid]);
 
-  // Handler for entity change
+  // Handler for entity change (with persistence)
   const handleEntityChange = useCallback((newEntityUuid: Uuid) => {
     setSelectedEntityUuid(newEntityUuid);
-  }, []);
+    // Persist to context
+    context.updateTransformerEditorState({ selectedEntityUuid: newEntityUuid });
+  }, [context]);
 
   // TransformerDefinition schema - memoized to avoid recalculation
   const transformerDefinitionSchema: JzodElement = useMemo(() => ({
@@ -484,9 +500,14 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
     },
   }), []);
 
-  // Initialize transformer definition only once
-  const [currentTransformerDefinition, setCurrentTransformerDefinition] = useState<any>(() =>
-    getDefaultValueForJzodSchemaWithResolutionNonHook(
+  // Initialize transformer definition with persistence
+  const [currentTransformerDefinition, setCurrentTransformerDefinition] = useState<any>(() => {
+    // Use persisted transformer definition if available
+    if (persistedState?.currentTransformerDefinition) {
+      return persistedState.currentTransformerDefinition;
+    }
+    // Otherwise, create default
+    return getDefaultValueForJzodSchemaWithResolutionNonHook(
       transformerDefinitionSchema,
       undefined, // rootObject
       "", // rootLessListKey,
@@ -497,23 +518,52 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
       deploymentUuid,
       currentMiroirModelEnvironment,
       {} // relativeReferenceJzodContext
-    )
-  );
+    );
+  });
 
   const [foldedObjectAttributeOrArrayItems, setFoldedObjectAttributeOrArrayItems] = useState<{
       [k: string]: boolean;
-    }>({});
+    }>(persistedState?.foldedObjectAttributeOrArrayItems || {});
   
   // State for transformation result
   const [transformationResult, setTransformationResult] = useState<any>(null);
   const [transformationError, setTransformationError] = useState<string | null>(null);
   
-  // Separate fold state management for each panel
-  const [foldedEntityInstanceItems, setFoldedEntityInstanceItems] = useState<{ [k: string]: boolean }>({});
-  const [foldedTransformationResultItems, setFoldedTransformationResultItems] = useState<{ [k: string]: boolean }>({});
+  // Separate fold state management for each panel (with persistence)
+  const [foldedEntityInstanceItems, setFoldedEntityInstanceItems] = useState<{ [k: string]: boolean }>(
+    persistedState?.foldedEntityInstanceItems || {}
+  );
+  const [foldedTransformationResultItems, setFoldedTransformationResultItems] = useState<{ [k: string]: boolean }>(
+    persistedState?.foldedTransformationResultItems || {}
+  );
   
   // Debouncing for transformer execution
   const transformerTimeoutRef = useRef<NodeJS.Timeout>();
+  
+  // Wrapper functions for folded state setters with persistence
+  const setFoldedObjectAttributeOrArrayItemsWithPersistence = useCallback((updates: React.SetStateAction<{ [k: string]: boolean }>) => {
+    setFoldedObjectAttributeOrArrayItems(prev => {
+      const newState = typeof updates === 'function' ? updates(prev) : updates;
+      context.updateTransformerEditorState({ foldedObjectAttributeOrArrayItems: newState });
+      return newState;
+    });
+  }, [context]);
+
+  const setFoldedEntityInstanceItemsWithPersistence = useCallback((updates: React.SetStateAction<{ [k: string]: boolean }>) => {
+    setFoldedEntityInstanceItems(prev => {
+      const newState = typeof updates === 'function' ? updates(prev) : updates;
+      context.updateTransformerEditorState({ foldedEntityInstanceItems: newState });
+      return newState;
+    });
+  }, [context]);
+
+  const setFoldedTransformationResultItemsWithPersistence = useCallback((updates: React.SetStateAction<{ [k: string]: boolean }>) => {
+    setFoldedTransformationResultItems(prev => {
+      const newState = typeof updates === 'function' ? updates(prev) : updates;
+      context.updateTransformerEditorState({ foldedTransformationResultItems: newState });
+      return newState;
+    });
+  }, [context]);
   
   // ################################################################################################
   const transformationResultSchema: JzodElement = useMemo(() => {
@@ -524,11 +574,13 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
   }, [transformationResult]);
   
   // ################################################################################################
-  // Handle transformer definition changes with debouncing
+  // Handle transformer definition changes with debouncing (with persistence)
   const handleTransformerDefinitionChange = useCallback(async (newTransformerDefinition: any) => {
     log.info("handleTransformerDefinitionChange", newTransformerDefinition);
     setCurrentTransformerDefinition(newTransformerDefinition);
-  }, []);
+    // Persist to context
+    context.updateTransformerEditorState({ currentTransformerDefinition: newTransformerDefinition });
+  }, [context]);
 
   // Memoized context results to avoid recreating on every execution
   const contextResults = useMemo(() => {
@@ -626,7 +678,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
           formLabel={"Transformer Definition Editor"}
           onSubmit={handleTransformerDefinitionChange}
           foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
-          setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
+          setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItemsWithPersistence}
           maxRenderDepth={Infinity} // Always render fully for editor
         />
 
@@ -642,7 +694,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
             selectedEntityUuid={selectedEntityUuid}
             onEntityChange={handleEntityChange}
             foldedObjectAttributeOrArrayItems={foldedEntityInstanceItems}
-            setFoldedObjectAttributeOrArrayItems={setFoldedEntityInstanceItems}
+            setFoldedObjectAttributeOrArrayItems={setFoldedEntityInstanceItemsWithPersistence}
             onNavigateNext={navigateToNextInstance}
             onNavigatePrevious={navigateToPreviousInstance}
           />
@@ -653,7 +705,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
             selectedEntityInstance={selectedEntityInstance}
             deploymentUuid={deploymentUuid}
             foldedObjectAttributeOrArrayItems={foldedTransformationResultItems}
-            setFoldedObjectAttributeOrArrayItems={setFoldedTransformationResultItems}
+            setFoldedObjectAttributeOrArrayItems={setFoldedTransformationResultItemsWithPersistence}
           />
         </div>
       </div>

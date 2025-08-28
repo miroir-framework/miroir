@@ -30,6 +30,18 @@ MiroirLoggerFactory.registerLoggerToStart(
   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "MiroirContextReactProvider")
 ).then((logger: LoggerInterface) => {log = logger});
 
+// ToolsPage state interface for persistence
+export interface ToolsPageState {
+  transformerEditor?: {
+    selectedEntityUuid?: string;
+    currentInstanceIndex?: number;
+    currentTransformerDefinition?: any;
+    foldedObjectAttributeOrArrayItems?: { [k: string]: boolean };
+    foldedEntityInstanceItems?: { [k: string]: boolean };
+    foldedTransformationResultItems?: { [k: string]: boolean };
+  };
+}
+
 
 
 
@@ -51,6 +63,9 @@ export interface MiroirReactContext {
   miroirFundamentalJzodSchema: JzodSchema | undefined,
   setMiroirFundamentalJzodSchema: React.Dispatch<React.SetStateAction<JzodElement>>,
   viewParams: ViewParams,
+  toolsPageState: ToolsPageState,
+  updateToolsPageState: (updates: Partial<ToolsPageState>) => void,
+  updateTransformerEditorState: (updates: Partial<ToolsPageState['transformerEditor']>) => void,
   showPerformanceDisplay: boolean,
   setShowPerformanceDisplay: (value: boolean | ((prev: boolean) => boolean)) => void,
   showActionTimeline: boolean,
@@ -64,9 +79,7 @@ export interface MiroirReactContext {
   handleAsyncAction: (action: () => Promise<any>, successMessage: string, actionName: string) => Promise<void>,
 }
 
-const miroirReactContext = createContext<MiroirReactContext>({
-  viewParams: new ViewParams(),
-} as MiroirReactContext);
+const miroirReactContext = createContext<MiroirReactContext | undefined>(undefined);
 
 // #############################################################################################
 // export function MiroirContextReactProvider(props:any extends {miroirContext:MiroirContextInterface}) {
@@ -93,6 +106,11 @@ export function MiroirContextReactProvider(props: {
   // Create ViewParams instance to track UI state with reactive state
   const [sidebarWidth, setSidebarWidth] = useState(250);
   const [gridType, setGridType] = useState<GridType>('ag-grid');
+  const [toolsPageState, setToolsPageState] = useState<ToolsPageState>(() => {
+    // Persist ToolsPage state across navigation per deployment
+    const saved = sessionStorage.getItem(`toolsPageState_${deploymentUuid}`);
+    return saved ? JSON.parse(saved) : {};
+  });
   const [showPerformanceDisplay, setShowPerformanceDisplay] = useState(() => {
     // Persist showPerformanceDisplay state across navigation
     const saved = sessionStorage.getItem('showPerformanceDisplay');
@@ -117,6 +135,24 @@ export function MiroirContextReactProvider(props: {
     params.setGridType = (type: GridType) => setGridType(type);
     return params;
   }, [sidebarWidth, gridType]);
+
+  // Update functions for ToolsPage state with persistence
+  const updateToolsPageState = useMemo(() => (updates: Partial<ToolsPageState>) => {
+    const newState = { ...toolsPageState, ...updates };
+    setToolsPageState(newState);
+    // Persist to sessionStorage per deployment
+    sessionStorage.setItem(`toolsPageState_${deploymentUuid}`, JSON.stringify(newState));
+  }, [toolsPageState, deploymentUuid]);
+
+  const updateTransformerEditorState = useMemo(() => (updates: Partial<ToolsPageState['transformerEditor']>) => {
+    const newState = {
+      ...toolsPageState,
+      transformerEditor: { ...toolsPageState.transformerEditor, ...updates }
+    };
+    setToolsPageState(newState);
+    // Persist to sessionStorage per deployment
+    sessionStorage.setItem(`toolsPageState_${deploymentUuid}`, JSON.stringify(newState));
+  }, [toolsPageState, deploymentUuid]);
 
   // Snackbar handlers
   const showSnackbar = useMemo(() => (message: string, severity: "success" | "error" | "info" = "info") => {
@@ -170,6 +206,9 @@ export function MiroirContextReactProvider(props: {
         setMiroirFundamentalJzodSchema(a);
       },
       viewParams,
+      toolsPageState,
+      updateToolsPageState,
+      updateTransformerEditorState,
       showPerformanceDisplay,
       setShowPerformanceDisplay: (value: boolean | ((prev: boolean) => boolean)) => {
         const newValue = typeof value === 'function' ? value(showPerformanceDisplay) : value;
@@ -200,8 +239,9 @@ export function MiroirContextReactProvider(props: {
       props.miroirContext,
       props.domainController,
       viewParams,
-      sidebarWidth,
-      gridType,
+      toolsPageState,
+      updateToolsPageState,
+      updateTransformerEditorState,
       showPerformanceDisplay,
       snackbarOpen,
       snackbarMessage,
@@ -223,27 +263,47 @@ export function useMiroirContextInnerFormOutput() {
 
 // #############################################################################################
 export function useMiroirContextService() {
-  return useContext(miroirReactContext);
+  const context = useContext(miroirReactContext);
+  if (!context) {
+    throw new Error('useMiroirContextService must be used within a MiroirContextReactProvider');
+  }
+  return context;
 }
 
 // #############################################################################################
 export function useMiroirContext() {
-  return useContext(miroirReactContext).miroirContext;
+  const context = useContext(miroirReactContext);
+  if (!context) {
+    throw new Error('useMiroirContext must be used within a MiroirContextReactProvider');
+  }
+  return context.miroirContext;
 }
 
 // #############################################################################################
 export function useViewParams() {
-  return useContext(miroirReactContext)?.viewParams;
+  const context = useContext(miroirReactContext);
+  if (!context) {
+    throw new Error('useViewParams must be used within a MiroirContextReactProvider');
+  }
+  return context.viewParams;
 }
 
 // #############################################################################################
 export const useErrorLogService = () => {
-  return useContext(miroirReactContext)?.miroirContext.errorLogService.getErrorLog();
+  const context = useContext(miroirReactContext);
+  if (!context) {
+    throw new Error('useErrorLogService must be used within a MiroirContextReactProvider');
+  }
+  return context.miroirContext.errorLogService.getErrorLog();
 };
 
 // #############################################################################################
 export const useDomainControllerService = () => {
-  return useContext(miroirReactContext)?.domainController;
+  const context = useContext(miroirReactContext);
+  if (!context) {
+    throw new Error('useDomainControllerService must be used within a MiroirContextReactProvider');
+  }
+  return context.domainController;
 };
 
 //#########################################################################################

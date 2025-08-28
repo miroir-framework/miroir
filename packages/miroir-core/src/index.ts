@@ -641,6 +641,7 @@ export {
   ViewParamsData,
   GridType,
   AppTheme,
+  ToolsPageState,
   viewParams,
 } from "./0_interfaces/4-views/ViewParams";
 export {
