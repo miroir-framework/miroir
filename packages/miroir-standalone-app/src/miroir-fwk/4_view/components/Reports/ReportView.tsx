@@ -27,7 +27,7 @@ import { useReduxDeploymentsStateJzodSchemaSelector, useReduxDeploymentsStateQue
 import { ReportSectionView } from './ReportSectionView.js';
 import { useDocumentOutlineContext } from '../Page/RootComponent.js';
 import { useMiroirContextService } from "../../MiroirContextReactProvider.js";
-import { ThemedSpan } from '../Themes/ThemedComponents.js';
+import { ThemedSpan } from '../Themes/index.js';
 
 import {
   getMemoizedReduxDeploymentsStateJzodSchemaSelectorMap,

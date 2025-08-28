@@ -153,12 +153,12 @@ export function getObjectUniondiscriminatorValuesFromResolvedSchema(
       return result;
     }
     if (Array.isArray(discriminator)) {
-      log.info(
-        "getObjectUniondiscriminatorValuesFromResolvedSchema processing array discriminator",
-        discriminator,
-        "unionObjectChoices",
-        unionObjectChoices.length
-      );
+      // log.info(
+      //   "getObjectUniondiscriminatorValuesFromResolvedSchema processing array discriminator",
+      //   discriminator,
+      //   "unionObjectChoices",
+      //   unionObjectChoices.length
+      // );
       const result: string[][] = discriminator.map((disc: string) => {
         return [
           ...new Set(
@@ -168,19 +168,19 @@ export function getObjectUniondiscriminatorValuesFromResolvedSchema(
             .filter((branch: any /** JzodObject */, index) => {
               // filter branches that have a discriminator
               // return branch && branch.definition && branch.definition[discriminator];
-              log.info(
-                "getObjectUniondiscriminatorValuesFromResolvedSchema filter processing",
-                index,
-                "disc",
-                disc,
-                "on branch",
-                branch
-              );
+              // log.info(
+              //   "getObjectUniondiscriminatorValuesFromResolvedSchema filter processing",
+              //   index,
+              //   "disc",
+              //   disc,
+              //   "on branch",
+              //   branch
+              // );
 
               return branch && branch.definition;
             })
             .flatMap((branch: any /** JzodObject */, index) => {
-              if (index == 1) log.info("getObjectUniondiscriminatorValuesFromResolvedSchema flatmap processing disc", disc, "on branch", branch);
+              // if (index == 1) log.info("getObjectUniondiscriminatorValuesFromResolvedSchema flatmap processing disc", disc, "on branch", branch);
               if (!branch || !branch.definition || !branch.definition[disc]) {
                 // ATTENTION:
                 // there can be one object branch without discriminator, the one that will be chosen
@@ -255,17 +255,17 @@ export function getObjectUniondiscriminatorValuesFromResolvedSchema(
         ];
       });
       // log.info("getObjectUniondiscriminatorValuesFromResolvedSchema found ", result);
-      log.info(
-        "getObjectUniondiscriminatorValuesFromResolvedSchema called with resolvedElementJzodSchema:",
-        resolvedElementJzodSchema,
-        "unfoldedRawSchema:",
-        unfoldedRawSchema,
-        // "recursivelyUnfoldedRawSchemaList:",
-        // recursivelyUnfoldedRawSchemaList,
-        "unionObjectChoices",
-        unionObjectChoices,
-        "result:", result
-      );
+      // log.info(
+      //   "getObjectUniondiscriminatorValuesFromResolvedSchema called with resolvedElementJzodSchema:",
+      //   resolvedElementJzodSchema,
+      //   "unfoldedRawSchema:",
+      //   unfoldedRawSchema,
+      //   // "recursivelyUnfoldedRawSchemaList:",
+      //   // recursivelyUnfoldedRawSchemaList,
+      //   "unionObjectChoices",
+      //   unionObjectChoices,
+      //   "result:", result
+      // );
 
       return result;
     }

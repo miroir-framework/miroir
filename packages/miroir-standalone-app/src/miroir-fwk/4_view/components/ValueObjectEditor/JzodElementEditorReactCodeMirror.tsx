@@ -13,7 +13,7 @@ import {
   ThemedStyledButton,
   ThemedSpan,
   ThemedCodeBlock
-} from "../Themes/ThemedComponents";
+} from "../Themes/index";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -55,15 +55,17 @@ export const JzodElementEditorReactCodeMirror: React.FC<JzodElementEditorReactCo
       <span>
         <span>{jzodSchemaTooltip ?? <></>}</span>
         <ThemedSpan
-          border={`2px solid green`}
-          borderRadius="4px"
-          padding="2px"
-          minWidth="40ch"
-          position="relative"
-          display={!hidden && !insideAny ? "inline-block" : "none"}
+          style={{
+            border: '2px solid green',
+            borderRadius: '4px',
+            padding: '2px',
+            minWidth: '40ch',
+            position: 'relative',
+            display: !hidden && !insideAny ? 'inline-block' : 'none'
+          }}
         >
           {props.displayAsStructuredElementSwitch && (
-            <ThemedSpan marginBottom="10px">{displayAsStructuredElementSwitch}</ThemedSpan>
+            <ThemedSpan style={{ marginBottom: "10px" }}>{displayAsStructuredElementSwitch}</ThemedSpan>
           )}
           <ThemedCodeBlock>{codeMirrorValue}</ThemedCodeBlock>
         </ThemedSpan>
@@ -135,48 +137,52 @@ export const JzodElementEditorReactCodeMirror: React.FC<JzodElementEditorReactCo
         {jzodSchemaTooltip ?? <></>}
       </span>
       <ThemedSpan
-        border={`2px solid ${codeMirrorIsValidJson ? "green" : "red"}`}
-        borderRadius="4px"
-        padding="2px"
-        minWidth="40ch"
-        position="relative"
-        display={!hidden && !insideAny ? "inline-block" : "none"} // control visibility
+        style={{
+          border: `2px solid ${codeMirrorIsValidJson ? "green" : "red"}`,
+          borderRadius: "4px",
+          padding: "2px",
+          minWidth: "40ch",
+          position: "relative",
+          display: !hidden && !insideAny ? "inline-block" : "none" // control visibility
+        }}
       >
         {props.displayAsStructuredElementSwitch && (
-          <ThemedSpan marginBottom="10px">{displayAsStructuredElementSwitch}</ThemedSpan>
+          <ThemedSpan style={{ marginBottom: "10px" }}>{displayAsStructuredElementSwitch}</ThemedSpan>
         )}
         <ThemedStyledButton
-          type="button"
-          ariaLabel="Format JSON"
-          position="absolute"
-          top="4px"
-          right="36px"
-          zIndex={2}
-          background="#eee"
-          border="1px solid #ccc"
-          borderRadius="3px"
-          padding="2px 6px"
-          cursor="pointer"
-          fontWeight="bold"
+          aria-label="Format JSON"
+          style={{
+            position: "absolute",
+            top: "4px",
+            right: "36px",
+            zIndex: 2,
+            background: "#eee",
+            border: "1px solid #ccc",
+            borderRadius: "3px",
+            padding: "2px 6px",
+            cursor: "pointer",
+            fontWeight: "bold"
+          }}
           onClick={handleFormat}
           title="Format JSON"
         >
           {"{}"}
         </ThemedStyledButton>
         <ThemedStyledButton
-          type="button"
-          ariaLabel="Check and Apply JSON"
-          position="absolute"
-          top="4px"
-          right="4px"
-          zIndex={2}
-          background="#eee"
-          border="1px solid #ccc"
-          borderRadius="3px"
-          padding="2px 6px"
-          cursor={codeMirrorIsValidJson ? "pointer" : "not-allowed"}
-          fontWeight="bold"
-          color={codeMirrorIsValidJson ? "green" : "gray"}
+          aria-label="Check and Apply JSON"
+          style={{
+            position: "absolute",
+            top: "4px",
+            right: "4px",
+            zIndex: 2,
+            background: "#eee",
+            border: "1px solid #ccc",
+            borderRadius: "3px",
+            padding: "2px 6px",
+            cursor: codeMirrorIsValidJson ? "pointer" : "not-allowed",
+            fontWeight: "bold",
+            color: codeMirrorIsValidJson ? "green" : "gray"
+          }}
           onClick={handleCheck}
           title="Check and Apply JSON"
           disabled={!codeMirrorIsValidJson}

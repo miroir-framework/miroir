@@ -45,7 +45,7 @@ import { deployments, packageName } from '../../../constants.js';
 import { useDomainControllerService, useMiroirContextService } from '../MiroirContextReactProvider.js';
 import { cleanLevel } from '../constants.js';
 import { TypedValueObjectEditor } from './Reports/TypedValueObjectEditor.js';
-import { ThemedFormControl, ThemedInputLabel, ThemedMUISelect, ThemedPaper } from './Themes/ThemedComponents.js';
+import { ThemedFormControl, ThemedInputLabel, ThemedMUISelect, ThemedPaper } from './Themes/index.js';
 import { useCurrentModel, useReduxDeploymentsStateQuerySelectorForCleanedResult } from '../ReduxHooks.js';
 import { getMemoizedReduxDeploymentsStateSelectorMap, ReduxStateWithUndoRedo } from 'miroir-localcache-redux';
 

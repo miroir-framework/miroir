@@ -44,7 +44,7 @@ import {
   ThemedText,
   ThemedTitle,
   ThemedTooltip
-} from "../Themes/ThemedComponents.js";
+} from "../Themes/index"
 import { TestCellWithDetails } from './TestCellWithDetails.js';
 import { TestResultCellWithActualValue } from './TestResultCellWithActualValue.js';
 import { TypedValueObjectEditor } from './TypedValueObjectEditor.js';

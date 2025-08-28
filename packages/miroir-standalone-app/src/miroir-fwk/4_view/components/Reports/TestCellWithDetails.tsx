@@ -7,7 +7,7 @@ import {
   ThemedPaper,
   ThemedStyledButton,
   ThemedTitle
-} from "../Themes/ThemedComponents.js";
+} from "../Themes/index"
 import { formatValue, SideBySideDiff } from './SideBySideDiff.js';
 
 // ################################################################################################
@@ -385,7 +385,7 @@ export const TestCellWithDetails: React.FC<TestCellWithDetailsProps> = ({
               color: currentTheme.colors.textSecondary,
             }}
             onClick={() => setIsExpanded(false)}
-            ariaLabel="Close"
+            aria-label="Close"
           >
             ×
           </ThemedStyledButton>

@@ -25,7 +25,7 @@ import {
   ThemedDivider, 
   ThemedIconButton,
   ThemedScrollableContent 
-} from '../Themes/ThemedComponents.js';
+} from "../Themes/index"
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

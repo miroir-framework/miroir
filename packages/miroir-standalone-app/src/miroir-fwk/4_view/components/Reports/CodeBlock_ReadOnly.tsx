@@ -2,7 +2,7 @@ import React from "react";
 import ReactCodeMirror from "@uiw/react-codemirror";
 import { EditorView } from "@codemirror/view";
 import { javascript } from '@codemirror/lang-javascript';
-import { ThemedCodeBlock } from "../Themes/ThemedComponents.js";
+import { ThemedCodeBlock } from "../Themes/index.js";
 
 const codeMirrorExtensions = [javascript()];
 

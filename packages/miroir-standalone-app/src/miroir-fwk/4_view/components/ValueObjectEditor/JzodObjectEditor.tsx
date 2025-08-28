@@ -42,7 +42,7 @@ import {
   ThemedOptionalAttributeItem,
   ThemedSizedButton,
   ThemedSmallIconButton
-} from "../Themes/ThemedComponents";
+} from "../Themes/index"
 import { indentShift } from "./JzodArrayEditor";
 import { FoldUnfoldAllObjectAttributesOrArrayItems, FoldUnfoldObjectOrArray, JzodElementEditor } from "./JzodElementEditor";
 import { useJzodElementEditorHooks } from "./JzodElementEditorHooks";

@@ -104,6 +104,24 @@ export default defineConfig({
     setupFiles: ['./setup.ts'],
     env: {
       VITE_TEST_MODE: 'true'
+    },
+    // Configure React Testing Library act warnings
+    pool: 'threads',
+    poolOptions: {
+      threads: {
+        singleThread: true
+      }
+    },
+    // Configure environment for React Testing Library
+    environmentOptions: {
+      happyDOM: {
+        settings: {
+          // Enable React 18 features
+          disableJavaScriptFileLoading: false,
+          disableJavaScriptEvaluation: false,
+          enableFileSystemHttpRequests: false
+        }
+      }
     }
   },
 });

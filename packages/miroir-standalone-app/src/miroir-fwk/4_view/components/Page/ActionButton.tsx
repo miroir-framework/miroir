@@ -1,5 +1,5 @@
 import React from 'react';
-import { ThemedButton } from '../Themes/ThemedComponents';
+import { ThemedButton } from '../Themes/index';
 
 interface ActionButtonProps {
   onAction: () => Promise<void>;

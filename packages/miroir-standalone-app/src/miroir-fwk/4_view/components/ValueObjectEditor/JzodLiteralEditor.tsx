@@ -1,15 +1,13 @@
 import { useFormikContext } from "formik";
-import React, { FC, useCallback, useMemo, type Key } from "react";
+import React, { FC, useCallback, useMemo } from "react";
 
 
 import {
   adminConfigurationDeploymentMiroir,
-  getDefaultValueForJzodSchemaWithResolution,
   getDefaultValueForJzodSchemaWithResolutionNonHook,
   JzodElement,
   JzodEnum,
   JzodLiteral,
-  JzodObject,
   jzodUnionResolvedTypeForObject,
   LoggerInterface,
   MetaModel,
@@ -18,19 +16,19 @@ import {
   resolvePathOnObject,
   type JzodSchema,
   type KeyMapEntry,
-  type MiroirModelEnvironment,
+  type MiroirModelEnvironment
 } from "miroir-core";
 
 import { packageName } from "../../../../constants";
 import { cleanLevel } from "../../constants";
 import { useMiroirContextService } from "../../MiroirContextReactProvider";
 import { useCurrentModel } from "../../ReduxHooks";
+import {
+  ThemedDisplayValue,
+  ThemedLabeledEditor,
+  ThemedSelect
+} from "../Themes/index";
 import { JzodLiteralEditorProps } from "./JzodElementEditorInterface";
-import { 
-  ThemedLabeledEditor, 
-  ThemedSelect,
-  ThemedDisplayValue
-} from "../Themes/ThemedComponents";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -51,6 +49,13 @@ const handleDiscriminatorChange = (
   formik: any,
   log: LoggerInterface
 ) => {
+  console.log("handleDiscriminatorChange called with:", {
+    selectedValue,
+    discriminatorType,
+    rootLessListKey,
+    rootLessListKeyArray
+  });
+  
   if (!parentKeyMap) {
     throw new Error(
       "handleDiscriminatorChange called but current object does not have information about the discriminated union type it must be part of!"
@@ -237,12 +242,13 @@ const handleDiscriminatorChange = (
     // If the target key is empty, we set the value directly on formik.values
     formik.setValues(
       defaultValue,
+      false, // do not validate / refresh
     );
   } else {
     formik.setFieldValue(
       targetRootLessListKey,
       defaultValue,
-      false
+      false, // do not validate / refresh
     );
   }
 };
@@ -326,52 +332,22 @@ export const JzodLiteralEditor: FC<JzodLiteralEditorProps> =  (
           "error",
           e
         );
-        return formik.values; // fallback to formik.values if the path resolution fails
+        return formik.values; // fallback to formik.values if the path
+        //        console.log("JzodLiteralEditor handleFilterableSelectChange called with event (DEBUG):", event);
       }
     }, [formik.values, rootLessListKeyArray]);
-  
-  // ############################################################################################
-  // uses setFormState to update the formik state (updating the parent value)
-  const handleSelectLiteralChange = useCallback(
-    (event: any) => {
-      if (!isDiscriminator) {
-        throw new Error(
-          "handleSelectLiteralChange called but this literal is not a discriminator!"
-        );
-      }
-      if (!parentKeyMap) {
-        throw new Error(
-          "handleSelectLiteralChange called but current object does not have information about the discriminated union type it must be part of!"
-        );
-      }
-      handleDiscriminatorChange(
-        event.target.value,
-        "literal",
-        parentKeyMap,
-        rootLessListKey,
-        rootLessListKeyArray,
-        currentDeploymentUuid,
-        currentMiroirModelEnvironment,
-        formik,
-        log
-      );
-    },
-    [
-      parentKeyMap,
-      rootLessListKey,
-      rootLessListKeyArray,
-      currentDeploymentUuid,
-      currentMiroirFundamentalJzodSchema,
-      currentModel,
-      miroirMetaModel,
-      formik.values,
-      currentValue
-    ]
-  );
+
 
   // Handler for the new filterable select component
   const handleFilterableSelectChange = useCallback(
     (event: React.ChangeEvent<HTMLSelectElement>) => {
+      console.log("handleFilterableSelectChange called with event:", event);
+      console.log("event.target.value:", event.target.value);
+      console.log("event.type:", event.type);
+      console.log("isDiscriminator:", isDiscriminator);
+      console.log("parentKeyMap:", parentKeyMap);
+      console.log("Stack trace:", new Error().stack);
+      
       if (!isDiscriminator) {
         throw new Error(
           "handleFilterableSelectChange called but this literal is not a discriminator!"
@@ -395,15 +371,13 @@ export const JzodLiteralEditor: FC<JzodLiteralEditorProps> =  (
       );
     },
     [
+      isDiscriminator,
       parentKeyMap,
       rootLessListKey,
       rootLessListKeyArray,
       currentDeploymentUuid,
-      currentMiroirFundamentalJzodSchema,
-      currentModel,
-      miroirMetaModel,
-      formik.values,
-      currentValue
+      currentMiroirModelEnvironment,
+      formik
     ]
   );
 
@@ -431,17 +405,6 @@ export const JzodLiteralEditor: FC<JzodLiteralEditorProps> =  (
   //   currentDiscriminatorValues,
   // );
   // Memoize discriminator values for better rendering performance
-  const discriminatorMenuItems = useMemo(() => {
-    if (isDiscriminator && parentKeyMap?.discriminatorValues) {
-      // return parentKeyMap.discriminatorValues[discriminatorIndex].sort().map((v) => (
-      return currentDiscriminatorValues.sort().map((v) => (
-        <option key={v} value={v}>
-          {v}
-        </option>
-      ));
-    }
-    return null;
-  }, [isDiscriminator, currentKeyMap]);
 
   // Memoize discriminator options for the filterable select
   const discriminatorSelectOptions = useMemo(() => {
@@ -453,20 +416,20 @@ export const JzodLiteralEditor: FC<JzodLiteralEditorProps> =  (
     }
     return [];
   }, [isDiscriminator, currentDiscriminatorValues]);
-  log.info(
-    "JzodLiteralEditor render",
-    JzodLiteralEditorRenderCount,
-    "rootLessListKey",
-    rootLessListKey,
-    readOnly ? "readOnly" : "editable",
-    isDiscriminator ? "discriminator" : "not discriminator",
-    "currentValue",
-    currentValue,
-    "parentKeyMap.discriminator",
-    parentKeyMap?.discriminator,
-    "parentKeyMap.discriminatorValues",
-    parentKeyMap?.discriminatorValues,
-  );
+  // log.info(
+  //   "JzodLiteralEditor render",
+  //   JzodLiteralEditorRenderCount,
+  //   "rootLessListKey",
+  //   rootLessListKey,
+  //   readOnly ? "readOnly" : "editable",
+  //   isDiscriminator ? "discriminator" : "not discriminator",
+  //   "currentValue",
+  //   currentValue,
+  //   "parentKeyMap.discriminator",
+  //   parentKeyMap?.discriminator,
+  //   "parentKeyMap.discriminatorValues",
+  //   parentKeyMap?.discriminatorValues,
+  // );
   return (
     <ThemedLabeledEditor
       labelElement={labelElement ?? <></>}
@@ -479,6 +442,7 @@ export const JzodLiteralEditor: FC<JzodLiteralEditorProps> =  (
         ) : isDiscriminator ? (
           <>
             <ThemedSelect
+              name={name}
               filterable={true}
               options={discriminatorSelectOptions}
               value={currentValue}

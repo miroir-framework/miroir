@@ -44,7 +44,7 @@ import {
   ThemedInputLabel,
   ThemedMenuItem,
   ThemedMUISelect
-} from '../Themes/ThemedComponents';
+} from '../Themes/index';
 import { ActionButton } from './ActionButton';
 import { ActionTimelineContainer } from '../ActionTimelineContainer';
 

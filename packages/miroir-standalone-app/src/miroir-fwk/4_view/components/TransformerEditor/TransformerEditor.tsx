@@ -40,7 +40,7 @@ import {
   ThemedHeaderSection,
   ThemedText,
   ThemedTitle,
-} from '../Themes/ThemedComponents';
+} from "../Themes/index"
 import { ReportSectionEntityInstance } from '../Reports/ReportSectionEntityInstance';
 import { getMemoizedReduxDeploymentsStateSelectorMap, type ReduxStateWithUndoRedo } from 'miroir-localcache-redux';
 import { useSelector } from 'react-redux';
