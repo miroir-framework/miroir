@@ -73,6 +73,7 @@ export const ThemedSelect: React.FC<ThemedComponentProps & {
     const [filteredOptions, setFilteredOptions] = useState(options);
     const [highlightedIndex, setHighlightedIndex] = useState(-1);
     const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0, width: 0 });
+    const [dropdownJustOpened, setDropdownJustOpened] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
     const dropdownRef = useRef<HTMLDivElement>(null);
@@ -94,7 +95,13 @@ export const ThemedSelect: React.FC<ThemedComponentProps & {
       setIsOpen(true);
       setFilterText('');
       setHighlightedIndex(-1);
+      setDropdownJustOpened(true);
       updateDropdownPosition();
+      
+      // Reset the "just opened" flag after a short delay to prevent accidental clicks
+      setTimeout(() => {
+        setDropdownJustOpened(false);
+      }, 150);
     }, [updateDropdownPosition]);
 
     // Calculate the width needed to fit the longest option
@@ -162,6 +169,7 @@ export const ThemedSelect: React.FC<ThemedComponentProps & {
           if (!isDropdownOption) {
             setIsOpen(false);
             setFilterText('');
+            setDropdownJustOpened(false);
           }
         }
       };
@@ -244,10 +252,16 @@ export const ThemedSelect: React.FC<ThemedComponentProps & {
     const displayText = selectedOption ? selectedOption.label : value || '';
 
     const handleOptionClick = (optionValue: string, event?: React.MouseEvent) => {
-      // console.log('ThemedSelect: Option clicked:', optionValue, event?.type);
+      console.log('ThemedSelect: Option clicked:', optionValue, 'event type:', event?.type, 'event:', event);
+      
+      // Prevent accidental clicks right after dropdown opens
+      if (dropdownJustOpened) {
+        console.log('ThemedSelect: Ignoring click because dropdown just opened');
+        return;
+      }
       
       if (onChange) {
-        // console.log('ThemedSelect: Calling onChange with value:', optionValue);
+        console.log('ThemedSelect: Calling onChange with value:', optionValue);
         const syntheticEvent = {
           target: { value: optionValue },
           currentTarget: { value: optionValue }
@@ -257,6 +271,7 @@ export const ThemedSelect: React.FC<ThemedComponentProps & {
       setIsOpen(false);
       setFilterText('');
       setHighlightedIndex(-1);
+      setDropdownJustOpened(false);
     };
 
     const handleInputKeyDown = (event: React.KeyboardEvent) => {
@@ -275,6 +290,7 @@ export const ThemedSelect: React.FC<ThemedComponentProps & {
         setIsOpen(false);
         setFilterText('');
         setHighlightedIndex(-1);
+        setDropdownJustOpened(false);
       } else if (event.key === 'ArrowDown') {
         event.preventDefault();
         if (!isOpen) {
@@ -478,7 +494,20 @@ export const ThemedSelect: React.FC<ThemedComponentProps & {
                     e.stopPropagation();
                     handleOptionClick(option.value, e);
                   }}
-                  onMouseEnter={() => setHighlightedIndex(index)}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleOptionClick(option.value, e);
+                  }}
+                  onMouseEnter={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setHighlightedIndex(index);
+                  }}
+                  onMouseLeave={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                  }}
                 >
                   {option.label}
                 </div>

@@ -1616,17 +1616,25 @@ export function getJzodUnionEditorTests(
             //   await user.keyboard('{Enter}'); // select the "type2" option
             // });
             await act(async () => {
-              // fireEvent.click(select); // open the select dropdown
+              fireEvent.click(select); // open the select dropdown
+              await new Promise((resolve) => setTimeout(resolve, 200)); // Wait for dropdown to open and protection delay to pass
+
               // await waitAfterUserInteraction();
               await user.type(select, "type2"); // filter options to "type2"
               await waitAfterUserInteraction();
               // await user.keyboard('{ArrowDown}');
+              await new Promise((resolve) => setTimeout(resolve, 200)); // Wait for dropdown to open and protection delay to pass
               console.log("select after typing:", select.outerHTML);
-              await user.keyboard('{ArrowDown}{ArrowDown}'); // navigate to the "type2" option
               fireEvent.change(select, { target: { value: "type2" } });
-              console.log("select after arrowDown:", select.outerHTML);
               await waitAfterUserInteraction();
+              await new Promise((resolve) => setTimeout(resolve, 200)); // Wait for dropdown to open and protection delay to pass
+              console.log("select after change:", select.outerHTML);
+              await user.keyboard('{ArrowDown}{ArrowDown}'); // navigate to the "type2" option
+              await waitAfterUserInteraction();
+              console.log("select after arrowDown:", select.outerHTML);
               await user.keyboard('{Enter}'); // select the "type2" option
+              await waitAfterUserInteraction();
+              console.log("select after enter:", select.outerHTML);
               // await waitAfterUserInteraction();
             });
             

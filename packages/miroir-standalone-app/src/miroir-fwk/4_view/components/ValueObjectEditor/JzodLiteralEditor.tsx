@@ -332,19 +332,21 @@ export const JzodLiteralEditor: FC<JzodLiteralEditorProps> =  (
           "error",
           e
         );
-        return formik.values; // fallback to formik.values if the path resolution fails
+        return formik.values; // fallback to formik.values if the path
+        //        console.log("JzodLiteralEditor handleFilterableSelectChange called with event (DEBUG):", event);
       }
     }, [formik.values, rootLessListKeyArray]);
-  
-  // ############################################################################################
+
 
   // Handler for the new filterable select component
   const handleFilterableSelectChange = useCallback(
     (event: React.ChangeEvent<HTMLSelectElement>) => {
-      log.info("handleFilterableSelectChange called with event:", event);
-      log.info("event.target.value:", event.target.value);
-      log.info("isDiscriminator:", isDiscriminator);
-      log.info("parentKeyMap:", parentKeyMap);
+      console.log("handleFilterableSelectChange called with event:", event);
+      console.log("event.target.value:", event.target.value);
+      console.log("event.type:", event.type);
+      console.log("isDiscriminator:", isDiscriminator);
+      console.log("parentKeyMap:", parentKeyMap);
+      console.log("Stack trace:", new Error().stack);
       
       if (!isDiscriminator) {
         throw new Error(
@@ -369,13 +371,13 @@ export const JzodLiteralEditor: FC<JzodLiteralEditorProps> =  (
       );
     },
     [
+      isDiscriminator,
       parentKeyMap,
       rootLessListKey,
       rootLessListKeyArray,
       currentDeploymentUuid,
       currentMiroirModelEnvironment,
-      formik.values,
-      currentValue
+      formik
     ]
   );
 
