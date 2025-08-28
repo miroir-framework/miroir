@@ -155,11 +155,14 @@ for (const op of restServerDefaultHandlers) {
     // urlencodedParser,
     async (request: CustomRequest, response: any, context: any) => {
       const body = request.body;
-      // myLogger.info("server received request", op.method, request.originalUrl, JSON.stringify(request, circularReplacer, 2));
-      // myLogger.info("server received body", op.method, request.originalUrl, body);
-      // myLogger.info("server received context", op.method, request.originalUrl, context.body);
+      console.log(`[CONSOLE DEBUG] Request received: ${op.method} ${request.originalUrl}`);
+      myLogger.info(`[REQUEST START] ${op.method} ${request.originalUrl} - params:`, JSON.stringify(request.params));
+      
       try {
-        const result = await op.handler(
+        console.log(`[CONSOLE DEBUG] About to call handler`);
+        myLogger.info(`[BEFORE HANDLER] About to call handler for ${op.method} ${request.originalUrl}`);
+        
+        await op.handler(
           true, // useDomainControllerToHandleModelAndInstanceActions: since we're on the server, we use the localCache as intermediate step, to access the persistenceStore
           (response: any) => response.json.bind(response),
           response,
@@ -170,9 +173,37 @@ for (const op of restServerDefaultHandlers) {
           body,
           request.params
         );
-        return result;
+        
+        console.log(`[CONSOLE DEBUG] Handler completed successfully`);
+        myLogger.info(`[AFTER HANDLER] Handler completed successfully for ${op.method} ${request.originalUrl}`);
+        // Don't return anything - the handler should have already sent the response
       } catch (error) {
-        myLogger.error("server could not handle action: " + op.method + " on URL: " + op.url + " error: " + error)
+        console.log(`[CONSOLE DEBUG] Error caught:`, error);
+        myLogger.error(`[ERROR CAUGHT] server could not handle action: ${op.method} on URL: ${op.url} error: ${error}`);
+        
+        // Send proper error response to client
+        if (!response.headersSent) {
+          console.log(`[CONSOLE DEBUG] Sending error response`);
+          myLogger.info(`[SENDING ERROR RESPONSE] Headers not sent, sending 500 error response for ${request.originalUrl}`);
+          const errorMessage = error instanceof Error ? error.message : String(error);
+          try {
+            response.status(500).json({
+              status: "error",
+              errorType: "ServerError",
+              errorMessage: `Failed to handle ${op.method} request on ${request.originalUrl}: ${errorMessage}`,
+              timestamp: new Date().toISOString()
+            });
+            console.log(`[CONSOLE DEBUG] Error response sent successfully`);
+            myLogger.info(`[ERROR RESPONSE SENT] Error response sent successfully for ${request.originalUrl}`);
+          } catch (responseError) {
+            console.log(`[CONSOLE DEBUG] Failed to send error response:`, responseError);
+            myLogger.error(`[ERROR SENDING RESPONSE] Failed to send error response: ${responseError}`);
+          }
+        } else {
+          console.log(`[CONSOLE DEBUG] Headers already sent, cannot send error response`);
+          myLogger.warn(`[HEADERS ALREADY SENT] Cannot send error response for ${request.originalUrl} - headers already sent`);
+        }
+        // Don't return anything - we've already handled the response
       }
     }
   );

@@ -112,7 +112,7 @@ export async function restMethodGetHandler
   );
 
   try {
-    const result = generateRestServiceResponse(
+    const result = await generateRestServiceResponse(
       { section, parentUuid },
       ["section", "parentUuid"],
       [],
@@ -153,7 +153,7 @@ export async function restMethodGetHandler
     // log.debug("restMethodGetHandler get CRUD/ result", JSON.stringify(result, undefined, 2));
     return Promise.resolve(result);
   } catch (error) {
-    console.warn(
+    log.error(
       "restMethodGetHandler get url",
       effectiveUrl,
       "deployment",
@@ -161,7 +161,15 @@ export async function restMethodGetHandler
       "failed with error",
       error
     );
-    return Promise.resolve(undefined);
+    // Send error response to client to prevent hanging
+    const errorResponse = {
+      error: "Internal server error",
+      message: error instanceof Error ? error.message : String(error),
+      statusCode: 500
+    };
+    continuationFunction(responseHandler)(errorResponse);
+    // Re-throw the error so it can be handled by the server's error handler
+    throw error;
   }
 }
 
