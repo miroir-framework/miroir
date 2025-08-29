@@ -512,6 +512,8 @@ export class DomainController implements DomainControllerInterface {
     // let entityDomainAction:DomainAction | undefined = undefined;
     try {
       LoggerGlobalContext.setAction(runBoxedExtractorOrQueryAction.actionName);
+      // Also set in RunActionTracker for ActionLogService
+      this.miroirContext.runActionTracker.setAction(runBoxedExtractorOrQueryAction.actionName);
       log.info(
         "handleBoxedExtractorOrQueryAction",
         // "deploymentUuid",
@@ -634,6 +636,8 @@ export class DomainController implements DomainControllerInterface {
       );
     } finally {
       LoggerGlobalContext.setAction(undefined);
+      // Also clear in RunActionTracker for ActionLogService
+      this.miroirContext.runActionTracker.setAction(undefined);
     }
 
     return ACTION_OK;
@@ -1295,6 +1299,8 @@ export class DomainController implements DomainControllerInterface {
     // }
     try {
       LoggerGlobalContext.setAction(domainAction.actionType);
+      // Also set in RunActionTracker for ActionLogService
+      this.miroirContext.runActionTracker.setAction(domainAction.actionType);
       switch (domainAction.actionType) {
         case "compositeAction": {
           // old school, not used anymore (or should not be used anymore)
@@ -1468,6 +1474,8 @@ export class DomainController implements DomainControllerInterface {
       );
     } finally {
       LoggerGlobalContext.setAction(undefined);
+      // Also clear in RunActionTracker for ActionLogService
+      this.miroirContext.runActionTracker.setAction(undefined);
     }
   }
 
@@ -1507,6 +1515,8 @@ export class DomainController implements DomainControllerInterface {
       let actionResult: Action2ReturnType | undefined = undefined;
       try {
         LoggerGlobalContext.setAction(currentAction.actionLabel);
+        // Also set in RunActionTracker for ActionLogService
+        this.miroirContext.runActionTracker.setAction(currentAction.actionLabel);
         // log.info(
         //   "handleCompositeAction compositeInstanceAction handling sub currentAction",
         //   JSON.stringify(currentAction, null, 2),
@@ -1675,6 +1685,8 @@ export class DomainController implements DomainControllerInterface {
         );
       } finally {
         LoggerGlobalContext.setCompositeAction(undefined);
+        // Also clear in RunActionTracker for ActionLogService
+        this.miroirContext.runActionTracker.setCompositeAction(undefined);
       }
     }
     return Promise.resolve(ACTION_OK);
@@ -1704,6 +1716,8 @@ export class DomainController implements DomainControllerInterface {
       let actionResult: Action2ReturnType | undefined = undefined;
       try {
         LoggerGlobalContext.setAction(currentAction.actionLabel);
+        // Also set in RunActionTracker for ActionLogService
+        this.miroirContext.runActionTracker.setAction(currentAction.actionLabel);
         // log.info(
         //   "handleRuntimeCompositeAction compositeInstanceAction handling sub currentAction",
         //   JSON.stringify(currentAction, null, 2),
@@ -1984,6 +1998,8 @@ export class DomainController implements DomainControllerInterface {
         );
       } finally {
         LoggerGlobalContext.setCompositeAction(undefined);
+        // Also clear in RunActionTracker for ActionLogService
+        this.miroirContext.runActionTracker.setCompositeAction(undefined);
       }
     }
     return Promise.resolve(ACTION_OK);

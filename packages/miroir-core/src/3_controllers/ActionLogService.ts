@@ -284,14 +284,15 @@ export class ActionLogService implements ActionLogServiceInterface {
   }
 
   private getCurrentLogContext() {
-    // Import LoggerGlobalContext dynamically to avoid circular dependencies
+    // Get action and compositeAction from RunActionTracker instead of LoggerGlobalContext
+    // Still get test-related context from LoggerGlobalContext to avoid breaking test functionality
     try {
       return {
         testSuite: LoggerGlobalContext.getTestSuite(),
         test: LoggerGlobalContext.getTest(),
         testAssertion: LoggerGlobalContext.getTestAssertion(),
-        compositeAction: LoggerGlobalContext.getCompositeAction(),
-        action: LoggerGlobalContext.getAction()
+        compositeAction: this.runActionTracker.getCompositeAction(),
+        action: this.runActionTracker.getAction()
       };
     } catch (error) {
       return undefined;

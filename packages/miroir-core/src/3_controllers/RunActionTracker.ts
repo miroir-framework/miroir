@@ -8,6 +8,10 @@ export class RunActionTracker implements RunActionTrackerInterface {
   private readonly CLEANUP_INTERVAL_MS = 60000; // 1 minute
   private readonly MAX_AGE_MS = 5 * 60 * 1000; // 5 minutes
 
+  // Action and composite action context tracking (duplicated from LoggerGlobalContext)
+  private currentCompositeAction: string | undefined = undefined;
+  private currentAction: string | undefined = undefined;
+
   constructor() {
     // Start auto-cleanup timer
     this.cleanupInterval = setInterval(() => {
@@ -110,6 +114,8 @@ export class RunActionTracker implements RunActionTrackerInterface {
   clear(): void {
     this.actions.clear();
     this.currentActionStack = [];
+    this.currentCompositeAction = undefined;
+    this.currentAction = undefined;
     this.notifySubscribers();
   }
 
@@ -122,6 +128,22 @@ export class RunActionTracker implements RunActionTrackerInterface {
 
   getCurrentActionId(): string | undefined {
     return this.currentActionStack[this.currentActionStack.length - 1];
+  }
+
+  setCompositeAction(compositeAction: string | undefined): void {
+    this.currentCompositeAction = compositeAction;
+  }
+
+  getCompositeAction(): string | undefined {
+    return this.currentCompositeAction;
+  }
+
+  setAction(action: string | undefined): void {
+    this.currentAction = action;
+  }
+
+  getAction(): string | undefined {
+    return this.currentAction;
   }
 
   private generateId(): string {

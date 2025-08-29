@@ -46,7 +46,7 @@ export class ActionLogInterceptor {
     // Intercept console methods
     console.trace = this.createInterceptor('trace', this.originalConsole.trace);
     console.debug = this.createInterceptor('debug', this.originalConsole.debug);
-    console.log = this.createInterceptor('debug', this.originalConsole.log);
+    console.log = this.createInterceptor('info', this.originalConsole.log);
     console.info = this.createInterceptor('info', this.originalConsole.info);
     console.warn = this.createInterceptor('warn', this.originalConsole.warn);
     console.error = this.createInterceptor('error', this.originalConsole.error);
@@ -70,7 +70,14 @@ export class ActionLogInterceptor {
     console.warn = this.originalConsole.warn;
     console.error = this.originalConsole.error;
   }
-
+  /**
+   * TODO #102: the message is parsed to extract the logger name, this is very fragile
+   * 
+   * TODO #102: better approach is to wrap loggers at creation time? or in the opposite direction?
+   *  see ActionAwareLoggerWrapper below for the first.
+   * 
+   * 
+   */
   private createInterceptor(
     level: 'trace' | 'debug' | 'info' | 'warn' | 'error', 
     originalMethod: (...args: any[]) => void
@@ -112,57 +119,57 @@ export class ActionLogInterceptor {
   }
 }
 
-// /**
-//  * Alternative approach: Logger wrapper that can be used with MiroirLoggerFactory
-//  * This wraps existing loggers to add action logging capability
-//  */
-// export class ActionAwareLoggerWrapper {
-//   constructor(
-//     private actionLogService: ActionLogServiceInterface,
-//     private runActionTracker: RunActionTrackerInterface
-//   ) {}
+/**
+ * Alternative approach: Logger wrapper that can be used with MiroirLoggerFactory
+ * This wraps existing loggers to add action logging capability
+ */
+export class ActionAwareLoggerWrapper {
+  constructor(
+    private actionLogService: ActionLogServiceInterface,
+    private runActionTracker: RunActionTrackerInterface
+  ) {}
 
-//   /**
-//    * Wrap an existing logger to add action logging capability
-//    */
-//   wrapLogger(logger: any, loggerName: string): any {
-//     const actionLogService = this.actionLogService;
-//     const runActionTracker = this.runActionTracker;
+  /**
+   * Wrap an existing logger to add action logging capability
+   */
+  wrapLogger(logger: any, loggerName: string): any {
+    const actionLogService = this.actionLogService;
+    const runActionTracker = this.runActionTracker;
 
-//     return new Proxy(logger, {
-//       get(target, prop, receiver) {
-//         const originalValue = Reflect.get(target, prop, receiver);
+    return new Proxy(logger, {
+      get(target, prop, receiver) {
+        const originalValue = Reflect.get(target, prop, receiver);
 
-//         // Only intercept logging methods
-//         if (typeof originalValue === 'function' && 
-//             ['trace', 'debug', 'log', 'info', 'warn', 'error'].includes(prop as string)) {
+        // Only intercept logging methods
+        if (typeof originalValue === 'function' && 
+            ['trace', 'debug', 'log', 'info', 'warn', 'error'].includes(prop as string)) {
           
-//           return function(...args: any[]) {
-//             // Call original method
-//             const result = originalValue.apply(target, args);
+          return function(...args: any[]) {
+            // Call original method
+            const result = originalValue.apply(target, args);
 
-//             // Capture for action logging if we have an active action
-//             const currentActionId = runActionTracker.getCurrentActionId();
-//             if (currentActionId) {
-//               const level = prop === 'log' ? 'debug' : prop as 'trace' | 'debug' | 'info' | 'warn' | 'error';
-//               const message = args.length > 0 ? String(args[0]) : '';
-//               const restArgs = args.slice(1);
-//               actionLogService.logForCurrentAction(level, loggerName, message, ...restArgs);
-//             }
+            // Capture for action logging if we have an active action
+            const currentActionId = runActionTracker.getCurrentActionId();
+            if (currentActionId) {
+              const level = prop === 'log' ? 'debug' : prop as 'trace' | 'debug' | 'info' | 'warn' | 'error';
+              const message = args.length > 0 ? String(args[0]) : '';
+              const restArgs = args.slice(1);
+              actionLogService.logForCurrentAction(level, loggerName, message, ...restArgs);
+            }
 
-//             return result;
-//           };
-//         }
+            return result;
+          };
+        }
 
-//         return originalValue;
-//       }
-//     });
-//   }
+        return originalValue;
+      }
+    });
+  }
 
-//   /**
-//    * Create a global logger wrapper function that can be used in MiroirLoggerFactory
-//    */
-//   createGlobalLoggerWrapper(): (logger: any, loggerName: string) => any {
-//     return (logger: any, loggerName: string) => this.wrapLogger(logger, loggerName);
-//   }
-// }
+  /**
+   * Create a global logger wrapper function that can be used in MiroirLoggerFactory
+   */
+  createGlobalLoggerWrapper(): (logger: any, loggerName: string) => any {
+    return (logger: any, loggerName: string) => this.wrapLogger(logger, loggerName);
+  }
+}

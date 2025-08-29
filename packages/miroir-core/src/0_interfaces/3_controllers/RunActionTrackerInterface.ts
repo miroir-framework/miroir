@@ -64,4 +64,28 @@ export interface RunActionTrackerInterface {
    * Get the current active action ID (for parent-child relationships)
    */
   getCurrentActionId(): string | undefined;
+
+  /**
+   * Set the current composite action name (similar to LoggerGlobalContext)
+   * @param compositeAction The composite action name or undefined to clear
+   */
+  setCompositeAction(compositeAction: string | undefined): void;
+
+  /**
+   * Get the current composite action name
+   * @returns The current composite action name or undefined
+   */
+  getCompositeAction(): string | undefined;
+
+  /**
+   * Set the current action name (similar to LoggerGlobalContext)
+   * @param action The action name or undefined to clear
+   */
+  setAction(action: string | undefined): void;
+
+  /**
+   * Get the current action name
+   * @returns The current action name or undefined
+   */
+  getAction(): string | undefined;
 }

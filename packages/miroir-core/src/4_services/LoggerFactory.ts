@@ -23,12 +23,17 @@ export function templateLogLevelOptionsFactory(
       level: (opts) => `${opts.level}`,
       name: (opts) => opts.logger.name,
       testSuite: (opts) => LoggerGlobalContext.getTestSuite() ?? "*NoTestSuite*",
-      test: (opts) => testSeparator + (LoggerGlobalContext.getTest() ? LoggerGlobalContext.getTest() : "*NoTest*"),
+      test: (opts) =>
+        testSeparator +
+        (LoggerGlobalContext.getTest() ? LoggerGlobalContext.getTest() : "*NoTest*"),
       testAssertion: (opts) =>
-        testSeparator + (LoggerGlobalContext.getTestAssertion() ? LoggerGlobalContext.getTestAssertion() : "*"),
+        testSeparator +
+        (LoggerGlobalContext.getTestAssertion() ? LoggerGlobalContext.getTestAssertion() : "*"),
       compositeAction: (opts) =>
-        testSeparator + (LoggerGlobalContext.getCompositeAction() ? LoggerGlobalContext.getCompositeAction() : "*"),
-      action: (opts) => testSeparator + (LoggerGlobalContext.getAction() ? LoggerGlobalContext.getAction() : "*"),
+        testSeparator +
+        (LoggerGlobalContext.getCompositeAction() ? LoggerGlobalContext.getCompositeAction() : "*"),
+      action: (opts) =>
+        testSeparator + (LoggerGlobalContext.getAction() ? LoggerGlobalContext.getAction() : "*"),
       template: "#{{testSuite}}{{test}}{{testAssertion}}{{compositeAction}}{{action}}# " + template,
       time: () => new Date().toTimeString().split(" ")[0],
     },
