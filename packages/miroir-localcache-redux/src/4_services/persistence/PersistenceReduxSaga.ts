@@ -615,12 +615,12 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
     }
     // indirect access to a remote storeController through the network
     if (action && (action as any).actionType !== "initModel") {
-      console.log(
+      log.info(
         "innerHandlePersistenceActionForRemoteStore calling remoteStoreNetworkClient on action",
         JSON.stringify(action, undefined, 2)
       );
     } else {
-      console.log(
+      log.info(
         "innerHandlePersistenceActionForRemoteStore calling remoteStoreNetworkClient on action",
         action
       );

@@ -6,6 +6,14 @@ import {
   jzodToTsCode,
 } from "@miroir-framework/jzod-ts";
 import { sqlQuerySelectSchema } from "../src/1_core/SqlQueryBuilder";
+import { LoggerInterface, MiroirLoggerFactory } from "miroir-core";
+import { cleanLevel } from "miroir-core/src/1_core/constants";
+import { packageName } from "miroir-core/src/constants";
+
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "PostgresGenerateTsTypes")
+).then((logger: LoggerInterface) => {log = logger});
 
 // ################################################################################################
 async function fileExists(filePath: string): Promise<boolean> {
@@ -28,9 +36,9 @@ async function writeFile(
     const oldFileContents = await fs.readFile(targetFileName).toString();
     if (newFileContents != oldFileContents) {
       await fs.writeFile(targetFileName, newFileContents);
-      console.log("writeFile", targetFileName, "generated!");
+      log.info("writeFile", targetFileName, "generated!");
     } else {
-      console.log(
+      log.info(
         "writeFile entityDefinitionReport old contents equal new contents, no file generation needed."
       );
     }
@@ -48,13 +56,13 @@ const extendedJzodSchemasTsTypes = jzodToTsCode(
   false, // headerForZodImports
   Object.keys(sqlQuerySelectSchema.context?? {}),
 );
-console.log("extendedJzodSchemasTsTypes",extendedJzodSchemasTsTypes);
+log.info("extendedJzodSchemasTsTypes",extendedJzodSchemasTsTypes);
 
 const fileContents = `import { ZodType, ZodTypeAny, z } from "zod";
 ${extendedJzodSchemasTsTypes}
 `
 
 const targetFileName = path.join("./src","generated.ts")
-console.log("generateTsTypeFileFromJzodSchemaInParallel writing file:", targetFileName, fileContents.length);
+log.info("generateTsTypeFileFromJzodSchemaInParallel writing file:", targetFileName, fileContents.length);
 writeFile(undefined, targetFileName, undefined, fileContents);
-console.log("generateTsTypeFileFromJzodSchemaInParallel file written OK:", targetFileName);
+log.info("generateTsTypeFileFromJzodSchemaInParallel file written OK:", targetFileName);

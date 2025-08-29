@@ -206,8 +206,8 @@ export function makeReferencesAbsolute(jzodSchema: any /** JzodElement */, absol
                 absolutePath,
               },
             };
-      // console.log("makeReferencesAbsolute schemaReference received", JSON.stringify(jzodSchema));
-      // console.log("makeReferencesAbsolute schemaReference returns", JSON.stringify(result));
+      // log.info("makeReferencesAbsolute schemaReference received", JSON.stringify(jzodSchema));
+      // log.info("makeReferencesAbsolute schemaReference returns", JSON.stringify(result));
       return result;
       break;
     }
@@ -357,7 +357,7 @@ export function getExtendedSchemas(jzodSchemajzodMiroirBootstrapSchema: any) {
     "transformerForBuild_parameterReference",
     "transformer_contextOrParameterReferenceTO_REMOVE",
   ];
-  // console.log("getExtendedSchemas result", JSON.stringify(result, null, 2));
+  // log.info("getExtendedSchemas result", JSON.stringify(result, null, 2));
   return result;
 }
 
@@ -370,7 +370,7 @@ export function getExtendedSchemasWithCarryOn(
   const result = getExtendedSchemas(jzodSchemajzodMiroirBootstrapSchema).map(
     (relativePath: string) => forgeCarryOnReferenceName(absolutePath, relativePath, "extend", prefix)
   );
-  // console.log("getExtendedSchemasWithCarryOn result", JSON.stringify(result, null, 2));
+  // log.info("getExtendedSchemasWithCarryOn result", JSON.stringify(result, null, 2));
   return result;
 }
 // ################################################################################################
@@ -586,7 +586,7 @@ function createDomainActionCarryOnSchemaResolver(
     alwaysPropagate // alwaysPropagate
   );
 
-  // console.log(
+  // log.info(
   //   "runtimeDomainActionLocalizedInnerResolutionStoreForExtendedSchemas",
   //   Object.keys(carryOnDomainActionLocalizedInnerResolutionStoreForExtendedSchemas).length,
   //   // JSON.stringify(runtimeDomainActionLocalizedInnerResolutionStoreForExtendedSchemas, null, 2),
@@ -606,7 +606,7 @@ function createDomainActionCarryOnSchemaResolver(
     alwaysPropagate
   );
 
-  // console.log(
+  // log.info(
   //   "domainActionLocalizedInnerResolutionStorePlainReferences",
   //   Object.keys(domainActionLocalizedInnerResolutionStorePlainReferences).length,
   //   JSON.stringify(Object.keys(domainActionLocalizedInnerResolutionStorePlainReferences), null, 2)
@@ -679,8 +679,8 @@ export function getMiroirFundamentalJzodSchema(
   // ): any /** JzodReference, avoiding reference to ensure proper compilation */ {
   ): any /** JzodSchema, avoiding reference to ensure proper compilation */ {
   // TODO: not really a JzodReference!!
-  console.log("getMiroirFundamentalJzodSchema called!");
-  console.log(
+  log.info("getMiroirFundamentalJzodSchema called!");
+  log.info(
     "getMiroirFundamentalJzodSchema entityDefinitionTransformerTest.jzodSchema.definition.definition.context",
     entityDefinitionTransformerTest.jzodSchema.definition.definition.context
   );
@@ -3717,7 +3717,7 @@ export function getMiroirFundamentalJzodSchema(
       },
     },
   };
-  console.log(
+  log.info(
     "################## miroirFundamentalJzodSchema",
     JSON.stringify(Object.keys(miroirFundamentalJzodSchema.definition.context), null, 2)
   );
@@ -3753,7 +3753,7 @@ export function getMiroirFundamentalJzodSchema(
     oldCompositeActionDependencySet.add(key);
   });
 
-  console.log(
+  log.info(
     "oldCompositeActionDependencySet",
     Array.from(oldCompositeActionDependencySet.keys()).length,
     JSON.stringify(Array.from(oldCompositeActionDependencySet.keys()), null, 2),
@@ -3778,7 +3778,7 @@ export function getMiroirFundamentalJzodSchema(
     },
   };
 
-  console.log(
+  log.info(
     "getMiroirFundamentalJzodSchema oldCompositeActionDependenciesInnerResolutionStore keys:",
     Object.keys(oldCompositeActionDependenciesJzodReference.context??{}).length,
     JSON.stringify(Object.keys(oldCompositeActionDependenciesJzodReference.context??{}), null, 2)
@@ -3800,7 +3800,7 @@ export function getMiroirFundamentalJzodSchema(
 
   const extendedSchemas: string[] = getExtendedSchemas(jzodSchemajzodMiroirBootstrapSchema);
 
-  console.log(
+  log.info(
     "getMiroirFundamentalJzodSchema extendedSchemas",
     extendedSchemas.length,
     JSON.stringify(extendedSchemas, null, 2)
@@ -3822,7 +3822,7 @@ export function getMiroirFundamentalJzodSchema(
       true, // alwaysPropagate
     );
 
-  console.log(
+  log.info(
     "oldCompositeActionLocalizedInnerResolutionStoreForExtendedSchemas",
     JSON.stringify(Object.keys(oldCompositeActionLocalizedInnerResolutionStoreForExtendedSchemas), null, 2)
   );
@@ -3839,7 +3839,7 @@ export function getMiroirFundamentalJzodSchema(
       "carryOn_", // prefix
       true, // alwaysPropagate
     );
-  console.log(
+  log.info(
     "getMiroirFundamentalJzodSchema oldCompositeActionLocalizedInnerResolutionStorePlainReferences",
     Object.keys(oldCompositeActionLocalizedInnerResolutionStorePlainReferences).length,
     JSON.stringify(Object.keys(oldCompositeActionLocalizedInnerResolutionStorePlainReferences), null, 2)
@@ -3875,7 +3875,7 @@ export function getMiroirFundamentalJzodSchema(
     domainActionDependencySet.add(key);
   });
   
-  console.log(
+  log.info(
     "domainActionDependencySet",
     Array.from(domainActionDependencySet.keys()).length,
     JSON.stringify(Array.from(domainActionDependencySet.keys()), null, 2),
@@ -3990,7 +3990,7 @@ export function getMiroirFundamentalJzodSchema(
       } as Record<string, any /**JzodElement */>,
     } as any /** JzodObjectOrReference */,
   };
-  console.log("entityDefinitionQueryVersionV1WithAbsoluteReferences=",JSON.stringify(entityDefinitionQueryVersionV1WithAbsoluteReferences))
+  log.info("entityDefinitionQueryVersionV1WithAbsoluteReferences=",JSON.stringify(entityDefinitionQueryVersionV1WithAbsoluteReferences))
 
   return miroirFundamentalJzodSchemaWithActionTemplate;
 

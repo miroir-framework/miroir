@@ -263,7 +263,7 @@ export async function restActionHandler(
 ):Promise<void> {
   log.info("restActionHandler called with method", method);
   log.info("restActionHandler called with effectiveUrl", effectiveUrl);
-  // console.log("restActionHandler called with params", JSON.stringify(params,undefined,2));
+  // log.info("restActionHandler called with params", JSON.stringify(params,undefined,2));
   log.info("restActionHandler called with params", params);
 
   if (body && (body as any).actionType !== "initModel") {
@@ -271,7 +271,7 @@ export async function restActionHandler(
     log.info("restActionHandler called with", "body", body);
   }
   // else {
-  //   console.log("restActionHandler called");
+  //   log.info("restActionHandler called");
   // }
   // const actionName: string = typeof params["actionName"] == "string" ? params["actionName"] : params["actionName"][0];
   const actionType: string =
@@ -440,10 +440,10 @@ export async function queryTemplateActionHandler(
   params: any,
 ):Promise<void> {
   // log.info("RestServer queryTemplateActionHandler params", params, "body", body);
-  // console.log("queryTemplateActionHandler called with method", method);
-  // console.log("queryTemplateActionHandler called with effectiveUrl", effectiveUrl);
-  // console.log("queryTemplateActionHandler called with","body", JSON.stringify(body, undefined, 2));
-  // console.log("queryTemplateActionHandler called with params", JSON.stringify(params,undefined,2));
+  // log.info("queryTemplateActionHandler called with method", method);
+  // log.info("queryTemplateActionHandler called with effectiveUrl", effectiveUrl);
+  // log.info("queryTemplateActionHandler called with","body", JSON.stringify(body, undefined, 2));
+  // log.info("queryTemplateActionHandler called with params", JSON.stringify(params,undefined,2));
 
 
   /**

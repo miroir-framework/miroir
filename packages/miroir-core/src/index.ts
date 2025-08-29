@@ -468,9 +468,6 @@ export {
   miroirFundamentalJzodSchema
 } from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalJzodSchema";
 
-console.log("miroir-core: loading miroirFundamentalType.js");
-console.log("miroir-core: loading miroirFundamentalType.js DONE");
-
 export {
   InstanceDictionary,
   InstanceDictionaryNum,
@@ -895,7 +892,6 @@ export { Endpoint } from "./3_controllers/Endpoint.js";
 export { CallUtils } from "./3_controllers/ErrorHandling/CallUtils.js";
 export { ErrorAdminStore } from "./3_controllers/ErrorHandling/ErrorAdminStore.js";
 export { ErrorDataStore } from "./3_controllers/ErrorHandling/ErrorDataStore.js";
-export { ErrorLogService } from "./3_controllers/ErrorHandling/ErrorLogService.js";
 export { ErrorModelStore } from "./3_controllers/ErrorHandling/ErrorModelStore.js";
 export { MiroirContext } from "./3_controllers/MiroirContext.js";
 export { RunActionTracker } from "./3_controllers/RunActionTracker.js";
@@ -951,9 +947,6 @@ export {
   testSuitesResults
 } from "./0_interfaces/4-services/TestInterface.js";
 
-console.log("miroir-core: DONE exports");
-
-console.log("miroir-core: loading MIROIR json files");
 // admin
 const entityAdminApplication = require("../src/assets/admin_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/25d935e7-9e93-42c2-aade-0472b883492b.json"); //assert { type: "json" };
 const entityViewParams = require("../src/assets/admin_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/b9765b7c-b614-4126-a0e2-634463f99937.json"); //assert { type: "json" };
@@ -1058,8 +1051,6 @@ const jzodSchemajzodMiroirBootstrapSchema = require("../src/assets/miroir_data/5
 // const transformerMenuV1 = require("../src/assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/685440be-7f3f-4774-b90d-bafa82d6832b.json"); //assert { type: "json" };
 const transformerMenuV1 = require("../src/assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/685440be-7f3f-4774-b90d-bafa82d6832b.json"); //assert { type: "json" };
 
-console.log("miroir-core: loading MIROIR json files DONE");
-
 export {
   // applicationEndpoint,
   // deploymentEndpoint,
@@ -1163,7 +1154,6 @@ export {
 // LIBRARY APPLICATION
 // ################################################################################################
 // import adminApplicationLibrary from "./assets/admin_model/a659d350-dd97-4da9-91de-524fa01745dc/55af124e-8c05-4bae-a3ef-0933d41daa92.json" //assert { type: "json" };
-console.log("miroir-core: loading APP json files");
 const adminApplicationLibrary = require("./assets/admin_data/25d935e7-9e93-42c2-aade-0472b883492b/dbabc841-b1fb-48f6-a31a-b8ce294127da.json");
 const selfApplicationLibrary = require("./assets/library_model/a659d350-dd97-4da9-91de-524fa01745dc/5af03c98-fe5e-490b-b08f-e1230971c57f.json");
 const selfApplicationStoreBasedConfigurationLibrary = require("./assets/library_model/7990c0c9-86c3-40a1-a121-036c91b55ed7/2e5b7948-ff33-4917-acac-6ae6e1ef364f.json");
@@ -1214,7 +1204,6 @@ const publisher1 = require("./assets/library_data/a027c379-8468-43a5-ba4d-bf618b
 const publisher2 = require("./assets/library_data/a027c379-8468-43a5-ba4d-bf618be25cab/516a7366-39e7-4998-82cb-80199a7fa667.json");
 const publisher3 = require("./assets/library_data/a027c379-8468-43a5-ba4d-bf618be25cab/c1c97d54-aba8-4599-883a-7fe8f3874095.json");
 
-console.log("miroir-core: loading APP json files DONE");
 export {
   author1,
   author2,

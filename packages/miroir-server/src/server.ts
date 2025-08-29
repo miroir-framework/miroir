@@ -155,11 +155,11 @@ for (const op of restServerDefaultHandlers) {
     // urlencodedParser,
     async (request: CustomRequest, response: any, context: any) => {
       const body = request.body;
-      console.log(`[CONSOLE DEBUG] Request received: ${op.method} ${request.originalUrl}`);
+      myLogger.info(`[CONSOLE DEBUG] Request received: ${op.method} ${request.originalUrl}`);
       myLogger.info(`[REQUEST START] ${op.method} ${request.originalUrl} - params:`, JSON.stringify(request.params));
       
       try {
-        console.log(`[CONSOLE DEBUG] About to call handler`);
+        myLogger.info(`[CONSOLE DEBUG] About to call handler`);
         myLogger.info(`[BEFORE HANDLER] About to call handler for ${op.method} ${request.originalUrl}`);
         
         await op.handler(
@@ -174,16 +174,16 @@ for (const op of restServerDefaultHandlers) {
           request.params
         );
         
-        console.log(`[CONSOLE DEBUG] Handler completed successfully`);
+        myLogger.info(`[CONSOLE DEBUG] Handler completed successfully`);
         myLogger.info(`[AFTER HANDLER] Handler completed successfully for ${op.method} ${request.originalUrl}`);
         // Don't return anything - the handler should have already sent the response
       } catch (error) {
-        console.log(`[CONSOLE DEBUG] Error caught:`, error);
+        myLogger.info(`[CONSOLE DEBUG] Error caught:`, error);
         myLogger.error(`[ERROR CAUGHT] server could not handle action: ${op.method} on URL: ${op.url} error: ${error}`);
         
         // Send proper error response to client
         if (!response.headersSent) {
-          console.log(`[CONSOLE DEBUG] Sending error response`);
+          myLogger.info(`[CONSOLE DEBUG] Sending error response`);
           myLogger.info(`[SENDING ERROR RESPONSE] Headers not sent, sending 500 error response for ${request.originalUrl}`);
           const errorMessage = error instanceof Error ? error.message : String(error);
           try {
@@ -193,14 +193,14 @@ for (const op of restServerDefaultHandlers) {
               errorMessage: `Failed to handle ${op.method} request on ${request.originalUrl}: ${errorMessage}`,
               timestamp: new Date().toISOString()
             });
-            console.log(`[CONSOLE DEBUG] Error response sent successfully`);
+            myLogger.info(`[CONSOLE DEBUG] Error response sent successfully`);
             myLogger.info(`[ERROR RESPONSE SENT] Error response sent successfully for ${request.originalUrl}`);
           } catch (responseError) {
-            console.log(`[CONSOLE DEBUG] Failed to send error response:`, responseError);
+            myLogger.info(`[CONSOLE DEBUG] Failed to send error response:`, responseError);
             myLogger.error(`[ERROR SENDING RESPONSE] Failed to send error response: ${responseError}`);
           }
         } else {
-          console.log(`[CONSOLE DEBUG] Headers already sent, cannot send error response`);
+          myLogger.info(`[CONSOLE DEBUG] Headers already sent, cannot send error response`);
           myLogger.warn(`[HEADERS ALREADY SENT] Cannot send error response for ${request.originalUrl} - headers already sent`);
         }
         // Don't return anything - we've already handled the response

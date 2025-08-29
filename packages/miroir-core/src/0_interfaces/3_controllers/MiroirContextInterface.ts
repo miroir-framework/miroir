@@ -4,7 +4,7 @@ import { RunActionTrackerInterface } from "../../0_interfaces/3_controllers/RunA
 import { MiroirConfigClient, MiroirConfigServer } from "../1_core/preprocessor-generated/miroirFundamentalType";
 
 export interface MiroirContextInterface {
-  errorLogService:ErrorLogServiceInterface,
+  // errorLogService:ErrorLogServiceInterface,
   runActionTracker: RunActionTrackerInterface,
   actionLogService: ActionLogServiceInterface,
   getMiroirConfig(): MiroirConfigClient | MiroirConfigServer | undefined,

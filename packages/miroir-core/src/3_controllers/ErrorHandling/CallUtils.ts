@@ -18,7 +18,7 @@ MiroirLoggerFactory.registerLoggerToStart(
 
 export class CallUtils {
   constructor(
-    private errorLogService: ErrorLogServiceInterface,
+    // private errorLogService: ErrorLogServiceInterface,
     // private localCache: LocalCacheInterface,
     private persistenceStoreLocalOrRemote: PersistenceStoreLocalOrRemoteInterface
   ) {}
@@ -46,7 +46,7 @@ export class CallUtils {
       //ensure the proper persistence of errors in the local storage, for it to be accessible by view components.
       // Problem: what if the local storage is not accessible? => store it in a in-memory effect.
       const error: MError = { errorMessage: result.errorMessage };
-      this.errorLogService.pushError(error);
+      // this.errorLogService.pushError(error);
       throw error;
     } else {
       const transformedResult = continuation.resultTransformation
@@ -96,7 +96,7 @@ export class CallUtils {
       //ensure the proper persistence of errors in the local storage, for it to be accessible by view components.
       // Problem: what if the local storage is not accessible? => store it in a in-memory effect.
       const error: MError = { errorMessage: JSON.stringify(result) };
-      this.errorLogService.pushError(error);
+      // this.errorLogService.pushError(error);
       // throw error;
       return result;
     } else {

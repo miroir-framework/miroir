@@ -49,7 +49,7 @@ const handleDiscriminatorChange = (
   formik: any,
   log: LoggerInterface
 ) => {
-  console.log("handleDiscriminatorChange called with:", {
+  log.info("handleDiscriminatorChange called with:", {
     selectedValue,
     discriminatorType,
     rootLessListKey,
@@ -333,7 +333,7 @@ export const JzodLiteralEditor: FC<JzodLiteralEditorProps> =  (
           e
         );
         return formik.values; // fallback to formik.values if the path
-        //        console.log("JzodLiteralEditor handleFilterableSelectChange called with event (DEBUG):", event);
+        //        log.info("JzodLiteralEditor handleFilterableSelectChange called with event (DEBUG):", event);
       }
     }, [formik.values, rootLessListKeyArray]);
 
@@ -341,12 +341,12 @@ export const JzodLiteralEditor: FC<JzodLiteralEditorProps> =  (
   // Handler for the new filterable select component
   const handleFilterableSelectChange = useCallback(
     (event: React.ChangeEvent<HTMLSelectElement>) => {
-      console.log("handleFilterableSelectChange called with event:", event);
-      console.log("event.target.value:", event.target.value);
-      console.log("event.type:", event.type);
-      console.log("isDiscriminator:", isDiscriminator);
-      console.log("parentKeyMap:", parentKeyMap);
-      console.log("Stack trace:", new Error().stack);
+      log.info("handleFilterableSelectChange called with event:", event);
+      log.info("event.target.value:", event.target.value);
+      log.info("event.type:", event.type);
+      log.info("isDiscriminator:", isDiscriminator);
+      log.info("parentKeyMap:", parentKeyMap);
+      log.info("Stack trace:", new Error().stack);
       
       if (!isDiscriminator) {
         throw new Error(

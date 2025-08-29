@@ -3,9 +3,16 @@ import {
   JzodObject,
   JzodSchema,
   MetaModel,
-  resolveJzodSchemaReference
+  MiroirLoggerFactory,
+  resolveJzodSchemaReference,
+  type LoggerInterface
 } from "miroir-core";
+import { packageName, cleanLevel } from "../constants";
 
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "JzodTools")
+).then((logger: LoggerInterface) => {log = logger});
 
 // #####################################################################################################
 export type JzodObjectRecord = { [k: string]: JzodObject };
@@ -17,7 +24,7 @@ export function getCurrentEnumJzodSchemaResolver(
   miroirFundamentalJzodSchema: JzodSchema,
 ):JzodEnumSchemaToJzodElementResolver  {
   return (type: string, definition?: any) => {
-    console.log("getCurrentEnumJzodSchemaResolver called with", type, "definition", definition);
+    log.info("getCurrentEnumJzodSchemaResolver called with", type, "definition", definition);
     return (
       currentMiroirModel.entities.length == 0
         ? ({} as JzodElementRecord)

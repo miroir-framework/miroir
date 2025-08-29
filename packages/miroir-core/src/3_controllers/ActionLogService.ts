@@ -1,4 +1,5 @@
 import { RunActionTrackerInterface } from "../0_interfaces/3_controllers/RunActionTrackerInterface";
+import{ LoggerGlobalContext } from "../4_services/LoggerContext";
 
 // Action log entry representing a single log message within an action execution
 export interface ActionLogEntry {
@@ -285,7 +286,6 @@ export class ActionLogService implements ActionLogServiceInterface {
   private getCurrentLogContext() {
     // Import LoggerGlobalContext dynamically to avoid circular dependencies
     try {
-      const { LoggerGlobalContext } = require('../4_services/LoggerContext');
       return {
         testSuite: LoggerGlobalContext.getTestSuite(),
         test: LoggerGlobalContext.getTest(),

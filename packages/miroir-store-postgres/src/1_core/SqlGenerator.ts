@@ -523,7 +523,7 @@ function sqlStringForCountTransformer(
     useAccessPathForContextReference,
     topLevelTransformer,
   );
-  console.log("sqlStringForRuntimeTransformer count referenceQuery", JSON.stringify(referenceQuery, null, 2));
+  log.info("sqlStringForRuntimeTransformer count referenceQuery", JSON.stringify(referenceQuery, null, 2));
   if (referenceQuery instanceof Domain2ElementFailed) {
     return referenceQuery;
   }
@@ -1641,11 +1641,11 @@ function sqlStringForObjectFullTemplateTransformer(
         failureMessage: "sqlStringForObjectFullTemplateTransformer object_fullTemplate attributeKey or attributeValue failed: " + JSON.stringify(foundError, null, 2),
       });
     }
-    console.log(
+    log.info(
       "sqlStringForObjectFullTemplateTransformer object_fullTemplate objectAttributes",
       JSON.stringify(objectAttributes, null, 2)
     );
-    console.log(
+    log.info(
       "sqlStringForObjectFullTemplateTransformer object_fullTemplate preparedStatementParameters",
       JSON.stringify(preparedStatementParameters, null, 2)
     );

@@ -1,15 +1,24 @@
 import {
+  MiroirLoggerFactory,
   resolvePathOnObject,
   test_createEntityAndReportFromSpreadsheetAndUpdateMenu,
   transformerForBuild,
   zodErrorFirstIssueLeaf,
   ZodParseError,
   ZodParseErrorIssue,
+  type LoggerInterface,
 } from "miroir-core";
 import { useState } from "react";
 import { z } from "zod";
 import { PageContainer } from "../components/Page/PageContainer.js";
 import { usePageConfiguration } from "../services/index.js";
+import { packageName } from "../../../constants.js";
+import { cleanLevel } from "../constants.js";
+
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "PersistenceReduxSaga")
+).then((logger: LoggerInterface) => {log = logger});
 
 let count = 0;
 
@@ -48,7 +57,7 @@ export const CheckPage: React.FC<any> = (
     const form = event.currentTarget;
     const input = form.elements.namedItem("testInput") as HTMLInputElement;
     const inputValue = input.value;
-    console.log("Form submitted with value:", inputValue);
+    log.info("Form submitted with value:", inputValue);
     // Here you can add logic to handle the input value, e.g., validate or process it
     if (!inputValue) {
       try {
@@ -56,7 +65,7 @@ export const CheckPage: React.FC<any> = (
 
         z.record(transformerForBuild).parse(testSubPart);
         setTestResult(<div style={{ color: "green" }}>Input is valid!</div>);
-        // console.log("Result:", result);
+        // log.info("Result:", result);
       } catch (error) {
         console.error("Error processing input:", error);
         const zodParseError = error as ZodParseError;

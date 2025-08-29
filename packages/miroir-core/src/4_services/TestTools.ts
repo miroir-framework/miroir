@@ -22,6 +22,10 @@ import { MiroirLoggerFactory } from "./LoggerFactory";
 import { ignorePostgresExtraAttributes } from "./otherTools";
 import { TestSuiteContext } from "./TestSuiteContext";
 
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "TestTools")
+).then((logger: LoggerInterface) => {log = logger});
 
 // ################################################################################################
 // Jzod schemas for TransformerTest and TransformerTestSuite
@@ -71,10 +75,6 @@ export const transformerTestSuiteJzodSchema = {
   ],
 };
 
-let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "TestTools")
-).then((logger: LoggerInterface) => {log = logger});
 
 // ################################################################################################
 export const globalTimeOut = 30000;

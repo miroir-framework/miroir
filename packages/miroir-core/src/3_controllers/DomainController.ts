@@ -171,7 +171,8 @@ export class DomainController implements DomainControllerInterface {
     private persistenceStoreLocalOrRemote: PersistenceStoreLocalOrRemoteInterface, // instance of PersistenceReduxSaga
     private endpoint: Endpoint
   ) {
-    this.callUtil = new CallUtils(miroirContext.errorLogService, persistenceStoreLocalOrRemote);
+    // this.callUtil = new CallUtils(miroirContext.errorLogService, persistenceStoreLocalOrRemote);
+    this.callUtil = new CallUtils(persistenceStoreLocalOrRemote);
     const boundRemotePersistenceAction = this.callUtil.callPersistenceAction.bind(
       this.callUtil
     );

@@ -1,23 +1,30 @@
-import { MiroirConfigClient } from "miroir-core";
+import { MiroirConfigClient, MiroirLoggerFactory, type LoggerInterface } from "miroir-core";
+import { packageName } from "miroir-core/src/constants";
 import path from "path";
+import { cleanLevel } from "../3_controllers/constants";
+
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "FileTools")
+).then((logger: LoggerInterface) => {log = logger});
 
 // ################################################################################################
 export async function loadTestSingleConfigFile( fileName:string): Promise<MiroirConfigClient> {
   try {
     const pwd = process.env["PWD"]??""
-    console.log("@@@@@@@@@@@@@@@@@@ loadTestSingleConfigFile pwd", pwd, "fileName", fileName);
+    log.info("@@@@@@@@@@@@@@@@@@ loadTestSingleConfigFile pwd", pwd, "fileName", fileName);
     // log.info("@@@@@@@@@@@@@@@@@@ env", process.env["npm_config_env"]);
     // const configFilePath = path.join(pwd, "./packages/miroir-standalone-app/tests/" + fileName + ".json")
     const configFilePath = path.join(pwd, fileName + ".json")
-    console.log("@@@@@@@@@@@@@@@@@@ loadTestSingleConfigFile configFilePath", configFilePath);
+    log.info("@@@@@@@@@@@@@@@@@@ loadTestSingleConfigFile configFilePath", configFilePath);
     const configFileContents = await import(configFilePath);
     // const configFileContents = JSON.parse(fs.readFileSync(new URL(configFilePath, import.meta.url)).toString());
     // const configFileContents = JSON.parse(fs.readFileSync(new URL(configFilePath)).toString());
-    console.log("@@@@@@@@@@@@@@@@@@ loadTestSingleConfigFile configFileContents", configFileContents);
+    log.info("@@@@@@@@@@@@@@@@@@ loadTestSingleConfigFile configFileContents", configFileContents);
   
     const miroirConfig:MiroirConfigClient = configFileContents as MiroirConfigClient;
   
-    console.log("@@@@@@@@@@@@@@@@@@ loadTestSingleConfigFile miroirConfig", JSON.stringify(miroirConfig, null, 2));
+    log.info("@@@@@@@@@@@@@@@@@@ loadTestSingleConfigFile miroirConfig", JSON.stringify(miroirConfig, null, 2));
     return Promise.resolve(miroirConfig);
   } catch (error) {
     console.error("@@@@@@@@@@@@@@@@@@ loadTestConfigFile error", error);
@@ -28,7 +35,7 @@ export async function loadTestSingleConfigFile( fileName:string): Promise<Miroir
 // ################################################################################################
 export async function loadTestConfigFiles(env:any) {
   try {
-    console.log("@@@@@@@@@@@@@@@@@@ loadTestConfigFiles started", JSON.stringify(env, null, 2));
+    log.info("@@@@@@@@@@@@@@@@@@ loadTestConfigFiles started", JSON.stringify(env, null, 2));
     let miroirConfig:MiroirConfigClient
     if (env.VITE_MIROIR_TEST_CONFIG_FILENAME) {
       miroirConfig = await loadTestSingleConfigFile(env.VITE_MIROIR_TEST_CONFIG_FILENAME??"");
@@ -40,7 +47,7 @@ export async function loadTestConfigFiles(env:any) {
     let logConfig:any
     if (env.VITE_MIROIR_LOG_CONFIG_FILENAME) {
       logConfig = await loadTestSingleConfigFile(env.VITE_MIROIR_LOG_CONFIG_FILENAME ?? "specificLoggersConfig_warn");
-      // console.log("@@@@@@@@@@@@@@@@@@ log config file contents:", miroirConfig)
+      // log.info("@@@@@@@@@@@@@@@@@@ log config file contents:", miroirConfig)
     
       // MiroirLoggerFactory.setEffectiveLoggerFactoryWithLogLevelNext(
       //   loglevelnext,
@@ -53,7 +60,7 @@ export async function loadTestConfigFiles(env:any) {
     } else {
       throw new Error("Environment variable VITE_MIROIR_LOG_CONFIG_FILENAME not found. Tests must find this variable, pointing to a valid test configuration file");
     }
-    console.log("@@@@@@@@@@@@@@@@@@ loadTestConfigFiles config file contents:", JSON.stringify(miroirConfig, null, 2));
+    log.info("@@@@@@@@@@@@@@@@@@ loadTestConfigFiles config file contents:", JSON.stringify(miroirConfig, null, 2));
     return Promise.resolve({miroirConfig,logConfig})
   } catch (error) {
     console.error("@@@@@@@@@@@@@@@@@@ loadTestConfigFiles error", error);
