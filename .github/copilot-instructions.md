@@ -27,9 +27,11 @@ The `miroir-core` and other packages follow a strict layered architecture in `sr
 
 Core dependency graph (must be built in this order):
 1. `miroir-core` (foundation with generated types)
-2. `miroir-localcache-redux`, `miroir-store-*` packages
+2. `miroir-localcache-redux`, `miroir-store-*` packages  
 3. `miroir-react`, `miroir-server`
 4. `miroir-standalone-app`, `miroir-designer`
+
+**Note**: `miroir-runtime` and `miroir-query-jsonata` are additional packages in the ecosystem.
 
 ## Development Workflows
 
@@ -52,18 +54,47 @@ npx tsc --noEmit --skipLibCheck
 
 always favor integration tests to unit tests, avoid mocking when possible
 
-for test commands, see the "Automated tests" section in `README.md`
+### Core Testing Commands
+```bash
+# Specific test with debug logging (miroir-core)
+VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug npm run vitest -w miroir-core -- domainSelector
+
+# Unit tests for transformers (in-memory execution)
+RUN_TEST=transformers.unit.test npm run testByFile -w miroir-core -- 'transformers.unit'
+
+# Integration tests for transformers (database execution)
+RUN_TEST=transformers.integ.test npm run testByFile -w miroir-core -- 'transformers.integ'
+
+# All miroir-core unit tests
+npm run test -w miroir-core -- ''
+```
+
+### Integration Testing by Store Type
+```bash
+# File System persistence tests
+VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-filesystem VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug npm run testByFile -w miroir-standalone-app -- DomainController.integ
+
+# IndexedDB persistence tests  
+VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-indexedDb VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug npm run testByFile -w miroir-standalone-app -- DomainController.integ
+
+# PostgreSQL persistence tests
+VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug npm run testByFile -w miroir-standalone-app -- DomainController.integ
+```
 
 
 ### Application Development
+
+It shall be assumed that the client already run and are available at http://localhost:5173 and the server at http://localhost:3080
+
+In any case when this would not be the case, use the following commands to start both server and client in development mode:
 ```bash
 # Background server build (for active development)
 npm run build-tsup -w miroir-server
 
-# Launch server. IT IS ASSUMED THAT THE SERVER IS ALREADY BUILT AND RUNNING IN BACKGROUND
+# Launch server
 npm run dev -w miroir-server
 
-# Launch client. IT IS ASSUMED THAT THE CLIENT IS ALREADY RUNNING AND AVAILABLE ON http://localhost:5173
+# Launch client (use dev, not startDev)
 npm run dev -w miroir-standalone-app
 ```
 
@@ -131,8 +162,15 @@ Each store implements the same interface defined in `miroir-core`.
 ### Test Configuration
 - Vitest workspace with single-thread execution (`--poolOptions.threads.singleThread`)
 - Environment-specific logging via `VITE_MIROIR_LOG_CONFIG_FILENAME`
+- Test configuration via `VITE_MIROIR_TEST_CONFIG_FILENAME`
 - Test fixtures in `tests/resources/` directories
 - In test mode the `RestClientStub` is used to simulate server interactions without a live server
+
+### Mixed Test Framework Setup
+- **Core framework**: Uses Vitest for all testing
+- **Some store packages**: Have Jest configurations for legacy compatibility
+- **Test environments**: `happy-dom` for React components, `node` for server-side tests
+- **Critical**: All tests use single-thread execution for reliability
 
 
 ## Key Files for Understanding
