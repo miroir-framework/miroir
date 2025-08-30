@@ -1025,6 +1025,8 @@ export function getMiroirFundamentalJzodSchema(
             },
           ],
         },
+        ...entityDefinitionTransformerDefinition.jzodSchema.definition.transformerInterface.definition.inputOutput.context,
+        // inputOutputObject: entityDefinitionTransformerDefinition.jzodSchema.definition.transformerInterface.definition.inputOutput as any,
         transformerDefinition: entityDefinitionTransformerDefinition.jzodSchema as any,
         ______________________________________________miroirMetaModel_____________________________________________:
           {

@@ -8,6 +8,10 @@
   "parentName": "TransformerDefinition",
   "classification": "basic",
   "transformerInterface": {
+    "inputOutput": {
+      "input": "undefined",
+      "output": "string"
+    },
     "transformerParameterSchema": {
       "transformerType": {
         "type": "literal",
@@ -20,7 +24,10 @@
       }
     },
     "transformerResultSchema": {
-      "type": "any"
+      "returns": "mlSchema",
+      "definition": {
+        "type": "uuid"
+      }
     }
   },
   "transformerImplementation": {

@@ -8,6 +8,10 @@
   "parentName": "TransformerDefinition",
   "classification": "basic",
   "transformerInterface": {
+    "inputOutput": {
+      "input": "array",
+      "output": "object"
+    },
     "transformerParameterSchema": {
       "transformerType": {
         "type": "literal",
@@ -42,9 +46,12 @@
       }
     },
     "transformerResultSchema": {
-      "type": "record",
+      "returns": "mlSchema",
       "definition": {
-        "type": "any"
+        "type": "record",
+        "definition": {
+          "type": "any"
+        }
       }
     }
   },

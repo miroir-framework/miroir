@@ -9,6 +9,10 @@
   "classification": "MLS",
   "runnableAsSql" : false,
   "transformerInterface": {
+    "inputOutput": {
+      "input": "object",
+      "output": "any"
+    },
     "transformerParameterSchema": {
       "transformerType": {
         "type": "literal",
@@ -28,7 +32,10 @@
       }
     },
     "transformerResultSchema": {
-      "type": "any"
+      "returns": "mlSchema",
+      "definition": {
+        "type": "any"
+      }
     }
   },
   "transformerImplementation": {

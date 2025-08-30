@@ -115,6 +115,45 @@
       "transformerInterface": {
         "type": "object",
         "definition": {
+          "inputOutput": {
+            "type": "schemaReference",
+            "optional": true,
+            "context": {
+              "inputOutputType": {
+                "type": "enum",
+                "definition": [
+                  "any",
+                  "undefined",
+                  "bigint",
+                  "number",
+                  "string",
+                  "boolean",
+                  "object",
+                  "array"
+                ]
+              },
+              "inputOutputObject": {
+                "type": "object",
+                "definition": {
+                  "input": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "inputOutputType"
+                    }
+                  },
+                  "output": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "inputOutputType"
+                    }
+                  }
+                }
+              }
+            },
+            "definition": {
+              "relativePath": "inputOutputObject"
+            }
+          },
           "transformerParameterSchema": {
             "type": "object",
             "definition": {
@@ -157,7 +196,7 @@
               {
                 "type": "object",
                 "definition": {
-                  "willReturn": {
+                  "returns": {
                     "type": "literal",
                     "definition": "mlSchemaTransformer"
                   },

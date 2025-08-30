@@ -8,6 +8,10 @@
   "parentName": "TransformerDefinition",
   "classification": "basic",
   "transformerInterface": {
+    "inputOutput": {
+      "input": "undefined",
+      "output": "bigint"
+    },
     "transformerParameterSchema": {
       "transformerType": {
         "type": "literal",
@@ -23,7 +27,10 @@
       }
     },
     "transformerResultSchema": {
-      "type": "bigint"
+      "returns": "mlSchema",
+      "definition": {
+        "type": "bigint"
+      }
     }
   },
   "transformerImplementation": {

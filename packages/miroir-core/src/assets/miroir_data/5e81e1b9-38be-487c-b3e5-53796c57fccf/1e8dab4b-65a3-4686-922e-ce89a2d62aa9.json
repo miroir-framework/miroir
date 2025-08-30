@@ -220,6 +220,10 @@
             "type": "boolean",
             "optional": true
           },
+          "description": {
+            "type": "string",
+            "optional": true
+          },
           "tag": {
             "type": "object",
             "optional": true,
