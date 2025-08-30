@@ -4,7 +4,7 @@ import {
   TestResult,
   TestSuiteResult,
 } from "../1_core/preprocessor-generated/miroirFundamentalType";
-import { TestTrackingData } from "./TestTrackerInterface.js";
+// Import other interface elements only
 
 export interface ActionTrackingData {
   id: string;
@@ -76,8 +76,6 @@ export interface RunActionTrackerInterface {
    * @returns Unsubscribe function
    */
   subscribe(callback: (actions: ActionTrackingData[]) => void): () => void;
-  // TestTracker compatibility overload
-  subscribe(callback: (context: TestTrackingData) => void): () => void;
   
   /**
    * Get the current active action ID (for parent-child relationships)

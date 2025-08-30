@@ -132,19 +132,19 @@ export class TestTracker implements TestTrackerInterface {
   }
 
   private notifySubscribers(): void {
-    const context: TestTrackingData = {
-      testSuite: this.currentTestSuite,
-      test: this.currentTest,
-      testAssertion: this.currentTestAssertion,
-      timestamp: Date.now()
-    };
+  //   const context: TestTrackingData = {
+  //     testSuite: this.currentTestSuite,
+  //     test: this.currentTest,
+  //     testAssertion: this.currentTestAssertion,
+  //     timestamp: Date.now()
+  //   };
     
-    this.subscribers.forEach(callback => {
-      try {
-        callback(context);
-      } catch (error) {
-        console.error('Error in TestTracker subscriber:', error);
-      }
-    });
+  //   this.subscribers.forEach(callback => {
+  //     try {
+  //       callback(context);
+  //     } catch (error) {
+  //       console.error('Error in TestTracker subscriber:', error);
+  //     }
+  //   });
   }
 }

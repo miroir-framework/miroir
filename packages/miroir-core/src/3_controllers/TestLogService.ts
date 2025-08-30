@@ -394,7 +394,7 @@ export class TestLogService implements TestLogServiceInterface {
     // Find test logs to remove (older than MAX_AGE_MS)
     const testLogsToRemove: string[] = [];
     
-    for (const [testLogKey, testLogs] of this.testLogs.entries()) {
+    for (const [testLogKey, testLogs] of Array.from(this.testLogs.entries())) {
       if (testLogs.startTime < cutoff) {
         testLogsToRemove.push(testLogKey);
       }

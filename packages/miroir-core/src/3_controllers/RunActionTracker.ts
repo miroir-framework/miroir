@@ -1,5 +1,4 @@
 import { RunActionTrackerInterface, ActionTrackingData } from "../0_interfaces/3_controllers/RunActionTrackerInterface";
-import { TestTrackingData } from "../0_interfaces/3_controllers/TestTrackerInterface";
 import {
   TestAssertionResult,
   TestAssertionsResults,
@@ -149,39 +148,11 @@ export class RunActionTracker implements RunActionTrackerInterface {
     this.notifySubscribers();
   }
 
-  subscribe(callback: (actions: ActionTrackingData[]) => void): () => void;
-  subscribe(callback: (context: TestTrackingData) => void): () => void;
-  subscribe(
-    callback: ((actions: ActionTrackingData[]) => void) | ((context: TestTrackingData) => void)
-  ): () => void {
-    // Determine if this is a TestTracker-style callback (single parameter) or ActionTracker-style (array parameter)
-    const isTestCallback = callback.length === 1 && callback.toString().includes("context");
-
-    if (isTestCallback) {
-      // For test callbacks, convert ActionTrackingData[] to TestTrackingData
-      const testCallback = callback as (context: TestTrackingData) => void;
-      const wrappedCallback = (actions: ActionTrackingData[]) => {
-        // Convert current tracking state to TestTrackingData format
-        const testData: TestTrackingData = {
-          testSuite: this.currentTestSuite,
-          test: this.currentTest,
-          testAssertion: this.currentTestAssertion,
-          timestamp: Date.now(),
-        };
-        testCallback(testData);
-      };
-      this.subscribers.add(wrappedCallback);
-      return () => {
-        this.subscribers.delete(wrappedCallback);
-      };
-    } else {
-      // Standard ActionTracker callback
-      const actionCallback = callback as (actions: ActionTrackingData[]) => void;
-      this.subscribers.add(actionCallback);
-      return () => {
-        this.subscribers.delete(actionCallback);
-      };
-    }
+  subscribe(callback: (actions: ActionTrackingData[]) => void): () => void {
+    this.subscribers.add(callback);
+    return () => {
+      this.subscribers.delete(callback);
+    };
   }
 
   getCurrentActionId(): string | undefined {
@@ -502,7 +473,7 @@ export class RunActionTracker implements RunActionTrackerInterface {
     // Find actions to remove (completed/error actions older than MAX_AGE_MS)
     const toRemove: string[] = [];
 
-    for (const [id, action] of this.actions.entries()) {
+    for (const [id, action] of Array.from(this.actions.entries())) {
       if (action.status !== "running" && action.startTime < cutoff) {
         toRemove.push(id);
       }

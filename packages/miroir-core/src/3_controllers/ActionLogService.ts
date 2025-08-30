@@ -413,7 +413,7 @@ export class ActionLogService implements ActionLogServiceInterface {
     // Find actions to remove (older than MAX_AGE_MS and completed)
     const actionsToRemove: string[] = [];
     
-    for (const [actionId, actionLogs] of this.actionLogs.entries()) {
+    for (const [actionId, actionLogs] of Array.from(this.actionLogs.entries())) {
       if (actionLogs.status !== 'running' && actionLogs.startTime < cutoff) {
         actionsToRemove.push(actionId);
       }

@@ -633,10 +633,6 @@ export {
   ActionTrackingData,
 } from "./0_interfaces/3_controllers/RunActionTrackerInterface.js";
 export {
-  TestTrackerInterface,
-  TestTrackingData,
-} from "./0_interfaces/3_controllers/TestTrackerInterface.js";
-export {
   ActionLogServiceInterface,
   ActionLogEntry,
   ActionLogs,
@@ -905,7 +901,6 @@ export { ErrorDataStore } from "./3_controllers/ErrorHandling/ErrorDataStore.js"
 export { ErrorModelStore } from "./3_controllers/ErrorHandling/ErrorModelStore.js";
 export { MiroirContext } from "./3_controllers/MiroirContext.js";
 export { RunActionTracker } from "./3_controllers/RunActionTracker.js";
-export { TestTracker } from "./3_controllers/TestTracker.js";
 export { TestLogService } from "./3_controllers/TestLogService.js";
 export { LogInterceptor, ActionAwareLoggerWrapper, TestAwareLoggerWrapper } from "./4_services/LogInterceptor.js";
 export { modelInitialize } from "./3_controllers/ModelInitializer.js";

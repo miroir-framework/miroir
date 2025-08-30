@@ -1,7 +1,6 @@
 import { ActionLogServiceInterface } from "../3_controllers/ActionLogService";
 import { TestLogServiceInterface } from "../3_controllers/TestLogService";
 import { RunActionTrackerInterface } from "../0_interfaces/3_controllers/RunActionTrackerInterface";
-import { TestTrackerInterface } from "../0_interfaces/3_controllers/TestTrackerInterface";
 
 /**
  * Configuration for LogInterceptor
@@ -13,7 +12,7 @@ export interface LogInterceptorConfig {
   };
   test?: {
     testLogService: TestLogServiceInterface;
-    testTracker: TestTrackerInterface;
+    runActionTracker: RunActionTrackerInterface;
   };
 }
 
@@ -121,7 +120,7 @@ export class LogInterceptor {
 
       // Check for active test and log if test logging is configured
       if (this.config.test) {
-        const currentTest = this.config.test.testTracker.getTest();
+        const currentTest = this.config.test.runActionTracker.getTest();
         if (currentTest) {
           this.config.test.testLogService.logForCurrentTest(level, loggerName, message, ...restArgs);
         }
@@ -213,13 +212,13 @@ export class ActionAwareLoggerWrapper extends LoggerWrapperBase {
 export class TestAwareLoggerWrapper extends LoggerWrapperBase {
   constructor(
     private testLogService: TestLogServiceInterface,
-    private testTracker: TestTrackerInterface
+    private runActionTracker: RunActionTrackerInterface
   ) {
     super();
   }
 
   protected shouldCapture(): boolean {
-    return !!this.testTracker.getTest();
+    return !!this.runActionTracker.getTest();
   }
 
   protected captureLog(level: 'trace' | 'debug' | 'info' | 'warn' | 'error', loggerName: string, message: string, ...restArgs: any[]): void {
