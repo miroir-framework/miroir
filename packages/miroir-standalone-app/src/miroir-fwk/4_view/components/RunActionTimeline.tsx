@@ -28,6 +28,10 @@ import {
   Clear,
   FilterList,
   Visibility,
+  BugReport,
+  Assignment,
+  AssignmentTurnedIn,
+  Science,
 } from '@mui/icons-material';
 
 import { ActionTrackingData } from 'miroir-core';
@@ -40,6 +44,7 @@ export interface RunActionTimelineProps {
 
 interface FilterState {
   actionType: string;
+  trackingType: string; // New field for filtering by action vs test types
   status: string;
   minDuration: string;
   since: string;
@@ -49,10 +54,11 @@ interface FilterState {
 // For rendering, we build a nested structure where children are the actual nodes.
 type TreeNode = ActionTrackingData & { children?: TreeNode[] };
 
-export const RunActionTimeline: React.FC<RunActionTimelineProps> = ({
+export const RunActionTimeline: React.FC<RunActionTimelineProps> = React.memo(({
   className,
   style,
 }) => {
+  const componentId = React.useMemo(() => Math.random().toString(36).substr(2, 9), []);
   const context = useMiroirContextService();
   const navigate = useNavigate();
   const [actions, setActions] = useState<ActionTrackingData[]>([]);
@@ -60,6 +66,7 @@ export const RunActionTimeline: React.FC<RunActionTimelineProps> = ({
   const [showFilters, setShowFilters] = useState(false);
   const [filters, setFilters] = useState<FilterState>({
     actionType: '',
+    trackingType: '', // New filter for action/test types
     status: '',
     minDuration: '',
     since: '',
@@ -67,29 +74,43 @@ export const RunActionTimeline: React.FC<RunActionTimelineProps> = ({
 
   // Subscribe to action tracking updates
   useEffect(() => {
+    console.log(`RunActionTimeline [${componentId}] - Setting up subscription`);
+    
     const unsubscribe = context.miroirContext.runActionTracker.subscribe((newActions: ActionTrackingData[]) => {
+      console.log(`RunActionTimeline [${componentId}] - Received subscription update:`, newActions.length, 'actions');
       setActions(newActions);
     });
 
     // Get initial actions
-    setActions(context.miroirContext.runActionTracker.getAllActions());
+    const initialActions = context.miroirContext.runActionTracker.getAllActions();
+    console.log(`RunActionTimeline [${componentId}] - Initial actions:`, initialActions.length, 'actions');
+    setActions(initialActions);
 
-    return unsubscribe;
-  }, [context.miroirContext.runActionTracker]);
+    return () => {
+      console.log(`RunActionTimeline [${componentId}] - Cleaning up subscription`);
+      unsubscribe();
+    };
+  }, [context.miroirContext.runActionTracker, componentId]);
 
   // Filter actions based on current filters
   const filteredActions = useMemo(() => {
-    if (!filters.actionType && !filters.status && !filters.minDuration && !filters.since) {
-      return actions;
+    let result: ActionTrackingData[];
+    
+    if (!filters.actionType && !filters.trackingType && !filters.status && !filters.minDuration && !filters.since) {
+      result = actions;
+    } else {
+      result = context.miroirContext.runActionTracker.getFilteredActions({
+        actionType: filters.actionType || undefined,
+        trackingType: filters.trackingType as 'action' | 'testSuite' | 'test' | 'testAssertion' || undefined,
+        status: filters.status as 'running' | 'completed' | 'error' || undefined,
+        minDuration: filters.minDuration ? parseInt(filters.minDuration) : undefined,
+        since: filters.since ? new Date(filters.since).getTime() : undefined,
+      });
     }
-
-    return context.miroirContext.runActionTracker.getFilteredActions({
-      actionType: filters.actionType || undefined,
-      status: filters.status as any || undefined,
-      minDuration: filters.minDuration ? parseInt(filters.minDuration) : undefined,
-      since: filters.since ? new Date(filters.since).getTime() : undefined,
-    });
-  }, [actions, filters, context.miroirContext.runActionTracker]);
+    
+    console.log(`RunActionTimeline [${componentId}] - Filtered:`, result.length, 'actions from', actions.length, 'total');
+    return result;
+  }, [actions, filters, context.miroirContext.runActionTracker, componentId]);
 
   // Get unique action types for filter dropdown
   const actionTypes = useMemo(() => {
@@ -100,6 +121,8 @@ export const RunActionTimeline: React.FC<RunActionTimelineProps> = ({
   // Build tree structure for nested display (TreeNode uses nested children)
   const actionTree = useMemo<TreeNode[]>(() => {
     const rootActions = filteredActions.filter((action: ActionTrackingData) => !action.parentId);
+    
+    console.log(`RunActionTimeline [${componentId}] - Building tree with`, rootActions.length, 'root actions');
 
     const buildTree = (action: ActionTrackingData): TreeNode => {
       const children: TreeNode[] = filteredActions
@@ -110,8 +133,11 @@ export const RunActionTimeline: React.FC<RunActionTimelineProps> = ({
   return ({ ...(action as any), children } as TreeNode);
     };
 
-    return rootActions.map(buildTree);
-  }, [filteredActions]);
+    const tree = rootActions.map(buildTree);
+    console.log(`RunActionTimeline [${componentId}] - Tree built with`, tree.length, 'top-level items');
+    
+    return tree;
+  }, [filteredActions, componentId]);
 
   const handleToggleExpanded = useCallback((actionId: string) => {
     setExpanded(prev => ({
@@ -136,7 +162,38 @@ export const RunActionTimeline: React.FC<RunActionTimelineProps> = ({
     setFilters(prev => ({ ...prev, [field]: value }));
   }, []);
 
-  const getStatusIcon = (status: string) => {
+  const getStatusIcon = (action: ActionTrackingData) => {
+    // Test-specific icons
+    if (action.trackingType === 'testSuite') {
+      return action.status === 'completed' ? <AssignmentTurnedIn color="success" /> : 
+             action.status === 'error' ? <Assignment color="error" /> : 
+             <Assignment color="primary" />;
+    }
+    if (action.trackingType === 'test') {
+      return action.status === 'completed' && action.testResult === 'ok' ? <Science color="success" /> :
+             action.status === 'error' || action.testResult === 'error' ? <BugReport color="error" /> :
+             <Science color="primary" />;
+    }
+    if (action.trackingType === 'testAssertion') {
+      return action.status === 'completed' && action.testResult === 'ok' ? <CheckCircle color="success" /> :
+             action.status === 'error' || action.testResult === 'error' ? <Error color="error" /> :
+             <PlayArrow color="primary" />;
+    }
+    
+    // Standard action icons
+    switch (action.status) {
+      case 'running':
+        return <PlayArrow color="primary" />;
+      case 'completed':
+        return <CheckCircle color="success" />;
+      case 'error':
+        return <Error color="error" />;
+      default:
+        return null;
+    }
+  };
+
+  const getStatusIcon_old = (status: string) => {
     switch (status) {
       case 'running':
         return <PlayArrow color="primary" />;
@@ -149,7 +206,29 @@ export const RunActionTimeline: React.FC<RunActionTimelineProps> = ({
     }
   };
 
-  const getStatusColor = (status: string) => {
+  const getStatusColor = (action: ActionTrackingData) => {
+    // For tests, consider both status and testResult
+    if (action.trackingType === 'test' || action.trackingType === 'testAssertion') {
+      if (action.status === 'completed' && action.testResult === 'ok') return 'success';
+      if (action.status === 'error' || action.testResult === 'error') return 'error';
+      if (action.status === 'running') return 'primary';
+      return 'default';
+    }
+    
+    // Standard action status colors
+    switch (action.status) {
+      case 'running':
+        return 'primary';
+      case 'completed':
+        return 'success';
+      case 'error':
+        return 'error';
+      default:
+        return 'default';
+    }
+  };
+
+  const getStatusColor_old = (status: string) => {
     switch (status) {
       case 'running':
         return 'primary';
@@ -172,6 +251,26 @@ export const RunActionTimeline: React.FC<RunActionTimelineProps> = ({
     return new Date(timestamp).toLocaleTimeString();
   };
 
+  const getDisplayLabel = (action: ActionTrackingData) => {
+    // For tests, show the test-specific name
+    if (action.trackingType === 'testSuite') return action.testSuite || action.actionLabel || 'Test Suite';
+    if (action.trackingType === 'test') return action.test || action.actionLabel || 'Test';
+    if (action.trackingType === 'testAssertion') return action.testAssertion || action.actionLabel || 'Test Assertion';
+    
+    // For actions, use the standard label
+    return action.actionLabel || action.actionType;
+  };
+
+  const getTrackingTypeLabel = (trackingType: string) => {
+    switch (trackingType) {
+      case 'testSuite': return 'Test Suite';
+      case 'test': return 'Test';
+      case 'testAssertion': return 'Assertion';
+      case 'action': return 'Action';
+      default: return trackingType;
+    }
+  };
+
   const renderAction = (action: TreeNode, depth = 0) => {
     const isExpanded = expanded[action.id];
     const hasChildren = action.children && action.children.length > 0;
@@ -184,22 +283,32 @@ export const RunActionTimeline: React.FC<RunActionTimelineProps> = ({
             pl: `${16 + indentLevel}px`,
             borderLeft: depth > 0 ? '1px solid #e0e0e0' : 'none',
             ml: depth > 0 ? '12px' : 0,
+            bgcolor: action.trackingType !== 'action' ? '#f8f9ff' : 'inherit', // Light blue tint for tests
           }}
         >
           <ListItemIcon sx={{ minWidth: '32px' }}>
-            {getStatusIcon(action.status)}
+            {getStatusIcon(action)}
           </ListItemIcon>
           
           <ListItemText
             primary={
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <Typography variant="body2" fontWeight="medium">
-                  {action.actionLabel || action.actionType}
+                  {getDisplayLabel(action)}
                 </Typography>
                 <Chip
-                  label={action.status}
+                  label={getTrackingTypeLabel(action.trackingType)}
                   size="small"
-                  color={getStatusColor(action.status) as any}
+                  color={action.trackingType !== 'action' ? 'secondary' : 'default'}
+                  variant="outlined"
+                  sx={{ fontSize: '0.7rem', height: '20px' }}
+                />
+                <Chip
+                  label={action.trackingType === 'test' || action.trackingType === 'testAssertion' 
+                    ? (action.testResult || action.status) 
+                    : action.status}
+                  size="small"
+                  color={getStatusColor(action) as any}
                   variant="outlined"
                 />
                 <Typography variant="caption" color="text.secondary">
@@ -292,13 +401,30 @@ export const RunActionTimeline: React.FC<RunActionTimelineProps> = ({
         </Box>
         
         <Typography variant="body2" color="text.secondary">
-          {filteredActions.length} actions ({actions.filter(a => a.status === 'running').length} running)
+          {filteredActions.length} items ({actions.filter(a => a.status === 'running').length} running) - 
+          Actions: {actions.filter(a => a.trackingType === 'action').length}, 
+          Tests: {actions.filter(a => a.trackingType !== 'action').length}
         </Typography>
       </Box>
 
       <Collapse in={showFilters}>
         <Box sx={{ p: 2, borderBottom: '1px solid #e0e0e0', bgcolor: '#f5f5f5' }}>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <FormControl size="small" fullWidth>
+              <InputLabel>Tracking Type</InputLabel>
+              <Select
+                value={filters.trackingType}
+                label="Tracking Type"
+                onChange={(e) => handleFilterChange('trackingType', e.target.value)}
+              >
+                <MenuItem value="">All</MenuItem>
+                <MenuItem value="action">Actions Only</MenuItem>
+                <MenuItem value="testSuite">Test Suites</MenuItem>
+                <MenuItem value="test">Tests</MenuItem>
+                <MenuItem value="testAssertion">Test Assertions</MenuItem>
+              </Select>
+            </FormControl>
+            
             <FormControl size="small" fullWidth>
               <InputLabel>Action Type</InputLabel>
               <Select
@@ -342,7 +468,7 @@ export const RunActionTimeline: React.FC<RunActionTimelineProps> = ({
         {actionTree.length === 0 ? (
           <Box sx={{ p: 3, textAlign: 'center' }}>
             <Typography variant="body2" color="text.secondary">
-              No actions to display
+              No actions or tests to display
             </Typography>
           </Box>
         ) : (
@@ -353,4 +479,4 @@ export const RunActionTimeline: React.FC<RunActionTimelineProps> = ({
       </Box>
     </Box>
   );
-};
+});

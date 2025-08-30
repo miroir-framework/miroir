@@ -18,7 +18,7 @@ import { describe, expect } from "miroir-core";
 import { ActionButton } from "../../components/Page/ActionButton.js";
 import { packageName } from "../../../../constants.js";
 import { cleanLevel } from "../../constants.js";
-import { useSnackbar } from "../../MiroirContextReactProvider.js";
+import { useSnackbar, useMiroirContextService } from "../../MiroirContextReactProvider.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -131,6 +131,7 @@ export const RunTransformerTestSuiteButton: React.FC<RunTransformerTestSuiteButt
   ...buttonProps
 }) => {
   const { handleAsyncAction } = useSnackbar();
+  const miroirContextService = useMiroirContextService();
 
   const onAction = async () => {
     // Reset previous results
@@ -151,7 +152,8 @@ export const RunTransformerTestSuiteButton: React.FC<RunTransformerTestSuiteButt
         miroirFundamentalJzodSchema: miroirFundamentalJzodSchema as JzodSchema,
         miroirMetaModel: defaultMiroirMetaModel
         // TODO: current app schema
-      }
+      },
+      miroirContextService.miroirContext.runActionTracker // Pass the unified tracker
     );
 
     // Get and format results - find the correct test suite key

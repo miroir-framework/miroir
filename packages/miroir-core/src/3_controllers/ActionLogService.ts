@@ -1,16 +1,24 @@
 import { RunActionTrackerInterface } from "../0_interfaces/3_controllers/RunActionTrackerInterface";
 import{ LoggerGlobalContext } from "../4_services/LoggerContext";
+// Import test interfaces for compatibility
+import { 
+  TestLogs, 
+  TestLogFilter, 
+  TestLogEntry,
+  TestLogServiceInterface 
+} from './TestLogService.js';
 
-// Action log entry representing a single log message within an action execution
+// Unified log entry representing a single log message within an action or test execution
 export interface ActionLogEntry {
   id: string;
-  actionId: string;
+  actionId: string; // Renamed from trackingId for backwards compatibility
   timestamp: number;
   level: 'trace' | 'debug' | 'info' | 'warn' | 'error';
   loggerName: string;
   message: string;
   args: any[];
   context?: {
+    trackingType?: 'action' | 'testSuite' | 'test' | 'testAssertion';
     testSuite?: string;
     test?: string;
     testAssertion?: string;
@@ -19,11 +27,12 @@ export interface ActionLogEntry {
   };
 }
 
-// Aggregated logs for a specific action execution
+// Aggregated logs for a specific action or test execution
 export interface ActionLogs {
-  actionId: string;
+  actionId: string; // trackingId for backwards compatibility
   actionType: string;
   actionLabel?: string;
+  trackingType?: 'action' | 'testSuite' | 'test' | 'testAssertion'; // Added for test support
   startTime: number;
   endTime?: number;
   status: 'running' | 'completed' | 'error';
@@ -38,14 +47,17 @@ export interface ActionLogs {
   };
 }
 
-// Filter criteria for action logs
+// Filter criteria for action and test logs
 export interface ActionLogFilter {
   actionId?: string;
   actionType?: string;
+  trackingType?: 'action' | 'testSuite' | 'test' | 'testAssertion'; // Added for test filtering
   level?: 'trace' | 'debug' | 'info' | 'warn' | 'error';
   since?: number;
   searchText?: string;
   loggerName?: string;
+  testSuite?: string; // Added for test filtering
+  test?: string; // Added for test filtering
 }
 
 // Service interface for action logging
@@ -89,6 +101,66 @@ export interface ActionLogServiceInterface {
    * Export action logs as JSON
    */
   exportLogs(): string;
+}
+
+// ===============================================
+// TestLogService Compatibility Wrappers
+// ===============================================
+
+// Wrapper to convert ActionLogs to TestLogs format for backwards compatibility
+export function actionLogsToTestLogs(actionLogs: ActionLogs): TestLogs {
+  return {
+    testSuite: actionLogs.trackingType === 'testSuite' ? actionLogs.actionLabel : undefined,
+    test: actionLogs.trackingType === 'test' ? actionLogs.actionLabel : undefined,
+    testAssertion: actionLogs.trackingType === 'testAssertion' ? actionLogs.actionLabel : undefined,
+    startTime: actionLogs.startTime,
+    endTime: actionLogs.endTime,
+    logs: actionLogs.logs.map(log => ({
+      id: log.id,
+      timestamp: log.timestamp,
+      level: log.level,
+      loggerName: log.loggerName,
+      message: log.message,
+      args: log.args,
+      testSuite: log.context?.testSuite,
+      test: log.context?.test,
+      testAssertion: log.context?.testAssertion,
+      context: {
+        testSuite: log.context?.testSuite,
+        test: log.context?.test,
+        testAssertion: log.context?.testAssertion,
+        action: log.context?.action,
+        compositeAction: log.context?.compositeAction
+      }
+    })),
+    logCounts: actionLogs.logCounts
+  };
+}
+
+// Wrapper to convert ActionLogFilter to TestLogFilter for backwards compatibility
+export function actionLogFilterToTestLogFilter(filter: ActionLogFilter): TestLogFilter {
+  return {
+    testSuite: filter.testSuite,
+    test: filter.test,
+    testAssertion: filter.trackingType === 'testAssertion' ? filter.actionType : undefined,
+    level: filter.level,
+    since: filter.since,
+    searchText: filter.searchText,
+    loggerName: filter.loggerName
+  };
+}
+
+// Wrapper to convert TestLogFilter to ActionLogFilter
+export function testLogFilterToActionLogFilter(filter: TestLogFilter): ActionLogFilter {
+  return {
+    trackingType: filter.testAssertion ? 'testAssertion' : filter.test ? 'test' : filter.testSuite ? 'testSuite' : undefined,
+    level: filter.level,
+    since: filter.since,
+    searchText: filter.searchText,
+    loggerName: filter.loggerName,
+    testSuite: filter.testSuite,
+    test: filter.test
+  };
 }
 
 /**
@@ -180,12 +252,31 @@ export class ActionLogService implements ActionLogServiceInterface {
       if (filter.actionType && actionLogs.actionType !== filter.actionType) {
         return false;
       }
+      if (filter.trackingType && actionLogs.trackingType !== filter.trackingType) {
+        return false;
+      }
       if (filter.since && actionLogs.startTime < filter.since) {
         return false;
       }
       if (filter.level) {
         // Check if action has logs of the specified level
         if (actionLogs.logCounts[filter.level] === 0) {
+          return false;
+        }
+      }
+      if (filter.testSuite) {
+        const hasMatchingTestSuite = actionLogs.logs.some(log => 
+          log.context?.testSuite === filter.testSuite
+        );
+        if (!hasMatchingTestSuite) {
+          return false;
+        }
+      }
+      if (filter.test) {
+        const hasMatchingTest = actionLogs.logs.some(log => 
+          log.context?.test === filter.test
+        );
+        if (!hasMatchingTest) {
           return false;
         }
       }
@@ -249,13 +340,14 @@ export class ActionLogService implements ActionLogServiceInterface {
   }
 
   private updateActionContainers(actions: any[]): void {
-    // Create action log containers for new actions
+    // Create action log containers for new actions and tests
     actions.forEach(action => {
       if (!this.actionLogs.has(action.id)) {
         const actionLogs: ActionLogs = {
           actionId: action.id,
           actionType: action.actionType,
           actionLabel: action.actionLabel,
+          trackingType: action.trackingType, // Support both actions and tests
           startTime: action.startTime,
           endTime: action.endTime,
           status: action.status,
@@ -287,10 +379,14 @@ export class ActionLogService implements ActionLogServiceInterface {
     // Get action and compositeAction from RunActionTracker instead of LoggerGlobalContext
     // Still get test-related context from LoggerGlobalContext to avoid breaking test functionality
     try {
+      const currentAction = this.runActionTracker.getCurrentActionId();
+      const currentActionData = currentAction ? this.runActionTracker.getAllActions().find(a => a.id === currentAction) : undefined;
+      
       return {
-        testSuite: LoggerGlobalContext.getTestSuite(),
-        test: LoggerGlobalContext.getTest(),
-        testAssertion: LoggerGlobalContext.getTestAssertion(),
+        trackingType: currentActionData?.trackingType,
+        testSuite: currentActionData?.testSuite || LoggerGlobalContext.getTestSuite(),
+        test: currentActionData?.test || LoggerGlobalContext.getTest(),
+        testAssertion: currentActionData?.testAssertion || LoggerGlobalContext.getTestAssertion(),
         compositeAction: this.runActionTracker.getCompositeAction(),
         action: this.runActionTracker.getAction()
       };
@@ -338,5 +434,84 @@ export class ActionLogService implements ActionLogServiceInterface {
     if (actionsToRemove.length > 0) {
       this.notifySubscribers();
     }
+  }
+}
+
+// ===============================================
+// TestLogService Compatibility Wrapper
+// ===============================================
+
+/**
+ * Backwards compatibility wrapper that makes ActionLogService compatible with TestLogServiceInterface
+ */
+export class TestLogServiceCompatibilityWrapper implements TestLogServiceInterface {
+  constructor(private actionLogService: ActionLogService) {}
+
+  logForCurrentTest(
+    level: 'trace' | 'debug' | 'info' | 'warn' | 'error',
+    loggerName: string,
+    message: string,
+    ...args: any[]
+  ): void {
+    // Delegate to ActionLogService which handles test context via RunActionTracker
+    this.actionLogService.logForCurrentAction(level, loggerName, message, ...args);
+  }
+
+  getTestLogs(testSuite?: string, test?: string, testAssertion?: string): TestLogs[] {
+    // Find matching action logs for the test execution
+    const allActionLogs = this.actionLogService.getAllActionLogs();
+    const matchingLogs = allActionLogs.filter(logs => {
+      if (testAssertion && logs.trackingType === 'testAssertion' && logs.actionLabel === testAssertion) return true;
+      if (test && logs.trackingType === 'test' && logs.actionLabel === test) return true;
+      if (testSuite && logs.trackingType === 'testSuite' && logs.actionLabel === testSuite) return true;
+      return false;
+    });
+
+    return matchingLogs.map(actionLogsToTestLogs);
+  }
+
+  getAllTestLogs(): TestLogs[] {
+    // Get all action logs that are test-related
+    const allActionLogs = this.actionLogService.getAllActionLogs();
+    const testLogs = allActionLogs.filter(logs => 
+      logs.trackingType === 'testSuite' || 
+      logs.trackingType === 'test' || 
+      logs.trackingType === 'testAssertion'
+    );
+    
+    return testLogs.map(actionLogsToTestLogs);
+  }
+
+  getFilteredTestLogs(filter: TestLogFilter): TestLogs[] {
+    // Convert TestLogFilter to ActionLogFilter and delegate
+    const actionFilter = testLogFilterToActionLogFilter(filter);
+    const filteredActionLogs = this.actionLogService.getFilteredActionLogs(actionFilter);
+    
+    return filteredActionLogs.map(actionLogsToTestLogs);
+  }
+
+  subscribe(callback: (testLogs: TestLogs[]) => void): () => void {
+    // Subscribe to ActionLogService and filter for test logs
+    return this.actionLogService.subscribe((actionLogs: ActionLogs[]) => {
+      const testLogs = actionLogs
+        .filter(logs => 
+          logs.trackingType === 'testSuite' || 
+          logs.trackingType === 'test' || 
+          logs.trackingType === 'testAssertion'
+        )
+        .map(actionLogsToTestLogs);
+      callback(testLogs);
+    });
+  }
+
+  clear(): void {
+    // Clear all logs through ActionLogService
+    this.actionLogService.clear();
+  }
+
+  exportLogs(): string {
+    // Export test logs only
+    const testLogs = this.getAllTestLogs();
+    return JSON.stringify(testLogs, null, 2);
   }
 }

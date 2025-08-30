@@ -3,7 +3,7 @@ import { MiroirContextInterface } from "../0_interfaces/3_controllers/MiroirCont
 import { RunActionTrackerInterface } from "../0_interfaces/3_controllers/RunActionTrackerInterface";
 import type { TestTrackerInterface } from "../0_interfaces/3_controllers/TestTrackerInterface";
 import { LogInterceptor } from "../4_services/LogInterceptor";
-import { ActionLogService, ActionLogServiceInterface } from "./ActionLogService";
+import { ActionLogService, ActionLogServiceInterface, TestLogServiceCompatibilityWrapper } from "./ActionLogService";
 import { RunActionTracker } from "./RunActionTracker";
 import { TestLogService, type TestLogServiceInterface } from "./TestLogService";
 import { TestTracker } from "./TestTracker";
@@ -13,16 +13,24 @@ export class MiroirContext implements MiroirContextInterface {
   // public errorLogService:ErrorLogServiceInterface;
   public runActionTracker: RunActionTrackerInterface;
   public actionLogService: ActionLogServiceInterface;
-  public testTracker: TestTrackerInterface;
-  public testLogService: TestLogServiceInterface;
+  public testTracker: TestTrackerInterface; // Backwards compatibility - points to same instance as runActionTracker
+  public testLogService: TestLogServiceInterface; // Backwards compatibility - unified with actionLogService
   public logInterceptor: LogInterceptor;
 
   constructor(public miroirConfig?: MiroirConfigClient | MiroirConfigServer | undefined) {
     // this.errorLogService = new ErrorLogService();
+    
+    // Create enhanced RunActionTracker that supports both actions and tests
     this.runActionTracker = new RunActionTracker();
+    
+    // For backwards compatibility, testTracker points to the same enhanced instance
+    this.testTracker = this.runActionTracker as TestTrackerInterface;
+    
+    // Create unified ActionLogService that handles both action and test logs
     this.actionLogService = new ActionLogService(this.runActionTracker);
-    this.testTracker = new TestTracker();
-    this.testLogService = new TestLogService(this.testTracker);
+    
+    // For backwards compatibility, testLogService uses a compatibility wrapper
+    this.testLogService = new TestLogServiceCompatibilityWrapper(this.actionLogService as ActionLogService);
     
     // Create unified log interceptor for both action and test logging
     this.logInterceptor = new LogInterceptor({
