@@ -1,19 +1,20 @@
-import { ActionLogServiceInterface } from "../3_controllers/ActionLogService";
-import { TestLogServiceInterface } from "../3_controllers/TestLogService";
-import { RunActionTrackerInterface } from "../0_interfaces/3_controllers/RunActionTrackerInterface";
+import { ActionOrTestLogServiceInterface } from "../3_controllers/MiroirLogService";
+// import { TestLogServiceInterface } from "../3_controllers/TestLogService";
+import { MiroirEventTrackerInterface } from "../0_interfaces/3_controllers/MiroirEventTrackerInterface";
 
 /**
  * Configuration for LogInterceptor
  */
 export interface LogInterceptorConfig {
-  action?: {
-    actionLogService: ActionLogServiceInterface;
-    runActionTracker: RunActionTrackerInterface;
+  actionOrTest?: {
+    actionOrTestLogService: ActionOrTestLogServiceInterface;
+    actionOrTestTracker: MiroirEventTrackerInterface;
   };
-  test?: {
-    testLogService: TestLogServiceInterface;
-    runActionTracker: RunActionTrackerInterface;
-  };
+  // test?: {
+  //   // testLogService: TestLogServiceInterface;
+  //   testLogService: ActionOrTestLogServiceInterface;
+  //   runActionTracker: MiroirEventTrackerInterface;
+  // };
 }
 
 /**
@@ -111,20 +112,23 @@ export class LogInterceptor {
       const loggerName = this.extractLoggerName(message);
 
       // Check for active action and log if action logging is configured
-      if (this.config.action) {
-        const currentActionId = this.config.action.runActionTracker.getCurrentActionId();
+      if (this.config.actionOrTest) {
+        const currentActionId = this.config.actionOrTest.actionOrTestTracker.getCurrentActionOrTestId();
         if (currentActionId) {
-          this.config.action.actionLogService.logForCurrentAction(level, loggerName, message, ...restArgs);
+          this.config.actionOrTest.actionOrTestLogService.logForCurrentActionOrTest(level, loggerName, message, ...restArgs);
         }
       }
 
-      // Check for active test and log if test logging is configured
-      if (this.config.test) {
-        const currentTest = this.config.test.runActionTracker.getTest();
-        if (currentTest) {
-          this.config.test.testLogService.logForCurrentTest(level, loggerName, message, ...restArgs);
-        }
-      }
+    //   // // Check for active test and log if test logging is configured
+    //   if (this.config.actionOrTest) {
+    //     const currentTest = this.config.actionOrTest.actionOrTestTracker.getTest();
+    //   //   // console.log('LogInterceptor Logging for test:', currentTest);
+    //   //   // const currentTest = this.config.actionorTest.runActionTracker.getCurrentActionOrTestId();
+    //     if (currentTest) {
+    //       console.log('LogInterceptor Logging for test:', currentTest, level, loggerName, message, ...restArgs);
+    //   //     this.config.actionOrTest.actionLogService.logForCurrentActionOrTest(level, loggerName, message, ...restArgs);
+    //     }
+    //   }
     };
   }
 
@@ -137,94 +141,94 @@ export class LogInterceptor {
 }
 
 /**
- * Abstract logger wrapper base class
- */
-abstract class LoggerWrapperBase {
-  /**
-   * Wrap an existing logger to add logging capability
-   */
-  wrapLogger(logger: any, loggerName: string): any {
-    return new Proxy(logger, {
-      get: (target, prop, receiver) => {
-        const originalValue = Reflect.get(target, prop, receiver);
+//  * Abstract logger wrapper base class
+//  */
+// abstract class LoggerWrapperBase {
+//   /**
+//    * Wrap an existing logger to add logging capability
+//    */
+//   wrapLogger(logger: any, loggerName: string): any {
+//     return new Proxy(logger, {
+//       get: (target, prop, receiver) => {
+//         const originalValue = Reflect.get(target, prop, receiver);
 
-        // Only intercept logging methods
-        if (typeof originalValue === 'function' && 
-            ['trace', 'debug', 'log', 'info', 'warn', 'error'].includes(prop as string)) {
+//         // Only intercept logging methods
+//         if (typeof originalValue === 'function' && 
+//             ['trace', 'debug', 'log', 'info', 'warn', 'error'].includes(prop as string)) {
           
-          return (...args: any[]) => {
-            // Call original method
-            const result = originalValue.apply(target, args);
+//           return (...args: any[]) => {
+//             // Call original method
+//             const result = originalValue.apply(target, args);
 
-            // Check if we should capture this log
-            if (this.shouldCapture()) {
-              const level = prop === 'log' ? 'debug' : prop as 'trace' | 'debug' | 'info' | 'warn' | 'error';
-              const message = args.length > 0 ? String(args[0]) : '';
-              const restArgs = args.slice(1);
-              this.captureLog(level, loggerName, message, ...restArgs);
-            }
+//             // Check if we should capture this log
+//             if (this.shouldCapture()) {
+//               const level = prop === 'log' ? 'debug' : prop as 'trace' | 'debug' | 'info' | 'warn' | 'error';
+//               const message = args.length > 0 ? String(args[0]) : '';
+//               const restArgs = args.slice(1);
+//               this.captureLog(level, loggerName, message, ...restArgs);
+//             }
 
-            return result;
-          };
-        }
+//             return result;
+//           };
+//         }
 
-        return originalValue;
-      }
-    });
-  }
+//         return originalValue;
+//       }
+//     });
+//   }
 
-  /**
-   * Create a global logger wrapper function
-   */
-  createGlobalLoggerWrapper(): (logger: any, loggerName: string) => any {
-    return (logger: any, loggerName: string) => this.wrapLogger(logger, loggerName);
-  }
+//   /**
+//    * Create a global logger wrapper function
+//    */
+//   createGlobalLoggerWrapper(): (logger: any, loggerName: string) => any {
+//     return (logger: any, loggerName: string) => this.wrapLogger(logger, loggerName);
+//   }
 
-  protected abstract shouldCapture(): boolean;
-  protected abstract captureLog(level: 'trace' | 'debug' | 'info' | 'warn' | 'error', loggerName: string, message: string, ...restArgs: any[]): void;
-}
+//   protected abstract shouldCapture(): boolean;
+//   protected abstract captureLog(level: 'trace' | 'debug' | 'info' | 'warn' | 'error', loggerName: string, message: string, ...restArgs: any[]): void;
+// }
 
 /**
- * Action-aware logger wrapper that can be used with MiroirLoggerFactory
- * This wraps existing loggers to add action logging capability
- */
-export class ActionAwareLoggerWrapper extends LoggerWrapperBase {
-  constructor(
-    private actionLogService: ActionLogServiceInterface,
-    private runActionTracker: RunActionTrackerInterface
-  ) {
-    super();
-  }
+//  * Action-aware logger wrapper that can be used with MiroirLoggerFactory
+//  * This wraps existing loggers to add action logging capability
+//  */
+// export class ActionAwareLoggerWrapper extends LoggerWrapperBase {
+//   constructor(
+//     private actionLogService: ActionOrTestLogServiceInterface,
+//     private runActionTracker: MiroirEventTrackerInterface
+//   ) {
+//     super();
+//   }
 
-  protected shouldCapture(): boolean {
-    return !!this.runActionTracker.getCurrentActionId();
-  }
+//   protected shouldCapture(): boolean {
+//     return !!this.runActionTracker.getCurrentActionOrTestId();
+//   }
 
-  protected captureLog(level: 'trace' | 'debug' | 'info' | 'warn' | 'error', loggerName: string, message: string, ...restArgs: any[]): void {
-    this.actionLogService.logForCurrentAction(level, loggerName, message, ...restArgs);
-  }
-}
+//   protected captureLog(level: 'trace' | 'debug' | 'info' | 'warn' | 'error', loggerName: string, message: string, ...restArgs: any[]): void {
+//     this.actionLogService.logForCurrentActionOrTest(level, loggerName, message, ...restArgs);
+//   }
+// }
 
 /**
  * Test-aware logger wrapper that can be used with MiroirLoggerFactory
  * This wraps existing loggers to add test logging capability
  */
-export class TestAwareLoggerWrapper extends LoggerWrapperBase {
-  constructor(
-    private testLogService: TestLogServiceInterface,
-    private runActionTracker: RunActionTrackerInterface
-  ) {
-    super();
-  }
+// export class TestAwareLoggerWrapper extends LoggerWrapperBase {
+//   constructor(
+//     private testLogService: TestLogServiceInterface,
+//     private runActionTracker: MiroirEventTrackerInterface
+//   ) {
+//     super();
+//   }
 
-  protected shouldCapture(): boolean {
-    return !!this.runActionTracker.getTest();
-  }
+//   protected shouldCapture(): boolean {
+//     return !!this.runActionTracker.getTest();
+//   }
 
-  protected captureLog(level: 'trace' | 'debug' | 'info' | 'warn' | 'error', loggerName: string, message: string, ...restArgs: any[]): void {
-    this.testLogService.logForCurrentTest(level, loggerName, message, ...restArgs);
-  }
-}
+//   protected captureLog(level: 'trace' | 'debug' | 'info' | 'warn' | 'error', loggerName: string, message: string, ...restArgs: any[]): void {
+//     this.testLogService.logForCurrentTest(level, loggerName, message, ...restArgs);
+//   }
+// }
 
 // Legacy exports for backward compatibility
 export const ActionLogInterceptor = LogInterceptor;

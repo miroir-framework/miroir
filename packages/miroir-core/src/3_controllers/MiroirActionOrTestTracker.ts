@@ -1,4 +1,3 @@
-import { RunActionTrackerInterface, ActionTrackingData } from "../0_interfaces/3_controllers/RunActionTrackerInterface";
 import {
   TestAssertionResult,
   TestAssertionsResults,
@@ -6,11 +5,12 @@ import {
   TestsResults,
   TestSuiteResult,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { ActionOrTestTrackingData, MiroirEventTrackerInterface } from "../0_interfaces/3_controllers/MiroirEventTrackerInterface";
 
-export class RunActionTracker implements RunActionTrackerInterface {
-  private actions: Map<string, ActionTrackingData> = new Map();
-  private subscribers: Set<(actions: ActionTrackingData[]) => void> = new Set();
-  private currentActionStack: string[] = []; // Stack to track nested actions
+export class MiroirActionOrTestTracker implements MiroirEventTrackerInterface {
+  private actionsOrTestTrackingData: Map<string, ActionOrTestTrackingData> = new Map();
+  private subscribers: Set<(actions: ActionOrTestTrackingData[]) => void> = new Set();
+  private currentActionAndTestStack: string[] = []; // Stack to track nested actions
   private cleanupInterval: NodeJS.Timeout;
   private readonly CLEANUP_INTERVAL_MS = 60000; // 1 minute
   private readonly MAX_AGE_MS = 10 * 60 * 1000; // 10 minutes (as requested)
@@ -39,11 +39,11 @@ export class RunActionTracker implements RunActionTrackerInterface {
     const now = Date.now();
 
     // If no parentId is provided, use the current active action as parent
-    const effectiveParentId = parentId || this.getCurrentActionId();
+    const effectiveParentId = parentId || this.getCurrentActionOrTestId();
 
-    const depth = effectiveParentId ? (this.actions.get(effectiveParentId)?.depth ?? 0) + 1 : 0;
+    const depth = effectiveParentId ? (this.actionsOrTestTrackingData.get(effectiveParentId)?.depth ?? 0) + 1 : 0;
 
-    const actionData: ActionTrackingData = {
+    const actionData: ActionOrTestTrackingData = {
       id,
       parentId: effectiveParentId,
       trackingType: "action",
@@ -55,25 +55,25 @@ export class RunActionTracker implements RunActionTrackerInterface {
       children: [],
     };
 
-    this.actions.set(id, actionData);
+    this.actionsOrTestTrackingData.set(id, actionData);
 
     // Add to parent's children if there's a parent
     if (effectiveParentId) {
-      const parent = this.actions.get(effectiveParentId);
+      const parent = this.actionsOrTestTrackingData.get(effectiveParentId);
       if (parent && !parent.children.includes(id)) {
         parent.children.push(id);
       }
     }
 
     // Push to action stack
-    this.currentActionStack.push(id);
+    this.currentActionAndTestStack.push(id);
 
     this.notifySubscribers();
     return id;
   }
 
   endAction(trackingId: string, error?: string): void {
-    const action = this.actions.get(trackingId);
+    const action = this.actionsOrTestTrackingData.get(trackingId);
     if (!action) {
       return;
     }
@@ -87,16 +87,16 @@ export class RunActionTracker implements RunActionTrackerInterface {
     }
 
     // Remove from action stack
-    const index = this.currentActionStack.indexOf(trackingId);
+    const index = this.currentActionAndTestStack.indexOf(trackingId);
     if (index !== -1) {
-      this.currentActionStack.splice(index, 1);
+      this.currentActionAndTestStack.splice(index, 1);
     }
 
     this.notifySubscribers();
   }
 
-  getAllActions(): ActionTrackingData[] {
-    return Array.from(this.actions.values()).sort((a, b) => a.startTime - b.startTime);
+  getAllActions(): ActionOrTestTrackingData[] {
+    return Array.from(this.actionsOrTestTrackingData.values()).sort((a, b) => a.startTime - b.startTime);
   }
 
   getFilteredActions(filter: {
@@ -106,7 +106,7 @@ export class RunActionTracker implements RunActionTrackerInterface {
     minDuration?: number;
     maxDuration?: number;
     since?: number;
-  }): ActionTrackingData[] {
+  }): ActionOrTestTrackingData[] {
     return this.getAllActions().filter((action) => {
       if (filter.actionType && action.actionType !== filter.actionType) {
         return false;
@@ -137,8 +137,8 @@ export class RunActionTracker implements RunActionTrackerInterface {
   }
 
   clear(): void {
-    this.actions.clear();
-    this.currentActionStack = [];
+    this.actionsOrTestTrackingData.clear();
+    this.currentActionAndTestStack = [];
     this.currentCompositeAction = undefined;
     this.currentAction = undefined;
     this.currentTestSuite = undefined;
@@ -148,15 +148,15 @@ export class RunActionTracker implements RunActionTrackerInterface {
     this.notifySubscribers();
   }
 
-  subscribe(callback: (actions: ActionTrackingData[]) => void): () => void {
+  subscribe(callback: (actions: ActionOrTestTrackingData[]) => void): () => void {
     this.subscribers.add(callback);
     return () => {
       this.subscribers.delete(callback);
     };
   }
 
-  getCurrentActionId(): string | undefined {
-    return this.currentActionStack[this.currentActionStack.length - 1];
+  getCurrentActionOrTestId(): string | undefined {
+    return this.currentActionAndTestStack[this.currentActionAndTestStack.length - 1];
   }
 
   setCompositeAction(compositeAction: string | undefined): void {
@@ -180,10 +180,10 @@ export class RunActionTracker implements RunActionTrackerInterface {
     const id = this.generateId();
     const now = Date.now();
 
-    const effectiveParentId = parentId || this.getCurrentActionId();
-    const depth = effectiveParentId ? (this.actions.get(effectiveParentId)?.depth ?? 0) + 1 : 0;
+    const effectiveParentId = parentId || this.getCurrentActionOrTestId();
+    const depth = effectiveParentId ? (this.actionsOrTestTrackingData.get(effectiveParentId)?.depth ?? 0) + 1 : 0;
 
-    const testSuiteData: ActionTrackingData = {
+    const testSuiteData: ActionOrTestTrackingData = {
       id,
       parentId: effectiveParentId,
       trackingType: "testSuite",
@@ -196,16 +196,16 @@ export class RunActionTracker implements RunActionTrackerInterface {
       children: [],
     };
 
-    this.actions.set(id, testSuiteData);
+    this.actionsOrTestTrackingData.set(id, testSuiteData);
 
     if (effectiveParentId) {
-      const parent = this.actions.get(effectiveParentId);
+      const parent = this.actionsOrTestTrackingData.get(effectiveParentId);
       if (parent && !parent.children.includes(id)) {
         parent.children.push(id);
       }
     }
 
-    this.currentActionStack.push(id);
+    this.currentActionAndTestStack.push(id);
     this.currentTestSuite = testSuite;
     this.notifySubscribers();
     return id;
@@ -215,10 +215,10 @@ export class RunActionTracker implements RunActionTrackerInterface {
     const id = this.generateId();
     const now = Date.now();
 
-    const effectiveParentId = parentId || this.getCurrentActionId();
-    const depth = effectiveParentId ? (this.actions.get(effectiveParentId)?.depth ?? 0) + 1 : 0;
+    const effectiveParentId = parentId || this.getCurrentActionOrTestId();
+    const depth = effectiveParentId ? (this.actionsOrTestTrackingData.get(effectiveParentId)?.depth ?? 0) + 1 : 0;
 
-    const testData: ActionTrackingData = {
+    const testData: ActionOrTestTrackingData = {
       id,
       parentId: effectiveParentId,
       trackingType: "test",
@@ -232,16 +232,16 @@ export class RunActionTracker implements RunActionTrackerInterface {
       children: [],
     };
 
-    this.actions.set(id, testData);
+    this.actionsOrTestTrackingData.set(id, testData);
 
     if (effectiveParentId) {
-      const parent = this.actions.get(effectiveParentId);
+      const parent = this.actionsOrTestTrackingData.get(effectiveParentId);
       if (parent && !parent.children.includes(id)) {
         parent.children.push(id);
       }
     }
 
-    this.currentActionStack.push(id);
+    this.currentActionAndTestStack.push(id);
     this.currentTest = test;
     this.notifySubscribers();
     return id;
@@ -251,10 +251,10 @@ export class RunActionTracker implements RunActionTrackerInterface {
     const id = this.generateId();
     const now = Date.now();
 
-    const effectiveParentId = parentId || this.getCurrentActionId();
-    const depth = effectiveParentId ? (this.actions.get(effectiveParentId)?.depth ?? 0) + 1 : 0;
+    const effectiveParentId = parentId || this.getCurrentActionOrTestId();
+    const depth = effectiveParentId ? (this.actionsOrTestTrackingData.get(effectiveParentId)?.depth ?? 0) + 1 : 0;
 
-    const testAssertionData: ActionTrackingData = {
+    const testAssertionData: ActionOrTestTrackingData = {
       id,
       parentId: effectiveParentId,
       trackingType: "testAssertion",
@@ -269,16 +269,16 @@ export class RunActionTracker implements RunActionTrackerInterface {
       children: [],
     };
 
-    this.actions.set(id, testAssertionData);
+    this.actionsOrTestTrackingData.set(id, testAssertionData);
 
     if (effectiveParentId) {
-      const parent = this.actions.get(effectiveParentId);
+      const parent = this.actionsOrTestTrackingData.get(effectiveParentId);
       if (parent && !parent.children.includes(id)) {
         parent.children.push(id);
       }
     }
 
-    this.currentActionStack.push(id);
+    this.currentActionAndTestStack.push(id);
     this.currentTestAssertion = testAssertion;
     this.notifySubscribers();
     return id;
@@ -298,11 +298,11 @@ export class RunActionTracker implements RunActionTrackerInterface {
       // Original TestTracker signature: (testAssertionResult: TestAssertionResult)
       result = param1;
       // Use current context to find the active test assertion
-      trackingId = this.getCurrentActionId();
+      trackingId = this.getCurrentActionOrTestId();
     }
 
     if (trackingId) {
-      const action = this.actions.get(trackingId);
+      const action = this.actionsOrTestTrackingData.get(trackingId);
       if (action && action.trackingType === "testAssertion") {
         // Update the action data
         action.status = result.assertionResult === "ok" ? "completed" : "error";
@@ -337,7 +337,7 @@ export class RunActionTracker implements RunActionTrackerInterface {
     const test = this.getTest();
 
     console.log(
-      "RunActionTracker.setTestAssertionResult called for",
+      "MiroirActionOrTestTracker.setTestAssertionResult called for",
       testSuite,
       test,
       "testAssertionResult",
@@ -461,7 +461,7 @@ export class RunActionTracker implements RunActionTrackerInterface {
       try {
         callback(actions);
       } catch (error) {
-        console.error("Error in RunActionTracker subscriber:", error);
+        console.error("Error in MiroirActionOrTestTracker subscriber:", error);
       }
     });
   }
@@ -473,7 +473,7 @@ export class RunActionTracker implements RunActionTrackerInterface {
     // Find actions to remove (completed/error actions older than MAX_AGE_MS)
     const toRemove: string[] = [];
 
-    for (const [id, action] of Array.from(this.actions.entries())) {
+    for (const [id, action] of Array.from(this.actionsOrTestTrackingData.entries())) {
       if (action.status !== "running" && action.startTime < cutoff) {
         toRemove.push(id);
       }
@@ -481,9 +481,9 @@ export class RunActionTracker implements RunActionTrackerInterface {
 
     // Remove old actions and update parent references
     toRemove.forEach((id) => {
-      const action = this.actions.get(id);
+      const action = this.actionsOrTestTrackingData.get(id);
       if (action?.parentId) {
-        const parent = this.actions.get(action.parentId);
+        const parent = this.actionsOrTestTrackingData.get(action.parentId);
         if (parent) {
           const index = parent.children.indexOf(id);
           if (index !== -1) {
@@ -491,7 +491,7 @@ export class RunActionTracker implements RunActionTrackerInterface {
           }
         }
       }
-      this.actions.delete(id);
+      this.actionsOrTestTrackingData.delete(id);
     });
 
     if (toRemove.length > 0) {

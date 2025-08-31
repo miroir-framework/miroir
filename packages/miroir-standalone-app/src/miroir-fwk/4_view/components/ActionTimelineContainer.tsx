@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useMiroirContextService } from '../MiroirContextReactProvider.js';
 import { DraggableContainer } from './DraggableContainer.js';
-import { RunActionTimeline } from './RunActionTimeline.js';
+import { MiroirLogTimeLine } from './MiroirLogTimeline.js';
 
 // Separate component to manage action timeline display state independently
 export const ActionTimelineContainer = () => {
@@ -31,7 +31,7 @@ export const ActionTimelineContainer = () => {
         context.setShowActionTimeline?.(false);
       }}
     >
-      <RunActionTimeline />
+      <MiroirLogTimeLine />
     </DraggableContainer>
   );
 };

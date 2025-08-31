@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { ActionLogService } from '../../src/3_controllers/ActionLogService';
-import { RunActionTracker } from '../../src/3_controllers/RunActionTracker';
-import { RunActionTrackerInterface } from '../../src/0_interfaces/3_controllers/RunActionTrackerInterface';
+import { MiroirLogService } from '../../src/3_controllers/MiroirLogService';
+import { MiroirActionOrTestTracker } from '../../src/3_controllers/MiroirActionOrTestTracker';
+import { MiroirEventTrackerInterface } from '../../src/0_interfaces/3_controllers/MiroirEventTrackerInterface';
 
 // Mock LoggerGlobalContext to avoid dependencies
 vi.mock('../../src/4_services/LoggerContext', () => ({
@@ -14,29 +14,29 @@ vi.mock('../../src/4_services/LoggerContext', () => ({
   }
 }));
 
-describe('ActionLogService', () => {
-  let actionLogService: ActionLogService;
-  let runActionTracker: RunActionTrackerInterface;
+describe('MiroirLogService', () => {
+  let actionLogService: MiroirLogService;
+  let runActionTracker: MiroirEventTrackerInterface;
 
   beforeEach(() => {
-    runActionTracker = new RunActionTracker();
-    actionLogService = new ActionLogService(runActionTracker);
+    runActionTracker = new MiroirActionOrTestTracker();
+    actionLogService = new MiroirLogService(runActionTracker);
   });
 
-  describe('Context tracking from RunActionTracker', () => {
-    it('should get action and compositeAction context from RunActionTracker, not LoggerGlobalContext', () => {
+  describe('Context tracking from MiroirActionOrTestTracker', () => {
+    it('should get action and compositeAction context from MiroirActionOrTestTracker, not LoggerGlobalContext', () => {
       // Start an action in the tracker
       const actionId = runActionTracker.startAction('testAction', 'Test Action Label');
       
-      // Set action context in RunActionTracker
+      // Set action context in MiroirActionOrTestTracker
       runActionTracker.setAction('contextAction');
       runActionTracker.setCompositeAction('contextCompositeAction');
       
       // Log a message
-      actionLogService.logForCurrentAction('info', 'testLogger', 'Test message');
+      actionLogService.logForCurrentActionOrTest('info', 'testLogger', 'Test message');
       
       // Get the action logs
-      const actionLogs = actionLogService.getActionLogs(actionId);
+      const actionLogs = actionLogService.getActionOrTestLogs(actionId);
       
       expect(actionLogs).toBeDefined();
       expect(actionLogs!.logs).toHaveLength(1);
@@ -57,10 +57,10 @@ describe('ActionLogService', () => {
       const actionId = runActionTracker.startAction('testAction', 'Test Action Label');
       
       // Log a message
-      actionLogService.logForCurrentAction('info', 'testLogger', 'Test message');
+      actionLogService.logForCurrentActionOrTest('info', 'testLogger', 'Test message');
       
       // Get the action logs
-      const actionLogs = actionLogService.getActionLogs(actionId);
+      const actionLogs = actionLogService.getActionOrTestLogs(actionId);
       
       expect(actionLogs).toBeDefined();
       expect(actionLogs!.logs).toHaveLength(1);
@@ -71,7 +71,7 @@ describe('ActionLogService', () => {
       expect(logEntry.context!.compositeAction).toBeUndefined();
     });
 
-    it('should update context when RunActionTracker context changes', () => {
+    it('should update context when MiroirActionOrTestTracker context changes', () => {
       // Start an action in the tracker
       const actionId = runActionTracker.startAction('testAction', 'Test Action Label');
       
@@ -80,17 +80,17 @@ describe('ActionLogService', () => {
       runActionTracker.setCompositeAction('initialCompositeAction');
       
       // Log first message
-      actionLogService.logForCurrentAction('info', 'testLogger', 'First message');
+      actionLogService.logForCurrentActionOrTest('info', 'testLogger', 'First message');
       
       // Change context
       runActionTracker.setAction('updatedAction');
       runActionTracker.setCompositeAction('updatedCompositeAction');
       
       // Log second message
-      actionLogService.logForCurrentAction('info', 'testLogger', 'Second message');
+      actionLogService.logForCurrentActionOrTest('info', 'testLogger', 'Second message');
       
       // Verify both log entries have correct context
-      const actionLogs = actionLogService.getActionLogs(actionId);
+      const actionLogs = actionLogService.getActionOrTestLogs(actionId);
       expect(actionLogs!.logs).toHaveLength(2);
       
       const firstLog = actionLogs!.logs[0];
@@ -102,14 +102,14 @@ describe('ActionLogService', () => {
       expect(secondLog.context!.compositeAction).toBe('updatedCompositeAction');
     });
 
-    it('should not log when no current action is set in RunActionTracker', () => {
+    it('should not log when no current action is set in MiroirActionOrTestTracker', () => {
       // Don't start any action
       
       // Try to log a message
-      actionLogService.logForCurrentAction('info', 'testLogger', 'Test message');
+      actionLogService.logForCurrentActionOrTest('info', 'testLogger', 'Test message');
       
       // Verify no logs were created
-      const allLogs = actionLogService.getAllActionLogs();
+      const allLogs = actionLogService.getAllActionOrTestLogs();
       expect(allLogs).toHaveLength(0);
     });
   });

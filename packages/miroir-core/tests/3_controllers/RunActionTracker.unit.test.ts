@@ -1,12 +1,12 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { RunActionTracker } from '../../src/3_controllers/RunActionTracker';
-import { RunActionTrackerInterface } from '../../src/0_interfaces/3_controllers/RunActionTrackerInterface';
+import { MiroirActionOrTestTracker } from '../../src/3_controllers/MiroirActionOrTestTracker';
+import { MiroirEventTrackerInterface } from '../../src/0_interfaces/3_controllers/MiroirEventTrackerInterface';
 
-describe('RunActionTracker', () => {
-  let tracker: RunActionTrackerInterface;
+describe('MiroirActionOrTestTracker', () => {
+  let tracker: MiroirEventTrackerInterface;
 
   beforeEach(() => {
-    tracker = new RunActionTracker();
+    tracker = new MiroirActionOrTestTracker();
   });
 
   describe('Action and CompositeAction context tracking', () => {
@@ -76,7 +76,7 @@ describe('RunActionTracker', () => {
       tracker.setCompositeAction('contextCompositeAction');
       
       // Verify both work
-      expect(tracker.getCurrentActionId()).toBe(actionId);
+      expect(tracker.getCurrentActionOrTestId()).toBe(actionId);
       expect(tracker.getAction()).toBe('contextAction');
       expect(tracker.getCompositeAction()).toBe('contextCompositeAction');
       

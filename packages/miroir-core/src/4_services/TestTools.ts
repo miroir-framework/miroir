@@ -21,6 +21,8 @@ import { cleanLevel } from "./constants";
 import { MiroirLoggerFactory } from "./LoggerFactory";
 import { ignorePostgresExtraAttributes } from "./otherTools";
 import { TestSuiteContext } from "./TestSuiteContext";
+import type { MiroirActionOrTestTracker } from "../3_controllers/MiroirActionOrTestTracker";
+import type { MiroirEventTrackerInterface } from "../0_interfaces/3_controllers/MiroirEventTrackerInterface";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -100,7 +102,7 @@ export async function runTransformerTestInMemory(
   testSuiteNamePath: string[],
   transformerTest: TransformerTest,
   modelEnvironment: MiroirModelEnvironment,
-  runActionTracker?: any, // Optional unified tracker for test execution tracking
+  actionOrTestTracker?: MiroirEventTrackerInterface, // Optional unified tracker for test execution tracking
 ) {
   const assertionName = transformerTest.transformerTestLabel ?? transformerTest.transformerName;
   console.log(
@@ -111,11 +113,11 @@ export async function runTransformerTestInMemory(
   
   // Start tracking individual test execution in unified tracker if available
   let testTrackingId: string | undefined;
-  if (runActionTracker) {
+  if (actionOrTestTracker) {
     try {
       // Get the current active test suite ID as parent
-      const parentId = runActionTracker.getCurrentActionId();
-      testTrackingId = runActionTracker.startTest(assertionName, parentId);
+      const parentId = actionOrTestTracker.getCurrentActionOrTestId();
+      testTrackingId = actionOrTestTracker.startTest(assertionName, parentId);
       console.log(`🧪 Started tracking test ${assertionName} with ID: ${testTrackingId}, parent: ${parentId}`);
     } catch (error) {
       console.warn(`Failed to start tracking test ${assertionName}:`, error);
@@ -236,7 +238,7 @@ export async function runTransformerTestInMemory(
   }
 
   // End tracking individual test execution if tracker was used
-  if (runActionTracker && testTrackingId) {
+  if (actionOrTestTracker && testTrackingId) {
     try {
       // Determine test result based on the last assertion set
       const testSuite = TestSuiteContext.getTestSuite();
@@ -247,7 +249,7 @@ export async function runTransformerTestInMemory(
                         (result) => result.assertionResult === "error"
                       );
       const errorMessage = hasError ? "Test assertion failed" : undefined;
-      runActionTracker.endAction(testTrackingId, errorMessage);
+      actionOrTestTracker.endAction(testTrackingId, errorMessage);
       console.log(`🧪 Ended tracking test ${assertionName} with ID: ${testTrackingId}, result: ${hasError ? "error" : "ok"}`);
     } catch (error) {
       console.warn(`Failed to end tracking test ${assertionName}:`, error);
@@ -272,7 +274,7 @@ export async function runTransformerTestSuite(
     runActionTracker?: any
   ) => Promise<void>,
   modelEnvironment: MiroirModelEnvironment,
-  runActionTracker?: any, // Optional unified tracker for test execution tracking
+  actionOrTestTracker?: MiroirEventTrackerInterface, // Optional unified tracker for test execution tracking
 ) {
   const testSuitePathAsString = TestSuiteContext.testSuitePathName(testSuitePath);
   const testSuiteName =
@@ -296,11 +298,11 @@ export async function runTransformerTestSuite(
   
   // Start tracking test suite execution in unified tracker if available
   let testSuiteTrackingId: string | undefined;
-  if (runActionTracker && typeof runActionTracker.startTestSuite === 'function') {
+  if (actionOrTestTracker && typeof actionOrTestTracker.startTestSuite === 'function') {
     try {
       // Get current action ID as parent (for nested test suites)
-      const parentId = runActionTracker.getCurrentActionId();
-      testSuiteTrackingId = runActionTracker.startTestSuite(testSuiteName, parentId);
+      const parentId = actionOrTestTracker.getCurrentActionOrTestId();
+      testSuiteTrackingId = actionOrTestTracker.startTestSuite(testSuiteName, parentId);
       console.log(`🧪🧪 Started tracking test suite ${testSuiteName} with ID: ${testSuiteTrackingId}, parent: ${parentId}`);
     } catch (error) {
       console.warn(`Failed to start tracking test suite ${testSuiteName}:`, error);
@@ -310,7 +312,7 @@ export async function runTransformerTestSuite(
   try {
     if (transformerTestSuite.transformerTestType == "transformerTest") {
       TestSuiteContext.setTest(transformerTestSuite.transformerTestLabel);
-      await runTransformerTest(localVitest, testSuitePath, transformerTestSuite, modelEnvironment, runActionTracker);
+      await runTransformerTest(localVitest, testSuitePath, transformerTestSuite, modelEnvironment, actionOrTestTracker);
       TestSuiteContext.setTest(undefined);
     } else {
       // console.log(`running transformer test suite ${testSuiteName} with ${JSON.stringify(Object.keys(transformerTestSuite.transformerTests))} tests`);
@@ -338,7 +340,7 @@ export async function runTransformerTestSuite(
               [...testSuitePath, transformerTestParam.transformerTestLabel],
               transformerTestParam,
               modelEnvironment,
-              runActionTracker // Pass the tracker to track this individual test
+              actionOrTestTracker // Pass the tracker to track this individual test
             );
             TestSuiteContext.setTest(undefined);
           } else {
@@ -349,7 +351,7 @@ export async function runTransformerTestSuite(
               transformerTestParam,
               runTransformerTest,
               modelEnvironment,
-              runActionTracker // Pass the tracker through to nested test suites
+              actionOrTestTracker // Pass the tracker through to nested test suites
             );
           }
         },
@@ -359,9 +361,9 @@ export async function runTransformerTestSuite(
     }
     
     // End tracking test suite execution if tracker was used
-    if (runActionTracker && testSuiteTrackingId) {
+    if (actionOrTestTracker && testSuiteTrackingId) {
       try {
-        runActionTracker.endAction(testSuiteTrackingId);
+        actionOrTestTracker.endAction(testSuiteTrackingId);
         console.log(`Ended tracking test suite ${testSuitePathAsString} with ID: ${testSuiteTrackingId}`);
       } catch (error) {
         console.warn(`Failed to end tracking test suite ${testSuitePathAsString}:`, error);
@@ -369,10 +371,10 @@ export async function runTransformerTestSuite(
     }
   } catch (error) {
     // End tracking with error if tracker was used
-    if (runActionTracker && testSuiteTrackingId) {
+    if (actionOrTestTracker && testSuiteTrackingId) {
       try {
         const errorMessage = error instanceof Error ? error.message : String(error) || 'Test suite execution failed';
-        runActionTracker.endAction(testSuiteTrackingId, errorMessage);
+        actionOrTestTracker.endAction(testSuiteTrackingId, errorMessage);
         console.log(`Ended tracking test suite ${testSuitePathAsString} with error`);
       } catch (trackerError) {
         console.warn(`Failed to end tracking test suite ${testSuitePathAsString} with error:`, trackerError);

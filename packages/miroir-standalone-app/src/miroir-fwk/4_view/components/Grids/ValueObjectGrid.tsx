@@ -103,7 +103,7 @@ const generateLocalId = (obj: any, index: number): string => {
 
 // ################################################################################################
 export const ValueObjectGrid = (props: ValueObjectGridProps & { theme?: DeepPartial<TableTheme> }) => {
-  log.info(":::::::::::::::::::::::::: ValueObjectGrid refreshing with props", props);
+  // log.info(":::::::::::::::::::::::::: ValueObjectGrid refreshing with props", props);
   
   // Get theme from context first, then allow prop overrides
   const contextTheme = useMiroirTableTheme();
@@ -209,7 +209,7 @@ export const ValueObjectGrid = (props: ValueObjectGridProps & { theme?: DeepPart
   const handleGlobalClearAllFilters = useCallback(() => {
     if (gridApiRef.current) {
       gridApiRef.current.setFilterModel(null);
-      log.info('All filters cleared in ValueObjectGrid');
+      // log.info('All filters cleared in ValueObjectGrid');
     }
   }, []);
 
@@ -222,7 +222,7 @@ export const ValueObjectGrid = (props: ValueObjectGridProps & { theme?: DeepPart
   // ##############################################################################################
   // Handle cell clicks (no navigation for value objects)
   const onCellClicked = useCallback((event: CellClickedEvent) => {
-    log.info("ValueObjectGrid cell clicked", event.colDef.field, event.data);
+    // log.info("ValueObjectGrid cell clicked", event.colDef.field, event.data);
     // Value objects don't have navigation behavior
   }, []);
 
@@ -231,7 +231,7 @@ export const ValueObjectGrid = (props: ValueObjectGridProps & { theme?: DeepPart
   const handleEditDialogFormOpen = useCallback((row?: ValueObjectGridRow, event?: any) => {
     if (!props.onRowEdit) return;
     
-    log.info('handleEditDialogFormOpen called with row', row);
+    // log.info('handleEditDialogFormOpen called with row', row);
     if (row) {
       setdialogFormObject(row.rawValue);
     } else {
@@ -241,14 +241,14 @@ export const ValueObjectGrid = (props: ValueObjectGridProps & { theme?: DeepPart
   }, [props.onRowEdit]);
 
   const handleEditDialogFormClose = useCallback((value?: string, event?: any) => {
-    log.info('handleEditDialogFormClose', value);
+    // log.info('handleEditDialogFormClose', value);
     setEditDialogFormIsOpen(false);
   }, []);
 
   const handleDeleteDialogFormOpen = useCallback((row?: ValueObjectGridRow, event?: any) => {
     if (!props.onRowDelete) return;
     
-    log.info('handleDeleteDialogFormOpen called with row', row);
+    // log.info('handleDeleteDialogFormOpen called with row', row);
     if (row) {
       setdialogFormObject(row.rawValue);
     } else {
@@ -260,7 +260,7 @@ export const ValueObjectGrid = (props: ValueObjectGridProps & { theme?: DeepPart
   const handleDuplicateDialogFormOpen = useCallback((row?: ValueObjectGridRow, event?: any) => {
     if (!props.onRowDuplicate) return;
     
-    log.info('handleDuplicateDialogFormOpen called with row', row);
+    // log.info('handleDuplicateDialogFormOpen called with row', row);
     if (row) {
       // Create a duplicate
       const duplicatedObject = { ...row.rawValue };
@@ -272,7 +272,7 @@ export const ValueObjectGrid = (props: ValueObjectGridProps & { theme?: DeepPart
   }, [props.onRowDuplicate]);
 
   const onEditDialogFormSubmit = useCallback(async (data: JsonObjectEditFormDialogInputs) => {
-    log.info('onEditDialogFormSubmit called with data', data);
+    // log.info('onEditDialogFormSubmit called with data', data);
     if (props.onRowEdit) {
       await props.onRowEdit(data);
     }
@@ -280,7 +280,7 @@ export const ValueObjectGrid = (props: ValueObjectGridProps & { theme?: DeepPart
   }, [props.onRowEdit]);
 
   const onDeleteDialogFormSubmit = useCallback(async (data: JsonObjectEditFormDialogInputs) => {
-    log.info('onDeleteDialogFormSubmit called with data', data);
+    // log.info('onDeleteDialogFormSubmit called with data', data);
     if (props.onRowDelete) {
       await props.onRowDelete(data);
     }
@@ -379,12 +379,12 @@ export const ValueObjectGrid = (props: ValueObjectGridProps & { theme?: DeepPart
       props.jzodSchema.definition,
     );
     
-    log.info("ValueObjectGrid calculated column widths", {
-      containerWidth,
-      stableWidth,
-      rowCount,
-      totalCalculatedWidth: widthSpecs.reduce((sum, spec) => sum + spec.calculatedWidth, 0),
-    });
+    // log.info("ValueObjectGrid calculated column widths", {
+    //   containerWidth,
+    //   stableWidth,
+    //   rowCount,
+    //   totalCalculatedWidth: widthSpecs.reduce((sum, spec) => sum + spec.calculatedWidth, 0),
+    // });
     
     return widthSpecs;
   }, [effectiveColumnDefs, tableComponentRows, containerWidth, props.displayTools, toolsColumnDefinition, props.jzodSchema]);
@@ -477,7 +477,7 @@ export const ValueObjectGrid = (props: ValueObjectGridProps & { theme?: DeepPart
   const onGlideGridCellClicked = useCallback((cell: any, event: any) => {
     const [col, row] = cell;
     const rowData = tableComponentRows.tableComponentRowUuidIndexSchema[row];
-    log.info("ValueObjectGrid Glide cell clicked", { col, row, rowData });
+    // log.info("ValueObjectGrid Glide cell clicked", { col, row, rowData });
     // No navigation for value objects
   }, [tableComponentRows]);
 
@@ -625,7 +625,7 @@ export const ValueObjectGrid = (props: ValueObjectGridProps & { theme?: DeepPart
             onCellClicked={onCellClicked}
             onCellValueChanged={onCellValueChanged}
             onGridReady={onGridReady}
-            enableRangeSelection={true}
+            // enableRangeSelection={true}
             enableCellTextSelection={true}
             suppressRowClickSelection={true}
             animateRows={true}

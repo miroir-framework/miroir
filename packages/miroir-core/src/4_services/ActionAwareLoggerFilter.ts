@@ -1,9 +1,9 @@
 import { FactoryLevels, LoggerInterface, SomeLevel } from "../0_interfaces/4-services/LoggerInterface";
 import { LoggerContextElement, LoggerGlobalContext } from "./LoggerContext";
-import { ActionLogServiceInterface } from "../3_controllers/ActionLogService";
+import { ActionOrTestLogServiceInterface } from "../3_controllers/MiroirLogService";
 
 /**
- * Enhanced LoggerFilter that integrates with ActionLogService to capture logs for specific actions
+ * Enhanced LoggerFilter that integrates with MiroirLogService to capture logs for specific actions
  */
 export class ActionAwareLoggerFilter implements LoggerInterface {
   constructor(
@@ -12,7 +12,7 @@ export class ActionAwareLoggerFilter implements LoggerInterface {
     public readonly name: string,
     public readonly level: FactoryLevels[keyof FactoryLevels],
     public readonly levels: FactoryLevels,
-    private actionLogService?: ActionLogServiceInterface
+    private actionLogService?: ActionOrTestLogServiceInterface
   ) {}
 
   disable(): void {
@@ -41,7 +41,7 @@ export class ActionAwareLoggerFilter implements LoggerInterface {
       if (this.actionLogService) {
         const message = msg.length > 0 ? String(msg[0]) : '';
         const args = msg.slice(1);
-        this.actionLogService.logForCurrentAction(level, this.name, message, ...args);
+        this.actionLogService.logForCurrentActionOrTest(level, this.name, message, ...args);
       }
     }
   }

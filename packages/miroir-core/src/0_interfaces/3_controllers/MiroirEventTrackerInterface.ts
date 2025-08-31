@@ -6,7 +6,7 @@ import {
 } from "../1_core/preprocessor-generated/miroirFundamentalType";
 // Import other interface elements only
 
-export interface ActionTrackingData {
+export interface ActionOrTestTrackingData {
   id: string;
   parentId?: string;
   trackingType: 'action' | 'testSuite' | 'test' | 'testAssertion';
@@ -28,7 +28,7 @@ export interface ActionTrackingData {
   testAssertionsResults?: TestAssertionsResults;
 }
 
-export interface RunActionTrackerInterface {
+export interface MiroirEventTrackerInterface {
   /**
    * Start tracking an action
    * @param actionType The type of action being tracked
@@ -49,7 +49,7 @@ export interface RunActionTrackerInterface {
    * Get all currently tracked actions
    * @returns Array of action tracking data
    */
-  getAllActions(): ActionTrackingData[];
+  getAllActions(): ActionOrTestTrackingData[];
   
   /**
    * Get actions filtered by criteria
@@ -63,7 +63,7 @@ export interface RunActionTrackerInterface {
     minDuration?: number;
     maxDuration?: number;
     since?: number; // timestamp
-  }): ActionTrackingData[];
+  }): ActionOrTestTrackingData[];
   
   /**
    * Clear all tracking data
@@ -75,12 +75,12 @@ export interface RunActionTrackerInterface {
    * @param callback Function to call when tracking data changes
    * @returns Unsubscribe function
    */
-  subscribe(callback: (actions: ActionTrackingData[]) => void): () => void;
+  subscribe(callback: (actions: ActionOrTestTrackingData[]) => void): () => void;
   
   /**
    * Get the current active action ID (for parent-child relationships)
    */
-  getCurrentActionId(): string | undefined;
+  getCurrentActionOrTestId(): string | undefined;
 
   /**
    * Set the current composite action name (similar to LoggerGlobalContext)

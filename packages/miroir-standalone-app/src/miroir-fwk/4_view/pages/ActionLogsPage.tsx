@@ -47,7 +47,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useMiroirContextService } from '../MiroirContextReactProvider';
 
 // Local type definitions (temporarily until exports work)
-interface ActionLogEntry {
+interface ActionOrTestLogEntry {
   id: string;
   actionId: string;
   timestamp: number;
@@ -64,14 +64,14 @@ interface ActionLogEntry {
   };
 }
 
-interface ActionLogs {
+interface ActionOrTestLogs {
   actionId: string;
   actionType: string;
   actionLabel?: string;
   startTime: number;
   endTime?: number;
   status: 'running' | 'completed' | 'error';
-  logs: ActionLogEntry[];
+  logs: ActionOrTestLogEntry[];
   logCounts: {
     trace: number;
     debug: number;
@@ -126,7 +126,7 @@ const getActionStatusIcon = (status: string) => {
 };
 
 // Component for displaying individual log entry
-const LogEntryComponent: React.FC<{ logEntry: ActionLogEntry; isExpanded: boolean; onToggle: () => void }> = ({
+const LogEntryComponent: React.FC<{ logEntry: ActionOrTestLogEntry; isExpanded: boolean; onToggle: () => void }> = ({
   logEntry,
   isExpanded,
   onToggle
@@ -216,11 +216,11 @@ export const ActionLogsPage: React.FC = () => {
   const navigate = useNavigate();
   const { miroirContext } = useMiroirContextService();
   
-  const [actionLogs, setActionLogs] = useState<ActionLogs[]>([]);
-  const [currentActionLogs, setCurrentActionLogs] = useState<ActionLogs | null>(null);
+  const [actionLogs, setActionLogs] = useState<ActionOrTestLogs[]>([]);
+  const [currentActionLogs, setCurrentActionLogs] = useState<ActionOrTestLogs | null>(null);
   const [expandedLogIds, setExpandedLogIds] = useState<Set<string>>(new Set());
   const [logDetailOpen, setLogDetailOpen] = useState(false);
-  const [selectedLog, setSelectedLog] = useState<ActionLogEntry | null>(null);
+  const [selectedLog, setSelectedLog] = useState<ActionOrTestLogEntry | null>(null);
   
   // Filter states
   const [filters, setFilters] = useState<{
@@ -231,28 +231,28 @@ export const ActionLogsPage: React.FC = () => {
 
   // Subscribe to action logs updates
   useEffect(() => {
-    const actionLogService = (miroirContext as any).actionLogService;
+    const actionLogService = miroirContext.actionOrTestLogService;
     if (!actionLogService) {
-      console.warn('ActionLogService not available');
+      console.warn('MiroirLogService not available');
       return;
     }
 
-    const unsubscribe = actionLogService.subscribe((logs: ActionLogs[]) => {
+    const unsubscribe = actionLogService.subscribe((logs: ActionOrTestLogs[]) => {
       setActionLogs(logs);
       
       // Update current action logs if viewing a specific action
       if (actionId) {
-        const current = logs.find((log: ActionLogs) => log.actionId === actionId);
+        const current = logs.find((log: ActionOrTestLogs) => log.actionId === actionId);
         setCurrentActionLogs(current || null);
       }
     });
 
     // Initial load
-    const allLogs = actionLogService.getAllActionLogs();
+    const allLogs = actionLogService.getAllActionOrTestLogs();
     setActionLogs(allLogs);
     
     if (actionId) {
-      const current = allLogs.find((log: ActionLogs) => log.actionId === actionId);
+      const current = allLogs.find((log: ActionOrTestLogs) => log.actionId === actionId);
       setCurrentActionLogs(current || null);
     }
 
@@ -263,7 +263,7 @@ export const ActionLogsPage: React.FC = () => {
   const filteredLogs = useMemo(() => {
     if (!currentActionLogs) return [];
     
-    return currentActionLogs.logs.filter((log: ActionLogEntry) => {
+    return currentActionLogs.logs.filter((log: ActionOrTestLogEntry) => {
       if (filters.level && log.level !== filters.level) {
         return false;
       }
@@ -292,9 +292,9 @@ export const ActionLogsPage: React.FC = () => {
   };
 
   const handleExportLogs = () => {
-    const actionLogService = (miroirContext as any).actionLogService;
+    const actionLogService = miroirContext.actionOrTestLogService;
     if (!actionLogService) {
-      console.warn('ActionLogService not available');
+      console.warn('MiroirLogService not available');
       return;
     }
 
@@ -494,7 +494,7 @@ export const ActionLogsPage: React.FC = () => {
               </Box>
             ) : (
               <List sx={{ maxHeight: 600, overflow: 'auto' }}>
-                {filteredLogs.map((log: ActionLogEntry) => (
+                {filteredLogs.map((log: ActionOrTestLogEntry) => (
                   <LogEntryComponent
                     key={log.id}
                     logEntry={log}

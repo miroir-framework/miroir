@@ -57,7 +57,7 @@ describe('TestLogService', () => {
       // Get all test logs
       const allLogs = testLogService.getAllTestLogs();
       
-      // Should NOT create logs when no test context is set (similar to ActionLogService behavior)
+      // Should NOT create logs when no test context is set (similar to MiroirLogService behavior)
       expect(allLogs).toHaveLength(0);
     });
 

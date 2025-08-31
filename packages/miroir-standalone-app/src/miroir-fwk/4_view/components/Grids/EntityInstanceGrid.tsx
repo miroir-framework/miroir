@@ -1090,8 +1090,8 @@ export const EntityInstanceGrid = (props: TableComponentProps & { theme?: DeepPa
                   onCellClicked={onCellClicked}
                   onCellValueChanged={onCellValueChanged}
                   onGridReady={onGridReady}
-                  // Enable advanced filtering and sorting features
-                  enableRangeSelection={true}
+                  // DO NOT Enable advanced filtering and sorting features, not free software
+                  // enableRangeSelection={true}
                   enableCellTextSelection={true}
                   suppressRowClickSelection={true}
                   animateRows={true}

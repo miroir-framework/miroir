@@ -317,26 +317,26 @@ export function selectUnionBranchFromDiscriminator<T extends MiroirModelEnvironm
 
   // Extract successful results
   const flattenedUnionChoices:JzodObject[] = flatteningResults.map(r => (r as any).result) as JzodObject[];
-  log.info(
-    "selectUnionBranchFromDiscriminator called",
-    "valueObjectPath",
-    valueObjectPath.join("."),
-    "discriminator(s)=",
-    discriminators,
-    "discriminatorValues",
-    discriminatorValues,
-    "valueObject=",
-    valueObject,
-    "valueObject[discriminator]=",
-    discriminators??[].map(d => valueObject[d]),
-    "relativeReferenceJzodContext=",
-    // JSON.stringify(relativeReferenceJzodContext, null, 2),
-    relativeReferenceJzodContext,
-    "flattenedUnionChoices=",
-    // JSON.stringify(flattenedUnionChoices, null, 2),
-    flattenedUnionChoices
-    // JSON.stringify(objectUnionChoices.map((e:any) => [e?.definition['transformerType'], e?.definition ]), null, 2),
-  );
+  // log.info(
+  //   "selectUnionBranchFromDiscriminator called",
+  //   "valueObjectPath",
+  //   valueObjectPath.join("."),
+  //   "discriminator(s)=",
+  //   discriminators,
+  //   "discriminatorValues",
+  //   discriminatorValues,
+  //   "valueObject=",
+  //   valueObject,
+  //   "valueObject[discriminator]=",
+  //   discriminators??[].map(d => valueObject[d]),
+  //   "relativeReferenceJzodContext=",
+  //   // JSON.stringify(relativeReferenceJzodContext, null, 2),
+  //   relativeReferenceJzodContext,
+  //   "flattenedUnionChoices=",
+  //   // JSON.stringify(flattenedUnionChoices, null, 2),
+  //   flattenedUnionChoices
+  //   // JSON.stringify(objectUnionChoices.map((e:any) => [e?.definition['transformerType'], e?.definition ]), null, 2),
+  // );
 
   let i = 0;
   let chosenDiscriminator = [];
@@ -562,18 +562,18 @@ export function jzodUnionResolvedTypeForObject<T extends MiroirModelEnvironment>
     modelEnvironment,
     relativeReferenceJzodContext
   ) as any;
-  log.info(
-    "jzodUnionResolvedTypeForObject called for",
-    "valuePath=" + currentValuePath.join("."),
-    "valueObject=",
-    valueObject,
-    "discriminator=",
-    discriminator,
-    "concreteUnrolledJzodSchemas",
-    concreteUnrolledJzodSchemas,
-    "objectUnionChoices",
-    objectUnionChoices,
-  );
+  // log.info(
+  //   "jzodUnionResolvedTypeForObject called for",
+  //   "valuePath=" + currentValuePath.join("."),
+  //   "valueObject=",
+  //   valueObject,
+  //   "discriminator=",
+  //   discriminator,
+  //   "concreteUnrolledJzodSchemas",
+  //   concreteUnrolledJzodSchemas,
+  //   "objectUnionChoices",
+  //   objectUnionChoices,
+  // );
   
   if (objectUnionChoices.length == 1) {
     return {
@@ -1236,14 +1236,14 @@ export function jzodTypeCheck(
           }
 
           const discriminatedSchemaForObject = resolveUnionResult.resolvedJzodObjectSchema;
-          log.info(
-            "jzodTypeCheck union for object at",
-            currentValuePath.join("."),
-            "discriminator:",
-            effectiveRawSchema.discriminator,
-            "resolveUnionResult:",
-            resolveUnionResult,
-          );
+          // log.info(
+          //   "jzodTypeCheck union for object at",
+          //   currentValuePath.join("."),
+          //   "discriminator:",
+          //   effectiveRawSchema.discriminator,
+          //   "resolveUnionResult:",
+          //   resolveUnionResult,
+          // );
           const subResolvedSchemas = jzodTypeCheck(
             discriminatedSchemaForObject,
             valueObject,

@@ -153,7 +153,7 @@ export const RunTransformerTestSuiteButton: React.FC<RunTransformerTestSuiteButt
         miroirMetaModel: defaultMiroirMetaModel
         // TODO: current app schema
       },
-      miroirContextService.miroirContext.runActionTracker // Pass the unified tracker
+      miroirContextService.miroirContext.runActionOrTestTracker // Pass the unified tracker
     );
 
     // Get and format results - find the correct test suite key

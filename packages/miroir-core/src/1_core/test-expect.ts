@@ -20,16 +20,16 @@ type Describe = {
 };
 
 export function describe(title: string, testFn: () => void | Promise<void>): void | Promise<void> {
-  console.log(`Describe: ${title}`);
+  // console.log(`Describe: ${title}`);
   return testFn();
 }
 
 describe.each = function(data: any[]): (template: string, testFn: (item: any) => void | Promise<void>, timeout?: number) => Promise<void> {
   return async function(template: string, testFn: (item: any) => void | Promise<void>, timeout?: number): Promise<void> {
-    console.log(`Describe.each with template: ${template}`);
+    // console.log(`Describe.each with template: ${template}`);
     const promises = data.map(async (item, index) => {
       const testTitle = template.replace('$currentTestSuiteName', item.transformerTestLabel || `Item ${index}`);
-      console.log(`Running test: ${testTitle}`);
+      // console.log(`Running test: ${testTitle}`);
       try {
         await testFn(item);
       } catch (error) {

@@ -18,7 +18,8 @@ import {
   miroirFundamentalJzodSchema as globalMiroirFundamentalJzodSchema,
   Uuid,
   ViewParams,
-  GridType
+  GridType,
+  type ActionOrTestLogs
 } from "miroir-core";
 import {
   ReduxStateChanges,
@@ -325,6 +326,7 @@ export function MiroirContextReactProvider(props: {
     ]
   );
 
+  // TODO: This belongs to the Root component
   // Subscribe to global error notifications
   useEffect(() => {
     const unsubscribe = ErrorLogService.subscribe((errorEntry: ErrorLogEntry) => {
@@ -425,6 +427,24 @@ export function useLocalCacheTransactions(): ReduxStateChanges[] {
   // const result:EntityState<ReduxStateChanges[]> = useSelector(selectCurrentTransaction());
   const result: ReduxStateChanges[] = useSelector(selectCurrentTransaction());
   return result ? result : [];
+}
+
+// #############################################################################################
+export function useMiroirLogs(): ActionOrTestLogs[] {
+  const context = useContext(miroirReactContext);
+  if (!context) {
+    throw new Error('useMiroirLogs must be used within a MiroirContextReactProvider');
+  }
+  return context.miroirContext.actionOrTestLogService.getAllActionOrTestLogs();
+}
+
+// #############################################################################################
+export function useActionOrTestTrackingData() {
+  const context = useContext(miroirReactContext);
+  if (!context) {
+    throw new Error('useActionOrTestTrackingData must be used within a MiroirContextReactProvider');
+  }
+  return context.miroirContext.runActionOrTestTracker.getAllActions();
 }
 
 // #############################################################################################
