@@ -33,6 +33,21 @@ Core dependency graph (must be built in this order):
 
 **Note**: `miroir-runtime` and `miroir-query-jsonata` are additional packages in the ecosystem.
 
+## Coding Conventions & Style
+
+## General Guidelines
+
+- TypeScript with strict settings (`tsconfig.json` in each package)
+- ESM modules only (`"type": "module"` in `package.json`)
+- Avoid debouncing in general, it's usually an anti-pattern, a sign of bad design
+- Avoid deep nesting, prefer early returns within functions
+- Avoid
+
+## Within React:
+ - Prefer functional components with hooks
+ - avoid `useEffect` unless strictly necessary
+ - do not use publish-subscribe patterns, as it is redundant with React principles, instaed feed the data to React.FC components through props and hooks (useSelector, useDispatch, etc.). Services providing subscription mechanisms may de defined for uses outside of React components (for example on the server side).
+
 ## Development Workflows
 
 ### Build Commands
