@@ -27,6 +27,9 @@ export class MiroirEventTracker implements MiroirEventTrackerInterface {
     [testSuite: string]: { [test: string]: TestAssertionsResults };
   } = {};
 
+  // Transformer tracking configuration
+  private transformerTrackingEnabled: boolean = true;
+
   constructor() {
     // Start auto-cleanup timer
     this.cleanupInterval = setInterval(() => {
@@ -101,7 +104,7 @@ export class MiroirEventTracker implements MiroirEventTrackerInterface {
 
   getFilteredEvents(filter: {
     actionType?: string;
-    trackingType?: "action" | "testSuite" | "test" | "testAssertion"; // New field for test filtering
+    trackingType?: "action" | "testSuite" | "test" | "testAssertion" | "transformer"; // New field for test and transformer filtering
     status?: "running" | "completed" | "error";
     minDuration?: number;
     maxDuration?: number;
@@ -452,6 +455,92 @@ export class MiroirEventTracker implements MiroirEventTrackerInterface {
     this.currentTestSuite = undefined;
     this.currentTest = undefined;
     this.currentTestAssertion = undefined;
+    this.notifySubscribers();
+  }
+
+  // Transformer-specific methods
+  startTransformer(
+    transformerName: string,
+    transformerType: string,
+    step: 'build' | 'runtime',
+    transformerParams?: any,
+    parentId?: string
+  ): string {
+    if (!this.transformerTrackingEnabled) {
+      return ""; // Return empty string if tracking is disabled
+    }
+
+    const id = this.generateId();
+    const now = Date.now();
+
+    const effectiveParentId = parentId || this.getCurrentEventId();
+    const depth = effectiveParentId ? (this.actionsOrTestTrackingData.get(effectiveParentId)?.depth ?? 0) + 1 : 0;
+
+    const transformerData: MiroirEventTrackingData = {
+      id,
+      parentId: effectiveParentId,
+      trackingType: "transformer",
+      actionType: "transformer",
+      actionLabel: transformerName,
+      transformerName,
+      transformerType,
+      transformerStep: step,
+      transformerParams,
+      startTime: now,
+      status: "running",
+      depth,
+      children: [],
+    };
+
+    this.actionsOrTestTrackingData.set(id, transformerData);
+
+    if (effectiveParentId) {
+      const parent = this.actionsOrTestTrackingData.get(effectiveParentId);
+      if (parent && !parent.children.includes(id)) {
+        parent.children.push(id);
+      }
+    }
+
+    this.currentActionAndTestStack.push(id);
+    this.notifySubscribers();
+    return id;
+  }
+
+  endTransformer(trackingId: string, result?: any, error?: string): void {
+    if (!this.transformerTrackingEnabled || !trackingId) {
+      return;
+    }
+
+    const transformer = this.actionsOrTestTrackingData.get(trackingId);
+    if (!transformer) {
+      return;
+    }
+
+    const now = Date.now();
+    transformer.endTime = now;
+    transformer.duration = now - transformer.startTime;
+    transformer.status = error ? "error" : "completed";
+    transformer.transformerResult = result;
+    if (error) {
+      transformer.error = error;
+      transformer.transformerError = error;
+    }
+
+    // Remove from action stack
+    const index = this.currentActionAndTestStack.indexOf(trackingId);
+    if (index !== -1) {
+      this.currentActionAndTestStack.splice(index, 1);
+    }
+
+    this.notifySubscribers();
+  }
+
+  isTransformerTrackingEnabled(): boolean {
+    return this.transformerTrackingEnabled;
+  }
+
+  setTransformerTrackingEnabled(enabled: boolean): void {
+    this.transformerTrackingEnabled = enabled;
     this.notifySubscribers();
   }
 

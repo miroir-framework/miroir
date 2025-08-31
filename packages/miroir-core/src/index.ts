@@ -633,6 +633,12 @@ export {
   MiroirEventTrackingData,
 } from "./0_interfaces/3_controllers/MiroirEventTrackerInterface.js";
 export {
+  TransformerEventServiceInterface,
+  TransformerEntry,
+  TransformerEvent,
+  TransformerEventFilter,
+} from "./0_interfaces/3_controllers/TransformerEventInterface.js";
+export {
   MiroirEventServiceInterface,
   MiroirEventEntry as ActionOrTestLogEntry,
   MiroirEvent as MiroirEvent,
@@ -895,9 +901,11 @@ export { ErrorDataStore } from "./3_controllers/ErrorHandling/ErrorDataStore.js"
 export { ErrorModelStore } from "./3_controllers/ErrorHandling/ErrorModelStore.js";
 export { MiroirContext } from "./3_controllers/MiroirContext.js";
 export { MiroirEventTracker } from "./3_controllers/MiroirEventTracker.js";
+export { TransformerEventService } from "./3_controllers/TransformerEventService.js";
 export { ConsoleInterceptor } from "./4_services/ConsoleInterceptor.js";
 export { modelInitialize } from "./3_controllers/ModelInitializer.js";
 export { LoggerGlobalContext } from "./4_services/LoggerContext.js";
+export { TransformerGlobalContext } from "./4_services/TransformerContext.js";
 export { MiroirLoggerFactory, testLogger } from "./4_services/LoggerFactory.js";
 export {
   PersistenceStoreController,

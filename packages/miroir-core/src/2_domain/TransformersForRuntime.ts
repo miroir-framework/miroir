@@ -3,6 +3,7 @@ import { serializeError } from 'serialize-error';
 // import Mustache from "mustache";
 import { v4 as uuidv4 } from 'uuid';
 import { Uuid } from '../0_interfaces/1_core/EntityDefinition';
+import { TransformerGlobalContext } from '../4_services/TransformerContext';
 import {
   DomainElementInstanceArray,
   DomainElementString,
@@ -2883,6 +2884,24 @@ export function transformer_extended_apply_wrapper<T extends MiroirModelEnvironm
   contextResults?: Record<string, any>,
   resolveBuildTransformersTo: ResolveBuildTransformersTo = "constantTransformer",
 ): Domain2QueryReturnType<any> {
+  // Start transformer tracking
+  const eventTracker = TransformerGlobalContext.getEventTracker();
+  let trackingId: string = "";
+  
+  if (eventTracker?.isTransformerTrackingEnabled()) {
+    const transformerType = (transformer as any)?.transformerType || "unknown";
+    trackingId = eventTracker.startTransformer(
+      label || transformerType,
+      transformerType,
+      step,
+      {
+        transformerParams: Object.keys(transformerParams ?? {}),
+        contextResults: Object.keys(contextResults ?? {}),
+        resolveBuildTransformersTo
+      }
+    );
+  }
+
   try {
     const result = transformer_extended_apply(
       step,
@@ -2900,6 +2919,11 @@ export function transformer_extended_apply_wrapper<T extends MiroirModelEnvironm
       // JSON.stringify(result, null, 2),
     );  
     if (result instanceof Domain2ElementFailed) {
+      // End transformer tracking with error
+      if (eventTracker?.isTransformerTrackingEnabled() && trackingId) {
+        eventTracker.endTransformer(trackingId, undefined, result.queryFailure || "Transformer failed");
+      }
+      
       log.error(
         "transformer_extended_apply_wrapper failed for",
         label??(transformer as any)["transformerType"],
@@ -2921,6 +2945,11 @@ export function transformer_extended_apply_wrapper<T extends MiroirModelEnvironm
         queryParameters: transformer as any,
       });
     } else {
+      // End transformer tracking with success
+      if (eventTracker?.isTransformerTrackingEnabled() && trackingId) {
+        eventTracker.endTransformer(trackingId, result);
+      }
+      
       // log.info(
       //   "transformer_extended_apply_wrapper called for",
       //   label,
@@ -2930,6 +2959,11 @@ export function transformer_extended_apply_wrapper<T extends MiroirModelEnvironm
       return result;
     }
   } catch (e) {
+    // End transformer tracking with error
+    if (eventTracker?.isTransformerTrackingEnabled() && trackingId) {
+      eventTracker.endTransformer(trackingId, undefined, e instanceof Error ? e.message : String(e));
+    }
+    
     log.error(
       "transformer_extended_apply_wrapper failed for",
       label,

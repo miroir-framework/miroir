@@ -11,12 +11,15 @@ export interface MiroirEventEntry {
   message: string;
   args: any[];
   context?: {
-    trackingType?: 'action' | 'testSuite' | 'test' | 'testAssertion';
+    trackingType?: 'action' | 'testSuite' | 'test' | 'testAssertion' | 'transformer';
     testSuite?: string;
     test?: string;
     testAssertion?: string;
     compositeAction?: string;
     action?: string;
+    transformerName?: string;
+    transformerType?: string;
+    transformerStep?: 'build' | 'runtime';
   };
 }
 
@@ -25,7 +28,7 @@ export interface MiroirEvent {
   actionId: string; // trackingId for backwards compatibility
   actionType: string;
   actionLabel?: string;
-  trackingType?: 'action' | 'testSuite' | 'test' | 'testAssertion'; // Added for test support
+  trackingType?: 'action' | 'testSuite' | 'test' | 'testAssertion' | 'transformer'; // Added for test and transformer support
   startTime: number;
   endTime?: number;
   status: 'running' | 'completed' | 'error';
@@ -38,13 +41,20 @@ export interface MiroirEvent {
     error: number;
     total: number;
   };
+  // Transformer-specific fields
+  transformerName?: string;
+  transformerType?: string;
+  transformerStep?: 'build' | 'runtime';
+  transformerParams?: any;
+  transformerResult?: any;
+  transformerError?: string;
 }
 
 // Filter criteria for action and test logs
 export interface ActionLogFilter {
   actionId?: string;
   actionType?: string;
-  trackingType?: 'action' | 'testSuite' | 'test' | 'testAssertion'; // Added for test filtering
+  trackingType?: 'action' | 'testSuite' | 'test' | 'testAssertion' | 'transformer'; // Added for test and transformer filtering
   level?: 'trace' | 'debug' | 'info' | 'warn' | 'error';
   since?: number;
   searchText?: string;
@@ -340,7 +350,7 @@ export class MiroirEventService implements MiroirEventServiceInterface {
           actionId: action.id,
           actionType: action.actionType,
           actionLabel: action.actionLabel,
-          trackingType: action.trackingType, // Support both actions and tests
+          trackingType: action.trackingType, // Support actions, tests, and transformers
           startTime: action.startTime,
           endTime: action.endTime,
           status: action.status,
@@ -352,14 +362,26 @@ export class MiroirEventService implements MiroirEventServiceInterface {
             warn: 0,
             error: 0,
             total: 0
-          }
+          },
+          // Transformer-specific fields
+          transformerName: action.transformerName,
+          transformerType: action.transformerType,
+          transformerStep: action.transformerStep,
+          transformerParams: action.transformerParams,
+          transformerResult: action.transformerResult,
+          transformerError: action.transformerError
         };
         this.events.set(action.id, event);
       } else {
-        // Update existing action status/timing
+        // Update existing action status/timing and transformer results
         const existing = this.events.get(action.id)!;
         existing.endTime = action.endTime;
         existing.status = action.status;
+        // Update transformer-specific fields if they exist
+        if (action.trackingType === 'transformer') {
+          existing.transformerResult = action.transformerResult;
+          existing.transformerError = action.transformerError;
+        }
       }
     });
   }
@@ -381,7 +403,11 @@ export class MiroirEventService implements MiroirEventServiceInterface {
         test: currentActionData?.test || LoggerGlobalContext.getTest(),
         testAssertion: currentActionData?.testAssertion || LoggerGlobalContext.getTestAssertion(),
         compositeAction: this.eventTracker.getCompositeAction(),
-        action: this.eventTracker.getAction()
+        action: this.eventTracker.getAction(),
+        // Transformer context
+        transformerName: currentActionData?.transformerName,
+        transformerType: currentActionData?.transformerType,
+        transformerStep: currentActionData?.transformerStep
       };
     } catch (error) {
       return undefined;

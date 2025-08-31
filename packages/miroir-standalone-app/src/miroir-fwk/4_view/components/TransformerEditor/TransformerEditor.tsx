@@ -45,6 +45,7 @@ import { ReportSectionEntityInstance } from '../Reports/ReportSectionEntityInsta
 import { getMemoizedReduxDeploymentsStateSelectorMap, type ReduxStateWithUndoRedo } from 'miroir-localcache-redux';
 import { useSelector } from 'react-redux';
 import { TypedValueObjectEditor } from '../Reports/TypedValueObjectEditor';
+import { TransformerEventsPanel } from './TransformerEventsPanel';
 
 // ################################################################################################
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -792,6 +793,8 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
           />
         </div>
       </div>
+
+      <TransformerEventsPanel />
 
       <DebugPanel currentTransformerDefinition={currentTransformerDefinition} />
     </ThemedContainer>

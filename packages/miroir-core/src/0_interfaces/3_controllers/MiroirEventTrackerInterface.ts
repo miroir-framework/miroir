@@ -9,7 +9,7 @@ import {
 export interface MiroirEventTrackingData {
   id: string;
   parentId?: string;
-  trackingType: 'action' | 'testSuite' | 'test' | 'testAssertion';
+  trackingType: 'action' | 'testSuite' | 'test' | 'testAssertion' | 'transformer';
   actionType: string; // For actions, or derived from trackingType for tests
   actionLabel?: string; // For actions, or test/testSuite name for tests
   startTime: number;
@@ -26,6 +26,14 @@ export interface MiroirEventTrackingData {
   testAssertion?: string;
   testResult?: 'ok' | 'error';
   testAssertionsResults?: TestAssertionsResults;
+  
+  // Transformer-specific fields
+  transformerName?: string;
+  transformerType?: string;
+  transformerStep?: 'build' | 'runtime';
+  transformerParams?: any;
+  transformerResult?: any;
+  transformerError?: string;
 }
 
 export interface MiroirEventTrackerInterface {
@@ -58,7 +66,7 @@ export interface MiroirEventTrackerInterface {
    */
   getFilteredEvents(filter: {
     actionType?: string;
-    trackingType?: 'action' | 'testSuite' | 'test' | 'testAssertion'; // New field for test filtering
+    trackingType?: 'action' | 'testSuite' | 'test' | 'testAssertion' | 'transformer'; // New field for test and transformer filtering
     status?: 'running' | 'completed' | 'error';
     minDuration?: number;
     maxDuration?: number;
@@ -211,4 +219,36 @@ export interface MiroirEventTrackerInterface {
    * Reset current test context
    */
   resetContext(): void;
+
+  // Transformer-specific methods
+  /**
+   * Start tracking a transformer execution
+   * @param transformerName The name/label of the transformer
+   * @param transformerType The type of transformer (e.g., 'contextReference', 'constant', etc.)
+   * @param step The transformer step ('build' or 'runtime')
+   * @param transformerParams The parameters passed to the transformer
+   * @param parentId Optional parent transformer ID for nested calls
+   * @returns Unique tracking ID for this transformer execution
+   */
+  startTransformer(
+    transformerName: string,
+    transformerType: string,
+    step: 'build' | 'runtime',
+    transformerParams?: any,
+    parentId?: string
+  ): string;
+
+  /**
+   * End tracking a transformer execution
+   * @param trackingId The tracking ID returned from startTransformer
+   * @param result The transformer result (if successful)
+   * @param error Optional error information if the transformer failed
+   */
+  endTransformer(trackingId: string, result?: any, error?: string): void;
+
+  /**
+   * Configuration flag to enable/disable transformer event gathering
+   */
+  isTransformerTrackingEnabled(): boolean;
+  setTransformerTrackingEnabled(enabled: boolean): void;
 }
