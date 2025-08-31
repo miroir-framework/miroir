@@ -2,14 +2,14 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import {
   MiroirEventService,
 } from "../../src/3_controllers/MiroirEventService";
-import { LogInterceptor } from '../../src/4_services/LogInterceptor';
+import { ConsoleInterceptor } from '../../src/4_services/ConsoleInterceptor';
 // import { TestLogService } from '../../src/3_controllers/TestLogService';
 import { MiroirEventTracker } from '../../src/3_controllers/MiroirEventTracker';
 // import { TestTracker } from '../../src/3_controllers/TestTracker';
 
 // Integration test without mocks - testing real interactions between components
-describe('LogInterceptor Integration Tests', () => {
-  let logInterceptor: LogInterceptor;
+describe('ConsoleInterceptor Integration Tests', () => {
+  let logInterceptor: ConsoleInterceptor;
   let miroirEventTracker: MiroirEventTracker;
   let actionOrTestLogService: MiroirEventService;
   // let testTracker: MiroirEventTracker;
@@ -47,8 +47,8 @@ describe('LogInterceptor Integration Tests', () => {
     // testTracker = miroirEventTracker;
     // testLogService = new TestLogServiceCompatibilityWrapper(actionOrTestLogService);
 
-    // Create LogInterceptor with both action and test configurations
-    logInterceptor = new LogInterceptor({
+    // Create ConsoleInterceptor with both action and test configurations
+    logInterceptor = new ConsoleInterceptor({
       actionOrTest: {
         actionOrTestLogService: actionOrTestLogService,
         actionOrTestTracker: miroirEventTracker
@@ -198,8 +198,8 @@ describe('LogInterceptor Integration Tests', () => {
     const freshActionTracker = new MiroirEventTracker();
     const freshActionLogService = new MiroirEventService(freshActionTracker);
     
-    // Create LogInterceptor with only action configuration
-    const actionOnlyInterceptor = new LogInterceptor({
+    // Create ConsoleInterceptor with only action configuration
+    const actionOnlyInterceptor = new ConsoleInterceptor({
       actionOrTest: {
         actionOrTestLogService: freshActionLogService,
         actionOrTestTracker: freshActionTracker
@@ -235,8 +235,8 @@ describe('LogInterceptor Integration Tests', () => {
   //   const freshTestTracker = new TestTracker();
   //   const freshTestLogService = new TestLogService(freshTestTracker);
     
-  //   // Create LogInterceptor with only test configuration
-  //   const testOnlyInterceptor = new LogInterceptor({
+  //   // Create ConsoleInterceptor with only test configuration
+  //   const testOnlyInterceptor = new ConsoleInterceptor({
   //     test: {
   //       testLogService: freshTestLogService,
   //       testTracker: freshTestTracker

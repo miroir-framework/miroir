@@ -3,7 +3,7 @@ import { MiroirEventServiceInterface } from "../3_controllers/MiroirEventService
 import { MiroirEventTrackerInterface } from "../0_interfaces/3_controllers/MiroirEventTrackerInterface";
 
 /**
- * Configuration for LogInterceptor
+ * Configuration for ConsoleInterceptor
  */
 export interface LogInterceptorConfig {
   eventHandlers?: {
@@ -16,7 +16,7 @@ export interface LogInterceptorConfig {
  * Unified logging interceptor that captures logs during action and/or test execution
  * This works by intercepting console methods when actions or tests are active
  */
-export class LogInterceptor {
+export class ConsoleInterceptor {
   private originalConsole: {
     trace: typeof console.trace;
     debug: typeof console.debug;
@@ -117,10 +117,10 @@ export class LogInterceptor {
     //   // // Check for active test and log if test logging is configured
     //   if (this.config.actionOrTest) {
     //     const currentTest = this.config.actionOrTest.actionOrTestTracker.getTest();
-    //   //   // console.log('LogInterceptor Logging for test:', currentTest);
+    //   //   // console.log('ConsoleInterceptor Logging for test:', currentTest);
     //   //   // const currentTest = this.config.actionorTest.runActionTracker.getCurrentEventId();
     //     if (currentTest) {
-    //       console.log('LogInterceptor Logging for test:', currentTest, level, loggerName, message, ...restArgs);
+    //       console.log('ConsoleInterceptor Logging for test:', currentTest, level, loggerName, message, ...restArgs);
     //   //     this.config.actionOrTest.actionLogService.logForCurrentActionOrTest(level, loggerName, message, ...restArgs);
     //     }
     //   }
@@ -137,5 +137,5 @@ export class LogInterceptor {
 
 
 // Legacy exports for backward compatibility
-export const ActionLogInterceptor = LogInterceptor;
-export const TestLogInterceptor = LogInterceptor;
+export const ActionLogInterceptor = ConsoleInterceptor;
+export const TestLogInterceptor = ConsoleInterceptor;

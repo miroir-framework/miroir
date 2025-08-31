@@ -1,7 +1,6 @@
 
 import {
   MiroirLoggerFactory,
-  TestSuiteContext,
   defaultMiroirMetaModel,
   miroirFundamentalJzodSchema,
   runTransformerTestInMemory,
@@ -135,7 +134,8 @@ export const RunTransformerTestSuiteButton: React.FC<RunTransformerTestSuiteButt
 
   const onAction = async () => {
     // Reset previous results
-    TestSuiteContext.resetResults();
+    // TestSuiteContext.resetResults();
+    miroirContextService.miroirContext.miroirEventTracker.resetResults();
 
     if (!transformerTestSuite) {
       throw new Error(`No transformer test suite found for ${testSuiteKey}`);
@@ -157,7 +157,7 @@ export const RunTransformerTestSuiteButton: React.FC<RunTransformerTestSuiteButt
     );
 
     // Get and format results - find the correct test suite key
-    const allResults = TestSuiteContext.getTestAssertionsResults();
+    const allResults = miroirContextService.miroirContext.miroirEventTracker.getTestAssertionsResults();
     const availableKeys = Object.keys(allResults);
     log.info("Available test suite keys:", availableKeys);
 
@@ -175,7 +175,7 @@ export const RunTransformerTestSuiteButton: React.FC<RunTransformerTestSuiteButt
     }
 
     const testSuiteResults: TestSuiteResult =
-      TestSuiteContext.getTestSuiteResult(matchingKey);
+      miroirContextService.miroirContext.miroirEventTracker.getTestSuiteResult(matchingKey);
     log.info(testSuiteKey, "test results:", testSuiteResults);
 
     // Format results for display

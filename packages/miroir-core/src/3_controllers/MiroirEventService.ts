@@ -1,12 +1,5 @@
 import { MiroirEventTrackerInterface } from "../0_interfaces/3_controllers/MiroirEventTrackerInterface";
 import{ LoggerGlobalContext } from "../4_services/LoggerContext";
-// Import test interfaces for compatibility
-// import { 
-//   TestLogs, 
-//   TestLogFilter, 
-//   TestLogEntry,
-//   TestLogServiceInterface 
-// } from './TestLogService.js';
 
 // Unified log entry representing a single log message within an action or test execution
 export interface MiroirEventEntry {
@@ -77,30 +70,15 @@ export interface MiroirEventServiceInterface {
    */
   getEvent(actionId: string): MiroirEvent | undefined;
 
-  // /**
-  //  * Get logs for a specific Test
-  //  */
-  // getTestLogs(testId: string): TestLogs | undefined;
-
   /**
    * Get all action logs
    */
   getAllEvents(): MiroirEvent[];
 
-  // /**
-  //  * Get all test logs
-  //  */
-  // getAllTestLogs(): TestLogs[];
-
   /**
    * Get filtered action logs
    */
   getFilteredEvents(filter: ActionLogFilter): MiroirEvent[];
-
-  // /**
-  //  * Get filtered test logs
-  //  */
-  // getFilteredTestLogs(filter: TestLogFilter): TestLogs[];
 
   /**
    * Subscribe to action log updates

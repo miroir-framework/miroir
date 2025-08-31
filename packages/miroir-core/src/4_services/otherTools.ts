@@ -1,5 +1,4 @@
 import { EntityInstance } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType"
-import { TestSuiteContext } from "./TestSuiteContext"
 
 // ################################################################################################
 export function ignorePostgresExtraAttributesOnRecord(instances: Record<string, EntityInstance>, furtherIgnore: string[] = []){

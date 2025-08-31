@@ -78,7 +78,7 @@ import { resolvePathOnObject } from "../tools";
 import { cleanLevel } from "./constants";
 import { Endpoint } from "./Endpoint";
 import { CallUtils } from "./ErrorHandling/CallUtils";
-import { TestSuiteContext } from '../4_services/TestSuiteContext.js';
+// import { TestSuiteContext } from '../4_services/TestSuiteContext.js';
 import { resolveTestCompositeActionTemplateSuite } from '../2_domain/TestSuiteTemplate.js';
 import {
   Action2Error,
@@ -3160,7 +3160,7 @@ export class DomainController implements DomainControllerInterface {
         "handleTestCompositeActionSuite caught error: " + JSON.stringify(error, null, 2)
       );
     } finally {
-      TestSuiteContext.resetContext();
+      this.miroirContext.miroirEventTracker.resetContext();
     }
   }
 

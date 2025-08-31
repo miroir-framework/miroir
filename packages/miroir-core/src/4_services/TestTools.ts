@@ -1,28 +1,25 @@
 import {
-  TransformerForBuild,
-  TransformerForBuildOrRuntime,
   TransformerForRuntime,
   type TransformerForBuildPlusRuntime,
   type TransformerTest,
-  type TransformerTestSuite,
+  type TransformerTestSuite
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { type MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import {
   Action2ReturnType,
   Action2Success,
   Domain2ElementFailed,
   Domain2QueryReturnType,
 } from "../0_interfaces/2_domain/DomainElement";
+import type { MiroirEventTrackerInterface } from "../0_interfaces/3_controllers/MiroirEventTrackerInterface";
 import type { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { jsonify } from "../1_core/test-expect";
-import { type MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import { transformer_extended_apply_wrapper } from "../2_domain/TransformersForRuntime";
+import { MiroirEventTracker } from "../3_controllers/MiroirEventTracker";
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
 import { MiroirLoggerFactory } from "./LoggerFactory";
 import { ignorePostgresExtraAttributes } from "./otherTools";
-import { TestSuiteContext } from "./TestSuiteContext";
-import type { MiroirEventTracker } from "../3_controllers/MiroirEventTracker";
-import type { MiroirEventTrackerInterface } from "../0_interfaces/3_controllers/MiroirEventTrackerInterface";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -102,7 +99,7 @@ export async function runTransformerTestInMemory(
   testSuiteNamePath: string[],
   transformerTest: TransformerTest,
   modelEnvironment: MiroirModelEnvironment,
-  actionOrTestTracker?: MiroirEventTrackerInterface, // Optional unified tracker for test execution tracking
+  miroirEventTracker: MiroirEventTrackerInterface, // Optional unified tracker for test execution tracking
 ) {
   const assertionName = transformerTest.transformerTestLabel ?? transformerTest.transformerName;
   console.log(
@@ -113,11 +110,11 @@ export async function runTransformerTestInMemory(
   
   // Start tracking individual test execution in unified tracker if available
   let testTrackingId: string | undefined;
-  if (actionOrTestTracker) {
+  if (miroirEventTracker) {
     try {
       // Get the current active test suite ID as parent
-      const parentId = actionOrTestTracker.getCurrentEventId();
-      testTrackingId = actionOrTestTracker.startTest(assertionName, parentId);
+      const parentId = miroirEventTracker.getCurrentEventId();
+      testTrackingId = miroirEventTracker.startTest(assertionName, parentId);
       console.log(`🧪 Started tracking test ${assertionName} with ID: ${testTrackingId}, parent: ${parentId}`);
     } catch (error) {
       console.warn(`Failed to start tracking test ${assertionName}:`, error);
@@ -127,7 +124,8 @@ export async function runTransformerTestInMemory(
   //   "################################ runTransformerTestInMemory vitest",
   //   JSON.stringify(vitest, null, 2)
   // );
-  // TestSuiteContext.setTest(transformerTest.transformerTestLabel);
+  // miroirEventTracker.setTest(transformerTest.transformerTestLabel);
+  miroirEventTracker.setTest(transformerTest.transformerTestLabel);
 
   // const transformer: TransformerForBuild | TransformerForRuntime = transformerTest.transformer;
   const transformer: TransformerForBuildPlusRuntime = transformerTest.transformer;
@@ -181,7 +179,7 @@ export async function runTransformerTestInMemory(
     result
     // JSON.stringify(result, null, 2)
   );
-  const testSuiteNamePathAsString = TestSuiteContext.testSuitePathName(testSuiteNamePath);
+  const testSuiteNamePathAsString = MiroirEventTracker.testSuitePathName(testSuiteNamePath);
   const jsonifiedResult = jsonify(result);
   // const jsonifiedResult = result;
   try {
@@ -207,20 +205,20 @@ export async function runTransformerTestInMemory(
     );
     if (!Object.hasOwn(testResult, "result")) {
       // vitest case
-      TestSuiteContext.setTestAssertionResult({
+      miroirEventTracker.setTestAssertionResult({
         assertionName,
         assertionResult: "ok",
       });
     } else {
       // simulated vitest case
       if (testResult.result) {
-        TestSuiteContext.setTestAssertionResult({
+        miroirEventTracker.setTestAssertionResult({
           assertionName,
           assertionResult: "ok",
         });
       } else {
         // TODO: use returned message from the testResult?
-        TestSuiteContext.setTestAssertionResult({
+        miroirEventTracker.setTestAssertionResult({
           assertionName,
           assertionResult: "error",
           assertionExpectedValue: transformerTest.expectedValue,
@@ -229,7 +227,7 @@ export async function runTransformerTestInMemory(
       };
     }
   } catch (error) {
-    TestSuiteContext.setTestAssertionResult({
+    miroirEventTracker.setTestAssertionResult({
       assertionName,
       assertionResult: "error",
       assertionExpectedValue: transformerTest.expectedValue,
@@ -238,18 +236,18 @@ export async function runTransformerTestInMemory(
   }
 
   // End tracking individual test execution if tracker was used
-  if (actionOrTestTracker && testTrackingId) {
+  if (miroirEventTracker && testTrackingId) {
     try {
       // Determine test result based on the last assertion set
-      const testSuite = TestSuiteContext.getTestSuite();
-      const test = TestSuiteContext.getTest();
-      const hasError = testSuite && test && TestSuiteContext.testAssertionsResults[testSuite] && 
-                      TestSuiteContext.testAssertionsResults[testSuite][test] &&
-                      Object.values(TestSuiteContext.testAssertionsResults[testSuite][test]).some(
+      const testSuite = miroirEventTracker.getTestSuite();
+      const test = miroirEventTracker.getTest();
+      const hasError = testSuite && test && miroirEventTracker.getTestAssertionsResults()[testSuite] && 
+                      miroirEventTracker.getTestAssertionsResults()[testSuite][test] &&
+                      Object.values(miroirEventTracker.getTestAssertionsResults()[testSuite][test]).some(
                         (result) => result.assertionResult === "error"
                       );
       const errorMessage = hasError ? "Test assertion failed" : undefined;
-      actionOrTestTracker.endEvent(testTrackingId, errorMessage);
+      miroirEventTracker.endEvent(testTrackingId, errorMessage);
       console.log(`🧪 Ended tracking test ${assertionName} with ID: ${testTrackingId}, result: ${hasError ? "error" : "ok"}`);
     } catch (error) {
       console.warn(`Failed to end tracking test ${assertionName}:`, error);
@@ -274,9 +272,9 @@ export async function runTransformerTestSuite(
     runActionTracker?: any
   ) => Promise<void>,
   modelEnvironment: MiroirModelEnvironment,
-  actionOrTestTracker: MiroirEventTrackerInterface, // Optional unified tracker for test execution tracking
+  miroirEventTracker: MiroirEventTrackerInterface, // Optional unified tracker for test execution tracking
 ) {
-  const testSuitePathAsString = TestSuiteContext.testSuitePathName(testSuitePath);
+  const testSuitePathAsString = MiroirEventTracker.testSuitePathName(testSuitePath);
   const testSuiteName =
     transformerTestSuite.transformerTestLabel ?? transformerTestSuite.transformerTestType;
   console.log(
@@ -294,15 +292,15 @@ export async function runTransformerTestSuite(
     );
   }
 
-  TestSuiteContext.setTestSuite(testSuitePathAsString);
+  miroirEventTracker.setTestSuite(testSuitePathAsString);
   
   // Start tracking test suite execution in unified tracker if available
   let testSuiteTrackingId: string | undefined;
-  if (actionOrTestTracker && typeof actionOrTestTracker.startTestSuite === 'function') {
+  if (miroirEventTracker && typeof miroirEventTracker.startTestSuite === 'function') {
     try {
       // Get current action ID as parent (for nested test suites)
-      const parentId = actionOrTestTracker.getCurrentEventId();
-      testSuiteTrackingId = actionOrTestTracker.startTestSuite(testSuiteName, parentId);
+      const parentId = miroirEventTracker.getCurrentEventId();
+      testSuiteTrackingId = miroirEventTracker.startTestSuite(testSuiteName, parentId);
       console.log(`🧪🧪 Started tracking test suite ${testSuiteName} with ID: ${testSuiteTrackingId}, parent: ${parentId}`);
     } catch (error) {
       console.warn(`Failed to start tracking test suite ${testSuiteName}:`, error);
@@ -313,9 +311,9 @@ export async function runTransformerTestSuite(
   
   try {
     if (transformerTestSuite.transformerTestType == "transformerTest") {
-      TestSuiteContext.setTest(transformerTestSuite.transformerTestLabel);
-      await runTransformerTest(localVitest, testSuitePath, transformerTestSuite, modelEnvironment, actionOrTestTracker);
-      TestSuiteContext.setTest(undefined);
+      miroirEventTracker.setTest(transformerTestSuite.transformerTestLabel);
+      await runTransformerTest(localVitest, testSuitePath, transformerTestSuite, modelEnvironment, miroirEventTracker);
+      miroirEventTracker.setTest(undefined);
     } else {
       // console.log(`running transformer test suite ${testSuiteName} with ${JSON.stringify(Object.keys(transformerTestSuite.transformerTests))} tests`);
 
@@ -336,15 +334,15 @@ export async function runTransformerTestSuite(
           // Check if this is an individual test or another test suite
           if (transformerTestParam.transformerTestType === "transformerTest") {
             // This is an individual test - track it as a test, not a test suite
-            TestSuiteContext.setTest(transformerTestParam.transformerTestLabel);
+            miroirEventTracker.setTest(transformerTestParam.transformerTestLabel);
             await runTransformerTest(
               localVitest,
               [...testSuitePath, transformerTestParam.transformerTestLabel],
               transformerTestParam,
               modelEnvironment,
-              actionOrTestTracker // Pass the tracker to track this individual test
+              miroirEventTracker // Pass the tracker to track this individual test
             );
-            TestSuiteContext.setTest(undefined);
+            miroirEventTracker.setTest(undefined);
           } else {
             // This is a nested test suite - handle recursively
             await runTransformerTestSuite(
@@ -353,7 +351,7 @@ export async function runTransformerTestSuite(
               transformerTestParam,
               runTransformerTest,
               modelEnvironment,
-              actionOrTestTracker // Pass the tracker through to nested test suites
+              miroirEventTracker // Pass the tracker through to nested test suites
             );
           }
         },
@@ -363,9 +361,9 @@ export async function runTransformerTestSuite(
     }
     
     // End tracking test suite execution if tracker was used
-    if (actionOrTestTracker && testSuiteTrackingId) {
+    if (miroirEventTracker && testSuiteTrackingId) {
       try {
-        actionOrTestTracker.endEvent(testSuiteTrackingId);
+        miroirEventTracker.endEvent(testSuiteTrackingId);
         console.log(`Ended tracking test suite ${testSuitePathAsString} with ID: ${testSuiteTrackingId}`);
       } catch (error) {
         console.warn(`Failed to end tracking test suite ${testSuitePathAsString}:`, error);
@@ -373,10 +371,10 @@ export async function runTransformerTestSuite(
     }
   } catch (error) {
     // End tracking with error if tracker was used
-    if (actionOrTestTracker && testSuiteTrackingId) {
+    if (miroirEventTracker && testSuiteTrackingId) {
       try {
         const errorMessage = error instanceof Error ? error.message : String(error) || 'Test suite execution failed';
-        actionOrTestTracker.endEvent(testSuiteTrackingId, errorMessage);
+        miroirEventTracker.endEvent(testSuiteTrackingId, errorMessage);
         console.log(`Ended tracking test suite ${testSuitePathAsString} with error`);
       } catch (trackerError) {
         console.warn(`Failed to end tracking test suite ${testSuitePathAsString} with error:`, trackerError);
@@ -387,7 +385,7 @@ export async function runTransformerTestSuite(
   console.log(
     `@@@@@@@@@@@@@@@@@@@@ finished running transformer test suite ${JSON.stringify(testSuitePath)}`
   );
-  // TestSuiteContext.resetContext();
+  // miroirEventTracker.resetContext();
 }
 // ################################################################################################
 function isJson(t: any) {
@@ -409,8 +407,9 @@ export function runTransformerIntegrationTest(sqlDbDataStore: any) {
     testNameArray: string[],
     transformerTest: TransformerTest,
     modelEnvironment: MiroirModelEnvironment,
+    miroirEventTracker: MiroirEventTrackerInterface, // Optional unified tracker for test execution tracking
   ) => {
-    const testSuitePathName = TestSuiteContext.testSuitePathName(testNameArray);
+    const testSuitePathName = MiroirEventTracker.testSuitePathName(testNameArray);
     const testRunStep = transformerTest.runTestStep ?? "runtime";
     // const runAsSql = false;
     const runAsSql = true;
@@ -464,12 +463,12 @@ export function runTransformerIntegrationTest(sqlDbDataStore: any) {
         );
 
         vitest.expect(resultToCompare, testSuitePathName).toEqual(transformerTest.expectedValue);
-        TestSuiteContext.setTestAssertionResult({
+        miroirEventTracker.setTestAssertionResult({
           assertionName: testSuitePathName,
           assertionResult: "ok",
         });
       } catch (error) {
-        TestSuiteContext.setTestAssertionResult({
+        miroirEventTracker.setTestAssertionResult({
           assertionName: testSuitePathName,
           assertionResult: "error",
           assertionExpectedValue: transformerTest.expectedValue,
@@ -568,12 +567,12 @@ export function runTransformerIntegrationTest(sqlDbDataStore: any) {
         console.log(testSuitePathName, "expectedValue", transformerTest.expectedValue);
         vitest.expect(resultToCompare, testSuitePathName).toEqual(transformerTest.expectedValue);
       }
-      TestSuiteContext.setTestAssertionResult({
+      miroirEventTracker.setTestAssertionResult({
         assertionName: testSuitePathName,
         assertionResult: "ok",
       });
     } catch (error) {
-      TestSuiteContext.setTestAssertionResult({
+      miroirEventTracker.setTestAssertionResult({
         assertionName: testSuitePathName,
         assertionResult: "error",
         assertionExpectedValue: transformerTest.expectedValue,
@@ -666,10 +665,11 @@ export const testSuites = (transformerTestSuite: TransformerTestSuite): string[]
 // ################################################################################################
 export function displayTestSuiteResults(
   expect: any, // vitest.expect
-  currentTestSuiteName: string
+  currentTestSuiteName: string,
+  miroirEventTracker: MiroirEventTrackerInterface, // Optional unified tracker for test execution tracking
 ) {
   console.log("============ results of testSuite: ", currentTestSuiteName);
-  const globalTestSuiteResults = TestSuiteContext.getTestSuiteResult(currentTestSuiteName);
+  const globalTestSuiteResults = miroirEventTracker.getTestSuiteResult(currentTestSuiteName);
   // console.log("globalTestSuiteResults", JSON.stringify(globalTestSuiteResults, null, 2));
   // console.log("============ results of testSuite: ", currentTestSuiteName);
   for (const testResult of Object.values(globalTestSuiteResults[currentTestSuiteName])) {
@@ -700,10 +700,11 @@ export function displayTestSuiteResults(
 // ################################################################################################
 export function displayTestSuiteResultsDetails(
   expect: any, // vitest.expect
-  currentTestSuiteName: string
+  currentTestSuiteName: string,
+  miroirEventTracker: MiroirEventTrackerInterface, // Optional unified tracker for test execution tracking
 ) {
   console.log("============ detailed results of testSuite: ", currentTestSuiteName);
-  const globalTestSuiteResults = TestSuiteContext.getTestSuiteResult(currentTestSuiteName);
+  const globalTestSuiteResults = miroirEventTracker.getTestSuiteResult(currentTestSuiteName);
   for (const testResult of Object.values(globalTestSuiteResults[currentTestSuiteName])) {
     console.log(`Test: ${testResult.testLabel}`);
     for (const [testAssertionLabel, testAssertionResult] of Object.entries(
@@ -734,18 +735,19 @@ export function displayTestSuiteResultsDetails(
 export const transformerTestsDisplayResults = (
   transformerTestSuite: TransformerTestSuite,
   RUN_TEST: string,
-  testSuiteName: string
+  testSuiteName: string,
+  miroirEventTracker: MiroirEventTrackerInterface, // Optional unified tracker for test execution tracking
 ) => {
   if (RUN_TEST == testSuiteName) {
     console.log(
       "#################################### transformerTestsDisplayResults",
       testSuiteName,
       "testResults",
-      JSON.stringify(TestSuiteContext.testAssertionsResults, null, 2)
+      JSON.stringify(miroirEventTracker.getTestAssertionsResults(), null, 2)
     );
     // const testSuitesPaths = testSuites(transformerTestSuite_miroirTransformers);
     const testSuitesPaths = testSuites(transformerTestSuite);
-    const testSuitesNames = testSuitesPaths.map(TestSuiteContext.testSuitePathName);
+    const testSuitesNames = testSuitesPaths.map(MiroirEventTracker.testSuitePathName);
     // console.log("#################################### afterAll TestSuites:", testSuitesPaths);
     console.log(
       "#################################### transformerTestsDisplayResults",
@@ -755,9 +757,9 @@ export const transformerTestsDisplayResults = (
     );
     console.log("#################################### transformerTestsDisplayResults", testSuiteName, "TestResults:");
     for (const testSuiteName of testSuitesNames) {
-      displayTestSuiteResults(expect, testSuiteName);
+      displayTestSuiteResults(expect, testSuiteName, miroirEventTracker);
       console.log("");
     }
-    TestSuiteContext.resetResults();
+    miroirEventTracker.resetResults();
   }
 };

@@ -247,6 +247,10 @@ export class MiroirEventTracker implements MiroirEventTrackerInterface {
     return id;
   }
 
+  public static testSuitePathName(testSuitePath: string[]): string {
+    return testSuitePath.join("#");
+  }
+
   startTestAssertion(testAssertion: string, parentId?: string): string {
     const id = this.generateId();
     const now = Date.now();
