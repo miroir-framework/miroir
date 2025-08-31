@@ -26,20 +26,30 @@ export const DraggableContainer: React.FC<DraggableContainerProps> = ({
   const [position, setPosition] = React.useState(() => {
     // Load position from sessionStorage
     const saved = sessionStorage.getItem(storageKey);
-    return saved ? JSON.parse(saved) : defaultPosition;
+    let result = saved ? JSON.parse(saved) : defaultPosition;
+    
+    // Ensure the timeline stays within viewport bounds
+    const viewport = { width: window.innerWidth, height: window.innerHeight };
+    result.x = Math.max(0, Math.min(result.x, viewport.width - 400)); // Keep 400px minimum visible
+    result.y = Math.max(0, Math.min(result.y, viewport.height - 200)); // Keep 200px minimum visible
+    
+    console.log('DraggableContainer position init:', { storageKey, saved, result, defaultPosition });
+    return result;
   });
 
   const [size, setSize] = React.useState(() => {
     // Load size from sessionStorage
     const saved = sessionStorage.getItem(`${storageKey}_size`);
-    return saved ? JSON.parse(saved) : defaultSize;
+    const result = saved ? JSON.parse(saved) : defaultSize;
+    console.log('DraggableContainer size init:', { storageKey, saved, result, defaultSize });
+    return result;
   });
 
   const [isDragging, setIsDragging] = React.useState(false);
   const [isResizing, setIsResizing] = React.useState(false);
   const [resizeDirection, setResizeDirection] = React.useState<string>('');
   const [dragStart, setDragStart] = React.useState({ x: 0, y: 0 });
-  const [resizeStart, setResizeStart] = React.useState({ x: 0, y: 0, width: 0, height: 0 });
+  const [resizeStart, setResizeStart] = React.useState({ x: 0, y: 0, width: 0, height: 0, startX: 0, startY: 0 });
   const dragRef = React.useRef<HTMLDivElement>(null);
 
   const handleMouseDown = React.useCallback(
@@ -65,19 +75,22 @@ export const DraggableContainer: React.FC<DraggableContainerProps> = ({
         y: e.clientY,
         width: size.width,
         height: size.height,
+        startX: position.x,
+        startY: position.y,
       });
       e.preventDefault();
       e.stopPropagation();
     },
-    [size]
+    [size, position]
   );
 
   const handleMouseMove = React.useCallback(
     (e: MouseEvent) => {
       if (isDragging) {
+        const viewport = { width: window.innerWidth, height: window.innerHeight };
         const newPosition = {
-          x: e.clientX - dragStart.x,
-          y: e.clientY - dragStart.y,
+          x: Math.max(0, Math.min(e.clientX - dragStart.x, viewport.width - 400)),
+          y: Math.max(0, Math.min(e.clientY - dragStart.y, viewport.height - 200)),
         };
         setPosition(newPosition);
         // Save position to sessionStorage
@@ -88,38 +101,43 @@ export const DraggableContainer: React.FC<DraggableContainerProps> = ({
         
         let newWidth = resizeStart.width;
         let newHeight = resizeStart.height;
+        let newX = resizeStart.startX;
+        let newY = resizeStart.startY;
         
+        // Handle horizontal resizing
         if (resizeDirection.includes('e')) {
+          // Resizing from east (right) edge - west (left) side is fixed
           newWidth = Math.max(300, resizeStart.width + deltaX);
         }
         if (resizeDirection.includes('w')) {
+          // Resizing from west (left) edge - east (right) side is fixed
           newWidth = Math.max(300, resizeStart.width - deltaX);
-          if (newWidth !== resizeStart.width - deltaX) {
-            // Only move position if we're not hitting the minimum width
-            const newPosition = { ...position, x: position.x + (resizeStart.width - newWidth) };
-            setPosition(newPosition);
-            sessionStorage.setItem(storageKey, JSON.stringify(newPosition));
-          }
+          // Adjust position to keep right edge fixed
+          newX = resizeStart.startX - (newWidth - resizeStart.width);
         }
+        
+        // Handle vertical resizing
         if (resizeDirection.includes('s')) {
+          // Resizing from south (bottom) edge - north (top) side is fixed
           newHeight = Math.max(200, resizeStart.height + deltaY);
         }
         if (resizeDirection.includes('n')) {
+          // Resizing from north (top) edge - south (bottom) side is fixed
           newHeight = Math.max(200, resizeStart.height - deltaY);
-          if (newHeight !== resizeStart.height - deltaY) {
-            // Only move position if we're not hitting the minimum height
-            const newPosition = { ...position, y: position.y + (resizeStart.height - newHeight) };
-            setPosition(newPosition);
-            sessionStorage.setItem(storageKey, JSON.stringify(newPosition));
-          }
+          // Adjust position to keep bottom edge fixed
+          newY = resizeStart.startY - (newHeight - resizeStart.height);
         }
         
         const newSize = { width: newWidth, height: newHeight };
+        const newPosition = { x: newX, y: newY };
+        
         setSize(newSize);
+        setPosition(newPosition);
         sessionStorage.setItem(`${storageKey}_size`, JSON.stringify(newSize));
+        sessionStorage.setItem(storageKey, JSON.stringify(newPosition));
       }
     },
-    [isDragging, isResizing, dragStart, resizeStart, resizeDirection, storageKey, position]
+    [isDragging, isResizing, dragStart, resizeStart, resizeDirection, storageKey]
   );
 
   const handleMouseUp = React.useCallback(() => {
@@ -159,6 +177,8 @@ export const DraggableContainer: React.FC<DraggableContainerProps> = ({
     display: 'flex',
     flexDirection: 'column',
   });
+
+  console.log('DraggableContainer render:', { title, position, size });
 
   const headerStyles = css({
     fontWeight: currentTheme.typography.fontWeight.bold,

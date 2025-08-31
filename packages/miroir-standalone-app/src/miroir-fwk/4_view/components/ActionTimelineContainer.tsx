@@ -6,34 +6,12 @@ import { RunActionTimeline } from './RunActionTimeline.js';
 // Separate component to manage action timeline display state independently
 export const ActionTimelineContainer = () => {
   const context = useMiroirContextService();
-  const [renderCount, setRenderCount] = useState(0);
-
-  // Force re-render when context changes
-  useEffect(() => {
-    setRenderCount(prev => prev + 1);
-  }, [context.showActionTimeline]);
 
   // Debug logging to track timeline visibility and re-renders
   console.log('ActionTimelineContainer render:', { 
     showActionTimeline: context.showActionTimeline,
-    timestamp: new Date().toISOString(),
-    contextExists: !!context,
-    setShowActionTimelineExists: !!context.setShowActionTimeline,
-    renderCount
+    timestamp: new Date().toISOString()
   });
-
-  // Track when the component mounts/unmounts
-  useEffect(() => {
-    console.log('ActionTimelineContainer mounted with showActionTimeline:', context.showActionTimeline);
-    return () => {
-      console.log('ActionTimelineContainer unmounted');
-    };
-  }, []);
-
-  // Track when showActionTimeline changes
-  useEffect(() => {
-    console.log('ActionTimelineContainer showActionTimeline changed:', context.showActionTimeline);
-  }, [context.showActionTimeline]);
 
   // Only render if action timeline display is enabled
   if (!context.showActionTimeline) {
