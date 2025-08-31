@@ -34,8 +34,15 @@ import {
   Science,
 } from '@mui/icons-material';
 
-import { ActionTrackingData } from 'miroir-core';
+import { ActionTrackingData, LoggerInterface, MiroirLoggerFactory } from 'miroir-core';
 import { useMiroirContextService } from '../MiroirContextReactProvider.js';
+import { packageName } from '../../../constants.js';
+import { cleanLevel } from '../constants.js';
+
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "RunActionTimeline")
+).then((logger: LoggerInterface) => { log = logger });
 
 export interface RunActionTimelineProps {
   className?: string;
@@ -72,22 +79,25 @@ export const RunActionTimeline: React.FC<RunActionTimelineProps> = React.memo(({
     since: '',
   });
 
+  // Debug: Log render with action count
+  // log.info(`RunActionTimeline [${componentId}] - Component rendered with ${actions.length} actions`);
+
   // Subscribe to action tracking updates
   useEffect(() => {
-    console.log(`RunActionTimeline [${componentId}] - Setting up subscription`);
+    // log.info(`RunActionTimeline [${componentId}] - Setting up subscription`);
     
     const unsubscribe = context.miroirContext.runActionTracker.subscribe((newActions: ActionTrackingData[]) => {
-      console.log(`RunActionTimeline [${componentId}] - Received subscription update:`, newActions.length, 'actions');
+      // log.info(`RunActionTimeline [${componentId}] - Received subscription update:`, newActions.length, 'actions');
       setActions(newActions);
     });
 
     // Get initial actions
     const initialActions = context.miroirContext.runActionTracker.getAllActions();
-    console.log(`RunActionTimeline [${componentId}] - Initial actions:`, initialActions.length, 'actions');
+    // log.info(`RunActionTimeline [${componentId}] - Initial actions:`, initialActions.length, 'actions');
     setActions(initialActions);
 
     return () => {
-      console.log(`RunActionTimeline [${componentId}] - Cleaning up subscription`);
+      // log.info(`RunActionTimeline [${componentId}] - Cleaning up subscription`);
       unsubscribe();
     };
   }, [context.miroirContext.runActionTracker, componentId]);
@@ -96,45 +106,134 @@ export const RunActionTimeline: React.FC<RunActionTimelineProps> = React.memo(({
   const filteredActions = useMemo(() => {
     let result: ActionTrackingData[];
     
+    log.debug(`RunActionTimeline [${componentId}] - Filtering with:`, filters);
+    
     if (!filters.actionType && !filters.trackingType && !filters.status && !filters.minDuration && !filters.since) {
+      // log.info(`RunActionTimeline [${componentId}] - No filters applied, using all actions`);
       result = actions;
     } else {
-      result = context.miroirContext.runActionTracker.getFilteredActions({
-        actionType: filters.actionType || undefined,
-        trackingType: filters.trackingType as 'action' | 'testSuite' | 'test' | 'testAssertion' || undefined,
-        status: filters.status as 'running' | 'completed' | 'error' || undefined,
-        minDuration: filters.minDuration ? parseInt(filters.minDuration) : undefined,
-        since: filters.since ? new Date(filters.since).getTime() : undefined,
-      });
+      // log.info(`RunActionTimeline [${componentId}] - Applying filters, tracker methods available:`, {
+      //   hasGetFilteredActions: !!context.miroirContext.runActionTracker.getFilteredActions
+      // });
+      
+      // Try using the tracker's built-in filtering if available
+      if (context.miroirContext.runActionTracker.getFilteredActions) {
+        try {
+          const filterCriteria = {
+            actionType: filters.actionType || undefined,
+            trackingType: filters.trackingType as 'action' | 'testSuite' | 'test' | 'testAssertion' || undefined,
+            status: filters.status as 'running' | 'completed' | 'error' || undefined,
+            minDuration: filters.minDuration ? parseInt(filters.minDuration) : undefined,
+            since: filters.since ? new Date(filters.since).getTime() : undefined,
+          };
+          // log.info(`RunActionTimeline [${componentId}] - Using tracker filtering with criteria:`, filterCriteria);
+          result = context.miroirContext.runActionTracker.getFilteredActions(filterCriteria);
+        } catch (error) {
+          log.error(`RunActionTimeline [${componentId}] - Tracker filtering failed:`, error);
+          result = actions; // Fallback to all actions
+        }
+      } else {
+        // Fallback to manual filtering
+        // log.info(`RunActionTimeline [${componentId}] - Using manual filtering`);
+        result = actions.filter(action => {
+          let include = true;
+          if (filters.actionType && action.actionType !== filters.actionType) {
+            // log.debug(`RunActionTimeline [${componentId}] - Excluding action ${action.id} due to actionType filter:`, {
+            //   expected: filters.actionType,
+            //   actual: action.actionType
+            // });
+            include = false;
+          }
+          if (filters.trackingType && action.trackingType !== filters.trackingType) {
+            // log.debug(`RunActionTimeline [${componentId}] - Excluding action ${action.id} due to trackingType filter:`, {
+            //   expected: filters.trackingType,
+            //   actual: action.trackingType
+            // });
+            include = false;
+          }
+          if (filters.status && action.status !== filters.status) {
+            // log.debug(`RunActionTimeline [${componentId}] - Excluding action ${action.id} due to status filter:`, {
+            //   expected: filters.status,
+            //   actual: action.status
+            // });
+            include = false;
+          }
+          if (filters.minDuration && action.duration && action.duration < parseInt(filters.minDuration)) {
+            // log.debug(`RunActionTimeline [${componentId}] - Excluding action ${action.id} due to minDuration filter:`, {
+            //   expected: filters.minDuration,
+            //   actual: action.duration
+            // });
+            include = false;
+          }
+          if (filters.since && action.startTime && action.startTime < new Date(filters.since).getTime()) {
+            // log.debug(`RunActionTimeline [${componentId}] - Excluding action ${action.id} due to since filter:`, {
+            //   expected: filters.since,
+            //   actual: action.startTime
+            // });
+            include = false;
+          }
+          return include;
+        });
+      }
     }
     
-    console.log(`RunActionTimeline [${componentId}] - Filtered:`, result.length, 'actions from', actions.length, 'total');
+    // log.info(`RunActionTimeline [${componentId}] - Filtered:`, result.length, 'actions from', actions.length, 'total');
     return result;
   }, [actions, filters, context.miroirContext.runActionTracker, componentId]);
 
   // Get unique action types for filter dropdown
   const actionTypes = useMemo(() => {
-    const types = new Set(actions.map(action => action.actionType));
-    return Array.from(types).sort();
-  }, [actions]);
+    // log.debug(`RunActionTimeline [${componentId}] - Computing actionTypes from ${actions.length} actions`);
+    
+    const allActionTypes = actions
+      .map(action => action.actionType)
+      .filter(actionType => actionType && actionType.trim() !== '');
+    
+    const types = new Set(allActionTypes);
+    const result = Array.from(types).sort();
+    
+    // log.debug(`RunActionTimeline [${componentId}] - Found ${result.length} unique action types:`, result);
+    
+    return result;
+  }, [actions.length, actions.map(a => a.id).join(','), componentId]);
+
+  // Get unique tracking types for filter dropdown
+  const trackingTypes = useMemo(() => {
+    // log.debug(`RunActionTimeline [${componentId}] - Computing trackingTypes from ${actions.length} actions`);
+    
+    const allTrackingTypes = actions
+      .map(action => action.trackingType)
+      .filter(trackingType => trackingType && trackingType.trim() !== '');
+    
+    const types = new Set(allTrackingTypes);
+    const result = Array.from(types).sort();
+    
+    // log.debug(`RunActionTimeline [${componentId}] - Found ${result.length} unique tracking types:`, result);
+    
+    return result;
+  }, [actions.length, actions.map(a => a.id).join(','), componentId]);
 
   // Build tree structure for nested display (TreeNode uses nested children)
+  // Sort by timestamp descending (newest first)
   const actionTree = useMemo<TreeNode[]>(() => {
-    const rootActions = filteredActions.filter((action: ActionTrackingData) => !action.parentId);
+    const rootActions = filteredActions
+      .filter((action: ActionTrackingData) => !action.parentId)
+      .sort((a, b) => (b.startTime || 0) - (a.startTime || 0)); // Sort newest first
     
-    console.log(`RunActionTimeline [${componentId}] - Building tree with`, rootActions.length, 'root actions');
+    // log.info(`RunActionTimeline [${componentId}] - Building tree with`, rootActions.length, 'root actions from', filteredActions.length, 'filtered actions');
 
     const buildTree = (action: ActionTrackingData): TreeNode => {
       const children: TreeNode[] = filteredActions
         .filter((child: ActionTrackingData) => child.parentId === action.id)
+        .sort((a, b) => (b.startTime || 0) - (a.startTime || 0)) // Sort children newest first too
         .map((c) => buildTree(c));
 
-  // Return a TreeNode with nested children (may be empty array)
-  return ({ ...(action as any), children } as TreeNode);
+      // Return a TreeNode with nested children (may be empty array)
+      return ({ ...(action as any), children } as TreeNode);
     };
 
     const tree = rootActions.map(buildTree);
-    console.log(`RunActionTimeline [${componentId}] - Tree built with`, tree.length, 'top-level items');
+    // log.info(`RunActionTimeline [${componentId}] - Tree built with`, tree.length, 'top-level items');
     
     return tree;
   }, [filteredActions, componentId]);
@@ -159,8 +258,13 @@ export const RunActionTimeline: React.FC<RunActionTimelineProps> = React.memo(({
   }, [context.miroirContext.runActionTracker]);
 
   const handleFilterChange = useCallback((field: keyof FilterState, value: string) => {
-    setFilters(prev => ({ ...prev, [field]: value }));
-  }, []);
+    // log.info(`RunActionTimeline [${componentId}] - Filter change:`, { field, value, oldFilters: filters });
+    setFilters(prev => {
+      const newFilters = { ...prev, [field]: value };
+      // log.info(`RunActionTimeline [${componentId}] - New filters:`, newFilters);
+      return newFilters;
+    });
+  }, [filters, componentId]);
 
   const getStatusIcon = (action: ActionTrackingData) => {
     // Test-specific icons
@@ -291,9 +395,11 @@ export const RunActionTimeline: React.FC<RunActionTimelineProps> = React.memo(({
           </ListItemIcon>
           
           <ListItemText
+            primaryTypographyProps={{ component: "div" }}
+            secondaryTypographyProps={{ component: "div" }}
             primary={
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Typography variant="body2" fontWeight="medium">
+                <Typography variant="body2" fontWeight="medium" component="span">
                   {getDisplayLabel(action)}
                 </Typography>
                 <Chip
@@ -311,23 +417,23 @@ export const RunActionTimeline: React.FC<RunActionTimelineProps> = React.memo(({
                   color={getStatusColor(action) as any}
                   variant="outlined"
                 />
-                <Typography variant="caption" color="text.secondary">
+                <Typography variant="caption" color="text.secondary" component="span">
                   {formatDuration(action.duration)}
                 </Typography>
               </Box>
             }
             secondary={
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                <Typography variant="caption">
+                <Typography variant="caption" component="span">
                   Started: {formatTime(action.startTime)}
                 </Typography>
                 {action.endTime && (
-                  <Typography variant="caption">
+                  <Typography variant="caption" component="span">
                     Ended: {formatTime(action.endTime)}
                   </Typography>
                 )}
                 {action.error && (
-                  <Typography variant="caption" color="error">
+                  <Typography variant="caption" color="error" component="span">
                     Error: {action.error}
                   </Typography>
                 )}
@@ -408,35 +514,56 @@ export const RunActionTimeline: React.FC<RunActionTimelineProps> = React.memo(({
       </Box>
 
       <Collapse in={showFilters}>
-        <Box sx={{ p: 2, borderBottom: '1px solid #e0e0e0', bgcolor: '#f5f5f5' }}>
+        <Box sx={{ p: 2, borderBottom: '1px solid #e0e0e0', bgcolor: '#f5f5f5', position: 'relative', zIndex: 1000 }}>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             <FormControl size="small" fullWidth>
-              <InputLabel>Tracking Type</InputLabel>
-              <Select
+              <InputLabel shrink>Tracking Type</InputLabel>
+              <select 
                 value={filters.trackingType}
-                label="Tracking Type"
-                onChange={(e) => handleFilterChange('trackingType', e.target.value)}
+                onChange={(e) => {
+                  handleFilterChange('trackingType', e.target.value);
+                }}
+                style={{
+                  padding: '8px 12px',
+                  fontSize: '14px',
+                  border: '1px solid #c4c4c4',
+                  borderRadius: '4px',
+                  backgroundColor: '#ffffff',
+                  width: '100%',
+                  marginTop: '16px',
+                  fontFamily: 'inherit'
+                }}
               >
-                <MenuItem value="">All</MenuItem>
-                <MenuItem value="action">Actions Only</MenuItem>
-                <MenuItem value="testSuite">Test Suites</MenuItem>
-                <MenuItem value="test">Tests</MenuItem>
-                <MenuItem value="testAssertion">Test Assertions</MenuItem>
-              </Select>
+                <option value="">All</option>
+                {trackingTypes.map(type => (
+                  <option key={type} value={type}>{type}</option>
+                ))}
+              </select>
             </FormControl>
             
             <FormControl size="small" fullWidth>
-              <InputLabel>Action Type</InputLabel>
-              <Select
+              <InputLabel shrink>Action Type</InputLabel>
+              <select 
                 value={filters.actionType}
-                label="Action Type"
-                onChange={(e) => handleFilterChange('actionType', e.target.value)}
+                onChange={(e) => {
+                  handleFilterChange('actionType', e.target.value);
+                }}
+                style={{
+                  padding: '8px 12px',
+                  fontSize: '14px',
+                  border: '1px solid #c4c4c4',
+                  borderRadius: '4px',
+                  backgroundColor: '#ffffff',
+                  width: '100%',
+                  marginTop: '16px',
+                  fontFamily: 'inherit'
+                }}
               >
-                <MenuItem value="">All</MenuItem>
+                <option value="">All</option>
                 {actionTypes.map(type => (
-                  <MenuItem key={type} value={type}>{type}</MenuItem>
+                  <option key={type} value={type}>{type}</option>
                 ))}
-              </Select>
+              </select>
             </FormControl>
             
             <FormControl size="small" fullWidth>
@@ -444,7 +571,20 @@ export const RunActionTimeline: React.FC<RunActionTimelineProps> = React.memo(({
               <Select
                 value={filters.status}
                 label="Status"
-                onChange={(e) => handleFilterChange('status', e.target.value)}
+                onChange={(e) => {
+                  log.info(`RunActionTimeline [${componentId}] - Status dropdown changed:`, e.target.value);
+                  handleFilterChange('status', e.target.value);
+                }}
+                onOpen={() => log.info(`RunActionTimeline [${componentId}] - Status dropdown opened`)}
+                onClose={() => log.info(`RunActionTimeline [${componentId}] - Status dropdown closed`)}
+                MenuProps={{
+                  PaperProps: {
+                    style: {
+                      maxHeight: 300,
+                      zIndex: 2000,
+                    },
+                  },
+                }}
               >
                 <MenuItem value="">All</MenuItem>
                 <MenuItem value="running">Running</MenuItem>

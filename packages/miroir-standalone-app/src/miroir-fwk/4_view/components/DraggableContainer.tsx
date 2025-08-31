@@ -2,6 +2,15 @@
 import { css } from '@emotion/react';
 import * as React from 'react';
 import { useMiroirTheme } from '../contexts/MiroirThemeContext.js';
+import { LoggerInterface, MiroirLoggerFactory } from 'miroir-core';
+import { packageName } from '../../../constants.js';
+import { cleanLevel } from '../constants.js';
+
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "DraggableContainer")
+).then((logger: LoggerInterface) => {log = logger});
+
 
 export interface DraggableContainerProps {
   title?: string;
@@ -33,7 +42,7 @@ export const DraggableContainer: React.FC<DraggableContainerProps> = ({
     result.x = Math.max(0, Math.min(result.x, viewport.width - 400)); // Keep 400px minimum visible
     result.y = Math.max(0, Math.min(result.y, viewport.height - 200)); // Keep 200px minimum visible
     
-    console.log('DraggableContainer position init:', { storageKey, saved, result, defaultPosition });
+    log.debug('DraggableContainer position init:', { storageKey, saved, result, defaultPosition });
     return result;
   });
 
@@ -41,7 +50,7 @@ export const DraggableContainer: React.FC<DraggableContainerProps> = ({
     // Load size from sessionStorage
     const saved = sessionStorage.getItem(`${storageKey}_size`);
     const result = saved ? JSON.parse(saved) : defaultSize;
-    console.log('DraggableContainer size init:', { storageKey, saved, result, defaultSize });
+    log.debug('DraggableContainer size init:', { storageKey, saved, result, defaultSize });
     return result;
   });
 
@@ -178,7 +187,7 @@ export const DraggableContainer: React.FC<DraggableContainerProps> = ({
     flexDirection: 'column',
   });
 
-  console.log('DraggableContainer render:', { title, position, size });
+  // log.debug('DraggableContainer render:', { title, position, size });
 
   const headerStyles = css({
     fontWeight: currentTheme.typography.fontWeight.bold,
