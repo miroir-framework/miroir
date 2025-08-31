@@ -157,11 +157,7 @@ const router = createBrowserRouter([
         element: <MiroirEventsPage />,
         // errorElement: <ErrorPage />,
       },
-      {
-        path: "action-logs/:actionId",
-        element: <MiroirEventsPage />,
-        // errorElement: <ErrorPage />,
-      },
+      // Removing the path parameter route since we'll use query parameters
     ]
   },
 ]);

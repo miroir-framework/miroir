@@ -42,9 +42,11 @@ import {
   Close,
   PlayArrow,
   CheckCircle,
-  ErrorOutline
+  ErrorOutline,
+  Assignment,
+  History
 } from '@mui/icons-material';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useSearchParams, useLocation } from 'react-router-dom';
 import { useMiroirContextService } from '../MiroirContextReactProvider';
 import { LoggerInterface, MiroirLoggerFactory } from 'miroir-core';
 import { packageName } from '../../../constants.js';
@@ -231,8 +233,10 @@ const LogEntryComponent: React.FC<{ logEntry: ActionOrTestLogEntry; isExpanded: 
 // ################################################################################################
 // Main component for viewing action logs
 export const MiroirEventsPage: React.FC = () => {
-  const { actionId } = useParams<{ actionId: string }>();
+  const [searchParams] = useSearchParams();
+  const actionId = searchParams.get('actionId');
   const navigate = useNavigate();
+  const location = useLocation();
   const { miroirContext } = useMiroirContextService();
   
   const [events, setEvents] = useState<MiroirEvent[]>([]);
@@ -345,6 +349,8 @@ export const MiroirEventsPage: React.FC = () => {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
+    
+    log.info(`Exported action logs${actionId ? ' for action ID: ' + actionId : ' (all)'}`);
   };
 
   const handleClearFilters = () => {
@@ -363,50 +369,106 @@ export const MiroirEventsPage: React.FC = () => {
   // Show error state if the action log doesn't exist
   if (actionExists === false) {
     return (
-      <Paper 
-        elevation={3} 
-        sx={{ 
-          p: 4, 
-          maxWidth: 800, 
-          mx: 'auto', 
-          mt: 4, 
-          backgroundColor: '#fff8e1' 
-        }}
-      >
-        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-          <ErrorOutline color="error" sx={{ fontSize: 28, mr: 2 }} />
-          <Typography variant="h5" color="error">
-            Action Log Not Found
-          </Typography>
-        </Box>
-        
-        <Typography paragraph>
-          The requested action log <code>{actionId}</code> could not be found. It may have been purged from the system.
-        </Typography>
-        
-        <Box sx={{ mt: 3, display: 'flex', gap: 2 }}>
-          <Button 
-            variant="contained" 
-            color="primary" 
-            onClick={() => navigate(-1)}
-          >
-            Go Back
-          </Button>
+      <Box sx={{ p: 3 }}>
+        <Paper 
+          elevation={3} 
+          sx={{ 
+            p: 4, 
+            maxWidth: '100%', 
+            mx: 'auto', 
+            mb: 4, 
+            backgroundColor: '#fff8e1',
+            borderLeft: '4px solid #f44336'
+          }}
+        >
+          <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+            <ErrorOutline color="error" sx={{ fontSize: 32, mr: 2 }} />
+            <Typography variant="h5" color="error">
+              Action Log Not Found
+            </Typography>
+          </Box>
           
-          <Button 
-            variant="outlined" 
-            color="primary" 
-            onClick={() => navigate('/action-logs')}
-          >
-            View All Action Logs
-          </Button>
-        </Box>
-      </Paper>
+          <Typography paragraph>
+            The requested action log <code>{actionId}</code> could not be found. It may have been purged from the system or never existed.
+          </Typography>
+          
+          <Box sx={{ mt: 3, display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+            <Button 
+              variant="contained" 
+              color="primary" 
+              onClick={() => navigate(-1)}
+              startIcon={<History />}
+            >
+              Go Back
+            </Button>
+            
+            <Button 
+              variant="outlined" 
+              color="primary" 
+              onClick={() => navigate('/action-logs')}
+              startIcon={<Assignment />}
+            >
+              View All Action Logs
+            </Button>
+          </Box>
+        </Paper>
+        
+        {/* Display available action logs as a helpful reference */}
+        <Paper elevation={2} sx={{ p: 3 }}>
+          <Typography variant="h6" gutterBottom>
+            Available Action Logs
+          </Typography>
+          
+          {events.length === 0 ? (
+            <Typography color="text.secondary">
+              No action logs are currently available in the system.
+            </Typography>
+          ) : (
+            <>
+              <Typography paragraph>
+                Here are the {Math.min(5, events.length)} most recent action logs available:
+              </Typography>
+              
+              <List sx={{ bgcolor: '#f5f5f5', borderRadius: 1 }}>
+                {events.slice(0, 5).map((event) => (
+                  <ListItem 
+                    key={event.actionId} 
+                    button
+                    onClick={() => navigate(`/action-logs?actionId=${event.actionId}`)}
+                    sx={{ borderBottom: '1px solid #e0e0e0' }}
+                  >
+                    <ListItemIcon>
+                      {getActionStatusIcon(event.status)}
+                    </ListItemIcon>
+                    <ListItemText 
+                      primary={event.actionType || 'Unknown Action'} 
+                      secondary={`ID: ${event.actionId} • ${new Date(event.startTime).toLocaleString()}`}
+                    />
+                  </ListItem>
+                ))}
+              </List>
+              
+              {events.length > 5 && (
+                <Box sx={{ mt: 2, textAlign: 'right' }}>
+                  <Button 
+                    color="primary"
+                    onClick={() => navigate('/action-logs')}
+                  >
+                    View All {events.length} Action Logs
+                  </Button>
+                </Box>
+              )}
+            </>
+          )}
+        </Paper>
+      </Box>
     );
   }
 
-  // Legacy check - should be redundant now but keeping for safety
-  if (actionId && !currentActionLogs) {
+  // Legacy check - remove query param and just go to main action logs page
+  if (actionId && !currentActionLogs && actionExists === true) {
+    // This is a fallback in case our earlier check didn't catch a missing action log
+    log.warn(`Legacy check: Action log ${actionId} not found but actionExists wasn't set to false`);
     return (
       <Box sx={{ p: 3 }}>
         <Typography variant="h5" gutterBottom>
@@ -415,9 +477,20 @@ export const MiroirEventsPage: React.FC = () => {
         <Typography color="text.secondary">
           No logs found for action ID: {actionId}
         </Typography>
-        <Button onClick={() => navigate(-1)} sx={{ mt: 2 }}>
-          Go Back
-        </Button>
+        <Box sx={{ mt: 2, display: 'flex', gap: 2 }}>
+          <Button 
+            variant="contained"
+            onClick={() => navigate(-1)}
+          >
+            Go Back
+          </Button>
+          <Button 
+            variant="outlined"
+            onClick={() => navigate('/action-logs')}
+          >
+            View All Action Logs
+          </Button>
+        </Box>
       </Box>
     );
   }
@@ -439,9 +512,14 @@ export const MiroirEventsPage: React.FC = () => {
             </IconButton>
           </Tooltip>
           {actionId && (
-            <Button variant="outlined" onClick={() => navigate(-1)}>
-              Back to Timeline
-            </Button>
+            <>
+              <Button variant="outlined" onClick={() => navigate('/action-logs')}>
+                Back to All Logs
+              </Button>
+              <Button variant="text" onClick={() => navigate(-1)}>
+                Go Back
+              </Button>
+            </>
           )}
         </Box>
       </Box>
@@ -623,7 +701,7 @@ export const MiroirEventsPage: React.FC = () => {
                     key={actionLog.actionId}
                     divider
                     sx={{ cursor: 'pointer' }}
-                    onClick={() => navigate(`/action-logs/${actionLog.actionId}`)}
+                    onClick={() => navigate(`/action-logs?actionId=${actionLog.actionId}`)}
                   >
                     <ListItemIcon>
                       {getActionStatusIcon(actionLog.status)}
