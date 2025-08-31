@@ -133,6 +133,20 @@ Other core concepts are defined as Entities / EntityDefinitions, for example:
   - `Report`: allows to display data in the UI, based on a Query and several display sections, in file `packages/miroir-core/src/assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/952d2c65-4da2-45c2-9394-a0920ceedfb6.json`
   - `Endpoint`: allows to define Actions, which can perform side-effects on Entity instances and on the Model of an Application. Actions can run on the client or the server. Definition in file `packages/miroir-core/src/assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/e3c1cc69-066d-4f52-beeb-b659dc7a88b9.json`
 
+### Logging
+each file has its own logger instance, named after the file, for example `DomainController.ts` has a logger named `DomainController`. Loggers are configured via environment variable `VITE_MIROIR_LOG_CONFIG_FILENAME`, see example config files in `packages/miroir-standalone-app/tests/`.
+
+example logger setup in `DomainController.ts`:
+
+```typescript
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "DomainController")
+).then((logger: LoggerInterface) => {log = logger});
+```
+
+then use `log.debug(...)`, `log.info(...)`, etc. in the file.
+
 ### State Management Pattern
 - Redux + Redux-Sagas for complex async flows
 - Domain state isolated from UI state
