@@ -286,6 +286,11 @@ export function MiroirContextReactProvider(props: {
       showActionTimeline,
       setShowActionTimeline: (value: boolean | ((prev: boolean) => boolean)) => {
         const newValue = typeof value === 'function' ? value(showActionTimeline) : value;
+        console.log('setShowActionTimeline called:', { 
+          oldValue: showActionTimeline, 
+          newValue: newValue, 
+          type: typeof value 
+        });
         setShowActionTimeline(newValue);
         sessionStorage.setItem('showActionTimeline', JSON.stringify(newValue));
       },
@@ -313,6 +318,7 @@ export function MiroirContextReactProvider(props: {
       updateToolsPageState,
       updateTransformerEditorState,
       showPerformanceDisplay,
+      showActionTimeline,
       snackbarOpen,
       snackbarMessage,
       snackbarSeverity,

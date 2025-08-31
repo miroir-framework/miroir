@@ -381,9 +381,13 @@ export function AppBar(props:AppBarProps) {
                 }
               >
                 <Button
-                  onClick={() =>
-                    context.setShowActionTimeline?.(!context.showActionTimeline)
-                  }
+                  onClick={() => {
+                    console.log('Action Timeline toggle clicked:', { 
+                      current: context.showActionTimeline, 
+                      willBecome: !context.showActionTimeline 
+                    });
+                    context.setShowActionTimeline?.(!context.showActionTimeline);
+                  }}
                   sx={{
                     mr: 2,
                     px: 1,

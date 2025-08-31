@@ -1005,7 +1005,7 @@ export const RootComponent = (props: RootComponentProps) => {
           </Snackbar>
 
           {/* Action Timeline - Show when enabled */}
-          <ActionTimelineContainer />
+          <ActionTimelineContainer key={`action-timeline-${context.showActionTimeline}`} />
         </div>
       </MiroirThemeProvider>
     </DocumentOutlineContext.Provider>
