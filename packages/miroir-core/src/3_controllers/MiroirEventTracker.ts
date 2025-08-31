@@ -5,11 +5,11 @@ import {
   TestsResults,
   TestSuiteResult,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import { ActionOrTestTrackingData, MiroirEventTrackerInterface } from "../0_interfaces/3_controllers/MiroirEventTrackerInterface";
+import { MiroirEventTrackingData, MiroirEventTrackerInterface } from "../0_interfaces/3_controllers/MiroirEventTrackerInterface";
 
-export class MiroirActionOrTestTracker implements MiroirEventTrackerInterface {
-  private actionsOrTestTrackingData: Map<string, ActionOrTestTrackingData> = new Map();
-  private subscribers: Set<(actions: ActionOrTestTrackingData[]) => void> = new Set();
+export class MiroirEventTracker implements MiroirEventTrackerInterface {
+  private actionsOrTestTrackingData: Map<string, MiroirEventTrackingData> = new Map();
+  private subscribers: Set<(actions: MiroirEventTrackingData[]) => void> = new Set();
   private currentActionAndTestStack: string[] = []; // Stack to track nested actions
   private cleanupInterval: NodeJS.Timeout;
   private readonly CLEANUP_INTERVAL_MS = 60000; // 1 minute
@@ -34,16 +34,16 @@ export class MiroirActionOrTestTracker implements MiroirEventTrackerInterface {
     }, this.CLEANUP_INTERVAL_MS);
   }
 
-  startAction(actionType: string, actionLabel?: string, parentId?: string): string {
+  startEvent(actionType: string, actionLabel?: string, parentId?: string): string {
     const id = this.generateId();
     const now = Date.now();
 
     // If no parentId is provided, use the current active action as parent
-    const effectiveParentId = parentId || this.getCurrentActionOrTestId();
+    const effectiveParentId = parentId || this.getCurrentEventId();
 
     const depth = effectiveParentId ? (this.actionsOrTestTrackingData.get(effectiveParentId)?.depth ?? 0) + 1 : 0;
 
-    const actionData: ActionOrTestTrackingData = {
+    const actionData: MiroirEventTrackingData = {
       id,
       parentId: effectiveParentId,
       trackingType: "action",
@@ -72,7 +72,7 @@ export class MiroirActionOrTestTracker implements MiroirEventTrackerInterface {
     return id;
   }
 
-  endAction(trackingId: string, error?: string): void {
+  endEvent(trackingId: string, error?: string): void {
     const action = this.actionsOrTestTrackingData.get(trackingId);
     if (!action) {
       return;
@@ -95,19 +95,19 @@ export class MiroirActionOrTestTracker implements MiroirEventTrackerInterface {
     this.notifySubscribers();
   }
 
-  getAllActions(): ActionOrTestTrackingData[] {
+  getAllEvents(): MiroirEventTrackingData[] {
     return Array.from(this.actionsOrTestTrackingData.values()).sort((a, b) => a.startTime - b.startTime);
   }
 
-  getFilteredActions(filter: {
+  getFilteredEvents(filter: {
     actionType?: string;
     trackingType?: "action" | "testSuite" | "test" | "testAssertion"; // New field for test filtering
     status?: "running" | "completed" | "error";
     minDuration?: number;
     maxDuration?: number;
     since?: number;
-  }): ActionOrTestTrackingData[] {
-    return this.getAllActions().filter((action) => {
+  }): MiroirEventTrackingData[] {
+    return this.getAllEvents().filter((action) => {
       if (filter.actionType && action.actionType !== filter.actionType) {
         return false;
       }
@@ -148,14 +148,14 @@ export class MiroirActionOrTestTracker implements MiroirEventTrackerInterface {
     this.notifySubscribers();
   }
 
-  subscribe(callback: (actions: ActionOrTestTrackingData[]) => void): () => void {
+  subscribe(callback: (actions: MiroirEventTrackingData[]) => void): () => void {
     this.subscribers.add(callback);
     return () => {
       this.subscribers.delete(callback);
     };
   }
 
-  getCurrentActionOrTestId(): string | undefined {
+  getCurrentEventId(): string | undefined {
     return this.currentActionAndTestStack[this.currentActionAndTestStack.length - 1];
   }
 
@@ -180,10 +180,10 @@ export class MiroirActionOrTestTracker implements MiroirEventTrackerInterface {
     const id = this.generateId();
     const now = Date.now();
 
-    const effectiveParentId = parentId || this.getCurrentActionOrTestId();
+    const effectiveParentId = parentId || this.getCurrentEventId();
     const depth = effectiveParentId ? (this.actionsOrTestTrackingData.get(effectiveParentId)?.depth ?? 0) + 1 : 0;
 
-    const testSuiteData: ActionOrTestTrackingData = {
+    const testSuiteData: MiroirEventTrackingData = {
       id,
       parentId: effectiveParentId,
       trackingType: "testSuite",
@@ -215,10 +215,10 @@ export class MiroirActionOrTestTracker implements MiroirEventTrackerInterface {
     const id = this.generateId();
     const now = Date.now();
 
-    const effectiveParentId = parentId || this.getCurrentActionOrTestId();
+    const effectiveParentId = parentId || this.getCurrentEventId();
     const depth = effectiveParentId ? (this.actionsOrTestTrackingData.get(effectiveParentId)?.depth ?? 0) + 1 : 0;
 
-    const testData: ActionOrTestTrackingData = {
+    const testData: MiroirEventTrackingData = {
       id,
       parentId: effectiveParentId,
       trackingType: "test",
@@ -251,10 +251,10 @@ export class MiroirActionOrTestTracker implements MiroirEventTrackerInterface {
     const id = this.generateId();
     const now = Date.now();
 
-    const effectiveParentId = parentId || this.getCurrentActionOrTestId();
+    const effectiveParentId = parentId || this.getCurrentEventId();
     const depth = effectiveParentId ? (this.actionsOrTestTrackingData.get(effectiveParentId)?.depth ?? 0) + 1 : 0;
 
-    const testAssertionData: ActionOrTestTrackingData = {
+    const testAssertionData: MiroirEventTrackingData = {
       id,
       parentId: effectiveParentId,
       trackingType: "testAssertion",
@@ -298,7 +298,7 @@ export class MiroirActionOrTestTracker implements MiroirEventTrackerInterface {
       // Original TestTracker signature: (testAssertionResult: TestAssertionResult)
       result = param1;
       // Use current context to find the active test assertion
-      trackingId = this.getCurrentActionOrTestId();
+      trackingId = this.getCurrentEventId();
     }
 
     if (trackingId) {
@@ -337,7 +337,7 @@ export class MiroirActionOrTestTracker implements MiroirEventTrackerInterface {
     const test = this.getTest();
 
     console.log(
-      "MiroirActionOrTestTracker.setTestAssertionResult called for",
+      "MiroirEventTracker.setTestAssertionResult called for",
       testSuite,
       test,
       "testAssertionResult",
@@ -456,12 +456,12 @@ export class MiroirActionOrTestTracker implements MiroirEventTrackerInterface {
   }
 
   private notifySubscribers(): void {
-    const actions = this.getAllActions();
+    const actions = this.getAllEvents();
     this.subscribers.forEach((callback) => {
       try {
         callback(actions);
       } catch (error) {
-        console.error("Error in MiroirActionOrTestTracker subscriber:", error);
+        console.error("Error in MiroirEventTracker subscriber:", error);
       }
     });
   }

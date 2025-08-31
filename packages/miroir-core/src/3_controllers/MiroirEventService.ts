@@ -9,7 +9,7 @@ import{ LoggerGlobalContext } from "../4_services/LoggerContext";
 // } from './TestLogService.js';
 
 // Unified log entry representing a single log message within an action or test execution
-export interface ActionOrTestLogEntry {
+export interface MiroirEventEntry {
   id: string;
   actionId: string; // Renamed from trackingId for backwards compatibility
   timestamp: number;
@@ -28,7 +28,7 @@ export interface ActionOrTestLogEntry {
 }
 
 // Aggregated logs for a specific action or test execution
-export interface ActionOrTestLogs {
+export interface MiroirEvent {
   actionId: string; // trackingId for backwards compatibility
   actionType: string;
   actionLabel?: string;
@@ -36,7 +36,7 @@ export interface ActionOrTestLogs {
   startTime: number;
   endTime?: number;
   status: 'running' | 'completed' | 'error';
-  logs: ActionOrTestLogEntry[];
+  logs: MiroirEventEntry[];
   logCounts: {
     trace: number;
     debug: number;
@@ -61,11 +61,11 @@ export interface ActionLogFilter {
 }
 
 // Service interface for action logging
-export interface ActionOrTestLogServiceInterface {
+export interface MiroirEventServiceInterface {
   /**
    * Log a message for the currently executing action
    */
-  logForCurrentActionOrTest(
+  pushEventFromLog(
     level: 'trace' | 'debug' | 'info' | 'warn' | 'error',
     loggerName: string,
     message: string,
@@ -75,7 +75,7 @@ export interface ActionOrTestLogServiceInterface {
   /**
    * Get logs for a specific action
    */
-  getActionOrTestLogs(actionId: string): ActionOrTestLogs | undefined;
+  getEvent(actionId: string): MiroirEvent | undefined;
 
   // /**
   //  * Get logs for a specific Test
@@ -85,7 +85,7 @@ export interface ActionOrTestLogServiceInterface {
   /**
    * Get all action logs
    */
-  getAllActionOrTestLogs(): ActionOrTestLogs[];
+  getAllEvents(): MiroirEvent[];
 
   // /**
   //  * Get all test logs
@@ -95,7 +95,7 @@ export interface ActionOrTestLogServiceInterface {
   /**
    * Get filtered action logs
    */
-  getFilteredActionOrTestLogs(filter: ActionLogFilter): ActionOrTestLogs[];
+  getFilteredEvents(filter: ActionLogFilter): MiroirEvent[];
 
   // /**
   //  * Get filtered test logs
@@ -105,7 +105,7 @@ export interface ActionOrTestLogServiceInterface {
   /**
    * Subscribe to action log updates
    */
-  subscribe(callback: (actionLogs: ActionOrTestLogs[]) => void): () => void;
+  subscribe(callback: (actionLogs: MiroirEvent[]) => void): () => void;
 
   /**
    * Clear all logs
@@ -115,69 +115,8 @@ export interface ActionOrTestLogServiceInterface {
   /**
    * Export action logs as JSON
    */
-  exportLogs(): string;
+  exportEvents(): string;
 }
-
-// ################################################################################################
-// ===============================================
-// TestLogService Compatibility Wrappers
-// ===============================================
-
-// // Wrapper to convert ActionOrTestLogs to TestLogs format for backwards compatibility
-// export function actionLogsToTestLogs(actionLogs: ActionOrTestLogs): TestLogs {
-//   return {
-//     testSuite: actionLogs.trackingType === 'testSuite' ? actionLogs.actionLabel : undefined,
-//     test: actionLogs.trackingType === 'test' ? actionLogs.actionLabel : undefined,
-//     testAssertion: actionLogs.trackingType === 'testAssertion' ? actionLogs.actionLabel : undefined,
-//     startTime: actionLogs.startTime,
-//     endTime: actionLogs.endTime,
-//     logs: actionLogs.logs.map(log => ({
-//       id: log.id,
-//       timestamp: log.timestamp,
-//       level: log.level,
-//       loggerName: log.loggerName,
-//       message: log.message,
-//       args: log.args,
-//       testSuite: log.context?.testSuite,
-//       test: log.context?.test,
-//       testAssertion: log.context?.testAssertion,
-//       context: {
-//         testSuite: log.context?.testSuite,
-//         test: log.context?.test,
-//         testAssertion: log.context?.testAssertion,
-//         action: log.context?.action,
-//         compositeAction: log.context?.compositeAction
-//       }
-//     })),
-//     logCounts: actionLogs.logCounts
-//   };
-// }
-
-// // Wrapper to convert ActionLogFilter to TestLogFilter for backwards compatibility
-// export function actionLogFilterToTestLogFilter(filter: ActionLogFilter): TestLogFilter {
-//   return {
-//     testSuite: filter.testSuite,
-//     test: filter.test,
-//     testAssertion: filter.trackingType === 'testAssertion' ? filter.actionType : undefined,
-//     level: filter.level,
-//     since: filter.since,
-//     searchText: filter.searchText,
-//     loggerName: filter.loggerName
-//   };
-// }
-
-// // Wrapper to convert TestLogFilter to ActionLogFilter
-// export function testLogFilterToActionLogFilter(filter: TestLogFilter): ActionLogFilter {
-//   return {
-//     trackingType: filter.testAssertion ? 'testAssertion' : filter.test ? 'test' : filter.testSuite ? 'testSuite' : undefined,
-//     level: filter.level,
-//     since: filter.since,
-//     searchText: filter.searchText,
-//     loggerName: filter.loggerName,
-//     testSuite: filter.testSuite,
-//     test: filter.test
-//   };
-// }
 
 // ################################################################################################
 // ################################################################################################
@@ -188,11 +127,11 @@ export interface ActionOrTestLogServiceInterface {
 /**
  * Service for capturing and managing logs associated with specific action executions
  */
-// export class MiroirLogService implements ActionOrTestLogServiceInterface {
-export class MiroirLogService implements ActionOrTestLogServiceInterface {
-  private actionOrTestLogs: Map<string, ActionOrTestLogs> = new Map();
-  private actionOrTestLogEntries: Map<string, ActionOrTestLogEntry> = new Map();
-  private actionOrTestSubscribers: Set<(actionLogs: ActionOrTestLogs[]) => void> = new Set();
+// export class MiroirEventService implements MiroirEventServiceInterface {
+export class MiroirEventService implements MiroirEventServiceInterface {
+  private events: Map<string, MiroirEvent> = new Map();
+  private eventEntries: Map<string, MiroirEventEntry> = new Map();
+  private eventSubscribers: Set<(actionLogs: MiroirEvent[]) => void> = new Set();
   // private testSubscribers: Set<(testLogs: TestLogs[]) => void> = new Set();
   private cleanupInterval: NodeJS.Timeout;
   
@@ -201,46 +140,47 @@ export class MiroirLogService implements ActionOrTestLogServiceInterface {
   private readonly CLEANUP_INTERVAL_MS = 2 * 60 * 1000; // 2 minutes
   private readonly MAX_ENTRIES_PER_ACTION_OR_TEST = 1000; // Prevent memory bloat
 
-  constructor(private runActionTracker: MiroirEventTrackerInterface) {
+  constructor(private eventTracker: MiroirEventTrackerInterface) {
     // Start cleanup timer
     this.cleanupInterval = setInterval(() => {
       this.cleanup();
     }, this.CLEANUP_INTERVAL_MS);
 
     // Subscribe to action tracker to create action log containers
-    this.runActionTracker.subscribe((actions) => {
-      this.updateActionContainers(actions);
+    this.eventTracker.subscribe((actions) => {
+      this.updateEventContainers(actions);
     });
   }
 
-  logForCurrentActionOrTest(
+  // ##############################################################################################
+  pushEventFromLog(
     level: 'trace' | 'debug' | 'info' | 'warn' | 'error',
     loggerName: string,
     message: string,
     ...args: any[]
   ): void {
-    const currentActionId = this.runActionTracker.getCurrentActionOrTestId();
+    const currentActionId = this.eventTracker.getCurrentEventId();
     if (!currentActionId) {
       // No active action, skip logging
       return;
     }
 
-    const logEntry: ActionOrTestLogEntry = {
-      id: this.generateLogId(),
+    const logEntry: MiroirEventEntry = {
+      id: this.generateEventId(),
       actionId: currentActionId,
       timestamp: Date.now(),
       level,
       loggerName,
       message,
       args,
-      context: this.getCurrentLogContext()
+      context: this.getCurrentEventContext()
     };
 
     // Store the log entry
-    this.actionOrTestLogEntries.set(logEntry.id, logEntry);
+    this.eventEntries.set(logEntry.id, logEntry);
 
     // Add to action logs
-    const actionLogs = this.actionOrTestLogs.get(currentActionId);
+    const actionLogs = this.events.get(currentActionId);
     if (actionLogs) {
       actionLogs.logs.push(logEntry);
       actionLogs.logCounts[level]++;
@@ -250,13 +190,13 @@ export class MiroirLogService implements ActionOrTestLogServiceInterface {
       if (actionLogs.logs.length > this.MAX_ENTRIES_PER_ACTION_OR_TEST) {
         const removedLog = actionLogs.logs.shift();
         if (removedLog) {
-          this.actionOrTestLogEntries.delete(removedLog.id);
+          this.eventEntries.delete(removedLog.id);
           actionLogs.logCounts[removedLog.level]--;
           actionLogs.logCounts.total--;
         }
       }
 
-      this.notifyActionSubscribers();
+      this.notifyEventSubscribers();
     }
   }
 
@@ -266,7 +206,7 @@ export class MiroirLogService implements ActionOrTestLogServiceInterface {
   //   message: string,
   //   ...args: any[]
   // ): void {
-  //   const currentActionId = this.runActionTracker.getCurrentActionOrTestId();
+  //   const currentActionId = this.runActionTracker.getCurrentEventId();
   //   if (!currentActionId) {
   //     // No active action, skip logging
   //     return;
@@ -307,20 +247,20 @@ export class MiroirLogService implements ActionOrTestLogServiceInterface {
   //   }
   // }
 
-  getActionOrTestLogs(actionId: string): ActionOrTestLogs | undefined {
-    return this.actionOrTestLogs.get(actionId);
+  getEvent(eventId: string): MiroirEvent | undefined {
+    return this.events.get(eventId);
   }
 
-  getAllActionOrTestLogs(): ActionOrTestLogs[] {
-    return Array.from(this.actionOrTestLogs.values()).sort((a, b) => b.startTime - a.startTime);
+  getAllEvents(): MiroirEvent[] {
+    return Array.from(this.events.values()).sort((a, b) => b.startTime - a.startTime);
   }
 
   // getAllTestLogs(): TestLogs[] {
   //   return Array.from(this.actionOrTestLogs.values()).sort((a, b) => b.startTime - a.startTime);
   // }
 
-  getFilteredActionOrTestLogs(filter: ActionLogFilter): ActionOrTestLogs[] {
-    return this.getAllActionOrTestLogs().filter(actionLogs => {
+  getFilteredEvents(filter: ActionLogFilter): MiroirEvent[] {
+    return this.getAllEvents().filter(actionLogs => {
       if (filter.actionId && actionLogs.actionId !== filter.actionId) {
         return false;
       }
@@ -379,23 +319,23 @@ export class MiroirLogService implements ActionOrTestLogServiceInterface {
     });
   }
 
-  subscribe(callback: (actionLogs: ActionOrTestLogs[]) => void): () => void {
-    this.actionOrTestSubscribers.add(callback);
+  subscribe(callback: (actionEvents: MiroirEvent[]) => void): () => void {
+    this.eventSubscribers.add(callback);
     return () => {
-      this.actionOrTestSubscribers.delete(callback);
+      this.eventSubscribers.delete(callback);
     };
   }
 
   clear(): void {
-    this.actionOrTestLogs.clear();
-    this.actionOrTestLogEntries.clear();
-    this.notifyActionSubscribers();
+    this.events.clear();
+    this.eventEntries.clear();
+    this.notifyEventSubscribers();
   }
 
-  exportLogs(): string {
+  exportEvents(): string {
     const exportData = {
       timestamp: new Date().toISOString(),
-      actionLogs: this.getAllActionOrTestLogs().map(actionLogs => ({
+      actionLogs: this.getAllEvents().map(actionLogs => ({
         ...actionLogs,
         logs: actionLogs.logs.map(log => ({
           ...log,
@@ -411,14 +351,14 @@ export class MiroirLogService implements ActionOrTestLogServiceInterface {
       clearInterval(this.cleanupInterval);
     }
     this.clear();
-    this.actionOrTestSubscribers.clear();
+    this.eventSubscribers.clear();
   }
 
-  private updateActionContainers(actions: any[]): void {
+  private updateEventContainers(events: any[]): void {
     // Create action log containers for new actions and tests
-    actions.forEach(action => {
-      if (!this.actionOrTestLogs.has(action.id)) {
-        const actionLogs: ActionOrTestLogs = {
+    events.forEach(action => {
+      if (!this.events.has(action.id)) {
+        const event: MiroirEvent = {
           actionId: action.id,
           actionType: action.actionType,
           actionLabel: action.actionLabel,
@@ -436,47 +376,47 @@ export class MiroirLogService implements ActionOrTestLogServiceInterface {
             total: 0
           }
         };
-        this.actionOrTestLogs.set(action.id, actionLogs);
+        this.events.set(action.id, event);
       } else {
         // Update existing action status/timing
-        const existing = this.actionOrTestLogs.get(action.id)!;
+        const existing = this.events.get(action.id)!;
         existing.endTime = action.endTime;
         existing.status = action.status;
       }
     });
   }
 
-  private generateLogId(): string {
+  private generateEventId(): string {
     return `log_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   }
 
-  private getCurrentLogContext() {
-    // Get action and compositeAction from MiroirActionOrTestTracker instead of LoggerGlobalContext
+  private getCurrentEventContext() {
+    // Get action and compositeAction from MiroirEventTracker instead of LoggerGlobalContext
     // Still get test-related context from LoggerGlobalContext to avoid breaking test functionality
     try {
-      const currentAction = this.runActionTracker.getCurrentActionOrTestId();
-      const currentActionData = currentAction ? this.runActionTracker.getAllActions().find(a => a.id === currentAction) : undefined;
+      const currentAction = this.eventTracker.getCurrentEventId();
+      const currentActionData = currentAction ? this.eventTracker.getAllEvents().find(a => a.id === currentAction) : undefined;
       
       return {
         trackingType: currentActionData?.trackingType,
         testSuite: currentActionData?.testSuite || LoggerGlobalContext.getTestSuite(),
         test: currentActionData?.test || LoggerGlobalContext.getTest(),
         testAssertion: currentActionData?.testAssertion || LoggerGlobalContext.getTestAssertion(),
-        compositeAction: this.runActionTracker.getCompositeAction(),
-        action: this.runActionTracker.getAction()
+        compositeAction: this.eventTracker.getCompositeAction(),
+        action: this.eventTracker.getAction()
       };
     } catch (error) {
       return undefined;
     }
   }
 
-  private notifyActionSubscribers(): void {
-    const actionLogs = this.getAllActionOrTestLogs();
-    this.actionOrTestSubscribers.forEach(callback => {
+  private notifyEventSubscribers(): void {
+    const actionLogs = this.getAllEvents();
+    this.eventSubscribers.forEach(callback => {
       try {
         callback(actionLogs);
       } catch (error) {
-        console.error('Error in MiroirLogService subscriber:', error);
+        console.error('Error in MiroirEventService subscriber:', error);
       }
     });
   }
@@ -487,7 +427,7 @@ export class MiroirLogService implements ActionOrTestLogServiceInterface {
   //     try {
   //       callback(testLogs);
   //     } catch (error) {
-  //       console.error('Error in MiroirLogService subscriber:', error);
+  //       console.error('Error in MiroirEventService subscriber:', error);
   //     }
   //   });
   // }
@@ -499,7 +439,7 @@ export class MiroirLogService implements ActionOrTestLogServiceInterface {
     // Find actions to remove (older than MAX_AGE_MS and completed)
     const actionsToRemove: string[] = [];
     
-    for (const [actionId, actionLogs] of Array.from(this.actionOrTestLogs.entries())) {
+    for (const [actionId, actionLogs] of Array.from(this.events.entries())) {
       if (actionLogs.status !== 'running' && actionLogs.startTime < cutoff) {
         actionsToRemove.push(actionId);
       }
@@ -507,18 +447,18 @@ export class MiroirLogService implements ActionOrTestLogServiceInterface {
 
     // Remove old actions and their log entries
     actionsToRemove.forEach(actionId => {
-      const actionLogs = this.actionOrTestLogs.get(actionId);
+      const actionLogs = this.events.get(actionId);
       if (actionLogs) {
         // Remove all log entries for this action
         actionLogs.logs.forEach(log => {
-          this.actionOrTestLogEntries.delete(log.id);
+          this.eventEntries.delete(log.id);
         });
-        this.actionOrTestLogs.delete(actionId);
+        this.events.delete(actionId);
       }
     });
 
     if (actionsToRemove.length > 0) {
-      this.notifyActionSubscribers();
+      this.notifyEventSubscribers();
     }
   }
 }
@@ -537,10 +477,10 @@ export class MiroirLogService implements ActionOrTestLogServiceInterface {
 // ===============================================
 
 /**
- * Backwards compatibility wrapper that makes MiroirLogService compatible with TestLogServiceInterface
+ * Backwards compatibility wrapper that makes MiroirEventService compatible with TestLogServiceInterface
  */
 // export class TestLogServiceCompatibilityWrapper implements TestLogServiceInterface {
-//   constructor(private actionLogService: MiroirLogService) {}
+//   constructor(private actionLogService: MiroirEventService) {}
 
 //   logForCurrentTest(
 //     level: 'trace' | 'debug' | 'info' | 'warn' | 'error',
@@ -548,7 +488,7 @@ export class MiroirLogService implements ActionOrTestLogServiceInterface {
 //     message: string,
 //     ...args: any[]
 //   ): void {
-//     // Delegate to MiroirLogService which handles test context via MiroirActionOrTestTracker
+//     // Delegate to MiroirEventService which handles test context via MiroirEventTracker
 //     this.actionLogService.logForCurrentAction(level, loggerName, message, ...args);
 //   }
 
@@ -586,8 +526,8 @@ export class MiroirLogService implements ActionOrTestLogServiceInterface {
 //   }
 
 //   subscribe(callback: (testLogs: TestLogs[]) => void): () => void {
-//     // Subscribe to MiroirLogService and filter for test logs
-//     return this.actionLogService.subscribe((actionLogs: ActionOrTestLogs[]) => {
+//     // Subscribe to MiroirEventService and filter for test logs
+//     return this.actionLogService.subscribe((actionLogs: MiroirEvent[]) => {
 //       const testLogs = actionLogs
 //         .filter(logs => 
 //           logs.trackingType === 'testSuite' || 
@@ -600,7 +540,7 @@ export class MiroirLogService implements ActionOrTestLogServiceInterface {
 //   }
 
 //   clear(): void {
-//     // Clear all logs through MiroirLogService
+//     // Clear all logs through MiroirEventService
 //     this.actionLogService.clear();
 //   }
 

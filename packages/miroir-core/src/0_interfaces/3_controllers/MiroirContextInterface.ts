@@ -1,10 +1,10 @@
-import { ActionOrTestLogServiceInterface } from "../../3_controllers/MiroirLogService";
+import { MiroirEventServiceInterface } from "../../3_controllers/MiroirEventService";
 import { MiroirEventTrackerInterface } from "./MiroirEventTrackerInterface";
 import { MiroirConfigClient, MiroirConfigServer } from "../1_core/preprocessor-generated/miroirFundamentalType";
 
 export interface MiroirContextInterface {
-  runActionOrTestTracker: MiroirEventTrackerInterface,
-  actionOrTestLogService: ActionOrTestLogServiceInterface,
+  miroirEventTracker: MiroirEventTrackerInterface,
+  miroirEventService: MiroirEventServiceInterface,
   getMiroirConfig(): MiroirConfigClient | MiroirConfigServer | undefined,
 }
 

@@ -1,19 +1,19 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import {
-  MiroirLogService,
-} from "../../src/3_controllers/MiroirLogService";
+  MiroirEventService,
+} from "../../src/3_controllers/MiroirEventService";
 import { LogInterceptor } from '../../src/4_services/LogInterceptor';
 // import { TestLogService } from '../../src/3_controllers/TestLogService';
-import { MiroirActionOrTestTracker } from '../../src/3_controllers/MiroirActionOrTestTracker';
+import { MiroirEventTracker } from '../../src/3_controllers/MiroirEventTracker';
 // import { TestTracker } from '../../src/3_controllers/TestTracker';
 
 // Integration test without mocks - testing real interactions between components
 describe('LogInterceptor Integration Tests', () => {
   let logInterceptor: LogInterceptor;
-  let runActionOrTestTracker: MiroirActionOrTestTracker;
-  let actionOrTestLogService: MiroirLogService;
-  // let testTracker: MiroirActionOrTestTracker;
-  // let testLogService: MiroirLogService;
+  let miroirEventTracker: MiroirEventTracker;
+  let actionOrTestLogService: MiroirEventService;
+  // let testTracker: MiroirEventTracker;
+  // let testLogService: MiroirEventService;
   let originalConsole: typeof console;
   let capturedLogs: string[] = [];
 
@@ -40,22 +40,22 @@ describe('LogInterceptor Integration Tests', () => {
     console.error = captureLog('error') as any;
 
     // Create real instances (no mocks)
-    runActionOrTestTracker = new MiroirActionOrTestTracker();
-    actionOrTestLogService = new MiroirLogService(runActionOrTestTracker);
+    miroirEventTracker = new MiroirEventTracker();
+    actionOrTestLogService = new MiroirEventService(miroirEventTracker);
     // testTracker = new TestTracker();
     // testLogService = new TestLogService(testTracker);
-    // testTracker = runActionOrTestTracker;
+    // testTracker = miroirEventTracker;
     // testLogService = new TestLogServiceCompatibilityWrapper(actionOrTestLogService);
 
     // Create LogInterceptor with both action and test configurations
     logInterceptor = new LogInterceptor({
       actionOrTest: {
         actionOrTestLogService: actionOrTestLogService,
-        actionOrTestTracker: runActionOrTestTracker
+        actionOrTestTracker: miroirEventTracker
       },
       // test: {
       //   testLogService: testLogService,
-      //   testTracker: runActionOrTestTracker,
+      //   testTracker: miroirEventTracker,
       //   // testLogService,
       //   // testTracker
       // }
@@ -72,17 +72,17 @@ describe('LogInterceptor Integration Tests', () => {
     logInterceptor.start();
 
     // Start an action
-    const actionId = runActionOrTestTracker.startAction('testAction');
+    const actionId = miroirEventTracker.startEvent('testAction');
     
     // Emit some logs
     console.info('[2024-01-01T10:00:00Z] info (TestLogger) - Test action message');
     console.warn('[2024-01-01T10:00:01Z] warn (ActionLogger) - Warning during action');
     
     // Stop the action
-    runActionOrTestTracker.endAction(actionId);
+    miroirEventTracker.endEvent(actionId);
 
     // Verify logs were captured for the action
-    const actionLogs = actionOrTestLogService.getActionOrTestLogs(actionId);
+    const actionLogs = actionOrTestLogService.getEvent(actionId);
     expect(actionLogs).toBeDefined();
     expect(actionLogs?.logs).toHaveLength(2);
     expect(actionLogs?.logs[0]).toMatchObject({
@@ -105,8 +105,8 @@ describe('LogInterceptor Integration Tests', () => {
     logInterceptor.start();
 
     // Start a test suite and test
-    runActionOrTestTracker.setTestSuite('Integration Tests');
-    runActionOrTestTracker.setTest('should capture logs');
+    miroirEventTracker.setTestSuite('Integration Tests');
+    miroirEventTracker.setTest('should capture logs');
     
     // Emit some logs
     console.error('[2024-01-01T10:00:00Z] error (TestRunner) - Test error message');
@@ -117,7 +117,7 @@ describe('LogInterceptor Integration Tests', () => {
 
     // Verify logs were captured for the test
     // const testLogs = actionOrTestLogService.getTestLogs('Integration Tests', 'should capture logs');
-    const testLogs = actionOrTestLogService.getActionOrTestLogs('Integration Tests');
+    const testLogs = actionOrTestLogService.getEvent('Integration Tests');
     expect(testLogs).toHaveLength(1); // One TestLogs object for this test context
     // expect(testLogs[0].logs).toHaveLength(2);
     // expect(testLogs[0].logs[0]).toMatchObject({
@@ -140,20 +140,20 @@ describe('LogInterceptor Integration Tests', () => {
     logInterceptor.start();
 
     // Start an action
-    const actionId = runActionOrTestTracker.startAction('testAction');
+    const actionId = miroirEventTracker.startEvent('testAction');
     
     // Start a test within the action
-    runActionOrTestTracker.setTestSuite('Action Test Suite');
-    runActionOrTestTracker.setTest('action test');
+    miroirEventTracker.setTestSuite('Action Test Suite');
+    miroirEventTracker.setTest('action test');
     
     // Emit a log that should be captured by both
     console.info('[2024-01-01T10:00:00Z] info (DualLogger) - Message in both contexts');
     
     // End both contexts
-    runActionOrTestTracker.endAction(actionId);
+    miroirEventTracker.endEvent(actionId);
 
     // Verify log was captured by both services
-    const actionLogs = actionOrTestLogService.getActionOrTestLogs(actionId);
+    const actionLogs = actionOrTestLogService.getEvent(actionId);
     // const testLogs = actionOrTestLogService.getActionOrTestLogs('Action Test Suite', 'action test');
     
     expect(actionLogs?.logs).toHaveLength(1);
@@ -195,8 +195,8 @@ describe('LogInterceptor Integration Tests', () => {
 
   it('should handle action-only configuration', () => {
     // Create a fresh interceptor with only action configuration
-    const freshActionTracker = new MiroirActionOrTestTracker();
-    const freshActionLogService = new MiroirLogService(freshActionTracker);
+    const freshActionTracker = new MiroirEventTracker();
+    const freshActionLogService = new MiroirEventService(freshActionTracker);
     
     // Create LogInterceptor with only action configuration
     const actionOnlyInterceptor = new LogInterceptor({
@@ -210,16 +210,16 @@ describe('LogInterceptor Integration Tests', () => {
     actionOnlyInterceptor.start();
 
     // Start an action
-    const actionId = freshActionTracker.startAction('actionOnlyTest');
+    const actionId = freshActionTracker.startEvent('actionOnlyTest');
     
     // Emit logs
     console.info('[2024-01-01T10:00:00Z] info (ActionOnlyLogger) - Action-only message');
     
     // End action
-    freshActionTracker.endAction(actionId);
+    freshActionTracker.endEvent(actionId);
 
     // Verify action logs were captured
-    const actionLogs = freshActionLogService.getActionOrTestLogs(actionId);
+    const actionLogs = freshActionLogService.getEvent(actionId);
     expect(actionLogs?.logs).toHaveLength(1);
     expect(actionLogs?.logs[0]).toMatchObject({
       level: 'info',
@@ -291,12 +291,12 @@ describe('LogInterceptor Integration Tests', () => {
     // Verify console methods were restored
     // Note: We can't compare function equality directly due to binding,
     // but we can verify they work and don't intercept anymore
-    const actionId = runActionOrTestTracker.startAction('postStopAction');
+    const actionId = miroirEventTracker.startEvent('postStopAction');
     console.info('[2024-01-01T10:00:00Z] info (PostStopLogger) - Post-stop message');
-    runActionOrTestTracker.endAction(actionId);
+    miroirEventTracker.endEvent(actionId);
 
     // Verify no logs were captured after stopping
-    const actionLogs = actionOrTestLogService.getActionOrTestLogs(actionId);
+    const actionLogs = actionOrTestLogService.getEvent(actionId);
     expect(actionLogs?.logs).toHaveLength(0);
   });
 
@@ -304,7 +304,7 @@ describe('LogInterceptor Integration Tests', () => {
   //   logInterceptor.start();
 
   //   // Create action-aware logger wrapper
-  //   const actionWrapper = new ActionAwareLoggerWrapper(actionOrTestLogService, runActionOrTestTracker);
+  //   const actionWrapper = new ActionAwareLoggerWrapper(actionOrTestLogService, miroirEventTracker);
     
   //   // Create test-aware logger wrapper
   //   const testWrapper = new TestAwareLoggerWrapper(testLogService, testTracker);
@@ -320,16 +320,16 @@ describe('LogInterceptor Integration Tests', () => {
   //   const testWrappedLogger = testWrapper.wrapLogger(mockLogger, 'TestWrappedLogger');
 
   //   // Start contexts
-  //   const actionId = runActionOrTestTracker.startAction('wrapperTest');
-  //   runActionOrTestTracker.setTestSuite('Wrapper Suite');
-  //   runActionOrTestTracker.setTest('wrapper test');
+  //   const actionId = miroirEventTracker.startEvent('wrapperTest');
+  //   miroirEventTracker.setTestSuite('Wrapper Suite');
+  //   miroirEventTracker.setTest('wrapper test');
 
   //   // Use wrapped loggers
   //   actionWrappedLogger.info('[2024-01-01T10:00:00Z] info (ActionWrappedLogger) - Action wrapped message');
   //   testWrappedLogger.warn('[2024-01-01T10:00:01Z] warn (TestWrappedLogger) - Test wrapped message');
 
   //   // End contexts
-  //   runActionOrTestTracker.endAction(actionId);
+  //   miroirEventTracker.endEvent(actionId);
 
   //   // Verify both direct console interception and wrapper interception worked
   //   const actionLogs = actionOrTestLogService.getActionOrTestLogs(actionId);

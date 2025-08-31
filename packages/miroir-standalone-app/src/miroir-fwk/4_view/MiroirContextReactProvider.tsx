@@ -19,7 +19,7 @@ import {
   Uuid,
   ViewParams,
   GridType,
-  type ActionOrTestLogs
+  type MiroirEvent
 } from "miroir-core";
 import {
   ReduxStateChanges,
@@ -430,12 +430,12 @@ export function useLocalCacheTransactions(): ReduxStateChanges[] {
 }
 
 // #############################################################################################
-export function useMiroirLogs(): ActionOrTestLogs[] {
+export function useMiroirLogs(): MiroirEvent[] {
   const context = useContext(miroirReactContext);
   if (!context) {
     throw new Error('useMiroirLogs must be used within a MiroirContextReactProvider');
   }
-  return context.miroirContext.actionOrTestLogService.getAllActionOrTestLogs();
+  return context.miroirContext.miroirEventService.getAllEvents();
 }
 
 // #############################################################################################
@@ -444,7 +444,7 @@ export function useActionOrTestTrackingData() {
   if (!context) {
     throw new Error('useActionOrTestTrackingData must be used within a MiroirContextReactProvider');
   }
-  return context.miroirContext.runActionOrTestTracker.getAllActions();
+  return context.miroirContext.miroirEventTracker.getAllEvents();
 }
 
 // #############################################################################################

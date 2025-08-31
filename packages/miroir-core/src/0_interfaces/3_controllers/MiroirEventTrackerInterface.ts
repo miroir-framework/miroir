@@ -6,7 +6,7 @@ import {
 } from "../1_core/preprocessor-generated/miroirFundamentalType";
 // Import other interface elements only
 
-export interface ActionOrTestTrackingData {
+export interface MiroirEventTrackingData {
   id: string;
   parentId?: string;
   trackingType: 'action' | 'testSuite' | 'test' | 'testAssertion';
@@ -36,34 +36,34 @@ export interface MiroirEventTrackerInterface {
    * @param parentId Optional parent action ID for nested calls
    * @returns Unique tracking ID for this action
    */
-  startAction(actionType: string, actionLabel?: string, parentId?: string): string;
+  startEvent(actionType: string, actionLabel?: string, parentId?: string): string;
   
   /**
    * End tracking an action
-   * @param trackingId The tracking ID returned from startAction
+   * @param trackingId The tracking ID returned from startEvent
    * @param error Optional error information if the action failed
    */
-  endAction(trackingId: string, error?: string): void;
+  endEvent(trackingId: string, error?: string): void;
   
   /**
    * Get all currently tracked actions
    * @returns Array of action tracking data
    */
-  getAllActions(): ActionOrTestTrackingData[];
+  getAllEvents(): MiroirEventTrackingData[];
   
   /**
    * Get actions filtered by criteria
    * @param filter Filter criteria
    * @returns Filtered array of action tracking data
    */
-  getFilteredActions(filter: {
+  getFilteredEvents(filter: {
     actionType?: string;
     trackingType?: 'action' | 'testSuite' | 'test' | 'testAssertion'; // New field for test filtering
     status?: 'running' | 'completed' | 'error';
     minDuration?: number;
     maxDuration?: number;
     since?: number; // timestamp
-  }): ActionOrTestTrackingData[];
+  }): MiroirEventTrackingData[];
   
   /**
    * Clear all tracking data
@@ -75,12 +75,12 @@ export interface MiroirEventTrackerInterface {
    * @param callback Function to call when tracking data changes
    * @returns Unsubscribe function
    */
-  subscribe(callback: (actions: ActionOrTestTrackingData[]) => void): () => void;
+  subscribe(callback: (actions: MiroirEventTrackingData[]) => void): () => void;
   
   /**
    * Get the current active action ID (for parent-child relationships)
    */
-  getCurrentActionOrTestId(): string | undefined;
+  getCurrentEventId(): string | undefined;
 
   /**
    * Set the current composite action name (similar to LoggerGlobalContext)

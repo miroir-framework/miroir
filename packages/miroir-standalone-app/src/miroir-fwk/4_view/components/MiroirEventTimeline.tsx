@@ -34,14 +34,14 @@ import {
   Science,
 } from '@mui/icons-material';
 
-import { ActionOrTestTrackingData, LoggerInterface, MiroirLoggerFactory } from 'miroir-core';
+import { MiroirEventTrackingData, LoggerInterface, MiroirLoggerFactory } from 'miroir-core';
 import { useActionOrTestTrackingData, useMiroirContextService } from '../MiroirContextReactProvider.js';
 import { packageName } from '../../../constants.js';
 import { cleanLevel } from '../constants.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "MiroirLogTimeLine")
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "MiroirEventTimeLine")
 ).then((logger: LoggerInterface) => { log = logger });
 
 export interface RunActionTimelineProps {
@@ -57,20 +57,18 @@ interface FilterState {
   since: string;
 }
 
-// Local tree node type: ActionOrTestTrackingData from the tracker stores children as IDs (string[]).
+// Local tree node type: MiroirEventTrackingData from the tracker stores children as IDs (string[]).
 // For rendering, we build a nested structure where children are the actual nodes.
-type TreeNode = ActionOrTestTrackingData & { children?: TreeNode[] };
+type TreeNode = MiroirEventTrackingData & { children?: TreeNode[] };
 
-export const MiroirLogTimeLine: React.FC<RunActionTimelineProps> = React.memo(({
+export const MiroirEventTimeLine: React.FC<RunActionTimelineProps> = React.memo(({
   className,
   style,
 }) => {
   const componentId = React.useMemo(() => Math.random().toString(36).substr(2, 9), []);
   const context = useMiroirContextService();
   const navigate = useNavigate();
-  // const [trackedActionsOrTests, setTrackedActionsOrTests] = useState<ActionOrTestTrackingData[]>([]);
-  // const trackedActionsOrTests = context.miroirContext.useActionOrTestTrackingData();
-  const trackedActionsOrTests = useActionOrTestTrackingData();
+  const trackedEvents = useActionOrTestTrackingData();
   const [expanded, setExpanded] = useState<{ [key: string]: boolean }>({});
   const [showFilters, setShowFilters] = useState(false);
   const [filters, setFilters] = useState<FilterState>({
@@ -81,45 +79,22 @@ export const MiroirLogTimeLine: React.FC<RunActionTimelineProps> = React.memo(({
     since: '',
   });
 
-  // Debug: Log render with action count
-  // log.info(`MiroirLogTimeLine [${componentId}] - Component rendered with ${actions.length} actions`);
-
-  // Subscribe to action tracking updates
-  // useEffect(() => {
-  //   // log.info(`MiroirLogTimeLine [${componentId}] - Setting up subscription`);
-    
-  //   const unsubscribe = context.miroirContext.runActionOrTestTracker.subscribe((newActions: ActionOrTestTrackingData[]) => {
-  //     // log.info(`MiroirLogTimeLine [${componentId}] - Received subscription update:`, newActions.length, 'actions');
-  //     setTrackedActionsOrTests(newActions);
-  //   });
-
-  //   // Get initial actions
-  //   const initialActions = context.miroirContext.runActionOrTestTracker.getAllActions();
-  //   // log.info(`MiroirLogTimeLine [${componentId}] - Initial actions:`, initialActions.length, 'actions');
-  //   setTrackedActionsOrTests(initialActions);
-
-  //   return () => {
-  //     // log.info(`MiroirLogTimeLine [${componentId}] - Cleaning up subscription`);
-  //     unsubscribe();
-  //   };
-  // }, [context.miroirContext.runActionOrTestTracker, componentId]);
-
   // Filter actions based on current filters
-  const filteredActions = useMemo(() => {
-    let result: ActionOrTestTrackingData[];
+  const filteredEvents = useMemo(() => {
+    let result: MiroirEventTrackingData[];
     
-    log.debug(`MiroirLogTimeLine [${componentId}] - Filtering with:`, filters);
+    log.debug(`MiroirEventTimeLine [${componentId}] - Filtering with:`, filters);
     
     if (!filters.actionType && !filters.trackingType && !filters.status && !filters.minDuration && !filters.since) {
-      // log.info(`MiroirLogTimeLine [${componentId}] - No filters applied, using all actions`);
-      result = trackedActionsOrTests;
+      // log.info(`MiroirEventTimeLine [${componentId}] - No filters applied, using all actions`);
+      result = trackedEvents;
     } else {
-      // log.info(`MiroirLogTimeLine [${componentId}] - Applying filters, tracker methods available:`, {
-      //   hasGetFilteredActions: !!context.miroirContext.runActionOrTestTracker.getFilteredActions
+      // log.info(`MiroirEventTimeLine [${componentId}] - Applying filters, tracker methods available:`, {
+      //   hasGetFilteredActions: !!context.miroirContext.miroirEventTracker.getFilteredEvents
       // });
       
       // Try using the tracker's built-in filtering if available
-      if (context.miroirContext.runActionOrTestTracker.getFilteredActions) {
+      if (context.miroirContext.miroirEventTracker.getFilteredEvents) {
         try {
           const filterCriteria = {
             actionType: filters.actionType || undefined,
@@ -128,47 +103,47 @@ export const MiroirLogTimeLine: React.FC<RunActionTimelineProps> = React.memo(({
             minDuration: filters.minDuration ? parseInt(filters.minDuration) : undefined,
             since: filters.since ? new Date(filters.since).getTime() : undefined,
           };
-          // log.info(`MiroirLogTimeLine [${componentId}] - Using tracker filtering with criteria:`, filterCriteria);
-          result = context.miroirContext.runActionOrTestTracker.getFilteredActions(filterCriteria);
+          // log.info(`MiroirEventTimeLine [${componentId}] - Using tracker filtering with criteria:`, filterCriteria);
+          result = context.miroirContext.miroirEventTracker.getFilteredEvents(filterCriteria);
         } catch (error) {
-          log.error(`MiroirLogTimeLine [${componentId}] - Tracker filtering failed:`, error);
-          result = trackedActionsOrTests; // Fallback to all actions
+          log.error(`MiroirEventTimeLine [${componentId}] - Tracker filtering failed:`, error);
+          result = trackedEvents; // Fallback to all actions
         }
       } else {
         // Fallback to manual filtering
-        // log.info(`MiroirLogTimeLine [${componentId}] - Using manual filtering`);
-        result = trackedActionsOrTests.filter(action => {
+        // log.info(`MiroirEventTimeLine [${componentId}] - Using manual filtering`);
+        result = trackedEvents.filter(action => {
           let include = true;
           if (filters.actionType && action.actionType !== filters.actionType) {
-            // log.debug(`MiroirLogTimeLine [${componentId}] - Excluding action ${action.id} due to actionType filter:`, {
+            // log.debug(`MiroirEventTimeLine [${componentId}] - Excluding action ${action.id} due to actionType filter:`, {
             //   expected: filters.actionType,
             //   actual: action.actionType
             // });
             include = false;
           }
           if (filters.trackingType && action.trackingType !== filters.trackingType) {
-            // log.debug(`MiroirLogTimeLine [${componentId}] - Excluding action ${action.id} due to trackingType filter:`, {
+            // log.debug(`MiroirEventTimeLine [${componentId}] - Excluding action ${action.id} due to trackingType filter:`, {
             //   expected: filters.trackingType,
             //   actual: action.trackingType
             // });
             include = false;
           }
           if (filters.status && action.status !== filters.status) {
-            // log.debug(`MiroirLogTimeLine [${componentId}] - Excluding action ${action.id} due to status filter:`, {
+            // log.debug(`MiroirEventTimeLine [${componentId}] - Excluding action ${action.id} due to status filter:`, {
             //   expected: filters.status,
             //   actual: action.status
             // });
             include = false;
           }
           if (filters.minDuration && action.duration && action.duration < parseInt(filters.minDuration)) {
-            // log.debug(`MiroirLogTimeLine [${componentId}] - Excluding action ${action.id} due to minDuration filter:`, {
+            // log.debug(`MiroirEventTimeLine [${componentId}] - Excluding action ${action.id} due to minDuration filter:`, {
             //   expected: filters.minDuration,
             //   actual: action.duration
             // });
             include = false;
           }
           if (filters.since && action.startTime && action.startTime < new Date(filters.since).getTime()) {
-            // log.debug(`MiroirLogTimeLine [${componentId}] - Excluding action ${action.id} due to since filter:`, {
+            // log.debug(`MiroirEventTimeLine [${componentId}] - Excluding action ${action.id} due to since filter:`, {
             //   expected: filters.since,
             //   actual: action.startTime
             // });
@@ -179,54 +154,54 @@ export const MiroirLogTimeLine: React.FC<RunActionTimelineProps> = React.memo(({
       }
     }
     
-    // log.info(`MiroirLogTimeLine [${componentId}] - Filtered:`, result.length, 'actions from', actions.length, 'total');
+    // log.info(`MiroirEventTimeLine [${componentId}] - Filtered:`, result.length, 'actions from', actions.length, 'total');
     return result;
-  }, [trackedActionsOrTests, filters, context.miroirContext.runActionOrTestTracker, componentId]);
+  }, [trackedEvents, filters, context.miroirContext.miroirEventTracker, componentId]);
 
-  // Get unique action types for filter dropdown
-  const actionTypes = useMemo(() => {
-    // log.debug(`MiroirLogTimeLine [${componentId}] - Computing actionTypes from ${actions.length} actions`);
-    
-    const allActionTypes = trackedActionsOrTests
-      .map(action => action.actionType)
-      .filter(actionType => actionType && actionType.trim() !== '');
-    
+    // Get unique action types for filter dropdown
+    const actionTypes = useMemo(() => {
+      // log.debug(`MiroirEventTimeLine [${componentId}] - Computing actionTypes from ${actions.length} actions`);
+      
+    const allActionTypes = trackedEvents
+      .map((action) => action.actionType)
+      .filter((actionType) => actionType && actionType.trim() !== "");
+      
     const types = new Set(allActionTypes);
     const result = Array.from(types).sort();
     
-    // log.debug(`MiroirLogTimeLine [${componentId}] - Found ${result.length} unique action types:`, result);
+    // log.debug(`MiroirEventTimeLine [${componentId}] - Found ${result.length} unique action types:`, result);
     
     return result;
-  }, [trackedActionsOrTests.length, trackedActionsOrTests.map(a => a.id).join(','), componentId]);
+  }, [trackedEvents.length, trackedEvents.map(a => a.id).join(','), componentId]);
 
   // Get unique tracking types for filter dropdown
   const trackingTypes = useMemo(() => {
-    // log.debug(`MiroirLogTimeLine [${componentId}] - Computing trackingTypes from ${actions.length} actions`);
+    // log.debug(`MiroirEventTimeLine [${componentId}] - Computing trackingTypes from ${actions.length} actions`);
     
-    const allTrackingTypes = trackedActionsOrTests
+    const allTrackingTypes = trackedEvents
       .map(action => action.trackingType)
       .filter(trackingType => trackingType && trackingType.trim() !== '');
     
     const types = new Set(allTrackingTypes);
     const result = Array.from(types).sort();
     
-    // log.debug(`MiroirLogTimeLine [${componentId}] - Found ${result.length} unique tracking types:`, result);
+    // log.debug(`MiroirEventTimeLine [${componentId}] - Found ${result.length} unique tracking types:`, result);
     
     return result;
-  }, [trackedActionsOrTests.length, trackedActionsOrTests.map(a => a.id).join(','), componentId]);
+  }, [trackedEvents.length, trackedEvents.map(a => a.id).join(','), componentId]);
 
   // Build tree structure for nested display (TreeNode uses nested children)
   // Sort by timestamp descending (newest first)
-  const actionTree = useMemo<TreeNode[]>(() => {
-    const rootActions = filteredActions
-      .filter((action: ActionOrTestTrackingData) => !action.parentId)
+  const eventTree = useMemo<TreeNode[]>(() => {
+    const rootActions = filteredEvents
+      .filter((action: MiroirEventTrackingData) => !action.parentId)
       .sort((a, b) => (b.startTime || 0) - (a.startTime || 0)); // Sort newest first
     
-    // log.info(`MiroirLogTimeLine [${componentId}] - Building tree with`, rootActions.length, 'root actions from', filteredActions.length, 'filtered actions');
+    // log.info(`MiroirEventTimeLine [${componentId}] - Building tree with`, rootActions.length, 'root actions from', filteredActions.length, 'filtered actions');
 
-    const buildTree = (action: ActionOrTestTrackingData): TreeNode => {
-      const children: TreeNode[] = filteredActions
-        .filter((child: ActionOrTestTrackingData) => child.parentId === action.id)
+    const buildTree = (action: MiroirEventTrackingData): TreeNode => {
+      const children: TreeNode[] = filteredEvents
+        .filter((child: MiroirEventTrackingData) => child.parentId === action.id)
         .sort((a, b) => (b.startTime || 0) - (a.startTime || 0)) // Sort children newest first too
         .map((c) => buildTree(c));
 
@@ -235,10 +210,10 @@ export const MiroirLogTimeLine: React.FC<RunActionTimelineProps> = React.memo(({
     };
 
     const tree = rootActions.map(buildTree);
-    // log.info(`MiroirLogTimeLine [${componentId}] - Tree built with`, tree.length, 'top-level items');
+    // log.info(`MiroirEventTimeLine [${componentId}] - Tree built with`, tree.length, 'top-level items');
     
     return tree;
-  }, [filteredActions, componentId]);
+  }, [filteredEvents, componentId]);
 
   const handleToggleExpanded = useCallback((actionId: string) => {
     setExpanded(prev => ({
@@ -252,23 +227,23 @@ export const MiroirLogTimeLine: React.FC<RunActionTimelineProps> = React.memo(({
   }, [navigate]);
 
   const handleClearActions = useCallback(() => {
-    context.miroirContext.runActionOrTestTracker.clear();
-  }, [context.miroirContext.runActionOrTestTracker]);
+    context.miroirContext.miroirEventTracker.clear();
+  }, [context.miroirContext.miroirEventTracker]);
 
   // const handleRefresh = useCallback(() => {
-  //   setTrackedActionsOrTests(context.miroirContext.runActionOrTestTracker.getAllActions());
-  // }, [context.miroirContext.runActionOrTestTracker]);
+  //   setTrackedActionsOrTests(context.miroirContext.miroirEventTracker.getAllEvents());
+  // }, [context.miroirContext.miroirEventTracker]);
 
   const handleFilterChange = useCallback((field: keyof FilterState, value: string) => {
-    // log.info(`MiroirLogTimeLine [${componentId}] - Filter change:`, { field, value, oldFilters: filters });
+    // log.info(`MiroirEventTimeLine [${componentId}] - Filter change:`, { field, value, oldFilters: filters });
     setFilters(prev => {
       const newFilters = { ...prev, [field]: value };
-      // log.info(`MiroirLogTimeLine [${componentId}] - New filters:`, newFilters);
+      // log.info(`MiroirEventTimeLine [${componentId}] - New filters:`, newFilters);
       return newFilters;
     });
   }, [filters, componentId]);
 
-  const getStatusIcon = (action: ActionOrTestTrackingData) => {
+  const getStatusIcon = (action: MiroirEventTrackingData) => {
     // Test-specific icons
     if (action.trackingType === 'testSuite') {
       return action.status === 'completed' ? <AssignmentTurnedIn color="success" /> : 
@@ -312,7 +287,7 @@ export const MiroirLogTimeLine: React.FC<RunActionTimelineProps> = React.memo(({
     }
   };
 
-  const getStatusColor = (action: ActionOrTestTrackingData) => {
+  const getStatusColor = (action: MiroirEventTrackingData) => {
     // For tests, consider both status and testResult
     if (action.trackingType === 'test' || action.trackingType === 'testAssertion') {
       if (action.status === 'completed' && action.testResult === 'ok') return 'success';
@@ -357,7 +332,7 @@ export const MiroirLogTimeLine: React.FC<RunActionTimelineProps> = React.memo(({
     return new Date(timestamp).toLocaleTimeString();
   };
 
-  const getDisplayLabel = (action: ActionOrTestTrackingData) => {
+  const getDisplayLabel = (action: MiroirEventTrackingData) => {
     // For tests, show the test-specific name
     if (action.trackingType === 'testSuite') return action.testSuite || action.actionLabel || 'Test Suite';
     if (action.trackingType === 'test') return action.test || action.actionLabel || 'Test';
@@ -468,7 +443,7 @@ export const MiroirLogTimeLine: React.FC<RunActionTimelineProps> = React.memo(({
         
         {hasChildren && (
           <Collapse in={isExpanded}>
-            {action.children?.map((child: ActionOrTestTrackingData & { children?: any[] }) => renderAction(child, depth + 1))}
+            {action.children?.map((child: MiroirEventTrackingData & { children?: any[] }) => renderAction(child, depth + 1))}
           </Collapse>
         )}
       </div>
@@ -504,9 +479,9 @@ export const MiroirLogTimeLine: React.FC<RunActionTimelineProps> = React.memo(({
         </Box>
         
         <Typography variant="body2" color="text.secondary">
-          {filteredActions.length} items ({trackedActionsOrTests.filter(a => a.status === 'running').length} running) - 
-          Actions: {trackedActionsOrTests.filter(a => a.trackingType === 'action').length}, 
-          Tests: {trackedActionsOrTests.filter(a => a.trackingType !== 'action').length}
+          {filteredEvents.length} items ({trackedEvents.filter(a => a.status === 'running').length} running) - 
+          Actions: {trackedEvents.filter(a => a.trackingType === 'action').length}, 
+          Tests: {trackedEvents.filter(a => a.trackingType !== 'action').length}
         </Typography>
       </Box>
 
@@ -569,11 +544,11 @@ export const MiroirLogTimeLine: React.FC<RunActionTimelineProps> = React.memo(({
                 value={filters.status}
                 label="Status"
                 onChange={(e) => {
-                  log.info(`MiroirLogTimeLine [${componentId}] - Status dropdown changed:`, e.target.value);
+                  log.info(`MiroirEventTimeLine [${componentId}] - Status dropdown changed:`, e.target.value);
                   handleFilterChange('status', e.target.value);
                 }}
-                onOpen={() => log.info(`MiroirLogTimeLine [${componentId}] - Status dropdown opened`)}
-                onClose={() => log.info(`MiroirLogTimeLine [${componentId}] - Status dropdown closed`)}
+                onOpen={() => log.info(`MiroirEventTimeLine [${componentId}] - Status dropdown opened`)}
+                onClose={() => log.info(`MiroirEventTimeLine [${componentId}] - Status dropdown closed`)}
                 MenuProps={{
                   PaperProps: {
                     style: {
@@ -602,7 +577,7 @@ export const MiroirLogTimeLine: React.FC<RunActionTimelineProps> = React.memo(({
       </Collapse>
 
       <Box sx={{ flex: 1, overflow: 'auto', minHeight: 0 }}>
-        {actionTree.length === 0 ? (
+        {eventTree.length === 0 ? (
           <Box sx={{ p: 3, textAlign: 'center' }}>
             <Typography variant="body2" color="text.secondary">
               No actions or tests to display
@@ -610,7 +585,7 @@ export const MiroirLogTimeLine: React.FC<RunActionTimelineProps> = React.memo(({
           </Box>
         ) : (
           <List dense>
-            {actionTree.map((action: ActionOrTestTrackingData & { children?: any[] }) => renderAction(action))}
+            {eventTree.map((action: MiroirEventTrackingData & { children?: any[] }) => renderAction(action))}
           </List>
         )}
       </Box>

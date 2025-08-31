@@ -1,25 +1,25 @@
 import { useEffect, useState } from 'react';
 import { useMiroirContextService } from '../MiroirContextReactProvider.js';
 import { DraggableContainer } from './DraggableContainer.js';
-import { MiroirLogTimeLine } from './MiroirLogTimeline.js';
+import { MiroirEventTimeLine } from './MiroirEventTimeline.js';
 
 // Separate component to manage action timeline display state independently
-export const ActionTimelineContainer = () => {
+export const EventTimelineContainer = () => {
   const context = useMiroirContextService();
 
   // Debug logging to track timeline visibility and re-renders
-  console.log('ActionTimelineContainer render:', { 
+  console.log('EventTimelineContainer render:', { 
     showActionTimeline: context.showActionTimeline,
     timestamp: new Date().toISOString()
   });
 
   // Only render if action timeline display is enabled
   if (!context.showActionTimeline) {
-    console.log('ActionTimelineContainer returning null (timeline should be hidden)');
+    console.log('EventTimelineContainer returning null (timeline should be hidden)');
     return null;
   }
 
-  console.log('ActionTimelineContainer rendering DraggableContainer (timeline should be visible)');
+  console.log('EventTimelineContainer rendering DraggableContainer (timeline should be visible)');
   return (
     <DraggableContainer
       title="Action Timeline"
@@ -31,7 +31,7 @@ export const ActionTimelineContainer = () => {
         context.setShowActionTimeline?.(false);
       }}
     >
-      <MiroirLogTimeLine />
+      <MiroirEventTimeLine />
     </DraggableContainer>
   );
 };

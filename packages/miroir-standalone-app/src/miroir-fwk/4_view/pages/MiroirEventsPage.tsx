@@ -64,7 +64,7 @@ interface ActionOrTestLogEntry {
   };
 }
 
-interface ActionOrTestLogs {
+interface MiroirEvent {
   actionId: string;
   actionType: string;
   actionLabel?: string;
@@ -210,14 +210,23 @@ const LogEntryComponent: React.FC<{ logEntry: ActionOrTestLogEntry; isExpanded: 
   );
 };
 
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
 // Main component for viewing action logs
-export const ActionLogsPage: React.FC = () => {
+export const MiroirEventsPage: React.FC = () => {
   const { actionId } = useParams<{ actionId: string }>();
   const navigate = useNavigate();
   const { miroirContext } = useMiroirContextService();
   
-  const [actionLogs, setActionLogs] = useState<ActionOrTestLogs[]>([]);
-  const [currentActionLogs, setCurrentActionLogs] = useState<ActionOrTestLogs | null>(null);
+  const [events, setEvents] = useState<MiroirEvent[]>([]);
+  const [currentActionLogs, setCurrentActionLogs] = useState<MiroirEvent | null>(null);
   const [expandedLogIds, setExpandedLogIds] = useState<Set<string>>(new Set());
   const [logDetailOpen, setLogDetailOpen] = useState(false);
   const [selectedLog, setSelectedLog] = useState<ActionOrTestLogEntry | null>(null);
@@ -230,29 +239,30 @@ export const ActionLogsPage: React.FC = () => {
   }>({});
 
   // Subscribe to action logs updates
+  // TODO: REFACTOR: this should be done via a useMiroirEventService hook
   useEffect(() => {
-    const actionLogService = miroirContext.actionOrTestLogService;
-    if (!actionLogService) {
-      console.warn('MiroirLogService not available');
+    const miroirEventService = miroirContext.miroirEventService;
+    if (!miroirEventService) {
+      console.warn('MiroirEventService not available');
       return;
     }
 
-    const unsubscribe = actionLogService.subscribe((logs: ActionOrTestLogs[]) => {
-      setActionLogs(logs);
+    const unsubscribe = miroirEventService.subscribe((logs: MiroirEvent[]) => {
+      setEvents(logs);
       
       // Update current action logs if viewing a specific action
       if (actionId) {
-        const current = logs.find((log: ActionOrTestLogs) => log.actionId === actionId);
+        const current = logs.find((log: MiroirEvent) => log.actionId === actionId);
         setCurrentActionLogs(current || null);
       }
     });
 
     // Initial load
-    const allLogs = actionLogService.getAllActionOrTestLogs();
-    setActionLogs(allLogs);
+    const allEvents = miroirEventService.getAllEvents();
+    setEvents(allEvents);
     
     if (actionId) {
-      const current = allLogs.find((log: ActionOrTestLogs) => log.actionId === actionId);
+      const current = allEvents.find((log: MiroirEvent) => log.actionId === actionId);
       setCurrentActionLogs(current || null);
     }
 
@@ -291,14 +301,14 @@ export const ActionLogsPage: React.FC = () => {
     setExpandedLogIds(newExpanded);
   };
 
-  const handleExportLogs = () => {
-    const actionLogService = miroirContext.actionOrTestLogService;
+  const handleExportEvents = () => {
+    const actionLogService = miroirContext.miroirEventService;
     if (!actionLogService) {
-      console.warn('MiroirLogService not available');
+      console.warn('MiroirEventService not available');
       return;
     }
 
-    const exportData = actionLogService.exportLogs();
+    const exportData = actionLogService.exportEvents();
     const blob = new Blob([exportData], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -330,7 +340,7 @@ export const ActionLogsPage: React.FC = () => {
     );
   }
 
-  const logsToDisplay = actionId ? [currentActionLogs!] : actionLogs;
+  const logsToDisplay = actionId ? [currentActionLogs!] : events;
   const currentLogs = actionId ? filteredLogs : [];
 
   return (
@@ -342,7 +352,7 @@ export const ActionLogsPage: React.FC = () => {
         </Typography>
         <Box sx={{ display: 'flex', gap: 1 }}>
           <Tooltip title="Export logs">
-            <IconButton onClick={handleExportLogs}>
+            <IconButton onClick={handleExportEvents}>
               <Download />
             </IconButton>
           </Tooltip>
@@ -514,11 +524,11 @@ export const ActionLogsPage: React.FC = () => {
           <Paper>
             <Box sx={{ p: 2, borderBottom: 1, borderColor: 'divider' }}>
               <Typography variant="h6">
-                Recent Actions with Logs ({actionLogs.length} actions)
+                Recent Actions with Logs ({events.length} actions)
               </Typography>
             </Box>
             
-            {actionLogs.length === 0 ? (
+            {events.length === 0 ? (
               <Box sx={{ p: 3, textAlign: 'center' }}>
                 <Typography color="text.secondary">
                   No action logs available. Execute some actions to see logs here.
@@ -526,7 +536,7 @@ export const ActionLogsPage: React.FC = () => {
               </Box>
             ) : (
               <List>
-                {actionLogs.map((actionLog) => (
+                {events.map((actionLog) => (
                   <ListItem 
                     key={actionLog.actionId}
                     divider

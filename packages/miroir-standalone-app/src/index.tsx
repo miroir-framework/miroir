@@ -26,7 +26,7 @@ import { RestPersistenceClientAndRestClient, setupMiroirDomainController } from 
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
 
 import { loglevelnext } from './loglevelnextImporter.js';
-import { ActionLogsPage } from "./miroir-fwk/4_view/pages/ActionLogsPage.js";
+import { MiroirEventsPage } from "./miroir-fwk/4_view/pages/MiroirEventsPage.js";
 import { ErrorPage } from "./miroir-fwk/4_view/ErrorPage.js";
 import { ErrorLogsPage } from "./miroir-fwk/4_view/ErrorLogsPage.js";
 import { MiroirContextReactProvider } from "./miroir-fwk/4_view/MiroirContextReactProvider.js";
@@ -154,12 +154,12 @@ const router = createBrowserRouter([
       },
       {
         path: "action-logs",
-        element: <ActionLogsPage />,
+        element: <MiroirEventsPage />,
         // errorElement: <ErrorPage />,
       },
       {
         path: "action-logs/:actionId",
-        element: <ActionLogsPage />,
+        element: <MiroirEventsPage />,
         // errorElement: <ErrorPage />,
       },
     ]

@@ -57,7 +57,7 @@ import {
   ThemedMUISelect
 } from '../Themes/index';
 import { ActionButton } from './ActionButton';
-import { ActionTimelineContainer } from '../ActionTimelineContainer';
+import { EventTimelineContainer } from '../EventTimelineContainer';
 
 import { v4 as uuidv4 } from 'uuid';
 
@@ -1005,7 +1005,7 @@ export const RootComponent = (props: RootComponentProps) => {
           </Snackbar>
 
           {/* Action Timeline - Show when enabled */}
-          <ActionTimelineContainer key={`action-timeline-${context.showActionTimeline}`} />
+          <EventTimelineContainer key={`action-timeline-${context.showActionTimeline}`} />
         </div>
       </MiroirThemeProvider>
     </DocumentOutlineContext.Provider>
