@@ -134,7 +134,6 @@ export const RunTransformerTestSuiteButton: React.FC<RunTransformerTestSuiteButt
 
   const onAction = async () => {
     // Reset previous results
-    // TestSuiteContext.resetResults();
     miroirContextService.miroirContext.miroirEventTracker.resetResults();
 
     if (!transformerTestSuite) {

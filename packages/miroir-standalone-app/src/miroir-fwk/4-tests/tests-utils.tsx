@@ -44,13 +44,13 @@ import {
   TestCompositeActionSuite,
   TestCompositeActionTemplate,
   TestCompositeActionTemplateSuite,
-  TestSuiteContext,
   Uuid,
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
   defaultMiroirMetaModel,
   selfApplicationDeploymentLibrary,
-  selfApplicationDeploymentMiroir
+  selfApplicationDeploymentMiroir,
+  type MiroirEventTrackerInterface
 } from "miroir-core";
 import {
   LocalCache,
@@ -718,6 +718,7 @@ export async function runTestOrTestSuite(
   // localCache: LocalCacheInterface,
   domainController: DomainControllerInterface,
   testAction: TestCompositeActionParams,
+  miroirEventTracker: MiroirEventTrackerInterface, // Optional unified tracker for test execution tracking
   testActionParamValues?: {[k:string]: any},
 ) {
   const fullTestName = testAction.testActionLabel??testAction.testActionType;
@@ -747,7 +748,7 @@ export async function runTestOrTestSuite(
           ": queryResult=",
           JSON.stringify(queryResult, null, 2),
           "TestContextResults",
-          JSON.stringify(TestSuiteContext.getTestAssertionsResults(), null, 2)
+          JSON.stringify(miroirEventTracker.getTestAssertionsResults(), null, 2)
         );
         // log.info(
         //   "received results for test testCompositeActionSuite",
@@ -789,7 +790,7 @@ export async function runTestOrTestSuite(
           ": queryResult=",
           JSON.stringify(queryResult, null, 2),
           "TestContextResults",
-          JSON.stringify(TestSuiteContext.getTestAssertionsResults(), null, 2)
+          JSON.stringify(miroirEventTracker.getTestAssertionsResults(), null, 2)
         );
         return queryResult;
       }

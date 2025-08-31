@@ -15,6 +15,12 @@ import {
 } from '../MiroirContextReactProvider.js';
 import { fetchMiroirAndAppConfigurations } from './ConfigurationService.js';
 
+// Application-wide state to track if configurations have been loaded
+// This ensures we only load once across the entire SPA lifecycle
+const appConfigState = {
+  hasLoadedConfigurations: false
+};
+
 export interface UsePageConfigurationOptions {
   /**
    * Whether to automatically fetch configurations when the page mounts
@@ -95,15 +101,17 @@ export function usePageConfiguration(
 
   /**
    * Auto-fetch configurations on mount if enabled
-   * Uses a ref to prevent multiple fetches in React's strict mode
+   * Uses a combination of local ref (for strict mode) and global state (for cross-component persistence)
    */
   useEffect(() => {
-    if (autoFetchOnMount && !hasFetchedRef.current) {
+    if (autoFetchOnMount && !hasFetchedRef.current && !appConfigState.hasLoadedConfigurations) {
       hasFetchedRef.current = true;
+      appConfigState.hasLoadedConfigurations = true;
       fetchConfigurations().catch((error) => {
         console.error('Failed to auto-fetch configurations on mount:', error);
-        // Reset the ref so it can be retried
+        // Reset both local and global state so it can be retried
         hasFetchedRef.current = false;
+        appConfigState.hasLoadedConfigurations = false;
       });
     }
   }, [autoFetchOnMount, fetchConfigurations]);

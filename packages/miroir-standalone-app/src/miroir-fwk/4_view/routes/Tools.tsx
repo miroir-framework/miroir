@@ -21,7 +21,6 @@ import {
   MiroirLoggerFactory,
   StoreUnitConfiguration,
   TestCompositeActionParams,
-  TestSuiteContext,
   adminConfigurationDeploymentAdmin,
   adminConfigurationDeploymentMiroir,
   defaultMiroirModelEnviroment,
@@ -387,14 +386,18 @@ export const ToolsPage: React.FC<any> = (
         //   ],
         // );
     
-        const globalTestSuiteResults = TestSuiteContext.getTestSuiteResult(
+        const globalTestSuiteResults = context.miroirContext.miroirEventTracker.getTestSuiteResult(
           Object.keys(testSuitesForBuildPlusRuntimeCompositeAction)[0]
         );
         setTestResults(globalTestSuiteResults);
         log.info("testResults", globalTestSuiteResults);
 
 
-        displayTestSuiteResultsDetails(expect,Object.keys(testSuitesForBuildPlusRuntimeCompositeAction)[0]);
+        displayTestSuiteResultsDetails(
+          expect,
+          Object.keys(testSuitesForBuildPlusRuntimeCompositeAction)[0],
+          context.miroirContext.miroirEventTracker
+        );
 
 
         // log.info("created Deployment instance in Admin App deployment");
