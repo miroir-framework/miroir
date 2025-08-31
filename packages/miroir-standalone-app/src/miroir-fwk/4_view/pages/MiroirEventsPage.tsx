@@ -25,7 +25,8 @@ import {
   ListItemIcon,
   Divider,
   Tooltip,
-  Badge
+  Badge,
+  CircularProgress
 } from '@mui/material';
 import {
   ExpandMore,
@@ -43,8 +44,17 @@ import {
   CheckCircle,
   ErrorOutline
 } from '@mui/icons-material';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useMiroirContextService } from '../MiroirContextReactProvider';
+import { LoggerInterface, MiroirLoggerFactory } from 'miroir-core';
+import { packageName } from '../../../constants.js';
+import { cleanLevel } from '../constants.js';
+
+// Set up logger
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "MiroirEventsPage")
+).then((logger: LoggerInterface) => {log = logger});
 
 // Local type definitions (temporarily until exports work)
 interface ActionOrTestLogEntry {
@@ -230,6 +240,8 @@ export const MiroirEventsPage: React.FC = () => {
   const [expandedLogIds, setExpandedLogIds] = useState<Set<string>>(new Set());
   const [logDetailOpen, setLogDetailOpen] = useState(false);
   const [selectedLog, setSelectedLog] = useState<ActionOrTestLogEntry | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [actionExists, setActionExists] = useState<boolean | null>(null);
   
   // Filter states
   const [filters, setFilters] = useState<{
@@ -241,10 +253,32 @@ export const MiroirEventsPage: React.FC = () => {
   // Subscribe to action logs updates
   // TODO: REFACTOR: this should be done via a useMiroirEventService hook
   useEffect(() => {
+    setIsLoading(true);
     const miroirEventService = miroirContext.miroirEventService;
     if (!miroirEventService) {
       console.warn('MiroirEventService not available');
+      setIsLoading(false);
       return;
+    }
+
+    // Initial load
+    const allEvents = miroirEventService.getAllEvents();
+    setEvents(allEvents);
+    
+    if (actionId) {
+      const current = allEvents.find((log: MiroirEvent) => log.actionId === actionId);
+      setCurrentActionLogs(current || null);
+      // Check if the action exists
+      const exists = !!current;
+      setActionExists(exists);
+      log.info(`Checking if action ${actionId} exists:`, exists);
+      if (!exists) {
+        log.warn(`Action log ${actionId} was requested but not found. Available actions:`, 
+          allEvents.map(event => event.actionId).join(', '));
+      }
+    } else {
+      // Not looking for a specific action, so no need to check existence
+      setActionExists(true);
     }
 
     const unsubscribe = miroirEventService.subscribe((logs: MiroirEvent[]) => {
@@ -254,18 +288,11 @@ export const MiroirEventsPage: React.FC = () => {
       if (actionId) {
         const current = logs.find((log: MiroirEvent) => log.actionId === actionId);
         setCurrentActionLogs(current || null);
+        setActionExists(!!current);
       }
     });
 
-    // Initial load
-    const allEvents = miroirEventService.getAllEvents();
-    setEvents(allEvents);
-    
-    if (actionId) {
-      const current = allEvents.find((log: MiroirEvent) => log.actionId === actionId);
-      setCurrentActionLogs(current || null);
-    }
-
+    setIsLoading(false);
     return unsubscribe;
   }, [miroirContext, actionId]);
 
@@ -324,6 +351,61 @@ export const MiroirEventsPage: React.FC = () => {
     setFilters({});
   };
 
+  // Show loading state
+  if (isLoading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%', p: 4 }}>
+        <Typography variant="h6" sx={{ mr: 2 }}>Loading action logs...</Typography>
+      </Box>
+    );
+  }
+
+  // Show error state if the action log doesn't exist
+  if (actionExists === false) {
+    return (
+      <Paper 
+        elevation={3} 
+        sx={{ 
+          p: 4, 
+          maxWidth: 800, 
+          mx: 'auto', 
+          mt: 4, 
+          backgroundColor: '#fff8e1' 
+        }}
+      >
+        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+          <ErrorOutline color="error" sx={{ fontSize: 28, mr: 2 }} />
+          <Typography variant="h5" color="error">
+            Action Log Not Found
+          </Typography>
+        </Box>
+        
+        <Typography paragraph>
+          The requested action log <code>{actionId}</code> could not be found. It may have been purged from the system.
+        </Typography>
+        
+        <Box sx={{ mt: 3, display: 'flex', gap: 2 }}>
+          <Button 
+            variant="contained" 
+            color="primary" 
+            onClick={() => navigate(-1)}
+          >
+            Go Back
+          </Button>
+          
+          <Button 
+            variant="outlined" 
+            color="primary" 
+            onClick={() => navigate('/action-logs')}
+          >
+            View All Action Logs
+          </Button>
+        </Box>
+      </Paper>
+    );
+  }
+
+  // Legacy check - should be redundant now but keeping for safety
   if (actionId && !currentActionLogs) {
     return (
       <Box sx={{ p: 3 }}>
