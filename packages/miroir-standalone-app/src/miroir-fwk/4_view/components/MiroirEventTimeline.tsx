@@ -38,6 +38,7 @@ import { MiroirEventTrackingData, LoggerInterface, MiroirLoggerFactory } from 'm
 import { useActionOrTestTrackingData, useMiroirContextService } from '../MiroirContextReactProvider.js';
 import { packageName } from '../../../constants.js';
 import { cleanLevel } from '../constants.js';
+import { usePageConfiguration } from '../services/usePageConfiguration.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -79,6 +80,7 @@ export const MiroirEventTimeLine: React.FC<RunActionTimelineProps> = React.memo(
     since: '',
   });
 
+  
   // Filter actions based on current filters
   const filteredEvents = useMemo(() => {
     let result: MiroirEventTrackingData[];
@@ -223,7 +225,7 @@ export const MiroirEventTimeLine: React.FC<RunActionTimelineProps> = React.memo(
   }, []);
 
   const handleViewActionLogs = useCallback((actionId: string) => {
-    navigate(`/action-logs/${actionId}`);
+    navigate(`/events/${actionId}`);
   }, [navigate]);
 
   const handleClearActions = useCallback(() => {
@@ -418,7 +420,7 @@ export const MiroirEventTimeLine: React.FC<RunActionTimelineProps> = React.memo(
             }
           />
           
-          <Tooltip title="View Action Logs">
+          <Tooltip title="View Miroir Events">
             <IconButton
               size="small"
               onClick={(e) => {

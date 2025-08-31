@@ -51,6 +51,7 @@ import { useMiroirContextService } from '../MiroirContextReactProvider';
 import { LoggerInterface, MiroirLoggerFactory } from 'miroir-core';
 import { packageName } from '../../../constants.js';
 import { cleanLevel } from '../constants.js';
+import { usePageConfiguration } from '../services';
 
 // Set up logger
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -137,6 +138,13 @@ const getActionStatusIcon = (status: string) => {
   }
 };
 
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
 // Component for displaying individual log entry
 const LogEntryComponent: React.FC<{ logEntry: ActionOrTestLogEntry; isExpanded: boolean; onToggle: () => void }> = ({
   logEntry,
@@ -231,7 +239,7 @@ const LogEntryComponent: React.FC<{ logEntry: ActionOrTestLogEntry; isExpanded: 
 // ################################################################################################
 // ################################################################################################
 // ################################################################################################
-// Main component for viewing action logs
+// Main component for viewing Miroir events
 export const MiroirEventsPage: React.FC = () => {
   const [searchParams] = useSearchParams();
   const actionId = searchParams.get('actionId');
@@ -247,6 +255,12 @@ export const MiroirEventsPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [actionExists, setActionExists] = useState<boolean | null>(null);
   
+  const { fetchConfigurations } = usePageConfiguration({
+    autoFetchOnMount: true,
+    successMessage: "Events page configurations loaded successfully",
+    actionName: "Events page configuration fetch"
+  });
+
   // Filter states
   const [filters, setFilters] = useState<{
     level?: string;
@@ -254,7 +268,7 @@ export const MiroirEventsPage: React.FC = () => {
     loggerName?: string;
   }>({});
 
-  // Subscribe to action logs updates
+  // Subscribe to events updates
   // TODO: REFACTOR: this should be done via a useMiroirEventService hook
   useEffect(() => {
     setIsLoading(true);
@@ -288,7 +302,7 @@ export const MiroirEventsPage: React.FC = () => {
     const unsubscribe = miroirEventService.subscribe((logs: MiroirEvent[]) => {
       setEvents(logs);
       
-      // Update current action logs if viewing a specific action
+      // Update current events if viewing a specific action
       if (actionId) {
         const current = logs.find((log: MiroirEvent) => log.actionId === actionId);
         setCurrentActionLogs(current || null);
@@ -350,7 +364,7 @@ export const MiroirEventsPage: React.FC = () => {
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
     
-    log.info(`Exported action logs${actionId ? ' for action ID: ' + actionId : ' (all)'}`);
+    log.info(`Exported events${actionId ? ' for action ID: ' + actionId : ' (all)'}`);
   };
 
   const handleClearFilters = () => {
@@ -361,7 +375,7 @@ export const MiroirEventsPage: React.FC = () => {
   if (isLoading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%', p: 4 }}>
-        <Typography variant="h6" sx={{ mr: 2 }}>Loading action logs...</Typography>
+        <Typography variant="h6" sx={{ mr: 2 }}>Loading Miroir Events...</Typography>
       </Box>
     );
   }
@@ -405,28 +419,28 @@ export const MiroirEventsPage: React.FC = () => {
             <Button 
               variant="outlined" 
               color="primary" 
-              onClick={() => navigate('/action-logs')}
+              onClick={() => navigate('/events')}
               startIcon={<Assignment />}
             >
-              View All Action Logs
+              View All Miroir Events
             </Button>
           </Box>
         </Paper>
         
-        {/* Display available action logs as a helpful reference */}
+        {/* Display available events as a helpful reference */}
         <Paper elevation={2} sx={{ p: 3 }}>
           <Typography variant="h6" gutterBottom>
-            Available Action Logs
+            Available Miroir Events
           </Typography>
           
           {events.length === 0 ? (
             <Typography color="text.secondary">
-              No action logs are currently available in the system.
+              No events are currently available in the system.
             </Typography>
           ) : (
             <>
               <Typography paragraph>
-                Here are the {Math.min(5, events.length)} most recent action logs available:
+                Here are the {Math.min(5, events.length)} most recent events available:
               </Typography>
               
               <List sx={{ bgcolor: '#f5f5f5', borderRadius: 1 }}>
@@ -434,7 +448,7 @@ export const MiroirEventsPage: React.FC = () => {
                   <ListItem 
                     key={event.actionId} 
                     button
-                    onClick={() => navigate(`/action-logs?actionId=${event.actionId}`)}
+                    onClick={() => navigate(`/events?actionId=${event.actionId}`)}
                     sx={{ borderBottom: '1px solid #e0e0e0' }}
                   >
                     <ListItemIcon>
@@ -452,9 +466,9 @@ export const MiroirEventsPage: React.FC = () => {
                 <Box sx={{ mt: 2, textAlign: 'right' }}>
                   <Button 
                     color="primary"
-                    onClick={() => navigate('/action-logs')}
+                    onClick={() => navigate('/events')}
                   >
-                    View All {events.length} Action Logs
+                    View All {events.length} Miroir Events
                   </Button>
                 </Box>
               )}
@@ -465,14 +479,14 @@ export const MiroirEventsPage: React.FC = () => {
     );
   }
 
-  // Legacy check - remove query param and just go to main action logs page
+  // Legacy check - remove query param and just go to main events page
   if (actionId && !currentActionLogs && actionExists === true) {
     // This is a fallback in case our earlier check didn't catch a missing action log
     log.warn(`Legacy check: Action log ${actionId} not found but actionExists wasn't set to false`);
     return (
       <Box sx={{ p: 3 }}>
         <Typography variant="h5" gutterBottom>
-          Action Logs
+          Miroir Events
         </Typography>
         <Typography color="text.secondary">
           No logs found for action ID: {actionId}
@@ -486,9 +500,9 @@ export const MiroirEventsPage: React.FC = () => {
           </Button>
           <Button 
             variant="outlined"
-            onClick={() => navigate('/action-logs')}
+            onClick={() => navigate('/events')}
           >
-            View All Action Logs
+            View All Miroir Events
           </Button>
         </Box>
       </Box>
@@ -503,7 +517,7 @@ export const MiroirEventsPage: React.FC = () => {
       {/* Header */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Typography variant="h4" component="h1">
-          {actionId ? `Logs for Action: ${currentActionLogs?.actionType || actionId}` : 'Action Logs'}
+          {actionId ? `Logs for Action: ${currentActionLogs?.actionType || actionId}` : 'Miroir Events'}
         </Typography>
         <Box sx={{ display: 'flex', gap: 1 }}>
           <Tooltip title="Export logs">
@@ -513,7 +527,7 @@ export const MiroirEventsPage: React.FC = () => {
           </Tooltip>
           {actionId && (
             <>
-              <Button variant="outlined" onClick={() => navigate('/action-logs')}>
+              <Button variant="outlined" onClick={() => navigate('/events')}>
                 Back to All Logs
               </Button>
               <Button variant="text" onClick={() => navigate(-1)}>
@@ -691,7 +705,7 @@ export const MiroirEventsPage: React.FC = () => {
             {events.length === 0 ? (
               <Box sx={{ p: 3, textAlign: 'center' }}>
                 <Typography color="text.secondary">
-                  No action logs available. Execute some actions to see logs here.
+                  No events available. Execute some actions to see events here.
                 </Typography>
               </Box>
             ) : (
@@ -701,7 +715,7 @@ export const MiroirEventsPage: React.FC = () => {
                     key={actionLog.actionId}
                     divider
                     sx={{ cursor: 'pointer' }}
-                    onClick={() => navigate(`/action-logs?actionId=${actionLog.actionId}`)}
+                    onClick={() => navigate(`/events?actionId=${actionLog.actionId}`)}
                   >
                     <ListItemIcon>
                       {getActionStatusIcon(actionLog.status)}

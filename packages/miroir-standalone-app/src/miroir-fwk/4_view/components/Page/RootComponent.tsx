@@ -766,7 +766,7 @@ export const RootComponent = (props: RootComponentProps) => {
                     </div>
 
                     {/* Navigation Section */}
-                    <Box sx={{ my: 2, p: 2, border: '1px solid #e0e0e0', borderRadius: 1 }}>
+                    {/* <Box sx={{ my: 2, p: 2, border: '1px solid #e0e0e0', borderRadius: 1 }}>
                       <Typography variant="h6" gutterBottom>
                         Navigation
                       </Typography>
@@ -811,14 +811,14 @@ export const RootComponent = (props: RootComponentProps) => {
                         <Button
                           variant="outlined"
                           color="info"
-                          onClick={() => navigate('/action-logs')}
+                          onClick={() => navigate('/events')}
                           size="small"
                           startIcon={<BugReportIcon />}
                         >
-                          Action Logs
+                          Miroir Events
                         </Button>
                       </Box>
-                    </Box>
+                    </Box> */}
 
                     <span>
                       {/* <ThemedButton
