@@ -47,6 +47,7 @@ export const ActionTimelineContainer = () => {
       title="Action Timeline"
       storageKey="actionTimelinePosition"
       defaultPosition={{ x: window.innerWidth - 520, y: 60 }}
+      defaultSize={{ width: 500, height: 600 }}
       onClose={() => {
         console.log('Action Timeline close button clicked');
         context.setShowActionTimeline?.(false);

@@ -372,7 +372,7 @@ export const RunActionTimeline: React.FC<RunActionTimelineProps> = React.memo(({
       className={className}
       style={{
         width: '100%',
-        maxHeight: '70vh',
+        height: '100%',
         overflow: 'hidden',
         display: 'flex',
         flexDirection: 'column',
@@ -464,7 +464,7 @@ export const RunActionTimeline: React.FC<RunActionTimelineProps> = React.memo(({
         </Box>
       </Collapse>
 
-      <Box sx={{ maxHeight: '400px', overflow: 'auto' }}>
+      <Box sx={{ flex: 1, overflow: 'auto', minHeight: 0 }}>
         {actionTree.length === 0 ? (
           <Box sx={{ p: 3, textAlign: 'center' }}>
             <Typography variant="body2" color="text.secondary">

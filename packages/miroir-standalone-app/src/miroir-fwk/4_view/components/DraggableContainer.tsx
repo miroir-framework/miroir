@@ -8,6 +8,7 @@ export interface DraggableContainerProps {
   children: React.ReactNode;
   storageKey?: string;
   defaultPosition?: { x: number; y: number };
+  defaultSize?: { width: number; height: number };
   onClose?: () => void;
 }
 
@@ -17,6 +18,7 @@ export const DraggableContainer: React.FC<DraggableContainerProps> = ({
   children,
   storageKey = "performanceStatsPosition",
   defaultPosition = { x: 10, y: 10 },
+  defaultSize = { width: 500, height: 400 },
   onClose
 }) => {
   const { currentTheme } = useMiroirTheme();
@@ -26,8 +28,18 @@ export const DraggableContainer: React.FC<DraggableContainerProps> = ({
     const saved = sessionStorage.getItem(storageKey);
     return saved ? JSON.parse(saved) : defaultPosition;
   });
+
+  const [size, setSize] = React.useState(() => {
+    // Load size from sessionStorage
+    const saved = sessionStorage.getItem(`${storageKey}_size`);
+    return saved ? JSON.parse(saved) : defaultSize;
+  });
+
   const [isDragging, setIsDragging] = React.useState(false);
+  const [isResizing, setIsResizing] = React.useState(false);
+  const [resizeDirection, setResizeDirection] = React.useState<string>('');
   const [dragStart, setDragStart] = React.useState({ x: 0, y: 0 });
+  const [resizeStart, setResizeStart] = React.useState({ x: 0, y: 0, width: 0, height: 0 });
   const dragRef = React.useRef<HTMLDivElement>(null);
 
   const handleMouseDown = React.useCallback(
@@ -44,6 +56,22 @@ export const DraggableContainer: React.FC<DraggableContainerProps> = ({
     [position]
   );
 
+  const handleResizeMouseDown = React.useCallback(
+    (e: React.MouseEvent, direction: string) => {
+      setIsResizing(true);
+      setResizeDirection(direction);
+      setResizeStart({
+        x: e.clientX,
+        y: e.clientY,
+        width: size.width,
+        height: size.height,
+      });
+      e.preventDefault();
+      e.stopPropagation();
+    },
+    [size]
+  );
+
   const handleMouseMove = React.useCallback(
     (e: MouseEvent) => {
       if (isDragging) {
@@ -54,17 +82,54 @@ export const DraggableContainer: React.FC<DraggableContainerProps> = ({
         setPosition(newPosition);
         // Save position to sessionStorage
         sessionStorage.setItem(storageKey, JSON.stringify(newPosition));
+      } else if (isResizing) {
+        const deltaX = e.clientX - resizeStart.x;
+        const deltaY = e.clientY - resizeStart.y;
+        
+        let newWidth = resizeStart.width;
+        let newHeight = resizeStart.height;
+        
+        if (resizeDirection.includes('e')) {
+          newWidth = Math.max(300, resizeStart.width + deltaX);
+        }
+        if (resizeDirection.includes('w')) {
+          newWidth = Math.max(300, resizeStart.width - deltaX);
+          if (newWidth !== resizeStart.width - deltaX) {
+            // Only move position if we're not hitting the minimum width
+            const newPosition = { ...position, x: position.x + (resizeStart.width - newWidth) };
+            setPosition(newPosition);
+            sessionStorage.setItem(storageKey, JSON.stringify(newPosition));
+          }
+        }
+        if (resizeDirection.includes('s')) {
+          newHeight = Math.max(200, resizeStart.height + deltaY);
+        }
+        if (resizeDirection.includes('n')) {
+          newHeight = Math.max(200, resizeStart.height - deltaY);
+          if (newHeight !== resizeStart.height - deltaY) {
+            // Only move position if we're not hitting the minimum height
+            const newPosition = { ...position, y: position.y + (resizeStart.height - newHeight) };
+            setPosition(newPosition);
+            sessionStorage.setItem(storageKey, JSON.stringify(newPosition));
+          }
+        }
+        
+        const newSize = { width: newWidth, height: newHeight };
+        setSize(newSize);
+        sessionStorage.setItem(`${storageKey}_size`, JSON.stringify(newSize));
       }
     },
-    [isDragging, dragStart, storageKey]
+    [isDragging, isResizing, dragStart, resizeStart, resizeDirection, storageKey, position]
   );
 
   const handleMouseUp = React.useCallback(() => {
     setIsDragging(false);
+    setIsResizing(false);
+    setResizeDirection('');
   }, []);
 
   React.useEffect(() => {
-    if (isDragging) {
+    if (isDragging || isResizing) {
       document.addEventListener("mousemove", handleMouseMove);
       document.addEventListener("mouseup", handleMouseUp);
       return () => {
@@ -72,7 +137,7 @@ export const DraggableContainer: React.FC<DraggableContainerProps> = ({
         document.removeEventListener("mouseup", handleMouseUp);
       };
     }
-  }, [isDragging, handleMouseMove, handleMouseUp]);
+  }, [isDragging, isResizing, handleMouseMove, handleMouseUp]);
 
   const containerStyles = css({
     fontSize: currentTheme.typography.fontSize.sm,
@@ -85,13 +150,14 @@ export const DraggableContainer: React.FC<DraggableContainerProps> = ({
     position: 'fixed',
     top: `${position.y}px`,
     left: `${position.x}px`,
+    width: `${size.width}px`,
+    height: `${size.height}px`,
     zIndex: 9999,
-    maxWidth: '500px',
-    maxHeight: '80vh',
     overflow: 'hidden',
     boxShadow: currentTheme.elevation.medium,
-    cursor: isDragging ? 'grabbing' : 'grab',
     userSelect: 'none',
+    display: 'flex',
+    flexDirection: 'column',
   });
 
   const headerStyles = css({
@@ -99,7 +165,7 @@ export const DraggableContainer: React.FC<DraggableContainerProps> = ({
     borderBottom: `1px solid ${currentTheme.colors.divider}`,
     marginBottom: currentTheme.spacing.sm,
     padding: `${currentTheme.spacing.xs} 0`,
-    cursor: 'grab',
+    cursor: isDragging ? 'grabbing' : 'grab',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -133,6 +199,89 @@ export const DraggableContainer: React.FC<DraggableContainerProps> = ({
     },
   });
 
+  const contentStyles = css({
+    flex: 1,
+    overflow: 'auto',
+    minHeight: 0, // Allow content to shrink
+  });
+
+  const resizeHandleBase = css({
+    position: 'absolute',
+    backgroundColor: 'transparent',
+    '&:hover': {
+      backgroundColor: currentTheme.colors.primary + '20',
+    },
+  });
+
+  const resizeHandles = {
+    e: css(resizeHandleBase, {
+      top: 0,
+      right: 0,
+      width: '8px',
+      height: '100%',
+      cursor: 'ew-resize',
+    }),
+    s: css(resizeHandleBase, {
+      bottom: 0,
+      left: 0,
+      width: '100%',
+      height: '8px',
+      cursor: 'ns-resize',
+    }),
+    se: css(resizeHandleBase, {
+      bottom: 0,
+      right: 0,
+      width: '16px',
+      height: '16px',
+      cursor: 'nw-resize',
+      '&::after': {
+        content: '""',
+        position: 'absolute',
+        bottom: '2px',
+        right: '2px',
+        width: '0',
+        height: '0',
+        borderLeft: '8px solid transparent',
+        borderBottom: `8px solid ${currentTheme.colors.textSecondary}40`,
+      },
+    }),
+    w: css(resizeHandleBase, {
+      top: 0,
+      left: 0,
+      width: '8px',
+      height: '100%',
+      cursor: 'ew-resize',
+    }),
+    n: css(resizeHandleBase, {
+      top: 0,
+      left: 0,
+      width: '100%',
+      height: '8px',
+      cursor: 'ns-resize',
+    }),
+    nw: css(resizeHandleBase, {
+      top: 0,
+      left: 0,
+      width: '16px',
+      height: '16px',
+      cursor: 'nw-resize',
+    }),
+    ne: css(resizeHandleBase, {
+      top: 0,
+      right: 0,
+      width: '16px',
+      height: '16px',
+      cursor: 'ne-resize',
+    }),
+    sw: css(resizeHandleBase, {
+      bottom: 0,
+      left: 0,
+      width: '16px',
+      height: '16px',
+      cursor: 'sw-resize',
+    }),
+  };
+
   return (
     <div ref={dragRef} onMouseDown={handleMouseDown} css={containerStyles}>
       <div className="drag-handle" css={headerStyles}>
@@ -153,7 +302,19 @@ export const DraggableContainer: React.FC<DraggableContainerProps> = ({
           </button>
         )}
       </div>
-      {children}
+      <div css={contentStyles}>
+        {children}
+      </div>
+      
+      {/* Resize handles */}
+      <div css={resizeHandles.n} onMouseDown={(e) => handleResizeMouseDown(e, 'n')} />
+      <div css={resizeHandles.s} onMouseDown={(e) => handleResizeMouseDown(e, 's')} />
+      <div css={resizeHandles.e} onMouseDown={(e) => handleResizeMouseDown(e, 'e')} />
+      <div css={resizeHandles.w} onMouseDown={(e) => handleResizeMouseDown(e, 'w')} />
+      <div css={resizeHandles.ne} onMouseDown={(e) => handleResizeMouseDown(e, 'ne')} />
+      <div css={resizeHandles.nw} onMouseDown={(e) => handleResizeMouseDown(e, 'nw')} />
+      <div css={resizeHandles.se} onMouseDown={(e) => handleResizeMouseDown(e, 'se')} />
+      <div css={resizeHandles.sw} onMouseDown={(e) => handleResizeMouseDown(e, 'sw')} />
     </div>
   );
 };
