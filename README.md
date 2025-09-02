@@ -17,15 +17,41 @@ Miroir is developed largely in Miroir, making it extremely adaptable.
 
 ## Current State
 
-What already exists:
+### What already exists
 
 - The Meta-Language [jzod](https://github.com/miroir-framework/jzod)
 - The Miroir Meta-model, used to define an application's logical data model: Entity and EntityDefinitions.
 - The core of the Miroir application model use to define business-domain data presentation and behavior: Transformer, Query, Report, Endpoint & Action, Test, Application
 - An interpreter for Actions, Transformers and Queries (in-memory and SQL)
-- A web application and a server leveraging the mentioned interpreters and providing rudimentary local cache management for data (to be used as working space).
+- A Web Application and a server leveraging the mentioned interpreters and providing rudimentary local cache management for data (to be used as working space).
 - A substancial set of tests for non-regression on core features
 - An Event system to monitor activities and troubleshoot issues.
+- A desktop application using Electron providing the same functionality as the Web App / Web Server combination.
+
+### Present Developments
+
+Today's on-going effort are centered on the identifcation and provision of actual workflows in the web interface:
+
+- providing an interactive, instant-feedback giving Transformer editor, enabling to create Transformer that encode the domain logic in a straightforward and confident way
+- provide similar editors for Queries and Actions
+- finalize the Event system, allowing to monitor activities and troubleshoot issue while during the development phase.
+
+### Future Developments
+
+Here's an overview, browse the [issues](https://github.com/miroir-framework/miroir/issues) for more details on some of the following (envisioned) goals
+
+- enable graphs in Reports (using D3js)
+- enable some text edition tool (probably based on Markdown, potentially html) to enable the creation of text-containing Reports and to create the documentation for Miroir
+- enable visual (UML-Like) Application Model edition
+- enable block-based visual programming (low code) for Actions and Transformers
+- support NOSQL datastores (MongoDB, ElasticSearch, DuckDb, etc.)
+- support for a Miroir Command Line Interface
+- support connection to software versioning tools: local Git repos, Github.
+- support connection to issue-tracking and project management tools (Github, Jira, etc.)
+- support for LLM-based tools
+- "Freezing" code to Javascript: generate js libraries from Miroir Transformers, Queries and Actions giving a proper escape hatch or enabling to use Miroir as an Application generator
+- "Freezing" code to Rust: enabling the production of industrial web services implemented in Rust, maybe even a Rust-based Desktop / Web Application?
+- develop "example" applications and tools: a relational DB model manager, an interface to the R programming platform
 
 ## installation
 
