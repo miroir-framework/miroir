@@ -15,6 +15,8 @@ Activities encompassed by the Miroir Framework are (tentatively):
  
 Miroir is developed largely in Miroir, making it extremely adaptable.
 
+The technically-inclined reader can refer to the defined [LLM-agent instructions employed during development](https://github.com/miroir-framework/miroir/blob/master/.github/copilot-instructions.md), which provide a Markdown-format description of the development environment.
+
 ## Current State
 
 ### What already exists
