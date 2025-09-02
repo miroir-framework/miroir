@@ -1,17 +1,31 @@
 # Miroir
 
 **caveat: developments are still ongoing, only a fraction of the goals described below have been reached yet. First official release is not yet available (soon)**
+
 This is the monorepo for the Miroir Framework. The Miroir Framework aims at becoming a comprehensive web application development environment that integrates development-time and runtime activities, inspired by Smalltalk's interactive development model.
 
-The foreseen first use case for the framework is the need for automation or data-management "in the small" that often takes the form of a spreadsheet and, as the developed "software" gains tracktion, needs to migrate to a more sturdy development environment. In speadsheets indeed, means to address ubiquitous software development issues such as non-regression, automated testing, or moving technical environment are scant, if any exist at all. The Miroir Frameworks integrates all activities taking place during of software creation, at any scale, providing opinionated solutions and tools while keeping the requirement to use them at a minimum. Along the way, it ensures the development and runtime environments to be as close as possible, guaranteeing instantaneous feedback that fosters experimental programming. One can then concentrate on the problem to be solved, being rid of usual chores like compiling before getting feedback.
+The foreseen first use case for the framework is the need for automation or data-management "in the small" that often takes the form of a spreadsheet and, as the developed "software" gains traction, needs to migrate to a more sturdy development environment. In speadsheets indeed, means to address ubiquitous software development issues such as non-regression, automated testing, or changing technical environment are scant, if any exist at all. The Miroir Frameworks integrates all activities taking place during of software creation, at any scale, providing opinionated solutions and tools while keeping the requirement to use them at a minimum. Along the way, it ensures the development and runtime environments to be as close as possible, guaranteeing instantaneous feedback that fosters an experimental to software creation. One can then concentrate on the problem to be solved, being rid of usual chores like compiling every time before getting feedback.
 
-Activities encompassed by the Miroir Framework are (tentative):
+Activities encompassed by the Miroir Framework are (tentatively):
 
-- modeling and management of the application's data: (logical and physical) data model elaboration and evolution, data store management (Relational schema maintenance, data migration, etc.)
-- business: coding value-producing analysis and behavior, create you own Domain-Specific Language (DSL), make it available as a service, desktop, or web application.
-- software tooling: enable software versioning, produce artefacts, automated Test management (unit tests, integration tests), enable continuous integration
-- favoring an experimental, incremental development approach: Test-Driven Development, decoupling of sub-systems
+- **modeling and management of the application's data:** (logical and physical) data model elaboration and evolution, data store management (Relational schema maintenance, data migration, etc.)
+- **practicing domain-driven development:** coding value-producing analysis and behavior from the application domain, create you own Domain-Specific Languages (DSLs), make them available as a services, or as a desktop and web applications.
+- **managing the software development cycle:** enable software versioning, produce artefacts, automated Test management (unit tests, integration tests), enable continuous integration.
+- **adapt your development environment to your needs**: benefit from the powerful javascript / web universe, leverage the LLM tools, adopt an experimental and incremental development approach (Test-Driven Development), be free to run your business-domain code in the client, on the server or in the database (SQL), or even switch data storage architecture according to your needs.
+ 
+Miroir is developed largely in Miroir, making it extremely adaptable.
 
+## Current State
+
+What already exists:
+
+- The Meta-Language [jzod](https://github.com/miroir-framework/jzod)
+- The Miroir Meta-model, used to define an application's logical data model: Entity and EntityDefinitions.
+- The core of the Miroir application model use to define business-domain data presentation and behavior: Transformer, Query, Report, Endpoint & Action, Test, Application
+- An interpreter for Actions, Transformers and Queries (in-memory and SQL)
+- A web application and a server leveraging the mentioned interpreters and providing rudimentary local cache management for data (to be used as working space).
+- A substancial set of tests for non-regression on core features
+- An Event system to monitor activities and troubleshoot issues.
 
 ## installation
 
