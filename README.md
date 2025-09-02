@@ -21,6 +21,7 @@ Miroir is developed largely in Miroir, making it extremely adaptable.
 
 - The Meta-Language [jzod](https://github.com/miroir-framework/jzod)
 - The Miroir Meta-model, used to define an application's logical data model: Entity and EntityDefinitions.
+- Connectors to PostgreSQL, to an indexedDB key-value datastore, and to a JSON file-based datastore.
 - The core of the Miroir application model use to define business-domain data presentation and behavior: Transformer, Query, Report, Endpoint & Action, Test, Application
 - An interpreter for Actions, Transformers and Queries (in-memory and SQL)
 - A Web Application and a server leveraging the mentioned interpreters and providing rudimentary local cache management for data (to be used as working space).
@@ -32,9 +33,11 @@ Miroir is developed largely in Miroir, making it extremely adaptable.
 
 Today's on-going effort are centered on the identifcation and provision of actual workflows in the web interface:
 
+- finalize the Event system, allowing to monitor activities and troubleshoot issue while during the development phase.
 - providing an interactive, instant-feedback giving Transformer editor, enabling to create Transformer that encode the domain logic in a straightforward and confident way
 - provide similar editors for Queries and Actions
-- finalize the Event system, allowing to monitor activities and troubleshoot issue while during the development phase.
+- Provide a read/write connector to Spreadsheets (ODS and other formats) to store an Application's model and data
+- make a first official release ecompassing the above points.
 
 ### Future Developments
 
