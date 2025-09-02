@@ -1,6 +1,17 @@
 # Miroir
 
-This is the monorepo for the Miroir Framework
+**caveat: developments are still ongoing, only a fraction of the goals described below have been reached yet. First official release is not yet available (soon)**
+This is the monorepo for the Miroir Framework. The Miroir Framework aims at becoming a comprehensive web application development environment that integrates development-time and runtime activities, inspired by Smalltalk's interactive development model.
+
+The foreseen first use case for the framework is the need for automation or data-management "in the small" that often takes the form of a spreadsheet and, as the developed "software" gains tracktion, needs to migrate to a more sturdy development environment. In speadsheets indeed, means to address ubiquitous software development issues such as non-regression, automated testing, or moving technical environment are scant, if any exist at all. The Miroir Frameworks integrates all activities taking place during of software creation, at any scale, providing opinionated solutions and tools while keeping the requirement to use them at a minimum. Along the way, it ensures the development and runtime environments to be as close as possible, guaranteeing instantaneous feedback that fosters experimental programming. One can then concentrate on the problem to be solved, being rid of usual chores like compiling before getting feedback.
+
+Activities encompassed by the Miroir Framework are (tentative):
+
+- modeling and management of the application's data: (logical and physical) data model elaboration and evolution, data store management (Relational schema maintenance, data migration, etc.)
+- business: coding value-producing analysis and behavior, create you own Domain-Specific Language (DSL), make it available as a service, desktop, or web application.
+- software tooling: enable software versioning, produce artefacts, automated Test management (unit tests, integration tests), enable continuous integration
+- favoring an experimental, incremental development approach: Test-Driven Development, decoupling of sub-systems
+
 
 ## installation
 
