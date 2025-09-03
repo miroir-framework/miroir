@@ -26,6 +26,7 @@ import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
 import { MiroirLoggerFactory } from "./LoggerFactory";
 import { ignorePostgresExtraAttributes, isJson, isJsonArray, removeUndefinedProperties, unNullify } from "./otherTools";
+import { circularReplacer } from '../tools';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -98,6 +99,9 @@ export const ignoreFailureAttributes: string[] = [
   "queryReference",
   "query",
 ];
+export const compareFailureAttributes: string[] = [
+  "queryFailure",
+];
 
 // ################################################################################################
 // ################################################################################################
@@ -106,7 +110,8 @@ export const ignoreFailureAttributes: string[] = [
 // ################################################################################################
 // ################################################################################################
 export async function runTransformerTestInMemory(
-  localVitest: any,
+  // localVitest: any,
+  localVitest: typeof vitest,
   testNamePath: string[],
   transformerTest: TransformerTest,
   modelEnvironment: MiroirModelEnvironment,
@@ -163,7 +168,7 @@ export async function runTransformerTestInMemory(
     undefined,
     runtimeTransformer,
     // transformerTest.transformerParams,
-    modelEnvironment,
+    {...modelEnvironment, ...transformerTest.transformerParams},
     transformerTest.transformerRuntimeContext ?? {},
     "value"
   );
@@ -178,7 +183,7 @@ export async function runTransformerTestInMemory(
       undefined,
       convertedTransformer,
       // transformerTest.transformerParams,
-      modelEnvironment,
+      {...modelEnvironment, ...transformerTest.transformerParams},
       transformerTest.transformerRuntimeContext ?? {}
     );
   } else {
@@ -193,14 +198,18 @@ export async function runTransformerTestInMemory(
     "################################ runTransformerTestInMemory expectedResult",
     JSON.stringify(transformerTest.expectedValue, null, 2)
   );
-  const result = ignorePostgresExtraAttributes(rawResult, transformerTest.ignoreAttributes);
+  const resultWithIgnored = ignorePostgresExtraAttributes(rawResult, transformerTest.ignoreAttributes);
+  const resultWithRetain = transformerTest.retainAttributes?
+    Object.fromEntries(
+      Object.entries(resultWithIgnored).filter(([key]) => transformerTest.retainAttributes!.includes(key))
+    ): resultWithIgnored;
   console.log(
     "################################ runTransformerTestInMemory result",
-    result
+    resultWithRetain
     // JSON.stringify(result, null, 2)
   );
   const testSuiteNamePathAsString = MiroirEventTracker.testPathName(testNamePath);
-  const jsonifiedResult = jsonify(result);
+  const jsonifiedResult = jsonify(resultWithRetain);
   
   // Use the explicitly passed testAssertionPath or fall back to current tracker path
   const currentTestAssertionPath = testAssertionPath || miroirEventTracker.getCurrentTestAssertionPath();
@@ -224,13 +233,14 @@ export async function runTransformerTestInMemory(
     //   "################################ runTransformerTestInMemory localVitest.expect called expectForm", expectForm
     // );
     // const testResult = expectForm.toEqual(transformerTest.expectedValue);
-    const testResult = expectForm.toEqual(normalizedExpected);
+    // vitest returns void, simulated vitest returns an object with a "result" boolean
+    const testResult: any = expectForm.toEqual(normalizedExpected);
     console.log(
       "################################ runTransformerTestInMemory testResult",
-      JSON.stringify(testResult, null, 2)
+      JSON.stringify(testResult, circularReplacer, 2)
     );
 
-    if (!Object.hasOwn(testResult, "result")) {
+    if (!testResult || !Object.hasOwn(testResult, "result")) {
       // vitest case
       testAssertionResult = {
         assertionName,
@@ -256,6 +266,11 @@ export async function runTransformerTestInMemory(
       };
     }
   } catch (error) {
+    console.log(
+      "################################ runTransformerTestInMemory caught error from localVitest.expect",
+      error
+    );
+    // vitest case
     testAssertionResult = {
       assertionName,
       assertionResult: "error",
@@ -367,49 +382,45 @@ export async function runTransformerTestSuite(
           2
         )} tests`
       );
-      await localVitest.describe.each(Object.values(transformerTestSuite.transformerTests))(
+      // replace the describe.each(...) call body with this:
+      localVitest.describe.each(Object.values(transformerTestSuite.transformerTests))(
         "test $transformerTestLabel",
-        async (transformerTestParam: TransformerTestSuite) => {
-          console.log(
-            `calling inner transformer test of ${testSuitePath} called ${transformerTestParam.transformerTestLabel}`
-          );
-          
-          // Check if this is an individual test or another test suite
+        (transformerTestParam: TransformerTestSuite) => {
+          // if it's an individual test register a vitest.test that runs it
           if (transformerTestParam.transformerTestType === "transformerTest") {
-            // This is an individual test - track it as a test, not a test suite
-            miroirEventTracker.setTest(transformerTestParam.transformerTestLabel);
-            
-            // Build the TestAssertionPath from the current testSuitePath (all test suites)
-            const testAssertionPath: TestAssertionPath = MiroirEventTracker.stringArrayToTestAssertionPath(testSuitePath);
-            // Add the test to the path
-            testAssertionPath.push({ test: transformerTestParam.transformerTestLabel });
-            // Add the test assertion to the path (same as test name for individual tests)
-            testAssertionPath.push({ testAssertion: transformerTestParam.transformerTestLabel });
-            
-            await runTransformerTest(
-              localVitest,
-              [...testSuitePath, transformerTestParam.transformerTestLabel],
-              transformerTestParam,
-              modelEnvironment,
-              miroirEventTracker, // Pass the tracker to track this individual test
-              testAssertionPath // Pass the explicit test assertion path
+            localVitest.test(
+              transformerTestParam.transformerTestLabel,
+              async () => {
+                // Build the explicit TestAssertionPath and run the test
+                const testAssertionPath: TestAssertionPath = MiroirEventTracker.stringArrayToTestAssertionPath(testSuitePath);
+                testAssertionPath.push({ test: transformerTestParam.transformerTestLabel });
+                testAssertionPath.push({ testAssertion: transformerTestParam.transformerTestLabel });
+                await runTransformerTest(
+                  localVitest,
+                  [...testSuitePath, transformerTestParam.transformerTestLabel],
+                  transformerTestParam,
+                  modelEnvironment,
+                  miroirEventTracker,
+                  testAssertionPath
+                );
+              },
+              globalTimeOut
             );
-            miroirEventTracker.setTest(undefined);
           } else {
-            // This is a nested test suite - handle recursively
-            await runTransformerTestSuite(
+            // nested suite -> register nested describes (no await)
+            runTransformerTestSuite(
               localVitest,
               [...testSuitePath, transformerTestParam.transformerTestLabel],
               transformerTestParam,
               runTransformerTest,
               modelEnvironment,
-              miroirEventTracker // Pass the tracker through to nested test suites
+              miroirEventTracker
             );
           }
         },
         globalTimeOut
       );
-      console.log(`finished running transformer subtests for test suite ${testSuitePath}`);
+      console.log(`finished registering transformer subtests for test suite ${testSuitePath}`);
     }
     
     // End tracking test suite execution if tracker was used

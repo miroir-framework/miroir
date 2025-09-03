@@ -447,8 +447,8 @@ export class MiroirEventTracker implements MiroirEventTrackerInterface {
     console.log(
       "MiroirEventTracker.setTestAssertionResult called for testAssertionPath",
       testAssertionPath,
-      // "testAssertionResult",
-      // JSON.stringify(testAssertionResult, null, 2),
+      "testAssertionResult",
+      JSON.stringify(testAssertionResult, null, 2),
       // "old this.testAssertionsResults",
       // JSON.stringify(this.testAssertionsResults, null, 2)
     );

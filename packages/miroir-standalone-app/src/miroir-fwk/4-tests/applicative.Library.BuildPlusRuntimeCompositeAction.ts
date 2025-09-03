@@ -433,12 +433,21 @@ export function getTestSuitesForBuildPlusRuntimeCompositeAction(miroirConfig: an
                 {
                   actionType: "createEntity",
                   actionLabel: "createEntity",
+                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                  // TODO: correct deploymentUuid usage
+                  /**
+                   * The types of 'compositeAction.definition' are incompatible between these types.
+Type '{ actionType: "createEntity"; actionLabel: string; deploymentUuid: { transformerType: "parameterReference"; interpolation: "build"; referenceName: string; }; endpoint: "7947ae40-eb34-4149-887b-15a9021e714e"; payload: { ...; }; }' is not assignable to type 'BuildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction | ... 4 more ... | { ...; }'.
+Types of property 'deploymentUuid' are incompatible.
+  Type '{ transformerType: "parameterReference"; interpolation: "build"; referenceName: string; }' is not assignable to type 'string | TransformerForBuildPlusRuntimeCarryOnObject'.
+	Types of property 'transformerType' are incompatible.
+	  Type '"parameterReference"' is not assignable to type '"defaultValueForMLSchema" | "resolveConditionalSchema" | "resolveSchemaReferenceInContext" | "unfoldSchemaOnce" | "jzodTypeCheck"'.ts(2634)
+                   */
                   deploymentUuid: {
                     transformerType: "parameterReference",
                     interpolation: "build",
                     referenceName: "testDeploymentUuid",
                   },
-                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
                     entities: [
                       {
@@ -721,12 +730,9 @@ export function getTestSuitesForBuildPlusRuntimeCompositeAction(miroirConfig: an
                             transformerType: "listPickElement",
                             interpolation: "runtime",
                             applyTo: {
-                              referenceType: "referencedTransformer",
-                              reference: {
-                                transformerType: "contextReference",
-                                interpolation: "runtime",
-                                referenceName: "menuList",
-                              },
+                              transformerType: "contextReference",
+                              interpolation: "runtime",
+                              referenceName: "menuList",
                             },
                             index: 0,
                           },

@@ -8298,6 +8298,13 @@ export const miroirFundamentalJzodSchema = {
           "expectedValue": {
             "type": "any"
           },
+          "retainAttributes": {
+            "type": "array",
+            "definition": {
+              "type": "string"
+            },
+            "optional": true
+          },
           "ignoreAttributes": {
             "type": "array",
             "definition": {
@@ -8475,6 +8482,13 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "expectedValue": {
                     "type": "any"
+                  },
+                  "retainAttributes": {
+                    "type": "array",
+                    "definition": {
+                      "type": "string"
+                    },
+                    "optional": true
                   },
                   "ignoreAttributes": {
                     "type": "array",

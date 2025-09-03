@@ -921,8 +921,8 @@ export { RestClientStub } from "./4_services/RestClientStub";
 export { restServerDefaultHandlers } from "./4_services/RestServer.js";
 export { generateRestServiceResponse } from "./4_services/RestTools.js";
 export {
-  displayTestSuiteResults,
-  displayTestSuiteResultsDetails,
+  // displayTestSuiteResults,
+  // displayTestSuiteResultsDetails,
   runTransformerTestInMemory,
   runTransformerTestSuite,
   testSuites,
