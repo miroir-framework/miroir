@@ -26,7 +26,7 @@ describe('MiroirEventService', () => {
   describe('Context tracking from MiroirEventTracker', () => {
     it('should get action and compositeAction context from MiroirEventTracker, not LoggerGlobalContext', () => {
       // Start an action in the tracker
-      const actionId = runActionTracker.startEvent('testAction', 'Test Action Label');
+      const actionId = runActionTracker.startAction('testAction', 'Test Action Label');
       
       // Set action context in MiroirEventTracker
       runActionTracker.setAction('contextAction');
@@ -54,7 +54,7 @@ describe('MiroirEventService', () => {
 
     it('should handle undefined action and compositeAction context', () => {
       // Start an action in the tracker without setting context
-      const actionId = runActionTracker.startEvent('testAction', 'Test Action Label');
+      const actionId = runActionTracker.startAction('testAction', 'Test Action Label');
       
       // Log a message
       actionLogService.logForCurrentActionOrTest('info', 'testLogger', 'Test message');
@@ -73,7 +73,7 @@ describe('MiroirEventService', () => {
 
     it('should update context when MiroirEventTracker context changes', () => {
       // Start an action in the tracker
-      const actionId = runActionTracker.startEvent('testAction', 'Test Action Label');
+      const actionId = runActionTracker.startAction('testAction', 'Test Action Label');
       
       // Set initial context
       runActionTracker.setAction('initialAction');

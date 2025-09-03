@@ -1236,29 +1236,29 @@ export class DomainController implements DomainControllerInterface {
     return Promise.resolve(ACTION_OK);
   }
 
-  // ##############################################################################################
-  private async trackAction<T>(
-    actionType: string,
-    actionLabel: string | undefined,
-    actionFn: () => Promise<T>
-  ): Promise<T> {
-    const trackingId = this.miroirContext.miroirEventTracker.startEvent(actionType, actionLabel);
-    try {
-      const result = await actionFn();
-      this.miroirContext.miroirEventTracker.endEvent(trackingId);
-      return result;
-    } catch (error) {
-      this.miroirContext.miroirEventTracker.endEvent(trackingId, error instanceof Error ? error.message : String(error));
-      throw error;
-    }
-  }
+  // // ##############################################################################################
+  // private async trackAction<T>(
+  //   actionType: string,
+  //   actionLabel: string | undefined,
+  //   actionFn: () => Promise<T>
+  // ): Promise<T> {
+  //   const trackingId = this.miroirContext.miroirEventTracker.startEvent(actionType, actionLabel);
+  //   try {
+  //     const result = await actionFn();
+  //     this.miroirContext.miroirEventTracker.endEvent(trackingId);
+  //     return result;
+  //   } catch (error) {
+  //     this.miroirContext.miroirEventTracker.endEvent(trackingId, error instanceof Error ? error.message : String(error));
+  //     throw error;
+  //   }
+  // }
 
   // ##############################################################################################
   async handleAction(
     domainAction: DomainAction,
     currentModel?: MetaModel
   ): Promise<Action2VoidReturnType> {
-    return this.trackAction(
+    return this.miroirContext.miroirEventTracker.trackAction(
       domainAction.actionType,
       (domainAction as any).actionLabel,
       async () => this.handleActionInternal(domainAction, currentModel)
@@ -1486,7 +1486,8 @@ export class DomainController implements DomainControllerInterface {
     actionParamValues: MiroirModelEnvironment & Record<string, any>,
     currentModel: MetaModel // TODO: redundant with actionParamValues, remove it?
   ): Promise<Action2VoidReturnType> {
-    return this.trackAction(
+    return this.miroirContext.miroirEventTracker
+    .trackAction(
       "compositeAction",
       compositeAction.actionLabel,
       async () => this.handleCompositeActionInternal(compositeAction, actionParamValues, currentModel)
@@ -2232,10 +2233,13 @@ export class DomainController implements DomainControllerInterface {
         //   // assertionActualValue: valueToTest,
         // });
         // Set test result in MiroirEventTracker for TestLogService
-        this.miroirContext.miroirEventTracker.setTestAssertionResult({
-          assertionName: currentAction.testAssertion.testLabel,
-          assertionResult: "ok",
-        });
+        this.miroirContext.miroirEventTracker.setTestAssertionResult(
+          this.miroirContext.miroirEventTracker.getCurrentTestAssertionPath(),
+          {
+            assertionName: currentAction.testAssertion.testLabel,
+            assertionResult: "ok",
+          }
+        );
       } catch (error) {
         // TestSuiteContext.setTestAssertionResult({
         //   assertionName: currentAction.testAssertion.testLabel,
@@ -2244,12 +2248,15 @@ export class DomainController implements DomainControllerInterface {
         //   assertionActualValue: valueToTest,
         // });
         // Set test result in MiroirEventTracker for TestLogService
-        this.miroirContext.miroirEventTracker.setTestAssertionResult({
-          assertionName: currentAction.testAssertion.testLabel,
-          assertionResult: "error",
-          assertionExpectedValue: currentAction.testAssertion.definition.expectedValue,
-          assertionActualValue: valueToTest,
-        });
+        this.miroirContext.miroirEventTracker.setTestAssertionResult(
+          this.miroirContext.miroirEventTracker.getCurrentTestAssertionPath(),
+          {
+            assertionName: currentAction.testAssertion.testLabel,
+            assertionResult: "error",
+            assertionExpectedValue: currentAction.testAssertion.definition.expectedValue,
+            assertionActualValue: valueToTest,
+          }
+        );
         // return ACTION_OK;
         actionResult = ACTION_OK;
       }
@@ -2264,7 +2271,9 @@ export class DomainController implements DomainControllerInterface {
       //   // assertionActualValue: valueToTest,
       // });
       // Set test result in MiroirEventTracker for TestLogService
-      this.miroirContext.miroirEventTracker.setTestAssertionResult({
+      this.miroirContext.miroirEventTracker.setTestAssertionResult(
+                  this.miroirContext.miroirEventTracker.getCurrentTestAssertionPath(),
+{
         assertionName: currentAction.testAssertion.testLabel,
         assertionResult: "error",
       });
@@ -2521,27 +2530,27 @@ export class DomainController implements DomainControllerInterface {
       );
       switch (currentAction.actionType) {
         // case "instanceAction":
-        case 'createInstance':
-        case 'deleteInstance':
-        case 'deleteInstanceWithCascade':
-        case 'updateInstance':
-        case 'loadNewInstancesInLocalCache':
-        case 'getInstance':
-        case 'getInstances':
-        // 
+        case "createInstance":
+        case "deleteInstance":
+        case "deleteInstanceWithCascade":
+        case "updateInstance":
+        case "loadNewInstancesInLocalCache":
+        case "getInstance":
+        case "getInstances":
+        //
         case "undoRedoAction":
         // case "modelAction":
-        case 'initModel':
-        case 'commit':
-        case 'rollback':
-        case 'remoteLocalCacheRollback':
-        case 'resetModel':
-        case 'resetData':
-        case 'alterEntityAttribute':
-        case 'renameEntity':
-        case 'createEntity':
-        case 'dropEntity':
-          // 
+        case "initModel":
+        case "commit":
+        case "rollback":
+        case "remoteLocalCacheRollback":
+        case "resetModel":
+        case "resetData":
+        case "alterEntityAttribute":
+        case "renameEntity":
+        case "createEntity":
+        case "dropEntity":
+        //
         case "transactionalInstanceAction":
         case "compositeAction":
         // case "storeManagementAction":
@@ -2550,7 +2559,7 @@ export class DomainController implements DomainControllerInterface {
         case "storeManagementAction_resetAndInitApplicationDeployment":
         case "storeManagementAction_openStore":
         case "storeManagementAction_closeStore":
-        // 
+        //
         case "bundleAction": {
           // case "domainAction": {
           // log.info(
@@ -2687,10 +2696,10 @@ export class DomainController implements DomainControllerInterface {
         //   // }
         //   break;
         // }
-        case 'compositeRunBoxedQueryAction':
-        case 'compositeRunBoxedExtractorAction':
-        case 'compositeRunBoxedExtractorOrQueryAction':
-        case 'compositeRunTestAssertion':
+        case "compositeRunBoxedQueryAction":
+        case "compositeRunBoxedExtractorAction":
+        case "compositeRunBoxedExtractorOrQueryAction":
+        case "compositeRunTestAssertion":
         default: {
           log.error(
             "handleCompositeActionTemplate",

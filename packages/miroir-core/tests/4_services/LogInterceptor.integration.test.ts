@@ -72,7 +72,7 @@ describe('ConsoleInterceptor Integration Tests', () => {
     logInterceptor.start();
 
     // Start an action
-    const actionId = miroirEventTracker.startEvent('testAction');
+    const actionId = miroirEventTracker.startAction('testAction');
     
     // Emit some logs
     console.info('[2024-01-01T10:00:00Z] info (TestLogger) - Test action message');
@@ -140,7 +140,7 @@ describe('ConsoleInterceptor Integration Tests', () => {
     logInterceptor.start();
 
     // Start an action
-    const actionId = miroirEventTracker.startEvent('testAction');
+    const actionId = miroirEventTracker.startAction('testAction');
     
     // Start a test within the action
     miroirEventTracker.setTestSuite('Action Test Suite');
@@ -210,7 +210,7 @@ describe('ConsoleInterceptor Integration Tests', () => {
     actionOnlyInterceptor.start();
 
     // Start an action
-    const actionId = freshActionTracker.startEvent('actionOnlyTest');
+    const actionId = freshActionTracker.startAction('actionOnlyTest');
     
     // Emit logs
     console.info('[2024-01-01T10:00:00Z] info (ActionOnlyLogger) - Action-only message');
@@ -291,7 +291,7 @@ describe('ConsoleInterceptor Integration Tests', () => {
     // Verify console methods were restored
     // Note: We can't compare function equality directly due to binding,
     // but we can verify they work and don't intercept anymore
-    const actionId = miroirEventTracker.startEvent('postStopAction');
+    const actionId = miroirEventTracker.startAction('postStopAction');
     console.info('[2024-01-01T10:00:00Z] info (PostStopLogger) - Post-stop message');
     miroirEventTracker.endEvent(actionId);
 

@@ -6,12 +6,12 @@ import {
 } from "../1_core/preprocessor-generated/miroirFundamentalType";
 // Import other interface elements only
 
-export interface MiroirEventTrackingData {
+// Base interface for common tracking fields
+interface MiroirEventTrackingDataBase {
   id: string;
   parentId?: string;
-  trackingType: 'action' | 'testSuite' | 'test' | 'testAssertion' | 'transformer';
-  actionType: string; // For actions, or derived from trackingType for tests
-  actionLabel?: string; // For actions, or test/testSuite name for tests
+  actionType: string;
+  actionLabel?: string;
   startTime: number;
   endTime?: number;
   duration?: number;
@@ -19,22 +19,32 @@ export interface MiroirEventTrackingData {
   error?: string;
   depth: number;
   children: string[];
-  
-  // Test-specific fields (optional for backwards compatibility)
-  testSuite?: string;
-  test?: string; 
-  testAssertion?: string;
-  testResult?: 'ok' | 'error';
-  testAssertionsResults?: TestAssertionsResults;
-  
-  // Transformer-specific fields
-  transformerName?: string;
-  transformerType?: string;
-  transformerStep?: 'build' | 'runtime';
-  transformerParams?: any;
-  transformerResult?: any;
-  transformerError?: string;
 }
+
+// Discriminated union for event tracking data
+export type MiroirEventTrackingData =
+  | (MiroirEventTrackingDataBase & {
+      trackingType: 'action';
+    })
+  | (MiroirEventTrackingDataBase & {
+      trackingType: 'testSuite' | 'test' | 'testAssertion';
+      testSuite?: string;
+      test?: string;
+      testAssertion?: string;
+      testResult?: 'ok' | 'error';
+      testAssertionsResults?: TestAssertionsResults;
+    })
+  | (MiroirEventTrackingDataBase & {
+      trackingType: 'transformer';
+      transformerName?: string;
+      transformerType?: string;
+      transformerStep?: 'build' | 'runtime';
+      transformerParams?: any;
+      transformerResult?: any;
+      transformerError?: string;
+    });
+
+export type TestAssertionPath = {testSuite?: string, test?: string, testAssertion?: string}[];
 
 export interface MiroirEventTrackerInterface {
   /**
@@ -44,7 +54,7 @@ export interface MiroirEventTrackerInterface {
    * @param parentId Optional parent action ID for nested calls
    * @returns Unique tracking ID for this action
    */
-  startEvent(actionType: string, actionLabel?: string, parentId?: string): string;
+  startAction(actionType: string, actionLabel?: string, parentId?: string): string;
   
   /**
    * End tracking an action
@@ -114,6 +124,12 @@ export interface MiroirEventTrackerInterface {
    */
   getAction(): string | undefined;
 
+  trackAction<T>(
+    actionType: string,
+    actionLabel: string | undefined,
+    actionFn: () => Promise<T>
+  ): Promise<T>;
+
   // Test-specific methods for backwards compatibility with TestTracker
   /**
    * Start tracking a test suite
@@ -139,18 +155,25 @@ export interface MiroirEventTrackerInterface {
    */
   startTestAssertion(testAssertion: string, parentId?: string): string;
 
-  /**
-   * Set test assertion result for a specific tracking ID or using current context
-   * @param trackingId The tracking ID of the test assertion (new signature)
-   * @param result The test assertion result (new signature)
-   */
-  setTestAssertionResult(trackingId: string, result: TestAssertionResult): void;
+  // /**
+  //  * Set test assertion result for a specific tracking ID or using current context
+  //  * @param trackingId The tracking ID of the test assertion (new signature)
+  //  * @param result The test assertion result (new signature)
+  //  */
+  // setTestAssertionResult(trackingId: string, result: TestAssertionResult): void;
+  
+  // /**
+  //  * Set test assertion result for a specific tracking ID or using current context
+  //  * @param trackingId The tracking ID of the test assertion (new signature)
+  //  * @param result The test assertion result (new signature)
+  //  */
+  // setTestAssertionResult(testSuiteName: string, result: TestAssertionResult): void;
   
   /**
    * Set test assertion result using current context (TestTracker compatibility)
    * @param testAssertionResult The test assertion result
    */
-  setTestAssertionResult(testAssertionResult: TestAssertionResult): void;
+  setTestAssertionResult(testAssertionPath: TestAssertionPath, testAssertionResult: TestAssertionResult): void;
 
   /**
    * Get test result for a specific test suite and test
@@ -158,20 +181,37 @@ export interface MiroirEventTrackerInterface {
    * @param test The test name
    * @returns The test result
    */
-  getTestResult(testSuite: string, test: string): TestResult;
+  // getTestResult(testSuite: string, test: string): TestResult;
+  getTestResult(testPath: TestAssertionPath): TestResult;
+
+  // /**
+  //  * Get test result for a specific test suite and test
+  //  * @param testSuite The test suite name
+  //  * @param test The test name
+  //  * @returns The test result
+  //  */
+  // getTestResultFromPath(testSuitePath: string[], test: string): TestResult;
 
   /**
    * Get test suite result for a specific test suite
-   * @param testSuite The test suite name
+   * @param testSuitePath The test suite name
    * @returns The test suite result
    */
-  getTestSuiteResult(testSuite: string): TestSuiteResult;
+  getTestSuiteResult(testSuitePath: TestAssertionPath): TestSuiteResult;
+
+  // /**
+  //  * Get test suite result for a specific test suite
+  //  * @param testSuite The test suite name
+  //  * @returns The test suite result
+  //  */
+  // getTestSuiteResultFromPath(testSuitePath: string[]): TestSuiteResult;
 
   /**
    * Get all test assertions results
    * @returns All test assertions results
    */
-  getTestAssertionsResults(): { [testSuite: string]: { [test: string]: TestAssertionsResults } };
+  // getTestAssertionsResults(): { [testSuite: string]: { [test: string]: TestAssertionsResults } };
+  getTestAssertionsResults(testAssertionsPath: TestAssertionPath): TestSuiteResult;
 
   // Test context methods (for TestTracker compatibility)
   /**
@@ -209,6 +249,12 @@ export interface MiroirEventTrackerInterface {
    * @returns The current test assertion name or undefined
    */
   getTestAssertion(): string | undefined;
+
+  /**
+   * Get the current test assertion
+   * @returns The current test assertion name or undefined
+   */
+  getCurrentTestAssertionPath(): TestAssertionPath;
 
   /**
    * Reset all test results

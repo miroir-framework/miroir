@@ -2532,14 +2532,14 @@ export function transformer_extended_apply<T extends MiroirModelEnvironment>(
           let preResult;
           const foundApplicationTransformer =
             applicationTransformerDefinitions[(transformer as any).transformerType];
-          log.info(
-            "transformer_extended_apply foundApplicationTransformer",
-            foundApplicationTransformer,
-            "for transformer",
-            JSON.stringify(transformer, null, 2),
-            "applicationTransformerDefinitions",
-            Object.keys(applicationTransformerDefinitions)
-          );
+          // log.info(
+          //   "transformer_extended_apply foundApplicationTransformer",
+          //   foundApplicationTransformer,
+          //   "for transformer",
+          //   JSON.stringify(transformer, null, 2),
+          //   "applicationTransformerDefinitions",
+          //   Object.keys(applicationTransformerDefinitions)
+          // );
           if (!foundApplicationTransformer) {
             log.error(
               "transformer_extended_apply failed for",
@@ -2593,37 +2593,37 @@ export function transformer_extended_apply<T extends MiroirModelEnvironment>(
                   ?.inMemoryImplementationFunctionName;
               const transformerFunction: ITransformerHandler<any, MiroirModelEnvironment> =
                 inMemoryTransformerImplementations[transformerIndexName];
-              log.info(
-                "transformer_extended_apply libraryImplementation for",
-                "foundApplicationTransformer",
-                JSON.stringify(foundApplicationTransformer, null, 2),
-                "inMemoryTransformerImplementations",
-                Object.keys(inMemoryTransformerImplementations),
-                Object.hasOwn(inMemoryTransformerImplementations, transformerIndexName),
-                // "transformerIndexName",
-                // Object.keys(inMemoryTransformerImplementations).findIndex(
-                //   (e) => e == transformerIndexName),
-                JSON.stringify(
-                  Object.entries(inMemoryTransformerImplementations).find(
-                    (e) => e[0] == transformerIndexName
-                  ),
-                  null,
-                  2
-                ),
-                typeof inMemoryTransformerImplementations,
-                Array.isArray(inMemoryTransformerImplementations),
-                "transformerIndexName",
-                transformerIndexName,
-                "transformerFunction",
-                transformerFunction == undefined ? "undefined" : "defined",
-                transformerFunction.toString()
-                // JSON.stringify(transformerFunction, null, 2)
-                // foundApplicationTransformer?.transformerImplementation?.inMemoryImplementationFunctionName,
-                // JSON.stringify(inMemoryTransformerImplementations[
-                //   foundApplicationTransformer.transformerImplementation
-                //     .inMemoryImplementationFunctionName
-                // ], null, 2)
-              );
+              // log.info(
+              //   "transformer_extended_apply libraryImplementation for",
+              //   "foundApplicationTransformer",
+              //   JSON.stringify(foundApplicationTransformer, null, 2),
+              //   "inMemoryTransformerImplementations",
+              //   Object.keys(inMemoryTransformerImplementations),
+              //   Object.hasOwn(inMemoryTransformerImplementations, transformerIndexName),
+              //   // "transformerIndexName",
+              //   // Object.keys(inMemoryTransformerImplementations).findIndex(
+              //   //   (e) => e == transformerIndexName),
+              //   JSON.stringify(
+              //     Object.entries(inMemoryTransformerImplementations).find(
+              //       (e) => e[0] == transformerIndexName
+              //     ),
+              //     null,
+              //     2
+              //   ),
+              //   typeof inMemoryTransformerImplementations,
+              //   Array.isArray(inMemoryTransformerImplementations),
+              //   "transformerIndexName",
+              //   transformerIndexName,
+              //   "transformerFunction",
+              //   transformerFunction == undefined ? "undefined" : "defined",
+              //   transformerFunction.toString()
+              //   // JSON.stringify(transformerFunction, null, 2)
+              //   // foundApplicationTransformer?.transformerImplementation?.inMemoryImplementationFunctionName,
+              //   // JSON.stringify(inMemoryTransformerImplementations[
+              //   //   foundApplicationTransformer.transformerImplementation
+              //   //     .inMemoryImplementationFunctionName
+              //   // ], null, 2)
+              // );
               if (
                 !foundApplicationTransformer.transformerImplementation
                   .inMemoryImplementationFunctionName ||

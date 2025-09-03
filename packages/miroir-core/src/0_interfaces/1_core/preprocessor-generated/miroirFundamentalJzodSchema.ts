@@ -8216,14 +8216,26 @@ export const miroirFundamentalJzodSchema = {
         }
       },
       "testSuiteResult": {
-        "type": "record",
+        "type": "object",
         "definition": {
-          "type": "schemaReference",
-          "definition": {
-            "relativePath": "testsResults",
-            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+          "testsResults": {
+            "type": "schemaReference",
+            "optional": true,
+            "definition": {
+              "relativePath": "testsResults",
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+            },
+            "context": {}
           },
-          "context": {}
+          "testsSuiteResults": {
+            "type": "schemaReference",
+            "optional": true,
+            "definition": {
+              "relativePath": "innerTestSuitesResults",
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+            },
+            "context": {}
+          }
         }
       },
       "innerTestSuitesResults": {

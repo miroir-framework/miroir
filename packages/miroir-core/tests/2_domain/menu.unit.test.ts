@@ -11,6 +11,7 @@ import {
 } from "../../src/4_services/TestTools";
 import type { TransformerTestSuite } from '../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType';
 import { defaultMiroirModelEnviroment } from '../../src/1_core/Model';
+import { MiroirEventTracker } from '../../src/3_controllers/MiroirEventTracker';
 // const env:any = (import.meta as any).env
 // console.log("@@@@@@@@@@@@@@@@@@ env", env);
 
@@ -28,11 +29,11 @@ export const transformerTestSuite_applicativeTransformers: TransformerTestSuite 
       runTestStep: "runtime",
       transformer: {
         transformerType: "transformer_menu_addItem",
-        interpolation: "build",
+        interpolation: "runtime",
           menuItemReference: "menuItem",
           menuReference: {
             transformerType: "objectDynamicAccess",
-            interpolation: "build",
+            interpolation: "runtime",
             objectAccessPath: [{
               transformerType: "contextReference",
               interpolation: "runtime",
@@ -176,6 +177,8 @@ describe("menu.unit.test", () => {
   it("transformer_menu_addItem", async () => { // TODO: test failure cases!
       console.log("transformer_menu_addItem START")
 
+      const miroirEventTracker = new MiroirEventTracker();
+
       // console.log("################################ result", JSON.stringify(result,null,2))
       // console.log("################################ expectedResult", JSON.stringify(expectedResult,null,2))
       await runTransformerTestSuite(
@@ -183,7 +186,8 @@ describe("menu.unit.test", () => {
         [],
         transformerTestSuite_applicativeTransformers,
         runTransformerTestInMemory,
-        defaultMiroirModelEnviroment
+        defaultMiroirModelEnviroment,
+        miroirEventTracker
       );
 
       // expect(result).toEqual(expectedResult);

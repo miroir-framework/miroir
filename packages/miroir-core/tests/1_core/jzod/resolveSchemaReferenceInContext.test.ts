@@ -23,6 +23,9 @@ import {
   transformerTestsDisplayResults,
 } from "../../../src/4_services/TestTools";
 
+import { MiroirEventTracker } from "../../../src/3_controllers/MiroirEventTracker";
+import { defaultMiroirModelEnviroment } from "../../../src/1_core/Model";
+
 import transformerTestSuite_resolveSchemaReferenceInContext from "../../../src/assets/miroir_data/681be9ca-c593-45f5-b45a-5f1d4969e91e/b9e7f4d5-6543-4a1b-9c8d-987654321fed.json";
 
 const RUN_TEST= process.env.RUN_TEST
@@ -45,18 +48,24 @@ if (RUN_TEST == transformerTestSuite_resolveSchemaReferenceInContext.definition.
     ...testSuite,
     transformerTests: selectedTests as any
   } as any;
+  
+  const miroirEventTracker = new MiroirEventTracker();
+  
   await runTransformerTestSuite(
-    { describe, expect},//vitest,
+    { describe, expect} as any,//vitest,
     [],
     // transformerTestSuite_resolveSchemaReferenceInContext.definition as TransformerTestSuite,
     effectiveTests,
-    runTransformerTestInMemory
+    runTransformerTestInMemory,
+    defaultMiroirModelEnviroment,
+    miroirEventTracker
   );
   transformerTestsDisplayResults(
     // transformerTestSuite_resolveSchemaReferenceInContext.definition as TransformerTestSuite,
     effectiveTests,
     RUN_TEST,
-    transformerTestSuite_resolveSchemaReferenceInContext.definition.transformerTestLabel
+    transformerTestSuite_resolveSchemaReferenceInContext.definition.transformerTestLabel,
+    miroirEventTracker
   );
 } else {
   console.log(

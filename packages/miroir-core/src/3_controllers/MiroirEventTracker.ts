@@ -3,14 +3,23 @@ import {
   TestAssertionsResults,
   TestResult,
   TestsResults,
-  TestSuiteResult,
+  type TestSuitesResults,
+  type TestSuiteResult,
+  type InnerTestSuitesResults,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import { MiroirEventTrackingData, MiroirEventTrackerInterface } from "../0_interfaces/3_controllers/MiroirEventTrackerInterface";
+import {
+  MiroirEventTrackingData,
+  MiroirEventTrackerInterface,
+  type TestAssertionPath,
+} from "../0_interfaces/3_controllers/MiroirEventTrackerInterface";
+import { resolvePathOnObject } from "../tools";
+
 
 export class MiroirEventTracker implements MiroirEventTrackerInterface {
-  private actionsOrTestTrackingData: Map<string, MiroirEventTrackingData> = new Map();
+  private eventTrackingData: Map<string, MiroirEventTrackingData> = new Map();
+  private currentEvenStack: string[] = []; // Stack to track nested actions
+
   private subscribers: Set<(actions: MiroirEventTrackingData[]) => void> = new Set();
-  private currentActionAndTestStack: string[] = []; // Stack to track nested actions
   private cleanupInterval: NodeJS.Timeout;
   private readonly CLEANUP_INTERVAL_MS = 60000; // 1 minute
   private readonly MAX_AGE_MS = 10 * 60 * 1000; // 10 minutes (as requested)
@@ -20,15 +29,18 @@ export class MiroirEventTracker implements MiroirEventTrackerInterface {
   private currentAction: string | undefined = undefined;
 
   // Test context tracking (for TestTracker compatibility)
+  public currentTestPath: TestAssertionPath = [];
   private currentTestSuite: string | undefined = undefined;
   private currentTest: string | undefined = undefined;
   private currentTestAssertion: string | undefined = undefined;
-  private testAssertionsResults: {
-    [testSuite: string]: { [test: string]: TestAssertionsResults };
-  } = {};
+  private testAssertionsResults: TestSuiteResult = {};
+  // private testAssertionsResults: {
+  //   [testSuite: string]: { [test: string]: TestAssertionsResults };
+  // } = {};
 
   // Transformer tracking configuration
   private transformerTrackingEnabled: boolean = true;
+  public currentTransformerPath: string[] = [];
 
   constructor() {
     // Start auto-cleanup timer
@@ -37,46 +49,13 @@ export class MiroirEventTracker implements MiroirEventTrackerInterface {
     }, this.CLEANUP_INTERVAL_MS);
   }
 
-  startEvent(actionType: string, actionLabel?: string, parentId?: string): string {
-    const id = this.generateId();
-    const now = Date.now();
-
-    // If no parentId is provided, use the current active action as parent
-    const effectiveParentId = parentId || this.getCurrentEventId();
-
-    const depth = effectiveParentId ? (this.actionsOrTestTrackingData.get(effectiveParentId)?.depth ?? 0) + 1 : 0;
-
-    const actionData: MiroirEventTrackingData = {
-      id,
-      parentId: effectiveParentId,
-      trackingType: "action",
-      actionType,
-      actionLabel,
-      startTime: now,
-      status: "running",
-      depth,
-      children: [],
-    };
-
-    this.actionsOrTestTrackingData.set(id, actionData);
-
-    // Add to parent's children if there's a parent
-    if (effectiveParentId) {
-      const parent = this.actionsOrTestTrackingData.get(effectiveParentId);
-      if (parent && !parent.children.includes(id)) {
-        parent.children.push(id);
-      }
-    }
-
-    // Push to action stack
-    this.currentActionAndTestStack.push(id);
-
-    this.notifySubscribers();
-    return id;
-  }
-
+  // ###############################################################################################
+  // ###############################################################################################
+  // EVENTS
+  // ###############################################################################################
+  // ###############################################################################################
   endEvent(trackingId: string, error?: string): void {
-    const action = this.actionsOrTestTrackingData.get(trackingId);
+    const action = this.eventTrackingData.get(trackingId);
     if (!action) {
       return;
     }
@@ -90,16 +69,46 @@ export class MiroirEventTracker implements MiroirEventTrackerInterface {
     }
 
     // Remove from action stack
-    const index = this.currentActionAndTestStack.indexOf(trackingId);
+    const index = this.currentEvenStack.indexOf(trackingId);
     if (index !== -1) {
-      this.currentActionAndTestStack.splice(index, 1);
+      this.currentEvenStack.splice(index, 1);
     }
 
-    this.notifySubscribers();
+    if (["testSuite", "test", "testAssertion" ].includes(action.trackingType)) {
+      this.currentTestPath.pop();
+    }
+    // // Remove from currentTestPath if this is a test-related event
+    // if (action.trackingType === "testSuite" && action.testSuite) {
+    //   // Remove the last occurrence of this test suite from currentTestPath
+    //   for (let i = this.currentTestPath.length - 1; i >= 0; i--) {
+    //     if (this.currentTestPath[i].testSuite === action.testSuite) {
+    //       this.currentTestPath.splice(i, 1);
+    //       break;
+    //     }
+    //   }
+    // } else if (action.trackingType === "test" && action.test) {
+    //   // Remove the last occurrence of this test from currentTestPath
+    //   for (let i = this.currentTestPath.length - 1; i >= 0; i--) {
+    //     if (this.currentTestPath[i].test === action.test) {
+    //       this.currentTestPath.splice(i, 1);
+    //       break;
+    //     }
+    //   }
+    // } else if (action.trackingType === "testAssertion" && action.testAssertion) {
+    //   // Remove the last occurrence of this test assertion from currentTestPath
+    //   for (let i = this.currentTestPath.length - 1; i >= 0; i--) {
+    //     if (this.currentTestPath[i].testAssertion === action.testAssertion) {
+    //       this.currentTestPath.splice(i, 1);
+    //       break;
+    //     }
+    //   }
+    // }
+
+    this.notifySubscribersDEFUNCT();
   }
 
   getAllEvents(): MiroirEventTrackingData[] {
-    return Array.from(this.actionsOrTestTrackingData.values()).sort((a, b) => a.startTime - b.startTime);
+    return Array.from(this.eventTrackingData.values()).sort((a, b) => a.startTime - b.startTime);
   }
 
   getFilteredEvents(filter: {
@@ -140,15 +149,15 @@ export class MiroirEventTracker implements MiroirEventTrackerInterface {
   }
 
   clear(): void {
-    this.actionsOrTestTrackingData.clear();
-    this.currentActionAndTestStack = [];
+    this.eventTrackingData.clear();
+    this.currentEvenStack = [];
     this.currentCompositeAction = undefined;
     this.currentAction = undefined;
     this.currentTestSuite = undefined;
     this.currentTest = undefined;
     this.currentTestAssertion = undefined;
     this.testAssertionsResults = {};
-    this.notifySubscribers();
+    this.notifySubscribersDEFUNCT();
   }
 
   subscribe(callback: (actions: MiroirEventTrackingData[]) => void): () => void {
@@ -159,7 +168,68 @@ export class MiroirEventTracker implements MiroirEventTrackerInterface {
   }
 
   getCurrentEventId(): string | undefined {
-    return this.currentActionAndTestStack[this.currentActionAndTestStack.length - 1];
+    return this.currentEvenStack[this.currentEvenStack.length - 1];
+  }
+
+  // ##############################################################################################
+  // ##############################################################################################
+  // ACTIONS
+  // ##############################################################################################
+  // ##############################################################################################
+  async trackAction<T>(
+    actionType: string,
+    actionLabel: string | undefined,
+    actionFn: () => Promise<T>
+  ): Promise<T> {
+    const trackingId = this.startAction(actionType, actionLabel);
+    try {
+      const result = await actionFn();
+      this.endEvent(trackingId);
+      return result;
+    } catch (error) {
+      this.endEvent(trackingId, error instanceof Error ? error.message : String(error));
+      throw error;
+    }
+  }
+
+  startAction(actionType: string, actionLabel?: string, parentId?: string): string {
+    const id = this.generateId();
+    const now = Date.now();
+
+    // If no parentId is provided, use the current active action as parent
+    const effectiveParentId = parentId || this.getCurrentEventId();
+
+    const depth = effectiveParentId
+      ? (this.eventTrackingData.get(effectiveParentId)?.depth ?? 0) + 1
+      : 0;
+
+    const actionData: MiroirEventTrackingData = {
+      id,
+      parentId: effectiveParentId,
+      trackingType: "action",
+      actionType,
+      actionLabel,
+      startTime: now,
+      status: "running",
+      depth,
+      children: [],
+    };
+
+    this.eventTrackingData.set(id, actionData);
+
+    // Add to parent's children if there's a parent
+    if (effectiveParentId) {
+      const parent = this.eventTrackingData.get(effectiveParentId);
+      if (parent && !parent.children.includes(id)) {
+        parent.children.push(id);
+      }
+    }
+
+    // Push to action stack
+    this.currentEvenStack.push(id);
+
+    this.notifySubscribersDEFUNCT();
+    return id;
   }
 
   setCompositeAction(compositeAction: string | undefined): void {
@@ -178,13 +248,38 @@ export class MiroirEventTracker implements MiroirEventTrackerInterface {
     return this.currentAction;
   }
 
+  // ###############################################################################################
+  // ###############################################################################################
+  // TEST SUITES
+  // ###############################################################################################
+  // ##############################################################################################
+  async trackTestSuite<T>(
+    testSuite: string,
+    parentId: string | undefined,
+    actionFn: () => Promise<T>
+  ): Promise<T> {
+    const trackingId = this.startTestSuite(testSuite, parentId);
+    try {
+      const result = await actionFn();
+      this.endEvent(trackingId);
+      return result;
+    } catch (error) {
+      this.endEvent(trackingId, error instanceof Error ? error.message : String(error));
+      throw error;
+    } finally {
+      this.currentTestPath.pop();
+    }
+  }
+
   // Test-specific methods for backwards compatibility with TestTracker
   startTestSuite(testSuite: string, parentId?: string): string {
     const id = this.generateId();
     const now = Date.now();
 
     const effectiveParentId = parentId || this.getCurrentEventId();
-    const depth = effectiveParentId ? (this.actionsOrTestTrackingData.get(effectiveParentId)?.depth ?? 0) + 1 : 0;
+    const depth = effectiveParentId
+      ? (this.eventTrackingData.get(effectiveParentId)?.depth ?? 0) + 1
+      : 0;
 
     const testSuiteData: MiroirEventTrackingData = {
       id,
@@ -199,59 +294,90 @@ export class MiroirEventTracker implements MiroirEventTrackerInterface {
       children: [],
     };
 
-    this.actionsOrTestTrackingData.set(id, testSuiteData);
+    this.eventTrackingData.set(id, testSuiteData);
 
     if (effectiveParentId) {
-      const parent = this.actionsOrTestTrackingData.get(effectiveParentId);
+      const parent = this.eventTrackingData.get(effectiveParentId);
       if (parent && !parent.children.includes(id)) {
         parent.children.push(id);
       }
     }
 
-    this.currentActionAndTestStack.push(id);
+    this.currentEvenStack.push(id);
     this.currentTestSuite = testSuite;
-    this.notifySubscribers();
+    this.currentTestPath.push({ testSuite });
+    this.notifySubscribersDEFUNCT();
     return id;
   }
 
-  startTest(test: string, parentId?: string): string {
-    const id = this.generateId();
-    const now = Date.now();
+  public static testPathName(testSuitePath: string[]): string {
+    return testSuitePath.join("#");
+  }
 
-    const effectiveParentId = parentId || this.getCurrentEventId();
-    const depth = effectiveParentId ? (this.actionsOrTestTrackingData.get(effectiveParentId)?.depth ?? 0) + 1 : 0;
+  // Convert string[] path to TestAssertionPath format
+  public static stringArrayToTestAssertionPath(stringPath: string[]): TestAssertionPath {
+    const result: TestAssertionPath = [];
+    
+    for (let i = 0; i < stringPath.length; i++) {
+      // Each level in the hierarchy can be a test suite name
+      // We assume all levels are test suites for now, since that's what testSuites() returns
+      result.push({ testSuite: stringPath[i] });
+    }
+    
+    return result;
+  }
 
-    const testData: MiroirEventTrackingData = {
-      id,
-      parentId: effectiveParentId,
-      trackingType: "test",
-      actionType: "test",
-      actionLabel: test,
-      testSuite: this.currentTestSuite,
-      test,
-      startTime: now,
-      status: "running",
-      depth,
-      children: [],
-    };
+  setTestSuite(testSuite: string | undefined): void {
+    this.currentTestSuite = testSuite;
+    this.notifySubscribersDEFUNCT();
+  }
 
-    this.actionsOrTestTrackingData.set(id, testData);
+  getTestSuite(): string | undefined {
+    return this.currentTestSuite;
+  }
 
-    if (effectiveParentId) {
-      const parent = this.actionsOrTestTrackingData.get(effectiveParentId);
-      if (parent && !parent.children.includes(id)) {
-        parent.children.push(id);
+  // ##############################################################################################
+  getTestSuiteResult(testSuitePath: TestAssertionPath): TestSuiteResult {
+    // Navigate through the test path to find the test suite result
+    let current: any = this.testAssertionsResults;
+
+    for (const pathElement of testSuitePath) {
+      if (pathElement.testSuite) {
+        if (!current.testsSuiteResults || !current.testsSuiteResults[pathElement.testSuite]) {
+          throw new Error(`getTestSuiteResult TestSuite not found: ${pathElement.testSuite}`);
+        }
+        current = current.testsSuiteResults[pathElement.testSuite];
+      } else {
+        // We've reached a non-test-suite element, so we should stop here and return the current level
+        break;
       }
     }
 
-    this.currentActionAndTestStack.push(id);
-    this.currentTest = test;
-    this.notifySubscribers();
-    return id;
+    // Return the current level as a TestSuiteResult
+    return current;
   }
 
-  public static testSuitePathName(testSuitePath: string[]): string {
-    return testSuitePath.join("#");
+  // ##############################################################################################
+  // ##############################################################################################
+  // TEST ASSERTIONS
+  // ##############################################################################################
+  // ##############################################################################################
+  async trackTestAssertion<T>(
+    testAssertion: string,
+    parentId: string | undefined,
+    actionFn: () => Promise<T>
+  ): Promise<T> {
+    const trackingId = this.startTestAssertion(testAssertion, parentId);
+    try {
+      const result = await actionFn();
+      this.endEvent(trackingId);
+      return result;
+    } catch (error) {
+      this.endEvent(trackingId, error instanceof Error ? error.message : String(error));
+      throw error;
+    } finally {
+      this.currentTestPath.pop();
+    }
   }
 
   startTestAssertion(testAssertion: string, parentId?: string): string {
@@ -259,7 +385,9 @@ export class MiroirEventTracker implements MiroirEventTrackerInterface {
     const now = Date.now();
 
     const effectiveParentId = parentId || this.getCurrentEventId();
-    const depth = effectiveParentId ? (this.actionsOrTestTrackingData.get(effectiveParentId)?.depth ?? 0) + 1 : 0;
+    const depth = effectiveParentId
+      ? (this.eventTrackingData.get(effectiveParentId)?.depth ?? 0) + 1
+      : 0;
 
     const testAssertionData: MiroirEventTrackingData = {
       id,
@@ -276,162 +404,267 @@ export class MiroirEventTracker implements MiroirEventTrackerInterface {
       children: [],
     };
 
-    this.actionsOrTestTrackingData.set(id, testAssertionData);
+    this.eventTrackingData.set(id, testAssertionData);
 
     if (effectiveParentId) {
-      const parent = this.actionsOrTestTrackingData.get(effectiveParentId);
+      const parent = this.eventTrackingData.get(effectiveParentId);
       if (parent && !parent.children.includes(id)) {
         parent.children.push(id);
       }
     }
 
-    this.currentActionAndTestStack.push(id);
+    this.currentEvenStack.push(id);
     this.currentTestAssertion = testAssertion;
-    this.notifySubscribers();
+    
+    // // Remove any previous testAssertion entries from currentTestPath
+    // // to ensure each testAssertion gets its own clean entry
+    // while (this.currentTestPath.length > 0) {
+    //   const lastElement = this.currentTestPath[this.currentTestPath.length - 1];
+    //   if (lastElement.testAssertion) {
+    //     this.currentTestPath.pop();
+    //   } else {
+    //     break;
+    //   }
+    // }
+    
+    this.currentTestPath.push({ testAssertion });
+    this.notifySubscribersDEFUNCT();
     return id;
   }
 
-  setTestAssertionResult(trackingId: string, result: TestAssertionResult): void;
-  setTestAssertionResult(testAssertionResult: TestAssertionResult): void;
-  setTestAssertionResult(param1: string | TestAssertionResult, param2?: TestAssertionResult): void {
-    let trackingId: string | undefined;
-    let result: TestAssertionResult;
+  getCurrentTestAssertionPath(): TestAssertionPath {
+    // if (!this.currentTestSuite || !this.currentTest || !this.currentTestAssertion) {
+    //   return [];
+    // }
+    return this.currentTestPath;
+  }
 
-    if (typeof param1 === "string") {
-      // New signature: (trackingId: string, result: TestAssertionResult)
-      trackingId = param1;
-      result = param2!;
-    } else {
-      // Original TestTracker signature: (testAssertionResult: TestAssertionResult)
-      result = param1;
-      // Use current context to find the active test assertion
-      trackingId = this.getCurrentEventId();
+  // ##############################################################################################
+  setTestAssertionResult(
+    testAssertionPath: TestAssertionPath,
+    testAssertionResult?: TestAssertionResult
+  ): void {
+    console.log(
+      "MiroirEventTracker.setTestAssertionResult called for testAssertionPath",
+      testAssertionPath,
+      // "testAssertionResult",
+      // JSON.stringify(testAssertionResult, null, 2),
+      // "old this.testAssertionsResults",
+      // JSON.stringify(this.testAssertionsResults, null, 2)
+    );
+
+    if (testAssertionPath.length === 0) {
+      throw new Error("testAssertionPath cannot be empty");
     }
 
-    if (trackingId) {
-      const action = this.actionsOrTestTrackingData.get(trackingId);
-      if (action && action.trackingType === "testAssertion") {
-        // Update the action data
-        action.status = result.assertionResult === "ok" ? "completed" : "error";
-        action.endTime = Date.now();
-        action.duration = action.endTime - action.startTime;
+    if (!testAssertionResult || !testAssertionResult.assertionName) {
+      throw new Error("Invalid testAssertionResult or missing assertionName");
+    }
 
-        // Store in test assertions results (TestTracker compatibility)
-        const testSuite = action.testSuite || this.currentTestSuite;
-        const test = action.test || this.currentTest;
+    // Navigate through the test path, creating missing nodes as needed
+    let current: any = this.testAssertionsResults;
+    
+    // Track the current test suite and test for creating the correct structure
+    let currentTestSuiteName: string | undefined;
+    let currentTestName: string | undefined;
 
-        if (testSuite && test && result.assertionName) {
-          if (!this.testAssertionsResults[testSuite]) {
-            this.testAssertionsResults[testSuite] = {};
-          }
-          if (!this.testAssertionsResults[testSuite][test]) {
-            this.testAssertionsResults[testSuite][test] = {};
-          }
-          if (!this.testAssertionsResults[testSuite][test][result.assertionName]) {
-            this.testAssertionsResults[testSuite][test][result.assertionName] = result;
-          } else {
-            throw new Error("Test Assertion already defined");
-          }
+    for (const pathElement of testAssertionPath) {
+      if (pathElement.testSuite) {
+        currentTestSuiteName = pathElement.testSuite;
+        
+        // Ensure the test suite results structure exists
+        if (!current.testsSuiteResults) {
+          current.testsSuiteResults = {};
         }
-
-        this.notifySubscribers();
-        return;
+        if (!current.testsSuiteResults[currentTestSuiteName]) {
+          current.testsSuiteResults[currentTestSuiteName] = {};
+        }
+        current = current.testsSuiteResults[currentTestSuiteName];
+        
+      } else if (pathElement.test) {
+        currentTestName = pathElement.test;
+        
+        // Ensure the tests results structure exists
+        if (!current.testsResults) {
+          current.testsResults = {};
+        }
+        if (!current.testsResults[currentTestName]) {
+          current.testsResults[currentTestName] = {
+            testLabel: currentTestName,
+            testResult: "ok", // Will be updated based on assertion results
+            testAssertionsResults: {}
+          };
+        }
+        current = current.testsResults[currentTestName];
+        
+      } else if (pathElement.testAssertion) {
+        // We're at the assertion level, set the result
+        if (!current.testAssertionsResults) {
+          current.testAssertionsResults = {};
+        }
+        current.testAssertionsResults[testAssertionResult.assertionName] = testAssertionResult;
+        
+        // Update the test result based on assertion results
+        const hasErrors = Object.values(current.testAssertionsResults).some(
+          (result: any) => result.assertionResult === "error"
+        );
+        current.testResult = hasErrors ? "error" : "ok";
+        break;
       }
     }
 
-    // Fallback: use current context like original TestTracker
-    const testSuite = this.getTestSuite();
-    const test = this.getTest();
+    // console.log(
+    //   "MiroirEventTracker.setTestAssertionResult new this.testAssertionsResults",
+    //   JSON.stringify(this.testAssertionsResults, null, 2)
+    // );
 
-    console.log(
-      "MiroirEventTracker.setTestAssertionResult called for",
-      testSuite,
+    this.notifySubscribersDEFUNCT();
+  }
+
+  // ##############################################################################################
+  getTestResult(testPath: TestAssertionPath): TestResult {
+    // First check if the path contains a test element
+    const hasTestElement = testPath.some(pathElement => pathElement.test);
+    if (!hasTestElement) {
+      throw new Error("getTestResult: Path does not contain a test element");
+    }
+
+    // Navigate through the test path to find the test result
+    let current: any = this.testAssertionsResults;
+    let testName: string | undefined;
+
+    for (const pathElement of testPath) {
+      if (pathElement.testSuite) {
+        if (!current.testsSuiteResults || !current.testsSuiteResults[pathElement.testSuite]) {
+          throw new Error(`getTestResult TestSuite not found: ${pathElement.testSuite}`);
+        }
+        current = current.testsSuiteResults[pathElement.testSuite];
+      } else if (pathElement.test) {
+        testName = pathElement.test;
+        if (!current.testsResults || !current.testsResults[pathElement.test]) {
+          throw new Error(`getTestResult Test not found: ${pathElement.test}`);
+        }
+        return current.testsResults[pathElement.test];
+      }
+    }
+
+    throw new Error("getTestResult: Path does not contain a test element");
+  }
+
+  // ##############################################################################################
+  // getTestAssertionsResults(): { [testSuite: string]: { [test: string]: TestAssertionsResults } } {
+  getTestAssertionsResults(testAssertionsPath: TestAssertionPath): TestSuiteResult {
+    // console.log(
+    //   "MiroirEventTracker.getTestAssertionsResults called for testAssertionsPath",
+    //   testAssertionsPath,
+    //   "this.testAssertionsResults",
+    //   JSON.stringify(this.testAssertionsResults, null, 2)
+    // );
+    // If no path is provided, return the root test results
+    if (testAssertionsPath.length === 0) {
+      return this.testAssertionsResults;
+    }
+
+    // Navigate through the test path to find the appropriate level
+    let current: any = this.testAssertionsResults;
+
+    for (const pathElement of testAssertionsPath) {
+      if (pathElement.testSuite) {
+        if (!current.testsSuiteResults || !current.testsSuiteResults[pathElement.testSuite]) {
+          throw new Error(`getTestAssertionsResults TestSuite not found: ${pathElement.testSuite}`);
+        }
+        current = current.testsSuiteResults[pathElement.testSuite];
+      } else if (pathElement.test) {
+        // For tests, we might want to return the test suite level or the specific test
+        // Based on the interface, this method should return TestSuiteResult, so we continue
+        break;
+      } else if (pathElement.testAssertion) {
+        // For test assertions, we also break here
+        break;
+      }
+    }
+
+    return current;
+  }
+
+  // ##############################################################################################
+  // ##############################################################################################
+  // TEST
+  // ##############################################################################################
+  // ##############################################################################################
+  async trackTest<T>(
+    test: string,
+    parentId: string | undefined,
+    actionFn: () => Promise<T>
+  ): Promise<T> {
+    const trackingId = this.startTest(test, parentId);
+    try {
+      const result = await actionFn();
+      this.endEvent(trackingId);
+      return result;
+    } catch (error) {
+      this.endEvent(trackingId, error instanceof Error ? error.message : String(error));
+      throw error;
+    } finally {
+      this.currentTestPath.pop();
+    }
+  }
+
+  // ###############################################################################################
+  startTest(test: string, parentId?: string): string {
+    const id = this.generateId();
+    const now = Date.now();
+
+    const effectiveParentId = parentId || this.getCurrentEventId();
+    const depth = effectiveParentId
+      ? (this.eventTrackingData.get(effectiveParentId)?.depth ?? 0) + 1
+      : 0;
+
+    const testData: MiroirEventTrackingData = {
+      id,
+      parentId: effectiveParentId,
+      trackingType: "test",
+      actionType: "test",
+      actionLabel: test,
+      testSuite: this.currentTestSuite,
       test,
-      "testAssertionResult",
-      JSON.stringify(result, null, 2)
-    );
-
-    if (testSuite === undefined || test === undefined || result.assertionName === undefined) {
-      throw new Error(
-        "TestSuite or Test not defined: suite=" +
-          testSuite +
-          ", test=" +
-          test +
-          ", assertion=" +
-          result.assertionName
-      );
-    }
-
-    if (!this.testAssertionsResults[testSuite]) {
-      this.testAssertionsResults[testSuite] = {};
-    }
-    if (!this.testAssertionsResults[testSuite][test]) {
-      this.testAssertionsResults[testSuite][test] = {};
-    }
-    if (!this.testAssertionsResults[testSuite][test][result.assertionName]) {
-      this.testAssertionsResults[testSuite][test][result.assertionName] = result;
-    } else {
-      throw new Error("Test Assertion already defined");
-    }
-
-    this.notifySubscribers();
-  }
-
-  getTestResult(testSuite: string, test: string): TestResult {
-    if (!this.testAssertionsResults[testSuite] || !this.testAssertionsResults[testSuite][test]) {
-      throw new Error("Test not defined: " + test + " in " + testSuite);
-    }
-
-    const testResult = Object.values(this.testAssertionsResults[testSuite][test]).some(
-      (testResult) => testResult.assertionResult === "error"
-    )
-      ? "error"
-      : "ok";
-
-    return {
-      testLabel: test,
-      testResult,
-      testAssertionsResults: this.testAssertionsResults[testSuite][test],
+      startTime: now,
+      status: "running",
+      depth,
+      children: [],
     };
-  }
 
-  getTestSuiteResult(testSuite: string): TestSuiteResult {
-    if (!this.testAssertionsResults[testSuite]) {
-      throw new Error(
-        "TestSuite is not defined: " +
-          testSuite +
-          " in results " +
-          JSON.stringify(this.testAssertionsResults, null, 2)
-      );
+    this.eventTrackingData.set(id, testData);
+
+    if (effectiveParentId) {
+      const parent = this.eventTrackingData.get(effectiveParentId);
+      if (parent && !parent.children.includes(id)) {
+        parent.children.push(id);
+      }
     }
 
-    const testsResults: TestsResults = {};
-    for (const test in this.testAssertionsResults[testSuite]) {
-      testsResults[test] = this.getTestResult(testSuite, test);
-    }
-
-    return {
-      [testSuite]: testsResults,
-    };
-  }
-
-  getTestAssertionsResults(): { [testSuite: string]: { [test: string]: TestAssertionsResults } } {
-    return this.testAssertionsResults;
-  }
-
-  // Test context methods (for TestTracker compatibility)
-  setTestSuite(testSuite: string | undefined): void {
-    this.currentTestSuite = testSuite;
-    this.notifySubscribers();
-  }
-
-  getTestSuite(): string | undefined {
-    return this.currentTestSuite;
+    this.currentEvenStack.push(id);
+    this.currentTest = test;
+    
+    // // Remove any previous test or testAssertion entries from currentTestPath
+    // // to ensure each test gets its own clean path within the current test suite context
+    // while (this.currentTestPath.length > 0) {
+    //   const lastElement = this.currentTestPath[this.currentTestPath.length - 1];
+    //   if (lastElement.test || lastElement.testAssertion) {
+    //     this.currentTestPath.pop();
+    //   } else {
+    //     break;
+    //   }
+    // }
+    
+    this.currentTestPath.push({test});
+    this.notifySubscribersDEFUNCT();
+    return id;
   }
 
   setTest(test: string | undefined): void {
     this.currentTest = test;
-    this.notifySubscribers();
+    this.notifySubscribersDEFUNCT();
   }
 
   getTest(): string | undefined {
@@ -440,13 +673,17 @@ export class MiroirEventTracker implements MiroirEventTrackerInterface {
 
   setTestAssertion(testAssertion: string | undefined): void {
     this.currentTestAssertion = testAssertion;
-    this.notifySubscribers();
+    this.notifySubscribersDEFUNCT();
   }
 
   getTestAssertion(): string | undefined {
     return this.currentTestAssertion;
   }
 
+  // ##############################################################################################
+  // ##############################################################################################
+  // ##############################################################################################
+  // ##############################################################################################
   resetResults(): void {
     this.testAssertionsResults = {};
   }
@@ -455,14 +692,19 @@ export class MiroirEventTracker implements MiroirEventTrackerInterface {
     this.currentTestSuite = undefined;
     this.currentTest = undefined;
     this.currentTestAssertion = undefined;
-    this.notifySubscribers();
+    this.notifySubscribersDEFUNCT();
   }
 
+  // ##############################################################################################
+  // ##############################################################################################
+  // TRANSFORMERS
+  // ##############################################################################################
+  // ##############################################################################################
   // Transformer-specific methods
   startTransformer(
     transformerName: string,
     transformerType: string,
-    step: 'build' | 'runtime',
+    step: "build" | "runtime",
     transformerParams?: any,
     parentId?: string
   ): string {
@@ -474,7 +716,9 @@ export class MiroirEventTracker implements MiroirEventTrackerInterface {
     const now = Date.now();
 
     const effectiveParentId = parentId || this.getCurrentEventId();
-    const depth = effectiveParentId ? (this.actionsOrTestTrackingData.get(effectiveParentId)?.depth ?? 0) + 1 : 0;
+    const depth = effectiveParentId
+      ? (this.eventTrackingData.get(effectiveParentId)?.depth ?? 0) + 1
+      : 0;
 
     const transformerData: MiroirEventTrackingData = {
       id,
@@ -492,26 +736,28 @@ export class MiroirEventTracker implements MiroirEventTrackerInterface {
       children: [],
     };
 
-    this.actionsOrTestTrackingData.set(id, transformerData);
+    this.eventTrackingData.set(id, transformerData);
 
     if (effectiveParentId) {
-      const parent = this.actionsOrTestTrackingData.get(effectiveParentId);
+      const parent = this.eventTrackingData.get(effectiveParentId);
       if (parent && !parent.children.includes(id)) {
         parent.children.push(id);
       }
     }
 
-    this.currentActionAndTestStack.push(id);
-    this.notifySubscribers();
+    this.currentEvenStack.push(id);
+    this.currentTransformerPath.push(transformerName);
+    this.notifySubscribersDEFUNCT();
     return id;
   }
 
+  // ###############################################################################################
   endTransformer(trackingId: string, result?: any, error?: string): void {
     if (!this.transformerTrackingEnabled || !trackingId) {
       return;
     }
 
-    const transformer = this.actionsOrTestTrackingData.get(trackingId);
+    const transformer = this.eventTrackingData.get(trackingId);
     if (!transformer) {
       return;
     }
@@ -520,19 +766,28 @@ export class MiroirEventTracker implements MiroirEventTrackerInterface {
     transformer.endTime = now;
     transformer.duration = now - transformer.startTime;
     transformer.status = error ? "error" : "completed";
-    transformer.transformerResult = result;
+
+    // Type guard for transformer events
+    if (transformer.trackingType === "transformer") {
+      transformer.transformerResult = result;
+      if (error) {
+        transformer.transformerError = error;
+      }
+    }
+
+    // Common error property for all event types
     if (error) {
       transformer.error = error;
-      transformer.transformerError = error;
     }
 
     // Remove from action stack
-    const index = this.currentActionAndTestStack.indexOf(trackingId);
+    const index = this.currentEvenStack.indexOf(trackingId);
     if (index !== -1) {
-      this.currentActionAndTestStack.splice(index, 1);
+      this.currentEvenStack.splice(index, 1);
     }
 
-    this.notifySubscribers();
+    this.currentTransformerPath.pop();
+    this.notifySubscribersDEFUNCT();
   }
 
   isTransformerTrackingEnabled(): boolean {
@@ -541,18 +796,22 @@ export class MiroirEventTracker implements MiroirEventTrackerInterface {
 
   setTransformerTrackingEnabled(enabled: boolean): void {
     this.transformerTrackingEnabled = enabled;
-    this.notifySubscribers();
+    this.notifySubscribersDEFUNCT();
   }
 
   private generateId(): string {
     return `action_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   }
 
-  private notifySubscribers(): void {
-    const actions = this.getAllEvents();
+  // ##############################################################################################
+  // ##############################################################################################
+  // ##############################################################################################
+  // ##############################################################################################
+  private notifySubscribersDEFUNCT(): void {
+    const events = this.getAllEvents();
     this.subscribers.forEach((callback) => {
       try {
-        callback(actions);
+        callback(events);
       } catch (error) {
         console.error("Error in MiroirEventTracker subscriber:", error);
       }
@@ -566,7 +825,7 @@ export class MiroirEventTracker implements MiroirEventTrackerInterface {
     // Find actions to remove (completed/error actions older than MAX_AGE_MS)
     const toRemove: string[] = [];
 
-    for (const [id, action] of Array.from(this.actionsOrTestTrackingData.entries())) {
+    for (const [id, action] of Array.from(this.eventTrackingData.entries())) {
       if (action.status !== "running" && action.startTime < cutoff) {
         toRemove.push(id);
       }
@@ -574,9 +833,9 @@ export class MiroirEventTracker implements MiroirEventTrackerInterface {
 
     // Remove old actions and update parent references
     toRemove.forEach((id) => {
-      const action = this.actionsOrTestTrackingData.get(id);
+      const action = this.eventTrackingData.get(id);
       if (action?.parentId) {
-        const parent = this.actionsOrTestTrackingData.get(action.parentId);
+        const parent = this.eventTrackingData.get(action.parentId);
         if (parent) {
           const index = parent.children.indexOf(id);
           if (index !== -1) {
@@ -584,11 +843,11 @@ export class MiroirEventTracker implements MiroirEventTrackerInterface {
           }
         }
       }
-      this.actionsOrTestTrackingData.delete(id);
+      this.eventTrackingData.delete(id);
     });
 
     if (toRemove.length > 0) {
-      this.notifySubscribers();
+      this.notifySubscribersDEFUNCT();
     }
   }
 

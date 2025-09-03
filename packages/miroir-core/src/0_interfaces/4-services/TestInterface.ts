@@ -64,16 +64,6 @@ export const testsResults: JzodElement = {
   },
 };
 
-export const testSuiteResult: JzodElement = {
-  type: "record",
-  definition: {
-    type: "schemaReference",
-    definition: {
-      relativePath: "testsResults",
-    },
-  },
-};
-
 export const innerTestSuitesResults: JzodElement = {
   type: "record",
   definition: {
@@ -83,6 +73,24 @@ export const innerTestSuitesResults: JzodElement = {
     },
   },
 };
+
+export const testSuiteResult: JzodElement = {
+  type: "object",
+  definition: {
+    testsResults: {
+      type: "schemaReference",
+      optional: true,
+      definition: { relativePath: "testsResults" },
+    },
+    testsSuiteResults: {
+      type: "schemaReference",
+      optional: true,
+      definition: { relativePath: "innerTestSuitesResults" },
+    },
+  },
+};
+
+
 export const testSuitesResults: JzodReference = {
   type: "schemaReference",
   context: {
@@ -95,5 +103,6 @@ export const testSuitesResults: JzodReference = {
   },
   definition: {
     relativePath: "innerTestSuitesResults",
+    // relativePath: "testSuiteResult",
   },
 };

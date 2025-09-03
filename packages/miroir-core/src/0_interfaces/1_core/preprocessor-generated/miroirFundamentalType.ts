@@ -3709,7 +3709,8 @@ export type TestsResults = {
     [x: string]: TestResult;
 };
 export type TestSuiteResult = {
-    [x: string]: TestsResults;
+    testsResults?: TestsResults | undefined;
+    testsSuiteResults?: InnerTestSuitesResults | undefined;
 };
 export type InnerTestSuitesResults = {
     [x: string]: TestSuiteResult;
@@ -13954,7 +13955,7 @@ export const testAssertionResult: z.ZodType<TestAssertionResult> = z.object({ass
 export const testAssertionsResults: z.ZodType<TestAssertionsResults> = z.record(z.string(),z.lazy(() =>testAssertionResult));
 export const testResult: z.ZodType<TestResult> = z.object({testLabel:z.string(), testResult:z.enum(["ok","error"]), testAssertionsResults:z.lazy(() =>testAssertionsResults)}).strict();
 export const testsResults: z.ZodType<TestsResults> = z.record(z.string(),z.lazy(() =>testResult));
-export const testSuiteResult: z.ZodType<TestSuiteResult> = z.record(z.string(),z.lazy(() =>testsResults));
+export const testSuiteResult: z.ZodType<TestSuiteResult> = z.object({testsResults:z.lazy(() =>testsResults).optional(), testsSuiteResults:z.lazy(() =>innerTestSuitesResults).optional()}).strict();
 export const innerTestSuitesResults: z.ZodType<InnerTestSuitesResults> = z.record(z.string(),z.lazy(() =>testSuiteResult));
 export const testSuitesResults: z.ZodType<TestSuitesResults> = z.lazy(() =>innerTestSuitesResults);
 export const transformerTest: z.ZodType<TransformerTest> = z.object({transformerTestType:z.literal("transformerTest"), transformerTestLabel:z.string(), transformerName:z.string(), transformer:z.lazy(() =>transformerForBuildPlusRuntime), runTestStep:z.string().optional(), transformerParams:z.record(z.string(),z.any()).optional(), transformerRuntimeContext:z.record(z.string(),z.any()).optional(), expectedValue:z.any(), ignoreAttributes:z.array(z.string()).optional()}).strict();

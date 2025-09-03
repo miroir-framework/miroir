@@ -3,7 +3,11 @@ import {
   currentTestSuite,
 } from "./transformersTests_miroir.data";
 import { runTransformerTestInMemory, runTransformerTestSuite, transformerTestsDisplayResults } from '../../src/4_services/TestTools';
+import { MiroirEventTracker } from '../../src/3_controllers/MiroirEventTracker';
+import { MiroirModelEnvironment } from '../../src/0_interfaces/1_core/Transformer';
+import { defaultMiroirModelEnviroment } from '../../src/1_core/Model';
 
+type VitestNamespace = typeof vitest;
 
 // const env:any = (import.meta as any).env
 // const env:any = (process as any).env
@@ -30,17 +34,26 @@ const params = getCommandLineArgs();
 // // console.log("@@@@@@@@@@@@@@@@@@ miroirConfig", miroirConfig);
 // console.log("@@@@@@@@@@@@@@@@@@ vitest",vitest.describe)
 // describe.sequential("templatesDEFUNCT.unit.test", () => {
+const miroirEventTracker = new MiroirEventTracker();
 
 afterAll(async () => {
   if (RUN_TEST) {
-    transformerTestsDisplayResults(currentTestSuite, RUN_TEST, testSuiteName);
+    await transformerTestsDisplayResults(currentTestSuite, RUN_TEST, testSuiteName, miroirEventTracker);
   }
 });
 
 // ################################################################################################
 const testSuiteName = "transformers.unit.test";
+
 if (RUN_TEST == testSuiteName) {
-  await runTransformerTestSuite(vitest, [], currentTestSuite, runTransformerTestInMemory);
+  await runTransformerTestSuite(
+    vitest,
+    [],
+    currentTestSuite,
+    runTransformerTestInMemory,
+    defaultMiroirModelEnviroment,
+    miroirEventTracker
+  );
 } else {
   console.log("################################ skipping test suite:", testSuiteName);
 }

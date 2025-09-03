@@ -69,7 +69,7 @@ describe('MiroirEventTracker', () => {
   describe('Integration with existing action tracking', () => {
     it('should maintain action context alongside action tracking', () => {
       // Start tracking an action
-      const actionId = tracker.startEvent('testActionType', 'testActionLabel');
+      const actionId = tracker.startAction('testActionType', 'testActionLabel');
       
       // Set action context
       tracker.setAction('contextAction');

@@ -32,6 +32,11 @@ export class TransformerEventService implements TransformerEventServiceInterface
   }
 
   private convertEventToTransformerEvent(event: MiroirEvent): TransformerEvent {
+    // Only process transformer events
+    if (event.trackingType !== 'transformer') {
+      throw new Error('Cannot convert non-transformer event to TransformerEvent');
+    }
+    
     // Get the tracking data from the event tracker to access hierarchical fields
     const trackingData = this.eventTracker.getAllEvents().find((data: MiroirEventTrackingData) => data.id === event.actionId);
     

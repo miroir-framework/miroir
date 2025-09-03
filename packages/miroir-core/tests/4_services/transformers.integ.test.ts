@@ -40,7 +40,7 @@ import {
   InitApplicationParameters,
   PersistenceStoreAdminSectionInterface,
 } from "../../src/0_interfaces/4-services/PersistenceStoreControllerInterface.js";
-import { defaultMiroirMetaModel } from '../../src/1_core/Model.js';
+import { defaultMiroirMetaModel, defaultMiroirModelEnviroment } from '../../src/1_core/Model.js';
 import { getBasicApplicationConfiguration, getBasicStoreUnitConfiguration } from '../../src/2_domain/Deployment.js';
 import { PersistenceStoreController } from '../../src/4_services/PersistenceStoreController.js';
 import {
@@ -51,6 +51,7 @@ import {
 import {
   currentTestSuite,
 } from "../2_domain/transformersTests_miroir.data";
+import { MiroirEventTracker } from '../../src/3_controllers/MiroirEventTracker';
 // const env:any = (import.meta as any).env
 // console.log("@@@@@@@@@@@@@@@@@@ env", env);
 const RUN_TEST= process.env.RUN_TEST
@@ -59,6 +60,7 @@ console.log("@@@@@@@@@@@@@@@@@@ RUN_TEST", RUN_TEST);
 // console.log("@@@@@@@@@@@@@@@@@@ miroirConfig", miroirConfig);
 
 // describe.sequential("templatesDEFUNCT.unit.test", () => {
+const miroirEventTracker = new MiroirEventTracker();
 
 const testSuiteName = "transformers.integ.test";
 
@@ -242,7 +244,14 @@ if (RUN_TEST == testSuiteName) {
   if (!sqlDbDataStore) {
     throw new Error("sqlDbDataStore is not defined!");
   }
-  await runTransformerTestSuite(vitest, [], currentTestSuite, runTransformerIntegrationTest(sqlDbDataStore));
+  await runTransformerTestSuite(
+    vitest,
+    [],
+    currentTestSuite,
+    runTransformerIntegrationTest(sqlDbDataStore),
+    defaultMiroirModelEnviroment,
+    miroirEventTracker
+  );
 } else {
   console.log("################################ skipping test suite:", testSuiteName, "RUN_TEST=", RUN_TEST);
 }
