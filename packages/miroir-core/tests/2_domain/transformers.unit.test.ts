@@ -2,7 +2,7 @@ import * as vitest from 'vitest';
 import {
   currentTestSuite,
 } from "./transformersTests_miroir.data";
-import { runTransformerTestInMemory, runTransformerTestSuite, transformerTestsDisplayResults } from '../../src/4_services/TestTools';
+import { displayTestSuiteResultsDetails, runTransformerTestInMemory, runTransformerTestSuite, transformerTestsDisplayResults } from '../../src/4_services/TestTools';
 import { MiroirEventTracker } from '../../src/3_controllers/MiroirEventTracker';
 import { MiroirModelEnvironment } from '../../src/0_interfaces/1_core/Transformer';
 import { defaultMiroirModelEnviroment } from '../../src/1_core/Model';
@@ -39,6 +39,13 @@ const miroirEventTracker = new MiroirEventTracker();
 afterAll(async () => {
   if (RUN_TEST) {
     await transformerTestsDisplayResults(currentTestSuite, RUN_TEST, testSuiteName, miroirEventTracker);
+    // await displayTestSuiteResultsDetails(
+    //   // currentTestSuite,
+    //   RUN_TEST,
+    //   // testSuiteName,
+    //   [],
+    //   miroirEventTracker
+    // );
   }
 });
 

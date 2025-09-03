@@ -707,15 +707,165 @@ export const testSuites = (transformerTestSuite: TransformerTestSuite): string[]
 //   throw new Error("displayTestSuiteResults is not implemented yet");
 // }
 
-// // ################################################################################################
-// export function displayTestSuiteResultsDetails(
-//   expect: any, // vitest.expect
-//   currentTestSuiteName: string,
-//   currentTestSuitePath: TestAssertionPath,
-//   miroirEventTracker: MiroirEventTrackerInterface, // Optional unified tracker for test execution tracking
-// ) {
-//   throw new Error("displayTestSuiteResultsDetails is not implemented yet");
-// }
+// ################################################################################################
+export const displayTestSuiteResultsDetails = async (
+  // expect: any, // vitest.expect
+  currentTestSuiteName: string,
+  currentTestSuitePath: TestAssertionPath,
+  miroirEventTracker: MiroirEventTrackerInterface, // Optional unified tracker for test execution tracking
+) => {
+  console.log("#################################### displayTestSuiteResultsDetails ####################################");
+  
+  // Import chalk for colors
+  const chalk = (await import('chalk')).default;
+  
+  // Retrieve results for the requested suite path (fallback to root if not provided)
+  const allResults = miroirEventTracker.getTestAssertionsResults(currentTestSuitePath ?? []);
+
+  let totalTestSuites = 0;
+  let totalTests = 0;
+  let totalAssertions = 0;
+  let passedTestSuites = 0;
+  let passedTests = 0;
+  let passedAssertions = 0;
+
+  // Collect all test information for processing
+  const collectTestInfo = (
+    results: TestSuiteResult,
+    pathPrefix: string[] = []
+  ): Array<{
+    type: 'suite' | 'test' | 'assertion';
+    path: string;
+    status: 'ok' | 'error';
+    assertion?: TestAssertionResult;
+  }> => {
+    const testInfo: Array<any> = [];
+    
+    // Count and collect test suites
+    if (results.testsSuiteResults) {
+      for (const [suiteName, suiteResult] of Object.entries(results.testsSuiteResults)) {
+        const currentPath = [...pathPrefix, suiteName];
+        totalTestSuites++;
+        
+        // Determine suite status (ok if all tests in suite pass)
+        const hasFailedTests = suiteResult.testsResults && 
+          Object.values(suiteResult.testsResults).some(test => test.testResult !== "ok");
+        const suiteStatus = hasFailedTests ? "error" : "ok";
+        
+        if (suiteStatus === "ok") {
+          passedTestSuites++;
+        }
+        
+        // Recursively collect from child suites
+        testInfo.push(...collectTestInfo(suiteResult, currentPath));
+      }
+    }
+
+    // Count and collect individual tests and their assertions
+    if (results.testsResults) {
+      for (const [testName, testResult] of Object.entries(results.testsResults)) {
+        totalTests++;
+        
+        const testPath = [...pathPrefix, testName].join(" > ");
+        const testStatus = testResult.testResult === "ok" ? "ok" : "error";
+        
+        if (testStatus === "ok") {
+          passedTests++;
+        }
+        
+        // Process assertions for this test
+        const assertions = Object.entries(testResult.testAssertionsResults);
+        totalAssertions += assertions.length;
+        
+        for (const [assertionName, assertion] of assertions) {
+          const assertionPath = [...pathPrefix, testName, assertionName].join(" > ");
+          const assertionStatus = assertion.assertionResult === "ok" ? "ok" : "error";
+          
+          if (assertionStatus === "ok") {
+            passedAssertions++;
+          }
+          
+          testInfo.push({
+            type: 'assertion',
+            path: assertionPath,
+            status: assertionStatus,
+            assertion: assertion
+          });
+        }
+      }
+    }
+    
+    return testInfo;
+  };
+  
+  // Collect all test information
+  const allTestInfo = collectTestInfo(allResults);
+  
+  // Display detailed assertion results
+  for (const item of allTestInfo) {
+    if (item.type === 'assertion') {
+      const symbol = item.status === "ok" ? chalk.green("✓") : chalk.red("✗");
+      const statusText = item.status === "ok" ? chalk.green("[ok]") : chalk.red("[error]");
+      
+      console.log(`${symbol} ${item.path} ${statusText}`);
+      
+      // Show detailed assertion results for failed assertions
+      if (item.status === "error" && item.assertion) {
+        console.log(chalk.red("    Expected:"));
+        try {
+          console.log("   ", JSON.stringify(item.assertion.assertionExpectedValue, null, 4));
+        } catch (e) {
+          console.log("    (unserializable)");
+        }
+        console.log(chalk.red("    Actual:"));
+        try {
+          console.log("   ", JSON.stringify(item.assertion.assertionActualValue, circularReplacer, 4));
+        } catch (e) {
+          console.log("    (unserializable)");
+        }
+        console.log(""); // Add spacing between failed assertions
+      }
+    }
+  }
+  
+  // Display comprehensive statistics
+  console.log("\n" + chalk.bold("═══════════════════════════════════════════════════════════════════════════════════════════════════"));
+  console.log(chalk.bold.blue("                                   DETAILED TEST ASSERTIONS SUMMARY"));
+  console.log(chalk.bold("═══════════════════════════════════════════════════════════════════════════════════════════════════"));
+  
+  if (totalTestSuites > 0) {
+    console.log(chalk.bold("Test Suites:"));
+    const suitePassRate = totalTestSuites > 0 ? ((passedTestSuites / totalTestSuites) * 100).toFixed(1) : "0.0";
+    console.log(`  ${chalk.green("✓ Passed:")} ${passedTestSuites}/${totalTestSuites} (${suitePassRate}%)`);
+    if (totalTestSuites - passedTestSuites > 0) {
+      console.log(`  ${chalk.red("✗ Failed:")} ${totalTestSuites - passedTestSuites}/${totalTestSuites}`);
+    }
+  }
+  
+  if (totalTests > 0) {
+    console.log(chalk.bold("\nTests:"));
+    const testPassRate = totalTests > 0 ? ((passedTests / totalTests) * 100).toFixed(1) : "0.0";
+    console.log(`  ${chalk.green("✓ Passed:")} ${passedTests}/${totalTests} (${testPassRate}%)`);
+    if (totalTests - passedTests > 0) {
+      console.log(`  ${chalk.red("✗ Failed:")} ${totalTests - passedTests}/${totalTests}`);
+    }
+  }
+  
+  console.log(chalk.bold("\nAssertions (Detailed):"));
+  const assertionPassRate = totalAssertions > 0 ? ((passedAssertions / totalAssertions) * 100).toFixed(1) : "0.0";
+  console.log(`  ${chalk.green("✓ Passed:")} ${passedAssertions}/${totalAssertions} (${assertionPassRate}%)`);
+  if (totalAssertions - passedAssertions > 0) {
+    console.log(`  ${chalk.red("✗ Failed:")} ${totalAssertions - passedAssertions}/${totalAssertions}`);
+  }
+  
+  // Overall status
+  const overallStatus = (passedTests === totalTests && passedAssertions === totalAssertions) ? "PASSED" : "FAILED";
+  const statusColor = overallStatus === "PASSED" ? chalk.green : chalk.red;
+  console.log(chalk.bold(`\nOverall Status: ${statusColor(overallStatus)}`));
+  
+  console.log(chalk.bold("═══════════════════════════════════════════════════════════════════════════════════════════════════"));
+  console.log("#################################### End of displayTestSuiteResultsDetails ####################################");
+};
 
 // ################################################################################################
 export const transformerTestsDisplayResults = async (
