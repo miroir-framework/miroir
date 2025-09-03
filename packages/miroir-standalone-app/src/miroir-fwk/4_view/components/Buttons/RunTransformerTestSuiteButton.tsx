@@ -47,6 +47,8 @@ export function generateTestReport(
     status: "✅ Pass" | "❌ Fail";
     failedAssertions?: string[];
     assertionCount: number;
+    assertions: string; // Summary text for assertions
+    fullAssertionsResults?: any; // Include full assertion results for detailed hover/diff view
   }
   
   const structuredResults: StructuredTestResult[] = [];
@@ -67,6 +69,7 @@ export function generateTestReport(
     status: 'ok' | 'error';
     failedAssertions?: string[];
     assertionCount?: number;
+    fullAssertionsResults?: any; // Include full assertion results
   }> => {
     const testInfo: Array<any> = [];
     
@@ -113,7 +116,8 @@ export function generateTestReport(
           path: testPath,
           status: testStatus,
           failedAssertions: failedAssertions.length > 0 ? failedAssertions : undefined,
-          assertionCount: assertions.length
+          assertionCount: assertions.length,
+          fullAssertionsResults: testResult.testAssertionsResults // Include full assertion results for detailed view
         });
       }
     }
@@ -138,7 +142,11 @@ export function generateTestReport(
         testResult: test.status,
         status: test.status === "ok" ? "✅ Pass" : "❌ Fail",
         failedAssertions: test.failedAssertions,
-        assertionCount: test.assertionCount || 0
+        assertionCount: test.assertionCount || 0,
+        assertions: test.failedAssertions && test.failedAssertions.length > 0 
+          ? `${test.failedAssertions.length} failed: ${test.failedAssertions.join(", ")}` 
+          : `All ${test.assertionCount || 0} assertions passed`,
+        fullAssertionsResults: test.fullAssertionsResults // Include full assertion results for hover/diff functionality
       });
       
       // Show failed assertions if any (but keep it brief)

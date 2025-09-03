@@ -640,7 +640,7 @@ export {
 } from "./0_interfaces/3_controllers/TransformerEventInterface.js";
 export {
   MiroirEventServiceInterface,
-  MiroirEventEntry as ActionOrTestLogEntry,
+  MiroirEventEntry,
   MiroirEvent as MiroirEvent,
   ActionLogFilter,
 } from "./3_controllers/MiroirEventService.js";

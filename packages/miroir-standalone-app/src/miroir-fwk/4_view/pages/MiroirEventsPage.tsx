@@ -48,7 +48,7 @@ import {
 } from '@mui/icons-material';
 import { useNavigate, Link, useSearchParams, useLocation } from 'react-router-dom';
 import { useMiroirContextService } from '../MiroirContextReactProvider';
-import { LoggerInterface, MiroirLoggerFactory } from 'miroir-core';
+import { LoggerInterface, MiroirLoggerFactory, type MiroirEvent, type MiroirEventEntry } from 'miroir-core';
 import { packageName } from '../../../constants.js';
 import { cleanLevel } from '../constants.js';
 import { usePageConfiguration } from '../services';
@@ -60,7 +60,7 @@ MiroirLoggerFactory.registerLoggerToStart(
 ).then((logger: LoggerInterface) => {log = logger});
 
 // Local type definitions (temporarily until exports work)
-interface ActionOrTestLogEntry {
+interface OLDMiroirEventEntry {
   id: string;
   actionId: string;
   timestamp: number;
@@ -77,23 +77,23 @@ interface ActionOrTestLogEntry {
   };
 }
 
-interface MiroirEvent {
-  actionId: string;
-  actionType: string;
-  actionLabel?: string;
-  startTime: number;
-  endTime?: number;
-  status: 'running' | 'completed' | 'error';
-  logs: ActionOrTestLogEntry[];
-  logCounts: {
-    trace: number;
-    debug: number;
-    info: number;
-    warn: number;
-    error: number;
-    total: number;
-  };
-}
+// interface MiroirEvent {
+//   actionId: string;
+//   actionType: string;
+//   actionLabel?: string;
+//   startTime: number;
+//   endTime?: number;
+//   status: 'running' | 'completed' | 'error';
+//   logs: MiroirEventEntry[];
+//   logCounts: {
+//     trace: number;
+//     debug: number;
+//     info: number;
+//     warn: number;
+//     error: number;
+//     total: number;
+//   };
+// }
 
 interface ActionLogFilter {
   actionId?: string;
@@ -146,7 +146,8 @@ const getActionStatusIcon = (status: string) => {
 // ################################################################################################
 // ################################################################################################
 // Component for displaying individual log entry
-const LogEntryComponent: React.FC<{ logEntry: ActionOrTestLogEntry; isExpanded: boolean; onToggle: () => void }> = ({
+// const LogEntryComponent: React.FC<{ logEntry: MiroirEventEntry; isExpanded: boolean; onToggle: () => void }> = ({
+const LogEntryComponent: React.FC<{ logEntry: MiroirEventEntry; isExpanded: boolean; onToggle: () => void }> = ({
   logEntry,
   isExpanded,
   onToggle
@@ -251,7 +252,7 @@ export const MiroirEventsPage: React.FC = () => {
   const [currentActionLogs, setCurrentActionLogs] = useState<MiroirEvent | null>(null);
   const [expandedLogIds, setExpandedLogIds] = useState<Set<string>>(new Set());
   const [logDetailOpen, setLogDetailOpen] = useState(false);
-  const [selectedLog, setSelectedLog] = useState<ActionOrTestLogEntry | null>(null);
+  const [selectedLog, setSelectedLog] = useState<MiroirEventEntry | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [actionExists, setActionExists] = useState<boolean | null>(null);
   
@@ -280,7 +281,7 @@ export const MiroirEventsPage: React.FC = () => {
     }
 
     // Initial load
-    const allEvents = miroirEventService.getAllEvents();
+    const allEvents: MiroirEvent[] = miroirEventService.getAllEvents();
     setEvents(allEvents);
     
     if (actionId) {
@@ -318,7 +319,7 @@ export const MiroirEventsPage: React.FC = () => {
   const filteredLogs = useMemo(() => {
     if (!currentActionLogs) return [];
     
-    return currentActionLogs.logs.filter((log: ActionOrTestLogEntry) => {
+    return currentActionLogs.logs.filter((log: MiroirEventEntry) => {
       if (filters.level && log.level !== filters.level) {
         return false;
       }
@@ -678,7 +679,7 @@ export const MiroirEventsPage: React.FC = () => {
               </Box>
             ) : (
               <List sx={{ maxHeight: 600, overflow: 'auto' }}>
-                {filteredLogs.map((log: ActionOrTestLogEntry) => (
+                {filteredLogs.map((log: MiroirEventEntry) => (
                   <LogEntryComponent
                     key={log.id}
                     logEntry={log}

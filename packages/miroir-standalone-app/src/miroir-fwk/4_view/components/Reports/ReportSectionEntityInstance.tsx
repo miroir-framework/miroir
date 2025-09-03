@@ -398,6 +398,10 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                           status: { type: "string" },
                           assertionCount: { type: "number" },
                           assertions: { type: "string" },
+                          failedAssertions: { 
+                            type: "array",
+                            definition: { type: "string" }
+                          },
                           fullAssertionsResults: {
                             type: "object",
                             definition: {},

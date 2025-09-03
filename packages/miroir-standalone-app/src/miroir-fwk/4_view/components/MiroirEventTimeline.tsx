@@ -225,7 +225,7 @@ export const MiroirEventTimeLine: React.FC<RunActionTimelineProps> = React.memo(
   }, []);
 
   const handleViewActionLogs = useCallback((actionId: string) => {
-    navigate(`/events/${actionId}`);
+    navigate(`/events?actionId=${actionId}`);
   }, [navigate]);
 
   const handleClearActions = useCallback(() => {
