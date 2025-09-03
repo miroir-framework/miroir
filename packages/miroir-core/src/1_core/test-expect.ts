@@ -19,8 +19,17 @@ type Describe = {
   each: DescribeEachFunction;
 };
 
+type Test = {
+  (title: string, testFn: () => void | Promise<void>, timeout?: number): void | Promise<void>;
+};
+
 export function describe(title: string, testFn: () => void | Promise<void>): void | Promise<void> {
   // console.log(`Describe: ${title}`);
+  return testFn();
+}
+
+export function test(title: string, testFn: () => void | Promise<void>, timeout?: number): void | Promise<void> {
+  // console.log(`Test: ${title}`);
   return testFn();
 }
 
@@ -65,6 +74,13 @@ export function jsonify(value: any): any {
     return value;
   }
 }
+
+// Test framework namespace to avoid naming conflicts with generated types
+export const TestFramework = {
+  describe,
+  test,
+  expect,
+};
 
 function findFirstDiffPath(a: any, b: any, path: string[] = []): string[] | null {
   if (a === b) return null;

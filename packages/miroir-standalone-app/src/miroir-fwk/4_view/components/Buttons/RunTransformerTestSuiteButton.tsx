@@ -1,6 +1,7 @@
 
 import {
   MiroirLoggerFactory,
+  TestFramework,
   defaultMiroirMetaModel,
   miroirFundamentalJzodSchema,
   runTransformerTestInMemory,
@@ -24,86 +25,145 @@ MiroirLoggerFactory.registerLoggerToStart(
   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "RunTransformerTestSuiteButton"),
 ).then((logger: LoggerInterface) => {log = logger});
 
+// // Simple test function to match vitest interface
+// const test = (title: string, testFn: () => void | Promise<void>, timeout?: number): void | Promise<void> => {
+//   return testFn();
+// };
+
 
 // ################################################################################################
 // ################################################################################################
 // ################################################################################################
-// Local type definitions based on miroir-core types
-interface TestAssertionResult {
-  assertionName: string;
-  assertionResult: "ok" | "error";
-  assertionExpectedValue?: any;
-  assertionActualValue?: any;
-}
-
-interface TestAssertionsResults {
-  [assertionName: string]: TestAssertionResult;
-}
-
 export function generateTestReport(
-  matchingKey: string | undefined,
-  testSuiteResults: TestSuiteResult,
+  testSuiteKey: string,
+  allResults: TestSuiteResult,
   setResolveConditionalSchemaResults: React.Dispatch<React.SetStateAction<string>>
 ) {
-  let resultText = "=== resolveConditionalSchema Test Results ===\n\n";
+  let resultText = `=== ${testSuiteKey} Test Results ===\n\n`;
+  
   interface StructuredTestResult {
     testName: string;
-    testResult: string;
-    assertions: string;
-    assertionCount: number;
+    testResult: "ok" | "error";
     status: "✅ Pass" | "❌ Fail";
-    fullAssertionsResults: TestAssertionsResults; // Add full assertion data
+    failedAssertions?: string[];
+    assertionCount: number;
   }
+  
   const structuredResults: StructuredTestResult[] = [];
-
-  if (!matchingKey) {
-    throw new Error();
-  }
-  if (testSuiteResults && testSuiteResults[matchingKey]) {
-    const suiteResults = testSuiteResults[matchingKey];
-    for (const [testName, testResult] of Object.entries(suiteResults)) {
-      resultText += `Test: ${testResult.testLabel}\n`;
-      resultText += `Result: ${testResult.testResult}\n`;
-
-      // Create structured data for ValueObjectGrid
-      const assertionsDetails = Object.entries(testResult.testAssertionsResults)
-        .map(([assertionName, assertion]) => {
-          let details = `${assertionName}: ${assertion.assertionResult}`;
-          if (assertion.assertionResult !== "ok") {
-            details += `\nExpected: ${JSON.stringify(assertion.assertionExpectedValue, null, 2)}`;
-            details += `\nActual: ${JSON.stringify(assertion.assertionActualValue, null, 2)}`;
-          }
-          return details;
-        })
-        .join("\n");
-
-      structuredResults.push({
-        testName: testResult.testLabel || testName,
-        testResult: testResult.testResult,
-        assertions: assertionsDetails,
-        assertionCount: Object.keys(testResult.testAssertionsResults).length,
-        status: testResult.testResult === "ok" ? "✅ Pass" : "❌ Fail",
-        fullAssertionsResults: testResult.testAssertionsResults, // Include full assertion data
-      });
-
-      for (const [assertionName, assertion] of Object.entries(testResult.testAssertionsResults)) {
-        resultText += `  Assertion: ${assertionName} - ${assertion.assertionResult}\n`;
-        if (assertion.assertionResult !== "ok") {
-          resultText += `    Expected: ${JSON.stringify(
-            assertion.assertionExpectedValue,
-            null,
-            2
-          )}\n`;
-          resultText += `    Actual: ${JSON.stringify(assertion.assertionActualValue, null, 2)}\n`;
+  
+  // Statistics
+  let totalTestSuites = 0;
+  let totalTests = 0;
+  let passedTestSuites = 0;
+  let passedTests = 0;
+  
+  // Collect all test information for processing (similar to transformerTestsDisplayResults)
+  const collectTestInfo = (
+    results: TestSuiteResult,
+    pathPrefix: string[] = []
+  ): Array<{
+    type: 'suite' | 'test';
+    path: string;
+    status: 'ok' | 'error';
+    failedAssertions?: string[];
+    assertionCount?: number;
+  }> => {
+    const testInfo: Array<any> = [];
+    
+    // Count and collect test suites
+    if (results.testsSuiteResults) {
+      for (const [suiteName, suiteResult] of Object.entries(results.testsSuiteResults)) {
+        const currentPath = [...pathPrefix, suiteName];
+        totalTestSuites++;
+        
+        // Determine suite status (ok if all tests in suite pass)
+        const hasFailedTests = suiteResult.testsResults && 
+          Object.values(suiteResult.testsResults).some(test => test.testResult !== "ok");
+        const suiteStatus = hasFailedTests ? "error" : "ok";
+        
+        if (suiteStatus === "ok") {
+          passedTestSuites++;
         }
+        
+        // Recursively collect from child suites
+        testInfo.push(...collectTestInfo(suiteResult, currentPath));
       }
-      resultText += "\n";
     }
-  } else {
-    resultText += "No test results found or test suite not executed properly.\n";
-  }
-  setResolveConditionalSchemaResults(resultText);
 
+    // Count and collect individual tests
+    if (results.testsResults) {
+      for (const [testName, testResult] of Object.entries(results.testsResults)) {
+        totalTests++;
+        
+        const testPath = [...pathPrefix, testName].join(" > ");
+        const testStatus = testResult.testResult === "ok" ? "ok" : "error";
+        
+        if (testStatus === "ok") {
+          passedTests++;
+        }
+        
+        // Count assertions for this test
+        const assertions = Object.entries(testResult.testAssertionsResults);
+        const failedAssertions = assertions
+          .filter(([_, assertion]) => assertion.assertionResult !== "ok")
+          .map(([name, _]) => name);
+        
+        testInfo.push({
+          type: 'test',
+          path: testPath,
+          status: testStatus,
+          failedAssertions: failedAssertions.length > 0 ? failedAssertions : undefined,
+          assertionCount: assertions.length
+        });
+      }
+    }
+    
+    return testInfo;
+  };
+  
+  // Collect all test information
+  const allTestInfo = collectTestInfo(allResults);
+  
+  // Generate text results focusing on tests (not detailed assertions)
+  for (const test of allTestInfo) {
+    if (test.type === 'test') {
+      const symbol = test.status === "ok" ? "✅" : "❌";
+      const statusText = test.status === "ok" ? "Pass" : "Fail";
+      
+      resultText += `${symbol} ${test.path} - ${statusText}\n`;
+      
+      // Create structured data
+      structuredResults.push({
+        testName: test.path,
+        testResult: test.status,
+        status: test.status === "ok" ? "✅ Pass" : "❌ Fail",
+        failedAssertions: test.failedAssertions,
+        assertionCount: test.assertionCount || 0
+      });
+      
+      // Show failed assertions if any (but keep it brief)
+      if (test.failedAssertions && test.failedAssertions.length > 0) {
+        resultText += `    Failed assertions: ${test.failedAssertions.join(", ")}\n`;
+      }
+    }
+  }
+  
+  // Add summary statistics
+  resultText += "\n=== Test Summary ===\n";
+  if (totalTestSuites > 0) {
+    const suitePassRate = totalTestSuites > 0 ? ((passedTestSuites / totalTestSuites) * 100).toFixed(1) : "0.0";
+    resultText += `Test Suites: ${passedTestSuites}/${totalTestSuites} passed (${suitePassRate}%)\n`;
+  }
+  
+  if (totalTests > 0) {
+    const testPassRate = totalTests > 0 ? ((passedTests / totalTests) * 100).toFixed(1) : "0.0";
+    resultText += `Tests: ${passedTests}/${totalTests} passed (${testPassRate}%)\n`;
+  }
+  
+  const overallStatus = (passedTests === totalTests) ? "PASSED" : "FAILED";
+  resultText += `\nOverall Status: ${overallStatus}\n`;
+  
+  setResolveConditionalSchemaResults(resultText);
   return structuredResults;
 };
 
@@ -143,7 +203,8 @@ export const RunTransformerTestSuiteButton: React.FC<RunTransformerTestSuiteButt
     // Run the test suite
     const testSuitePath = [testSuiteKey];
     await runTransformerTestSuite(
-      { expect, describe }, // vitest-like interface
+      // { expect, describe, test } as any, // vitest-like interface
+      TestFramework as any, // vitest-like interface
       testSuitePath,
       (transformerTestSuite as TransformerTestDefinition).definition,
       runTransformerTestInMemory,
@@ -155,32 +216,14 @@ export const RunTransformerTestSuiteButton: React.FC<RunTransformerTestSuiteButt
       miroirContextService.miroirContext.miroirEventTracker // Pass the unified tracker
     );
 
-    // Get and format results - find the correct test suite key
-    const allResults = miroirContextService.miroirContext.miroirEventTracker.getTestAssertionsResults();
-    const availableKeys = Object.keys(allResults);
-    log.info("Available test suite keys:", availableKeys);
+    // Get all results using the new format
+    const allResults = miroirContextService.miroirContext.miroirEventTracker.getTestAssertionsResults([]);
+    log.info("All test results:", allResults);
 
-    // Find the key that contains our test suite name
-    const matchingKey: string | undefined = availableKeys.find((key) =>
-      key.includes(testSuiteKey)
-    );
-
-    if (!matchingKey) {
-      throw new Error(
-        `No test suite found containing '${testSuiteKey}'. Available keys: ${availableKeys.join(
-          ", "
-        )}`
-      );
-    }
-
-    const testSuiteResults: TestSuiteResult =
-      miroirContextService.miroirContext.miroirEventTracker.getTestSuiteResult(matchingKey);
-    log.info(testSuiteKey, "test results:", testSuiteResults);
-
-    // Format results for display
+    // Format results for display using the new structure
     const structuredResults = generateTestReport(
-      matchingKey,
-      testSuiteResults,
+      testSuiteKey,
+      allResults,
       () => {} // Placeholder setter function
     );
 

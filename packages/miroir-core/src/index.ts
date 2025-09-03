@@ -742,6 +742,7 @@ export {
 export {
   describe,
   expect,
+  TestFramework,
 } from "./1_core/test-expect";
 export {} from "./1_core/Report";
 export {} from "./1_core/Report.js";

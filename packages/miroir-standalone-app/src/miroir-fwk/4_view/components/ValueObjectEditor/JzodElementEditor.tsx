@@ -270,27 +270,11 @@ export const FoldUnfoldAllObjectAttributesOrArrayItems = (props: {
             newState[key] = true;
           });
         } else {
-          // Unfold to the specified depth
-          const unfoldToDepth = (currentKeys: string[], depth: number) => {
-            if (depth <= 0) return;
-            
-            currentKeys.forEach((key) => {
-              newState[key] = false; // Unfold this level
-              
-              // If there's more depth to go, recursively unfold children
-              if (depth > 1) {
-                // This is a simplified approach - in a real implementation, 
-                // you'd need to inspect the actual data structure to find child keys
-                // For now, we'll just unfold direct children
-                props.itemsOrder.forEach((childAttr) => {
-                  const childKey = `${key}.${childAttr}`;
-                  unfoldToDepth([childKey], depth - 1);
-                });
-              }
-            });
-          };
-          
-          unfoldToDepth(childKeys, maxDepthToUnfold);
+          // Unfold to the specified depth (only first level for now)
+          // TODO: Implement proper recursive unfolding by inspecting actual data structure
+          childKeys.forEach((key) => {
+            newState[key] = false; // Unfold this level
+          });
         }
         
         return newState;

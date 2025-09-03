@@ -239,20 +239,23 @@ export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
   //     "rawJzodSchema=", rawJzodSchema,
   // );
 
-  const isDiscriminator =
-    parentKeyMap?.discriminator &&
-    parentKeyMap?.discriminatorValues;
 
   const discriminatorIndex: number = !parentKeyMap?.discriminator
     ? -1
     : typeof parentKeyMap?.discriminator == "string"
     ? 0
     : parentKeyMap?.discriminator?.findIndex((d: string) => d === name);
-  if (isDiscriminator && discriminatorIndex === -1) {
-    throw new Error(
-      `JzodLiteralEditor: isDiscriminator is true but could not find discriminator index for name "${name}" in parentKeyMap.discriminator ${parentKeyMap?.discriminator}`
-    );
-  }
+
+  const isDiscriminator =
+    parentKeyMap?.discriminator &&
+    parentKeyMap?.discriminatorValues &&
+    discriminatorIndex !== -1;
+
+  // if (isDiscriminator && discriminatorIndex === -1) {
+  //   throw new Error(
+  //     `JzodEnumEditor: isDiscriminator is true but could not find discriminator index for name "${name}" in parentKeyMap.discriminator ${parentKeyMap?.discriminator} with values ${parentKeyMap?.discriminatorValues}`
+  //   );
+  // }
 
   // Create the model environment needed for discriminator change handling
   const currentMiroirModelEnvironment: MiroirModelEnvironment = useMemo(() => {
@@ -292,10 +295,10 @@ export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
     ]
   );
 
-    const currentDiscriminatorValues =
-      parentKeyMap?.discriminatorValues && discriminatorIndex !== -1
-        ? parentKeyMap.discriminatorValues[discriminatorIndex]
-        : [];
+  const currentDiscriminatorValues =
+    parentKeyMap?.discriminatorValues && discriminatorIndex !== -1
+      ? parentKeyMap.discriminatorValues[discriminatorIndex]
+      : [];
 
   // Memoize the menu items for better performance
   const menuItems = useMemo(() => {

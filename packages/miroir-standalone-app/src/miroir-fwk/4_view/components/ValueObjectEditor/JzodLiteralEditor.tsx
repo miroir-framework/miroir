@@ -310,7 +310,7 @@ export const JzodLiteralEditor: FC<JzodLiteralEditorProps> =  (
     : parentKeyMap?.discriminator?.findIndex((d: string) => d === name);
   if (isDiscriminator && discriminatorIndex === -1) {
     throw new Error(
-      `JzodLiteralEditor: isDiscriminator is true but could not find discriminator index for name "${name}" in parentKeyMap.discriminator ${parentKeyMap?.discriminator}`
+      `JzodLiteralEditor: isDiscriminator is true but could not find discriminator index for name "${name}" in parentKeyMap.discriminator ${parentKeyMap?.discriminator} with values ${parentKeyMap?.discriminatorValues}`
     );
   }
 
