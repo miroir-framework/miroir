@@ -385,19 +385,23 @@ export function selectUnionBranchFromDiscriminator<T extends MiroirModelEnvironm
     }
     possibleDiscriminators = flattenedUnionChoices.map((objectChoice) => {
       const objectChoiceKeys = Object.keys(objectChoice.definition);
-      return discriminators.map((discriminator) =>
-        objectChoiceKeys.includes(discriminator) &&
-        (objectChoice as any).definition[discriminator]?.type == "literal"
-          ? (objectChoice as any).definition[discriminator]?.definition
-          : undefined
-          // : "NO VALUE FOR DISCRIMINATOR " + discriminator
+      return discriminators.map(
+        (discriminator) =>
+          objectChoiceKeys.includes(discriminator) &&
+          (objectChoice as any).definition[discriminator]?.type == "literal"
+            ? (objectChoice as any).definition[discriminator]?.definition
+            :(objectChoice as any).definition[discriminator]?.type == "enum"
+            ? (objectChoice as any).definition[discriminator]?.definition
+            : undefined
+        // : "NO VALUE FOR DISCRIMINATOR " + discriminator
       );
-      });
+    });
+    // const valueObjectPathString = valueObjectPath.join(".")
     while (i < discriminators.length && filteredFlattenedUnionChoices.length > 1) {
       const disc = discriminators[i];
       const newfilteredFlattenedUnionChoices = filteredFlattenedUnionChoices.filter(
-        (a) =>
-          (
+        (a) =>{
+          return (
             a.type == "object" &&
             a.definition[disc]?.type == "literal" &&
             (a.definition[disc] as JzodLiteral).definition == valueObject[disc]
@@ -407,19 +411,24 @@ export function selectUnionBranchFromDiscriminator<T extends MiroirModelEnvironm
             a.definition[disc]?.type == "enum" &&
             (a.definition[disc] as JzodEnum).definition.includes(valueObject[disc])
           )
+        }
       );
       chosenDiscriminator.push({discriminator: disc, value: valueObject[disc]});
       filteredFlattenedUnionChoices = newfilteredFlattenedUnionChoices;
       i++;
     }
     // log.info(
-    //   "selectUnionBranchFromDiscriminator called for union-type value object with discriminator(s)=",
+    //   "selectUnionBranchFromDiscriminator called for union-type value object",
+    //   "valueObjectPath",
+    //   valueObjectPath.join("."),
+    //   "discriminator(s)=",
+    //   "with discriminator(s)=",
     //   discriminators,
     //   "filteredFlattenedUnionChoices=",
     //   filteredFlattenedUnionChoices
     //   // JSON.stringify(objectUnionChoices.map((e:any) => [e?.definition['transformerType'], e?.definition ]), null, 2),
     // );
-  }
+  } // end: !discriminators || discriminators.length == 0
 
 
 
@@ -435,7 +444,8 @@ export function selectUnionBranchFromDiscriminator<T extends MiroirModelEnvironm
       typePath,
       value: valueObject,
       objectUnionChoices,
-      flattenedUnionChoices: filteredFlattenedUnionChoices,
+      // flattenedUnionChoices: filteredFlattenedUnionChoices,
+      flattenedUnionChoices: flattenedUnionChoices,
     };
   }
   if (filteredFlattenedUnionChoices.length > 1) {
@@ -677,9 +687,11 @@ export function jzodTypeCheck(
   // log.info(
   //   "jzodTypeCheck called for valuePath=." + 
   //   currentValuePath.join("."),
-  //   // "value",
+  //   "value",
   //   // // JSON.stringify(valueObject, null, 2),
-  //   // valueObject,
+  //   valueObject,
+  //   "jzodSchema",
+  //   jzodSchema,
   //   // "schema",
   //   // JSON.stringify(jzodSchema, null, 2)
   // );
@@ -719,17 +731,21 @@ export function jzodTypeCheck(
     reduxDeploymentsState &&
     deploymentUuid ?
       resolveConditionalSchema(
+        "build", // TODO: can typeCheck be used in "runtime"? What does it mean in this context?
         jzodSchema,
         rootObject || currentDefaultValue, // Use rootObject if provided, fallback to currentDefaultValue
         currentValuePath as string[],
         modelEnvironment,
+        {}, // contextResults
         reduxDeploymentsState,
         deploymentUuid,
         'typeCheck' // Specify this is for type checking
       ) : jzodSchema;
 
   // log.info(
-  //   "jzodTypeCheck effectiveSchemaOrError",
+  //   "jzodTypeCheck",
+  //   currentValuePath.join("."),
+  //   "effectiveSchemaOrError",
   //   effectiveSchemaOrError,
   // );
   if ('error' in effectiveSchemaOrError) {
@@ -1248,7 +1264,7 @@ export function jzodTypeCheck(
             discriminatedSchemaForObject,
             valueObject,
             currentValuePath,
-            [...currentTypePath, "union choice"],
+            [...currentTypePath, "union choice(" + JSON.stringify(resolveUnionResult.chosenDiscriminator) + ")"],
             modelEnvironment,
             relativeReferenceJzodContext,
             currentDefaultValue,
@@ -1526,13 +1542,9 @@ export function jzodTypeCheck(
             [...currentValuePath, index],
             [...currentTypePath, index],
             modelEnvironment,
-            // miroirFundamentalJzodSchema,
-            // currentModel,
-            // miroirMetaModel,
             relativeReferenceJzodContext,
             currentDefaultValue,
             reduxDeploymentsState,
-            // getEntityInstancesUuidIndex,
             deploymentUuid,
             rootObject
           );

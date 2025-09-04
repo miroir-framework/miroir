@@ -147,6 +147,10 @@
                   "type": "boolean",
                   "optional": true
                 },
+                "isTemplate": {
+                  "type": "boolean",
+                  "optional": true
+                },
                 "conditionalMMLS": {
                   "type": "object",
                   "optional": true,
@@ -334,6 +338,10 @@
                     "optional": true
                   },
                   "canBeTemplate": {
+                    "type": "boolean",
+                    "optional": true
+                  },
+                  "isTemplate": {
                     "type": "boolean",
                     "optional": true
                   },

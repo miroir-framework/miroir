@@ -2022,74 +2022,80 @@ export class DomainController implements DomainControllerInterface {
       Object.keys(localActionParams)
     );
 
-      const resolvedCompositeActionTemplates: any = {}
-      // going imperatively to handle inner references
-      if (buildPlusRuntimeCompositeAction.templates) {
-        // log.info("handleBuildPlusRuntimeCompositeAction resolving templates", buildPlusRuntimeCompositeAction.templates);
+    const resolvedCompositeActionTemplates: any = {};
+    // going imperatively to handle inner references
+    if (buildPlusRuntimeCompositeAction.templates) {
+      // log.info("handleBuildPlusRuntimeCompositeAction resolving templates", buildPlusRuntimeCompositeAction.templates);
 
-        for (const t of Object.entries(buildPlusRuntimeCompositeAction.templates)) {
-          // const newLocalParameters: Record<string,any> = { ...localActionParams, ...resolvedCompositeActionTemplates };
-          const newLocalParameters: MiroirModelEnvironment & Record<string, any> = {
-            // miroirFundamentalJzodSchema: miroirFundamentalJzodSchema as JzodSchema,
-            // TODO: missing miroirMetaModel: MetaModel
-            currentModel,
-            ...localActionParams,
-            ...resolvedCompositeActionTemplates,
-          };
-          // log.info(
-          //   "buildPlusRuntimeCompositeAction",
-          //   buildPlusRuntimeCompositeAction.actionLabel,
-          //   "resolving template",
-          //   t[0],
-          //   // t[1],
-          //   "newLocalParameters",
-          //   newLocalParameters
-          // );
-          const resolvedTemplate = transformer_extended_apply_wrapper(
-            "build",
-            // "runtime",
-            t[0],
-            t[1] as any,
-            newLocalParameters, // queryParams
-            {}, // contextResults
-            "value",
+      for (const t of Object.entries(buildPlusRuntimeCompositeAction.templates)) {
+        // const newLocalParameters: Record<string,any> = { ...localActionParams, ...resolvedCompositeActionTemplates };
+        const newLocalParameters: MiroirModelEnvironment & Record<string, any> = {
+          // miroirFundamentalJzodSchema: miroirFundamentalJzodSchema as JzodSchema,
+          // TODO: missing miroirMetaModel: MetaModel
+          currentModel,
+          ...localActionParams,
+          ...resolvedCompositeActionTemplates,
+        };
+        // log.info(
+        //   "buildPlusRuntimeCompositeAction",
+        //   buildPlusRuntimeCompositeAction.actionLabel,
+        //   "resolving template",
+        //   t[0],
+        //   // t[1],
+        //   "newLocalParameters",
+        //   newLocalParameters
+        // );
+        const resolvedTemplate = transformer_extended_apply_wrapper(
+          "build",
+          // "runtime",
+          t[0],
+          t[1] as any,
+          newLocalParameters, // queryParams
+          {}, // contextResults
+          "value"
+        );
+        if (resolvedTemplate.queryFailure) {
+          log.error(
+            "handleBuildPlusRuntimeCompositeAction resolved template error",
+            resolvedTemplate
           );
-          if (resolvedTemplate.queryFailure) {
-            log.error("handleBuildPlusRuntimeCompositeAction resolved template error", resolvedTemplate);
-            return new Action2Error(
-              "FailedToResolveTemplate",
-              "handleBuildPlusRuntimeCompositeAction error resolving template " +
-                JSON.stringify(resolvedTemplate, null, 2),
-              [buildPlusRuntimeCompositeAction.actionLabel ?? buildPlusRuntimeCompositeAction.actionType]
-            );
-            // throw new Error(
-            //   "handleBuildPlusRuntimeCompositeAction error resolving template " +
-            //   " " + t[0] + " " + JSON.stringify(resolvedTemplate, null, 2)
-            // );
-          } else {
-            log.info(
-              "handleBuildPlusRuntimeCompositeAction",
-              buildPlusRuntimeCompositeAction.actionLabel,
-              "resolved template",
-              t[0],
-              "has value",
-              resolvedTemplate
-            );
-            resolvedCompositeActionTemplates[t[0]] = resolvedTemplate;
-          }
+          return new Action2Error(
+            "FailedToResolveTemplate",
+            "handleBuildPlusRuntimeCompositeAction error resolving template " +
+              JSON.stringify(resolvedTemplate, null, 2),
+            [
+              buildPlusRuntimeCompositeAction.actionLabel ??
+                buildPlusRuntimeCompositeAction.actionType,
+            ]
+          );
+          // throw new Error(
+          //   "handleBuildPlusRuntimeCompositeAction error resolving template " +
+          //   " " + t[0] + " " + JSON.stringify(resolvedTemplate, null, 2)
+          // );
+        } else {
+          log.info(
+            "handleBuildPlusRuntimeCompositeAction",
+            buildPlusRuntimeCompositeAction.actionLabel,
+            "resolved template",
+            t[0],
+            "has value",
+            resolvedTemplate
+          );
+          resolvedCompositeActionTemplates[t[0]] = resolvedTemplate;
         }
       }
-    
+    }
 
     // const resolvedActionDefinition: Domain2QueryReturnType<RuntimeCompositeAction> = transformer_extended_apply(
-    const resolvedActionDefinition: Domain2QueryReturnType<any> = transformer_extended_apply_wrapper(
-      "build",
-      buildPlusRuntimeCompositeAction.actionLabel,
-      buildPlusRuntimeCompositeAction.definition as any as TransformerForRuntime,
-      {...actionParamValues, ...resolvedCompositeActionTemplates}, // queryParams
-      localContext, // contextResults
-      "value",
-    );
+    const resolvedActionDefinition: Domain2QueryReturnType<any> =
+      transformer_extended_apply_wrapper(
+        "build",
+        buildPlusRuntimeCompositeAction.actionLabel,
+        buildPlusRuntimeCompositeAction.definition as any as TransformerForRuntime,
+        { ...actionParamValues, ...resolvedCompositeActionTemplates }, // queryParams
+        localContext, // contextResults
+        "value"
+      );
 
     // log.info(
     //   "handleBuildPlusRuntimeCompositeAction resolvedActionDefinition",

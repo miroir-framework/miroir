@@ -20,7 +20,7 @@ import {
   miroirTransformersForBuild,
   miroirTransformersForBuildPlusRuntime,
   miroirTransformersForRuntime,
-  mmlsTransformers,
+  mlsTransformers,
   transformerForBuildNames,
   transformerForBuildPlusRuntimeNames,
   transformerForRuntimeNames
@@ -352,6 +352,8 @@ export function getExtendedSchemas(jzodSchemajzodMiroirBootstrapSchema: any) {
     "transformerForBuild_optional_Abstract",
     "transformerForRuntime_Abstract",
     "transformerForRuntime_optional_Abstract",
+    "transformerForBuildPlusRuntime_Abstract",
+    "transformerForBuildPlusRuntime_optional_Abstract",
     "transformerForBuild_objectDynamicAccess",
     "transformerForRuntime_contextReference",
     "transformerForBuild_parameterReference",
@@ -787,7 +789,7 @@ export function getMiroirFundamentalJzodSchema(
           miroirTransformersForBuild.transformer_parameterReference,
         transformerForBuild_unique: miroirTransformersForBuild.transformer_unique,
         // MLS
-        ...Object.fromEntries(Object.entries(mmlsTransformers).map(([key, value]) => [
+        ...Object.fromEntries(Object.entries(mlsTransformers).map(([key, value]) => [
           key.replace("transformer_", "transformerForBuild_"),
           miroirTransformersForBuild[key as keyof typeof miroirTransformersForBuild]])),
         // 
@@ -865,7 +867,7 @@ export function getMiroirFundamentalJzodSchema(
           miroirTransformersForRuntime.transformer_object_fullTemplate,
         transformerForRuntime_unique: miroirTransformersForRuntime.transformer_unique,
         // MLS
-        ...Object.fromEntries(Object.entries(mmlsTransformers).map(([key, value]) => [
+        ...Object.fromEntries(Object.entries(mlsTransformers).map(([key, value]) => [
           key.replace("transformer_", "transformerForRuntime_"),
           miroirTransformersForBuild[key as keyof typeof miroirTransformersForRuntime]])),
         // extendedTransformerForRuntime: {
@@ -957,6 +959,8 @@ export function getMiroirFundamentalJzodSchema(
           miroirTransformersForBuildPlusRuntime.transformer_freeObjectTemplate,
         transformerForBuildPlusRuntime_mapperListToList:
           miroirTransformersForBuildPlusRuntime.transformer_mapperListToList,
+        transformerForBuildPlusRuntime_parameterReference:
+          miroirTransformersForBuildPlusRuntime.transformer_parameterReference,
         transformerForBuildPlusRuntime_listPickElement:
           miroirTransformersForBuildPlusRuntime.transformer_listPickElement,
         transformerForBuildPlusRuntime_newUuid:
@@ -980,7 +984,7 @@ export function getMiroirFundamentalJzodSchema(
         transformerForBuildPlusRuntime_unique:
           miroirTransformersForBuildPlusRuntime.transformer_unique,
         // MLS
-        ...Object.fromEntries(Object.entries(mmlsTransformers).map(([key, value]) => [
+        ...Object.fromEntries(Object.entries(mlsTransformers).map(([key, value]) => [
           key.replace("transformer_", "transformerForBuildPlusRuntime_"),
           miroirTransformersForBuild[key as keyof typeof miroirTransformersForBuildPlusRuntime]])),
         transformerForBuildPlusRuntime: {

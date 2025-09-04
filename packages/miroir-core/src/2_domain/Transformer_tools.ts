@@ -102,9 +102,18 @@ export function transformerInterfaceFromDefinition(
     referenceMap
   ).definition;
 
-  const relativePath = target == "runtime" || target == "buildPlusRuntime"
-  ? optionalInterpolation?"transformerForRuntime_optional_Abstract":"transformerForRuntime_Abstract"
-  : optionalInterpolation?"transformerForBuild_optional_Abstract":"transformerForBuild_Abstract"
+  const relativePath =
+    target == "buildPlusRuntime"
+      ? optionalInterpolation
+        ? "transformerForBuildPlusRuntime_optional_Abstract"
+        : "transformerForBuildPlusRuntime_Abstract"
+      : target == "runtime"
+      ? optionalInterpolation
+        ? "transformerForRuntime_optional_Abstract"
+        : "transformerForRuntime_Abstract"
+      : optionalInterpolation
+      ? "transformerForBuild_optional_Abstract"
+      : "transformerForBuild_Abstract";
   const result: JzodElement = {
     type: "object",
     extend: transformerDefinition.transformerInterface.transformerParameterSchema

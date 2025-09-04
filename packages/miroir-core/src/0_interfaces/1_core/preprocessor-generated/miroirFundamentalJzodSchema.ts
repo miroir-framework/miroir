@@ -155,6 +155,10 @@ export const miroirFundamentalJzodSchema = {
                   "type": "boolean",
                   "optional": true
                 },
+                "isTemplate": {
+                  "type": "boolean",
+                  "optional": true
+                },
                 "conditionalMMLS": {
                   "type": "object",
                   "optional": true,
@@ -352,6 +356,10 @@ export const miroirFundamentalJzodSchema = {
                     "optional": true
                   },
                   "canBeTemplate": {
+                    "type": "boolean",
+                    "optional": true
+                  },
+                  "isTemplate": {
                     "type": "boolean",
                     "optional": true
                   },
@@ -1435,6 +1443,27 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
+      "transformerForBuildPlusRuntime_Abstract": {
+        "type": "object",
+        "extend": {
+          "type": "schemaReference",
+          "definition": {
+            "eager": true,
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "relativePath": "transformer_inner_label"
+          },
+          "context": {}
+        },
+        "definition": {
+          "interpolation": {
+            "type": "enum",
+            "definition": [
+              "build",
+              "runtime"
+            ]
+          }
+        }
+      },
       "transformerForBuild_optional_Abstract": {
         "type": "object",
         "extend": {
@@ -1470,6 +1499,28 @@ export const miroirFundamentalJzodSchema = {
             "type": "literal",
             "optional": true,
             "definition": "runtime"
+          }
+        }
+      },
+      "transformerForBuildPlusRuntime_optional_Abstract": {
+        "type": "object",
+        "extend": {
+          "type": "schemaReference",
+          "definition": {
+            "eager": true,
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "relativePath": "transformer_inner_label"
+          },
+          "context": {}
+        },
+        "definition": {
+          "interpolation": {
+            "type": "enum",
+            "optional": true,
+            "definition": [
+              "build",
+              "runtime"
+            ]
           }
         }
       },
@@ -5933,7 +5984,7 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "eager": true,
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "transformerForRuntime_Abstract"
+              "relativePath": "transformerForBuildPlusRuntime_Abstract"
             },
             "context": {}
           }
@@ -5993,7 +6044,7 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "eager": true,
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "transformerForRuntime_Abstract"
+              "relativePath": "transformerForBuildPlusRuntime_Abstract"
             },
             "context": {}
           }
@@ -6016,7 +6067,7 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "eager": true,
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "transformerForRuntime_Abstract"
+              "relativePath": "transformerForBuildPlusRuntime_Abstract"
             },
             "context": {}
           }
@@ -6042,7 +6093,7 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "eager": true,
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "transformerForRuntime_Abstract"
+              "relativePath": "transformerForBuildPlusRuntime_Abstract"
             },
             "context": {}
           }
@@ -6065,7 +6116,7 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "eager": true,
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "transformerForRuntime_Abstract"
+              "relativePath": "transformerForBuildPlusRuntime_Abstract"
             },
             "context": {}
           }
@@ -6088,7 +6139,7 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "eager": true,
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "transformerForRuntime_Abstract"
+              "relativePath": "transformerForBuildPlusRuntime_Abstract"
             },
             "context": {}
           }
@@ -6111,7 +6162,7 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "eager": true,
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "transformerForRuntime_Abstract"
+              "relativePath": "transformerForBuildPlusRuntime_Abstract"
             },
             "context": {}
           }
@@ -6137,7 +6188,7 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "eager": true,
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "transformerForRuntime_Abstract"
+              "relativePath": "transformerForBuildPlusRuntime_Abstract"
             },
             "context": {}
           }
@@ -6160,7 +6211,7 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "eager": true,
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "transformerForRuntime_Abstract"
+              "relativePath": "transformerForBuildPlusRuntime_Abstract"
             },
             "context": {}
           }
@@ -6183,7 +6234,7 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "eager": true,
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "transformerForRuntime_Abstract"
+              "relativePath": "transformerForBuildPlusRuntime_Abstract"
             },
             "context": {}
           }
@@ -6225,7 +6276,7 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "eager": true,
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "transformerForRuntime_optional_Abstract"
+              "relativePath": "transformerForBuildPlusRuntime_optional_Abstract"
             },
             "context": {}
           }
@@ -6256,7 +6307,7 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "eager": true,
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "transformerForRuntime_Abstract"
+              "relativePath": "transformerForBuildPlusRuntime_Abstract"
             },
             "context": {}
           }
@@ -6292,7 +6343,7 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "eager": true,
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "transformerForRuntime_Abstract"
+              "relativePath": "transformerForBuildPlusRuntime_Abstract"
             },
             "context": {}
           }
@@ -6325,7 +6376,7 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "eager": true,
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "transformerForRuntime_Abstract"
+              "relativePath": "transformerForBuildPlusRuntime_Abstract"
             },
             "context": {}
           }
@@ -6394,7 +6445,7 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "eager": true,
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "transformerForRuntime_Abstract"
+              "relativePath": "transformerForBuildPlusRuntime_Abstract"
             },
             "context": {}
           }
@@ -6424,6 +6475,37 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
+      "transformerForBuildPlusRuntime_parameterReference": {
+        "type": "object",
+        "extend": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "transformerForBuildPlusRuntime_optional_Abstract"
+            },
+            "context": {}
+          }
+        ],
+        "definition": {
+          "transformerType": {
+            "type": "literal",
+            "definition": "parameterReference"
+          },
+          "referenceName": {
+            "optional": true,
+            "type": "string"
+          },
+          "referencePath": {
+            "optional": true,
+            "type": "array",
+            "definition": {
+              "type": "string"
+            }
+          }
+        }
+      },
       "transformerForBuildPlusRuntime_listPickElement": {
         "type": "object",
         "extend": [
@@ -6440,7 +6522,7 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "eager": true,
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "transformerForRuntime_Abstract"
+              "relativePath": "transformerForBuildPlusRuntime_Abstract"
             },
             "context": {}
           }
@@ -6471,7 +6553,7 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "eager": true,
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "transformerForRuntime_Abstract"
+              "relativePath": "transformerForBuildPlusRuntime_Abstract"
             },
             "context": {}
           }
@@ -6491,7 +6573,7 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "eager": true,
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "transformerForRuntime_Abstract"
+              "relativePath": "transformerForBuildPlusRuntime_Abstract"
             },
             "context": {}
           }
@@ -6522,7 +6604,7 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "eager": true,
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "transformerForRuntime_Abstract"
+              "relativePath": "transformerForBuildPlusRuntime_Abstract"
             },
             "context": {}
           }
@@ -6553,7 +6635,7 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "eager": true,
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "transformerForRuntime_Abstract"
+              "relativePath": "transformerForBuildPlusRuntime_Abstract"
             },
             "context": {}
           }
@@ -6581,7 +6663,7 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "eager": true,
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "transformerForRuntime_Abstract"
+              "relativePath": "transformerForBuildPlusRuntime_Abstract"
             },
             "context": {}
           }
@@ -6619,7 +6701,7 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "eager": true,
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "transformerForRuntime_Abstract"
+              "relativePath": "transformerForBuildPlusRuntime_Abstract"
             },
             "context": {}
           }
@@ -6680,7 +6762,7 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "eager": true,
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "transformerForRuntime_Abstract"
+              "relativePath": "transformerForBuildPlusRuntime_Abstract"
             },
             "context": {}
           }
@@ -6716,7 +6798,7 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "eager": true,
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "transformerForRuntime_Abstract"
+              "relativePath": "transformerForBuildPlusRuntime_Abstract"
             },
             "context": {}
           }
@@ -6752,7 +6834,7 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "eager": true,
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "transformerForRuntime_Abstract"
+              "relativePath": "transformerForBuildPlusRuntime_Abstract"
             },
             "context": {}
           }
@@ -6822,7 +6904,7 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "eager": true,
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "transformerForRuntime_Abstract"
+              "relativePath": "transformerForBuildPlusRuntime_Abstract"
             },
             "context": {}
           }
@@ -7366,6 +7448,13 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "transformerForBuildPlusRuntime_object_fullTemplate"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "transformerForBuildPlusRuntime_parameterReference"
             }
           },
           {
@@ -19889,7 +19978,8 @@ export const miroirFundamentalJzodSchema = {
                                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                                   "relativePath": "transformerForBuild"
                                 }
-                              }
+                              },
+                              "isTemplate": true
                             }
                           },
                           "optional": true,
@@ -20096,6 +20186,22 @@ export const miroirFundamentalJzodSchema = {
                   ]
                 },
                 "canBeTemplate": {
+                  "type": "union",
+                  "optional": true,
+                  "definition": [
+                    {
+                      "type": "boolean",
+                      "optional": true
+                    },
+                    {
+                      "type": "schemaReference",
+                      "definition": {
+                        "relativePath": "transformerForBuildCarryOnObject"
+                      }
+                    }
+                  ]
+                },
+                "isTemplate": {
                   "type": "union",
                   "optional": true,
                   "definition": [
@@ -20472,7 +20578,8 @@ export const miroirFundamentalJzodSchema = {
                                             "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                                             "relativePath": "transformerForBuild"
                                           }
-                                        }
+                                        },
+                                        "isTemplate": true
                                       }
                                     },
                                     "optional": true,
@@ -20681,6 +20788,22 @@ export const miroirFundamentalJzodSchema = {
                             ]
                           },
                           "canBeTemplate": {
+                            "type": "union",
+                            "optional": true,
+                            "definition": [
+                              {
+                                "type": "boolean",
+                                "optional": true
+                              },
+                              {
+                                "type": "schemaReference",
+                                "definition": {
+                                  "relativePath": "transformerForBuildCarryOnObject"
+                                }
+                              }
+                            ]
+                          },
+                          "isTemplate": {
                             "type": "union",
                             "optional": true,
                             "definition": [
@@ -21974,7 +22097,8 @@ export const miroirFundamentalJzodSchema = {
         ],
         "tag": {
           "value": {
-            "unfoldSubLevels": 2
+            "unfoldSubLevels": 2,
+            "isTemplate": true
           }
         },
         "definition": {
@@ -22691,7 +22815,8 @@ export const miroirFundamentalJzodSchema = {
                 "id": 1,
                 "canBeTemplate": true,
                 "defaultLabel": "Uuid",
-                "editable": false
+                "editable": false,
+                "isTemplate": true
               }
             },
             "definition": [
@@ -22810,7 +22935,8 @@ export const miroirFundamentalJzodSchema = {
               "value": {
                 "id": 1,
                 "defaultLabel": "Label",
-                "editable": false
+                "editable": false,
+                "isTemplate": true
               }
             },
             "definition": [
@@ -22839,7 +22965,8 @@ export const miroirFundamentalJzodSchema = {
               "value": {
                 "id": 2,
                 "defaultLabel": "SelfApplication Section",
-                "editable": false
+                "editable": false,
+                "isTemplate": true
               }
             },
             "definition": [
@@ -22850,7 +22977,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 2,
                     "defaultLabel": "SelfApplication Section",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "definition": {
@@ -22874,7 +23002,8 @@ export const miroirFundamentalJzodSchema = {
               "value": {
                 "id": 3,
                 "defaultLabel": "Parent Name",
-                "editable": false
+                "editable": false,
+                "isTemplate": true
               }
             },
             "definition": [
@@ -22904,7 +23033,8 @@ export const miroirFundamentalJzodSchema = {
               "value": {
                 "id": 4,
                 "defaultLabel": "Parent Uuid",
-                "editable": false
+                "editable": false,
+                "isTemplate": true
               }
             },
             "definition": [
@@ -22938,7 +23068,8 @@ export const miroirFundamentalJzodSchema = {
               "value": {
                 "id": 1,
                 "defaultLabel": "Label",
-                "editable": false
+                "editable": false,
+                "isTemplate": true
               }
             },
             "definition": [
@@ -22967,7 +23098,8 @@ export const miroirFundamentalJzodSchema = {
               "value": {
                 "id": 2,
                 "defaultLabel": "SelfApplication Section",
-                "editable": false
+                "editable": false,
+                "isTemplate": true
               }
             },
             "definition": [
@@ -22978,7 +23110,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 2,
                     "defaultLabel": "SelfApplication Section",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "definition": {
@@ -23003,7 +23136,8 @@ export const miroirFundamentalJzodSchema = {
                 "id": 3,
                 "canBeTemplate": true,
                 "defaultLabel": "Parent Name",
-                "editable": false
+                "editable": false,
+                "isTemplate": true
               }
             },
             "definition": [
@@ -23038,7 +23172,8 @@ export const miroirFundamentalJzodSchema = {
                 "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                 "selectorParams": {
                   "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad"
-                }
+                },
+                "isTemplate": true
               }
             },
             "definition": [
@@ -23232,6 +23367,74 @@ export const miroirFundamentalJzodSchema = {
                 "type": "literal",
                 "optional": true,
                 "definition": "runtime"
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "transformerForBuildCarryOnObject"
+                }
+              }
+            ]
+          }
+        }
+      },
+      "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_Abstract_extend": {
+        "type": "object",
+        "extend": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_inner_label_extend"
+            }
+          }
+        ],
+        "definition": {
+          "interpolation": {
+            "type": "union",
+            "definition": [
+              {
+                "type": "enum",
+                "definition": [
+                  "build",
+                  "runtime"
+                ]
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "transformerForBuildCarryOnObject"
+                }
+              }
+            ]
+          }
+        }
+      },
+      "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_optional_Abstract_extend": {
+        "type": "object",
+        "extend": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_inner_label_extend"
+            }
+          }
+        ],
+        "definition": {
+          "interpolation": {
+            "type": "union",
+            "optional": true,
+            "definition": [
+              {
+                "type": "enum",
+                "optional": true,
+                "definition": [
+                  "build",
+                  "runtime"
+                ]
               },
               {
                 "type": "schemaReference",
@@ -23562,7 +23765,8 @@ export const miroirFundamentalJzodSchema = {
                 "tag": {
                   "value": {
                     "defaultLabel": "Module Deployment Uuid",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -24010,7 +24214,8 @@ export const miroirFundamentalJzodSchema = {
                 "tag": {
                   "value": {
                     "defaultLabel": "Module Deployment Uuid",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -24109,7 +24314,8 @@ export const miroirFundamentalJzodSchema = {
                 "tag": {
                   "value": {
                     "defaultLabel": "Module Deployment Uuid",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -24567,7 +24773,8 @@ export const miroirFundamentalJzodSchema = {
                     "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Uuid",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -24752,7 +24959,8 @@ export const miroirFundamentalJzodSchema = {
                     "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Uuid",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -24915,7 +25123,8 @@ export const miroirFundamentalJzodSchema = {
                     "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Uuid",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -25257,7 +25466,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 1,
                     "defaultLabel": "Uuid",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -25351,7 +25561,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 1,
                     "defaultLabel": "Uuid",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -25469,7 +25680,8 @@ export const miroirFundamentalJzodSchema = {
                     "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Deployment",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -25677,7 +25889,8 @@ export const miroirFundamentalJzodSchema = {
                     "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Deployment",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -25758,7 +25971,8 @@ export const miroirFundamentalJzodSchema = {
                     "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Deployment",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -25839,7 +26053,8 @@ export const miroirFundamentalJzodSchema = {
                     "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Deployment",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -25920,7 +26135,8 @@ export const miroirFundamentalJzodSchema = {
                     "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Deployment",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -26001,7 +26217,8 @@ export const miroirFundamentalJzodSchema = {
                     "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Deployment",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -26082,7 +26299,8 @@ export const miroirFundamentalJzodSchema = {
                     "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Deployment",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -26372,7 +26590,8 @@ export const miroirFundamentalJzodSchema = {
                     "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Deployment",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -26563,7 +26782,8 @@ export const miroirFundamentalJzodSchema = {
                     "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Deployment",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -26635,7 +26855,8 @@ export const miroirFundamentalJzodSchema = {
                                       "type": "union",
                                       "tag": {
                                         "value": {
-                                          "canBeTemplate": true
+                                          "canBeTemplate": true,
+                                          "isTemplate": true
                                         }
                                       },
                                       "definition": [
@@ -26643,7 +26864,8 @@ export const miroirFundamentalJzodSchema = {
                                           "type": "schemaReference",
                                           "tag": {
                                             "value": {
-                                              "canBeTemplate": true
+                                              "canBeTemplate": true,
+                                              "isTemplate": true
                                             }
                                           },
                                           "definition": {
@@ -26664,7 +26886,8 @@ export const miroirFundamentalJzodSchema = {
                                       "type": "union",
                                       "tag": {
                                         "value": {
-                                          "canBeTemplate": true
+                                          "canBeTemplate": true,
+                                          "isTemplate": true
                                         }
                                       },
                                       "definition": [
@@ -26672,7 +26895,8 @@ export const miroirFundamentalJzodSchema = {
                                           "type": "schemaReference",
                                           "tag": {
                                             "value": {
-                                              "canBeTemplate": true
+                                              "canBeTemplate": true,
+                                              "isTemplate": true
                                             }
                                           },
                                           "definition": {
@@ -26749,7 +26973,8 @@ export const miroirFundamentalJzodSchema = {
                     "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Deployment",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -26930,7 +27155,8 @@ export const miroirFundamentalJzodSchema = {
                         "interpolation": "build",
                         "referenceName": "deploymentUuid"
                       }
-                    }
+                    },
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -27010,7 +27236,8 @@ export const miroirFundamentalJzodSchema = {
                               "targetEntityApplicationSection": "model",
                               "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                               "targetEntityOrderInstancesBy": "name"
-                            }
+                            },
+                            "isTemplate": true
                           }
                         },
                         "definition": [
@@ -27044,7 +27271,8 @@ export const miroirFundamentalJzodSchema = {
                           "value": {
                             "id": 2,
                             "defaultLabel": "Entity Instances (objects) to create",
-                            "editable": true
+                            "editable": true,
+                            "isTemplate": true
                           }
                         },
                         "definition": [
@@ -27054,7 +27282,8 @@ export const miroirFundamentalJzodSchema = {
                               "value": {
                                 "id": 2,
                                 "defaultLabel": "Entity Instances (objects) to create",
-                                "editable": true
+                                "editable": true,
+                                "isTemplate": true
                               }
                             },
                             "definition": {
@@ -27077,7 +27306,8 @@ export const miroirFundamentalJzodSchema = {
                                           "id": 1,
                                           "defaultLabel": "Parent Name",
                                           "editable": false,
-                                          "canBeTemplate": true
+                                          "canBeTemplate": true,
+                                          "isTemplate": true
                                         }
                                       },
                                       "definition": [
@@ -27125,7 +27355,8 @@ export const miroirFundamentalJzodSchema = {
                                                 "parentUuid"
                                               ]
                                             }
-                                          }
+                                          },
+                                          "isTemplate": true
                                         }
                                       },
                                       "definition": [
@@ -27200,7 +27431,8 @@ export const miroirFundamentalJzodSchema = {
                                                     "defaultValuePath": "#.parentUuid",
                                                     "typeCheckPath": "#.#.parentUuid"
                                                   }
-                                                }
+                                                },
+                                                "isTemplate": true
                                               }
                                             },
                                             "definition": [
@@ -27214,7 +27446,8 @@ export const miroirFundamentalJzodSchema = {
                                                         "defaultValuePath": "#.parentUuid",
                                                         "typeCheckPath": "#.#.parentUuid"
                                                       }
-                                                    }
+                                                    },
+                                                    "isTemplate": true
                                                   }
                                                 },
                                                 "definition": {
@@ -27300,7 +27533,8 @@ export const miroirFundamentalJzodSchema = {
                     "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Uuid",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -27391,7 +27625,8 @@ export const miroirFundamentalJzodSchema = {
                           "value": {
                             "id": 2,
                             "defaultLabel": "Entity Instances to delete",
-                            "editable": true
+                            "editable": true,
+                            "isTemplate": true
                           }
                         },
                         "definition": [
@@ -27401,7 +27636,8 @@ export const miroirFundamentalJzodSchema = {
                               "value": {
                                 "id": 2,
                                 "defaultLabel": "Entity Instances to delete",
-                                "editable": true
+                                "editable": true,
+                                "isTemplate": true
                               }
                             },
                             "definition": {
@@ -27480,7 +27716,8 @@ export const miroirFundamentalJzodSchema = {
                     "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Uuid",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -27571,7 +27808,8 @@ export const miroirFundamentalJzodSchema = {
                           "value": {
                             "id": 2,
                             "defaultLabel": "Entity Instances to delete",
-                            "editable": true
+                            "editable": true,
+                            "isTemplate": true
                           }
                         },
                         "definition": [
@@ -27581,7 +27819,8 @@ export const miroirFundamentalJzodSchema = {
                               "value": {
                                 "id": 2,
                                 "defaultLabel": "Entity Instances to delete",
-                                "editable": true
+                                "editable": true,
+                                "isTemplate": true
                               }
                             },
                             "definition": {
@@ -27675,7 +27914,8 @@ export const miroirFundamentalJzodSchema = {
                     "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Uuid",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -27751,7 +27991,8 @@ export const miroirFundamentalJzodSchema = {
                           "value": {
                             "id": 2,
                             "defaultLabel": "Entity Instances to update",
-                            "editable": true
+                            "editable": true,
+                            "isTemplate": true
                           }
                         },
                         "definition": [
@@ -27761,14 +28002,16 @@ export const miroirFundamentalJzodSchema = {
                               "value": {
                                 "id": 2,
                                 "defaultLabel": "Entity Instances to update",
-                                "editable": true
+                                "editable": true,
+                                "isTemplate": true
                               }
                             },
                             "definition": {
                               "type": "union",
                               "tag": {
                                 "value": {
-                                  "canBeTemplate": true
+                                  "canBeTemplate": true,
+                                  "isTemplate": true
                                 }
                               },
                               "definition": [
@@ -27777,7 +28020,8 @@ export const miroirFundamentalJzodSchema = {
                                   "optional": false,
                                   "tag": {
                                     "value": {
-                                      "canBeTemplate": true
+                                      "canBeTemplate": true,
+                                      "isTemplate": true
                                     }
                                   },
                                   "definition": {
@@ -27865,7 +28109,8 @@ export const miroirFundamentalJzodSchema = {
                     "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Uuid",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -27906,7 +28151,8 @@ export const miroirFundamentalJzodSchema = {
                           "value": {
                             "id": 2,
                             "defaultLabel": "Entity Instances to place in the local cache",
-                            "editable": true
+                            "editable": true,
+                            "isTemplate": true
                           }
                         },
                         "definition": [
@@ -27916,7 +28162,8 @@ export const miroirFundamentalJzodSchema = {
                               "value": {
                                 "id": 2,
                                 "defaultLabel": "Entity Instances to place in the local cache",
-                                "editable": true
+                                "editable": true,
+                                "isTemplate": true
                               }
                             },
                             "definition": {
@@ -28010,7 +28257,8 @@ export const miroirFundamentalJzodSchema = {
                     "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Uuid",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -28070,7 +28318,8 @@ export const miroirFundamentalJzodSchema = {
                           "value": {
                             "id": 1,
                             "defaultLabel": "Uuid",
-                            "editable": false
+                            "editable": false,
+                            "isTemplate": true
                           }
                         },
                         "definition": [
@@ -28098,7 +28347,8 @@ export const miroirFundamentalJzodSchema = {
                           "value": {
                             "id": 1,
                             "defaultLabel": "Uuid",
-                            "editable": false
+                            "editable": false,
+                            "isTemplate": true
                           }
                         },
                         "definition": [
@@ -28182,7 +28432,8 @@ export const miroirFundamentalJzodSchema = {
                     "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Uuid",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -28242,7 +28493,8 @@ export const miroirFundamentalJzodSchema = {
                           "value": {
                             "id": 1,
                             "defaultLabel": "Uuid",
-                            "editable": false
+                            "editable": false,
+                            "isTemplate": true
                           }
                         },
                         "definition": [
@@ -28351,7 +28603,8 @@ export const miroirFundamentalJzodSchema = {
                         "interpolation": "build",
                         "referenceName": "deploymentUuid"
                       }
-                    }
+                    },
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -28431,7 +28684,8 @@ export const miroirFundamentalJzodSchema = {
                               "targetEntityApplicationSection": "model",
                               "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                               "targetEntityOrderInstancesBy": "name"
-                            }
+                            },
+                            "isTemplate": true
                           }
                         },
                         "definition": [
@@ -28465,7 +28719,8 @@ export const miroirFundamentalJzodSchema = {
                           "value": {
                             "id": 2,
                             "defaultLabel": "Entity Instances (objects) to create",
-                            "editable": true
+                            "editable": true,
+                            "isTemplate": true
                           }
                         },
                         "definition": [
@@ -28475,7 +28730,8 @@ export const miroirFundamentalJzodSchema = {
                               "value": {
                                 "id": 2,
                                 "defaultLabel": "Entity Instances (objects) to create",
-                                "editable": true
+                                "editable": true,
+                                "isTemplate": true
                               }
                             },
                             "definition": {
@@ -28498,7 +28754,8 @@ export const miroirFundamentalJzodSchema = {
                                           "id": 1,
                                           "defaultLabel": "Parent Name",
                                           "editable": false,
-                                          "canBeTemplate": true
+                                          "canBeTemplate": true,
+                                          "isTemplate": true
                                         }
                                       },
                                       "definition": [
@@ -28546,7 +28803,8 @@ export const miroirFundamentalJzodSchema = {
                                                 "parentUuid"
                                               ]
                                             }
-                                          }
+                                          },
+                                          "isTemplate": true
                                         }
                                       },
                                       "definition": [
@@ -28621,7 +28879,8 @@ export const miroirFundamentalJzodSchema = {
                                                     "defaultValuePath": "#.parentUuid",
                                                     "typeCheckPath": "#.#.parentUuid"
                                                   }
-                                                }
+                                                },
+                                                "isTemplate": true
                                               }
                                             },
                                             "definition": [
@@ -28635,7 +28894,8 @@ export const miroirFundamentalJzodSchema = {
                                                         "defaultValuePath": "#.parentUuid",
                                                         "typeCheckPath": "#.#.parentUuid"
                                                       }
-                                                    }
+                                                    },
+                                                    "isTemplate": true
                                                   }
                                                 },
                                                 "definition": {
@@ -28721,7 +28981,8 @@ export const miroirFundamentalJzodSchema = {
                     "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Uuid",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -28812,7 +29073,8 @@ export const miroirFundamentalJzodSchema = {
                           "value": {
                             "id": 2,
                             "defaultLabel": "Entity Instances to delete",
-                            "editable": true
+                            "editable": true,
+                            "isTemplate": true
                           }
                         },
                         "definition": [
@@ -28822,7 +29084,8 @@ export const miroirFundamentalJzodSchema = {
                               "value": {
                                 "id": 2,
                                 "defaultLabel": "Entity Instances to delete",
-                                "editable": true
+                                "editable": true,
+                                "isTemplate": true
                               }
                             },
                             "definition": {
@@ -28916,7 +29179,8 @@ export const miroirFundamentalJzodSchema = {
                     "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Uuid",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -28992,7 +29256,8 @@ export const miroirFundamentalJzodSchema = {
                           "value": {
                             "id": 2,
                             "defaultLabel": "Entity Instances to update",
-                            "editable": true
+                            "editable": true,
+                            "isTemplate": true
                           }
                         },
                         "definition": [
@@ -29002,14 +29267,16 @@ export const miroirFundamentalJzodSchema = {
                               "value": {
                                 "id": 2,
                                 "defaultLabel": "Entity Instances to update",
-                                "editable": true
+                                "editable": true,
+                                "isTemplate": true
                               }
                             },
                             "definition": {
                               "type": "union",
                               "tag": {
                                 "value": {
-                                  "canBeTemplate": true
+                                  "canBeTemplate": true,
+                                  "isTemplate": true
                                 }
                               },
                               "definition": [
@@ -29018,7 +29285,8 @@ export const miroirFundamentalJzodSchema = {
                                   "optional": false,
                                   "tag": {
                                     "value": {
-                                      "canBeTemplate": true
+                                      "canBeTemplate": true,
+                                      "isTemplate": true
                                     }
                                   },
                                   "definition": {
@@ -29066,7 +29334,8 @@ export const miroirFundamentalJzodSchema = {
             "initializeTo": {
               "initializeToType": "value",
               "value": "data"
-            }
+            },
+            "isTemplate": true
           }
         },
         "definition": [
@@ -29345,7 +29614,8 @@ export const miroirFundamentalJzodSchema = {
                 "tag": {
                   "value": {
                     "defaultLabel": "Module Deployment Uuid",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -29422,7 +29692,8 @@ export const miroirFundamentalJzodSchema = {
                 "tag": {
                   "value": {
                     "defaultLabel": "Module Deployment Uuid",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -29551,7 +29822,8 @@ export const miroirFundamentalJzodSchema = {
                 "tag": {
                   "value": {
                     "defaultLabel": "Module Deployment Uuid",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -29661,7 +29933,8 @@ export const miroirFundamentalJzodSchema = {
                 "tag": {
                   "value": {
                     "defaultLabel": "Module Deployment Uuid",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -29738,7 +30011,8 @@ export const miroirFundamentalJzodSchema = {
                 "tag": {
                   "value": {
                     "defaultLabel": "Module Deployment Uuid",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -29828,7 +30102,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 1,
                     "defaultLabel": "Uuid",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -29907,7 +30182,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 1,
                     "defaultLabel": "Uuid",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -30007,7 +30283,8 @@ export const miroirFundamentalJzodSchema = {
                                 "value": {
                                   "id": 1,
                                   "defaultLabel": "Uuid",
-                                  "editable": false
+                                  "editable": false,
+                                  "isTemplate": true
                                 }
                               },
                               "definition": [
@@ -30036,7 +30313,8 @@ export const miroirFundamentalJzodSchema = {
                                 "value": {
                                   "id": 2,
                                   "defaultLabel": "Entity Name",
-                                  "editable": false
+                                  "editable": false,
+                                  "isTemplate": true
                                 }
                               },
                               "definition": [
@@ -30065,7 +30343,8 @@ export const miroirFundamentalJzodSchema = {
                                 "value": {
                                   "id": 3,
                                   "defaultLabel": "Entity Uuid",
-                                  "editable": false
+                                  "editable": false,
+                                  "isTemplate": true
                                 }
                               },
                               "definition": [
@@ -30118,7 +30397,8 @@ export const miroirFundamentalJzodSchema = {
                                 "value": {
                                   "id": 4,
                                   "defaultLabel": "Concept Level",
-                                  "editable": false
+                                  "editable": false,
+                                  "isTemplate": true
                                 }
                               }
                             },
@@ -30128,7 +30408,8 @@ export const miroirFundamentalJzodSchema = {
                                 "value": {
                                   "id": 1,
                                   "defaultLabel": "SelfApplication Version",
-                                  "editable": false
+                                  "editable": false,
+                                  "isTemplate": true
                                 }
                               },
                               "definition": [
@@ -30156,7 +30437,8 @@ export const miroirFundamentalJzodSchema = {
                                 "value": {
                                   "id": 1,
                                   "defaultLabel": "Entity Definition",
-                                  "editable": false
+                                  "editable": false,
+                                  "isTemplate": true
                                 }
                               },
                               "definition": [
@@ -30396,7 +30678,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 1,
                     "defaultLabel": "Uuid",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -30425,7 +30708,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 2,
                     "defaultLabel": "Entity Name",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -30454,7 +30738,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 3,
                     "defaultLabel": "Entity Uuid",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -30483,7 +30768,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 4,
                     "defaultLabel": "Entity Definition Version Uuid",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -30512,7 +30798,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 5,
                     "defaultLabel": "Name",
-                    "editable": true
+                    "editable": true,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -30540,7 +30827,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 6,
                     "defaultLabel": "Default Label",
-                    "editable": true
+                    "editable": true,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -30569,7 +30857,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 7,
                     "defaultLabel": "Description",
-                    "editable": true
+                    "editable": true,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -30615,7 +30904,8 @@ export const miroirFundamentalJzodSchema = {
                     "id": 1,
                     "defaultLabel": "Uuid",
                     "editable": false,
-                    "canBeTemplate": true
+                    "canBeTemplate": true,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -30646,7 +30936,8 @@ export const miroirFundamentalJzodSchema = {
                     "id": 2,
                     "defaultLabel": "Entity Name",
                     "editable": false,
-                    "canBeTemplate": true
+                    "canBeTemplate": true,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -30677,7 +30968,8 @@ export const miroirFundamentalJzodSchema = {
                     "id": 3,
                     "defaultLabel": "Entity Uuid",
                     "editable": false,
-                    "canBeTemplate": true
+                    "canBeTemplate": true,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -30733,7 +31025,8 @@ export const miroirFundamentalJzodSchema = {
                     "id": 4,
                     "defaultLabel": "Concept Level",
                     "editable": false,
-                    "canBeTemplate": true
+                    "canBeTemplate": true,
+                    "isTemplate": true
                   }
                 }
               }
@@ -30897,7 +31190,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 1,
                     "defaultLabel": "Uuid",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -30926,7 +31220,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 2,
                     "defaultLabel": "Entity Name",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -30955,7 +31250,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 3,
                     "defaultLabel": "Entity Uuid",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -30984,7 +31280,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 4,
                     "defaultLabel": "Entity Definition Version Uuid",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -31038,7 +31335,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 5,
                     "defaultLabel": "Concept Level",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 }
               },
@@ -31073,7 +31371,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 6,
                     "defaultLabel": "Storage Access",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 }
               },
@@ -31089,7 +31388,8 @@ export const miroirFundamentalJzodSchema = {
                     "selectorParams": {
                       "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
                       "targetEntityOrderInstancesBy": "name"
-                    }
+                    },
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -31123,7 +31423,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 8,
                     "defaultLabel": "Name",
-                    "editable": true
+                    "editable": true,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -31152,7 +31453,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 9,
                     "defaultLabel": "SelfApplication",
-                    "editable": true
+                    "editable": true,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -31182,7 +31484,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 10,
                     "defaultLabel": "Description",
-                    "editable": true
+                    "editable": true,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -31227,7 +31530,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 1,
                     "defaultLabel": "Uuid",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -31255,7 +31559,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 2,
                     "defaultLabel": "Entity Name",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -31283,7 +31588,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 3,
                     "defaultLabel": "Entity Uuid",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -31312,7 +31618,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 4,
                     "defaultLabel": "Entity Definition Version Uuid",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -31341,7 +31648,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 5,
                     "defaultLabel": "Name",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -31369,7 +31677,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 6,
                     "defaultLabel": "Entity Uuid of the Entity which this definition is the definition",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -31422,7 +31731,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 7,
                     "defaultLabel": "Concept Level",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 }
               },
@@ -31433,7 +31743,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 8,
                     "defaultLabel": "Description",
-                    "editable": true
+                    "editable": true,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -31463,7 +31774,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 9,
                     "defaultLabel": "Default Report used to display instances of this Entity",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -31510,7 +31822,8 @@ export const miroirFundamentalJzodSchema = {
                     "tag": {
                       "value": {
                         "id": 10,
-                        "editable": true
+                        "editable": true,
+                        "isTemplate": true
                       }
                     }
                   },
@@ -31524,7 +31837,8 @@ export const miroirFundamentalJzodSchema = {
                 "tag": {
                   "value": {
                     "id": 10,
-                    "editable": true
+                    "editable": true,
+                    "isTemplate": true
                   }
                 }
               },
@@ -31535,7 +31849,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 11,
                     "defaultLabel": "Icon used to represent instances of this Entity",
-                    "editable": true
+                    "editable": true,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -31564,7 +31879,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 13,
                     "defaultLabel": "Display Options",
-                    "editable": true
+                    "editable": true,
+                    "isTemplate": true
                   }
                 },
                 "type": "union",
@@ -31581,7 +31897,8 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "id": 13,
                         "defaultLabel": "Display Options",
-                        "editable": true
+                        "editable": true,
+                        "isTemplate": true
                       }
                     },
                     "definition": {
@@ -31591,7 +31908,8 @@ export const miroirFundamentalJzodSchema = {
                         "tag": {
                           "value": {
                             "defaultLabel": "Unfold Sub Levels",
-                            "editable": true
+                            "editable": true,
+                            "isTemplate": true
                           }
                         },
                         "definition": [
@@ -31601,7 +31919,8 @@ export const miroirFundamentalJzodSchema = {
                             "tag": {
                               "value": {
                                 "defaultLabel": "Unfold Sub Levels",
-                                "editable": true
+                                "editable": true,
+                                "isTemplate": true
                               }
                             },
                             "definition": {
@@ -31637,7 +31956,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 12,
                     "defaultLabel": "Jzod Schema",
-                    "editable": true
+                    "editable": true,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -31651,7 +31971,8 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "id": 12,
                         "defaultLabel": "Jzod Schema",
-                        "editable": true
+                        "editable": true,
+                        "isTemplate": true
                       }
                     },
                     "context": {}
@@ -31688,7 +32009,8 @@ export const miroirFundamentalJzodSchema = {
                     "id": 1,
                     "defaultLabel": "Parent Name",
                     "editable": false,
-                    "canBeTemplate": true
+                    "canBeTemplate": true,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -31719,7 +32041,8 @@ export const miroirFundamentalJzodSchema = {
                     "id": 2,
                     "defaultLabel": "Parent Name",
                     "editable": false,
-                    "canBeTemplate": true
+                    "canBeTemplate": true,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -31771,7 +32094,8 @@ export const miroirFundamentalJzodSchema = {
                       "type": "union",
                       "tag": {
                         "value": {
-                          "canBeTemplate": true
+                          "canBeTemplate": true,
+                          "isTemplate": true
                         }
                       },
                       "definition": [
@@ -31779,7 +32103,8 @@ export const miroirFundamentalJzodSchema = {
                           "type": "schemaReference",
                           "tag": {
                             "value": {
-                              "canBeTemplate": true
+                              "canBeTemplate": true,
+                              "isTemplate": true
                             }
                           },
                           "definition": {
@@ -31828,7 +32153,8 @@ export const miroirFundamentalJzodSchema = {
                     "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Uuid",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -32146,6 +32472,13 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_object_fullTemplate"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_parameterReference"
             }
           },
           {
@@ -32791,7 +33124,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 1,
                     "defaultLabel": "Uuid",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -32820,7 +33154,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 2,
                     "defaultLabel": "Entity Name",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -32849,7 +33184,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 3,
                     "defaultLabel": "Entity Uuid",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -32878,7 +33214,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 4,
                     "defaultLabel": "Entity Definition Version Uuid",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -32907,7 +33244,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 5,
                     "defaultLabel": "Name",
-                    "editable": true
+                    "editable": true,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -32935,7 +33273,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 6,
                     "defaultLabel": "Default Label",
-                    "editable": true
+                    "editable": true,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -32964,7 +33303,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 7,
                     "defaultLabel": "Description",
-                    "editable": true
+                    "editable": true,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -32999,7 +33339,8 @@ export const miroirFundamentalJzodSchema = {
                     "selectorParams": {
                       "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                       "targetEntityOrderInstancesBy": "name"
-                    }
+                    },
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -33035,7 +33376,8 @@ export const miroirFundamentalJzodSchema = {
                     "defaultLabel": "Bundle",
                     "description": "The deployed bundle.",
                     "targetEntity": "",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -33065,7 +33407,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 9,
                     "defaultLabel": "Deployment Configuration",
-                    "editable": true
+                    "editable": true,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -33076,7 +33419,8 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "id": 9,
                         "defaultLabel": "Deployment Configuration",
-                        "editable": true
+                        "editable": true,
+                        "isTemplate": true
                       }
                     },
                     "definition": {
@@ -33099,7 +33443,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 9,
                     "defaultLabel": "SelfApplication Deployment Model",
-                    "editable": true
+                    "editable": true,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -33110,7 +33455,8 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "id": 9,
                         "defaultLabel": "SelfApplication Deployment Model",
-                        "editable": true
+                        "editable": true,
+                        "isTemplate": true
                       }
                     },
                     "definition": {
@@ -33133,7 +33479,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 10,
                     "defaultLabel": "SelfApplication Deployment Data",
-                    "editable": true
+                    "editable": true,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -33144,7 +33491,8 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "id": 10,
                         "defaultLabel": "SelfApplication Deployment Data",
-                        "editable": true
+                        "editable": true,
+                        "isTemplate": true
                       }
                     },
                     "definition": {
@@ -33183,7 +33531,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 1,
                     "defaultLabel": "Uuid",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -33212,7 +33561,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 2,
                     "defaultLabel": "Entity Name",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -33241,7 +33591,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 3,
                     "defaultLabel": "Entity Uuid",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -33270,7 +33621,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 4,
                     "defaultLabel": "Entity Definition Version Uuid",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -33299,7 +33651,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 5,
                     "defaultLabel": "Name",
-                    "editable": true
+                    "editable": true,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -33328,7 +33681,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 6,
                     "defaultLabel": "Default Label",
-                    "editable": true
+                    "editable": true,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -33358,7 +33712,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 7,
                     "defaultLabel": "Description",
-                    "editable": true
+                    "editable": true,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -33388,7 +33743,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 8,
                     "defaultLabel": "Type of Report",
-                    "editable": true
+                    "editable": true,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -33422,7 +33778,8 @@ export const miroirFundamentalJzodSchema = {
                     "selectorParams": {
                       "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
                       "targetEntityOrderInstancesBy": "name"
-                    }
+                    },
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -33461,7 +33818,8 @@ export const miroirFundamentalJzodSchema = {
                     "selectorParams": {
                       "targetEntity": "cdb0aec6-b848-43ac-a058-fe2dbe5811f1",
                       "targetEntityOrderInstancesBy": "name"
-                    }
+                    },
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -33502,7 +33860,8 @@ export const miroirFundamentalJzodSchema = {
                     "selectorParams": {
                       "targetEntity": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
                       "targetEntityOrderInstancesBy": "name"
-                    }
+                    },
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -33538,7 +33897,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 12,
                     "defaultLabel": "Structure Migration from Previous Version",
-                    "editable": true
+                    "editable": true,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -33549,7 +33909,8 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "id": 12,
                         "defaultLabel": "Structure Migration from Previous Version",
-                        "editable": true
+                        "editable": true,
+                        "isTemplate": true
                       }
                     },
                     "definition": {
@@ -33596,7 +33957,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 13,
                     "defaultLabel": "Create-Update-Delete Migration from Previous Version",
-                    "editable": true
+                    "editable": true,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -33607,7 +33969,8 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "id": 13,
                         "defaultLabel": "Create-Update-Delete Migration from Previous Version",
-                        "editable": true
+                        "editable": true,
+                        "isTemplate": true
                       }
                     },
                     "definition": {
@@ -33669,7 +34032,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 1,
                     "defaultLabel": "Uuid",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -33697,7 +34061,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 2,
                     "defaultLabel": "Entity Name",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -33725,7 +34090,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 3,
                     "defaultLabel": "Entity Uuid",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -33754,7 +34120,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 4,
                     "defaultLabel": "Entity Definition Version Uuid",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -33783,7 +34150,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 5,
                     "defaultLabel": "Name",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -33836,7 +34204,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 6,
                     "defaultLabel": "Concept Level",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 }
               },
@@ -33847,7 +34216,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 7,
                     "defaultLabel": "Default Label",
-                    "editable": true
+                    "editable": true,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -33877,7 +34247,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 8,
                     "defaultLabel": "Description",
-                    "editable": true
+                    "editable": true,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -33906,7 +34277,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 9,
                     "defaultLabel": "Definition",
-                    "editable": true
+                    "editable": true,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -33944,7 +34316,8 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "id": 9,
                         "defaultLabel": "Definition",
-                        "editable": true
+                        "editable": true,
+                        "isTemplate": true
                       }
                     }
                   },
@@ -33978,7 +34351,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 1,
                     "defaultLabel": "Uuid",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -34007,7 +34381,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 2,
                     "defaultLabel": "Entity Name",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -34036,7 +34411,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 3,
                     "defaultLabel": "Entity Uuid",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -34065,7 +34441,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 4,
                     "defaultLabel": "Entity Definition Version Uuid",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -34094,7 +34471,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 5,
                     "defaultLabel": "Name",
-                    "editable": true
+                    "editable": true,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -34122,7 +34500,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 6,
                     "defaultLabel": "Default Label",
-                    "editable": true
+                    "editable": true,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -34151,7 +34530,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 7,
                     "defaultLabel": "Description",
-                    "editable": true
+                    "editable": true,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -34375,7 +34755,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 1,
                     "defaultLabel": "Uuid",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -34404,7 +34785,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 2,
                     "defaultLabel": "Entity Name",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -34433,7 +34815,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 3,
                     "defaultLabel": "Entity Uuid",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -34462,7 +34845,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 4,
                     "defaultLabel": "Entity Definition Version Uuid",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -34516,7 +34900,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 5,
                     "defaultLabel": "Concept Level",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 }
               },
@@ -34526,7 +34911,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 6,
                     "defaultLabel": "Name",
-                    "editable": true
+                    "editable": true,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -34554,7 +34940,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 7,
                     "defaultLabel": "Default Label",
-                    "editable": true
+                    "editable": true,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -34606,7 +34993,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 8,
                     "defaultLabel": "Type of Report",
-                    "editable": true
+                    "editable": true,
+                    "isTemplate": true
                   }
                 }
               },
@@ -34622,7 +35010,8 @@ export const miroirFundamentalJzodSchema = {
                     "selectorParams": {
                       "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
                       "targetEntityOrderInstancesBy": "name"
-                    }
+                    },
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -34656,7 +35045,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 9,
                     "defaultLabel": "Definition",
-                    "editable": true
+                    "editable": true,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -35075,7 +35465,8 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "id": 9,
                         "defaultLabel": "Definition",
-                        "editable": true
+                        "editable": true,
+                        "isTemplate": true
                       }
                     }
                   },
@@ -35981,7 +36372,8 @@ export const miroirFundamentalJzodSchema = {
       "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodObject": {
         "tag": {
           "value": {
-            "unfoldSubLevels": 2
+            "unfoldSubLevels": 2,
+            "isTemplate": true
           }
         },
         "type": "union",
@@ -36006,7 +36398,8 @@ export const miroirFundamentalJzodSchema = {
             ],
             "tag": {
               "value": {
-                "unfoldSubLevels": 2
+                "unfoldSubLevels": 2,
+                "isTemplate": true
               }
             },
             "definition": {
@@ -36863,7 +37256,7 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "eager": true,
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_Abstract_extend"
+                  "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_Abstract_extend"
                 }
               }
             ],
@@ -36980,7 +37373,7 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "eager": true,
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_Abstract_extend"
+                  "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_Abstract_extend"
                 }
               }
             ],
@@ -37035,7 +37428,7 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "eager": true,
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_Abstract_extend"
+                  "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_Abstract_extend"
                 }
               }
             ],
@@ -37104,7 +37497,7 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "eager": true,
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_Abstract_extend"
+                  "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_Abstract_extend"
                 }
               }
             ],
@@ -37159,7 +37552,7 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "eager": true,
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_Abstract_extend"
+                  "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_Abstract_extend"
                 }
               }
             ],
@@ -37214,7 +37607,7 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "eager": true,
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_Abstract_extend"
+                  "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_Abstract_extend"
                 }
               }
             ],
@@ -37283,7 +37676,7 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "eager": true,
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_Abstract_extend"
+                  "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_Abstract_extend"
                 }
               }
             ],
@@ -37338,7 +37731,7 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "eager": true,
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_Abstract_extend"
+                  "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_Abstract_extend"
                 }
               }
             ],
@@ -37393,7 +37786,7 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "eager": true,
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_Abstract_extend"
+                  "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_Abstract_extend"
                 }
               }
             ],
@@ -37491,7 +37884,7 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "eager": true,
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_optional_Abstract_extend"
+                  "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_optional_Abstract_extend"
                 }
               }
             ],
@@ -37578,7 +37971,7 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "eager": true,
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_Abstract_extend"
+                  "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_Abstract_extend"
                 }
               }
             ],
@@ -37659,7 +38052,7 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "eager": true,
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_Abstract_extend"
+                  "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_Abstract_extend"
                 }
               }
             ],
@@ -37736,7 +38129,7 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "eager": true,
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_Abstract_extend"
+                  "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_Abstract_extend"
                 }
               }
             ],
@@ -37845,7 +38238,7 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "eager": true,
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_Abstract_extend"
+                  "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_Abstract_extend"
                 }
               }
             ],
@@ -37916,7 +38309,7 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "eager": true,
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_Abstract_extend"
+                  "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_Abstract_extend"
                 }
               }
             ],
@@ -37979,7 +38372,7 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "eager": true,
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_Abstract_extend"
+                  "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_Abstract_extend"
                 }
               }
             ],
@@ -38036,7 +38429,7 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "eager": true,
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_Abstract_extend"
+                  "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_Abstract_extend"
                 }
               }
             ],
@@ -38107,7 +38500,7 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "eager": true,
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_Abstract_extend"
+                  "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_Abstract_extend"
                 }
               }
             ],
@@ -38162,7 +38555,7 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "eager": true,
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_Abstract_extend"
+                  "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_Abstract_extend"
                 }
               }
             ],
@@ -38203,7 +38596,7 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "eager": true,
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_Abstract_extend"
+                  "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_Abstract_extend"
                 }
               }
             ],
@@ -38285,7 +38678,7 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "eager": true,
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_Abstract_extend"
+                  "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_Abstract_extend"
                 }
               }
             ],
@@ -38384,7 +38777,7 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "eager": true,
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_Abstract_extend"
+                  "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_Abstract_extend"
                 }
               }
             ],
@@ -38441,7 +38834,7 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "eager": true,
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_Abstract_extend"
+                  "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_Abstract_extend"
                 }
               }
             ],
@@ -38498,7 +38891,7 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "eager": true,
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_Abstract_extend"
+                  "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_Abstract_extend"
                 }
               }
             ],
@@ -38604,6 +38997,93 @@ export const miroirFundamentalJzodSchema = {
           }
         ]
       },
+      "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_parameterReference": {
+        "type": "union",
+        "definition": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "transformerForBuildCarryOnObject"
+            }
+          },
+          {
+            "type": "object",
+            "extend": [
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "eager": true,
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_optional_Abstract_extend"
+                }
+              }
+            ],
+            "definition": {
+              "transformerType": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "parameterReference"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "transformerForBuildCarryOnObject"
+                    }
+                  }
+                ]
+              },
+              "referenceName": {
+                "optional": true,
+                "type": "union",
+                "definition": [
+                  {
+                    "optional": true,
+                    "type": "string"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "transformerForBuildCarryOnObject"
+                    }
+                  }
+                ]
+              },
+              "referencePath": {
+                "optional": true,
+                "type": "union",
+                "definition": [
+                  {
+                    "optional": true,
+                    "type": "array",
+                    "definition": {
+                      "type": "union",
+                      "definition": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "relativePath": "transformerForBuildCarryOnObject"
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "transformerForBuildCarryOnObject"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
       "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_unique": {
         "type": "union",
         "definition": [
@@ -38629,7 +39109,7 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "eager": true,
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_Abstract_extend"
+                  "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_Abstract_extend"
                 }
               }
             ],
@@ -38692,7 +39172,7 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "eager": true,
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_Abstract_extend"
+                  "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_Abstract_extend"
                 }
               }
             ],
@@ -43056,7 +43536,8 @@ export const miroirFundamentalJzodSchema = {
                                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                                   "relativePath": "transformerForBuild"
                                 }
-                              }
+                              },
+                              "isTemplate": true
                             }
                           },
                           "optional": true,
@@ -43263,6 +43744,22 @@ export const miroirFundamentalJzodSchema = {
                   ]
                 },
                 "canBeTemplate": {
+                  "type": "union",
+                  "optional": true,
+                  "definition": [
+                    {
+                      "type": "boolean",
+                      "optional": true
+                    },
+                    {
+                      "type": "schemaReference",
+                      "definition": {
+                        "relativePath": "transformerForBuildCarryOnObject"
+                      }
+                    }
+                  ]
+                },
+                "isTemplate": {
                   "type": "union",
                   "optional": true,
                   "definition": [
@@ -43608,7 +44105,8 @@ export const miroirFundamentalJzodSchema = {
                                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                                       "relativePath": "transformerForBuild"
                                     }
-                                  }
+                                  },
+                                  "isTemplate": true
                                 }
                               },
                               "optional": true,
@@ -43815,6 +44313,22 @@ export const miroirFundamentalJzodSchema = {
                       ]
                     },
                     "canBeTemplate": {
+                      "type": "union",
+                      "optional": true,
+                      "definition": [
+                        {
+                          "type": "boolean",
+                          "optional": true
+                        },
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "relativePath": "transformerForBuildCarryOnObject"
+                          }
+                        }
+                      ]
+                    },
+                    "isTemplate": {
                       "type": "union",
                       "optional": true,
                       "definition": [
@@ -44191,7 +44705,8 @@ export const miroirFundamentalJzodSchema = {
                                                 "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                                                 "relativePath": "transformerForBuild"
                                               }
-                                            }
+                                            },
+                                            "isTemplate": true
                                           }
                                         },
                                         "optional": true,
@@ -44400,6 +44915,22 @@ export const miroirFundamentalJzodSchema = {
                                 ]
                               },
                               "canBeTemplate": {
+                                "type": "union",
+                                "optional": true,
+                                "definition": [
+                                  {
+                                    "type": "boolean",
+                                    "optional": true
+                                  },
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  }
+                                ]
+                              },
+                              "isTemplate": {
                                 "type": "union",
                                 "optional": true,
                                 "definition": [
@@ -45006,7 +45537,51 @@ export const miroirFundamentalJzodSchema = {
           }
         ]
       },
-      "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_optional_Abstract": {
+      "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_Abstract": {
+        "type": "union",
+        "definition": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "transformerForBuildCarryOnObject"
+            }
+          },
+          {
+            "type": "object",
+            "extend": [
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "eager": true,
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_inner_label_extend"
+                }
+              }
+            ],
+            "definition": {
+              "interpolation": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "enum",
+                    "definition": [
+                      "build",
+                      "runtime"
+                    ]
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "transformerForBuildCarryOnObject"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_optional_Abstract": {
         "type": "union",
         "definition": [
           {
@@ -45033,9 +45608,12 @@ export const miroirFundamentalJzodSchema = {
                 "optional": true,
                 "definition": [
                   {
-                    "type": "literal",
+                    "type": "enum",
                     "optional": true,
-                    "definition": "runtime"
+                    "definition": [
+                      "build",
+                      "runtime"
+                    ]
                   },
                   {
                     "type": "schemaReference",
@@ -45654,6 +46232,49 @@ export const miroirFundamentalJzodSchema = {
                   {
                     "type": "string",
                     "optional": true
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "transformerForBuildCarryOnObject"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_optional_Abstract": {
+        "type": "union",
+        "definition": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "transformerForBuildCarryOnObject"
+            }
+          },
+          {
+            "type": "object",
+            "extend": [
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "eager": true,
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_inner_label_extend"
+                }
+              }
+            ],
+            "definition": {
+              "interpolation": {
+                "type": "union",
+                "optional": true,
+                "definition": [
+                  {
+                    "type": "literal",
+                    "optional": true,
+                    "definition": "runtime"
                   },
                   {
                     "type": "schemaReference",
@@ -46367,7 +46988,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 1,
                     "defaultLabel": "Label",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -46396,7 +47018,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 2,
                     "defaultLabel": "SelfApplication Section",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -46407,7 +47030,8 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "id": 2,
                         "defaultLabel": "SelfApplication Section",
-                        "editable": false
+                        "editable": false,
+                        "isTemplate": true
                       }
                     },
                     "definition": {
@@ -46432,7 +47056,8 @@ export const miroirFundamentalJzodSchema = {
                     "id": 3,
                     "canBeTemplate": true,
                     "defaultLabel": "Parent Name",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -46467,7 +47092,8 @@ export const miroirFundamentalJzodSchema = {
                     "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                     "selectorParams": {
                       "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad"
-                    }
+                    },
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -46876,7 +47502,8 @@ export const miroirFundamentalJzodSchema = {
           "value": {
             "display": {
               "displayedAttributeValueWhenFolded": "definition.label"
-            }
+            },
+            "isTemplate": true
           }
         },
         "type": "union",
@@ -46893,7 +47520,8 @@ export const miroirFundamentalJzodSchema = {
               "value": {
                 "display": {
                   "displayedAttributeValueWhenFolded": "definition.label"
-                }
+                },
+                "isTemplate": true
               }
             },
             "definition": {
@@ -46931,7 +47559,8 @@ export const miroirFundamentalJzodSchema = {
                           "value": {
                             "id": 1,
                             "defaultLabel": "Label",
-                            "editable": false
+                            "editable": false,
+                            "isTemplate": true
                           }
                         },
                         "definition": [
@@ -46961,7 +47590,8 @@ export const miroirFundamentalJzodSchema = {
                           "value": {
                             "id": 2,
                             "defaultLabel": "Entity Name",
-                            "editable": false
+                            "editable": false,
+                            "isTemplate": true
                           }
                         },
                         "definition": [
@@ -46995,7 +47625,8 @@ export const miroirFundamentalJzodSchema = {
                             "selectorParams": {
                               "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                               "targetEntityOrderInstancesBy": "name"
-                            }
+                            },
+                            "isTemplate": true
                           }
                         },
                         "definition": [
@@ -47029,7 +47660,8 @@ export const miroirFundamentalJzodSchema = {
                           "value": {
                             "id": 3,
                             "defaultLabel": "Fetched Data Reference",
-                            "editable": false
+                            "editable": false,
+                            "isTemplate": true
                           }
                         },
                         "definition": [
@@ -47101,7 +47733,8 @@ export const miroirFundamentalJzodSchema = {
           "value": {
             "display": {
               "displayedAttributeValueWhenFolded": "definition.label"
-            }
+            },
+            "isTemplate": true
           }
         },
         "type": "union",
@@ -47118,7 +47751,8 @@ export const miroirFundamentalJzodSchema = {
               "value": {
                 "display": {
                   "displayedAttributeValueWhenFolded": "definition.label"
-                }
+                },
+                "isTemplate": true
               }
             },
             "definition": {
@@ -47200,7 +47834,8 @@ export const miroirFundamentalJzodSchema = {
                           "value": {
                             "id": 1,
                             "defaultLabel": "Label",
-                            "editable": false
+                            "editable": false,
+                            "isTemplate": true
                           }
                         },
                         "definition": [
@@ -47234,7 +47869,8 @@ export const miroirFundamentalJzodSchema = {
                           "value": {
                             "id": 2,
                             "defaultLabel": "Entity Uuid",
-                            "editable": false
+                            "editable": false,
+                            "isTemplate": true
                           }
                         },
                         "definition": [
@@ -47268,7 +47904,8 @@ export const miroirFundamentalJzodSchema = {
                           "value": {
                             "id": 3,
                             "defaultLabel": "Fetched Data Reference",
-                            "editable": false
+                            "editable": false,
+                            "isTemplate": true
                           }
                         },
                         "definition": [
@@ -47731,7 +48368,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 1,
                     "defaultLabel": "SelfApplication",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -47769,7 +48407,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 1,
                     "defaultLabel": "Report",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -47808,7 +48447,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 1,
                     "defaultLabel": "Instance",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -48037,7 +48677,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 1,
                     "defaultLabel": "Label",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -48066,7 +48707,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 2,
                     "defaultLabel": "SelfApplication Section",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -48077,7 +48719,8 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "id": 2,
                         "defaultLabel": "SelfApplication Section",
-                        "editable": false
+                        "editable": false,
+                        "isTemplate": true
                       }
                     },
                     "definition": {
@@ -48101,7 +48744,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 3,
                     "defaultLabel": "Parent Name",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -48131,7 +48775,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "id": 4,
                     "defaultLabel": "Parent Uuid",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "definition": [
@@ -49429,6 +50074,10 @@ export const miroirFundamentalJzodSchema = {
                   "type": "boolean",
                   "optional": true
                 },
+                "isTemplate": {
+                  "type": "boolean",
+                  "optional": true
+                },
                 "conditionalMMLS": {
                   "type": "object",
                   "optional": true,
@@ -49626,6 +50275,10 @@ export const miroirFundamentalJzodSchema = {
                     "optional": true
                   },
                   "canBeTemplate": {
+                    "type": "boolean",
+                    "optional": true
+                  },
+                  "isTemplate": {
                     "type": "boolean",
                     "optional": true
                   },
@@ -50308,7 +50961,8 @@ export const miroirFundamentalJzodSchema = {
         ],
         "tag": {
           "value": {
-            "unfoldSubLevels": 2
+            "unfoldSubLevels": 2,
+            "isTemplate": true
           }
         },
         "definition": {
@@ -50647,7 +51301,8 @@ export const miroirFundamentalJzodSchema = {
                 "id": 1,
                 "canBeTemplate": true,
                 "defaultLabel": "Uuid",
-                "editable": false
+                "editable": false,
+                "isTemplate": true
               }
             },
             "discriminator": [
@@ -50716,7 +51371,8 @@ export const miroirFundamentalJzodSchema = {
               "value": {
                 "id": 2,
                 "defaultLabel": "SelfApplication Section",
-                "editable": false
+                "editable": false,
+                "isTemplate": true
               }
             },
             "definition": {
@@ -50742,7 +51398,8 @@ export const miroirFundamentalJzodSchema = {
               "value": {
                 "id": 4,
                 "defaultLabel": "Parent Uuid",
-                "editable": false
+                "editable": false,
+                "isTemplate": true
               }
             },
             "definition": [
@@ -50781,7 +51438,8 @@ export const miroirFundamentalJzodSchema = {
               "value": {
                 "id": 2,
                 "defaultLabel": "SelfApplication Section",
-                "editable": false
+                "editable": false,
+                "isTemplate": true
               }
             },
             "definition": {
@@ -50797,7 +51455,8 @@ export const miroirFundamentalJzodSchema = {
                 "id": 3,
                 "canBeTemplate": true,
                 "defaultLabel": "Parent Name",
-                "editable": false
+                "editable": false,
+                "isTemplate": true
               }
             },
             "discriminator": [
@@ -50837,7 +51496,8 @@ export const miroirFundamentalJzodSchema = {
                 "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                 "selectorParams": {
                   "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad"
-                }
+                },
+                "isTemplate": true
               }
             },
             "discriminator": [
@@ -50974,6 +51634,51 @@ export const miroirFundamentalJzodSchema = {
             "type": "literal",
             "optional": true,
             "definition": "runtime"
+          }
+        }
+      },
+      "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_Abstract_extend": {
+        "type": "object",
+        "extend": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_inner_label_extend"
+            }
+          }
+        ],
+        "definition": {
+          "interpolation": {
+            "type": "enum",
+            "definition": [
+              "build",
+              "runtime"
+            ]
+          }
+        }
+      },
+      "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_optional_Abstract_extend": {
+        "type": "object",
+        "extend": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_inner_label_extend"
+            }
+          }
+        ],
+        "definition": {
+          "interpolation": {
+            "type": "enum",
+            "optional": true,
+            "definition": [
+              "build",
+              "runtime"
+            ]
           }
         }
       },
@@ -51370,7 +52075,8 @@ export const miroirFundamentalJzodSchema = {
                     "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Deployment",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "discriminator": [
@@ -51467,7 +52173,8 @@ export const miroirFundamentalJzodSchema = {
                     "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Deployment",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "discriminator": [
@@ -51519,7 +52226,8 @@ export const miroirFundamentalJzodSchema = {
                     "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Deployment",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "discriminator": [
@@ -51571,7 +52279,8 @@ export const miroirFundamentalJzodSchema = {
                     "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Deployment",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "discriminator": [
@@ -51623,7 +52332,8 @@ export const miroirFundamentalJzodSchema = {
                     "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Deployment",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "discriminator": [
@@ -51675,7 +52385,8 @@ export const miroirFundamentalJzodSchema = {
                     "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Deployment",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "discriminator": [
@@ -51727,7 +52438,8 @@ export const miroirFundamentalJzodSchema = {
                     "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Deployment",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "discriminator": [
@@ -51841,7 +52553,8 @@ export const miroirFundamentalJzodSchema = {
                     "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Deployment",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "discriminator": [
@@ -51925,7 +52638,8 @@ export const miroirFundamentalJzodSchema = {
                     "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Deployment",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "discriminator": [
@@ -51969,7 +52683,8 @@ export const miroirFundamentalJzodSchema = {
                           "type": "union",
                           "tag": {
                             "value": {
-                              "canBeTemplate": true
+                              "canBeTemplate": true,
+                              "isTemplate": true
                             }
                           },
                           "discriminator": [
@@ -51981,7 +52696,8 @@ export const miroirFundamentalJzodSchema = {
                               "type": "schemaReference",
                               "tag": {
                                 "value": {
-                                  "canBeTemplate": true
+                                  "canBeTemplate": true,
+                                  "isTemplate": true
                                 }
                               },
                               "definition": {
@@ -52003,7 +52719,8 @@ export const miroirFundamentalJzodSchema = {
                           "type": "union",
                           "tag": {
                             "value": {
-                              "canBeTemplate": true
+                              "canBeTemplate": true,
+                              "isTemplate": true
                             }
                           },
                           "discriminator": [
@@ -52015,7 +52732,8 @@ export const miroirFundamentalJzodSchema = {
                               "type": "schemaReference",
                               "tag": {
                                 "value": {
-                                  "canBeTemplate": true
+                                  "canBeTemplate": true,
+                                  "isTemplate": true
                                 }
                               },
                               "definition": {
@@ -52058,7 +52776,8 @@ export const miroirFundamentalJzodSchema = {
                     "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Deployment",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "discriminator": [
@@ -52148,7 +52867,8 @@ export const miroirFundamentalJzodSchema = {
                         "interpolation": "build",
                         "referenceName": "deploymentUuid"
                       }
-                    }
+                    },
+                    "isTemplate": true
                   }
                 },
                 "discriminator": [
@@ -52222,7 +52942,8 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "id": 2,
                         "defaultLabel": "Entity Instances (objects) to create",
-                        "editable": true
+                        "editable": true,
+                        "isTemplate": true
                       }
                     },
                     "definition": {
@@ -52236,7 +52957,8 @@ export const miroirFundamentalJzodSchema = {
                               "id": 1,
                               "defaultLabel": "Parent Name",
                               "editable": false,
-                              "canBeTemplate": true
+                              "canBeTemplate": true,
+                              "isTemplate": true
                             }
                           },
                           "discriminator": [
@@ -52289,7 +53011,8 @@ export const miroirFundamentalJzodSchema = {
                                     "parentUuid"
                                   ]
                                 }
-                              }
+                              },
+                              "isTemplate": true
                             }
                           },
                           "discriminator": [
@@ -52354,7 +53077,8 @@ export const miroirFundamentalJzodSchema = {
                                     "defaultValuePath": "#.parentUuid",
                                     "typeCheckPath": "#.#.parentUuid"
                                   }
-                                }
+                                },
+                                "isTemplate": true
                               }
                             },
                             "discriminator": [
@@ -52372,7 +53096,8 @@ export const miroirFundamentalJzodSchema = {
                                         "defaultValuePath": "#.parentUuid",
                                         "typeCheckPath": "#.#.parentUuid"
                                       }
-                                    }
+                                    },
+                                    "isTemplate": true
                                   }
                                 },
                                 "definition": {
@@ -52416,7 +53141,8 @@ export const miroirFundamentalJzodSchema = {
                     "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Uuid",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "discriminator": [
@@ -52468,7 +53194,8 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "id": 2,
                         "defaultLabel": "Entity Instances to delete",
-                        "editable": true
+                        "editable": true,
+                        "isTemplate": true
                       }
                     },
                     "definition": {
@@ -52502,7 +53229,8 @@ export const miroirFundamentalJzodSchema = {
                     "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Uuid",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "discriminator": [
@@ -52554,7 +53282,8 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "id": 2,
                         "defaultLabel": "Entity Instances to delete",
-                        "editable": true
+                        "editable": true,
+                        "isTemplate": true
                       }
                     },
                     "definition": {
@@ -52592,7 +53321,8 @@ export const miroirFundamentalJzodSchema = {
                     "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Uuid",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "discriminator": [
@@ -52640,14 +53370,16 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "id": 2,
                         "defaultLabel": "Entity Instances to update",
-                        "editable": true
+                        "editable": true,
+                        "isTemplate": true
                       }
                     },
                     "definition": {
                       "type": "union",
                       "tag": {
                         "value": {
-                          "canBeTemplate": true
+                          "canBeTemplate": true,
+                          "isTemplate": true
                         }
                       },
                       "discriminator": [
@@ -52660,7 +53392,8 @@ export const miroirFundamentalJzodSchema = {
                           "optional": false,
                           "tag": {
                             "value": {
-                              "canBeTemplate": true
+                              "canBeTemplate": true,
+                              "isTemplate": true
                             }
                           },
                           "definition": {
@@ -52705,7 +53438,8 @@ export const miroirFundamentalJzodSchema = {
                     "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Uuid",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "discriminator": [
@@ -52742,7 +53476,8 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "id": 2,
                         "defaultLabel": "Entity Instances to place in the local cache",
-                        "editable": true
+                        "editable": true,
+                        "isTemplate": true
                       }
                     },
                     "definition": {
@@ -52780,7 +53515,8 @@ export const miroirFundamentalJzodSchema = {
                     "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Uuid",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "discriminator": [
@@ -52864,7 +53600,8 @@ export const miroirFundamentalJzodSchema = {
                     "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Uuid",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "discriminator": [
@@ -52957,7 +53694,8 @@ export const miroirFundamentalJzodSchema = {
                         "interpolation": "build",
                         "referenceName": "deploymentUuid"
                       }
-                    }
+                    },
+                    "isTemplate": true
                   }
                 },
                 "discriminator": [
@@ -53031,7 +53769,8 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "id": 2,
                         "defaultLabel": "Entity Instances (objects) to create",
-                        "editable": true
+                        "editable": true,
+                        "isTemplate": true
                       }
                     },
                     "definition": {
@@ -53045,7 +53784,8 @@ export const miroirFundamentalJzodSchema = {
                               "id": 1,
                               "defaultLabel": "Parent Name",
                               "editable": false,
-                              "canBeTemplate": true
+                              "canBeTemplate": true,
+                              "isTemplate": true
                             }
                           },
                           "discriminator": [
@@ -53098,7 +53838,8 @@ export const miroirFundamentalJzodSchema = {
                                     "parentUuid"
                                   ]
                                 }
-                              }
+                              },
+                              "isTemplate": true
                             }
                           },
                           "discriminator": [
@@ -53163,7 +53904,8 @@ export const miroirFundamentalJzodSchema = {
                                     "defaultValuePath": "#.parentUuid",
                                     "typeCheckPath": "#.#.parentUuid"
                                   }
-                                }
+                                },
+                                "isTemplate": true
                               }
                             },
                             "discriminator": [
@@ -53181,7 +53923,8 @@ export const miroirFundamentalJzodSchema = {
                                         "defaultValuePath": "#.parentUuid",
                                         "typeCheckPath": "#.#.parentUuid"
                                       }
-                                    }
+                                    },
+                                    "isTemplate": true
                                   }
                                 },
                                 "definition": {
@@ -53225,7 +53968,8 @@ export const miroirFundamentalJzodSchema = {
                     "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Uuid",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "discriminator": [
@@ -53277,7 +54021,8 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "id": 2,
                         "defaultLabel": "Entity Instances to delete",
-                        "editable": true
+                        "editable": true,
+                        "isTemplate": true
                       }
                     },
                     "definition": {
@@ -53315,7 +54060,8 @@ export const miroirFundamentalJzodSchema = {
                     "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Uuid",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "discriminator": [
@@ -53363,14 +54109,16 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "id": 2,
                         "defaultLabel": "Entity Instances to update",
-                        "editable": true
+                        "editable": true,
+                        "isTemplate": true
                       }
                     },
                     "definition": {
                       "type": "union",
                       "tag": {
                         "value": {
-                          "canBeTemplate": true
+                          "canBeTemplate": true,
+                          "isTemplate": true
                         }
                       },
                       "discriminator": [
@@ -53383,7 +54131,8 @@ export const miroirFundamentalJzodSchema = {
                           "optional": false,
                           "tag": {
                             "value": {
-                              "canBeTemplate": true
+                              "canBeTemplate": true,
+                              "isTemplate": true
                             }
                           },
                           "definition": {
@@ -53583,7 +54332,8 @@ export const miroirFundamentalJzodSchema = {
                 "id": 1,
                 "canBeTemplate": true,
                 "defaultLabel": "Uuid",
-                "editable": false
+                "editable": false,
+                "isTemplate": true
               }
             },
             "discriminator": [
@@ -53670,7 +54420,8 @@ export const miroirFundamentalJzodSchema = {
                 "id": 1,
                 "canBeTemplate": true,
                 "defaultLabel": "Uuid",
-                "editable": false
+                "editable": false,
+                "isTemplate": true
               }
             },
             "discriminator": [
@@ -53747,7 +54498,8 @@ export const miroirFundamentalJzodSchema = {
                 "id": 1,
                 "canBeTemplate": true,
                 "defaultLabel": "Uuid",
-                "editable": false
+                "editable": false,
+                "isTemplate": true
               }
             },
             "discriminator": [
@@ -54008,7 +54760,8 @@ export const miroirFundamentalJzodSchema = {
                 "id": 1,
                 "defaultLabel": "Uuid",
                 "editable": false,
-                "canBeTemplate": true
+                "canBeTemplate": true,
+                "isTemplate": true
               }
             },
             "discriminator": [
@@ -54044,7 +54797,8 @@ export const miroirFundamentalJzodSchema = {
                 "id": 2,
                 "defaultLabel": "Entity Name",
                 "editable": false,
-                "canBeTemplate": true
+                "canBeTemplate": true,
+                "isTemplate": true
               }
             },
             "discriminator": [
@@ -54080,7 +54834,8 @@ export const miroirFundamentalJzodSchema = {
                 "id": 3,
                 "defaultLabel": "Entity Uuid",
                 "editable": false,
-                "canBeTemplate": true
+                "canBeTemplate": true,
+                "isTemplate": true
               }
             },
             "discriminator": [
@@ -54142,7 +54897,8 @@ export const miroirFundamentalJzodSchema = {
                 "id": 4,
                 "defaultLabel": "Concept Level",
                 "editable": false,
-                "canBeTemplate": true
+                "canBeTemplate": true,
+                "isTemplate": true
               }
             },
             "discriminator": [
@@ -54191,7 +54947,8 @@ export const miroirFundamentalJzodSchema = {
                 "id": 1,
                 "defaultLabel": "Parent Name",
                 "editable": false,
-                "canBeTemplate": true
+                "canBeTemplate": true,
+                "isTemplate": true
               }
             },
             "discriminator": [
@@ -54227,7 +54984,8 @@ export const miroirFundamentalJzodSchema = {
                 "id": 2,
                 "defaultLabel": "Parent Name",
                 "editable": false,
-                "canBeTemplate": true
+                "canBeTemplate": true,
+                "isTemplate": true
               }
             },
             "discriminator": [
@@ -54269,7 +55027,8 @@ export const miroirFundamentalJzodSchema = {
               "type": "union",
               "tag": {
                 "value": {
-                  "canBeTemplate": true
+                  "canBeTemplate": true,
+                  "isTemplate": true
                 }
               },
               "discriminator": [
@@ -54281,7 +55040,8 @@ export const miroirFundamentalJzodSchema = {
                   "type": "schemaReference",
                   "tag": {
                     "value": {
-                      "canBeTemplate": true
+                      "canBeTemplate": true,
+                      "isTemplate": true
                     }
                   },
                   "definition": {
@@ -54536,7 +55296,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "display": {
                       "displayedAttributeValueWhenFolded": "definition.label"
-                    }
+                    },
+                    "isTemplate": true
                   }
                 },
                 "definition": {
@@ -54622,7 +55383,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "display": {
                       "displayedAttributeValueWhenFolded": "definition.label"
-                    }
+                    },
+                    "isTemplate": true
                   }
                 },
                 "definition": {
@@ -54923,7 +55685,8 @@ export const miroirFundamentalJzodSchema = {
               "value": {
                 "id": 9,
                 "defaultLabel": "Definition",
-                "editable": true
+                "editable": true,
+                "isTemplate": true
               }
             }
           }
@@ -55065,7 +55828,8 @@ export const miroirFundamentalJzodSchema = {
                 "id": 1,
                 "canBeTemplate": true,
                 "defaultLabel": "Uuid",
-                "editable": false
+                "editable": false,
+                "isTemplate": true
               }
             },
             "discriminator": [
@@ -55297,6 +56061,13 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_object_fullTemplate"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_parameterReference"
             }
           },
           {
@@ -55999,6 +56770,13 @@ export const miroirFundamentalJzodSchema = {
         "definition": {
           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
           "relativePath": "transformerForBuildPlusRuntime_object_fullTemplate"
+        }
+      },
+      "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_parameterReference": {
+        "type": "schemaReference",
+        "definition": {
+          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          "relativePath": "transformerForBuildPlusRuntime_parameterReference"
         }
       },
       "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_unique": {
@@ -56811,11 +57589,18 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
-      "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_optional_Abstract": {
+      "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_Abstract": {
         "type": "schemaReference",
         "definition": {
           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-          "relativePath": "transformerForRuntime_optional_Abstract"
+          "relativePath": "transformerForBuildPlusRuntime_Abstract"
+        }
+      },
+      "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_optional_Abstract": {
+        "type": "schemaReference",
+        "definition": {
+          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          "relativePath": "transformerForBuildPlusRuntime_optional_Abstract"
         }
       },
       "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_orderBy": {
@@ -57020,6 +57805,13 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
+      "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_optional_Abstract": {
+        "type": "schemaReference",
+        "definition": {
+          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          "relativePath": "transformerForRuntime_optional_Abstract"
+        }
+      },
       "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_inner_label": {
         "type": "schemaReference",
         "definition": {
@@ -57188,7 +57980,8 @@ export const miroirFundamentalJzodSchema = {
               "value": {
                 "id": 2,
                 "defaultLabel": "SelfApplication Section",
-                "editable": false
+                "editable": false,
+                "isTemplate": true
               }
             },
             "definition": {
@@ -57204,7 +57997,8 @@ export const miroirFundamentalJzodSchema = {
                 "id": 3,
                 "canBeTemplate": true,
                 "defaultLabel": "Parent Name",
-                "editable": false
+                "editable": false,
+                "isTemplate": true
               }
             },
             "discriminator": [
@@ -57244,7 +58038,8 @@ export const miroirFundamentalJzodSchema = {
                 "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                 "selectorParams": {
                   "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad"
-                }
+                },
+                "isTemplate": true
               }
             },
             "discriminator": [
@@ -57615,6 +58410,10 @@ export const miroirFundamentalJzodSchema = {
                   "type": "boolean",
                   "optional": true
                 },
+                "isTemplate": {
+                  "type": "boolean",
+                  "optional": true
+                },
                 "conditionalMMLS": {
                   "type": "object",
                   "optional": true,
@@ -57812,6 +58611,10 @@ export const miroirFundamentalJzodSchema = {
                     "optional": true
                   },
                   "canBeTemplate": {
+                    "type": "boolean",
+                    "optional": true
+                  },
+                  "isTemplate": {
                     "type": "boolean",
                     "optional": true
                   },
@@ -58494,7 +59297,8 @@ export const miroirFundamentalJzodSchema = {
         ],
         "tag": {
           "value": {
-            "unfoldSubLevels": 2
+            "unfoldSubLevels": 2,
+            "isTemplate": true
           }
         },
         "definition": {
@@ -58833,7 +59637,8 @@ export const miroirFundamentalJzodSchema = {
                 "id": 1,
                 "canBeTemplate": true,
                 "defaultLabel": "Uuid",
-                "editable": false
+                "editable": false,
+                "isTemplate": true
               }
             },
             "discriminator": [
@@ -58901,7 +59706,8 @@ export const miroirFundamentalJzodSchema = {
               "value": {
                 "id": 2,
                 "defaultLabel": "SelfApplication Section",
-                "editable": false
+                "editable": false,
+                "isTemplate": true
               }
             },
             "definition": {
@@ -58927,7 +59733,8 @@ export const miroirFundamentalJzodSchema = {
               "value": {
                 "id": 4,
                 "defaultLabel": "Parent Uuid",
-                "editable": false
+                "editable": false,
+                "isTemplate": true
               }
             },
             "definition": [
@@ -58966,7 +59773,8 @@ export const miroirFundamentalJzodSchema = {
               "value": {
                 "id": 2,
                 "defaultLabel": "SelfApplication Section",
-                "editable": false
+                "editable": false,
+                "isTemplate": true
               }
             },
             "definition": {
@@ -58982,7 +59790,8 @@ export const miroirFundamentalJzodSchema = {
                 "id": 3,
                 "canBeTemplate": true,
                 "defaultLabel": "Parent Name",
-                "editable": false
+                "editable": false,
+                "isTemplate": true
               }
             },
             "discriminator": [
@@ -59021,7 +59830,8 @@ export const miroirFundamentalJzodSchema = {
                 "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                 "selectorParams": {
                   "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad"
-                }
+                },
+                "isTemplate": true
               }
             },
             "discriminator": [
@@ -59157,6 +59967,51 @@ export const miroirFundamentalJzodSchema = {
             "type": "literal",
             "optional": true,
             "definition": "runtime"
+          }
+        }
+      },
+      "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_Abstract_extend": {
+        "type": "object",
+        "extend": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_inner_label_extend"
+            }
+          }
+        ],
+        "definition": {
+          "interpolation": {
+            "type": "enum",
+            "definition": [
+              "build",
+              "runtime"
+            ]
+          }
+        }
+      },
+      "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_optional_Abstract_extend": {
+        "type": "object",
+        "extend": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_inner_label_extend"
+            }
+          }
+        ],
+        "definition": {
+          "interpolation": {
+            "type": "enum",
+            "optional": true,
+            "definition": [
+              "build",
+              "runtime"
+            ]
           }
         }
       },
@@ -59553,7 +60408,8 @@ export const miroirFundamentalJzodSchema = {
                     "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Deployment",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "discriminator": [
@@ -59649,7 +60505,8 @@ export const miroirFundamentalJzodSchema = {
                     "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Deployment",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "discriminator": [
@@ -59700,7 +60557,8 @@ export const miroirFundamentalJzodSchema = {
                     "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Deployment",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "discriminator": [
@@ -59751,7 +60609,8 @@ export const miroirFundamentalJzodSchema = {
                     "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Deployment",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "discriminator": [
@@ -59802,7 +60661,8 @@ export const miroirFundamentalJzodSchema = {
                     "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Deployment",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "discriminator": [
@@ -59853,7 +60713,8 @@ export const miroirFundamentalJzodSchema = {
                     "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Deployment",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "discriminator": [
@@ -59904,7 +60765,8 @@ export const miroirFundamentalJzodSchema = {
                     "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Deployment",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "discriminator": [
@@ -60017,7 +60879,8 @@ export const miroirFundamentalJzodSchema = {
                     "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Deployment",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "discriminator": [
@@ -60100,7 +60963,8 @@ export const miroirFundamentalJzodSchema = {
                     "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Deployment",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "discriminator": [
@@ -60143,7 +61007,8 @@ export const miroirFundamentalJzodSchema = {
                           "type": "union",
                           "tag": {
                             "value": {
-                              "canBeTemplate": true
+                              "canBeTemplate": true,
+                              "isTemplate": true
                             }
                           },
                           "discriminator": [
@@ -60155,7 +61020,8 @@ export const miroirFundamentalJzodSchema = {
                               "type": "schemaReference",
                               "tag": {
                                 "value": {
-                                  "canBeTemplate": true
+                                  "canBeTemplate": true,
+                                  "isTemplate": true
                                 }
                               },
                               "definition": {
@@ -60176,7 +61042,8 @@ export const miroirFundamentalJzodSchema = {
                           "type": "union",
                           "tag": {
                             "value": {
-                              "canBeTemplate": true
+                              "canBeTemplate": true,
+                              "isTemplate": true
                             }
                           },
                           "discriminator": [
@@ -60188,7 +61055,8 @@ export const miroirFundamentalJzodSchema = {
                               "type": "schemaReference",
                               "tag": {
                                 "value": {
-                                  "canBeTemplate": true
+                                  "canBeTemplate": true,
+                                  "isTemplate": true
                                 }
                               },
                               "definition": {
@@ -60230,7 +61098,8 @@ export const miroirFundamentalJzodSchema = {
                     "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Deployment",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "discriminator": [
@@ -60319,7 +61188,8 @@ export const miroirFundamentalJzodSchema = {
                         "interpolation": "build",
                         "referenceName": "deploymentUuid"
                       }
-                    }
+                    },
+                    "isTemplate": true
                   }
                 },
                 "discriminator": [
@@ -60392,7 +61262,8 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "id": 2,
                         "defaultLabel": "Entity Instances (objects) to create",
-                        "editable": true
+                        "editable": true,
+                        "isTemplate": true
                       }
                     },
                     "definition": {
@@ -60406,7 +61277,8 @@ export const miroirFundamentalJzodSchema = {
                               "id": 1,
                               "defaultLabel": "Parent Name",
                               "editable": false,
-                              "canBeTemplate": true
+                              "canBeTemplate": true,
+                              "isTemplate": true
                             }
                           },
                           "discriminator": [
@@ -60458,7 +61330,8 @@ export const miroirFundamentalJzodSchema = {
                                     "parentUuid"
                                   ]
                                 }
-                              }
+                              },
+                              "isTemplate": true
                             }
                           },
                           "discriminator": [
@@ -60522,7 +61395,8 @@ export const miroirFundamentalJzodSchema = {
                                     "defaultValuePath": "#.parentUuid",
                                     "typeCheckPath": "#.#.parentUuid"
                                   }
-                                }
+                                },
+                                "isTemplate": true
                               }
                             },
                             "discriminator": [
@@ -60540,7 +61414,8 @@ export const miroirFundamentalJzodSchema = {
                                         "defaultValuePath": "#.parentUuid",
                                         "typeCheckPath": "#.#.parentUuid"
                                       }
-                                    }
+                                    },
+                                    "isTemplate": true
                                   }
                                 },
                                 "definition": {
@@ -60583,7 +61458,8 @@ export const miroirFundamentalJzodSchema = {
                     "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Uuid",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "discriminator": [
@@ -60634,7 +61510,8 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "id": 2,
                         "defaultLabel": "Entity Instances to delete",
-                        "editable": true
+                        "editable": true,
+                        "isTemplate": true
                       }
                     },
                     "definition": {
@@ -60668,7 +61545,8 @@ export const miroirFundamentalJzodSchema = {
                     "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Uuid",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "discriminator": [
@@ -60719,7 +61597,8 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "id": 2,
                         "defaultLabel": "Entity Instances to delete",
-                        "editable": true
+                        "editable": true,
+                        "isTemplate": true
                       }
                     },
                     "definition": {
@@ -60757,7 +61636,8 @@ export const miroirFundamentalJzodSchema = {
                     "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Uuid",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "discriminator": [
@@ -60804,14 +61684,16 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "id": 2,
                         "defaultLabel": "Entity Instances to update",
-                        "editable": true
+                        "editable": true,
+                        "isTemplate": true
                       }
                     },
                     "definition": {
                       "type": "union",
                       "tag": {
                         "value": {
-                          "canBeTemplate": true
+                          "canBeTemplate": true,
+                          "isTemplate": true
                         }
                       },
                       "discriminator": [
@@ -60824,7 +61706,8 @@ export const miroirFundamentalJzodSchema = {
                           "optional": false,
                           "tag": {
                             "value": {
-                              "canBeTemplate": true
+                              "canBeTemplate": true,
+                              "isTemplate": true
                             }
                           },
                           "definition": {
@@ -60868,7 +61751,8 @@ export const miroirFundamentalJzodSchema = {
                     "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Uuid",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "discriminator": [
@@ -60904,7 +61788,8 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "id": 2,
                         "defaultLabel": "Entity Instances to place in the local cache",
-                        "editable": true
+                        "editable": true,
+                        "isTemplate": true
                       }
                     },
                     "definition": {
@@ -60942,7 +61827,8 @@ export const miroirFundamentalJzodSchema = {
                     "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Uuid",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "discriminator": [
@@ -61025,7 +61911,8 @@ export const miroirFundamentalJzodSchema = {
                     "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Uuid",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "discriminator": [
@@ -61117,7 +62004,8 @@ export const miroirFundamentalJzodSchema = {
                         "interpolation": "build",
                         "referenceName": "deploymentUuid"
                       }
-                    }
+                    },
+                    "isTemplate": true
                   }
                 },
                 "discriminator": [
@@ -61190,7 +62078,8 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "id": 2,
                         "defaultLabel": "Entity Instances (objects) to create",
-                        "editable": true
+                        "editable": true,
+                        "isTemplate": true
                       }
                     },
                     "definition": {
@@ -61204,7 +62093,8 @@ export const miroirFundamentalJzodSchema = {
                               "id": 1,
                               "defaultLabel": "Parent Name",
                               "editable": false,
-                              "canBeTemplate": true
+                              "canBeTemplate": true,
+                              "isTemplate": true
                             }
                           },
                           "discriminator": [
@@ -61256,7 +62146,8 @@ export const miroirFundamentalJzodSchema = {
                                     "parentUuid"
                                   ]
                                 }
-                              }
+                              },
+                              "isTemplate": true
                             }
                           },
                           "discriminator": [
@@ -61320,7 +62211,8 @@ export const miroirFundamentalJzodSchema = {
                                     "defaultValuePath": "#.parentUuid",
                                     "typeCheckPath": "#.#.parentUuid"
                                   }
-                                }
+                                },
+                                "isTemplate": true
                               }
                             },
                             "discriminator": [
@@ -61338,7 +62230,8 @@ export const miroirFundamentalJzodSchema = {
                                         "defaultValuePath": "#.parentUuid",
                                         "typeCheckPath": "#.#.parentUuid"
                                       }
-                                    }
+                                    },
+                                    "isTemplate": true
                                   }
                                 },
                                 "definition": {
@@ -61381,7 +62274,8 @@ export const miroirFundamentalJzodSchema = {
                     "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Uuid",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "discriminator": [
@@ -61432,7 +62326,8 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "id": 2,
                         "defaultLabel": "Entity Instances to delete",
-                        "editable": true
+                        "editable": true,
+                        "isTemplate": true
                       }
                     },
                     "definition": {
@@ -61470,7 +62365,8 @@ export const miroirFundamentalJzodSchema = {
                     "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Uuid",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "discriminator": [
@@ -61517,14 +62413,16 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "id": 2,
                         "defaultLabel": "Entity Instances to update",
-                        "editable": true
+                        "editable": true,
+                        "isTemplate": true
                       }
                     },
                     "definition": {
                       "type": "union",
                       "tag": {
                         "value": {
-                          "canBeTemplate": true
+                          "canBeTemplate": true,
+                          "isTemplate": true
                         }
                       },
                       "discriminator": [
@@ -61537,7 +62435,8 @@ export const miroirFundamentalJzodSchema = {
                           "optional": false,
                           "tag": {
                             "value": {
-                              "canBeTemplate": true
+                              "canBeTemplate": true,
+                              "isTemplate": true
                             }
                           },
                           "definition": {
@@ -61736,7 +62635,8 @@ export const miroirFundamentalJzodSchema = {
                 "id": 1,
                 "canBeTemplate": true,
                 "defaultLabel": "Uuid",
-                "editable": false
+                "editable": false,
+                "isTemplate": true
               }
             },
             "discriminator": [
@@ -61822,7 +62722,8 @@ export const miroirFundamentalJzodSchema = {
                 "id": 1,
                 "canBeTemplate": true,
                 "defaultLabel": "Uuid",
-                "editable": false
+                "editable": false,
+                "isTemplate": true
               }
             },
             "discriminator": [
@@ -61898,7 +62799,8 @@ export const miroirFundamentalJzodSchema = {
                 "id": 1,
                 "canBeTemplate": true,
                 "defaultLabel": "Uuid",
-                "editable": false
+                "editable": false,
+                "isTemplate": true
               }
             },
             "discriminator": [
@@ -62158,7 +63060,8 @@ export const miroirFundamentalJzodSchema = {
                 "id": 1,
                 "defaultLabel": "Uuid",
                 "editable": false,
-                "canBeTemplate": true
+                "canBeTemplate": true,
+                "isTemplate": true
               }
             },
             "discriminator": [
@@ -62193,7 +63096,8 @@ export const miroirFundamentalJzodSchema = {
                 "id": 2,
                 "defaultLabel": "Entity Name",
                 "editable": false,
-                "canBeTemplate": true
+                "canBeTemplate": true,
+                "isTemplate": true
               }
             },
             "discriminator": [
@@ -62228,7 +63132,8 @@ export const miroirFundamentalJzodSchema = {
                 "id": 3,
                 "defaultLabel": "Entity Uuid",
                 "editable": false,
-                "canBeTemplate": true
+                "canBeTemplate": true,
+                "isTemplate": true
               }
             },
             "discriminator": [
@@ -62288,7 +63193,8 @@ export const miroirFundamentalJzodSchema = {
                 "id": 4,
                 "defaultLabel": "Concept Level",
                 "editable": false,
-                "canBeTemplate": true
+                "canBeTemplate": true,
+                "isTemplate": true
               }
             },
             "discriminator": [
@@ -62337,7 +63243,8 @@ export const miroirFundamentalJzodSchema = {
                 "id": 1,
                 "defaultLabel": "Parent Name",
                 "editable": false,
-                "canBeTemplate": true
+                "canBeTemplate": true,
+                "isTemplate": true
               }
             },
             "discriminator": [
@@ -62372,7 +63279,8 @@ export const miroirFundamentalJzodSchema = {
                 "id": 2,
                 "defaultLabel": "Parent Name",
                 "editable": false,
-                "canBeTemplate": true
+                "canBeTemplate": true,
+                "isTemplate": true
               }
             },
             "discriminator": [
@@ -62413,7 +63321,8 @@ export const miroirFundamentalJzodSchema = {
               "type": "union",
               "tag": {
                 "value": {
-                  "canBeTemplate": true
+                  "canBeTemplate": true,
+                  "isTemplate": true
                 }
               },
               "discriminator": [
@@ -62425,7 +63334,8 @@ export const miroirFundamentalJzodSchema = {
                   "type": "schemaReference",
                   "tag": {
                     "value": {
-                      "canBeTemplate": true
+                      "canBeTemplate": true,
+                      "isTemplate": true
                     }
                   },
                   "definition": {
@@ -62679,7 +63589,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "display": {
                       "displayedAttributeValueWhenFolded": "definition.label"
-                    }
+                    },
+                    "isTemplate": true
                   }
                 },
                 "definition": {
@@ -62765,7 +63676,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "display": {
                       "displayedAttributeValueWhenFolded": "definition.label"
-                    }
+                    },
+                    "isTemplate": true
                   }
                 },
                 "definition": {
@@ -63066,7 +63978,8 @@ export const miroirFundamentalJzodSchema = {
               "value": {
                 "id": 9,
                 "defaultLabel": "Definition",
-                "editable": true
+                "editable": true,
+                "isTemplate": true
               }
             }
           }
@@ -63208,7 +64121,8 @@ export const miroirFundamentalJzodSchema = {
                 "id": 1,
                 "canBeTemplate": true,
                 "defaultLabel": "Uuid",
-                "editable": false
+                "editable": false,
+                "isTemplate": true
               }
             },
             "discriminator": [
@@ -63439,6 +64353,13 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_object_fullTemplate"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_parameterReference"
             }
           },
           {
@@ -64141,6 +65062,13 @@ export const miroirFundamentalJzodSchema = {
         "definition": {
           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
           "relativePath": "transformerForBuildPlusRuntime_object_fullTemplate"
+        }
+      },
+      "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_parameterReference": {
+        "type": "schemaReference",
+        "definition": {
+          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          "relativePath": "transformerForBuildPlusRuntime_parameterReference"
         }
       },
       "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_unique": {
@@ -64953,11 +65881,18 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
-      "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_optional_Abstract": {
+      "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_Abstract": {
         "type": "schemaReference",
         "definition": {
           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-          "relativePath": "transformerForRuntime_optional_Abstract"
+          "relativePath": "transformerForBuildPlusRuntime_Abstract"
+        }
+      },
+      "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_optional_Abstract": {
+        "type": "schemaReference",
+        "definition": {
+          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          "relativePath": "transformerForBuildPlusRuntime_optional_Abstract"
         }
       },
       "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_orderBy": {
@@ -65162,6 +66097,13 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
+      "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_optional_Abstract": {
+        "type": "schemaReference",
+        "definition": {
+          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          "relativePath": "transformerForRuntime_optional_Abstract"
+        }
+      },
       "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_inner_label": {
         "type": "schemaReference",
         "definition": {
@@ -65330,7 +66272,8 @@ export const miroirFundamentalJzodSchema = {
               "value": {
                 "id": 2,
                 "defaultLabel": "SelfApplication Section",
-                "editable": false
+                "editable": false,
+                "isTemplate": true
               }
             },
             "definition": {
@@ -65346,7 +66289,8 @@ export const miroirFundamentalJzodSchema = {
                 "id": 3,
                 "canBeTemplate": true,
                 "defaultLabel": "Parent Name",
-                "editable": false
+                "editable": false,
+                "isTemplate": true
               }
             },
             "discriminator": [
@@ -65385,7 +66329,8 @@ export const miroirFundamentalJzodSchema = {
                 "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                 "selectorParams": {
                   "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad"
-                }
+                },
+                "isTemplate": true
               }
             },
             "discriminator": [
@@ -65755,6 +66700,10 @@ export const miroirFundamentalJzodSchema = {
                   "type": "boolean",
                   "optional": true
                 },
+                "isTemplate": {
+                  "type": "boolean",
+                  "optional": true
+                },
                 "conditionalMMLS": {
                   "type": "object",
                   "optional": true,
@@ -65952,6 +66901,10 @@ export const miroirFundamentalJzodSchema = {
                     "optional": true
                   },
                   "canBeTemplate": {
+                    "type": "boolean",
+                    "optional": true
+                  },
+                  "isTemplate": {
                     "type": "boolean",
                     "optional": true
                   },
@@ -66634,7 +67587,8 @@ export const miroirFundamentalJzodSchema = {
         ],
         "tag": {
           "value": {
-            "unfoldSubLevels": 2
+            "unfoldSubLevels": 2,
+            "isTemplate": true
           }
         },
         "definition": {
@@ -66973,7 +67927,8 @@ export const miroirFundamentalJzodSchema = {
                 "id": 1,
                 "canBeTemplate": true,
                 "defaultLabel": "Uuid",
-                "editable": false
+                "editable": false,
+                "isTemplate": true
               }
             },
             "discriminator": [
@@ -67042,7 +67997,8 @@ export const miroirFundamentalJzodSchema = {
               "value": {
                 "id": 2,
                 "defaultLabel": "SelfApplication Section",
-                "editable": false
+                "editable": false,
+                "isTemplate": true
               }
             },
             "definition": {
@@ -67068,7 +68024,8 @@ export const miroirFundamentalJzodSchema = {
               "value": {
                 "id": 4,
                 "defaultLabel": "Parent Uuid",
-                "editable": false
+                "editable": false,
+                "isTemplate": true
               }
             },
             "definition": [
@@ -67107,7 +68064,8 @@ export const miroirFundamentalJzodSchema = {
               "value": {
                 "id": 2,
                 "defaultLabel": "SelfApplication Section",
-                "editable": false
+                "editable": false,
+                "isTemplate": true
               }
             },
             "definition": {
@@ -67123,7 +68081,8 @@ export const miroirFundamentalJzodSchema = {
                 "id": 3,
                 "canBeTemplate": true,
                 "defaultLabel": "Parent Name",
-                "editable": false
+                "editable": false,
+                "isTemplate": true
               }
             },
             "discriminator": [
@@ -67163,7 +68122,8 @@ export const miroirFundamentalJzodSchema = {
                 "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                 "selectorParams": {
                   "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad"
-                }
+                },
+                "isTemplate": true
               }
             },
             "discriminator": [
@@ -67300,6 +68260,51 @@ export const miroirFundamentalJzodSchema = {
             "type": "literal",
             "optional": true,
             "definition": "runtime"
+          }
+        }
+      },
+      "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_Abstract_extend": {
+        "type": "object",
+        "extend": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_inner_label_extend"
+            }
+          }
+        ],
+        "definition": {
+          "interpolation": {
+            "type": "enum",
+            "definition": [
+              "build",
+              "runtime"
+            ]
+          }
+        }
+      },
+      "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_optional_Abstract_extend": {
+        "type": "object",
+        "extend": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_inner_label_extend"
+            }
+          }
+        ],
+        "definition": {
+          "interpolation": {
+            "type": "enum",
+            "optional": true,
+            "definition": [
+              "build",
+              "runtime"
+            ]
           }
         }
       },
@@ -67696,7 +68701,8 @@ export const miroirFundamentalJzodSchema = {
                     "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Deployment",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "discriminator": [
@@ -67793,7 +68799,8 @@ export const miroirFundamentalJzodSchema = {
                     "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Deployment",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "discriminator": [
@@ -67845,7 +68852,8 @@ export const miroirFundamentalJzodSchema = {
                     "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Deployment",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "discriminator": [
@@ -67897,7 +68905,8 @@ export const miroirFundamentalJzodSchema = {
                     "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Deployment",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "discriminator": [
@@ -67949,7 +68958,8 @@ export const miroirFundamentalJzodSchema = {
                     "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Deployment",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "discriminator": [
@@ -68001,7 +69011,8 @@ export const miroirFundamentalJzodSchema = {
                     "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Deployment",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "discriminator": [
@@ -68053,7 +69064,8 @@ export const miroirFundamentalJzodSchema = {
                     "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Deployment",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "discriminator": [
@@ -68167,7 +69179,8 @@ export const miroirFundamentalJzodSchema = {
                     "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Deployment",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "discriminator": [
@@ -68251,7 +69264,8 @@ export const miroirFundamentalJzodSchema = {
                     "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Deployment",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "discriminator": [
@@ -68295,7 +69309,8 @@ export const miroirFundamentalJzodSchema = {
                           "type": "union",
                           "tag": {
                             "value": {
-                              "canBeTemplate": true
+                              "canBeTemplate": true,
+                              "isTemplate": true
                             }
                           },
                           "discriminator": [
@@ -68307,7 +69322,8 @@ export const miroirFundamentalJzodSchema = {
                               "type": "schemaReference",
                               "tag": {
                                 "value": {
-                                  "canBeTemplate": true
+                                  "canBeTemplate": true,
+                                  "isTemplate": true
                                 }
                               },
                               "definition": {
@@ -68329,7 +69345,8 @@ export const miroirFundamentalJzodSchema = {
                           "type": "union",
                           "tag": {
                             "value": {
-                              "canBeTemplate": true
+                              "canBeTemplate": true,
+                              "isTemplate": true
                             }
                           },
                           "discriminator": [
@@ -68341,7 +69358,8 @@ export const miroirFundamentalJzodSchema = {
                               "type": "schemaReference",
                               "tag": {
                                 "value": {
-                                  "canBeTemplate": true
+                                  "canBeTemplate": true,
+                                  "isTemplate": true
                                 }
                               },
                               "definition": {
@@ -68384,7 +69402,8 @@ export const miroirFundamentalJzodSchema = {
                     "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Deployment",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "discriminator": [
@@ -68474,7 +69493,8 @@ export const miroirFundamentalJzodSchema = {
                         "interpolation": "build",
                         "referenceName": "deploymentUuid"
                       }
-                    }
+                    },
+                    "isTemplate": true
                   }
                 },
                 "discriminator": [
@@ -68548,7 +69568,8 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "id": 2,
                         "defaultLabel": "Entity Instances (objects) to create",
-                        "editable": true
+                        "editable": true,
+                        "isTemplate": true
                       }
                     },
                     "definition": {
@@ -68562,7 +69583,8 @@ export const miroirFundamentalJzodSchema = {
                               "id": 1,
                               "defaultLabel": "Parent Name",
                               "editable": false,
-                              "canBeTemplate": true
+                              "canBeTemplate": true,
+                              "isTemplate": true
                             }
                           },
                           "discriminator": [
@@ -68615,7 +69637,8 @@ export const miroirFundamentalJzodSchema = {
                                     "parentUuid"
                                   ]
                                 }
-                              }
+                              },
+                              "isTemplate": true
                             }
                           },
                           "discriminator": [
@@ -68680,7 +69703,8 @@ export const miroirFundamentalJzodSchema = {
                                     "defaultValuePath": "#.parentUuid",
                                     "typeCheckPath": "#.#.parentUuid"
                                   }
-                                }
+                                },
+                                "isTemplate": true
                               }
                             },
                             "discriminator": [
@@ -68698,7 +69722,8 @@ export const miroirFundamentalJzodSchema = {
                                         "defaultValuePath": "#.parentUuid",
                                         "typeCheckPath": "#.#.parentUuid"
                                       }
-                                    }
+                                    },
+                                    "isTemplate": true
                                   }
                                 },
                                 "definition": {
@@ -68742,7 +69767,8 @@ export const miroirFundamentalJzodSchema = {
                     "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Uuid",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "discriminator": [
@@ -68794,7 +69820,8 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "id": 2,
                         "defaultLabel": "Entity Instances to delete",
-                        "editable": true
+                        "editable": true,
+                        "isTemplate": true
                       }
                     },
                     "definition": {
@@ -68828,7 +69855,8 @@ export const miroirFundamentalJzodSchema = {
                     "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Uuid",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "discriminator": [
@@ -68880,7 +69908,8 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "id": 2,
                         "defaultLabel": "Entity Instances to delete",
-                        "editable": true
+                        "editable": true,
+                        "isTemplate": true
                       }
                     },
                     "definition": {
@@ -68918,7 +69947,8 @@ export const miroirFundamentalJzodSchema = {
                     "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Uuid",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "discriminator": [
@@ -68966,14 +69996,16 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "id": 2,
                         "defaultLabel": "Entity Instances to update",
-                        "editable": true
+                        "editable": true,
+                        "isTemplate": true
                       }
                     },
                     "definition": {
                       "type": "union",
                       "tag": {
                         "value": {
-                          "canBeTemplate": true
+                          "canBeTemplate": true,
+                          "isTemplate": true
                         }
                       },
                       "discriminator": [
@@ -68986,7 +70018,8 @@ export const miroirFundamentalJzodSchema = {
                           "optional": false,
                           "tag": {
                             "value": {
-                              "canBeTemplate": true
+                              "canBeTemplate": true,
+                              "isTemplate": true
                             }
                           },
                           "definition": {
@@ -69031,7 +70064,8 @@ export const miroirFundamentalJzodSchema = {
                     "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Uuid",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "discriminator": [
@@ -69068,7 +70102,8 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "id": 2,
                         "defaultLabel": "Entity Instances to place in the local cache",
-                        "editable": true
+                        "editable": true,
+                        "isTemplate": true
                       }
                     },
                     "definition": {
@@ -69106,7 +70141,8 @@ export const miroirFundamentalJzodSchema = {
                     "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Uuid",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "discriminator": [
@@ -69190,7 +70226,8 @@ export const miroirFundamentalJzodSchema = {
                     "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Uuid",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "discriminator": [
@@ -69283,7 +70320,8 @@ export const miroirFundamentalJzodSchema = {
                         "interpolation": "build",
                         "referenceName": "deploymentUuid"
                       }
-                    }
+                    },
+                    "isTemplate": true
                   }
                 },
                 "discriminator": [
@@ -69357,7 +70395,8 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "id": 2,
                         "defaultLabel": "Entity Instances (objects) to create",
-                        "editable": true
+                        "editable": true,
+                        "isTemplate": true
                       }
                     },
                     "definition": {
@@ -69371,7 +70410,8 @@ export const miroirFundamentalJzodSchema = {
                               "id": 1,
                               "defaultLabel": "Parent Name",
                               "editable": false,
-                              "canBeTemplate": true
+                              "canBeTemplate": true,
+                              "isTemplate": true
                             }
                           },
                           "discriminator": [
@@ -69424,7 +70464,8 @@ export const miroirFundamentalJzodSchema = {
                                     "parentUuid"
                                   ]
                                 }
-                              }
+                              },
+                              "isTemplate": true
                             }
                           },
                           "discriminator": [
@@ -69489,7 +70530,8 @@ export const miroirFundamentalJzodSchema = {
                                     "defaultValuePath": "#.parentUuid",
                                     "typeCheckPath": "#.#.parentUuid"
                                   }
-                                }
+                                },
+                                "isTemplate": true
                               }
                             },
                             "discriminator": [
@@ -69507,7 +70549,8 @@ export const miroirFundamentalJzodSchema = {
                                         "defaultValuePath": "#.parentUuid",
                                         "typeCheckPath": "#.#.parentUuid"
                                       }
-                                    }
+                                    },
+                                    "isTemplate": true
                                   }
                                 },
                                 "definition": {
@@ -69551,7 +70594,8 @@ export const miroirFundamentalJzodSchema = {
                     "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Uuid",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "discriminator": [
@@ -69603,7 +70647,8 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "id": 2,
                         "defaultLabel": "Entity Instances to delete",
-                        "editable": true
+                        "editable": true,
+                        "isTemplate": true
                       }
                     },
                     "definition": {
@@ -69641,7 +70686,8 @@ export const miroirFundamentalJzodSchema = {
                     "id": 1,
                     "canBeTemplate": true,
                     "defaultLabel": "Uuid",
-                    "editable": false
+                    "editable": false,
+                    "isTemplate": true
                   }
                 },
                 "discriminator": [
@@ -69689,14 +70735,16 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "id": 2,
                         "defaultLabel": "Entity Instances to update",
-                        "editable": true
+                        "editable": true,
+                        "isTemplate": true
                       }
                     },
                     "definition": {
                       "type": "union",
                       "tag": {
                         "value": {
-                          "canBeTemplate": true
+                          "canBeTemplate": true,
+                          "isTemplate": true
                         }
                       },
                       "discriminator": [
@@ -69709,7 +70757,8 @@ export const miroirFundamentalJzodSchema = {
                           "optional": false,
                           "tag": {
                             "value": {
-                              "canBeTemplate": true
+                              "canBeTemplate": true,
+                              "isTemplate": true
                             }
                           },
                           "definition": {
@@ -69909,7 +70958,8 @@ export const miroirFundamentalJzodSchema = {
                 "id": 1,
                 "canBeTemplate": true,
                 "defaultLabel": "Uuid",
-                "editable": false
+                "editable": false,
+                "isTemplate": true
               }
             },
             "discriminator": [
@@ -69996,7 +71046,8 @@ export const miroirFundamentalJzodSchema = {
                 "id": 1,
                 "canBeTemplate": true,
                 "defaultLabel": "Uuid",
-                "editable": false
+                "editable": false,
+                "isTemplate": true
               }
             },
             "discriminator": [
@@ -70073,7 +71124,8 @@ export const miroirFundamentalJzodSchema = {
                 "id": 1,
                 "canBeTemplate": true,
                 "defaultLabel": "Uuid",
-                "editable": false
+                "editable": false,
+                "isTemplate": true
               }
             },
             "discriminator": [
@@ -70334,7 +71386,8 @@ export const miroirFundamentalJzodSchema = {
                 "id": 1,
                 "defaultLabel": "Uuid",
                 "editable": false,
-                "canBeTemplate": true
+                "canBeTemplate": true,
+                "isTemplate": true
               }
             },
             "discriminator": [
@@ -70370,7 +71423,8 @@ export const miroirFundamentalJzodSchema = {
                 "id": 2,
                 "defaultLabel": "Entity Name",
                 "editable": false,
-                "canBeTemplate": true
+                "canBeTemplate": true,
+                "isTemplate": true
               }
             },
             "discriminator": [
@@ -70406,7 +71460,8 @@ export const miroirFundamentalJzodSchema = {
                 "id": 3,
                 "defaultLabel": "Entity Uuid",
                 "editable": false,
-                "canBeTemplate": true
+                "canBeTemplate": true,
+                "isTemplate": true
               }
             },
             "discriminator": [
@@ -70468,7 +71523,8 @@ export const miroirFundamentalJzodSchema = {
                 "id": 4,
                 "defaultLabel": "Concept Level",
                 "editable": false,
-                "canBeTemplate": true
+                "canBeTemplate": true,
+                "isTemplate": true
               }
             },
             "discriminator": [
@@ -70517,7 +71573,8 @@ export const miroirFundamentalJzodSchema = {
                 "id": 1,
                 "defaultLabel": "Parent Name",
                 "editable": false,
-                "canBeTemplate": true
+                "canBeTemplate": true,
+                "isTemplate": true
               }
             },
             "discriminator": [
@@ -70553,7 +71610,8 @@ export const miroirFundamentalJzodSchema = {
                 "id": 2,
                 "defaultLabel": "Parent Name",
                 "editable": false,
-                "canBeTemplate": true
+                "canBeTemplate": true,
+                "isTemplate": true
               }
             },
             "discriminator": [
@@ -70595,7 +71653,8 @@ export const miroirFundamentalJzodSchema = {
               "type": "union",
               "tag": {
                 "value": {
-                  "canBeTemplate": true
+                  "canBeTemplate": true,
+                  "isTemplate": true
                 }
               },
               "discriminator": [
@@ -70607,7 +71666,8 @@ export const miroirFundamentalJzodSchema = {
                   "type": "schemaReference",
                   "tag": {
                     "value": {
-                      "canBeTemplate": true
+                      "canBeTemplate": true,
+                      "isTemplate": true
                     }
                   },
                   "definition": {
@@ -70862,7 +71922,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "display": {
                       "displayedAttributeValueWhenFolded": "definition.label"
-                    }
+                    },
+                    "isTemplate": true
                   }
                 },
                 "definition": {
@@ -70948,7 +72009,8 @@ export const miroirFundamentalJzodSchema = {
                   "value": {
                     "display": {
                       "displayedAttributeValueWhenFolded": "definition.label"
-                    }
+                    },
+                    "isTemplate": true
                   }
                 },
                 "definition": {
@@ -71249,7 +72311,8 @@ export const miroirFundamentalJzodSchema = {
               "value": {
                 "id": 9,
                 "defaultLabel": "Definition",
-                "editable": true
+                "editable": true,
+                "isTemplate": true
               }
             }
           }
@@ -71391,7 +72454,8 @@ export const miroirFundamentalJzodSchema = {
                 "id": 1,
                 "canBeTemplate": true,
                 "defaultLabel": "Uuid",
-                "editable": false
+                "editable": false,
+                "isTemplate": true
               }
             },
             "discriminator": [
@@ -71623,6 +72687,13 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_object_fullTemplate"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_parameterReference"
             }
           },
           {
@@ -72325,6 +73396,13 @@ export const miroirFundamentalJzodSchema = {
         "definition": {
           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
           "relativePath": "transformerForBuildPlusRuntime_object_fullTemplate"
+        }
+      },
+      "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_parameterReference": {
+        "type": "schemaReference",
+        "definition": {
+          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          "relativePath": "transformerForBuildPlusRuntime_parameterReference"
         }
       },
       "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_unique": {
@@ -73137,11 +74215,18 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
-      "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_optional_Abstract": {
+      "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_Abstract": {
         "type": "schemaReference",
         "definition": {
           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-          "relativePath": "transformerForRuntime_optional_Abstract"
+          "relativePath": "transformerForBuildPlusRuntime_Abstract"
+        }
+      },
+      "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_optional_Abstract": {
+        "type": "schemaReference",
+        "definition": {
+          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          "relativePath": "transformerForBuildPlusRuntime_optional_Abstract"
         }
       },
       "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_orderBy": {
@@ -73346,6 +74431,13 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
+      "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_optional_Abstract": {
+        "type": "schemaReference",
+        "definition": {
+          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          "relativePath": "transformerForRuntime_optional_Abstract"
+        }
+      },
       "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformer_inner_label": {
         "type": "schemaReference",
         "definition": {
@@ -73514,7 +74606,8 @@ export const miroirFundamentalJzodSchema = {
               "value": {
                 "id": 2,
                 "defaultLabel": "SelfApplication Section",
-                "editable": false
+                "editable": false,
+                "isTemplate": true
               }
             },
             "definition": {
@@ -73530,7 +74623,8 @@ export const miroirFundamentalJzodSchema = {
                 "id": 3,
                 "canBeTemplate": true,
                 "defaultLabel": "Parent Name",
-                "editable": false
+                "editable": false,
+                "isTemplate": true
               }
             },
             "discriminator": [
@@ -73570,7 +74664,8 @@ export const miroirFundamentalJzodSchema = {
                 "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                 "selectorParams": {
                   "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad"
-                }
+                },
+                "isTemplate": true
               }
             },
             "discriminator": [
@@ -74449,6 +75544,13 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "transformerForBuildPlusRuntime_object_fullTemplate"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "transformerForBuildPlusRuntime_parameterReference"
             }
           },
           {

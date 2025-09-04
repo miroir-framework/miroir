@@ -134,17 +134,6 @@ export function applyLimitedCarryOnSchemaOnLevel(
   //   alwaysPropagate,
   // );
 
-  // log.info("############# applyLimitedCarryOnSchemaOnLevel", "suffixForReferences", suffixForReferences);
-  // const convertedExtra: JzodElement | undefined = baseSchema.extra
-  //   ? applyCarryOnSchema(
-  //       baseSchema.extra, // hard-coded type for jzodBaseSchema.extra is "any", it is replaced in any "concrete" jzodSchema definition
-  //       carryOnSchema,
-  //       localReferencePrefix,
-  //       resolveJzodReference,
-  //       convertedReferences
-  //     ).resultSchema // TODO: what about resolvedReferences for extra? They are ignored, is it about right?
-  //   : undefined;
-
   // const convertedTag = baseSchema.tag;
   const castTag = (baseSchema as any).tag as any;
 
@@ -155,7 +144,11 @@ export function applyLimitedCarryOnSchemaOnLevel(
   //     resolvedReferences: convertedReferences,
   //   }
   // }
-  let convertedTag:JzodElement = castTag;
+  // let convertedTag:JzodElement = castTag;
+  let convertedTag:JzodElement = castTag?.value?{
+    ...castTag,
+    value: {...castTag.value, isTemplate: true}
+  }: castTag;
   if (castTag && castTag.schema && castTag.schema.valueSchema) {    
     // Check if this tag references a transformer schema - if so, skip carryOn application
     // to prevent infinite recursion since transformers are already complete types
@@ -174,6 +167,7 @@ export function applyLimitedCarryOnSchemaOnLevel(
         ...castTag,
         schema: {
           ...castTag.schema,
+          // isTemplate: true,
           valueSchema: applyLimitedCarryOnSchemaOnLevel(
             castTag.schema.valueSchema, // hard-coded type for jzodBaseSchema.extra is "any", it is replaced in any "concrete" jzodSchema definition
             carryOnSchema,

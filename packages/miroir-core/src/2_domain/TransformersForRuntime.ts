@@ -76,7 +76,7 @@ import { cleanLevel } from "./constants";
 import { getEntityInstancesUuidIndexNonHook } from './ReduxDeploymentsStateQueryExecutor';
 import { transformer_spreadSheetToJzodSchema } from "./Transformer_Spreadsheet";
 import {
-  mmlsTransformers,
+  mlsTransformers,
   transformer_constant,
   transformer_constantArray,
   transformer_constantAsExtractor,
@@ -142,6 +142,7 @@ export const defaultTransformers = {
 // Default value for Jzod Schema functions - moved here to avoid circular dependency
 // ################################################################################################
 export function getDefaultValueForJzodSchemaWithResolution<T extends MiroirModelEnvironment>(
+  step: Step,
   jzodSchema: JzodElement,
   rootObject: any | undefined, // Optional parameter for backward compatibility
   rootLessListKey: string,
@@ -151,18 +152,18 @@ export function getDefaultValueForJzodSchemaWithResolution<T extends MiroirModel
   forceOptional: boolean = false,
   deploymentUuid: Uuid | undefined = undefined,
   miroirEnvironment: T,
-  // miroirFundamentalJzodSchema: JzodSchema,
-  // currentModel?: MetaModel,
-  // miroirMetaModel?: MetaModel,
+  contextResults?: Record<string, any>,
   relativeReferenceJzodContext?: { [k: string]: JzodElement },
 ): any {
 
 
   let effectiveSchemaOrError = resolveConditionalSchema(
+    step,
     jzodSchema,
     rootObject || currentDefaultValue, // Use rootObject if provided, fallback to currentDefaultValue
     currentValuePath,
     miroirEnvironment,
+    contextResults,
     reduxDeploymentsState,
     // getEntityInstancesUuidIndex,
     deploymentUuid,
@@ -286,6 +287,7 @@ export function getDefaultValueForJzodSchemaWithResolution<T extends MiroirModel
         .forEach((a) => {
           const attributeName = a[0];
           const attributeValue = getDefaultValueForJzodSchemaWithResolution(
+            step,
             a[1],
             rootObject,
             rootLessListKey,
@@ -450,6 +452,7 @@ export function getDefaultValueForJzodSchemaWithResolution<T extends MiroirModel
         // miroirMetaModel,
       );
       return getDefaultValueForJzodSchemaWithResolution(
+        step,
         resolvedReference,
         rootObject,
         rootLessListKey,
@@ -459,9 +462,6 @@ export function getDefaultValueForJzodSchemaWithResolution<T extends MiroirModel
         forceOptional,
         deploymentUuid,
         miroirEnvironment,
-        // miroirFundamentalJzodSchema,
-        // currentModel,
-        // miroirMetaModel,
         localContext,
       );
     }
@@ -476,6 +476,7 @@ export function getDefaultValueForJzodSchemaWithResolution<T extends MiroirModel
         return jzodSchema.tag?.value?.initializeTo.value;
       } else {
         return getDefaultValueForJzodSchemaWithResolution(
+          step,
           effectiveSchema.definition[0],
           rootObject,
           rootLessListKey,
@@ -485,9 +486,6 @@ export function getDefaultValueForJzodSchemaWithResolution<T extends MiroirModel
           forceOptional,
           deploymentUuid,
           miroirEnvironment,
-          // miroirFundamentalJzodSchema,
-          // currentModel,
-          // miroirMetaModel,
           relativeReferenceJzodContext,
         );
       }
@@ -524,6 +522,7 @@ export function getDefaultValueForJzodSchemaWithResolution<T extends MiroirModel
 }
 
 export function getDefaultValueForJzodSchemaWithResolutionNonHook<T extends MiroirModelEnvironment>(
+  step: Step,
   jzodSchema: JzodElement,
   rootObject: any = undefined, 
   rootLessListKey: string,
@@ -533,6 +532,7 @@ export function getDefaultValueForJzodSchemaWithResolutionNonHook<T extends Miro
   forceOptional: boolean = false,
   deploymentUuid: Uuid | undefined,
   miroirEnvironment: T,
+  contextResults?: Record<string, any>,
   relativeReferenceJzodContext?: { [k: string]: JzodElement },
 ): any {
   // log.info(
@@ -556,6 +556,7 @@ export function getDefaultValueForJzodSchemaWithResolutionNonHook<T extends Miro
 
   if (deploymentUuid == undefined || deploymentUuid.length < 8 || !reduxDeploymentsState) {
     return getDefaultValueForJzodSchemaWithResolution(
+      step,
       jzodSchema,
       rootObject,
       rootLessListKey,
@@ -570,6 +571,7 @@ export function getDefaultValueForJzodSchemaWithResolutionNonHook<T extends Miro
   }
 
   return getDefaultValueForJzodSchemaWithResolution(
+    step,
     jzodSchema,
     rootObject,
     rootLessListKey,
@@ -583,6 +585,7 @@ export function getDefaultValueForJzodSchemaWithResolutionNonHook<T extends Miro
   );
 }
 
+// ################################################################################################
 export function defaultValueForMLSchemaTransformer<T extends MiroirModelEnvironment>(
   step: Step,
   label: string | undefined,
@@ -592,6 +595,7 @@ export function defaultValueForMLSchemaTransformer<T extends MiroirModelEnvironm
   contextResults?: Record<string, any>
 ): any {
   const result = getDefaultValueForJzodSchemaWithResolutionNonHook(
+    step,
     transformer.mlSchema,
     undefined, // rootObject
     "", // rootLessListKey
@@ -601,19 +605,19 @@ export function defaultValueForMLSchemaTransformer<T extends MiroirModelEnvironm
     false, // forceOptional
     undefined, // deploymentUuid
     transformerParams, // miroirEnvironment
+    contextResults,
     undefined, // relativeReferenceJzodContext
-    // miroirFundamentalJzodSchema as JzodSchema,
   );
-  // log.info(
-  //   "defaultValueForMLSchemaTransformer called with",
-  //   "step", step,
-  //   "label", label,
-  //   "transformer", transformer,
-  //   "resolveBuildTransformersTo", resolveBuildTransformersTo,
-  //   "transformerParams", transformerParams,
-  //   "contextResults", contextResults,
-  //   "result", result
-  // );
+  log.info(
+    "defaultValueForMLSchemaTransformer called with",
+    "step", step,
+    "label", label,
+    "transformer", transformer,
+    "resolveBuildTransformersTo", resolveBuildTransformersTo,
+    "transformerParams", transformerParams,
+    "contextResults", contextResults,
+    "result", result
+  );
   return result;
 }
 
@@ -683,7 +687,7 @@ export const applicationTransformerDefinitions: Record<string, TransformerDefini
   unique: transformer_unique,
   // MLS
   ...Object.fromEntries(
-    Object.entries(mmlsTransformers).map(([key, value]) => [
+    Object.entries(mlsTransformers).map(([key, value]) => [
       key.replace("transformer_", ""),
       value as TransformerDefinition,
     ])
@@ -700,7 +704,6 @@ function resolveApplyTo<T extends MiroirModelEnvironment>(
     | TransformerForBuild_objectAlter
     | TransformerForRuntime_objectAlter,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
-  // queryParams: Record<string, any>,
   queryParams: T,
   contextResults?: Record<string, any>
 ) {

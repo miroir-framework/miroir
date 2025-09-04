@@ -204,6 +204,7 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
       !selectedDeploymentUuid
         ? {}
         : getDefaultValueForJzodSchemaWithResolutionNonHook(
+            "build",
             {
               type: "object",
               definition: currentAction.actionParameters || {},

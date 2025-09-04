@@ -50,7 +50,7 @@ import {
   getMiroirFundamentalJzodSchema,
   miroirFundamentalJzodSchemaUuid,
 } from "../src/0_interfaces/1_core/bootstrapJzodSchemas/getMiroirFundamentalJzodSchema.js";
-import { miroirTransformersForBuild, mmlsTransformers } from "../src/2_domain/Transformers";
+import { miroirTransformersForBuild, mlsTransformers } from "../src/2_domain/Transformers";
 import { entity } from "../src";
 
 async function build() {
@@ -163,7 +163,7 @@ export type TransformerForBuild =
   | TransformerForBuild_InnerReference
   | TransformerForBuild_dataflowSequence
   // MLS
-  | ${Object.keys(mmlsTransformers)
+  | ${Object.keys(mlsTransformers)
     .map((e) => `${e.replace("transformer_", "TransformerForBuild_")}`)
     .join("\n  | ")}
 ;
@@ -220,7 +220,7 @@ export const transformerForBuild: z.ZodType<TransformerForBuild> = z.lazy(() => 
     transformerForBuild_InnerReference,
     transformerForBuild_dataflowSequence,
     // MLS
-    ${Object.keys(mmlsTransformers)
+    ${Object.keys(mlsTransformers)
       .map((e) => `${e.replace("transformer_", "transformerForBuild_")}`)
       .join(",\n   ")}
   ]);
@@ -256,7 +256,7 @@ export type TransformerForRuntime =
   | TransformerForRuntime_InnerReference
   | TransformerForRuntime_dataflowSequence
   // MLS
-  | ${Object.keys(mmlsTransformers)
+  | ${Object.keys(mlsTransformers)
     .map((e) => `${e.replace("transformer_", "TransformerForRuntime_")}`)
     .join("\n  | ")}
 ;
@@ -292,7 +292,7 @@ export const transformerForRuntime: z.ZodType<TransformerForRuntime> = z.union([
   z.lazy(() => transformerForRuntime_InnerReference),
   z.lazy(() => transformerForRuntime_dataflowSequence),
   // MLS
-  ${Object.keys(mmlsTransformers)
+  ${Object.keys(mlsTransformers)
     .map((e) => `z.lazy(() => ${e.replace("transformer_", "transformerForRuntime_")})`)
     .join(",\n   ")}
 ]);
@@ -313,7 +313,7 @@ export type TransformerForBuildPlusRuntime =
         [P in "transformerType" | "interpolation"]?: never;
       }
     )
-  | TransformerForBuild
+  // | TransformerForBuild
   | TransformerForBuildPlusRuntime_menu_addItem
   | TransformerForBuildPlusRuntime_constant
   | TransformerForBuildPlusRuntime_constantArray
@@ -344,7 +344,7 @@ export type TransformerForBuildPlusRuntime =
   | TransformerForBuildPlusRuntime_InnerReference
   | TransformerForBuildPlusRuntime_dataflowSequence
   // MLS
-  | ${Object.keys(mmlsTransformers)
+  | ${Object.keys(mlsTransformers)
     .map((e) => `${e.replace("transformer_", "TransformerForBuildPlusRuntime_")}`)
     .join("\n  | ")}
 ;
@@ -403,7 +403,7 @@ export const transformerForBuildPlusRuntime: z.ZodType<TransformerForBuildPlusRu
     transformerForBuildPlusRuntime_InnerReference,
     transformerForBuildPlusRuntime_dataflowSequence,
     // MLS
-    ${Object.keys(mmlsTransformers)
+    ${Object.keys(mlsTransformers)
       .map((e) => `${e.replace("transformer_", "transformerForBuildPlusRuntime_")}`)
       .join(",\n   ")}
   ]);

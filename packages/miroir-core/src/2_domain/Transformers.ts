@@ -77,7 +77,7 @@ export const transformer_resolveSchemaReferenceInContext: TransformerDefinition 
 export const transformer_unfoldSchemaOnce: TransformerDefinition = transformer_unfoldSchemaOnce_json as TransformerDefinition;
 export const transformer_jzodTypeCheck: TransformerDefinition = transformer_jzodTypeCheck_json as TransformerDefinition;
 
-export const mmlsTransformers: Record<string,TransformerDefinition> = {
+export const mlsTransformers: Record<string,TransformerDefinition> = {
   transformer_defaultValueForMLSchema,
   transformer_resolveConditionalSchema,
   transformer_resolveSchemaReferenceInContext,
@@ -113,12 +113,12 @@ export const miroirCoreTransformers: Record<string,TransformerDefinition> = {
   transformer_unique,
   transformer_constantBigint,
   // MLS
-  ...mmlsTransformers,
+  ...mlsTransformers,
 };
 export const miroirTransformers: Record<string,TransformerDefinition> = {
   transformer_menu_addItem,
   ...miroirCoreTransformers,
-  ...mmlsTransformers,
+  ...mlsTransformers,
 };
 export const transformerForBuildNames = Object.keys(miroirTransformers)
   .filter((e) => e != "transformer_contextReference")
@@ -131,7 +131,6 @@ export const transformerForRuntimeNames = Object.keys(miroirTransformers)
 );
 
 export const transformerForBuildPlusRuntimeNames = Object.keys(miroirTransformers)
-.filter((e) => e != "transformer_parameterReference")
 .map((e) =>
   e.replace("transformer_", "transformerForBuildPlusRuntime_")
 );
