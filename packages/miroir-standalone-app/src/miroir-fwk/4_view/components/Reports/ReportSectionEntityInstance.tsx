@@ -347,8 +347,8 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   // ##############################################################################################
   if (instance) {
     return (
-      <ThemedContainer style={{ width: '100%' }}>
-        {/* <div style={{ width: "100%" }}> */}
+      // <ThemedContainer style={{ width: '100%' }}>
+      <ThemedContainer>
           {showPerformanceDisplay && (
             <ThemedText>
               ReportSectionEntityInstance renders: {navigationCount} (total: {totalCount})
@@ -485,7 +485,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                         height: "400px",
                         width: "100%",
                       }}
-                      maxRows={20}
+                      maxRows={50}
                       sortByAttribute="testName"
                       displayTools={false}
                       gridType="ag-grid"

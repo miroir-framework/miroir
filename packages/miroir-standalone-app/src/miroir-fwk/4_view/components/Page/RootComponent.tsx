@@ -12,7 +12,6 @@ import {
 import { Outlet, useNavigate } from 'react-router-dom';
 import { EventTimelineContainer } from '../EventTimelineContainer';
 import {
-  ThemedBox,
   ThemedButton,
   ThemedFormControl,
   ThemedGrid,
@@ -570,9 +569,8 @@ export const RootComponent = (props: RootComponentProps) => {
             container
             direction="column"
             id="mainPanel"
-            // style={{ height: "100vh" }}
           >
-            <ThemedGrid item>
+            {/* <ThemedGrid item> */}
               <AppBar
                 handleDrawerOpen={handleDrawerOpen}
                 open={drawerIsOpen}
@@ -586,8 +584,8 @@ export const RootComponent = (props: RootComponentProps) => {
               >
                 Bar!
               </AppBar>
-            </ThemedGrid>
-            <ThemedGrid item container style={{ flex: 1, minHeight: 0 }}>
+            {/* </ThemedGrid> */}
+            {/* <ThemedGrid item container style={{ flex: 1, minHeight: 0 }}> */}
               <ThemedMain
                 open={drawerIsOpen}
                 width={sidebarWidth}
@@ -761,7 +759,7 @@ export const RootComponent = (props: RootComponentProps) => {
                 <Outlet></Outlet>
               </ThemedMain>
             </ThemedGrid>
-          </ThemedGrid>
+          {/* </ThemedGrid> */}
           {/* Document Outline - Full height on right side */}
           <InstanceEditorOutline
             isOpen={isOutlineOpen}

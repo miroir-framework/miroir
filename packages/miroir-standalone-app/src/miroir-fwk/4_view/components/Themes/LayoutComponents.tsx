@@ -262,7 +262,7 @@ export const ThemedGrid: React.FC<ThemedComponentProps & {
     width: container ? `calc(100% + ${spacing * 8}px)` : undefined,
     flex: item ? '1 1 0%' : undefined,
     maxWidth: item ? '100%' : undefined,
-    // padding: item ? `${spacing * 4}px` : undefined,
+    padding: item ? `${spacing * 4}px` : undefined,
     minWidth: zeroMinWidth ? 0 : undefined,
     
     // Basic responsive grid system
@@ -480,17 +480,21 @@ export const ThemedMain: React.FC<ThemedComponentProps & {
       width: `calc(100% - ${width}px - ${outlineOpen ? outlineWidth : 0}px)`,
       marginLeft: `${width}px`,
       marginRight: outlineOpen ? `${outlineWidth}px` : 0,
+      // Let the element naturally fill remaining space
+      // width: 'auto',
     }),
     // When sidebar is closed but outline is open
     ...(!open && outlineOpen && {
       width: `calc(100% - ${outlineWidth}px)`,
       marginRight: `${outlineWidth}px`,
+      // width: 'auto',
     }),
     // When both sidebar and outline are closed
     ...(!open && !outlineOpen && {
       width: '100%',
       marginLeft: 0,
       marginRight: 0,
+      // width: 'auto',
     }),
   });
 

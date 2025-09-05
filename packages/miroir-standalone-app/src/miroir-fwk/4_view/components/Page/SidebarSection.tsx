@@ -42,51 +42,13 @@ MiroirLoggerFactory.registerLoggerToStart(
 ).then((logger: LoggerInterface) => {log = logger});
 
 
-
 export const SidebarWidth = 200;
-
-const openedMixin = (theme: Theme): CSSObject => ({
-  width: SidebarWidth,
-  transition: theme.transitions.create('width', {
-    easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.enteringScreen,
-  }),
-  display: 'flex',
-  overflowX: 'hidden',
-});
-
-const closedMixin = (theme: Theme): CSSObject => ({
-  transition: theme.transitions.create('width', {
-    easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.leavingScreen,
-  }),
-  display: "none"
-});
 
 export interface ResponsiveAppBarProps {
   handleDrawerOpen: ()=>void,
   open: boolean,
   children:any,
 }
-
-// const Sidebar = MuiDrawer;
-const StyledDrawer = styled(MuiDrawer as any, { shouldForwardProp: (prop) => prop !== 'open' })(
-  ({ theme, open }) => ({
-    width: SidebarWidth,
-    flexShrink: 0,
-    whiteSpace: 'nowrap',
-    boxSizing: 'border-box',
-    ...(open && {
-      ...openedMixin(theme),
-      '& .MuiDrawer-paper': openedMixin(theme),
-    }),
-    ...(!open && {
-      ...closedMixin(theme),
-      '& .MuiDrawer-paper': closedMixin(theme),
-    }),
-  }),
-);
-
 
 const sideBarDefaultItems = [
   {
@@ -99,18 +61,6 @@ const sideBarDefaultItems = [
 ];
 
 let count = 0;
-const muiIcons = {
-  "AutoStories": AutoStories
-}
-// interface IconProps {
-//   icon?: keyof typeof MUIcon;
-// }
-// const IconComp: React.FC<IconProps> = ({
-//  icon,
-// }) => {
-//    const Icon = icon && MUIcon[icon];
-//    return ({Icon && <Icon />})
-// }
 // ################################################################################################
 export interface SidebarSectionProps {deploymentUuid: Uuid, menuUuid: Uuid, open:boolean, setOpen: (v:boolean)=>void};
 export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProps) => {

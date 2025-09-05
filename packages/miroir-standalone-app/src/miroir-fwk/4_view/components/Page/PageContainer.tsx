@@ -48,7 +48,7 @@ export const PageContainer: React.FC<PageContainerProps> = ({
         
         // Use full available space - parent (RootComponent) handles sidebar/outline margins
         width: '100%',
-        minWidth: 0, // Allow shrinking
+        minWidth: '20vw', // Allow shrinking
         height: '100%',
         
         // Box model

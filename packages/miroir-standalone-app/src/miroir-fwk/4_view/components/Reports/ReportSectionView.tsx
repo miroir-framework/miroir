@@ -142,9 +142,9 @@ export const ReportSectionView = (props: ReportSectionViewProps) => {
   //   props
   // );
 
-  const styles = useMemo(()=>({
-    width: "80vw",
-  }),[])
+  // const styles = useMemo(()=>({
+  //   width: "80vw",
+  // }),[])
 
   return props.applicationSection && props.reportSection ? (
     <>
@@ -189,7 +189,7 @@ export const ReportSectionView = (props: ReportSectionViewProps) => {
                 props.reportQueriesResultsRecord,
                 "report label"
               )}
-              styles={styles}
+              // styles={styles}
               deploymentUuid={props.deploymentUuid}
               chosenApplicationSection={props.applicationSection as ApplicationSection}
               displayedDeploymentDefinition={displayedDeploymentDefinition}
