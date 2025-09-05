@@ -1,100 +1,53 @@
-/**
- * PERFORMANCE OPTIMIZATIONS FOR REACT 18 BATCHING
- * 
- * This component has been optimized to reduce excessive re-renders, particularly
- * when performing bulk async operations like "fetch Miroir & App configurations from database".
- * 
- * Key optimizations:
- * 
- * 1. DEPENDENCY STABILIZATION:
- *    - Fixed context dependencies to only update when specific values change
- *    - Memoized selector parameters to prevent Redux selector re-runs
- *    - Stable references for ViewParams and update queue initialization
- * 
- * 2. ASYNC OPERATION BATCHING:
- *    - Changed sequential async operations to Promise.all for parallel execution
- *    - Grouped related domain controller actions to reduce state updates
- *    - Used startTransition for non-urgent UI updates (snackbar notifications)
- * 
- * 3. REACT 18 BATCHING SUPPORT:
- *    - Leveraged automatic batching in async operations
- *    - Used startTransition to defer non-critical state updates
- *    - Reduced blocking operations to allow better batching
- * 
- * 4. SELECTOR OPTIMIZATION:
- *    - Memoized query parameters to prevent selector recreation
- *    - Stabilized ViewParams dependencies 
- *    - Added specific dependency arrays instead of broad object references
- * 
- * Expected result: Reduced from ~16 re-renders to ~3-4 re-renders for bulk operations
- */
-
+import type { SelectChangeEvent } from '@mui/material';
 import {
-  createContext, useContext, useCallback, useEffect, useMemo, useState, startTransition 
+  Alert,
+  Snackbar
+} from '@mui/material';
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect, useMemo, useState
 } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
-import type { SelectChangeEvent, AppBarProps as MuiAppBarProps } from '@mui/material';
-import { 
-  AppBar as MuiAppBar, 
-  styled, 
-  Toolbar, 
-  Box, 
-  Grid, 
-  Snackbar, 
-  Alert,
-  Typography,
-  Button
-} from '@mui/material';
-import { Error as ErrorIcon, BugReport as BugReportIcon } from '@mui/icons-material';
-import { 
-  ThemedSelect,
-  ThemedButton,
+import { EventTimelineContainer } from '../EventTimelineContainer';
+import {
   ThemedBox,
-  ThemedGrid,
+  ThemedButton,
   ThemedFormControl,
+  ThemedGrid,
   ThemedInputLabel,
+  ThemedMain,
   ThemedMenuItem,
   ThemedMUISelect,
   ThemedText
 } from '../Themes/index';
 import { ActionButton } from './ActionButton';
-import { EventTimelineContainer } from '../EventTimelineContainer';
 
 import { v4 as uuidv4 } from 'uuid';
 
 
 import {
-  Action2Error,
-  Action2ReturnType,
   adminConfigurationDeploymentAdmin,
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
-  BoxedQueryTemplateWithExtractorCombinerTransformer,
+  AppTheme,
   defaultAdminViewParams,
   defaultMiroirMetaModel,
   defaultViewParamsFromAdminStorageFetchQueryParams,
-  ReduxDeploymentsState,
-  Domain2ElementFailed,
   Domain2QueryReturnType,
   DomainControllerInterface,
   DomainElementSuccess,
   dummyDomainManyQueryWithDeploymentUuid,
-  entityDeployment,
   EntityInstancesUuidIndex,
-  entityViewParams,
   getQueryRunnerParamsForReduxDeploymentsState,
   LoggerInterface,
   MetaModel,
   miroirFundamentalJzodSchema,
   MiroirLoggerFactory,
-  RunBoxedExtractorAction,
-  RunBoxedExtractorOrQueryAction,
-  StoreOrBundleAction,
-  StoreUnitConfiguration,
+  ReduxDeploymentsState,
   SyncBoxedExtractorOrQueryRunnerMap,
   SyncQueryRunner,
-  SyncQueryRunnerParams,
-  AppTheme,
   ViewParamsData
 } from "miroir-core";
 import { getMemoizedReduxDeploymentsStateSelectorMap, ReduxStateChanges } from "miroir-localcache-redux";
@@ -104,21 +57,19 @@ import {
   useLocalCacheTransactions,
   useMiroirContextService,
   useSnackbar,
-  // useViewParams,
 } from "../../MiroirContextReactProvider.js";
 import { MiroirThemeProvider, useMiroirTheme } from '../../contexts/MiroirThemeContext.js';
 import { useRenderTracker } from "../../tools/renderCountTracker.js";
 import AppBar from './AppBar.js';
 
-import { adminConfigurationDeploymentParis, deployments, packageName } from '../../../../constants.js';
+import { deployments, packageName } from '../../../../constants.js';
+import { useCurrentModel, useReduxDeploymentsStateQuerySelectorForCleanedResult } from "../../ReduxHooks.js";
 import { cleanLevel } from '../../constants.js';
+import { usePageConfiguration } from '../../services/index.js';
+import { InstanceEditorOutline } from '../InstanceEditorOutline.js';
+import { ViewParamsUpdateQueue, ViewParamsUpdateQueueConfig } from '../ViewParamsUpdateQueue.js';
 import { Sidebar } from "./Sidebar.js";
 import { SidebarWidth } from "./SidebarSection.js";
-import { InstanceEditorOutline } from '../InstanceEditorOutline.js';
-import { useCurrentModel, useReduxDeploymentsStateQuerySelectorForCleanedResult } from "../../ReduxHooks.js";
-import { ViewParamsUpdateQueue, ViewParamsUpdateQueueConfig } from '../ViewParamsUpdateQueue.js';
-import { usePageConfiguration } from '../../services/index.js';
-import type { Deployment } from 'miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -155,89 +106,6 @@ export interface RootComponentProps {
 }
 
 
-const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })<{
-  open?: boolean;
-}>(({ theme, open }) => ({
-  flexGrow: 1,
-  // display: "inline-block",
-  p: 3,
-  padding: theme.spacing(3),
-  transition: theme.transitions.create('margin', {
-    easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.leavingScreen,
-  }),
-  // marginLeft: `-${SidebarWidth}px`,
-  // marginLeft: `${SidebarWidth}px`,
-  // marginLeft: `24px`,
-  // ...(open && {
-  //   transition: theme.transitions.create('margin', {
-  //     easing: theme.transitions.easing.easeOut,
-  //     duration: theme.transitions.duration.enteringScreen,
-  //   }),
-  //   marginLeft: 0,
-  // }),
-}));
-
-interface AppBarProps extends MuiAppBarProps {
-  open?: boolean;
-}
-
-const StyledMain =
-styled(
-  Main, 
-  {shouldForwardProp: (prop) => prop !== "open" && prop !== "width" && prop !== "outlineOpen" && prop !== "outlineWidth"}
-)<{
-  open?: boolean;
-  width?: number;
-  outlineOpen?: boolean;
-  outlineWidth?: number;
-}>(
-  ({ theme, open, width = SidebarWidth, outlineOpen, outlineWidth = 300 }) => ({
-    boxSizing: 'border-box',
-    overflow: 'auto',
-    minWidth: 0,
-    height: '100%',
-    display: 'flex',
-    flexDirection: 'column',
-    marginTop: 0, // Fix wide gap below the appbar
-    paddingTop: theme.spacing(3),
-    ...(
-      open && {
-        width: `calc(100% - ${width}px - ${outlineOpen ? outlineWidth : 0}px)`,
-        marginLeft: `${width}px`,
-        marginRight: outlineOpen ? `${outlineWidth}px` : 0,
-        transition: theme.transitions.create(
-          ["margin", "width"], {
-            easing: theme.transitions.easing.easeOut,
-            duration: theme.transitions.duration.enteringScreen,
-          }
-        ),
-      }
-    ),
-    ...(!open && outlineOpen && {
-      width: `calc(100% - ${outlineWidth}px)`,
-      marginRight: `${outlineWidth}px`,
-      transition: theme.transitions.create(
-        ["margin", "width"], {
-          easing: theme.transitions.easing.easeOut,
-          duration: theme.transitions.duration.enteringScreen,
-        }
-      ),
-    }),
-    ...(!open && !outlineOpen && {
-      width: '100%',
-      marginLeft: 0,
-      marginRight: 0,
-      transition: theme.transitions.create(
-        ["margin", "width"], {
-          easing: theme.transitions.easing.easeOut,
-          duration: theme.transitions.duration.enteringScreen,
-        }
-      ),
-    }),
-  })
-);
-
 // ################################################################################################
 // ################################################################################################
 // ################################################################################################
@@ -256,10 +124,6 @@ export const RootComponent = (props: RootComponentProps) => {
   // const params = useParams<any>() as Readonly<Params<ReportUrlParamKeys>>;
   
   const [drawerIsOpen, setDrawerIsOpen] = useState(true);
-  
-  // // Use ViewParams for sidebar width management
-  // const viewParams = useViewParams();
-  // const [sidebarWidth, setSidebarWidth] = useState(viewParams?.sidebarWidth ?? SidebarWidth);
   
   // Use snackbar from context
   const { snackbarOpen, snackbarMessage, snackbarSeverity, showSnackbar, handleSnackbarClose, handleAsyncAction } = useSnackbar();
@@ -724,44 +588,41 @@ export const RootComponent = (props: RootComponentProps) => {
               </AppBar>
             </ThemedGrid>
             <ThemedGrid item container style={{ flex: 1, overflow: "hidden" }}>
-              <ThemedGrid item>
-                <StyledMain
-                  open={drawerIsOpen}
-                  width={sidebarWidth}
-                  outlineOpen={isOutlineOpen}
-                  outlineWidth={outlineWidth}
-                >
-                  <ThemedText>uuid: {uuidv4()}</ThemedText>
-                  <ThemedText>transactions: {JSON.stringify(transactions)}</ThemedText>
-                  {context.showPerformanceDisplay && (
-                    <>
-                      <div>
-                        RootComponent renders: {navigationCount} (total: {totalCount})
-                      </div>
-                    </>
-                  )}
-                  <ThemedFormControl fullWidth>
-                    <ThemedInputLabel id="demo-simple-select-label">
-                      Chosen selfApplication Deployment
-                    </ThemedInputLabel>
-                    <ThemedMUISelect
-                      labelId="demo-simple-select-label"
-                      id="demo-simple-select"
-                      value={context.deploymentUuid}
-                      label="displayedDeploymentUuid"
-                      onChange={handleChangeDisplayedDeployment}
-                    >
-                      {deployments.map((deployment) => {
-                        return (
-                          <ThemedMenuItem key={deployment.name} value={deployment.uuid}>
-                            {deployment.description}
-                          </ThemedMenuItem>
-                        );
-                      })}
-                    </ThemedMUISelect>
-                  </ThemedFormControl>
-                  <span>
-                    {/* <ThemedButton
+              <ThemedMain
+                open={drawerIsOpen}
+                width={sidebarWidth}
+                outlineOpen={isOutlineOpen}
+                outlineWidth={outlineWidth}
+              >
+                <ThemedText>uuid: {uuidv4()}</ThemedText>
+                <ThemedText>transactions: {JSON.stringify(transactions)}</ThemedText>
+                {context.showPerformanceDisplay && (
+                  <div>
+                    RootComponent renders: {navigationCount} (total: {totalCount})
+                  </div>
+                )}
+                <ThemedFormControl fullWidth>
+                  <ThemedInputLabel id="demo-simple-select-label">
+                    Chosen selfApplication Deployment
+                  </ThemedInputLabel>
+                  <ThemedMUISelect
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    value={context.deploymentUuid}
+                    label="displayedDeploymentUuid"
+                    onChange={handleChangeDisplayedDeployment}
+                  >
+                    {deployments.map((deployment) => {
+                      return (
+                        <ThemedMenuItem key={deployment.name} value={deployment.uuid}>
+                          {deployment.description}
+                        </ThemedMenuItem>
+                      );
+                    })}
+                  </ThemedMUISelect>
+                </ThemedFormControl>
+                <span>
+                  {/* <ThemedButton
                         onClick={() =>
                           handleAsyncAction(
                             async () => {
@@ -806,10 +667,10 @@ export const RootComponent = (props: RootComponentProps) => {
                       >
                         Open database
                       </ThemedButton> */}
-                    <ThemedButton onClick={fetchConfigurations}>
-                      fetch Miroir & App configurations from database
-                    </ThemedButton>
-                    {/* <ThemedButton
+                  <ThemedButton onClick={fetchConfigurations}>
+                    fetch Miroir & App configurations from database
+                  </ThemedButton>
+                  {/* <ThemedButton
                         onClick={() =>
                           handleAsyncAction(
                             async () => {
@@ -834,7 +695,7 @@ export const RootComponent = (props: RootComponentProps) => {
                       >
                         fetch Admin configuration from database
                       </ThemedButton> */}
-                    {/* <ThemedButton
+                  {/* <ThemedButton
                         onClick={() =>
                           handleAsyncAction(
                             async () => {
@@ -862,47 +723,46 @@ export const RootComponent = (props: RootComponentProps) => {
                       >
                         Load server local cache
                       </ThemedButton> */}
-                    {/* commit miroir */}
-                      <ActionButton
-                        onAction={async () => {
-                          await domainController.handleAction(
-                            {
-                              actionType: "commit",
-                              endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                              deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
-                            },
-                            defaultMiroirMetaModel
-                          );
-                        }}
-                        successMessage="Miroir committed successfully"
-                        label="Commit Miroir"
-                        handleAsyncAction={handleAsyncAction}
-                        actionName="commit miroir"
-                      />
-                    {/* Commit Library app */}
-                      <ActionButton
-                        onAction={async () => {
-                          await domainController.handleAction(
-                            {
-                              actionType: "commit",
-                              endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                              deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-                            },
-                            defaultMiroirMetaModel
-                          );
-                        }}
-                        successMessage="Library app committed successfully"
-                        label="Commit Library app"
-                        handleAsyncAction={handleAsyncAction}
-                        actionName="commit library app"
-                      />
-                  </span>
-                  {/* Wrap Outlet in a container that allows scrolling when needed */}
-                  <ThemedBox id="rootComponentOutletContainer" style={{ flex: 1, overflow: "auto" }}>
-                    <Outlet></Outlet>
-                  </ThemedBox>
-                </StyledMain>
-              </ThemedGrid>
+                  {/* commit miroir */}
+                  <ActionButton
+                    onAction={async () => {
+                      await domainController.handleAction(
+                        {
+                          actionType: "commit",
+                          endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                          deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+                        },
+                        defaultMiroirMetaModel
+                      );
+                    }}
+                    successMessage="Miroir committed successfully"
+                    label="Commit Miroir"
+                    handleAsyncAction={handleAsyncAction}
+                    actionName="commit miroir"
+                  />
+                  {/* Commit Library app */}
+                  <ActionButton
+                    onAction={async () => {
+                      await domainController.handleAction(
+                        {
+                          actionType: "commit",
+                          endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                          deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                        },
+                        defaultMiroirMetaModel
+                      );
+                    }}
+                    successMessage="Library app committed successfully"
+                    label="Commit Library app"
+                    handleAsyncAction={handleAsyncAction}
+                    actionName="commit library app"
+                  />
+                </span>
+                {/* Wrap Outlet in a container that allows scrolling when needed */}
+                <ThemedBox id="rootComponentOutletContainer" style={{ flex: 1, overflow: "auto" }}>
+                  <Outlet></Outlet>
+                </ThemedBox>
+              </ThemedMain>
             </ThemedGrid>
           </ThemedGrid>
           {/* Document Outline - Full height on right side */}

@@ -45,6 +45,7 @@ export {
   ThemedDeleteButtonContainer,
   ThemedIndentedContainer,
   ThemedScrollableContent,
+  ThemedMain,
 } from './LayoutComponents';
 
 // Display components

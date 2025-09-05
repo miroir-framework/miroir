@@ -437,3 +437,64 @@ export const ThemedScrollableContent: React.FC<ThemedComponentProps> = ({
     </div>
   );
 };
+
+export const ThemedMain: React.FC<ThemedComponentProps & {
+  open?: boolean;
+  width?: number;
+  outlineOpen?: boolean;
+  outlineWidth?: number;
+}> = ({ 
+  children, 
+  className, 
+  style,
+  open,
+  width = 200, // SidebarWidth default
+  outlineOpen,
+  outlineWidth = 300
+}) => {
+  const { currentTheme } = useMiroirTheme();
+  
+  // Base styles for all conditions
+  const baseStyles = {
+    flexGrow: 1,
+    padding: currentTheme.spacing.md,
+    boxSizing: 'border-box' as const,
+    overflow: 'auto',
+    minWidth: 0,
+    height: '100%',
+    display: 'flex',
+    flexDirection: 'column' as const,
+    marginTop: 0, // Fix wide gap below the appbar
+    paddingTop: currentTheme.spacing.md,
+    // Simple transition for all properties
+    transition: 'margin 300ms ease-out, width 300ms ease-out',
+  };
+
+  // Calculate responsive layout based on sidebar and outline states
+  const responsiveStyles = css({
+    ...baseStyles,
+    // When sidebar is open
+    ...(open && {
+      width: `calc(100% - ${width}px - ${outlineOpen ? outlineWidth : 0}px)`,
+      marginLeft: `${width}px`,
+      marginRight: outlineOpen ? `${outlineWidth}px` : 0,
+    }),
+    // When sidebar is closed but outline is open
+    ...(!open && outlineOpen && {
+      width: `calc(100% - ${outlineWidth}px)`,
+      marginRight: `${outlineWidth}px`,
+    }),
+    // When both sidebar and outline are closed
+    ...(!open && !outlineOpen && {
+      width: '100%',
+      marginLeft: 0,
+      marginRight: 0,
+    }),
+  });
+
+  return (
+    <main css={responsiveStyles} className={className} style={style}>
+      {children}
+    </main>
+  );
+};
