@@ -27,7 +27,6 @@ import {
   measuredUnfoldJzodSchemaOnce
 } from "../../tools/hookPerformanceMeasure";
 import { ErrorFallbackComponent } from "../ErrorFallbackComponent";
-import { getItemsOrder } from "../Themes/Style";
 import {
   ThemedAddIcon,
   ThemedAttributeLabel,
@@ -340,7 +339,6 @@ const ProgressiveAttribute: FC<{
 // ##############################################################################################
 // ##############################################################################################
 // ##############################################################################################
-// ##############################################################################################
 export function JzodObjectEditor(props: JzodObjectEditorProps) {
   const [count, setCount] = useState(0);
 
@@ -566,6 +564,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
     // log.info("addExtraRecordEntry newAttributeType", JSON.stringify(newAttributeType, null, 2));
     const newAttributeValue = currentMiroirFundamentalJzodSchema
       ? getDefaultValueForJzodSchemaWithResolutionNonHook(
+          "build",
           currentTypeCheckKeyMap?.rawSchema.definition,
           formik.values, // rootObject
           rootLessListKey,
@@ -588,7 +587,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
     const newRecordValue: any = { ["newRecordEntry"]: newAttributeValue, ...currentValue };
     // log.info("addExtraRecordEntry", "newValue", newRecordValue);
 
-    const newItemsOrder = getItemsOrder(newRecordValue, currentTypeCheckKeyMap.rawSchema);
+    // const newItemsOrder = getItemsOrder(newRecordValue, currentTypeCheckKeyMap.rawSchema);
     // log.info("addExtraRecordEntry", "itemsOrder", itemsOrder, "newItemsOrder", newItemsOrder);
 
     formik.setFieldValue(rootLessListKey, newRecordValue);
@@ -638,6 +637,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
       );
       const newAttributeValue = !!currentMiroirFundamentalJzodSchema
         ? getDefaultValueForJzodSchemaWithResolutionNonHook(
+            "build",
             newAttributeType,
             formik.values,
             rootLessListKey,
@@ -668,12 +668,12 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
         "newObjectValue",
         JSON.stringify(newObjectValue, null, 2),
       );
-      const newItemsOrder = getItemsOrder(
-        newObjectValue,
-        currentTypeCheckKeyMap?.chosenUnionBranchRawSchema ??
-          currentTypeCheckKeyMap?.jzodObjectFlattenedSchema ??
-          currentTypeCheckKeyMap?.rawSchema
-      );
+      // const newItemsOrder = getItemsOrder(
+      //   newObjectValue,
+      //   currentTypeCheckKeyMap?.chosenUnionBranchRawSchema ??
+      //     currentTypeCheckKeyMap?.jzodObjectFlattenedSchema ??
+      //     currentTypeCheckKeyMap?.rawSchema
+      // );
 
       // log.info(
       //   "addObjectOptionalAttribute clicked2!",

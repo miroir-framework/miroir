@@ -36,6 +36,7 @@ export interface JzodEditorPropsRoot {
   foreignKeyObjects: Record<string, EntityInstancesUuidIndex>; // prop drilling: for uuid / objects only
   returnsEmptyElement?: boolean; // used to force the editor to return an empty element
   // any
+  isTopLevel?: boolean; // used to control if the editor is an inner editor (used for any type)
   insideAny?: boolean;
   hidden?: boolean; // used to control visibility of the editor
   optional?: boolean; // used to control if the displayed element can be removed or not

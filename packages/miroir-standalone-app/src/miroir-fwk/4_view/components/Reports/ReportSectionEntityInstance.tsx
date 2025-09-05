@@ -17,7 +17,8 @@ import {
 
 import {
   useDomainControllerService,
-  useMiroirContextService
+  useMiroirContextService,
+  useViewParams
 } from "../../MiroirContextReactProvider.js";
 
 import { Toc } from '@mui/icons-material';
@@ -127,6 +128,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
 
   // const errorLog = useErrorLogService();
   const context = useMiroirContextService();
+  const viewParams = useViewParams();
   const showPerformanceDisplay = context.showPerformanceDisplay;
   // const { currentTheme } = useMiroirTheme();
 
@@ -160,6 +162,16 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   const outlineContext = useDocumentOutlineContext();
   const isOutlineOpen = outlineContext.isOutlineOpen;
   const handleToggleOutline = outlineContext.onToggleOutline;
+
+  // Calculate available width based on sidebar and outline panel
+  const availableWidth = useMemo(() => {
+    const sidebarWidth = viewParams.sidebarIsOpen?viewParams.sidebarWidth:0;
+    const outlineWidth = isOutlineOpen ? outlineContext.outlineWidth : 0;
+    // return `calc(100vw - ${sidebarWidth}px - ${outlineWidth}px - 62px)`; // 32px for padding/margins
+    // return `calc(100vw - ${sidebarWidth}px - ${outlineWidth}px - 152px)`; // 32px for padding/margins
+    // return `calc(100vw - ${sidebarWidth}px - ${outlineWidth}px - 132px)`; // 32px for padding/margins
+    return `calc(100vw - ${sidebarWidth}px - ${outlineWidth}px)`; // 32px for padding/margins
+  }, [viewParams.sidebarWidth, isOutlineOpen, outlineContext.outlineWidth]);
 
   const instance: any = props.instance;
 
@@ -342,8 +354,8 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   // ##############################################################################################
   if (instance) {
     return (
-      <ThemedContainer>
-        <div>
+      <ThemedContainer style={{ width: availableWidth, maxWidth: availableWidth }}>
+        {/* <div style={{ width: "100%" }}> */}
           {showPerformanceDisplay && (
             <ThemedText>
               ReportSectionEntityInstance renders: {navigationCount} (total: {totalCount})
@@ -360,6 +372,8 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                 borderRadius: "8px",
                 border: "1px solid #b3d9ff",
                 boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                width: "100%",
+                boxSizing: "border-box",
               }}
             >
               <div style={{ marginBottom: "8px", fontWeight: "bold", color: "#1976d2" }}>
@@ -386,7 +400,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
               {/* Test Results Display */}
               {resolveConditionalSchemaResultsData &&
                 resolveConditionalSchemaResultsData.length > 0 && (
-                  <div style={{ margin: "20px 0" }}>
+                  <div style={{ margin: "20px 0", width: "100%" }}>
                     <h3>resolveConditionalSchema Test Results:</h3>
                     <ValueObjectGrid
                       valueObjects={resolveConditionalSchemaResultsData}
@@ -496,65 +510,6 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
               onChange={handleDisplayEditorSwitchChange}
             />
           </div>
-
-          {/* {displayEditor && (
-            <div style={{ marginTop: "12px", padding: "12px", backgroundColor: "#f5f5f5", borderRadius: "6px" }}>
-              <ThemedText style={{ fontWeight: "bold", marginBottom: "8px" }}>
-                🎛️ Rendering Depth Controls
-              </ThemedText>
-              
-              <ThemedFlexRow align="center" style={{ marginBottom: "8px" }}>
-                <ThemedLabel style={{ marginRight: "12px", minWidth: "120px" }}>
-                  Max Render Depth:
-                </ThemedLabel>
-                <ThemedTextField
-                  type="number"
-                  value={maxRenderDepth.toString()}
-                  onChange={handleMaxRenderDepthChange}
-                  style={{ width: "80px", marginRight: "12px" }}
-                  minWidth="80px"
-                  maxWidth="80px"
-                />
-                <ThemedText style={{ fontSize: "0.85em", color: "#666" }}>
-                  (1 = shallow, higher = deeper)
-                </ThemedText>
-              </ThemedFlexRow>
-              
-              <ThemedFlexRow align="center" style={{ gap: "8px" }}>
-                <ThemedText style={{ marginRight: "8px" }}>Quick expand to:</ThemedText>
-                <ThemedButton
-                  onClick={() => handleUnfoldToDepth(1)}
-                  style={{ fontSize: "0.8em", padding: "4px 8px" }}
-                >
-                  Depth 1
-                </ThemedButton>
-                <ThemedButton
-                  onClick={() => handleUnfoldToDepth(2)}
-                  style={{ fontSize: "0.8em", padding: "4px 8px" }}
-                >
-                  Depth 2
-                </ThemedButton>
-                <ThemedButton
-                  onClick={() => handleUnfoldToDepth(3)}
-                  style={{ fontSize: "0.8em", padding: "4px 8px" }}
-                >
-                  Depth 3
-                </ThemedButton>
-                <ThemedButton
-                  onClick={() => handleUnfoldToDepth(-1)}
-                  style={{ fontSize: "0.8em", fontWeight: "bold", padding: "4px 8px" }}
-                >
-                  Full ∞
-                </ThemedButton>
-                <ThemedButton
-                  onClick={handleCollapseAll}
-                  style={{ fontSize: "0.8em", padding: "4px 8px" }}
-                >
-                  Collapse
-                </ThemedButton>
-              </ThemedFlexRow>
-            </div>
-          )} */}
           <div>
             <ThemedStatusText>
               displayAsStructuredElement: {displayAsStructuredElement ? "true" : "false"}{" "}
@@ -665,7 +620,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
               </ThemedPreformattedText>
             </div>
           )}
-        </div>
+        {/* </div> */}
         {/* <PerformanceMetricsDisplay /> */}
       </ThemedContainer>
     );

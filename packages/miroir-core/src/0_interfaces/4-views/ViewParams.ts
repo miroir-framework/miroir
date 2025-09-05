@@ -48,6 +48,7 @@ export interface ViewParamsData {
   name: string;
   defaultLabel?: string;
   description?: string;
+  sidebarisOpen: number;
   sidebarWidth: number;
   gridType: GridType;
   appTheme: AppTheme;
@@ -55,21 +56,36 @@ export interface ViewParamsData {
 }
 
 export class ViewParams {
+  private _sidebarIsOpen: boolean;
   private _sidebarWidth: number;
   private _gridType: GridType;
   private _appTheme: AppTheme;
   private _toolsPage: ToolsPageState;
 
   constructor(
+    initialSidebarIsOpen: boolean = true,
     initialSidebarWidth: number = 250, 
     initialGridType: GridType = 'ag-grid', 
     initialAppTheme: AppTheme = 'default',
     initialToolsPage: ToolsPageState = {}
   ) {
+    this._sidebarIsOpen = initialSidebarIsOpen;
     this._sidebarWidth = initialSidebarWidth;
     this._gridType = initialGridType;
     this._appTheme = initialAppTheme;
     this._toolsPage = initialToolsPage;
+  }
+
+  get sidebarIsOpen(): boolean {
+    return this._sidebarIsOpen;
+  }
+
+  set sidebarIsOpen(isOpen: boolean) {
+    this._sidebarIsOpen = isOpen;
+  }
+
+  updateSidebarIsOpen(isOpen: boolean): void {
+    this._sidebarIsOpen = isOpen;
   }
 
   get sidebarWidth(): number {

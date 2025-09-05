@@ -12,27 +12,20 @@ import { ThemedComponentProps } from './BaseTypes';
 // ################################################################################################
 
 export const ThemedFlexRow: React.FC<ThemedComponentProps & {
-  justify?: 'start' | 'center' | 'end' | 'space-between';
-  align?: 'start' | 'center' | 'end' | 'stretch';
-  gap?: string;
-  wrap?: boolean;
-}> = ({ 
-  children, 
-  className, 
-  style,
-  justify = 'start',
-  align = 'center',
-  gap,
-  wrap = false
-}) => {
+    justify?: "start" | "center" | "end" | "space-between";
+    align?: "start" | "center" | "end" | "stretch";
+    gap?: string;
+    wrap?: boolean;
+  }
+> = ({ children, className, style, justify = "start", align = "center", gap, wrap = false }) => {
   const { currentTheme } = useMiroirTheme();
-  
+
   const flexStyles = css({
     display: "flex",
     flexDirection: "row",
-    justifyContent: justify === 'start' ? 'flex-start' : justify === 'end' ? 'flex-end' : justify,
-    alignItems: align === 'start' ? 'flex-start' : align === 'end' ? 'flex-end' : align,
-    flexWrap: wrap ? 'wrap' : 'nowrap',
+    justifyContent: justify === "start" ? "flex-start" : justify === "end" ? "flex-end" : justify,
+    alignItems: align === "start" ? "flex-start" : align === "end" ? "flex-end" : align,
+    flexWrap: wrap ? "wrap" : "nowrap",
     gap: gap || currentTheme.spacing.sm,
   });
 
@@ -269,7 +262,7 @@ export const ThemedGrid: React.FC<ThemedComponentProps & {
     width: container ? `calc(100% + ${spacing * 8}px)` : undefined,
     flex: item ? '1 1 0%' : undefined,
     maxWidth: item ? '100%' : undefined,
-    padding: item ? `${spacing * 4}px` : undefined,
+    // padding: item ? `${spacing * 4}px` : undefined,
     minWidth: zeroMinWidth ? 0 : undefined,
     
     // Basic responsive grid system

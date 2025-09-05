@@ -29,7 +29,7 @@ export const PageContainer: React.FC<PageContainerProps> = ({
   children,
   withSidebar = true,
   withDocumentOutline = true,
-  padding = 2,
+  padding = 0,
   customSx = {},
   ...boxProps
 }) => {

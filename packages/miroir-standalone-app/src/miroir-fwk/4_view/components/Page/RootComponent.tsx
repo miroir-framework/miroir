@@ -54,7 +54,8 @@ import {
   ThemedFormControl,
   ThemedInputLabel,
   ThemedMenuItem,
-  ThemedMUISelect
+  ThemedMUISelect,
+  ThemedText
 } from '../Themes/index';
 import { ActionButton } from './ActionButton';
 import { EventTimelineContainer } from '../EventTimelineContainer';
@@ -694,134 +695,73 @@ export const RootComponent = (props: RootComponentProps) => {
         currentThemeId={defaultViewParamsFromAdminStorage?.appTheme || "default"}
         onThemeChange={handleAppThemeChange}
       >
-        <div>
-          {/* <div> */}
-            {/* Sidebar positioned as fixed overlay */}
-            <Sidebar
-              open={drawerIsOpen}
-              setOpen={handleDrawerStateChange}
-              width={sidebarWidth}
-              onWidthChange={handleSidebarWidthChange}
-            />
-            <ThemedGrid
-              container
-              direction="column"
-              // style={{ height: "100vh" }}
-            >
+        <>
+          <Sidebar
+            open={drawerIsOpen}
+            setOpen={handleDrawerStateChange}
+            width={sidebarWidth}
+            onWidthChange={handleSidebarWidthChange}
+          />
+          <ThemedGrid
+            container
+            direction="column"
+            id="mainPanel"
+            // style={{ height: "100vh" }}
+          >
+            <ThemedGrid item>
+              <AppBar
+                handleDrawerOpen={handleDrawerOpen}
+                open={drawerIsOpen}
+                width={sidebarWidth}
+                onWidthChange={handleSidebarWidthChange}
+                outlineOpen={isOutlineOpen}
+                outlineWidth={outlineWidth}
+                onOutlineToggle={handleToggleOutline}
+                gridType={defaultViewParamsFromAdminStorage?.gridType || "ag-grid"}
+                onGridTypeToggle={handleGridTypeToggle}
+              >
+                Bar!
+              </AppBar>
+            </ThemedGrid>
+            <ThemedGrid item container style={{ flex: 1, overflow: "hidden" }}>
               <ThemedGrid item>
-                <AppBar
-                  handleDrawerOpen={handleDrawerOpen}
+                <StyledMain
                   open={drawerIsOpen}
                   width={sidebarWidth}
-                  onWidthChange={handleSidebarWidthChange}
                   outlineOpen={isOutlineOpen}
                   outlineWidth={outlineWidth}
-                  onOutlineToggle={handleToggleOutline}
-                  gridType={defaultViewParamsFromAdminStorage?.gridType || "ag-grid"}
-                  onGridTypeToggle={handleGridTypeToggle}
                 >
-                  Bar!
-                </AppBar>
-              </ThemedGrid>
-              <ThemedGrid item container style={{ flex: 1, overflow: "hidden" }}>
-                <ThemedGrid item>
-                  <StyledMain
-                    open={drawerIsOpen}
-                    width={sidebarWidth}
-                    outlineOpen={isOutlineOpen}
-                    outlineWidth={outlineWidth}
-                  >
-                    <p />
-                    <div>uuid: {uuidv4()}</div>
-                    <div>transactions: {JSON.stringify(transactions)}</div>
-                    {context.showPerformanceDisplay && (
-                      <>
-                        <div>
-                          RootComponent renders: {navigationCount} (total: {totalCount})
-                        </div>
-                      </>
-                    )}
-                    <p />
-                    <div>
-                      <ThemedFormControl fullWidth>
-                        <ThemedInputLabel id="demo-simple-select-label">
-                          Chosen selfApplication Deployment
-                        </ThemedInputLabel>
-                        <ThemedMUISelect
-                          labelId="demo-simple-select-label"
-                          id="demo-simple-select"
-                          value={context.deploymentUuid}
-                          label="displayedDeploymentUuid"
-                          onChange={handleChangeDisplayedDeployment}
-                        >
-                          {deployments.map((deployment) => {
-                            return (
-                              <ThemedMenuItem key={deployment.name} value={deployment.uuid}>
-                                {deployment.description}
-                              </ThemedMenuItem>
-                            );
-                          })}
-                        </ThemedMUISelect>
-                      </ThemedFormControl>
-                    </div>
-
-                    {/* Navigation Section */}
-                    {/* <Box sx={{ my: 2, p: 2, border: '1px solid #e0e0e0', borderRadius: 1 }}>
-                      <Typography variant="h6" gutterBottom>
-                        Navigation
-                      </Typography>
-                      <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-                        <Button
-                          variant="outlined"
-                          onClick={() => navigate('/home')}
-                          size="small"
-                        >
-                          Home
-                        </Button>
-                        <Button
-                          variant="outlined"
-                          onClick={() => navigate('/concept')}
-                          size="small"
-                        >
-                          Concept
-                        </Button>
-                        <Button
-                          variant="outlined"
-                          onClick={() => navigate('/tools')}
-                          size="small"
-                        >
-                          Tools
-                        </Button>
-                        <Button
-                          variant="outlined"
-                          onClick={() => navigate('/check')}
-                          size="small"
-                        >
-                          Check
-                        </Button>
-                        <Button
-                          variant="outlined"
-                          color="error"
-                          onClick={() => navigate('/error-logs')}
-                          size="small"
-                          startIcon={<ErrorIcon />}
-                        >
-                          Error Logs
-                        </Button>
-                        <Button
-                          variant="outlined"
-                          color="info"
-                          onClick={() => navigate('/events')}
-                          size="small"
-                          startIcon={<BugReportIcon />}
-                        >
-                          Miroir Events
-                        </Button>
-                      </Box>
-                    </Box> */}
-
-                    <span>
-                      {/* <ThemedButton
+                  <ThemedText>uuid: {uuidv4()}</ThemedText>
+                  <ThemedText>transactions: {JSON.stringify(transactions)}</ThemedText>
+                  {context.showPerformanceDisplay && (
+                    <>
+                      <div>
+                        RootComponent renders: {navigationCount} (total: {totalCount})
+                      </div>
+                    </>
+                  )}
+                  <ThemedFormControl fullWidth>
+                    <ThemedInputLabel id="demo-simple-select-label">
+                      Chosen selfApplication Deployment
+                    </ThemedInputLabel>
+                    <ThemedMUISelect
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      value={context.deploymentUuid}
+                      label="displayedDeploymentUuid"
+                      onChange={handleChangeDisplayedDeployment}
+                    >
+                      {deployments.map((deployment) => {
+                        return (
+                          <ThemedMenuItem key={deployment.name} value={deployment.uuid}>
+                            {deployment.description}
+                          </ThemedMenuItem>
+                        );
+                      })}
+                    </ThemedMUISelect>
+                  </ThemedFormControl>
+                  <span>
+                    {/* <ThemedButton
                         onClick={() =>
                           handleAsyncAction(
                             async () => {
@@ -866,12 +806,10 @@ export const RootComponent = (props: RootComponentProps) => {
                       >
                         Open database
                       </ThemedButton> */}
-                      <ThemedButton
-                        onClick={fetchConfigurations}
-                      >
-                        fetch Miroir & App configurations from database
-                      </ThemedButton>
-                      {/* <ThemedButton
+                    <ThemedButton onClick={fetchConfigurations}>
+                      fetch Miroir & App configurations from database
+                    </ThemedButton>
+                    {/* <ThemedButton
                         onClick={() =>
                           handleAsyncAction(
                             async () => {
@@ -896,7 +834,7 @@ export const RootComponent = (props: RootComponentProps) => {
                       >
                         fetch Admin configuration from database
                       </ThemedButton> */}
-                      {/* <ThemedButton
+                    {/* <ThemedButton
                         onClick={() =>
                           handleAsyncAction(
                             async () => {
@@ -924,64 +862,49 @@ export const RootComponent = (props: RootComponentProps) => {
                       >
                         Load server local cache
                       </ThemedButton> */}
-                      {/* commit miroir */}
-                      <span>
-                        <ActionButton
-                          onAction={async () => {
-                            await domainController.handleAction(
-                              {
-                                actionType: "commit",
-                                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                                deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
-                              },
-                              defaultMiroirMetaModel
-                            );
-                          }}
-                          successMessage="Miroir committed successfully"
-                          label="Commit Miroir"
-                          handleAsyncAction={handleAsyncAction}
-                          actionName="commit miroir"
-                        />
-                      </span>
-                      {/* Commit Library app */}
-                      <span>
-                        <ActionButton
-                          onAction={async () => {
-                            await domainController.handleAction(
-                              {
-                                actionType: "commit",
-                                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                                deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-                              },
-                              defaultMiroirMetaModel
-                            );
-                          }}
-                          successMessage="Library app committed successfully"
-                          label="Commit Library app"
-                          handleAsyncAction={handleAsyncAction}
-                          actionName="commit library app"
-                        />
-                      </span>
-                    </span>
-                    {/* Wrap Outlet in a container that allows scrolling when needed */}
-                    <div
-                      style={
-                        {
-                          // flex: 1,
-                          // overflow: "auto", // Allow scrolling when content overflows
-                          // height: "100%", // Use full available height
-                          // boxSizing: "border-box",
-                        }
-                      }
-                    >
-                      <Outlet></Outlet>
-                    </div>
-                  </StyledMain>
-                </ThemedGrid>
+                    {/* commit miroir */}
+                      <ActionButton
+                        onAction={async () => {
+                          await domainController.handleAction(
+                            {
+                              actionType: "commit",
+                              endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                              deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+                            },
+                            defaultMiroirMetaModel
+                          );
+                        }}
+                        successMessage="Miroir committed successfully"
+                        label="Commit Miroir"
+                        handleAsyncAction={handleAsyncAction}
+                        actionName="commit miroir"
+                      />
+                    {/* Commit Library app */}
+                      <ActionButton
+                        onAction={async () => {
+                          await domainController.handleAction(
+                            {
+                              actionType: "commit",
+                              endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                              deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                            },
+                            defaultMiroirMetaModel
+                          );
+                        }}
+                        successMessage="Library app committed successfully"
+                        label="Commit Library app"
+                        handleAsyncAction={handleAsyncAction}
+                        actionName="commit library app"
+                      />
+                  </span>
+                  {/* Wrap Outlet in a container that allows scrolling when needed */}
+                  <ThemedBox id="rootComponentOutletContainer" style={{ flex: 1, overflow: "auto" }}>
+                    <Outlet></Outlet>
+                  </ThemedBox>
+                </StyledMain>
               </ThemedGrid>
             </ThemedGrid>
-          {/* </div> */}
-
+          </ThemedGrid>
           {/* Document Outline - Full height on right side */}
           <InstanceEditorOutline
             isOpen={isOutlineOpen}
@@ -992,7 +915,6 @@ export const RootComponent = (props: RootComponentProps) => {
             width={outlineWidth}
             onWidthChange={setOutlineWidth}
           />
-
           <Snackbar
             open={snackbarOpen}
             autoHideDuration={6000}
@@ -1003,10 +925,9 @@ export const RootComponent = (props: RootComponentProps) => {
               {snackbarMessage}
             </Alert>
           </Snackbar>
-
           {/* Action Timeline - Show when enabled */}
           <EventTimelineContainer key={`action-timeline-${context.showActionTimeline}`} />
-        </div>
+        </>
       </MiroirThemeProvider>
     </DocumentOutlineContext.Provider>
   );

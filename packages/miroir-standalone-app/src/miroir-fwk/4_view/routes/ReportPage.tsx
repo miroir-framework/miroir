@@ -223,52 +223,54 @@ export const ReportPage = () => {
         withDocumentOutline={true} // ReportPage has document outline
         customSx={{
           // ReportPage specific styling
-          '& .miroir-table-container': {
-            maxWidth: '100%',
-            overflow: 'hidden',
+          "& .miroir-table-container": {
+            maxWidth: "100%",
+            overflow: "hidden",
           },
         }}
       >
-        {/* Page Header */}
-        <ThemedBox flexGrow={0} marginBottom="16px">
+        {/* <ThemedBox flexGrow={0} marginBottom="16px"> */}
+        <ThemedBox>
           {context.showPerformanceDisplay && (
-            <span>ReportPage renders: {navigationCount} (total: {totalCount})</span>
+            <>
+              <ThemedBox>
+                deploymentUuid={pageParams.deploymentUuid}, applicationSection=
+                {pageParams.applicationSection}, reportUuid={pageParams.reportUuid}, instanceUuid=
+                {pageParams.instanceUuid}
+              </ThemedBox>
+              <span>
+                ReportPage renders: {navigationCount} (total: {totalCount})
+              </span>
+            </>
           )}
-          <div>
-            <h3>erreurs: {JSON.stringify(errorLog)}</h3>
-          </div>
+          {(errorLog as any)?.errorLogs.length == 0 && <h3>erreurs: {JSON.stringify(errorLog)}</h3>}
         </ThemedBox>
-        
-        {/* Main Report Content */}
         <ThemedBox flexGrow={1}>
-          {
-            pageParams.deploymentUuid &&
-            pageParams.applicationSection &&
-            pageParams.reportUuid &&
-            pageParams.reportUuid != "undefined" ? (
-              <>
-                <ThemedBox padding="16px">
-                  deploymentUuid={pageParams.deploymentUuid}, applicationSection={pageParams.applicationSection},
-                  reportUuid={pageParams.reportUuid}, instanceUuid={pageParams.instanceUuid}
-                </ThemedBox>
-                <ReportView
-                  applicationSection={pageParams.applicationSection as ApplicationSection}
-                  deploymentUuid={pageParams.deploymentUuid}
-                  instanceUuid={pageParams.instanceUuid}
-                  pageParams={pageParams}
-                  reportDefinition={currentMiroirReport?.definition}
-                />
-                {context.showPerformanceDisplay && <PerformanceDisplayContainer />}
-              </>
-            ) : (
-              <ThemedSpan 
-                style={{ color: theme.currentTheme.colors.error, padding: "16px" }}
-              >
-                ReportDisplay: no report to display, deploymentUuid={pageParams.deploymentUuid}, applicationSection=
-                {pageParams.applicationSection}, reportUuid={pageParams.reportUuid}
-              </ThemedSpan>
-            )
-          }
+          {pageParams.deploymentUuid &&
+          pageParams.applicationSection &&
+          pageParams.reportUuid &&
+          pageParams.reportUuid != "undefined" ? (
+            <>
+              {/* <ThemedBox padding="16px"> */}
+              <ReportView
+                applicationSection={pageParams.applicationSection as ApplicationSection}
+                deploymentUuid={pageParams.deploymentUuid}
+                instanceUuid={pageParams.instanceUuid}
+                pageParams={pageParams}
+                reportDefinition={currentMiroirReport?.definition}
+              />
+              {context.showPerformanceDisplay && <PerformanceDisplayContainer />}
+            </>
+          ) : (
+            <ThemedSpan
+              // style={{ color: theme.currentTheme.colors.error, padding: "16px" }}
+              style={{ color: theme.currentTheme.colors.error }}
+            >
+              ReportDisplay: no report to display, deploymentUuid={pageParams.deploymentUuid},
+              applicationSection=
+              {pageParams.applicationSection}, reportUuid={pageParams.reportUuid}
+            </ThemedSpan>
+          )}
         </ThemedBox>
       </PageContainer>
     );

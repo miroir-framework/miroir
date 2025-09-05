@@ -411,6 +411,7 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
                 >
                   <JzodElementEditor
                     name={"ROOT"}
+                    isTopLevel={true}
                     listKey={"ROOT"}
                     rootLessListKey=""
                     rootLessListKeyArray={[]}
@@ -463,6 +464,7 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
                   >
                     <JzodElementEditor
                       name={"ROOT"}
+                      isTopLevel={true}
                       listKey={"ROOT"}
                       rootLessListKey=""
                       rootLessListKeyArray={[]}

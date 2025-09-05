@@ -111,6 +111,7 @@ export function MiroirContextReactProvider(props: {
   // useState<JzodSchema>({name: "dummyJzodSchema", parentName: "JzodSchema", parentUuid:"", uuid: ""});
 
   // Create ViewParams instance to track UI state with reactive state
+  const [sidebarIsopen, setSidebarIsOpen] = useState(true);
   const [sidebarWidth, setSidebarWidth] = useState(250);
   const [gridType, setGridType] = useState<GridType>('ag-grid');
   const [toolsPageState, setToolsPageState] = useState<ToolsPageState>(() => {
@@ -136,8 +137,9 @@ export function MiroirContextReactProvider(props: {
   const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error" | "info">("info");
   
   const viewParams = useMemo(() => {
-    const params = new ViewParams(sidebarWidth, gridType);
+    const params = new ViewParams(sidebarIsopen, sidebarWidth, gridType);
     // Override setters to use React state
+    params.updateSidebarIsOpen = ( sidebarIsopen: boolean) => setSidebarIsOpen(sidebarIsopen);
     params.updateSidebarWidth = (width: number) => setSidebarWidth(width);
     params.setGridType = (type: GridType) => setGridType(type);
     return params;

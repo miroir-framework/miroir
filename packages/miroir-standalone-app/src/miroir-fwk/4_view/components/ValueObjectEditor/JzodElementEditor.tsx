@@ -1045,8 +1045,6 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
 
   return (
     <div>
-      {/* JzodElementEditor displayCodeEditor: {displayCodeEditor ? "yes" : "no"}{" "}
-      JzodElementEditor hideSubJzodEditor: {hideSubJzodEditor ? "hidden" : "visible"}{" "} */}
       <span>
         {props.rootLessListKey === "" && (
           <RenderPerformanceMetrics.RenderPerformanceDisplay
@@ -1061,6 +1059,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
             style={{
               padding: "1px",
               width: "calc(100% - 10px)",
+              // margin: !props.isTopLevel?"5px 10px 5px 0": undefined,
               margin: "5px 10px 5px 0",
               position: "relative",
               // Apply nesting background colors for visual hierarchy (Prettier-like effect)
@@ -1080,56 +1079,49 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                 backgroundColor: backgroundColor,
               }}
             >
-              <div>
-                {/* indentLevel: {props.indentLevel} backgroundColor: {backgroundColor} */}
+              {/* <span
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <span> */}
+                  {props.submitButton}
+                  {/* </span>
+              </span> */}
+              {/* <span style={{ display: "flex" }}> */}
                 <span
                   style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
+                    display: !displayCodeEditor ? "none" : "inline-block",
                   }}
                 >
-                  <span>{props.submitButton}</span>
+                  {shouldShowCodeEditor && (
+                    <JzodElementEditorReactCodeMirror
+                      initialValue={JSON.stringify(currentValue, null, 2)}
+                      codeMirrorValue={codeMirrorValue}
+                      setCodeMirrorValue={setCodeMirrorValue}
+                      codeMirrorIsValidJson={codeMirrorIsValidJson}
+                      setCodeMirrorIsValidJson={setCodeMirrorIsValidJson}
+                      rootLessListKey={props.rootLessListKey}
+                      rootLessListKeyArray={props.rootLessListKeyArray}
+                      hidden={!displayCodeEditor}
+                      insideAny={props.insideAny}
+                      isUnderTest={isUnderTest}
+                      displayAsStructuredElementSwitch={displayAsStructuredElementSwitch}
+                    />
+                  )}
                 </span>
-                <span>
-                  <span style={{ display: "flex" }}>
-                    <span
-                      style={{
-                        display: !displayCodeEditor ? "none" : "inline-block",
-                      }}
-                    >
-                      {/* code editor: {shouldShowCodeEditor ? "yes" : "no"}{" hideSubJzodEditor "}{hideSubJzodEditor ? "hidden" : "visible"}{" "} */}
-                      {props.labelElement ?? <></>}
-                      {shouldShowCodeEditor && (
-                        <JzodElementEditorReactCodeMirror
-                          // initialValue={safeStringify(currentValue)}
-                          initialValue={JSON.stringify(currentValue, null, 2)}
-                          codeMirrorValue={codeMirrorValue}
-                          setCodeMirrorValue={setCodeMirrorValue}
-                          codeMirrorIsValidJson={codeMirrorIsValidJson}
-                          setCodeMirrorIsValidJson={setCodeMirrorIsValidJson}
-                          rootLessListKey={props.rootLessListKey}
-                          rootLessListKeyArray={props.rootLessListKeyArray}
-                          hidden={!displayCodeEditor}
-                          insideAny={props.insideAny}
-                          isUnderTest={isUnderTest}
-                          displayAsStructuredElementSwitch={displayAsStructuredElementSwitch}
-                        />
-                      )}
-                    </span>
-                  </span>
-                  <span
-                    style={{
-                      display: hideSubJzodEditor ? "none" : "block",
-                      margin: "2px 5px 5px 5px",
-                      width: "calc(100% - 15px)",
-                      flexGrow: 1,
-                    }}
-                  >
-                    {mainElement}
-                  </span>
-                </span>
-              </div>
+              <span
+                style={{
+                  display: hideSubJzodEditor ? "none" : "block",
+                  margin: "2px 5px 5px 5px",
+                  width: "calc(100% - 15px)",
+                  flexGrow: 1,
+                }}
+              >
+                {mainElement}
+              </span>
             </ThemedCardContent>
           </ThemedCard>
         ) : (
@@ -1142,7 +1134,6 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
             }}
           >
             <span>{props.deleteButtonElement ?? <></>}</span>
-            {/* {props.labelElement} */}
             <span
               style={{
                 // display: !hideSubJzodEditor ? "none" : "inline-block",

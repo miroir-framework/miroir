@@ -29,7 +29,6 @@ import { cleanLevel } from "../../constants";
 import { MiroirReactContext, useMiroirContextService } from "../../MiroirContextReactProvider";
 import { useCurrentModel, useReduxDeploymentsStateQuerySelectorForCleanedResult } from "../../ReduxHooks";
 import { JzodEditorPropsRoot, noValue } from "./JzodElementEditorInterface";
-import { getItemsOrder } from "../Themes/Style";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -66,6 +65,24 @@ export interface JzodElementEditorHooks {
   // hiddenFormItems and setHiddenFormItems moved to props
 }
 
+
+// ################################################################################################
+// ##############################################################################################
+export function getItemsOrder(currentValue: any, jzodSchema: JzodElement | undefined) {
+  return (jzodSchema?.type == "object" || jzodSchema?.type == "record") &&
+    typeof currentValue == "object" &&
+    currentValue !== null
+    ? Object.keys(currentValue)
+    : Array.isArray(currentValue)
+    ? currentValue.map((e: any, k: number) => k)
+    : [];
+}
+
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
 let count = 0;
 
 export function useJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
