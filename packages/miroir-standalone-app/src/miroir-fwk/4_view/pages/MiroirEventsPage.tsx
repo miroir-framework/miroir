@@ -47,8 +47,8 @@ import {
   History
 } from '@mui/icons-material';
 import { useNavigate, Link, useSearchParams, useLocation } from 'react-router-dom';
-import { useMiroirContextService } from '../MiroirContextReactProvider';
-import { LoggerInterface, MiroirLoggerFactory, type MiroirEvent, type MiroirEventLog } from 'miroir-core';
+import { useMiroirContextService, type MiroirReactContext } from '../MiroirContextReactProvider';
+import { LoggerInterface, MiroirLoggerFactory, type MiroirContext, type MiroirEvent, type MiroirEventLog, type MiroirEventService } from 'miroir-core';
 import { packageName } from '../../../constants.js';
 import { cleanLevel } from '../constants.js';
 import { usePageConfiguration } from '../services';
@@ -58,51 +58,6 @@ let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "MiroirEventsPage")
 ).then((logger: LoggerInterface) => {log = logger});
-
-// Local type definitions (temporarily until exports work)
-interface OLDMiroirEventEntry {
-  id: string;
-  eventId: string;
-  timestamp: number;
-  level: 'trace' | 'debug' | 'info' | 'warn' | 'error';
-  loggerName: string;
-  message: string;
-  args: any[];
-  context?: {
-    testSuite?: string;
-    test?: string;
-    testAssertion?: string;
-    compositeAction?: string;
-    action?: string;
-  };
-}
-
-// interface MiroirEvent {
-//   eventId: string;
-//   actionType: string;
-//   actionLabel?: string;
-//   startTime: number;
-//   endTime?: number;
-//   status: 'running' | 'completed' | 'error';
-//   logs: MiroirEventLog[];
-//   logCounts: {
-//     trace: number;
-//     debug: number;
-//     info: number;
-//     warn: number;
-//     error: number;
-//     total: number;
-//   };
-// }
-
-interface EventFilter {
-  eventId?: string;
-  actionType?: string;
-  level?: 'trace' | 'debug' | 'info' | 'warn' | 'error';
-  since?: number;
-  searchText?: string;
-  loggerName?: string;
-}
 
 // Utility function to get appropriate icon for log level
 const getLogLevelIcon = (level: string) => {
@@ -246,15 +201,12 @@ export const MiroirEventsPage: React.FC = () => {
   const eventId = searchParams.get('eventId');
   const navigate = useNavigate();
   const location = useLocation();
-  const { miroirContext } = useMiroirContextService();
+  const { miroirContext }:{ miroirContext: MiroirContext} = useMiroirContextService();
   
-  const [events, setEvents] = useState<MiroirEvent[]>([]);
-  const [currentActionLogs, setCurrentActionLogs] = useState<MiroirEvent | null>(null);
+  // UI-specific state only
   const [expandedLogIds, setExpandedLogIds] = useState<Set<string>>(new Set());
   const [logDetailOpen, setLogDetailOpen] = useState(false);
   const [selectedLog, setSelectedLog] = useState<MiroirEventLog | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [actionExists, setActionExists] = useState<boolean | null>(null);
   
   const { fetchConfigurations } = usePageConfiguration({
     autoFetchOnMount: true,
@@ -262,58 +214,40 @@ export const MiroirEventsPage: React.FC = () => {
     actionName: "Events page configuration fetch"
   });
 
-  // Filter states
+  // Filter states - create state for filters since they're user input
   const [filters, setFilters] = useState<{
     level?: string;
     searchText?: string;
     loggerName?: string;
   }>({});
 
-  // Subscribe to events updates
-  // TODO: REFACTOR: this should be done via a useMiroirEventService hook
-  useEffect(() => {
-    setIsLoading(true);
-    const miroirEventService = miroirContext.miroirEventService;
-    if (!miroirEventService) {
-      console.warn('MiroirEventService not available');
-      setIsLoading(false);
-      return;
-    }
+  // Access events directly from service and compute derived data with memos
+  const miroirEventService: MiroirEventService = miroirContext.miroirEventService;
 
-    // Initial load
-    const allEvents: MiroirEvent[] = miroirEventService.getAllEvents();
-    setEvents(allEvents);
-    
+  // Use memo to prevent unnecessary recalculations
+  const allEvents: MiroirEvent[] = Array.from(miroirEventService.events.values());
+
+  // Get current action logs when viewing a specific event
+  const currentActionLogs = useMemo(() => {
+    if (!eventId || !allEvents.length) return null;
+    const found = allEvents.find((event: MiroirEvent) => event.eventId === eventId) || null;
+    log.debug('MiroirEventsPage: computed currentActionLogs', { eventId, found: !!found, actionType: found?.actionType });
+    return found;
+  }, [eventId, allEvents]);
+
+  // Check if action exists
+  const actionExists = useMemo(() => {
+    if (!eventId) return true; // Not looking for specific action
+    const exists = !!currentActionLogs;
     if (eventId) {
-      const current = allEvents.find((log: MiroirEvent) => log.eventId === eventId);
-      setCurrentActionLogs(current || null);
-      // Check if the action exists
-      const exists = !!current;
-      setActionExists(exists);
-      log.info(`Checking if action ${eventId} exists:`, exists);
+      log.info(`MiroirEventsPage: checking if action ${eventId} exists:`, exists);
       if (!exists) {
         log.warn(`Action log ${eventId} was requested but not found. Available actions:`, 
           allEvents.map(event => event.eventId).join(', '));
       }
-    } else {
-      // Not looking for a specific action, so no need to check existence
-      setActionExists(true);
     }
-
-    const unsubscribe = miroirEventService.subscribe((logs: MiroirEvent[]) => {
-      setEvents(logs);
-      
-      // Update current events if viewing a specific action
-      if (eventId) {
-        const current = logs.find((log: MiroirEvent) => log.eventId === eventId);
-        setCurrentActionLogs(current || null);
-        setActionExists(!!current);
-      }
-    });
-
-    setIsLoading(false);
-    return unsubscribe;
-  }, [miroirContext, eventId]);
+    return exists;
+  }, [eventId, currentActionLogs, allEvents]);
 
   // Filter logs based on current filters
   const filteredLogs = useMemo(() => {
@@ -348,13 +282,12 @@ export const MiroirEventsPage: React.FC = () => {
   };
 
   const handleExportEvents = () => {
-    const actionLogService = miroirContext.miroirEventService;
-    if (!actionLogService) {
+    if (!miroirEventService) {
       console.warn('MiroirEventService not available');
       return;
     }
 
-    const exportData = actionLogService.exportEvents();
+    const exportData = miroirEventService.exportEvents();
     const blob = new Blob([exportData], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -371,15 +304,6 @@ export const MiroirEventsPage: React.FC = () => {
   const handleClearFilters = () => {
     setFilters({});
   };
-
-  // Show loading state
-  if (isLoading) {
-    return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%', p: 4 }}>
-        <Typography variant="h6" sx={{ mr: 2 }}>Loading Miroir Events...</Typography>
-      </Box>
-    );
-  }
 
   // Show error state if the action log doesn't exist
   if (actionExists === false) {
@@ -434,18 +358,18 @@ export const MiroirEventsPage: React.FC = () => {
             Available Miroir Events
           </Typography>
           
-          {events.length === 0 ? (
+          {allEvents.length === 0 ? (
             <Typography color="text.secondary">
               No events are currently available in the system.
             </Typography>
           ) : (
             <>
               <Typography paragraph>
-                Here are the {Math.min(5, events.length)} most recent events available:
+                Here are the {Math.min(5, allEvents.length)} most recent events available:
               </Typography>
               
               <List sx={{ bgcolor: '#f5f5f5', borderRadius: 1 }}>
-                {events.slice(0, 5).map((event) => (
+                {allEvents.slice(0, 5).map((event) => (
                   <ListItem 
                     key={event.eventId} 
                     button
@@ -463,13 +387,13 @@ export const MiroirEventsPage: React.FC = () => {
                 ))}
               </List>
               
-              {events.length > 5 && (
+              {allEvents.length > 5 && (
                 <Box sx={{ mt: 2, textAlign: 'right' }}>
                   <Button 
                     color="primary"
                     onClick={() => navigate('/events')}
                   >
-                    View All {events.length} Miroir Events
+                    View All {allEvents.length} Miroir Events
                   </Button>
                 </Box>
               )}
@@ -510,7 +434,7 @@ export const MiroirEventsPage: React.FC = () => {
     );
   }
 
-  const logsToDisplay = eventId ? [currentActionLogs!] : events;
+  const logsToDisplay = eventId ? [currentActionLogs!] : allEvents;
   const currentLogs = eventId ? filteredLogs : [];
 
   return (
@@ -699,11 +623,11 @@ export const MiroirEventsPage: React.FC = () => {
           <Paper>
             <Box sx={{ p: 2, borderBottom: 1, borderColor: 'divider' }}>
               <Typography variant="h6">
-                Recent Actions with Logs ({events.length} actions)
+                Recent Actions with Logs ({allEvents.length} actions)
               </Typography>
             </Box>
             
-            {events.length === 0 ? (
+            {allEvents.length === 0 ? (
               <Box sx={{ p: 3, textAlign: 'center' }}>
                 <Typography color="text.secondary">
                   No events available. Execute some actions to see events here.
@@ -711,7 +635,7 @@ export const MiroirEventsPage: React.FC = () => {
               </Box>
             ) : (
               <List>
-                {events.map((actionLog) => (
+                {allEvents.map((actionLog: MiroirEvent) => (
                   <ListItem 
                     key={actionLog.eventId}
                     divider

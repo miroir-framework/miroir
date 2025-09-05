@@ -396,7 +396,7 @@ export function useMiroirContextInnerFormOutput() {
 }
 
 // #############################################################################################
-export function useMiroirContextService() {
+export function useMiroirContextService(): MiroirReactContext {
   const context = useContext(miroirReactContext);
   if (!context) {
     throw new Error('useMiroirContextService must be used within a MiroirContextReactProvider');

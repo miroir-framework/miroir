@@ -11,7 +11,7 @@ import { TransformerEventService } from "./TransformerEventService";
 
 export class MiroirContext implements MiroirContextInterface {
   public miroirEventTracker: MiroirEventTrackerInterface;
-  public miroirEventService: MiroirEventServiceInterface;
+  public miroirEventService: MiroirEventService;
   public transformerEventService: TransformerEventServiceInterface;
   public logInterceptor: ConsoleInterceptor;
 

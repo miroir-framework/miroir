@@ -1,11 +1,11 @@
-import { MiroirEventServiceInterface } from "../../3_controllers/MiroirEventService";
-import { MiroirEventTrackerInterface } from "./MiroirEventTrackerInterface";
+import { type MiroirEventService } from "../../3_controllers/MiroirEventService";
 import { MiroirConfigClient, MiroirConfigServer } from "../1_core/preprocessor-generated/miroirFundamentalType";
+import { MiroirEventTrackerInterface } from "./MiroirEventTrackerInterface";
 import { TransformerEventServiceInterface } from "./TransformerEventInterface";
 
 export interface MiroirContextInterface {
   miroirEventTracker: MiroirEventTrackerInterface,
-  miroirEventService: MiroirEventServiceInterface,
+  miroirEventService: MiroirEventService,
   transformerEventService: TransformerEventServiceInterface,
   getMiroirConfig(): MiroirConfigClient | MiroirConfigServer | undefined,
 }

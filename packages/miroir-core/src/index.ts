@@ -642,6 +642,7 @@ export {
   MiroirEventServiceInterface,
   MiroirEventLog,
   MiroirEvent,
+  MiroirEventService,
   EventFilter,
 } from "./3_controllers/MiroirEventService.js";
 export { LocalCacheInterface } from "./0_interfaces/4-services/LocalCacheInterface.js";

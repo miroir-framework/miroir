@@ -41,12 +41,12 @@ Core dependency graph (must be built in this order):
 - ESM modules only (`"type": "module"` in `package.json`)
 - Avoid debouncing in general, it's usually an anti-pattern, a sign of bad design
 - Avoid deep nesting, prefer early returns within functions
-- Avoid
 
 ## Within React:
  - Prefer functional components with hooks
  - avoid `useEffect` unless strictly necessary, always ask for confirmation before adding a `useEffect`
  - do not use publish-subscribe patterns to push data from one component to another, this is an anti-pattern, and it is redundant with React principles. Instead, feed the data to React.FC components through props and hooks (useSelector, useDispatch, etc.). Services providing subscription mechanisms may de defined for uses outside of React components (for example on the server side).
+ - do not call a function in a useMemo to get data in a FC, useMemo can not work properly to get data from a service via a plain function. If a useMemo is needed to limit rendering, then enable access to the wanted data from the service via a hook.
 
 ## Development Workflows
 
