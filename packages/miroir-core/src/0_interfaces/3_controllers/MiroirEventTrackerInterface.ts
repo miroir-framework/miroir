@@ -81,7 +81,7 @@ export interface MiroirEventTrackerInterface {
     minDuration?: number;
     maxDuration?: number;
     since?: number; // timestamp
-  }): MiroirEventTrackingData[];
+  }, events?: MiroirEventTrackingData[]): MiroirEventTrackingData[];
   
   /**
    * Clear all tracking data

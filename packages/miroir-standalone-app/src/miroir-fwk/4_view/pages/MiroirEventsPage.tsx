@@ -47,7 +47,7 @@ import {
   History
 } from '@mui/icons-material';
 import { useNavigate, Link, useSearchParams, useLocation } from 'react-router-dom';
-import { useMiroirContextService, type MiroirReactContext } from '../MiroirContextReactProvider';
+import { useMiroirContextService, useMiroirEvents, type MiroirReactContext } from '../MiroirContextReactProvider';
 import { LoggerInterface, MiroirLoggerFactory, type MiroirContext, type MiroirEvent, type MiroirEventLog, type MiroirEventService } from 'miroir-core';
 import { packageName } from '../../../constants.js';
 import { cleanLevel } from '../constants.js';
@@ -225,7 +225,8 @@ export const MiroirEventsPage: React.FC = () => {
   const miroirEventService: MiroirEventService = miroirContext.miroirEventService;
 
   // Use memo to prevent unnecessary recalculations
-  const allEvents: MiroirEvent[] = Array.from(miroirEventService.events.values());
+  // const allEvents: MiroirEvent[] = Array.from(miroirEventService.events.values());
+  const allEvents = useMiroirEvents();
 
   // Get current action logs when viewing a specific event
   const currentActionLogs = useMemo(() => {

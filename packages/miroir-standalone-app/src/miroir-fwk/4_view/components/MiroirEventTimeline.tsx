@@ -80,6 +80,7 @@ export const MiroirEventTimeLine: React.FC<RunActionTimelineProps> = React.memo(
     since: '',
   });
 
+  // const allEvents = useMiroirEventTrackingData();
   
   // Filter actions based on current filters
   const filteredEvents = useMemo(() => {
@@ -106,7 +107,7 @@ export const MiroirEventTimeLine: React.FC<RunActionTimelineProps> = React.memo(
             since: filters.since ? new Date(filters.since).getTime() : undefined,
           };
           // log.info(`MiroirEventTimeLine [${componentId}] - Using tracker filtering with criteria:`, filterCriteria);
-          result = context.miroirContext.miroirEventTracker.getFilteredEvents(filterCriteria);
+          result = context.miroirContext.miroirEventTracker.getFilteredEvents(filterCriteria, trackedEvents);
         } catch (error) {
           log.error(`MiroirEventTimeLine [${componentId}] - Tracker filtering failed:`, error);
           result = trackedEvents; // Fallback to all actions

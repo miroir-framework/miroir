@@ -77,33 +77,6 @@ export class MiroirEventTracker implements MiroirEventTrackerInterface {
     if (["testSuite", "test", "testAssertion" ].includes(action.trackingType)) {
       this.currentTestPath.pop();
     }
-    // // Remove from currentTestPath if this is a test-related event
-    // if (action.trackingType === "testSuite" && action.testSuite) {
-    //   // Remove the last occurrence of this test suite from currentTestPath
-    //   for (let i = this.currentTestPath.length - 1; i >= 0; i--) {
-    //     if (this.currentTestPath[i].testSuite === action.testSuite) {
-    //       this.currentTestPath.splice(i, 1);
-    //       break;
-    //     }
-    //   }
-    // } else if (action.trackingType === "test" && action.test) {
-    //   // Remove the last occurrence of this test from currentTestPath
-    //   for (let i = this.currentTestPath.length - 1; i >= 0; i--) {
-    //     if (this.currentTestPath[i].test === action.test) {
-    //       this.currentTestPath.splice(i, 1);
-    //       break;
-    //     }
-    //   }
-    // } else if (action.trackingType === "testAssertion" && action.testAssertion) {
-    //   // Remove the last occurrence of this test assertion from currentTestPath
-    //   for (let i = this.currentTestPath.length - 1; i >= 0; i--) {
-    //     if (this.currentTestPath[i].testAssertion === action.testAssertion) {
-    //       this.currentTestPath.splice(i, 1);
-    //       break;
-    //     }
-    //   }
-    // }
-
     this.notifySubscribersDEFUNCT();
   }
 
@@ -118,8 +91,8 @@ export class MiroirEventTracker implements MiroirEventTrackerInterface {
     minDuration?: number;
     maxDuration?: number;
     since?: number;
-  }): MiroirEventTrackingData[] {
-    return this.getAllEvents().filter((action) => {
+  }, events?: MiroirEventTrackingData[]): MiroirEventTrackingData[] {
+    return events??this.getAllEvents().filter((action) => {
       if (filter.actionType && action.actionType !== filter.actionType) {
         return false;
       }
