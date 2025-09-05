@@ -229,7 +229,6 @@ export const ReportPage = () => {
           },
         }}
       >
-        {/* <ThemedBox flexGrow={0} marginBottom="16px"> */}
         <ThemedBox>
           {context.showPerformanceDisplay && (
             <>
@@ -245,13 +244,12 @@ export const ReportPage = () => {
           )}
           {(errorLog as any)?.errorLogs.length == 0 && <h3>erreurs: {JSON.stringify(errorLog)}</h3>}
         </ThemedBox>
-        <ThemedBox flexGrow={1}>
+        <ThemedBox style={{ flex: 1, overflow: 'auto', minHeight: 0 }}>
           {pageParams.deploymentUuid &&
           pageParams.applicationSection &&
           pageParams.reportUuid &&
           pageParams.reportUuid != "undefined" ? (
             <>
-              {/* <ThemedBox padding="16px"> */}
               <ReportView
                 applicationSection={pageParams.applicationSection as ApplicationSection}
                 deploymentUuid={pageParams.deploymentUuid}
@@ -263,7 +261,6 @@ export const ReportPage = () => {
             </>
           ) : (
             <ThemedSpan
-              // style={{ color: theme.currentTheme.colors.error, padding: "16px" }}
               style={{ color: theme.currentTheme.colors.error }}
             >
               ReportDisplay: no report to display, deploymentUuid={pageParams.deploymentUuid},

@@ -587,7 +587,7 @@ export const RootComponent = (props: RootComponentProps) => {
                 Bar!
               </AppBar>
             </ThemedGrid>
-            <ThemedGrid item container style={{ flex: 1, overflow: "hidden" }}>
+            <ThemedGrid item container style={{ flex: 1, minHeight: 0 }}>
               <ThemedMain
                 open={drawerIsOpen}
                 width={sidebarWidth}
@@ -758,10 +758,7 @@ export const RootComponent = (props: RootComponentProps) => {
                     actionName="commit library app"
                   />
                 </span>
-                {/* Wrap Outlet in a container that allows scrolling when needed */}
-                <ThemedBox id="rootComponentOutletContainer" style={{ flex: 1, overflow: "auto" }}>
-                  <Outlet></Outlet>
-                </ThemedBox>
+                <Outlet></Outlet>
               </ThemedMain>
             </ThemedGrid>
           </ThemedGrid>

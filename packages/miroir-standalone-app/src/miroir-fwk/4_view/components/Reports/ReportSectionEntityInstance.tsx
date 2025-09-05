@@ -163,15 +163,8 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   const isOutlineOpen = outlineContext.isOutlineOpen;
   const handleToggleOutline = outlineContext.onToggleOutline;
 
-  // Calculate available width based on sidebar and outline panel
-  const availableWidth = useMemo(() => {
-    const sidebarWidth = viewParams.sidebarIsOpen?viewParams.sidebarWidth:0;
-    const outlineWidth = isOutlineOpen ? outlineContext.outlineWidth : 0;
-    // return `calc(100vw - ${sidebarWidth}px - ${outlineWidth}px - 62px)`; // 32px for padding/margins
-    // return `calc(100vw - ${sidebarWidth}px - ${outlineWidth}px - 152px)`; // 32px for padding/margins
-    // return `calc(100vw - ${sidebarWidth}px - ${outlineWidth}px - 132px)`; // 32px for padding/margins
-    return `calc(100vw - ${sidebarWidth}px - ${outlineWidth}px)`; // 32px for padding/margins
-  }, [viewParams.sidebarWidth, isOutlineOpen, outlineContext.outlineWidth]);
+  // Removed redundant availableWidth calculation - parent components handle sizing
+  // Just use 100% width since RootComponent's ThemedMain handles sidebar/outline spacing
 
   const instance: any = props.instance;
 
@@ -354,7 +347,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   // ##############################################################################################
   if (instance) {
     return (
-      <ThemedContainer style={{ width: availableWidth, maxWidth: availableWidth }}>
+      <ThemedContainer style={{ width: '100%' }}>
         {/* <div style={{ width: "100%" }}> */}
           {showPerformanceDisplay && (
             <ThemedText>

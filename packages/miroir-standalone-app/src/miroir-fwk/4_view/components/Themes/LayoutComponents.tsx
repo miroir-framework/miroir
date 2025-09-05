@@ -459,8 +459,8 @@ export const ThemedMain: React.FC<ThemedComponentProps & {
     flexGrow: 1,
     padding: currentTheme.spacing.md,
     boxSizing: 'border-box' as const,
-    overflow: 'auto',
-    minWidth: 0,
+    minWidth: 0, // Allow shrinking
+    minHeight: 0, // Allow shrinking
     height: '100%',
     display: 'flex',
     flexDirection: 'column' as const,
@@ -468,6 +468,8 @@ export const ThemedMain: React.FC<ThemedComponentProps & {
     paddingTop: currentTheme.spacing.md,
     // Simple transition for all properties
     transition: 'margin 300ms ease-out, width 300ms ease-out',
+    // Handle overflow - let content determine scrolling behavior
+    overflow: 'hidden', // Prevent main panel from scrolling, let content handle it
   };
 
   // Calculate responsive layout based on sidebar and outline states
