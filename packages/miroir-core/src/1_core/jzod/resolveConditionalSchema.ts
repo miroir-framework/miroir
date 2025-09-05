@@ -24,7 +24,8 @@ import { transformer_extended_apply_wrapper } from "../../2_domain/TransformersF
 export type ResolveConditionalSchemaError =
   | { error: 'NO_REDUX_DEPLOYMENTS_STATE' }
   | { error: 'NO_DEPLOYMENT_UUID' }
-  | { error: 'INVALID_PARENT_UUID_CONFIG', details: string };
+  | { error: 'INVALID_PARENT_UUID_CONFIG', details: string }
+  | { error: 'PARENT_NOT_FOUND', details: string };
 
 export type ResolveConditionalSchemaResult = JzodElement | ResolveConditionalSchemaError;
 
@@ -93,7 +94,7 @@ export function resolveConditionalSchema(
   //   "context",
   //   context
   // );
-  if (jzodSchema.tag && jzodSchema.tag.value && !jzodSchema.tag.value.isTemplate && jzodSchema.tag.value.conditionalMMLS) {
+  if (jzodSchema?.tag && jzodSchema.tag.value && !jzodSchema.tag.value.isTemplate && jzodSchema.tag.value.conditionalMMLS) {
     // If the schema has a conditionalMMLS, we use it as the effective schema
     const conditionalConfig = jzodSchema.tag.value.conditionalMMLS;
     // the runtime path is given by the parentUuid, to be found in the reduxDeploymentsState
@@ -178,12 +179,18 @@ export function resolveConditionalSchema(
       );
       const parentEntityDefinition = (
         currentDeploymentEntityDefinitions.find(e => e.entityUuid === parentUuidStr) as EntityDefinition
-      ).jzodSchema;
+      );
       log.info(
         "resolveConditionalSchema parentEntityDefinition",
         parentEntityDefinition
       );
-      effectiveSchema = parentEntityDefinition;
+      if (!parentEntityDefinition) {
+        return {
+          error: 'PARENT_NOT_FOUND',
+          details: `No entity definition found for parentUuid ${parentUuidStr} in deployment ${deploymentUuid}`
+        };
+      }
+      effectiveSchema = parentEntityDefinition.jzodSchema;
     }
     log.info(
       "resolveConditionalSchema return effectiveSchema",

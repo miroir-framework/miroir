@@ -77,6 +77,17 @@
         "definition": {
           "interpolation": {
             "type": "enum",
+            "tag": {
+              "value": {
+                "id": 1,
+                "defaultLabel": "Interpolation",
+                "editable": true,
+                "initializeTo": {
+                  "initializeToType": "value",
+                  "value": "build"
+                }
+              }
+            },
             "definition": [ "build", "runtime"]
           }
         }

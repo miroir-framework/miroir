@@ -165,30 +165,30 @@ export function getDefaultValueForJzodSchemaWithResolution<T extends MiroirModel
     miroirEnvironment,
     contextResults,
     reduxDeploymentsState,
-    // getEntityInstancesUuidIndex,
     deploymentUuid,
     'defaultValue' // Specify this is for default value generation
   );
 
-  // log.info(
-  //   "getDefaultValueForJzodSchemaWithResolution called with",
-  //   "jzodSchema", jzodSchema,
-  //   "rootObject", rootObject,
-  //   "currentValuePath", currentValuePath,
-  //   "reduxDeploymentsState", reduxDeploymentsState,
-  //   "deploymentUuid", deploymentUuid,
-  //   // "relativeReferenceJzodContext", relativeReferenceJzodContext
-  //   "effectiveSchemaOrError", effectiveSchemaOrError,
-  // );
+  log.info(
+    "getDefaultValueForJzodSchemaWithResolution called with",
+    "jzodSchema", jzodSchema,
+    "rootObject", rootObject,
+    "currentValuePath", currentValuePath,
+    "reduxDeploymentsState", reduxDeploymentsState,
+    "deploymentUuid", deploymentUuid,
+    // "relativeReferenceJzodContext", relativeReferenceJzodContext
+    "effectiveSchemaOrError", effectiveSchemaOrError,
+  );
   
-  if ('error' in effectiveSchemaOrError) {
+  // if (Object.hasOwn(effectiveSchemaOrError, 'error')) {
+  if (!effectiveSchemaOrError || Object.hasOwn(effectiveSchemaOrError, 'error')) {
     log.error(
       "getDefaultValueForJzodSchemaWithResolution: resolveConditionalSchema returned error",
       effectiveSchemaOrError
     );
     return undefined; // or propagate error as needed
   }
-  let effectiveSchema: JzodElement = effectiveSchemaOrError;
+  let effectiveSchema: JzodElement = effectiveSchemaOrError as JzodElement;
 
   if (effectiveSchema.optional && !forceOptional) {
     // log.info(

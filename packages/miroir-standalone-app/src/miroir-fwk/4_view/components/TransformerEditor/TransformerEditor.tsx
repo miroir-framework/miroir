@@ -509,6 +509,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
     }
     // Otherwise, create default
     return getDefaultValueForJzodSchemaWithResolutionNonHook(
+      "build", // mode
       transformerDefinitionSchema,
       undefined, // rootObject
       "", // rootLessListKey,
