@@ -38,10 +38,10 @@ export class TransformerEventService implements TransformerEventServiceInterface
     }
     
     // Get the tracking data from the event tracker to access hierarchical fields
-    const trackingData = this.eventTracker.getAllEvents().find((data: MiroirEventTrackingData) => data.id === event.actionId);
+    const trackingData = this.eventTracker.getAllEvents().find((data: MiroirEventTrackingData) => data.id === event.eventId);
     
     return {
-      transformerId: event.actionId,
+      transformerId: event.eventId,
       transformerName: event.transformerName || event.actionLabel || 'Unknown',
       transformerType: event.transformerType || 'unknown',
       transformerStep: event.transformerStep || 'runtime',
@@ -52,7 +52,7 @@ export class TransformerEventService implements TransformerEventServiceInterface
       transformerParams: event.transformerParams,
       transformerResult: event.transformerResult,
       transformerError: event.transformerError,
-      logs: event.logs.map((log: any) => this.convertLogToTransformerEntry(log)),
+      logs: event.eventLogs.map((log: any) => this.convertLogToTransformerEntry(log)),
       logCounts: event.logCounts,
       parentTransformerId: trackingData?.parentId,
       children: trackingData?.children || [],
@@ -63,7 +63,7 @@ export class TransformerEventService implements TransformerEventServiceInterface
   private convertLogToTransformerEntry(log: any): TransformerEntry {
     return {
       id: log.id,
-      transformerId: log.actionId,
+      transformerId: log.eventId,
       timestamp: log.timestamp,
       level: log.level,
       loggerName: log.loggerName,
@@ -95,7 +95,7 @@ export class TransformerEventService implements TransformerEventServiceInterface
     // Convert transformer filter to action log filter
     const actionFilter = {
       trackingType: 'transformer' as const,
-      actionId: filter.transformerId,
+      eventId: filter.transformerId,
       actionType: filter.transformerType,
       level: filter.level,
       since: filter.since,

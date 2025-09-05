@@ -26,7 +26,7 @@ describe('MiroirEventService', () => {
   describe('Context tracking from MiroirEventTracker', () => {
     it('should get action and compositeAction context from MiroirEventTracker, not LoggerGlobalContext', () => {
       // Start an action in the tracker
-      const actionId = runActionTracker.startAction('testAction', 'Test Action Label');
+      const eventId = runActionTracker.startAction('testAction', 'Test Action Label');
       
       // Set action context in MiroirEventTracker
       runActionTracker.setAction('contextAction');
@@ -36,12 +36,12 @@ describe('MiroirEventService', () => {
       actionLogService.logForCurrentActionOrTest('info', 'testLogger', 'Test message');
       
       // Get the action logs
-      const actionLogs = actionLogService.getEvent(actionId);
+      const actionLogs = actionLogService.getEvent(eventId);
       
       expect(actionLogs).toBeDefined();
-      expect(actionLogs!.logs).toHaveLength(1);
+      expect(actionLogs!.eventEntries).toHaveLength(1);
       
-      const logEntry = actionLogs!.logs[0];
+      const logEntry = actionLogs!.eventEntries[0];
       expect(logEntry.context).toBeDefined();
       expect(logEntry.context!.action).toBe('contextAction');
       expect(logEntry.context!.compositeAction).toBe('contextCompositeAction');
@@ -54,18 +54,18 @@ describe('MiroirEventService', () => {
 
     it('should handle undefined action and compositeAction context', () => {
       // Start an action in the tracker without setting context
-      const actionId = runActionTracker.startAction('testAction', 'Test Action Label');
+      const eventId = runActionTracker.startAction('testAction', 'Test Action Label');
       
       // Log a message
       actionLogService.logForCurrentActionOrTest('info', 'testLogger', 'Test message');
       
       // Get the action logs
-      const actionLogs = actionLogService.getEvent(actionId);
+      const actionLogs = actionLogService.getEvent(eventId);
       
       expect(actionLogs).toBeDefined();
-      expect(actionLogs!.logs).toHaveLength(1);
+      expect(actionLogs!.eventEntries).toHaveLength(1);
       
-      const logEntry = actionLogs!.logs[0];
+      const logEntry = actionLogs!.eventEntries[0];
       expect(logEntry.context).toBeDefined();
       expect(logEntry.context!.action).toBeUndefined();
       expect(logEntry.context!.compositeAction).toBeUndefined();
@@ -73,7 +73,7 @@ describe('MiroirEventService', () => {
 
     it('should update context when MiroirEventTracker context changes', () => {
       // Start an action in the tracker
-      const actionId = runActionTracker.startAction('testAction', 'Test Action Label');
+      const eventId = runActionTracker.startAction('testAction', 'Test Action Label');
       
       // Set initial context
       runActionTracker.setAction('initialAction');
@@ -90,14 +90,14 @@ describe('MiroirEventService', () => {
       actionLogService.logForCurrentActionOrTest('info', 'testLogger', 'Second message');
       
       // Verify both log entries have correct context
-      const actionLogs = actionLogService.getEvent(actionId);
-      expect(actionLogs!.logs).toHaveLength(2);
+      const actionLogs = actionLogService.getEvent(eventId);
+      expect(actionLogs!.eventEntries).toHaveLength(2);
       
-      const firstLog = actionLogs!.logs[0];
+      const firstLog = actionLogs!.eventEntries[0];
       expect(firstLog.context!.action).toBe('initialAction');
       expect(firstLog.context!.compositeAction).toBe('initialCompositeAction');
       
-      const secondLog = actionLogs!.logs[1];
+      const secondLog = actionLogs!.eventEntries[1];
       expect(secondLog.context!.action).toBe('updatedAction');
       expect(secondLog.context!.compositeAction).toBe('updatedCompositeAction');
     });

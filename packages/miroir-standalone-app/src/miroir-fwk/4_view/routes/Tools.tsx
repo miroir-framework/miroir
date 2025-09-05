@@ -27,7 +27,6 @@ import {
   displayTestSuiteResultsDetails,
   entityApplicationForAdmin,
   entityBook,
-  entityDefinitionTransformerDefinition,
   entityDeployment,
   entityMenu,
   entitySelfApplication,
@@ -41,7 +40,8 @@ import {
   type ReduxDeploymentsState,
   type SyncBoxedExtractorOrQueryRunnerMap,
   type TestSuiteResult,
-  type TransformerTestSuite
+  type TransformerTestSuite,
+  type Uuid
 } from "miroir-core";
 
 import { getMemoizedReduxDeploymentsStateSelectorMap, type ReduxStateWithUndoRedo } from "miroir-localcache-redux";
@@ -65,7 +65,6 @@ import { cleanLevel } from "../constants.js";
 import { usePageConfiguration } from "../services/index.js";
 
 import { RunTransformerTestSuiteButton } from "../components/Buttons/RunTransformerTestSuiteButton";
-import { EntityInstanceGrid } from "../components/Grids/EntityInstanceGrid";
 import { TransformerEditor } from "../components/TransformerEditor/TransformerEditor";
 
 // ################################################################################################
@@ -109,7 +108,7 @@ export const ToolsPage: React.FC<any> = (
   props: any // TODO: give a type to props!!!
 ) => {
   count++;
-  const [dialogOuterFormObject, setdialogOuterFormObject] = useMiroirContextInnerFormOutput();
+  // const [dialogOuterFormObject, setdialogOuterFormObject] = useMiroirContextInnerFormOutput();
   const [formHelperState, setformHelperState] = useMiroirContextformHelperState();
 
   // Auto-fetch configurations when the page loads
@@ -144,7 +143,7 @@ export const ToolsPage: React.FC<any> = (
     ) {
       const configuration = jzodTypeCheck(
         (context.miroirFundamentalJzodSchema.definition as any).context.testsResults,
-        testResults["applicative.Library.BuildPlusRuntimeCompositeAction.integ.test"],
+        testResults?.testsSuiteResults?.["applicative.Library.BuildPlusRuntimeCompositeAction.integ.test"],
         [], // currentValuePath
         [], // currentTypePath
         {
@@ -334,7 +333,11 @@ export const ToolsPage: React.FC<any> = (
           testSuitesForBuildPlusRuntimeCompositeAction,
           testDeploymentStorageConfiguration,
           testDeploymentUuid,
-        }: Record<string, any> = getTestSuitesForBuildPlusRuntimeCompositeAction(testMiroirConfig);
+        }: {
+          testSuitesForBuildPlusRuntimeCompositeAction: Record<string, TestCompositeActionParams>;
+          testDeploymentStorageConfiguration: any;
+          testDeploymentUuid: Uuid;
+        } = getTestSuitesForBuildPlusRuntimeCompositeAction(testMiroirConfig);
 
         for (const [currentTestSuiteName, testSuite] of Object.entries(
           testSuitesForBuildPlusRuntimeCompositeAction as Record<string, TestCompositeActionParams>
@@ -386,16 +389,18 @@ export const ToolsPage: React.FC<any> = (
         //   ],
         // );
     
+        const testSuitePath = [{ testSuite: Object.keys(testSuitesForBuildPlusRuntimeCompositeAction)[0]}]
         const globalTestSuiteResults = context.miroirContext.miroirEventTracker.getTestSuiteResult(
-          Object.keys(testSuitesForBuildPlusRuntimeCompositeAction)[0]
+          testSuitePath
         );
         setTestResults(globalTestSuiteResults);
         log.info("testResults", globalTestSuiteResults);
 
 
         displayTestSuiteResultsDetails(
-          expect,
+          // TestFramework,
           Object.keys(testSuitesForBuildPlusRuntimeCompositeAction)[0],
+          testSuitePath,
           context.miroirContext.miroirEventTracker
         );
 
@@ -523,9 +528,10 @@ export const ToolsPage: React.FC<any> = (
                 {resolveConditionalSchemaResults}
               </pre>
             </div>
-          )}
+          )
+        }
         {/* test results */}
-        <div>
+        {/* <div> */}
           {
             testResults &&
             testSuitesResults != undefined &&
@@ -533,7 +539,10 @@ export const ToolsPage: React.FC<any> = (
             resolvedTestResultsJzodSchema != undefined ? (
               <div>
                 <div>Test results:</div>
-                <EntityInstanceGrid
+                <pre>
+                  {JSON.stringify(testResults, null, 2)}
+                </pre>
+                {/* <EntityInstanceGrid
                   type="EntityInstance"
                   deploymentUuid={context.deploymentUuid}
                   displayTools={false}
@@ -592,14 +601,14 @@ export const ToolsPage: React.FC<any> = (
                       },
                     } as any
                   }
-                />
+                /> */}
               </div>
             ) : (
               <div>could not display test results!</div>
             )
           }
-        </div>
-        <div>
+        {/* </div> */}
+        {/* <div> */}
           <Formik
             enableReinitialize={true}
             initialValues={formState}
@@ -621,7 +630,7 @@ export const ToolsPage: React.FC<any> = (
               </>
             )}
           </Formik>
-        </div>
+        {/* </div> */}
       </div>
     </PageContainer>
   );

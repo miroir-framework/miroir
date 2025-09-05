@@ -640,9 +640,9 @@ export {
 } from "./0_interfaces/3_controllers/TransformerEventInterface.js";
 export {
   MiroirEventServiceInterface,
-  MiroirEventEntry,
-  MiroirEvent as MiroirEvent,
-  ActionLogFilter,
+  MiroirEventLog,
+  MiroirEvent,
+  EventFilter,
 } from "./3_controllers/MiroirEventService.js";
 export { LocalCacheInterface } from "./0_interfaces/4-services/LocalCacheInterface.js";
 export {

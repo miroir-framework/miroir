@@ -51,30 +51,45 @@ export interface ToolsPageState {
 
 
 export interface MiroirReactContext {
-  miroirContext: MiroirContextInterface,
+  // miroirContext: MiroirContextInterface, // events, client/server config
+  miroirContext: MiroirContext, // events, client/server config
+  // level 4 access: perform side effects, via domain controller action calls
   domainController: DomainControllerInterface,
+  // ###################################################################################################
+  // page parameters
   deploymentUuid: string,
   setDeploymentUuid: React.Dispatch<React.SetStateAction<string>>,
   reportUuid: Uuid | undefined,
   setReportUuid: React.Dispatch<React.SetStateAction<Uuid>>,
   applicationSection: ApplicationSection | undefined,
   setApplicationSection: React.Dispatch<React.SetStateAction<ApplicationSection>>,
+  // ###################################################################################################
+  // session information
+  viewParams: ViewParams,
+  // ###################################################################################################
+  // Miroir meta-model
+  miroirFundamentalJzodSchema: JzodSchema | undefined,
+  setMiroirFundamentalJzodSchema: React.Dispatch<React.SetStateAction<JzodElement>>,
+  // ###################################################################################################
+  // Form state management
   innerFormOutput: any,
   setInnerFormOutput: React.Dispatch<React.SetStateAction<any>>,
   formHelperState: any,
   setformHelperState: React.Dispatch<React.SetStateAction<any>>,
-  deploymentUuidToReportsEntitiesDefinitionsMapping: DeploymentUuidToReportsEntitiesDefinitionsMapping,
+  deploymentUuidToReportsEntitiesDefinitionsMapping: DeploymentUuidToReportsEntitiesDefinitionsMapping, // ??
   setDeploymentUuidToReportsEntitiesDefinitionsMapping: React.Dispatch<React.SetStateAction<DeploymentUuidToReportsEntitiesDefinitionsMapping>>,
-  miroirFundamentalJzodSchema: JzodSchema | undefined,
-  setMiroirFundamentalJzodSchema: React.Dispatch<React.SetStateAction<JzodElement>>,
-  viewParams: ViewParams,
+  updateTransformerEditorState: (updates: Partial<ToolsPageState['transformerEditor']>) => void,
+  // ###################################################################################################
+  // ToolsPage state management
   toolsPageState: ToolsPageState,
   updateToolsPageState: (updates: Partial<ToolsPageState>) => void,
-  updateTransformerEditorState: (updates: Partial<ToolsPageState['transformerEditor']>) => void,
+  // ###################################################################################################
+  // Modal windows for monitoring
   showPerformanceDisplay: boolean,
   setShowPerformanceDisplay: (value: boolean | ((prev: boolean) => boolean)) => void,
   showActionTimeline: boolean,
   setShowActionTimeline: (value: boolean | ((prev: boolean) => boolean)) => void,
+  // ##################################################################################################
   // Snackbar functionality
   snackbarOpen: boolean,
   snackbarMessage: string,
@@ -91,7 +106,8 @@ const miroirReactContext = createContext<MiroirReactContext | undefined>(undefin
 // #############################################################################################
 // export function MiroirContextReactProvider(props:any extends {miroirContext:MiroirContextInterface}) {
 export function MiroirContextReactProvider(props: {
-  miroirContext: MiroirContextInterface;
+  // miroirContext: MiroirContextInterface;
+  miroirContext: MiroirContext;
   domainController: DomainControllerInterface;
   testingDeploymentUuid?: Uuid; // for tests only! Yuck!
   children: ReactNode;
@@ -432,19 +448,19 @@ export function useLocalCacheTransactions(): ReduxStateChanges[] {
 }
 
 // #############################################################################################
-export function useMiroirLogs(): MiroirEvent[] {
+export function useMiroirEvents(): MiroirEvent[] {
   const context = useContext(miroirReactContext);
   if (!context) {
-    throw new Error('useMiroirLogs must be used within a MiroirContextReactProvider');
+    throw new Error('useMiroirEvents must be used within a MiroirContextReactProvider');
   }
   return context.miroirContext.miroirEventService.getAllEvents();
 }
 
 // #############################################################################################
-export function useActionOrTestTrackingData() {
+export function useMiroirEventTrackingData() {
   const context = useContext(miroirReactContext);
   if (!context) {
-    throw new Error('useActionOrTestTrackingData must be used within a MiroirContextReactProvider');
+    throw new Error('useMiroirEventTrackingData must be used within a MiroirContextReactProvider');
   }
   return context.miroirContext.miroirEventTracker.getAllEvents();
 }

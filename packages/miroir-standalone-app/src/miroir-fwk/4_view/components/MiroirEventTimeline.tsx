@@ -35,7 +35,7 @@ import {
 } from '@mui/icons-material';
 
 import { MiroirEventTrackingData, LoggerInterface, MiroirLoggerFactory } from 'miroir-core';
-import { useActionOrTestTrackingData, useMiroirContextService } from '../MiroirContextReactProvider.js';
+import { useMiroirEventTrackingData, useMiroirContextService } from '../MiroirContextReactProvider.js';
 import { packageName } from '../../../constants.js';
 import { cleanLevel } from '../constants.js';
 import { usePageConfiguration } from '../services/usePageConfiguration.js';
@@ -69,7 +69,7 @@ export const MiroirEventTimeLine: React.FC<RunActionTimelineProps> = React.memo(
   const componentId = React.useMemo(() => Math.random().toString(36).substr(2, 9), []);
   const context = useMiroirContextService();
   const navigate = useNavigate();
-  const trackedEvents = useActionOrTestTrackingData();
+  const trackedEvents = useMiroirEventTrackingData();
   const [expanded, setExpanded] = useState<{ [key: string]: boolean }>({});
   const [showFilters, setShowFilters] = useState(false);
   const [filters, setFilters] = useState<FilterState>({
@@ -217,15 +217,15 @@ export const MiroirEventTimeLine: React.FC<RunActionTimelineProps> = React.memo(
     return tree;
   }, [filteredEvents, componentId]);
 
-  const handleToggleExpanded = useCallback((actionId: string) => {
+  const handleToggleExpanded = useCallback((eventId: string) => {
     setExpanded(prev => ({
       ...prev,
-      [actionId]: !prev[actionId]
+      [eventId]: !prev[eventId]
     }));
   }, []);
 
-  const handleViewActionLogs = useCallback((actionId: string) => {
-    navigate(`/events?actionId=${actionId}`);
+  const handleViewActionLogs = useCallback((eventId: string) => {
+    navigate(`/events?eventId=${eventId}`);
   }, [navigate]);
 
   const handleClearActions = useCallback(() => {

@@ -69,19 +69,19 @@ describe('MiroirEventTracker', () => {
   describe('Integration with existing action tracking', () => {
     it('should maintain action context alongside action tracking', () => {
       // Start tracking an action
-      const actionId = tracker.startAction('testActionType', 'testActionLabel');
+      const eventId = tracker.startAction('testActionType', 'testActionLabel');
       
       // Set action context
       tracker.setAction('contextAction');
       tracker.setCompositeAction('contextCompositeAction');
       
       // Verify both work
-      expect(tracker.getCurrentEventId()).toBe(actionId);
+      expect(tracker.getCurrentEventId()).toBe(eventId);
       expect(tracker.getAction()).toBe('contextAction');
       expect(tracker.getCompositeAction()).toBe('contextCompositeAction');
       
       // End action tracking
-      tracker.endEvent(actionId);
+      tracker.endEvent(eventId);
       
       // Action context should still be available
       expect(tracker.getAction()).toBe('contextAction');

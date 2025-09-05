@@ -45,8 +45,8 @@ Core dependency graph (must be built in this order):
 
 ## Within React:
  - Prefer functional components with hooks
- - avoid `useEffect` unless strictly necessary
- - do not use publish-subscribe patterns, as it is redundant with React principles, instaed feed the data to React.FC components through props and hooks (useSelector, useDispatch, etc.). Services providing subscription mechanisms may de defined for uses outside of React components (for example on the server side).
+ - avoid `useEffect` unless strictly necessary, always ask for confirmation before adding a `useEffect`
+ - do not use publish-subscribe patterns to push data from one component to another, this is an anti-pattern, and it is redundant with React principles. Instead, feed the data to React.FC components through props and hooks (useSelector, useDispatch, etc.). Services providing subscription mechanisms may de defined for uses outside of React components (for example on the server side).
 
 ## Development Workflows
 
