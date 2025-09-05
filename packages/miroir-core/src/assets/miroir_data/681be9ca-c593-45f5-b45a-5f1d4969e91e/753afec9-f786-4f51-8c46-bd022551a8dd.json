@@ -105,8 +105,12 @@
           "mlSchema": {
             "type": "object",
             "definition": {
-              "a": { "type": "string" },
-              "b": { "type": "number" }
+              "a": {
+                "type": "string"
+              },
+              "b": {
+                "type": "number"
+              }
             }
           }
         },
@@ -127,8 +131,13 @@
           "mlSchema": {
             "type": "object",
             "definition": {
-              "a": { "type": "string" },
-              "b": { "type": "number", "optional": true }
+              "a": {
+                "type": "string"
+              },
+              "b": {
+                "type": "number",
+                "optional": true
+              }
             }
           }
         },
@@ -148,11 +157,15 @@
           "mlSchema": {
             "type": "object",
             "definition": {
-              "a": { "type": "string" },
+              "a": {
+                "type": "string"
+              },
               "b": {
                 "type": "object",
                 "definition": {
-                  "c": { "type": "number" }
+                  "c": {
+                    "type": "number"
+                  }
                 }
               }
             }
@@ -176,7 +189,9 @@
           "interpolation": "build",
           "mlSchema": {
             "type": "array",
-            "definition": { "type": "string" }
+            "definition": {
+              "type": "string"
+            }
           }
         },
         "transformerParams": {},
@@ -192,14 +207,16 @@
           "interpolation": "build",
           "mlSchema": {
             "type": "schemaReference",
-            "definition": { "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "jzodObject" }
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "jzodObject"
+            }
           }
         },
         "transformerParams": {},
         "expectedValue": {
           "type": "object",
-          "definition": {
-          }
+          "definition": {}
         }
       },
       "returns empty Transformer defintion for transformerDefinition MLS": {
@@ -220,13 +237,10 @@
         },
         "transformerParams": {},
         "expectedValue": {
-          "transformerImplementationType": "transformer",
-          "definition": {
-            "interpolation": "runtime",
-            "transformerType": "transformer_menu_addItem",
-            "menuReference": "",
-            "menuItemReference": ""
-          }
+          "interpolation": "build",
+          "transformerType": "transformer_menu_addItem",
+          "menuReference": "",
+          "menuItemReference": ""
         }
       }
     }

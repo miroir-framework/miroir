@@ -16575,8 +16575,10 @@ export const miroirFundamentalJzodSchema = {
                                 "canBeTemplate": true,
                                 "conditionalMMLS": {
                                   "parentUuid": {
-                                    "defaultValuePath": "#.parentUuid",
-                                    "typeCheckPath": "#.#.parentUuid"
+                                    "path": {
+                                      "defaultValuePath": "#.parentUuid",
+                                      "typeCheckPath": "#.#.parentUuid"
+                                    }
                                   }
                                 }
                               }
@@ -16864,8 +16866,10 @@ export const miroirFundamentalJzodSchema = {
                                 "canBeTemplate": true,
                                 "conditionalMMLS": {
                                   "parentUuid": {
-                                    "defaultValuePath": "#.parentUuid",
-                                    "typeCheckPath": "#.#.parentUuid"
+                                    "path": {
+                                      "defaultValuePath": "#.parentUuid",
+                                      "typeCheckPath": "#.#.parentUuid"
+                                    }
                                   }
                                 }
                               }
@@ -27462,8 +27466,10 @@ export const miroirFundamentalJzodSchema = {
                                                 "canBeTemplate": true,
                                                 "conditionalMMLS": {
                                                   "parentUuid": {
-                                                    "defaultValuePath": "#.parentUuid",
-                                                    "typeCheckPath": "#.#.parentUuid"
+                                                    "path": {
+                                                      "defaultValuePath": "#.parentUuid",
+                                                      "typeCheckPath": "#.#.parentUuid"
+                                                    }
                                                   }
                                                 },
                                                 "isTemplate": true
@@ -27477,8 +27483,10 @@ export const miroirFundamentalJzodSchema = {
                                                     "canBeTemplate": true,
                                                     "conditionalMMLS": {
                                                       "parentUuid": {
-                                                        "defaultValuePath": "#.parentUuid",
-                                                        "typeCheckPath": "#.#.parentUuid"
+                                                        "path": {
+                                                          "defaultValuePath": "#.parentUuid",
+                                                          "typeCheckPath": "#.#.parentUuid"
+                                                        }
                                                       }
                                                     },
                                                     "isTemplate": true
@@ -28910,8 +28918,10 @@ export const miroirFundamentalJzodSchema = {
                                                 "canBeTemplate": true,
                                                 "conditionalMMLS": {
                                                   "parentUuid": {
-                                                    "defaultValuePath": "#.parentUuid",
-                                                    "typeCheckPath": "#.#.parentUuid"
+                                                    "path": {
+                                                      "defaultValuePath": "#.parentUuid",
+                                                      "typeCheckPath": "#.#.parentUuid"
+                                                    }
                                                   }
                                                 },
                                                 "isTemplate": true
@@ -28925,8 +28935,10 @@ export const miroirFundamentalJzodSchema = {
                                                     "canBeTemplate": true,
                                                     "conditionalMMLS": {
                                                       "parentUuid": {
-                                                        "defaultValuePath": "#.parentUuid",
-                                                        "typeCheckPath": "#.#.parentUuid"
+                                                        "path": {
+                                                          "defaultValuePath": "#.parentUuid",
+                                                          "typeCheckPath": "#.#.parentUuid"
+                                                        }
                                                       }
                                                     },
                                                     "isTemplate": true
@@ -53142,8 +53154,10 @@ export const miroirFundamentalJzodSchema = {
                                 "canBeTemplate": true,
                                 "conditionalMMLS": {
                                   "parentUuid": {
-                                    "defaultValuePath": "#.parentUuid",
-                                    "typeCheckPath": "#.#.parentUuid"
+                                    "path": {
+                                      "defaultValuePath": "#.parentUuid",
+                                      "typeCheckPath": "#.#.parentUuid"
+                                    }
                                   }
                                 },
                                 "isTemplate": true
@@ -53161,8 +53175,10 @@ export const miroirFundamentalJzodSchema = {
                                     "canBeTemplate": true,
                                     "conditionalMMLS": {
                                       "parentUuid": {
-                                        "defaultValuePath": "#.parentUuid",
-                                        "typeCheckPath": "#.#.parentUuid"
+                                        "path": {
+                                          "defaultValuePath": "#.parentUuid",
+                                          "typeCheckPath": "#.#.parentUuid"
+                                        }
                                       }
                                     },
                                     "isTemplate": true
@@ -53969,8 +53985,10 @@ export const miroirFundamentalJzodSchema = {
                                 "canBeTemplate": true,
                                 "conditionalMMLS": {
                                   "parentUuid": {
-                                    "defaultValuePath": "#.parentUuid",
-                                    "typeCheckPath": "#.#.parentUuid"
+                                    "path": {
+                                      "defaultValuePath": "#.parentUuid",
+                                      "typeCheckPath": "#.#.parentUuid"
+                                    }
                                   }
                                 },
                                 "isTemplate": true
@@ -53988,8 +54006,10 @@ export const miroirFundamentalJzodSchema = {
                                     "canBeTemplate": true,
                                     "conditionalMMLS": {
                                       "parentUuid": {
-                                        "defaultValuePath": "#.parentUuid",
-                                        "typeCheckPath": "#.#.parentUuid"
+                                        "path": {
+                                          "defaultValuePath": "#.parentUuid",
+                                          "typeCheckPath": "#.#.parentUuid"
+                                        }
                                       }
                                     },
                                     "isTemplate": true
@@ -61471,8 +61491,10 @@ export const miroirFundamentalJzodSchema = {
                                 "canBeTemplate": true,
                                 "conditionalMMLS": {
                                   "parentUuid": {
-                                    "defaultValuePath": "#.parentUuid",
-                                    "typeCheckPath": "#.#.parentUuid"
+                                    "path": {
+                                      "defaultValuePath": "#.parentUuid",
+                                      "typeCheckPath": "#.#.parentUuid"
+                                    }
                                   }
                                 },
                                 "isTemplate": true
@@ -61490,8 +61512,10 @@ export const miroirFundamentalJzodSchema = {
                                     "canBeTemplate": true,
                                     "conditionalMMLS": {
                                       "parentUuid": {
-                                        "defaultValuePath": "#.parentUuid",
-                                        "typeCheckPath": "#.#.parentUuid"
+                                        "path": {
+                                          "defaultValuePath": "#.parentUuid",
+                                          "typeCheckPath": "#.#.parentUuid"
+                                        }
                                       }
                                     },
                                     "isTemplate": true
@@ -62287,8 +62311,10 @@ export const miroirFundamentalJzodSchema = {
                                 "canBeTemplate": true,
                                 "conditionalMMLS": {
                                   "parentUuid": {
-                                    "defaultValuePath": "#.parentUuid",
-                                    "typeCheckPath": "#.#.parentUuid"
+                                    "path": {
+                                      "defaultValuePath": "#.parentUuid",
+                                      "typeCheckPath": "#.#.parentUuid"
+                                    }
                                   }
                                 },
                                 "isTemplate": true
@@ -62306,8 +62332,10 @@ export const miroirFundamentalJzodSchema = {
                                     "canBeTemplate": true,
                                     "conditionalMMLS": {
                                       "parentUuid": {
-                                        "defaultValuePath": "#.parentUuid",
-                                        "typeCheckPath": "#.#.parentUuid"
+                                        "path": {
+                                          "defaultValuePath": "#.parentUuid",
+                                          "typeCheckPath": "#.#.parentUuid"
+                                        }
                                       }
                                     },
                                     "isTemplate": true
@@ -69790,8 +69818,10 @@ export const miroirFundamentalJzodSchema = {
                                 "canBeTemplate": true,
                                 "conditionalMMLS": {
                                   "parentUuid": {
-                                    "defaultValuePath": "#.parentUuid",
-                                    "typeCheckPath": "#.#.parentUuid"
+                                    "path": {
+                                      "defaultValuePath": "#.parentUuid",
+                                      "typeCheckPath": "#.#.parentUuid"
+                                    }
                                   }
                                 },
                                 "isTemplate": true
@@ -69809,8 +69839,10 @@ export const miroirFundamentalJzodSchema = {
                                     "canBeTemplate": true,
                                     "conditionalMMLS": {
                                       "parentUuid": {
-                                        "defaultValuePath": "#.parentUuid",
-                                        "typeCheckPath": "#.#.parentUuid"
+                                        "path": {
+                                          "defaultValuePath": "#.parentUuid",
+                                          "typeCheckPath": "#.#.parentUuid"
+                                        }
                                       }
                                     },
                                     "isTemplate": true
@@ -70617,8 +70649,10 @@ export const miroirFundamentalJzodSchema = {
                                 "canBeTemplate": true,
                                 "conditionalMMLS": {
                                   "parentUuid": {
-                                    "defaultValuePath": "#.parentUuid",
-                                    "typeCheckPath": "#.#.parentUuid"
+                                    "path": {
+                                      "defaultValuePath": "#.parentUuid",
+                                      "typeCheckPath": "#.#.parentUuid"
+                                    }
                                   }
                                 },
                                 "isTemplate": true
@@ -70636,8 +70670,10 @@ export const miroirFundamentalJzodSchema = {
                                     "canBeTemplate": true,
                                     "conditionalMMLS": {
                                       "parentUuid": {
-                                        "defaultValuePath": "#.parentUuid",
-                                        "typeCheckPath": "#.#.parentUuid"
+                                        "path": {
+                                          "defaultValuePath": "#.parentUuid",
+                                          "typeCheckPath": "#.#.parentUuid"
+                                        }
                                       }
                                     },
                                     "isTemplate": true
