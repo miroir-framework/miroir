@@ -120,7 +120,7 @@ export interface MiroirEventServiceInterface {
   /**
    * Get filtered action logs
    */
-  getFilteredEvents(filter: EventFilter): MiroirEvent[];
+  getFilteredEvents(filter: EventFilter, events?: MiroirEvent[]): MiroirEvent[];
 
   /**
    * Subscribe to action log updates
@@ -303,7 +303,7 @@ export class MiroirEventService implements MiroirEventServiceInterface {
   //   return Array.from(this.actionOrTestLogs.values()).sort((a, b) => b.startTime - a.startTime);
   // }
 
-  getFilteredEvents(filter: EventFilter): MiroirEvent[] {
+  getFilteredEvents(filter: EventFilter, events?: MiroirEvent[]): MiroirEvent[] {
     return this.getAllEvents().filter(actionLogs => {
       if (filter.eventId && actionLogs.eventId !== filter.eventId) {
         return false;

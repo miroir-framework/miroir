@@ -97,64 +97,34 @@ export const MiroirEventTimeLine: React.FC<RunActionTimelineProps> = React.memo(
       // });
       
       // Try using the tracker's built-in filtering if available
-      if (context.miroirContext.miroirEventTracker.getFilteredEvents) {
-        try {
-          const filterCriteria = {
-            actionType: filters.actionType || undefined,
-            trackingType: filters.trackingType as 'action' | 'testSuite' | 'test' | 'testAssertion' || undefined,
-            status: filters.status as 'running' | 'completed' | 'error' || undefined,
-            minDuration: filters.minDuration ? parseInt(filters.minDuration) : undefined,
-            since: filters.since ? new Date(filters.since).getTime() : undefined,
-          };
-          // log.info(`MiroirEventTimeLine [${componentId}] - Using tracker filtering with criteria:`, filterCriteria);
-          result = context.miroirContext.miroirEventTracker.getFilteredEvents(filterCriteria, trackedEvents);
-        } catch (error) {
-          log.error(`MiroirEventTimeLine [${componentId}] - Tracker filtering failed:`, error);
-          result = trackedEvents; // Fallback to all actions
-        }
-      } else {
-        // Fallback to manual filtering
-        // log.info(`MiroirEventTimeLine [${componentId}] - Using manual filtering`);
-        result = trackedEvents.filter(action => {
-          let include = true;
-          if (filters.actionType && action.actionType !== filters.actionType) {
-            // log.debug(`MiroirEventTimeLine [${componentId}] - Excluding action ${action.id} due to actionType filter:`, {
-            //   expected: filters.actionType,
-            //   actual: action.actionType
-            // });
-            include = false;
-          }
-          if (filters.trackingType && action.trackingType !== filters.trackingType) {
-            // log.debug(`MiroirEventTimeLine [${componentId}] - Excluding action ${action.id} due to trackingType filter:`, {
-            //   expected: filters.trackingType,
-            //   actual: action.trackingType
-            // });
-            include = false;
-          }
-          if (filters.status && action.status !== filters.status) {
-            // log.debug(`MiroirEventTimeLine [${componentId}] - Excluding action ${action.id} due to status filter:`, {
-            //   expected: filters.status,
-            //   actual: action.status
-            // });
-            include = false;
-          }
-          if (filters.minDuration && action.duration && action.duration < parseInt(filters.minDuration)) {
-            // log.debug(`MiroirEventTimeLine [${componentId}] - Excluding action ${action.id} due to minDuration filter:`, {
-            //   expected: filters.minDuration,
-            //   actual: action.duration
-            // });
-            include = false;
-          }
-          if (filters.since && action.startTime && action.startTime < new Date(filters.since).getTime()) {
-            // log.debug(`MiroirEventTimeLine [${componentId}] - Excluding action ${action.id} due to since filter:`, {
-            //   expected: filters.since,
-            //   actual: action.startTime
-            // });
-            include = false;
-          }
-          return include;
-        });
-      }
+      // if (context.miroirContext.miroirEventTracker.getFilteredEvents) {
+        // try {
+        const filterCriteria = {
+          actionType: filters.actionType || undefined,
+          trackingType: filters.trackingType as 'action' | 'testSuite' | 'test' | 'testAssertion' || undefined,
+          status: filters.status as 'running' | 'completed' | 'error' || undefined,
+          minDuration: filters.minDuration ? parseInt(filters.minDuration) : undefined,
+          since: filters.since ? new Date(filters.since).getTime() : undefined,
+        };
+        // log.info(`MiroirEventTimeLine [${componentId}] - Using tracker filtering with criteria:`, filterCriteria);
+        result = context.miroirContext.miroirEventTracker.getFilteredEvents(filterCriteria, trackedEvents);
+        // } catch (error) {
+        //   log.error(`MiroirEventTimeLine [${componentId}] - Tracker filtering failed:`, error);
+        //   result = trackedEvents; // Fallback to all actions
+        // }
+      // } else {
+      //   // Fallback to manual filtering
+      //   // log.info(`MiroirEventTimeLine [${componentId}] - Using manual filtering`);
+      //   result = trackedEvents.filter(action => {
+      //     return (
+      //       (!filters.actionType || action.actionType === filters.actionType) &&
+      //       (!filters.trackingType || action.trackingType === filters.trackingType) &&
+      //       (!filters.status || action.status === filters.status) &&
+      //       (!filters.minDuration || !action.duration || action.duration >= parseInt(filters.minDuration)) &&
+      //       (!filters.since || !action.startTime || action.startTime >= new Date(filters.since).getTime())
+      //     );
+      //   });
+      // }
     }
     
     // log.info(`MiroirEventTimeLine [${componentId}] - Filtered:`, result.length, 'actions from', actions.length, 'total');
@@ -277,18 +247,6 @@ export const MiroirEventTimeLine: React.FC<RunActionTimelineProps> = React.memo(
     }
   };
 
-  const getStatusIcon_old = (status: string) => {
-    switch (status) {
-      case 'running':
-        return <PlayArrow color="primary" />;
-      case 'completed':
-        return <CheckCircle color="success" />;
-      case 'error':
-        return <Error color="error" />;
-      default:
-        return null;
-    }
-  };
 
   const getStatusColor = (action: MiroirEventTrackingData) => {
     // For tests, consider both status and testResult
@@ -301,19 +259,6 @@ export const MiroirEventTimeLine: React.FC<RunActionTimelineProps> = React.memo(
     
     // Standard action status colors
     switch (action.status) {
-      case 'running':
-        return 'primary';
-      case 'completed':
-        return 'success';
-      case 'error':
-        return 'error';
-      default:
-        return 'default';
-    }
-  };
-
-  const getStatusColor_old = (status: string) => {
-    switch (status) {
       case 'running':
         return 'primary';
       case 'completed':

@@ -5,6 +5,8 @@ import {
   TransformerEntry,
   TransformerEvent,
   TransformerEventFilter,
+  type EventFilter,
+  type MiroirEvent,
 } from 'miroir-core';
 
 import { packageName } from '../../../../constants';
@@ -16,7 +18,7 @@ import {
   ThemedTitle,
   ThemedCodeBlock,
 } from "../Themes/index";
-import { useMiroirContextService } from '../../MiroirContextReactProvider';
+import { useMiroirContextService, useMiroirEvents } from '../../MiroirContextReactProvider';
 
 // ################################################################################################
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -77,7 +79,7 @@ const TransformerEventEntry: React.FC<{
             {event.transformerName} ({event.transformerType})
           </div>
           <div style={{ fontSize: '12px', color: '#666', marginTop: '2px' }}>
-            {event.transformerStep} • {formatDuration(event.duration)} • {event.status}
+            {event.transformerStep} • {formatDuration(event.endTime? event.endTime - event.startTime:undefined)} • {event.status}
             {event.transformerError && <span style={{ color: '#ff6b6b', marginLeft: '8px' }}>Error</span>}
           </div>
         </div>
@@ -162,41 +164,21 @@ export const TransformerEventsPanel: React.FC<TransformerEventsPanelProps> = Rea
   transformerFilter = {}
 }) => {
   const { miroirContext } = useMiroirContextService();
-  const [transformerEvents, setTransformerEvents] = useState<TransformerEvent[]>([]);
+  // const [transformerEvents, setTransformerEvents] = useState<TransformerEvent[]>([]);
   const [isCollapsed, setIsCollapsed] = useState(false);
-
-  // Subscribe to transformer events
-  useEffect(() => {
-    if (!miroirContext.transformerEventService) {
-      log.warn('TransformerEventsPanel: No transformer event service available');
-      return;
-    }
-
-    const unsubscribe = miroirContext.transformerEventService.subscribe((events: TransformerEvent[]) => {
-      setTransformerEvents(events);
-    });
-
-    // Get initial events
-    try {
-      const initialEvents = miroirContext.transformerEventService.getFilteredTransformerEvents(transformerFilter);
-      setTransformerEvents(initialEvents);
-    } catch (error: any) {
-      log.error('Failed to get initial transformer events:', error);
-      setTransformerEvents([]);
-    }
-
-    return unsubscribe;
-  }, [miroirContext.transformerEventService, transformerFilter]);
+  const allEvents: MiroirEvent[] = useMiroirEvents();
 
   // Filter and sort events for display
   const displayEvents = useMemo(() => {
-    if (!transformerEvents.length) return [];
+    if (!allEvents.length) return [];
     
+      const filterCriteria: EventFilter = { trackingType: "transformer" };
+
     // Sort by start time, newest first
-    return transformerEvents
-      .filter(event => !event.parentTransformerId) // Only show root events, children are shown nested
+    return miroirContext.miroirEventService.getFilteredEvents(filterCriteria, allEvents)
+      // .filter(event => !event.parentTransformerId) // Only show root events, children are shown nested
       .sort((a, b) => (b.startTime || 0) - (a.startTime || 0));
-  }, [transformerEvents]);
+  }, [allEvents]);
 
   if (!miroirContext.transformerEventService) {
     return (
@@ -214,7 +196,7 @@ export const TransformerEventsPanel: React.FC<TransformerEventsPanelProps> = Rea
       <ThemedHeaderSection>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <ThemedTitle>
-            Transformer Events {transformerEvents.length > 0 && `(${transformerEvents.length})`}
+            Transformer Events {allEvents.length > 0 && `(${allEvents.length})`}
           </ThemedTitle>
           <button
             onClick={() => setIsCollapsed(!isCollapsed)}
@@ -236,7 +218,7 @@ export const TransformerEventsPanel: React.FC<TransformerEventsPanelProps> = Rea
         <div style={{ padding: '16px 0' }}>
           {displayEvents.length > 0 ? (
             <div>
-              {displayEvents.map((event) => (
+              {displayEvents.map((event: any) => (
                 <TransformerEventEntry
                   key={event.transformerId}
                   event={event}

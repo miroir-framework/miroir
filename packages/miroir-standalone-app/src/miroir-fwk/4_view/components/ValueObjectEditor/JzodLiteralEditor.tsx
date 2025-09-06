@@ -215,6 +215,7 @@ const handleDiscriminatorChange = (
   log.info(`handleDiscriminatorChange (${discriminatorType})`, "newJzodSchema", JSON.stringify(newJzodSchema, null, 2));
   const defaultValue = modelEnvironment
     ? getDefaultValueForJzodSchemaWithResolutionNonHook(
+        "build",
         newJzodSchemaWithOptional,
         formik.values,
         rootLessListKey,

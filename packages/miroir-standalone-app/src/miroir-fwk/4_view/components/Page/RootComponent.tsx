@@ -121,12 +121,19 @@ export interface RootComponentProps {
  */
 export const RootComponent = (props: RootComponentProps) => {
   // const params = useParams<any>() as Readonly<Params<ReportUrlParamKeys>>;
-  
+
   const [drawerIsOpen, setDrawerIsOpen] = useState(true);
-  
+
   // Use snackbar from context
-  const { snackbarOpen, snackbarMessage, snackbarSeverity, showSnackbar, handleSnackbarClose, handleAsyncAction } = useSnackbar();
-  
+  const {
+    snackbarOpen,
+    snackbarMessage,
+    snackbarSeverity,
+    showSnackbar,
+    handleSnackbarClose,
+    handleAsyncAction,
+  } = useSnackbar();
+
   // InstanceEditorOutline state
   const [isOutlineOpen, setIsOutlineOpen] = useState(false);
   const [outlineWidth, setOutlineWidth] = useState(300);
@@ -134,7 +141,7 @@ export const RootComponent = (props: RootComponentProps) => {
   const [outlineTitle, setOutlineTitle] = useState<string>("Document Structure");
   // Remember sidebar state before outline was opened
   const [sidebarStateBeforeOutline, setSidebarStateBeforeOutline] = useState<boolean | null>(null);
-  
+
   const domainController: DomainControllerInterface = useDomainControllerService();
   const context = useMiroirContextService();
   const navigate = useNavigate();
@@ -150,72 +157,90 @@ export const RootComponent = (props: RootComponentProps) => {
   // Track render counts with centralized tracker
   const currentNavigationKey = `${context.deploymentUuid}-${context.applicationSection}`;
   const { navigationCount, totalCount } = useRenderTracker("RootComponent", currentNavigationKey);
-  
+
   log.info(
     "##################################### rendering root component",
     "totalRenderCount",
     totalCount,
-    "navigationRenderCount", 
-    navigationCount,
+    "navigationRenderCount",
+    navigationCount
   );
 
   // Memoize current model to prevent unnecessary re-renders
-  const currentModel: MetaModel = useCurrentModel(
-    adminConfigurationDeploymentAdmin.uuid
-  );
-  
+  const currentModel: MetaModel = useCurrentModel(adminConfigurationDeploymentAdmin.uuid);
+
   if (miroirConfig && miroirConfig.miroirConfigType != "client") {
-    throw new Error("RootComponent: miroirConfig.miroirConfigType != 'client' " + JSON.stringify(miroirConfig));
+    throw new Error(
+      "RootComponent: miroirConfig.miroirConfigType != 'client' " + JSON.stringify(miroirConfig)
+    );
   }
 
   // ##############################################################################################
   // Stable references to prevent unnecessary re-renders
   const displayedDeploymentUuid = useMemo(() => context.deploymentUuid, [context.deploymentUuid]);
-  const setDisplayedDeploymentUuid = useMemo(() => context.setDeploymentUuid, [context.setDeploymentUuid]);
+  const setDisplayedDeploymentUuid = useMemo(
+    () => context.setDeploymentUuid,
+    [context.setDeploymentUuid]
+  );
   // const displayedApplicationSection = useMemo(() => context.applicationSection, [context.applicationSection]);
-  const setDisplayedApplicationSection = useMemo(() => context.setApplicationSection, [context.setApplicationSection]);
+  const setDisplayedApplicationSection = useMemo(
+    () => context.setApplicationSection,
+    [context.setApplicationSection]
+  );
 
   // ###############################################################################################
   useEffect(() => context.setMiroirFundamentalJzodSchema(miroirFundamentalJzodSchema as any));
   // ###############################################################################################
 
-  const handleDrawerOpen = useMemo(() => () => {
-    setDrawerIsOpen(true);
-    // If opening sidebar, close outline
-    if (isOutlineOpen) {
-      setIsOutlineOpen(false);
-    }
-  }, [setDrawerIsOpen, isOutlineOpen]);
+  const handleDrawerOpen = useMemo(
+    () => () => {
+      setDrawerIsOpen(true);
+      // If opening sidebar, close outline
+      if (isOutlineOpen) {
+        setIsOutlineOpen(false);
+      }
+    },
+    [setDrawerIsOpen, isOutlineOpen]
+  );
 
-  const handleDrawerClose = useMemo(() => () => {
-    setDrawerIsOpen(false);
-    // Note: When closing sidebar, we don't automatically open outline
-    // The user can manually open it if needed
-  }, [setDrawerIsOpen]);
+  const handleDrawerClose = useMemo(
+    () => () => {
+      setDrawerIsOpen(false);
+      // Note: When closing sidebar, we don't automatically open outline
+      // The user can manually open it if needed
+    },
+    [setDrawerIsOpen]
+  );
 
   // Coordinated drawer state handler for sidebar
-  const handleDrawerStateChange = useMemo(() => (isOpen: boolean) => {
-    if (isOpen) {
-      handleDrawerOpen();
-    } else {
-      handleDrawerClose();
-    }
-  }, [handleDrawerOpen, handleDrawerClose]);
+  const handleDrawerStateChange = useMemo(
+    () => (isOpen: boolean) => {
+      if (isOpen) {
+        handleDrawerOpen();
+      } else {
+        handleDrawerClose();
+      }
+    },
+    [handleDrawerOpen, handleDrawerClose]
+  );
 
-  const handleChangeDisplayedDeployment = useMemo(() => (event: SelectChangeEvent<unknown>) => {
-    event.stopPropagation();
-    log.info('handleChangeDisplayedDeployment',event);
-    setDisplayedDeploymentUuid(event.target.value as string);
-    log.info('handleChangeDisplayedDeployment',displayedDeploymentUuid);
-    setDisplayedApplicationSection('data');
-    // setDisplayedReportUuid("");
-  }, [setDisplayedDeploymentUuid, setDisplayedApplicationSection]);
+  const handleChangeDisplayedDeployment = useMemo(
+    () => (event: SelectChangeEvent<unknown>) => {
+      event.stopPropagation();
+      log.info("handleChangeDisplayedDeployment", event);
+      setDisplayedDeploymentUuid(event.target.value as string);
+      log.info("handleChangeDisplayedDeployment", displayedDeploymentUuid);
+      setDisplayedApplicationSection("data");
+      // setDisplayedReportUuid("");
+    },
+    [setDisplayedDeploymentUuid, setDisplayedApplicationSection]
+  );
 
   // InstanceEditorOutline handlers with sidebar coordination
   const handleToggleOutline = useCallback(() => {
-    setIsOutlineOpen(prev => {
+    setIsOutlineOpen((prev) => {
       const newOutlineState = !prev;
-      
+
       if (newOutlineState) {
         // Opening outline: remember current sidebar state and close it
         setSidebarStateBeforeOutline(drawerIsOpen);
@@ -229,78 +254,80 @@ export const RootComponent = (props: RootComponentProps) => {
           setSidebarStateBeforeOutline(null);
         }
       }
-      
+
       return newOutlineState;
     });
   }, [drawerIsOpen, sidebarStateBeforeOutline]);
 
   const handleNavigateToPath = useCallback((path: string[]) => {
-    const rootLessListKey = path.join('.');
-    
-    console.log('Attempting to navigate to path:', path, 'rootLessListKey:', rootLessListKey);
-    
+    const rootLessListKey = path.join(".");
+
+    console.log("Attempting to navigate to path:", path, "rootLessListKey:", rootLessListKey);
+
     // Helper function to escape CSS selectors
     const escapeCSS = (str: string) => {
-      return str.replace(/[!"#$%&'()*+,.\/:;<=>?@[\\\]^`{|}~\s]/g, '\\$&');
+      return str.replace(/[!"#$%&'()*+,.\/:;<=>?@[\\\]^`{|}~\s]/g, "\\$&");
     };
-    
+
     // Try multiple strategies to find the element
     let targetElement: HTMLElement | null = null;
-    
+
     // Strategy 1: Direct ID match
     targetElement = document.getElementById(rootLessListKey);
-    
+
     // Strategy 2: Try with escaped CSS selector
     if (!targetElement) {
       try {
         const escapedSelector = escapeCSS(rootLessListKey);
         targetElement = document.querySelector(`#${escapedSelector}`) as HTMLElement;
       } catch (e) {
-        console.warn('CSS selector failed:', e);
+        console.warn("CSS selector failed:", e);
       }
     }
-    
+
     // Strategy 3: Try with data-testid
     if (!targetElement) {
       try {
         const escapedSelector = escapeCSS(rootLessListKey);
-        targetElement = document.querySelector(`[data-testid="miroirInput"][id="${rootLessListKey}"]`) as HTMLElement;
+        targetElement = document.querySelector(
+          `[data-testid="miroirInput"][id="${rootLessListKey}"]`
+        ) as HTMLElement;
       } catch (e) {
         // Ignore selector errors
       }
     }
-    
+
     // Strategy 4: Try partial matches (contains)
     if (!targetElement) {
       // Split the path and try to find elements that contain parts of the path
       const pathParts = path.slice(-2); // Take last 2 parts for a more specific search
-      const partialKey = pathParts.join('.');
-      
-      const candidates = Array.from(document.querySelectorAll('[id]'));
+      const partialKey = pathParts.join(".");
+
+      const candidates = Array.from(document.querySelectorAll("[id]"));
       for (const candidate of candidates) {
         const id = (candidate as HTMLElement).id;
         if (id && id.includes(partialKey)) {
           targetElement = candidate as HTMLElement;
-          console.log('Found partial match:', id);
+          console.log("Found partial match:", id);
           break;
         }
       }
     }
-    
+
     // Strategy 5: Try finding by the last part of the path
     if (!targetElement) {
       const lastPart = path[path.length - 1];
-      const candidates = Array.from(document.querySelectorAll('[id]'));
+      const candidates = Array.from(document.querySelectorAll("[id]"));
       for (const candidate of candidates) {
         const id = (candidate as HTMLElement).id;
         if (id && id.endsWith(lastPart)) {
           targetElement = candidate as HTMLElement;
-          console.log('Found by last part match:', id);
+          console.log("Found by last part match:", id);
           break;
         }
       }
     }
-    
+
     // Strategy 6: Fuzzy search through all IDs
     if (!targetElement) {
       console.log("Trying fuzzy search...");
@@ -343,46 +370,48 @@ export const RootComponent = (props: RootComponentProps) => {
     if (targetElement) {
       // Scroll the element into view with smooth behavior
       targetElement.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start',
-        inline: 'nearest'
+        behavior: "smooth",
+        block: "start",
+        inline: "nearest",
       });
-      
+
       // Optional: Add a temporary highlight effect
       const originalBackgroundColor = targetElement.style.backgroundColor;
       const originalBorder = targetElement.style.border;
       const originalBorderRadius = targetElement.style.borderRadius;
-      
+
       targetElement.style.backgroundColor = theme.currentTheme.colors.warningLight;
       targetElement.style.border = `2px solid ${theme.currentTheme.colors.warning}`;
-      targetElement.style.borderRadius = '4px';
-      targetElement.style.transition = 'all 0.3s ease';
-      
+      targetElement.style.borderRadius = "4px";
+      targetElement.style.transition = "all 0.3s ease";
+
       // Remove the highlight after 2 seconds
       setTimeout(() => {
         targetElement!.style.backgroundColor = originalBackgroundColor;
         targetElement!.style.border = originalBorder;
         targetElement!.style.borderRadius = originalBorderRadius;
-        targetElement!.style.transition = '';
+        targetElement!.style.transition = "";
       }, 2000);
     } else {
-      console.warn('Element not found for path:', path, 'rootLessListKey:', rootLessListKey);
-      
+      console.warn("Element not found for path:", path, "rootLessListKey:", rootLessListKey);
+
       // List all elements with IDs to help with debugging
-      const allElementsWithIds = document.querySelectorAll('[id]');
-      const ids = Array.from(allElementsWithIds).map(el => el.id).filter(id => id);
-      console.log('Available element IDs (first 20):', ids.slice(0, 20));
-      console.log('Total elements with IDs:', ids.length);
-      
+      const allElementsWithIds = document.querySelectorAll("[id]");
+      const ids = Array.from(allElementsWithIds)
+        .map((el) => el.id)
+        .filter((id) => id);
+      console.log("Available element IDs (first 20):", ids.slice(0, 20));
+      console.log("Total elements with IDs:", ids.length);
+
       // Show IDs that might be related
-      const relatedIds = ids.filter(id => {
-        const pathStr = path.join('').toLowerCase();
+      const relatedIds = ids.filter((id) => {
+        const pathStr = path.join("").toLowerCase();
         const idStr = id.toLowerCase();
         return pathStr.includes(idStr.slice(-10)) || idStr.includes(pathStr.slice(-10));
       });
-      
+
       if (relatedIds.length > 0) {
-        console.log('Potentially related IDs:', relatedIds);
+        console.log("Potentially related IDs:", relatedIds);
       }
     }
   }, []);
@@ -399,17 +428,25 @@ export const RootComponent = (props: RootComponentProps) => {
       setOutlineData,
       setOutlineTitle,
     }),
-    [isOutlineOpen, outlineWidth, outlineData, outlineTitle, handleToggleOutline, handleNavigateToPath]
+    [
+      isOutlineOpen,
+      outlineWidth,
+      outlineData,
+      outlineTitle,
+      handleToggleOutline,
+      handleNavigateToPath,
+    ]
   );
 
   const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> =
-  useMemo(() => getMemoizedReduxDeploymentsStateSelectorMap(), []);
+    useMemo(() => getMemoizedReduxDeploymentsStateSelectorMap(), []);
 
   // Stabilize query params to prevent unnecessary selector re-runs
   const stableQueryParams = useMemo(
-    () => currentModel?.entities?.length > 0
-      ? defaultViewParamsFromAdminStorageFetchQueryParams(deploymentEntityStateSelectorMap)
-      : getQueryRunnerParamsForReduxDeploymentsState(dummyDomainManyQueryWithDeploymentUuid),
+    () =>
+      currentModel?.entities?.length > 0
+        ? defaultViewParamsFromAdminStorageFetchQueryParams(deploymentEntityStateSelectorMap)
+        : getQueryRunnerParamsForReduxDeploymentsState(dummyDomainManyQueryWithDeploymentUuid),
     [currentModel?.entities?.length, deploymentEntityStateSelectorMap]
   );
 
@@ -426,7 +463,9 @@ export const RootComponent = (props: RootComponentProps) => {
 
   // Optimize ViewParams state management to reduce re-renders
   const defaultViewParamsFromAdminStorage: ViewParamsData | undefined = useMemo(
-    () => defaultViewParamsFromAdminStorageFetchQueryResults?.["viewParams"] as any || defaultAdminViewParams,
+    () =>
+      (defaultViewParamsFromAdminStorageFetchQueryResults?.["viewParams"] as any) ||
+      defaultAdminViewParams,
     [defaultViewParamsFromAdminStorageFetchQueryResults]
   );
 
@@ -435,13 +474,13 @@ export const RootComponent = (props: RootComponentProps) => {
     defaultViewParamsFromAdminStorage,
     defaultViewParamsFromAdminStorageFetchQueryResults
   );
-  
+
   // Get the database sidebar width value with stable reference
   const dbSidebarWidth = useMemo(
-    () => defaultViewParamsFromAdminStorage?.sidebarWidth, 
+    () => defaultViewParamsFromAdminStorage?.sidebarWidth,
     [defaultViewParamsFromAdminStorage?.sidebarWidth]
   );
-  
+
   // Use local state for sidebar width that can be overridden by user
   const [sidebarWidth, setSidebarWidth] = useState(dbSidebarWidth ?? SidebarWidth);
   const [userHasChangedSidebarWidth, setUserHasChangedSidebarWidth] = useState(false);
@@ -451,9 +490,9 @@ export const RootComponent = (props: RootComponentProps) => {
     if (!defaultViewParamsFromAdminStorage) {
       return null;
     }
-    
+
     const viewParamsInstanceUuid = Object.keys(defaultViewParamsFromAdminStorage)[0];
-    
+
     if (!viewParamsInstanceUuid) {
       return null;
     }
@@ -462,7 +501,7 @@ export const RootComponent = (props: RootComponentProps) => {
       // delayMs: 60000, // 1 minute
       delayMs: 5000, // 5 seconds
       deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
-      viewParamsInstanceUuid: viewParamsInstanceUuid
+      viewParamsInstanceUuid: viewParamsInstanceUuid,
     };
 
     try {
@@ -473,7 +512,7 @@ export const RootComponent = (props: RootComponentProps) => {
     }
   }, [
     defaultViewParamsFromAdminStorage ? Object.keys(defaultViewParamsFromAdminStorage)[0] : null,
-    domainController
+    domainController,
   ]);
 
   // Update sidebar width when database value changes (only if user hasn't made changes)
@@ -495,7 +534,7 @@ export const RootComponent = (props: RootComponentProps) => {
           currentValue: defaultViewParamsFromAdminStorage,
           updates: {
             sidebarWidth: width,
-          }
+          },
         });
         log.info("RootComponent: Queued sidebar width update", width);
       }
@@ -507,16 +546,22 @@ export const RootComponent = (props: RootComponentProps) => {
   const handleGridTypeToggle = useMemo(
     () => () => {
       if (defaultViewParamsFromAdminStorage && updateQueue) {
-        const currentGridType = defaultViewParamsFromAdminStorage.gridType || 'ag-grid';
-        const newGridType = currentGridType === 'ag-grid' ? 'glide-data-grid' : 'ag-grid';
-        
-        updateQueue.queueUpdate({
-          currentValue: defaultViewParamsFromAdminStorage,
-          updates: {
-            gridType: newGridType,
-          }
-        }, true); // Force immediate processing for grid type changes
-        log.info("RootComponent: Queued grid type toggle (immediate)", { from: currentGridType, to: newGridType });
+        const currentGridType = defaultViewParamsFromAdminStorage.gridType || "ag-grid";
+        const newGridType = currentGridType === "ag-grid" ? "glide-data-grid" : "ag-grid";
+
+        updateQueue.queueUpdate(
+          {
+            currentValue: defaultViewParamsFromAdminStorage,
+            updates: {
+              gridType: newGridType,
+            },
+          },
+          true
+        ); // Force immediate processing for grid type changes
+        log.info("RootComponent: Queued grid type toggle (immediate)", {
+          from: currentGridType,
+          to: newGridType,
+        });
       }
     },
     [updateQueue, defaultViewParamsFromAdminStorage]
@@ -526,15 +571,21 @@ export const RootComponent = (props: RootComponentProps) => {
   const handleAppThemeChange = useMemo(
     () => (newThemeId: string) => {
       if (defaultViewParamsFromAdminStorage && updateQueue) {
-        const currentAppTheme = defaultViewParamsFromAdminStorage.appTheme || 'default';
-        
-        updateQueue.queueUpdate({
-          currentValue: defaultViewParamsFromAdminStorage,
-          updates: {
-            appTheme: newThemeId as AppTheme,
-          }
-        }, true); // Force immediate processing for app theme changes
-        log.info("RootComponent: Queued app theme change (immediate)", { from: currentAppTheme, to: newThemeId });
+        const currentAppTheme = defaultViewParamsFromAdminStorage.appTheme || "default";
+
+        updateQueue.queueUpdate(
+          {
+            currentValue: defaultViewParamsFromAdminStorage,
+            updates: {
+              appTheme: newThemeId as AppTheme,
+            },
+          },
+          true
+        ); // Force immediate processing for app theme changes
+        log.info("RootComponent: Queued app theme change (immediate)", {
+          from: currentAppTheme,
+          to: newThemeId,
+        });
       }
     },
     [updateQueue, defaultViewParamsFromAdminStorage]
@@ -545,7 +596,7 @@ export const RootComponent = (props: RootComponentProps) => {
     return () => {
       if (updateQueue) {
         // Flush any pending updates before unmounting
-        updateQueue.flushImmediately().catch(error => {
+        updateQueue.flushImmediately().catch((error) => {
           log.error("Failed to flush pending updates on unmount", error);
         });
       }
@@ -565,62 +616,58 @@ export const RootComponent = (props: RootComponentProps) => {
             width={sidebarWidth}
             onWidthChange={handleSidebarWidthChange}
           />
-          <ThemedGrid
-            container
-            direction="column"
-            id="mainPanel"
-          >
+          <ThemedGrid container direction="column" id="mainPanel">
             {/* <ThemedGrid item> */}
-              <AppBar
-                handleDrawerOpen={handleDrawerOpen}
-                open={drawerIsOpen}
-                width={sidebarWidth}
-                onWidthChange={handleSidebarWidthChange}
-                outlineOpen={isOutlineOpen}
-                outlineWidth={outlineWidth}
-                onOutlineToggle={handleToggleOutline}
-                gridType={defaultViewParamsFromAdminStorage?.gridType || "ag-grid"}
-                onGridTypeToggle={handleGridTypeToggle}
-              >
-                Bar!
-              </AppBar>
+            <AppBar
+              handleDrawerOpen={handleDrawerOpen}
+              open={drawerIsOpen}
+              width={sidebarWidth}
+              onWidthChange={handleSidebarWidthChange}
+              outlineOpen={isOutlineOpen}
+              outlineWidth={outlineWidth}
+              onOutlineToggle={handleToggleOutline}
+              gridType={defaultViewParamsFromAdminStorage?.gridType || "ag-grid"}
+              onGridTypeToggle={handleGridTypeToggle}
+            >
+              Bar!
+            </AppBar>
             {/* </ThemedGrid> */}
             {/* <ThemedGrid item container style={{ flex: 1, minHeight: 0 }}> */}
-              <ThemedMain
-                open={drawerIsOpen}
-                width={sidebarWidth}
-                outlineOpen={isOutlineOpen}
-                outlineWidth={outlineWidth}
-              >
-                <ThemedText>uuid: {uuidv4()}</ThemedText>
-                <ThemedText>transactions: {JSON.stringify(transactions)}</ThemedText>
-                {context.showPerformanceDisplay && (
-                  <div>
-                    RootComponent renders: {navigationCount} (total: {totalCount})
-                  </div>
-                )}
-                <ThemedFormControl fullWidth>
-                  <ThemedInputLabel id="demo-simple-select-label">
-                    Chosen selfApplication Deployment
-                  </ThemedInputLabel>
-                  <ThemedMUISelect
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    value={context.deploymentUuid}
-                    label="displayedDeploymentUuid"
-                    onChange={handleChangeDisplayedDeployment}
-                  >
-                    {deployments.map((deployment) => {
-                      return (
-                        <ThemedMenuItem key={deployment.name} value={deployment.uuid}>
-                          {deployment.description}
-                        </ThemedMenuItem>
-                      );
-                    })}
-                  </ThemedMUISelect>
-                </ThemedFormControl>
-                <span>
-                  {/* <ThemedButton
+            <ThemedMain
+              open={drawerIsOpen}
+              width={sidebarWidth}
+              outlineOpen={isOutlineOpen}
+              outlineWidth={outlineWidth}
+            >
+              <ThemedText>uuid: {uuidv4()}</ThemedText>
+              <ThemedText>transactions: {JSON.stringify(transactions)}</ThemedText>
+              {context.showPerformanceDisplay && (
+                <div>
+                  RootComponent renders: {navigationCount} (total: {totalCount})
+                </div>
+              )}
+              <ThemedFormControl fullWidth>
+                <ThemedInputLabel id="demo-simple-select-label">
+                  Chosen selfApplication Deployment
+                </ThemedInputLabel>
+                <ThemedMUISelect
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  value={context.deploymentUuid}
+                  label="displayedDeploymentUuid"
+                  onChange={handleChangeDisplayedDeployment}
+                >
+                  {deployments.map((deployment) => {
+                    return (
+                      <ThemedMenuItem key={deployment.name} value={deployment.uuid}>
+                        {deployment.description}
+                      </ThemedMenuItem>
+                    );
+                  })}
+                </ThemedMUISelect>
+              </ThemedFormControl>
+              <span>
+                {/* <ThemedButton
                         onClick={() =>
                           handleAsyncAction(
                             async () => {
@@ -665,10 +712,10 @@ export const RootComponent = (props: RootComponentProps) => {
                       >
                         Open database
                       </ThemedButton> */}
-                  <ThemedButton onClick={fetchConfigurations}>
-                    fetch Miroir & App configurations from database
-                  </ThemedButton>
-                  {/* <ThemedButton
+                <ThemedButton onClick={fetchConfigurations}>
+                  fetch Miroir & App configurations from database
+                </ThemedButton>
+                {/* <ThemedButton
                         onClick={() =>
                           handleAsyncAction(
                             async () => {
@@ -693,7 +740,7 @@ export const RootComponent = (props: RootComponentProps) => {
                       >
                         fetch Admin configuration from database
                       </ThemedButton> */}
-                  {/* <ThemedButton
+                {/* <ThemedButton
                         onClick={() =>
                           handleAsyncAction(
                             async () => {
@@ -721,44 +768,44 @@ export const RootComponent = (props: RootComponentProps) => {
                       >
                         Load server local cache
                       </ThemedButton> */}
-                  {/* commit miroir */}
-                  <ActionButton
-                    onAction={async () => {
-                      await domainController.handleAction(
-                        {
-                          actionType: "commit",
-                          endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                          deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
-                        },
-                        defaultMiroirMetaModel
-                      );
-                    }}
-                    successMessage="Miroir committed successfully"
-                    label="Commit Miroir"
-                    handleAsyncAction={handleAsyncAction}
-                    actionName="commit miroir"
-                  />
-                  {/* Commit Library app */}
-                  <ActionButton
-                    onAction={async () => {
-                      await domainController.handleAction(
-                        {
-                          actionType: "commit",
-                          endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                          deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-                        },
-                        defaultMiroirMetaModel
-                      );
-                    }}
-                    successMessage="Library app committed successfully"
-                    label="Commit Library app"
-                    handleAsyncAction={handleAsyncAction}
-                    actionName="commit library app"
-                  />
-                </span>
-                <Outlet></Outlet>
-              </ThemedMain>
-            </ThemedGrid>
+                {/* commit miroir */}
+                <ActionButton
+                  onAction={async () => {
+                    await domainController.handleAction(
+                      {
+                        actionType: "commit",
+                        endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                        deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+                      },
+                      defaultMiroirMetaModel
+                    );
+                  }}
+                  successMessage="Miroir committed successfully"
+                  label="Commit Miroir"
+                  handleAsyncAction={handleAsyncAction}
+                  actionName="commit miroir"
+                />
+                {/* Commit Library app */}
+                <ActionButton
+                  onAction={async () => {
+                    await domainController.handleAction(
+                      {
+                        actionType: "commit",
+                        endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                        deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+                      },
+                      defaultMiroirMetaModel
+                    );
+                  }}
+                  successMessage="Library app committed successfully"
+                  label="Commit Library app"
+                  handleAsyncAction={handleAsyncAction}
+                  actionName="commit library app"
+                />
+              </span>
+              <Outlet></Outlet>
+            </ThemedMain>
+          </ThemedGrid>
           {/* </ThemedGrid> */}
           {/* Document Outline - Full height on right side */}
           <InstanceEditorOutline

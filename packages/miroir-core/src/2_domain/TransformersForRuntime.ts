@@ -171,11 +171,13 @@ export function getDefaultValueForJzodSchemaWithResolution<T extends MiroirModel
 
   log.info(
     "getDefaultValueForJzodSchemaWithResolution called with",
+    "step", step,
     "jzodSchema", jzodSchema,
     "rootObject", rootObject,
     "currentValuePath", currentValuePath,
     "reduxDeploymentsState", reduxDeploymentsState,
     "deploymentUuid", deploymentUuid,
+    "forceOptional", forceOptional,
     // "relativeReferenceJzodContext", relativeReferenceJzodContext
     "effectiveSchemaOrError", effectiveSchemaOrError,
   );

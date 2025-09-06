@@ -1528,6 +1528,17 @@ export const miroirFundamentalJzodSchema = {
           "interpolation": {
             "type": "enum",
             "optional": true,
+            "tag": {
+              "value": {
+                "id": 1,
+                "defaultLabel": "Interpolation",
+                "editable": true,
+                "initializeTo": {
+                  "initializeToType": "value",
+                  "value": "build"
+                }
+              }
+            },
             "definition": [
               "build",
               "runtime"
@@ -23465,10 +23476,33 @@ export const miroirFundamentalJzodSchema = {
           "interpolation": {
             "type": "union",
             "optional": true,
+            "tag": {
+              "value": {
+                "id": 1,
+                "defaultLabel": "Interpolation",
+                "editable": true,
+                "initializeTo": {
+                  "initializeToType": "value",
+                  "value": "build"
+                },
+                "isTemplate": true
+              }
+            },
             "definition": [
               {
                 "type": "enum",
                 "optional": true,
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "Interpolation",
+                    "editable": true,
+                    "initializeTo": {
+                      "initializeToType": "value",
+                      "value": "build"
+                    }
+                  }
+                },
                 "definition": [
                   "build",
                   "runtime"
@@ -45675,10 +45709,33 @@ export const miroirFundamentalJzodSchema = {
               "interpolation": {
                 "type": "union",
                 "optional": true,
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "Interpolation",
+                    "editable": true,
+                    "initializeTo": {
+                      "initializeToType": "value",
+                      "value": "build"
+                    },
+                    "isTemplate": true
+                  }
+                },
                 "definition": [
                   {
                     "type": "enum",
                     "optional": true,
+                    "tag": {
+                      "value": {
+                        "id": 1,
+                        "defaultLabel": "Interpolation",
+                        "editable": true,
+                        "initializeTo": {
+                          "initializeToType": "value",
+                          "value": "build"
+                        }
+                      }
+                    },
                     "definition": [
                       "build",
                       "runtime"
@@ -51755,6 +51812,17 @@ export const miroirFundamentalJzodSchema = {
           "interpolation": {
             "type": "enum",
             "optional": true,
+            "tag": {
+              "value": {
+                "id": 1,
+                "defaultLabel": "Interpolation",
+                "editable": true,
+                "initializeTo": {
+                  "initializeToType": "value",
+                  "value": "build"
+                }
+              }
+            },
             "definition": [
               "build",
               "runtime"
@@ -60107,6 +60175,17 @@ export const miroirFundamentalJzodSchema = {
           "interpolation": {
             "type": "enum",
             "optional": true,
+            "tag": {
+              "value": {
+                "id": 1,
+                "defaultLabel": "Interpolation",
+                "editable": true,
+                "initializeTo": {
+                  "initializeToType": "value",
+                  "value": "build"
+                }
+              }
+            },
             "definition": [
               "build",
               "runtime"
@@ -68419,6 +68498,17 @@ export const miroirFundamentalJzodSchema = {
           "interpolation": {
             "type": "enum",
             "optional": true,
+            "tag": {
+              "value": {
+                "id": 1,
+                "defaultLabel": "Interpolation",
+                "editable": true,
+                "initializeTo": {
+                  "initializeToType": "value",
+                  "value": "build"
+                }
+              }
+            },
             "definition": [
               "build",
               "runtime"
