@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useMemo } from 'react';
 import {
+  getInnermostTransformerError,
   LoggerInterface,
   MiroirLoggerFactory,
   TransformerEntry,
@@ -7,18 +7,20 @@ import {
   TransformerEventFilter,
   type EventFilter,
   type MiroirEvent,
+  type TransformerFailure
 } from 'miroir-core';
+import React, { useMemo, useState } from 'react';
 
 import { packageName } from '../../../../constants';
 import { cleanLevel } from '../../constants';
+import { useMiroirContextService, useMiroirEvents } from '../../MiroirContextReactProvider';
 import {
+  ThemedCodeBlock,
   ThemedContainer,
   ThemedHeaderSection,
   ThemedText,
   ThemedTitle,
-  ThemedCodeBlock,
 } from "../Themes/index";
-import { useMiroirContextService, useMiroirEvents } from '../../MiroirContextReactProvider';
 
 // ################################################################################################
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -59,6 +61,15 @@ const TransformerEventEntry: React.FC<{
     paddingLeft: depth > 0 ? '10px' : '0px',
   };
 
+  log.info("Rendering TransformerEventEntry", event, depth, isExpanded, hasDetails );
+  
+  // const preciseError: Domain2ElementFailed | undefined = useMemo(() => {
+  const preciseError: TransformerFailure | undefined = useMemo(() => {
+    if (event.transformerError) {
+      return getInnermostTransformerError(event.transformerResult as any);
+    }
+  }, [event.transformerError]);
+
   return (
     <div style={{ ...indentStyle, marginBottom: '8px' }}>
       <div 
@@ -91,35 +102,20 @@ const TransformerEventEntry: React.FC<{
         )}
       </div>
       
+      {/* ERROR */}
       {isExpanded && hasDetails && (
         <div style={{ marginTop: '8px', padding: '12px', backgroundColor: '#fff', border: '1px solid #dee2e6', borderRadius: '4px' }}>
-          {event.transformerParams && (
-            <div style={{ marginBottom: '12px' }}>
-              <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>Parameters:</div>
-              <ThemedCodeBlock>
-                {JSON.stringify(event.transformerParams, null, 2)}
-              </ThemedCodeBlock>
-            </div>
-          )}
-          
-          {event.transformerResult && (
-            <div style={{ marginBottom: '12px' }}>
-              <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>Result:</div>
-              <ThemedCodeBlock>
-                {JSON.stringify(event.transformerResult, null, 2)}
-              </ThemedCodeBlock>
-            </div>
-          )}
-          
           {event.transformerError && (
             <div style={{ marginBottom: '12px' }}>
               <div style={{ fontWeight: 'bold', marginBottom: '4px', color: '#ff6b6b' }}>Error:</div>
               <ThemedCodeBlock style={{ backgroundColor: '#fff5f5', border: '1px solid #ff6b6b' }}>
-                {event.transformerError}
+                {/* {event.transformerError} */}
+                {preciseError ? JSON.stringify(preciseError, null, 2) : event.transformerError}
               </ThemedCodeBlock>
             </div>
           )}
           
+          {/* LOGS */}
           {event.logs && event.logs.length > 0 && (
             <div>
               <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>Logs ({event.logs.length}):</div>
@@ -140,6 +136,25 @@ const TransformerEventEntry: React.FC<{
               </div>
             </div>
           )}
+
+          {event.transformerParams && (
+            <div style={{ marginBottom: '12px' }}>
+              <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>Parameters:</div>
+              <ThemedCodeBlock>
+                {JSON.stringify(event.transformerParams, null, 2)}
+              </ThemedCodeBlock>
+            </div>
+          )}
+          
+          {event.transformerResult && (
+            <div style={{ marginBottom: '12px' }}>
+              <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>Result:</div>
+              <ThemedCodeBlock>
+                {JSON.stringify(event.transformerResult, null, 2)}
+              </ThemedCodeBlock>
+            </div>
+          )}
+          
         </div>
       )}
       
@@ -160,11 +175,10 @@ const TransformerEventEntry: React.FC<{
 });
 
 // ################################################################################################
-export const TransformerEventsPanel: React.FC<TransformerEventsPanelProps> = React.memo(({
+export const TransformerEventsPanel: React.FC<TransformerEventsPanelProps> = ({
   transformerFilter = {}
 }) => {
   const { miroirContext } = useMiroirContextService();
-  // const [transformerEvents, setTransformerEvents] = useState<TransformerEvent[]>([]);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const allEvents: MiroirEvent[] = useMiroirEvents();
 
@@ -176,7 +190,6 @@ export const TransformerEventsPanel: React.FC<TransformerEventsPanelProps> = Rea
 
     // Sort by start time, newest first
     return miroirContext.miroirEventService.getFilteredEvents(filterCriteria, allEvents)
-      // .filter(event => !event.parentTransformerId) // Only show root events, children are shown nested
       .sort((a, b) => (b.startTime || 0) - (a.startTime || 0));
   }, [allEvents]);
 
@@ -196,7 +209,7 @@ export const TransformerEventsPanel: React.FC<TransformerEventsPanelProps> = Rea
       <ThemedHeaderSection>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <ThemedTitle>
-            Transformer Events {allEvents.length > 0 && `(${allEvents.length})`}
+            Transformer Events {displayEvents.length > 0 && `(${displayEvents.length} / ${allEvents.length})`}
           </ThemedTitle>
           <button
             onClick={() => setIsCollapsed(!isCollapsed)}
@@ -247,6 +260,6 @@ export const TransformerEventsPanel: React.FC<TransformerEventsPanelProps> = Rea
       )}
     </ThemedContainer>
   );
-});
+};
 
 TransformerEventsPanel.displayName = 'TransformerEventsPanel';

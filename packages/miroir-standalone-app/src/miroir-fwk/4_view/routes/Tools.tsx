@@ -448,6 +448,7 @@ export const ToolsPage: React.FC<any> = (
 
   return (
     <PageContainer>
+      Tools page!
       <div>
         {/* Transformer Editor */}
         <div style={{ margin: "20px 0" }}>
@@ -508,107 +509,6 @@ export const ToolsPage: React.FC<any> = (
             />
           </div>
         )}
-        {/* Fallback to text display if no structured data */}
-        {resolveConditionalSchemaResults &&
-          (!resolveConditionalSchemaResultsData ||
-            resolveConditionalSchemaResultsData.length === 0) && (
-            <div style={{ margin: "20px 0" }}>
-              <h3>resolveConditionalSchema Test Results (Text):</h3>
-              <pre
-                style={{
-                  backgroundColor: "#f5f5f5",
-                  padding: "10px",
-                  borderRadius: "4px",
-                  fontSize: "12px",
-                  overflow: "auto",
-                  maxHeight: "400px",
-                  whiteSpace: "pre-wrap",
-                }}
-              >
-                {resolveConditionalSchemaResults}
-              </pre>
-            </div>
-          )
-        }
-        {/* test results */}
-        {/* <div> */}
-          {
-            testResults &&
-            testSuitesResults != undefined &&
-            testSuitesResults.context != undefined &&
-            resolvedTestResultsJzodSchema != undefined ? (
-              <div>
-                <div>Test results:</div>
-                <pre>
-                  {JSON.stringify(testResults, null, 2)}
-                </pre>
-                {/* <EntityInstanceGrid
-                  type="EntityInstance"
-                  deploymentUuid={context.deploymentUuid}
-                  displayTools={false}
-                  currentModel={currentModel}
-                  defaultFormValuesObject={{}}
-                  paramsAsdomainElements={{
-                    elementType: "object",
-                    elementValue: {},
-                  }}
-                  foreignKeyObjects={{}}
-                  displayedDeploymentDefinition={adminConfigurationDeploymentMiroir}
-                  columnDefs={{
-                    columnDefs: [
-                      { field: "testName", headerName: "Test Name" },
-                      { field: "testResult", headerName: "Result" },
-                      { field: "assertions", headerName: "Assertions" },
-                    ],
-                  }}
-                  instancesToDisplay={
-                    testResults["applicative.Library.BuildPlusRuntimeCompositeAction.integ.test"]
-                      ? Object.entries(
-                          testResults[
-                            "applicative.Library.BuildPlusRuntimeCompositeAction.integ.test"
-                          ]
-                        ).reduce((acc, [testName, testResult]: any) => {
-                          acc[testName] = {
-                            uuid: testName,
-                            testName: testResult.testLabel || testName,
-                            testResult: testResult.testResult,
-                            assertions: Object.entries(testResult.testAssertionsResults || {})
-                              .map(
-                                ([assertionName, assertion]: any) =>
-                                  `${assertionName}: ${assertion.assertionResult}`
-                              )
-                              .join("; "),
-                          };
-                          return acc;
-                        }, {} as Record<string, any>)
-                      : {}
-                  }
-                  currentEntityDefinition={
-                    {
-                      uuid: "test-results-entity-definition",
-                      parentName: "TestResults",
-                      parentUuid: "test-results-parent-uuid",
-                      name: "TestResultsEntity",
-                      entityUuid: "test-results-entity-uuid",
-                      conceptLevel: "Data",
-                      jzodSchema: {
-                        type: "object",
-                        definition: {
-                          testName: { type: "string" },
-                          testResult: { type: "string" },
-                          assertions: { type: "string" },
-                        },
-                      },
-                    } as any
-                  }
-                /> */}
-              </div>
-            ) : (
-              <div>could not display test results!</div>
-            )
-          }
-        {/* </div> */}
-        {/* <div> */}
           <Formik
             enableReinitialize={true}
             initialValues={formState}

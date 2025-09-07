@@ -249,7 +249,7 @@ const TransformationResultPanel = React.memo<{
     foldedObjectAttributeOrArrayItems,
     setFoldedObjectAttributeOrArrayItems,
   }) => (
-    <ThemedContainer style={{ flex: 1 }}>
+    <ThemedContainer style={{ flex: 1, maxWidth: '50%' }}>
       <ThemedHeaderSection>
         <ThemedTitle>
           Transformation Result

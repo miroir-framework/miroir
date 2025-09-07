@@ -8,7 +8,7 @@ import {
   QueryFailed,
 } from "../1_core/preprocessor-generated/miroirFundamentalType";
 
-export type QueryFailureType =
+export type TransformerFailureType =
   | "FailedTransformer_mustache"
   | "FailedTransformer_dynamicObjectAccess"
   | "FailedTransformer_objectEntries"
@@ -22,7 +22,78 @@ export type QueryFailureType =
   | "FailedTransformer_contextReference"
   | "FailedTransformer_listPickElement"
   | "FailedTransformer"
+  | "ReferenceNotFound"
+  | "ReferenceFoundButUndefined"
+  | "ReferenceFoundButAttributeUndefinedOnFoundObject"
   | "TransformerNotFound"
+;
+
+export interface ITransformerFailure {
+  queryFailure: TransformerFailureType;
+  query?: string | undefined;
+  transformerPath?: string[];
+  failureOrigin?: string[] | undefined;
+  failureMessage?: string | undefined;
+  queryReference?: string | undefined;
+  queryParameters?: string | undefined;
+  queryContext?: string | undefined;
+  deploymentUuid?: string | undefined;
+  errorStack?: string[] | undefined;
+  innerError?: ITransformerFailure | Error | undefined;
+  applicationSection?: ApplicationSection | undefined;
+  entityUuid?: string | undefined;
+  instanceUuid?: string | undefined;
+}
+
+export class TransformerFailure implements ITransformerFailure {
+  public get elementType() {
+    return "failure";
+  }
+
+  public queryFailure: TransformerFailureType;
+  public query?: string | undefined;
+  public failureOrigin?: string[] | undefined;
+  public failureMessage?: string | undefined;
+  public queryReference?: string | undefined;
+  public queryParameters?: string | undefined;
+  public queryContext?: string | undefined;
+  public deploymentUuid?: string | undefined;
+  public errorStack?: string[] | undefined;
+  // public innerError?: QueryFailed | Domain2ElementFailed | Action2Error | Error | undefined;
+  public innerError?: ITransformerFailure | Error | undefined;
+  public applicationSection?: ApplicationSection | undefined;
+  public entityUuid?: string | undefined;
+  public instanceUuid?: string | undefined;
+
+  // constructor(elementValue: QueryFailed | Domain2ElementFailed) {
+  constructor(elementValue: ITransformerFailure) {
+    this.queryFailure = elementValue.queryFailure;
+    this.query = elementValue.query;
+    this.failureOrigin = elementValue.failureOrigin;
+    this.failureMessage = elementValue.failureMessage;
+    this.queryReference = elementValue.queryReference;
+    this.queryParameters = elementValue.queryParameters;
+    this.queryContext = elementValue.queryContext;
+    this.deploymentUuid = elementValue.deploymentUuid;
+    this.errorStack = elementValue.errorStack;
+    this.innerError = elementValue.innerError;
+    this.applicationSection = elementValue.applicationSection;
+    this.entityUuid = elementValue.entityUuid;
+    this.instanceUuid = elementValue.instanceUuid;
+  }
+  // elementValue: QueryFailed;
+};
+
+export type TransformerReturnType<T> =
+  T
+  | TransformerFailure
+export type TransformerResult = TransformerReturnType<any>;
+
+// export const domain2ElementObjectZodSchema = z.record(z.any());
+
+// ################################################################################################
+export type QueryFailureType =
+  TransformerFailureType
   | "FailedExtractor"
   | "QueryNotExecutable"
   | "DomainStateNotLoaded"
@@ -31,9 +102,6 @@ export type QueryFailureType =
   | "ApplicationSectionNotFound"
   | "EntityNotFound"
   | "InstanceNotFound"
-  | "ReferenceNotFound"
-  | "ReferenceFoundButUndefined"
-  | "ReferenceFoundButAttributeUndefinedOnFoundObject"
 ;
 
 export interface IDomain2ElementFailed {
@@ -46,7 +114,7 @@ export interface IDomain2ElementFailed {
   queryContext?: string | undefined;
   deploymentUuid?: string | undefined;
   errorStack?: string[] | undefined;
-  innerError?: QueryFailed | Domain2ElementFailed | Action2Error | Error | undefined;
+  innerError?: QueryFailed | Domain2ElementFailed | Error | undefined;
   applicationSection?: ApplicationSection | undefined;
   entityUuid?: string | undefined;
   instanceUuid?: string | undefined;
@@ -66,7 +134,8 @@ export class Domain2ElementFailed implements IDomain2ElementFailed {
   public queryContext?: string | undefined;
   public deploymentUuid?: string | undefined;
   public errorStack?: string[] | undefined;
-  public innerError?: QueryFailed | Domain2ElementFailed | Action2Error | Error | undefined;
+  // public innerError?: QueryFailed | Domain2ElementFailed | Action2Error | Error | undefined;
+  public innerError?: QueryFailed | Domain2ElementFailed | Error | undefined;
   public applicationSection?: ApplicationSection | undefined;
   public entityUuid?: string | undefined;
   public instanceUuid?: string | undefined;
@@ -90,6 +159,7 @@ export class Domain2ElementFailed implements IDomain2ElementFailed {
   // elementValue: QueryFailed;
 };
 
+// ################################################################################################
 export type ActionErrorType =
 | ("FailedToCreateStore" | "FailedToDeployModule")
 | "FailedTestAction"
@@ -129,86 +199,54 @@ export class Action2Error {
   ){};
 }
 
-
+  
+// ################################################################################################
 export type Domain2QueryReturnType<T> =
   T
   | Domain2ElementFailed
-  // | DomainElementVoid
-  // | DomainElementAny
-  // | Domain2QueryReturnType<DomainElementObject>
-  // | Domain2QueryReturnType<DomainElementInstanceUuidIndex>
-  // | DomainElementEntityInstanceCollectionOrFailed
-  // | DomainElementInstanceArrayOrFailed
-  // | DomainElementEntityInstanceOrFailed
-  // | {
-  //     elementType: "instanceUuid";
-  //     elementValue: EntityInstanceUuid;
-  //   }
-  // | {
-  //     elementType: "instanceUuidIndexUuidIndex";
-  //     elementValue: EntityInstancesUuidIndex;
-  //   }
-  // | {
-  //     elementType: "string";
-  //     elementValue: string;
-  //   }
-  // | {
-  //     elementType: "number";
-  //     elementValue: number;
-  //   }
-  // | {
-  //     elementType: "array";
-  //     elementValue: DomainElement[];
-  //   };
+export type Domain2Element = Domain2QueryReturnType<any>;
 
-  // export type Domain2Element = DomainElementSuccess | Domain2ElementFailed;
-  export type Domain2Element = Domain2QueryReturnType<any>;
-
-  export const domain2ElementObjectZodSchema = z.record(z.any());
-  // export const domain2ElementObjectZodSchema = z.object({
-  //   elementType: z.string(),
-  //   elementValue: z.record(z.any()),
-  // })
+export const domain2ElementObjectZodSchema = z.record(z.any());
   
 
-  export type Action2EntityInstanceSuccess = {
+// ################################################################################################
+export type Action2EntityInstanceSuccess = {
       status: "ok";
       returnedDomainElement: Domain2QueryReturnType<EntityInstance>;
       // returnedDomainElement: DomainElementEntityInstance;
   };
 
-  export type Action2EntityInstanceCollection = {
+export type Action2EntityInstanceCollection = {
     status: "ok";
     returnedDomainElement: Domain2QueryReturnType<EntityInstanceCollection>;
   };
 
-  export type Action2VoidSuccess = {
+export type Action2VoidSuccess = {
     status: "ok";
     returnedDomainElement: Domain2QueryReturnType<void>;
   };
 
 
-  export type Action2EntityInstanceCollectionOrFailure =
-    | Action2Error
-    // | Action2EntityInstanceSuccess
-    | Action2EntityInstanceCollection;
+export type Action2EntityInstanceCollectionOrFailure =
+  | Action2Error
+  // | Action2EntityInstanceSuccess
+  | Action2EntityInstanceCollection;
 
-  export type Action2EntityInstanceReturnType =
-    | Action2Error
-    | Action2EntityInstanceSuccess;
-    // | Action2EntityInstanceCollection;
-    
-  // export type Action2EntityInstanceReturnType =
-  //   | Action2Error
-  //   | Action2EntityInstanceSuccess
-  //   | Action2EntityInstanceCollection;
+export type Action2EntityInstanceReturnType =
+  | Action2Error
+  | Action2EntityInstanceSuccess;
+  // | Action2EntityInstanceCollection;
   
-  export type Action2Success = {
-      status: "ok";
-      returnedDomainElement: Domain2Element;
-  };
+// export type Action2EntityInstanceReturnType =
+//   | Action2Error
+//   | Action2EntityInstanceSuccess
+//   | Action2EntityInstanceCollection;
 
-  export type Action2VoidReturnType = Action2Error | Action2VoidSuccess;
+export type Action2Success = {
+    status: "ok";
+    returnedDomainElement: Domain2Element;
+};
 
-  export type Action2ReturnType = Action2Error | Action2Success;
-  
+export type Action2VoidReturnType = Action2Error | Action2VoidSuccess;
+
+export type Action2ReturnType = Action2Error | Action2Success;

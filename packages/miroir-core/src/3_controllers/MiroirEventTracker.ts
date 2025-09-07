@@ -1,28 +1,24 @@
 import {
   TestAssertionResult,
-  TestAssertionsResults,
   TestResult,
-  TestsResults,
-  type TestSuitesResults,
-  type TestSuiteResult,
-  type InnerTestSuitesResults,
+  type TestSuiteResult
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import {
-  MiroirEventTrackingData,
   MiroirEventTrackerInterface,
+  MiroirEventTrackingData,
   type TestAssertionPath,
 } from "../0_interfaces/3_controllers/MiroirEventTrackerInterface";
-import { resolvePathOnObject } from "../tools";
 
 
 export class MiroirEventTracker implements MiroirEventTrackerInterface {
+  private readonly CLEANUP_INTERVAL_MS = 60000; // 1 minute
+  private readonly MAX_AGE_MS = 20 * 60 * 1000; // 20 minutes
+
   private eventTrackingData: Map<string, MiroirEventTrackingData> = new Map();
   private currentEvenStack: string[] = []; // Stack to track nested actions
 
   private subscribers: Set<(actions: MiroirEventTrackingData[]) => void> = new Set();
   private cleanupInterval: NodeJS.Timeout;
-  private readonly CLEANUP_INTERVAL_MS = 60000; // 1 minute
-  private readonly MAX_AGE_MS = 10 * 60 * 1000; // 10 minutes (as requested)
 
   // Action and composite action context tracking (duplicated from LoggerGlobalContext)
   private currentCompositeAction: string | undefined = undefined;
@@ -34,9 +30,6 @@ export class MiroirEventTracker implements MiroirEventTrackerInterface {
   private currentTest: string | undefined = undefined;
   private currentTestAssertion: string | undefined = undefined;
   private testAssertionsResults: TestSuiteResult = {};
-  // private testAssertionsResults: {
-  //   [testSuite: string]: { [test: string]: TestAssertionsResults };
-  // } = {};
 
   // Transformer tracking configuration
   private transformerTrackingEnabled: boolean = true;

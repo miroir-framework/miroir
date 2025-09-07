@@ -581,6 +581,10 @@ export {
   Domain2ElementFailed,
   domain2ElementObjectZodSchema,
   Domain2QueryReturnType,
+  TransformerFailure,
+  TransformerFailureType,
+  TransformerResult,
+  TransformerReturnType,
 } from "./0_interfaces/2_domain/DomainElement.js";
 export {
   RecordOfJzodElement,
@@ -873,6 +877,7 @@ export {
 export { transformer_spreadSheetToJzodSchema } from "./2_domain/Transformer_Spreadsheet";
 export {
   applicationTransformerDefinitions,
+  getInnermostTransformerError,
   resolveApplyTo_legacy,
   transformer_extended_apply,
   transformer_extended_apply_wrapper,

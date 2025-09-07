@@ -4,6 +4,7 @@ import {
   TestResult,
   TestSuiteResult,
 } from "../1_core/preprocessor-generated/miroirFundamentalType";
+import type { Domain2QueryReturnType } from "../2_domain/DomainElement";
 // Import other interface elements only
 
 // Base interface for common tracking fields
@@ -40,7 +41,7 @@ export type MiroirEventTrackingData =
       transformerType?: string;
       transformerStep?: 'build' | 'runtime';
       transformerParams?: any;
-      transformerResult?: any;
+      transformerResult?: Domain2QueryReturnType<any>;
       transformerError?: string;
     });
 

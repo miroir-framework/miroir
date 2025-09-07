@@ -3,7 +3,6 @@ import { serializeError } from 'serialize-error';
 // import Mustache from "mustache";
 import { v4 as uuidv4 } from 'uuid';
 import { Uuid } from '../0_interfaces/1_core/EntityDefinition';
-import { TransformerGlobalContext } from '../4_services/TransformerContext';
 import {
   DomainElementInstanceArray,
   DomainElementString,
@@ -61,7 +60,11 @@ import {
   TransformerForRuntime_unique
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import type { ITransformerHandler, MiroirModelEnvironment } from '../0_interfaces/1_core/Transformer';
-import { Action2Error, Domain2ElementFailed, Domain2QueryReturnType } from "../0_interfaces/2_domain/DomainElement";
+import {
+  Action2Error,
+  TransformerFailure,
+  type TransformerReturnType
+} from "../0_interfaces/2_domain/DomainElement";
 import { ReduxDeploymentsState } from '../0_interfaces/2_domain/ReduxDeploymentsStateInterface';
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { resolveJzodSchemaReferenceInContext, resolveSchemaReferenceInContextTransformer } from "../1_core/jzod/jzodResolveSchemaReferenceInContext";
@@ -70,6 +73,7 @@ import { unfoldSchemaOnceTransformer } from '../1_core/jzod/JzodUnfoldSchemaOnce
 import { resolveConditionalSchema, resolveConditionalSchemaTransformer } from '../1_core/jzod/resolveConditionalSchema';
 import { handleTransformer_menu_AddItem } from "../1_core/Menu";
 import { MiroirLoggerFactory } from "../4_services/LoggerFactory";
+import { TransformerGlobalContext } from '../4_services/TransformerContext';
 import { packageName } from "../constants";
 import { resolvePathOnObject } from "../tools";
 import { cleanLevel } from "./constants";
@@ -178,7 +182,6 @@ export function getDefaultValueForJzodSchemaWithResolution<T extends MiroirModel
     "reduxDeploymentsState", reduxDeploymentsState,
     "deploymentUuid", deploymentUuid,
     "forceOptional", forceOptional,
-    // "relativeReferenceJzodContext", relativeReferenceJzodContext
     "effectiveSchemaOrError", effectiveSchemaOrError,
   );
   
@@ -724,7 +727,7 @@ function resolveApplyTo<T extends MiroirModelEnvironment>(
       // if (transformer.applyTo.referenceType == "referencedExtractor") {
       //   // throw new Error("resolveApplyTo_legacy can not handle referencedExtractor");
       //   return new Domain2ElementFailed({
-      //     queryFailure: "QueryNotExecutable",
+      //     queryFailure: "FailedTransformer",
       //     failureOrigin: ["resolveApplyTo_legacy"],
       //     failureMessage: "resolveApplyTo_legacy can not handle referencedExtractor",
       //     queryContext: JSON.stringify(transformer),
@@ -761,8 +764,8 @@ function resolveApplyTo<T extends MiroirModelEnvironment>(
     case 'function':
     default: {
       // throw new Error("resolveApplyTo_legacy failed, unknown type for transformer.applyTo=" + transformer.applyTo);
-      return new Domain2ElementFailed({
-        queryFailure: "QueryNotExecutable",
+      return new TransformerFailure({
+        queryFailure: "FailedTransformer",
         failureOrigin: ["resolveApplyTo"],
         failureMessage: "resolveApplyTo failed, unknown type for transformer.applyTo=" + transformer.applyTo,
         queryContext: JSON.stringify(transformer),
@@ -853,8 +856,8 @@ export function resolveApplyTo_legacy<T extends MiroirModelEnvironment>(
       }
       // if (transformer.applyTo.referenceType == "referencedExtractor") {
       //   // throw new Error("resolveApplyTo_legacy can not handle referencedExtractor");
-      //   return new Domain2ElementFailed({
-      //     queryFailure: "QueryNotExecutable",
+      //   return new TransformerFailure({
+      //     queryFailure: "FailedTransformer",
       //     failureOrigin: ["resolveApplyTo_legacy"],
       //     failureMessage: "resolveApplyTo_legacy can not handle referencedExtractor",
       //     queryContext: JSON.stringify(transformer),
@@ -890,8 +893,8 @@ export function resolveApplyTo_legacy<T extends MiroirModelEnvironment>(
     case 'function':
     default: {
       // throw new Error("resolveApplyTo_legacy failed, unknown type for transformer.applyTo=" + transformer.applyTo);
-      return new Domain2ElementFailed({
-        queryFailure: "QueryNotExecutable",
+      return new TransformerFailure({
+        queryFailure: "FailedTransformer",
         failureOrigin: ["resolveApplyTo"],
         failureMessage: "resolveApplyTo failed, unknown type for transformer.applyTo=" + transformer.applyTo,
         queryContext: JSON.stringify(transformer),
@@ -911,15 +914,15 @@ function transformerForBuild_list_listMapperToList_apply<T extends MiroirModelEn
   // queryParams: Record<string, any>,
   queryParams: T,
   contextResults?: Record<string, any>,
-): Domain2QueryReturnType<any[]> {
+): TransformerReturnType<any[]> {
   const resolvedApplyTo = resolveApplyTo_legacy(transformer, step, resolveBuildTransformersTo, queryParams, contextResults, label);
-  if (resolvedApplyTo instanceof Domain2ElementFailed) {
+  if (resolvedApplyTo instanceof TransformerFailure) {
     log.error(
       "transformerForBuild_list_listMapperToList_apply extractorTransformer can not apply to failed resolvedReference",
       resolvedApplyTo
     );
-    return new Domain2ElementFailed({
-      queryFailure: "QueryNotExecutable",
+    return new TransformerFailure({
+      queryFailure: "FailedTransformer",
       failureOrigin: ["transformerForBuild_list_listMapperToList_apply"],
       queryContext: "transformerForBuild_list_listMapperToList_apply can not apply to failed resolvedReference",
       innerError: resolvedApplyTo
@@ -962,8 +965,8 @@ function transformerForBuild_list_listMapperToList_apply<T extends MiroirModelEn
       }
     } else {
       log.error("transformerForBuild_list_listMapperToList_apply extractorTransformer can not work on resolvedReference", resolvedApplyTo);
-      return new Domain2ElementFailed({
-        queryFailure: "QueryNotExecutable",
+      return new TransformerFailure({
+        queryFailure: "FailedTransformer",
         failureOrigin: ["transformerForBuild_list_listMapperToList_apply"],
         failureMessage:
           "resolved reference is not instanceUuidIndex or object " + JSON.stringify(resolvedApplyTo, null, 2),
@@ -992,7 +995,7 @@ function transformer_object_listReducerToSpreadObject_apply<T extends MiroirMode
   // queryParams: Record<string, any>,
   queryParams: T,
   contextResults?: Record<string, any>,
-): Domain2QueryReturnType<any> {
+): TransformerReturnType<any> {
   // log.info(
   //   "transformer_object_listReducerToSpreadObject_apply called for transformer",
   //   transformer,
@@ -1003,13 +1006,13 @@ function transformer_object_listReducerToSpreadObject_apply<T extends MiroirMode
   // );
   const resolvedReference = resolveApplyTo_legacy(transformer, step, resolveBuildTransformersTo, queryParams, contextResults, label);
 
-  if (resolvedReference instanceof Domain2ElementFailed) {
+  if (resolvedReference instanceof TransformerFailure) {
     log.error(
       "transformer_object_listReducerToSpreadObject_apply can not apply to failed resolvedReference",
       resolvedReference
     );
-    return new Domain2ElementFailed({
-      queryFailure: "QueryNotExecutable",
+    return new TransformerFailure({
+      queryFailure: "FailedTransformer",
       failureOrigin: ["transformer_object_listReducerToSpreadObject_apply"],
       queryContext: "transformer_object_listReducerToSpreadObject_apply can not apply to failed resolvedReference",
       innerError: resolvedReference
@@ -1023,8 +1026,8 @@ function transformer_object_listReducerToSpreadObject_apply<T extends MiroirMode
       "transformer_object_listReducerToSpreadObject_apply can not apply to resolvedReference of wrong type",
       resolvedReference
     );
-    return new Domain2ElementFailed({
-      queryFailure: "QueryNotExecutable",
+    return new TransformerFailure({
+      queryFailure: "FailedTransformer",
       failureOrigin: ["transformer_object_listReducerToSpreadObject_apply"],
       queryContext: "transformer_object_listReducerToSpreadObject_apply can not apply to resolvedReference of wrong type",
       queryParameters: resolvedReference,
@@ -1051,7 +1054,7 @@ function transformer_object_listReducerToIndexObject_apply<T extends MiroirModel
   // queryParams: Record<string, any>,
   queryParams: T,
   contextResults?: Record<string, any>
-): Domain2QueryReturnType<any> {
+): TransformerReturnType<any> {
   // log.info(
   //   "transformer_object_listReducerToIndexObject_apply called for transformer",
   //   transformer,
@@ -1096,7 +1099,7 @@ function handleTransformer_object_fullTemplate<T extends MiroirModelEnvironment>
   // queryParams: Record<string, any>,
   queryParams: T,
   contextResults?: Record<string, any>
-): Domain2QueryReturnType<DomainElementString | DomainElementInstanceArray> {
+): TransformerReturnType<DomainElementString | DomainElementInstanceArray> {
   // log.info(
   //   "transformer_object_fullTemplate called with objectName=",
   //   objectName,
@@ -1115,13 +1118,13 @@ function handleTransformer_object_fullTemplate<T extends MiroirModelEnvironment>
     contextResults
   );
 
-  if (resolvedApplyTo instanceof Domain2ElementFailed) {
+  if (resolvedApplyTo instanceof TransformerFailure) {
     log.error(
       "transformer_object_fullTemplate can not apply to failed resolvedApplyTo",
       resolvedApplyTo
     );
-    return new Domain2ElementFailed({
-      queryFailure: "QueryNotExecutable",
+    return new TransformerFailure({
+      queryFailure: "FailedTransformer",
       failureOrigin: ["transformer_object_fullTemplate"],
       queryContext: "transformer_object_fullTemplate can not apply to failed resolvedApplyTo",
       innerError: resolvedApplyTo
@@ -1140,10 +1143,10 @@ function handleTransformer_object_fullTemplate<T extends MiroirModelEnvironment>
       attributeKey: TransformerForBuild | TransformerForRuntime | string;
       attributeValue: TransformerForBuild | TransformerForRuntime;
     }): [
-      { rawLeftValue: Domain2QueryReturnType<DomainElementSuccess>; finalLeftValue: Domain2QueryReturnType<DomainElementSuccess> },
-      { renderedRightValue: Domain2QueryReturnType<DomainElementSuccess>; finalRightValue: Domain2QueryReturnType<DomainElementSuccess> }
+      { rawLeftValue: TransformerReturnType<DomainElementSuccess>; finalLeftValue: TransformerReturnType<DomainElementSuccess> },
+      { renderedRightValue: TransformerReturnType<DomainElementSuccess>; finalRightValue: TransformerReturnType<DomainElementSuccess> }
     ] => {
-      const rawLeftValue: Domain2QueryReturnType<DomainElementSuccess> = typeof innerEntry.attributeKey == "object" && Object.hasOwn(innerEntry.attributeKey,"transformerType")
+      const rawLeftValue: TransformerReturnType<DomainElementSuccess> = typeof innerEntry.attributeKey == "object" && Object.hasOwn(innerEntry.attributeKey,"transformerType")
         ? defaultTransformers.transformer_extended_apply(
             step,
             objectName, // is this correct? or should it be undefined?
@@ -1153,8 +1156,8 @@ function handleTransformer_object_fullTemplate<T extends MiroirModelEnvironment>
             newContextResults
           )
         : innerEntry.attributeKey;
-      const leftValue: { rawLeftValue: Domain2QueryReturnType<any>; finalLeftValue: Domain2QueryReturnType<any> } = {
-      // const leftValue: { rawLeftValue: Domain2QueryReturnType<DomainElementSuccess>; finalLeftValue: Domain2QueryReturnType<DomainElementSuccess> } = {
+      const leftValue: { rawLeftValue: TransformerReturnType<any>; finalLeftValue: TransformerReturnType<any> } = {
+      // const leftValue: { rawLeftValue: TransformerReturnType<DomainElementSuccess>; finalLeftValue: TransformerReturnType<DomainElementSuccess> } = {
         rawLeftValue,
         finalLeftValue:
           !(rawLeftValue instanceof Action2Error) &&
@@ -1170,7 +1173,7 @@ function handleTransformer_object_fullTemplate<T extends MiroirModelEnvironment>
       //   leftValue
       // );
 
-      const renderedRightValue: Domain2QueryReturnType<DomainElementSuccess> = defaultTransformers.transformer_extended_apply(
+      const renderedRightValue: TransformerReturnType<DomainElementSuccess> = defaultTransformers.transformer_extended_apply(
         // TODO: use actionRuntimeTransformer_apply or merge the two functions
         step,
         leftValue.finalLeftValue as any as string,
@@ -1179,7 +1182,7 @@ function handleTransformer_object_fullTemplate<T extends MiroirModelEnvironment>
         queryParams,
         newContextResults
       ); // TODO: check for failure!
-      const rightValue: { renderedRightValue: Domain2QueryReturnType<DomainElementSuccess>; finalRightValue: Domain2QueryReturnType<DomainElementSuccess> } = {
+      const rightValue: { renderedRightValue: TransformerReturnType<DomainElementSuccess>; finalRightValue: TransformerReturnType<DomainElementSuccess> } = {
         renderedRightValue,
         finalRightValue:
           renderedRightValue.elementType != "failure" && (innerEntry.attributeValue as any).applyFunction
@@ -1216,7 +1219,7 @@ function handleTransformer_object_fullTemplate<T extends MiroirModelEnvironment>
     // log.info("transformer_object_fullTemplate for", transformerForBuild, "fullObjectResult", fullObjectResult);
     return fullObjectResult;
   } else {
-    return new Domain2ElementFailed({
+    return new TransformerFailure({
       queryFailure: "ReferenceNotFound",
       failureOrigin: ["transformer_object_fullTemplate"],
       queryContext: "FullObjectTemplate error in " +
@@ -1236,15 +1239,15 @@ function handleTransformer_objectAlter<T extends MiroirModelEnvironment>(
   // queryParams: Record<string, any>,
   queryParams: T,
   contextResults?: Record<string, any>,
-): Domain2QueryReturnType<any> {
+): TransformerReturnType<any> {
   const resolvedApplyTo = resolveApplyTo(step, objectName, transformer, resolveBuildTransformersTo, queryParams, contextResults);
-  if (resolvedApplyTo instanceof Domain2ElementFailed) {
+  if (resolvedApplyTo instanceof TransformerFailure) {
     log.error(
       "transformer_objectAlter can not apply to failed resolvedApplyTo",
       resolvedApplyTo
     );
-    return new Domain2ElementFailed({
-      queryFailure: "QueryNotExecutable",
+    return new TransformerFailure({
+      queryFailure: "FailedTransformer",
       failureOrigin: ["transformer_objectAlter"],
       queryContext: "transformer_objectAlter can not apply to failed resolvedApplyTo",
       innerError: resolvedApplyTo
@@ -1263,13 +1266,13 @@ function handleTransformer_objectAlter<T extends MiroirModelEnvironment>(
     }
   );
 
-  if (overrideObject instanceof Domain2ElementFailed) {
+  if (overrideObject instanceof TransformerFailure) {
     log.error(
       "transformer_objectAlter can not apply to failed overrideObject",
       overrideObject
     );
-    return new Domain2ElementFailed({
-      queryFailure: "QueryNotExecutable",
+    return new TransformerFailure({
+      queryFailure: "FailedTransformer",
       failureOrigin: ["transformer_objectAlter"],
       queryContext: "transformer_objectAlter can not apply to failed overrideObject",
       innerError: overrideObject
@@ -1301,7 +1304,7 @@ export function transformer_resolveReference(
   paramOrContext: "param" | "context",
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>
-): Domain2QueryReturnType<any> {
+): TransformerReturnType<any> {
   // ReferenceNotFound
   const bank: Record<string, any> =
     paramOrContext == "param" ? queryParams ?? {} : contextResults ?? {};
@@ -1319,7 +1322,7 @@ export function transformer_resolveReference(
       "transformerInnerReference=",
       transformerInnerReference
     );
-    return new Domain2ElementFailed({
+    return new TransformerFailure({
       queryFailure: "ReferenceNotFound",
       failureOrigin: ["transformer_resolveReference"],
       queryReference: transformerInnerReference.referenceName,
@@ -1343,7 +1346,7 @@ export function transformer_resolveReference(
       //   "in",
       //   bank
       // );
-      return new Domain2ElementFailed({
+      return new TransformerFailure({
         queryFailure: "ReferenceNotFound",
         failureOrigin: ["transformer_resolveReference"],
         queryReference: transformerInnerReference.referenceName,
@@ -1384,7 +1387,7 @@ export function transformer_resolveReference(
         "in",
         bank
       );
-      return new Domain2ElementFailed({
+      return new TransformerFailure({
         // queryFailure: "ReferenceNotFound",
         queryFailure: "FailedTransformer_contextReference",
         failureOrigin: ["transformer_resolveReference"],
@@ -1415,7 +1418,7 @@ export function transformer_InnerReference_resolve<T extends MiroirModelEnvironm
   transformerParams: T,
   // queryParams: Record<string, any>,
   contextResults?: Record<string, any>
-): Domain2QueryReturnType<any> {
+): TransformerReturnType<any> {
   // TODO: copy / paste (almost?) from query parameter lookup!
   // log.info(
   //   "transformer_InnerReference_resolve called for transformerInnerReference=",
@@ -1435,7 +1438,7 @@ export function transformer_InnerReference_resolve<T extends MiroirModelEnvironm
     return transformerInnerReference;
   }
 
-  let result: Domain2QueryReturnType<any> = undefined;
+  let result: TransformerReturnType<any> = undefined;
   switch (transformerInnerReference.transformerType) {
     case "constant":
     case "constantUuid":
@@ -1463,7 +1466,7 @@ export function transformer_InnerReference_resolve<T extends MiroirModelEnvironm
       if (step == "build") {
         // no resolution in case of build step
         result = transformerInnerReference;
-        // return new Domain2ElementFailed({
+        // return new TransformerFailure({
         //   queryFailure: "ReferenceNotFound",
         //   failureOrigin: ["transformer_InnerReference_resolve"],
         //   queryReference: transformerInnerReference.referenceName,
@@ -1508,8 +1511,8 @@ export function transformer_InnerReference_resolve<T extends MiroirModelEnvironm
       //   "transformer_InnerReference_resolve failed, unknown transformerType for transformer=" +
       //     transformerInnerReference
       // );
-      return new Domain2ElementFailed({
-        queryFailure: "QueryNotExecutable",
+      return new TransformerFailure({
+        queryFailure: "FailedTransformer",
         failureOrigin: ["transformer_InnerReference_resolve"],
         failureMessage:
           "transformer_InnerReference_resolve failed, unknown transformerType for transformer=" +
@@ -1545,7 +1548,7 @@ export function transformer_mustacheStringTemplate_apply(
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>,
-): Domain2QueryReturnType<any> {
+): TransformerReturnType<any> {
   try {
     // log.info(
     //   "transformer_mustacheStringTemplate_apply called for transformer",
@@ -1568,7 +1571,7 @@ export function transformer_mustacheStringTemplate_apply(
     //   "error:",
     //   error
     // );
-    return new Domain2ElementFailed({
+    return new TransformerFailure({
       queryFailure: "FailedTransformer_mustache",
       failureOrigin: ["transformer_mustacheStringTemplate_apply"],
       // queryReference: transformer,
@@ -1588,13 +1591,13 @@ export function transformer_dynamicObjectAccess_apply<T extends MiroirModelEnvir
   transformerParams: T,
   // queryParams: Record<string, any>,
   contextResults?: Record<string, any>,
-): Domain2QueryReturnType<any> {
+): TransformerReturnType<any> {
   const result = (transformer.objectAccessPath.reduce as any)( // triggers "error TS2349: This expression is not callable" in tsc. Not in eslint, though!
     ((acc: any, currentPathElement: any): any => {
       switch (typeof currentPathElement) {
         case "string": {
           if (!acc) {
-            return new Domain2ElementFailed({
+            return new TransformerFailure({
               queryFailure: "FailedTransformer_dynamicObjectAccess",
               failureOrigin: ["transformer_dynamicObjectAccess_apply"],
               query: currentPathElement,
@@ -1619,7 +1622,7 @@ export function transformer_dynamicObjectAccess_apply<T extends MiroirModelEnvir
         case "object": {
           if (Array.isArray(currentPathElement)) {
             // throw new Error("transformer_dynamicObjectAccess_apply can not handle arrays");
-            return new Domain2ElementFailed({
+            return new TransformerFailure({
               queryFailure: "FailedTransformer_dynamicObjectAccess",
               failureOrigin: ["transformer_dynamicObjectAccess_apply"],
               query: transformer as any,
@@ -1628,7 +1631,7 @@ export function transformer_dynamicObjectAccess_apply<T extends MiroirModelEnvir
           }
           if (!currentPathElement.transformerType) {
             // throw new Error("transformer_dynamicObjectAccess_apply can not handle objects without transformerType");
-            return new Domain2ElementFailed({
+            return new TransformerFailure({
               queryFailure: "FailedTransformer_dynamicObjectAccess",
               failureOrigin: ["transformer_dynamicObjectAccess_apply"],
               query: transformer as any,
@@ -1643,8 +1646,8 @@ export function transformer_dynamicObjectAccess_apply<T extends MiroirModelEnvir
             transformerParams,
             contextResults
           );
-          if (key instanceof Domain2ElementFailed) {
-            return new Domain2ElementFailed({
+          if (key instanceof TransformerFailure) {
+            return new TransformerFailure({
               queryFailure: "FailedTransformer_dynamicObjectAccess",
               failureOrigin: ["transformer_dynamicObjectAccess_apply"],
               query: currentPathElement,
@@ -1674,7 +1677,7 @@ export function transformer_dynamicObjectAccess_apply<T extends MiroirModelEnvir
         case "undefined":
         case "function": {
           // throw new Error("transformer_dynamicObjectAccess_apply can not handle " + typeof currentPathElement);
-          return new Domain2ElementFailed({
+          return new TransformerFailure({
             queryFailure: "FailedTransformer_dynamicObjectAccess",
             failureOrigin: ["transformer_dynamicObjectAccess_apply"],
             query: transformer as any,
@@ -1701,7 +1704,7 @@ export function handleCountTransformer<T extends MiroirModelEnvironment>(
   transformerParams: T,
   // queryParams: Record<string, any>,
   contextResults?: Record<string, any>
-): Domain2QueryReturnType<any> {
+): TransformerReturnType<any> {
   const resolvedReference = resolveApplyTo_legacy(
     transformer,
     step,
@@ -1714,13 +1717,13 @@ export function handleCountTransformer<T extends MiroirModelEnvironment>(
   //   "handleCountTransformer extractorTransformer count resolvedReference=",
   //   resolvedReference
   // );
-  if (resolvedReference instanceof Domain2ElementFailed) {
+  if (resolvedReference instanceof TransformerFailure) {
     log.error(
       "handleCountTransformer extractorTransformer count can not apply to failed resolvedReference",
       resolvedReference
     );
-    return new Domain2ElementFailed({
-      queryFailure: "QueryNotExecutable",
+    return new TransformerFailure({
+      queryFailure: "FailedTransformer",
       failureOrigin: ["handleCountTransformer"],
       queryContext: "count can not apply to failed resolvedReference",
       innerError: resolvedReference,
@@ -1733,8 +1736,8 @@ export function handleCountTransformer<T extends MiroirModelEnvironment>(
       "innerTransformer_apply extractorTransformer count can not apply to resolvedReference of wrong type",
       resolvedReference
     );
-    return new Domain2ElementFailed({
-      queryFailure: "QueryNotExecutable",
+    return new TransformerFailure({
+      queryFailure: "FailedTransformer",
       failureOrigin: ["handleCountTransformer"],
       queryContext:
         "count can not apply to resolvedReference of wrong type: " + typeof resolvedReference,
@@ -1786,7 +1789,7 @@ export function handleUniqueTransformer<T extends MiroirModelEnvironment>(
   transformerParams: T,
   // queryParams: Record<string, any>,
   contextResults?: Record<string, any>
-): Domain2QueryReturnType<any> {
+): TransformerReturnType<any> {
   const resolvedReference = resolveApplyTo_legacy(
     transformer,
     step,
@@ -1802,13 +1805,13 @@ export function handleUniqueTransformer<T extends MiroirModelEnvironment>(
   //   resolvedReference
   // );
 
-  if (resolvedReference instanceof Domain2ElementFailed) {
+  if (resolvedReference instanceof TransformerFailure) {
     log.error(
       "handleUniqueTransformer extractorTransformer unique can not apply to resolvedReference",
       resolvedReference
     );
-    return new Domain2ElementFailed({
-      queryFailure: "QueryNotExecutable",
+    return new TransformerFailure({
+      queryFailure: "FailedTransformer",
       failureOrigin: ["handleUniqueTransformer"],
       queryContext: "unique can not apply to resolvedReference",
       innerError: resolvedReference,
@@ -1820,8 +1823,8 @@ export function handleUniqueTransformer<T extends MiroirModelEnvironment>(
       "handleUniqueTransformer extractorTransformer unique referencedExtractor can not apply to resolvedReference",
       resolvedReference
     );
-    return new Domain2ElementFailed({
-      queryFailure: "QueryNotExecutable",
+    return new TransformerFailure({
+      queryFailure: "FailedTransformer",
       failureOrigin: ["handleUniqueTransformer"],
       queryContext:
         "unique can not apply to resolvedReference, wrong type: " + typeof resolvedReference,
@@ -1841,7 +1844,7 @@ export function handleUniqueTransformer<T extends MiroirModelEnvironment>(
   for (const entry of Object.entries(resolvedReference)) {
     result.add((entry[1] as any)[transformer.attribute]);
   }
-  const resultDomainElement: Domain2QueryReturnType<any> = sortByAttribute(
+  const resultDomainElement: TransformerReturnType<any> = sortByAttribute(
     [...result].map((e) => ({ [transformer.attribute]: e }))
   );
   // log.info(
@@ -1864,7 +1867,7 @@ export function handleListPickElementTransformer<T extends MiroirModelEnvironmen
   transformerParams: T,
   // queryParams: Record<string, any>,
   contextResults?: Record<string, any>
-): Domain2QueryReturnType<any> {
+): TransformerReturnType<any> {
   const resolvedReference = resolveApplyTo_legacy(
     transformer,
     step,
@@ -1873,13 +1876,13 @@ export function handleListPickElementTransformer<T extends MiroirModelEnvironmen
     contextResults,
     label
   );
-  if (resolvedReference instanceof Domain2ElementFailed) {
+  if (resolvedReference instanceof TransformerFailure) {
     log.error(
       "handleListPickElementTransformer extractorTransformer listPickElement can not apply to resolvedReference",
       resolvedReference
     );
-    return new Domain2ElementFailed({
-      queryFailure: "QueryNotExecutable",
+    return new TransformerFailure({
+      queryFailure: "FailedTransformer",
       failureOrigin: ["innerTransformer_apply"],
       queryContext: "listPickElement can not apply to resolvedReference",
       innerError: resolvedReference,
@@ -1891,8 +1894,8 @@ export function handleListPickElementTransformer<T extends MiroirModelEnvironmen
       "handleListPickElementTransformer extractorTransformer listPickElement can not apply to resolvedReference",
       resolvedReference
     );
-    return new Domain2ElementFailed({
-      queryFailure: "QueryNotExecutable",
+    return new TransformerFailure({
+      queryFailure: "FailedTransformer",
       failureOrigin: ["innerTransformer_apply"],
       queryContext:
         "listPickElement can not apply to resolvedReference, wrong type: " +
@@ -1915,7 +1918,7 @@ export function handleListPickElementTransformer<T extends MiroirModelEnvironmen
   const sortedResultArray = sortByAttribute(resolvedReference);
   if (transformer.index < 0 || sortedResultArray.length < transformer.index) {
     return undefined;
-    // return new Domain2ElementFailed({
+    // return new TransformerFailure({
     //   queryFailure: "FailedTransformer_listPickElement",
     //   failureOrigin: ["innerTransformer_apply"],
     //   queryContext: "listPickElement index out of bounds",
@@ -1939,7 +1942,7 @@ export function handleListPickElementTransformer<T extends MiroirModelEnvironmen
   //     "innerTransformer_apply extractorTransformer listPickElement failed",
   //     error
   //   )
-  //   return new Domain2ElementFailed({
+  //   return new TransformerFailure({
   //     queryFailure: "FailedTransformer_listPickElement",
   //     failureOrigin: ["innerTransformer_apply"],
   //     queryContext: "listPickElement failed: " + error,
@@ -1959,7 +1962,7 @@ export function handleTransformer_FreeObjectTemplate<T extends MiroirModelEnviro
   transformerParams: T,
   // queryParams: Record<string, any>,
   contextResults?: Record<string, any>
-): Domain2QueryReturnType<any> {
+): TransformerReturnType<any> {
   // log.info("innerTransformer_apply freeObjectTemplate", JSON.stringify(transformer, null, 2));
   const result = Object.fromEntries(
     Object.entries(transformer.definition).map((objectTemplateEntry: [string, any]) => {
@@ -1976,11 +1979,11 @@ export function handleTransformer_FreeObjectTemplate<T extends MiroirModelEnviro
       ];
     })
   );
-  const hasFailures = Object.values(result).find((e) => e instanceof Domain2ElementFailed);
+  const hasFailures = Object.values(result).find((e) => e instanceof TransformerFailure);
   if (hasFailures) {
     log.error("handleTransformer_FreeObjectTemplate freeObjectTemplate hasFailures", hasFailures);
-    return new Domain2ElementFailed({
-      queryFailure: "QueryNotExecutable",
+    return new TransformerFailure({
+      queryFailure: "FailedTransformer",
       failureOrigin: ["handleTransformer_FreeObjectTemplate"],
       queryContext: "freeObjectTemplate hasFailures",
       innerError: hasFailures,
@@ -2008,7 +2011,7 @@ export function handleTransformer_objectEntries<T extends MiroirModelEnvironment
   transformerParams: T,
   // queryParams: Record<string, any>,
   contextResults?: Record<string, any>
-): Domain2QueryReturnType<any> {
+): TransformerReturnType<any> {
   const resolvedReference = resolveApplyTo_legacy(
     transformer,
     step,
@@ -2019,13 +2022,13 @@ export function handleTransformer_objectEntries<T extends MiroirModelEnvironment
   );
   // log.info("handleTransformer_objectEntries referencedExtractor=", resolvedReference);
 
-  if (resolvedReference instanceof Domain2ElementFailed) {
+  if (resolvedReference instanceof TransformerFailure) {
     log.error(
       "handleTransformer_objectEntries can not apply to resolvedReference",
       resolvedReference
     );
-    return new Domain2ElementFailed({
-      queryFailure: "QueryNotExecutable",
+    return new TransformerFailure({
+      queryFailure: "FailedTransformer",
       failureOrigin: ["handleTransformer_objectEntries"],
       queryContext: "handleTransformer_objectEntries can not apply to resolvedReference",
       innerError: resolvedReference,
@@ -2033,7 +2036,7 @@ export function handleTransformer_objectEntries<T extends MiroirModelEnvironment
   }
 
   if (!(typeof resolvedReference == "object") || Array.isArray(resolvedReference)) {
-    const failure: Domain2ElementFailed = new Domain2ElementFailed({
+    const failure: TransformerFailure = new TransformerFailure({
       queryFailure: "FailedTransformer_objectEntries",
       failureMessage:
         "handleTransformer_objectEntries called on something that is not an object: " +
@@ -2065,7 +2068,7 @@ export function handleTransformer_objectValues<T extends MiroirModelEnvironment>
   transformerParams: T,
   // queryParams: Record<string, any>,
   contextResults?: Record<string, any>
-): Domain2QueryReturnType<any> {
+): TransformerReturnType<any> {
   const resolvedReference = resolveApplyTo_legacy(
     transformer,
     step,
@@ -2074,13 +2077,13 @@ export function handleTransformer_objectValues<T extends MiroirModelEnvironment>
     contextResults,
     label
   );
-  if (resolvedReference instanceof Domain2ElementFailed) {
+  if (resolvedReference instanceof TransformerFailure) {
     log.error(
       "handleTransformer_objectValues can not apply to resolvedReference",
       resolvedReference
     );
-    return new Domain2ElementFailed({
-      queryFailure: "QueryNotExecutable",
+    return new TransformerFailure({
+      queryFailure: "FailedTransformer",
       failureOrigin: ["handleTransformer_objectValues"],
       queryContext: "handleTransformer_objectValues failed ro resolve resolvedReference",
       innerError: resolvedReference,
@@ -2092,8 +2095,8 @@ export function handleTransformer_objectValues<T extends MiroirModelEnvironment>
       "innerTransformer_apply extractorTransformer count referencedExtractor resolvedReference",
       resolvedReference
     );
-    return new Domain2ElementFailed({
-      queryFailure: "QueryNotExecutable",
+    return new TransformerFailure({
+      queryFailure: "FailedTransformer",
       failureOrigin: ["handleTransformer_objectValues"],
       queryContext:
         "handleTransformer_objectValues resolvedReference is not an object: " + typeof resolvedReference,
@@ -2117,7 +2120,7 @@ export function handleTransformer_dataflowObject<T extends MiroirModelEnvironmen
   transformerParams: T,
   // queryParams: Record<string, any>,
   contextResults?: Record<string, any>
-): Domain2QueryReturnType<any> {
+): TransformerReturnType<any> {
   const resultObject: Record<string, any> = {};
   for (const [key, value] of Object.entries(transformer.definition)) {
     // const currentContext = label ? { ...contextResults, [label]: resultObject } : { ...contextResults, ...resultObject }
@@ -2155,13 +2158,13 @@ export function handleTransformer_constantArray(
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>
-): Domain2QueryReturnType<any> {
+): TransformerReturnType<any> {
   if (Array.isArray(transformer.value)) {
     return transformer.value;
   } else {
     return transformer.value; // TODO: fail! is it relevant?
     // return JSON.stringify(transformer.value)
-    // return new Domain2ElementFailed({
+    // return new TransformerFailure({
     //   queryFailure: "FailedTransformer_constantArray",
     //   failureOrigin: ["innerTransformer_apply"],
     //   queryContext: "constantArrayValue is not an array",
@@ -2179,7 +2182,7 @@ export function handleTransformer_constant(
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>
-): Domain2QueryReturnType<any> {
+): TransformerReturnType<any> {
   switch (typeof transformer.value) {
     case "string":
     case "number":
@@ -2200,7 +2203,7 @@ export function handleTransformer_constant(
     case "symbol":
     case "undefined":
     case "function": {
-      return new Domain2ElementFailed({
+      return new TransformerFailure({
         queryFailure: "FailedTransformer_constant",
         failureOrigin: ["handleTransformer_constant"],
         queryContext: "constantValue is not a string, number, bigint, boolean, or object",
@@ -2208,7 +2211,7 @@ export function handleTransformer_constant(
       break;
     }
     default: {
-      return new Domain2ElementFailed({
+      return new TransformerFailure({
         queryFailure: "FailedTransformer_constant",
         failureOrigin: ["handleTransformer_constant"],
         queryContext: "constantValue could not be handled",
@@ -2228,7 +2231,7 @@ export function handleTransformer_contextReference<T extends MiroirModelEnvironm
   transformerParams: T,
   // queryParams: Record<string, any>,
   contextResults?: Record<string, any>
-): Domain2QueryReturnType<any> {
+): TransformerReturnType<any> {
   const rawValue = defaultTransformers.transformer_InnerReference_resolve(
     step,
     transformer,
@@ -2236,7 +2239,7 @@ export function handleTransformer_contextReference<T extends MiroirModelEnvironm
     transformerParams,
     contextResults
   );
-  const returnedValue: Domain2QueryReturnType<any> =
+  const returnedValue: TransformerReturnType<any> =
     typeof transformer == "object" && (transformer as any).applyFunction
       ? (transformer as any).applyFunction(rawValue)
       : rawValue;
@@ -2252,7 +2255,7 @@ export function handleTransformer_parameterReference<T extends MiroirModelEnviro
   transformerParams: T,
   // queryParams: Record<string, any>,
   contextResults?: Record<string, any>
-): Domain2QueryReturnType<any> {
+): TransformerReturnType<any> {
   const rawValue = defaultTransformers.transformer_InnerReference_resolve(
     step,
     transformer,
@@ -2260,7 +2263,7 @@ export function handleTransformer_parameterReference<T extends MiroirModelEnviro
     transformerParams,
     contextResults
   );
-  const returnedValue: Domain2QueryReturnType<any> =
+  const returnedValue: TransformerReturnType<any> =
     typeof transformer == "object" && (transformer as any).applyFunction
       ? (transformer as any).applyFunction(rawValue)
       : rawValue;
@@ -2275,7 +2278,7 @@ export function handleTransformer_constantAsExtractor(
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>
-): Domain2QueryReturnType<any> {
+): TransformerReturnType<any> {
   return transformer.value;
 }
 
@@ -2288,7 +2291,7 @@ export function handleTransformer_newUuid<T extends MiroirModelEnvironment>(
   transformerParams: T,
   // queryParams: Record<string, any>,
   contextResults?: Record<string, any>
-): Domain2QueryReturnType<any> {
+): TransformerReturnType<any> {
   const rawValue = defaultTransformers.transformer_InnerReference_resolve(
     step,
     transformer,
@@ -2296,7 +2299,7 @@ export function handleTransformer_newUuid<T extends MiroirModelEnvironment>(
     transformerParams,
     contextResults
   );
-  const returnedValue: Domain2QueryReturnType<any> =
+  const returnedValue: TransformerReturnType<any> =
     typeof transformer == "object" && (transformer as any).applyFunction
       ? (transformer as any).applyFunction(rawValue)
       : rawValue;
@@ -2319,7 +2322,7 @@ export function innerTransformer_plainObject_apply<T extends MiroirModelEnvironm
   // queryParams: Record<string, any>,
   transformerParams: T,
   contextResults?: Record<string, any>,
-): Domain2QueryReturnType<any> {
+): TransformerReturnType<any> {
   // log.info(
   //   "innerTransformer_plainObject_apply called for object labeled",
   //   label,
@@ -2336,7 +2339,7 @@ export function innerTransformer_plainObject_apply<T extends MiroirModelEnvironm
   //   "contextResults elements",
   //   JSON.stringify(Object.keys(contextResults??{}), null, 2)
   // );
-  const attributeEntries: [string, Domain2QueryReturnType<DomainElementSuccess>][] = Object.entries(transformer).map(
+  const attributeEntries: [string, TransformerReturnType<DomainElementSuccess>][] = Object.entries(transformer).map(
     (objectTemplateEntry: [string, any]) => {
       // log.info("transformer_apply converting attribute",JSON.stringify(objectTemplateEntry, null, 2));
       return [
@@ -2375,7 +2378,7 @@ export function innerTransformer_plainObject_apply<T extends MiroirModelEnvironm
     //   "in",
     //   JSON.stringify(attributeEntries[failureIndex], null, 2)
     // );
-    const errorToReturn = new Domain2ElementFailed({
+    const errorToReturn = new TransformerFailure({
       queryFailure: "ReferenceNotFound",
       failureOrigin: ["innerTransformer_plainObject_apply"],
       innerError: attributeEntries[failureIndex][1] as any, // TODO: type!
@@ -2401,7 +2404,7 @@ export function innerTransformer_array_apply<T extends MiroirModelEnvironment>(
   // queryParams: Record<string, any>,
   transformerParams: T,
   contextResults?: Record<string, any>,
-): Domain2QueryReturnType<any> {
+): TransformerReturnType<any> {
   // log.info(
   //   "innerTransformer_array_apply called for object named",
   //   objectName,
@@ -2444,7 +2447,7 @@ export function innerTransformer_array_apply<T extends MiroirModelEnvironment>(
     //   "innerTransformer_array_apply failed converting array 2",
     // )
 
-    const errorToReturn = new Domain2ElementFailed({
+    const errorToReturn = new TransformerFailure({
       queryFailure: "ReferenceNotFound",
       failureOrigin: ["innerTransformer_array_apply"],
       innerError: subObject[failureIndex],
@@ -2489,7 +2492,7 @@ export function transformer_extended_apply<T extends MiroirModelEnvironment>(
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   transformerParams: T,
   contextResults?: Record<string, any>
-): Domain2QueryReturnType<any> {
+): TransformerReturnType<any> {
   log.info(
     "transformer_extended_apply called for label",
     label,
@@ -2508,7 +2511,7 @@ export function transformer_extended_apply<T extends MiroirModelEnvironment>(
     // Object.keys(contextResults??{})
     // // JSON.stringify(Object.keys(contextResults??{}), null, 2)
   );
-  let result: Domain2QueryReturnType<any> = undefined as any;
+  let result: TransformerReturnType<any> = undefined as any;
 
   if (typeof transformer == "object" && transformer != null) {
     if (transformer instanceof Array) {
@@ -2554,8 +2557,8 @@ export function transformer_extended_apply<T extends MiroirModelEnvironment>(
               "transformer",
               JSON.stringify(transformer, null, 2)
             );
-            preResult = new Domain2ElementFailed({
-              // queryFailure: "QueryNotExecutable",
+            preResult = new TransformerFailure({
+              // queryFailure: "FailedTransformer",
               queryFailure: "TransformerNotFound",
               failureOrigin: ["transformer_extended_apply"],
               queryContext: "transformer " + (transformer as any).transformerType + " not found",
@@ -2579,8 +2582,8 @@ export function transformer_extended_apply<T extends MiroirModelEnvironment>(
               "transformer",
               JSON.stringify(transformer, null, 2)
             );
-            preResult = new Domain2ElementFailed({
-              queryFailure: "QueryNotExecutable",
+            preResult = new TransformerFailure({
+              queryFailure: "FailedTransformer",
               failureOrigin: ["transformer_extended_apply"],
               queryContext:
                 "transformerImplementation for transformer" +
@@ -2645,8 +2648,8 @@ export function transformer_extended_apply<T extends MiroirModelEnvironment>(
                   "transformer",
                   JSON.stringify(transformer, null, 2)
                 );
-                preResult = new Domain2ElementFailed({
-                  // queryFailure: "QueryNotExecutable",
+                preResult = new TransformerFailure({
+                  // queryFailure: "FailedTransformer",
                   queryFailure: "TransformerNotFound",
                   failureOrigin: ["transformer_extended_apply"],
                   queryContext:
@@ -2701,8 +2704,8 @@ export function transformer_extended_apply<T extends MiroirModelEnvironment>(
                   "transformer",
                   JSON.stringify(transformer, null, 2)
                 );
-                preResult = new Domain2ElementFailed({
-                  queryFailure: "QueryNotExecutable",
+                preResult = new TransformerFailure({
+                  queryFailure: "FailedTransformer",
                   failureOrigin: ["transformer_extended_apply"],
                   queryContext:
                     "transformer " + (transformer as any).transformerType + " not found",
@@ -2742,8 +2745,8 @@ export function transformer_extended_apply<T extends MiroirModelEnvironment>(
               break;
             }
             default: {
-              return new Domain2ElementFailed({
-                // queryFailure: "QueryNotExecutable",
+              return new TransformerFailure({
+                // queryFailure: "FailedTransformer",
                 queryFailure: "FailedTransformer",
                 failureOrigin: ["transformer_extended_apply"],
                 queryContext:
@@ -2765,7 +2768,7 @@ export function transformer_extended_apply<T extends MiroirModelEnvironment>(
               break;
             }
           }
-          if (preResult instanceof Domain2ElementFailed) {
+          if (preResult instanceof TransformerFailure) {
             log.error(
               "transformer_extended_apply failed for",
               label,
@@ -2884,11 +2887,10 @@ export function transformer_extended_apply_wrapper<T extends MiroirModelEnvironm
   step: Step,
   label: string | undefined,
   transformer: TransformerForBuild | TransformerForRuntime | ExtendedTransformerForRuntime | TransformerForBuildPlusRuntime,
-  // queryParams: Record<string, any>,
-  transformerParams: T,
+  transformerParams: T, // includes queryParams
   contextResults?: Record<string, any>,
   resolveBuildTransformersTo: ResolveBuildTransformersTo = "constantTransformer",
-): Domain2QueryReturnType<any> {
+): TransformerReturnType<any> {
   // Start transformer tracking
   const eventTracker = TransformerGlobalContext.getEventTracker();
   let trackingId: string = "";
@@ -2923,10 +2925,12 @@ export function transformer_extended_apply_wrapper<T extends MiroirModelEnvironm
       result
       // JSON.stringify(result, null, 2),
     );  
-    if (result instanceof Domain2ElementFailed) {
+    // if (result instanceof TransformerFailure) {
+    if (result instanceof TransformerFailure) {
       // End transformer tracking with error
       if (eventTracker?.isTransformerTrackingEnabled() && trackingId) {
-        eventTracker.endTransformer(trackingId, undefined, result.queryFailure || "Transformer failed");
+        // eventTracker.endTransformer(trackingId, undefined, result.queryFailure || "Transformer failed");
+        eventTracker.endTransformer(trackingId, result, result.queryFailure || "Transformer failed");
       }
       
       log.error(
@@ -2939,14 +2943,11 @@ export function transformer_extended_apply_wrapper<T extends MiroirModelEnvironm
         "result",
         JSON.stringify(result, null, 2)
       );
-      return new Domain2ElementFailed({
-        // queryFailure: "QueryNotExecutable",
+      return new TransformerFailure({
         queryFailure: "FailedTransformer",
-        // queryFailure: result.queryFailure,
         failureOrigin: ["transformer_extended_apply"],
         innerError: result,
         queryContext: "failed to transform object attribute",
-        // queryParameters: JSON.stringify(transformer),
         queryParameters: transformer as any,
       });
     } else {
@@ -2979,11 +2980,9 @@ export function transformer_extended_apply_wrapper<T extends MiroirModelEnvironm
       "error",
       e
     );
-    return new Domain2ElementFailed({
-      // queryFailure: "QueryNotExecutable",
+    return new TransformerFailure({
       queryFailure: "FailedTransformer",
       failureOrigin: ["transformer_extended_apply"],
-      // innerError: e as any,
       innerError: serializeError(e) as any,
       queryContext: "failed to transform object attribute",
     });
@@ -3006,5 +3005,35 @@ export function applyTransformer(t: Transformer, o: any):any {
       throw new Error(`Transformer ${JSON.stringify(t)} can not be applied`);
       break;
   }
+}
+
+// ################################################################################################
+export function getInnermostTransformerError(
+  error: TransformerFailure
+): TransformerFailure {
+  if (error.innerError) {
+    if (
+      typeof error.innerError === "object" &&
+      error.innerError !== null
+      // "innerError" in error.innerError
+    ) {
+      if (error.innerError instanceof TransformerFailure) {
+        return getInnermostTransformerError(error.innerError as TransformerFailure);
+      }
+      // // record of ResolvedJzodSchemaReturnTypeError, take the first one
+      // const firstError = Object.values(error.innerError)[0];
+      // return getInnermostTransformerError(firstError as TransformerFailure);
+    }
+    // if (Array.isArray(error.innerError)) {
+    //   // If innerError is an array, recursively check each error in the array
+    //   return error.innerError.reduce((innermost, current) => {
+    //     if (typeof current === "object") {
+    //       return getInnermostJzodError(current);
+    //     }
+    //     return innermost;
+    //   }, error);
+    // }
+  }
+  return error;
 }
 
