@@ -29,6 +29,7 @@ MiroirLoggerFactory.registerLoggerToStart(
 
 export function handleTransformer_menu_AddItem(
   step: Step,
+  transformerPath: string[],
   objectName: string | undefined,
   // transformers: any,
   transformer: TransformerForBuild_menu_addItem | TransformerForRuntime_menu_addItem,
@@ -54,6 +55,7 @@ export function handleTransformer_menu_AddItem(
     typeof transformer.menuReference == "string"
       ? (defaultTransformers.transformer_InnerReference_resolve(
           step,
+          transformerPath,
           {
             transformerType: "contextReference",
             interpolation: "runtime",
@@ -65,6 +67,7 @@ export function handleTransformer_menu_AddItem(
         ) as Menu)
       : (defaultTransformers.transformer_InnerReference_resolve(
           step,
+          transformerPath,
           transformer.menuReference,
           "value",
           queryParams,
@@ -78,6 +81,7 @@ export function handleTransformer_menu_AddItem(
     typeof transformer.menuItemReference == "string"
       ? (defaultTransformers.transformer_InnerReference_resolve(
           step,
+          transformerPath,
           {
             transformerType: "contextReference",
             interpolation: "runtime",
@@ -89,6 +93,7 @@ export function handleTransformer_menu_AddItem(
         ) as MiroirMenuItem)
       : (defaultTransformers.transformer_InnerReference_resolve(
           step,
+          transformerPath,
           transformer.menuItemReference,
           "value",
           queryParams,

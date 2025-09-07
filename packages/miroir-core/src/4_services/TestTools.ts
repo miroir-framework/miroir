@@ -165,6 +165,7 @@ export async function runTransformerTestInMemory(
 
   const convertedTransformer = transformer_extended_apply_wrapper(
     "build",
+    [], // transformerPath
     undefined,
     runtimeTransformer,
     // transformerTest.transformerParams,
@@ -180,6 +181,7 @@ export async function runTransformerTestInMemory(
   if (interpolation == "runtime" && !convertedTransformer["elementType"]) {
     rawResult = transformer_extended_apply_wrapper(
       "runtime",
+      [], // transformerPath
       undefined,
       convertedTransformer,
       // transformerTest.transformerParams,
@@ -503,6 +505,7 @@ export function runTransformerIntegrationTest(sqlDbDataStore: any) {
     const resolvedTransformer: Domain2QueryReturnType<TransformerForRuntime> =
       transformer_extended_apply_wrapper(
         "build",
+        [], // transformerPath
         (transformerTest.transformer as any)?.label,
         transformerTest.transformer,
         modelEnvironment,

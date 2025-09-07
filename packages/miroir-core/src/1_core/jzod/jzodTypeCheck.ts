@@ -732,6 +732,7 @@ export function jzodTypeCheck(
     deploymentUuid ?
       resolveConditionalSchema(
         "build", // TODO: can typeCheck be used in "runtime"? What does it mean in this context?
+        [], // transformerPath
         jzodSchema,
         rootObject || currentDefaultValue, // Use rootObject if provided, fallback to currentDefaultValue
         currentValuePath as string[],
@@ -1972,6 +1973,7 @@ export function jzodTypeCheck(
 // Transformer function for jzodTypeCheck
 export function jzodTypeCheckTransformer<T extends MiroirModelEnvironment>(
   step: Step,
+  transformerPath: string[],
   label: string | undefined,
   transformer: any,
   resolveBuildTransformersTo: any,

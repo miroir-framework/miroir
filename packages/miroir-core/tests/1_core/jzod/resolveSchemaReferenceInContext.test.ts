@@ -24,7 +24,7 @@ import {
 } from "../../../src/4_services/TestTools";
 
 import { MiroirEventTracker } from "../../../src/3_controllers/MiroirEventTracker";
-import { defaultMiroirModelEnviroment } from "../../../src/1_core/Model";
+import { defaultMiroirModelEnvironment } from "../../../src/1_core/Model";
 
 import transformerTestSuite_resolveSchemaReferenceInContext from "../../../src/assets/miroir_data/681be9ca-c593-45f5-b45a-5f1d4969e91e/b9e7f4d5-6543-4a1b-9c8d-987654321fed.json";
 
@@ -57,7 +57,7 @@ if (RUN_TEST == transformerTestSuite_resolveSchemaReferenceInContext.definition.
     // transformerTestSuite_resolveSchemaReferenceInContext.definition as TransformerTestSuite,
     effectiveTests,
     runTransformerTestInMemory,
-    defaultMiroirModelEnviroment,
+    defaultMiroirModelEnvironment,
     miroirEventTracker
   );
   transformerTestsDisplayResults(

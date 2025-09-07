@@ -648,6 +648,7 @@ export function unfoldJzodSchemaOnce(
 // ################################################################################################
 export function unfoldSchemaOnceTransformer(
   step: Step,
+  transformerPath: string[],
   label: string | undefined,
   transformer: any, // TransformerForBuild_unfoldSchemaOnce | TransformerForRuntime_unfoldSchemaOnce | TransformerForBuildPlusRuntime_unfoldSchemaOnce,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,

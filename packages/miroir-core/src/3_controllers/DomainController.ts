@@ -1815,6 +1815,7 @@ export class DomainController implements DomainControllerInterface {
             // // TODO: resolve runtime transformers for all composite actions. Should there be preserved areas?
             const resolvedAction = transformer_extended_apply(
               "runtime",
+              [],
               currentAction.actionLabel,
               currentAction as any as TransformerForRuntime,
               "value",
@@ -1876,6 +1877,7 @@ export class DomainController implements DomainControllerInterface {
               queryTemplate: RunBoxedQueryAction;
             } = transformer_extended_apply(
               "build",
+              [],
               currentAction.actionLabel,
               currentAction as any as TransformerForRuntime,
               "value",
@@ -1911,6 +1913,7 @@ export class DomainController implements DomainControllerInterface {
               query: RunBoxedExtractorOrQueryAction;
             } = transformer_extended_apply(
               "build",
+              [],
               currentAction.actionLabel,
               currentAction as any as TransformerForRuntime,
               "value",
@@ -1930,6 +1933,7 @@ export class DomainController implements DomainControllerInterface {
           case "compositeRunTestAssertion": {
             const resolvedAction = transformer_extended_apply(
               "runtime",
+              [],
               currentAction.actionLabel,
               currentAction as any as TransformerForRuntime,
               "value",
@@ -2047,6 +2051,7 @@ export class DomainController implements DomainControllerInterface {
         // );
         const resolvedTemplate = transformer_extended_apply_wrapper(
           "build",
+          [],
           // "runtime",
           t[0],
           t[1] as any,
@@ -2090,6 +2095,7 @@ export class DomainController implements DomainControllerInterface {
     const resolvedActionDefinition: Domain2QueryReturnType<any> =
       transformer_extended_apply_wrapper(
         "build",
+        [],
         buildPlusRuntimeCompositeAction.actionLabel,
         buildPlusRuntimeCompositeAction.definition as any as TransformerForRuntime,
         { ...actionParamValues, ...resolvedCompositeActionTemplates }, // queryParams
@@ -2174,6 +2180,7 @@ export class DomainController implements DomainControllerInterface {
       const prePreValueToTest = currentAction.testAssertion.definition.resultTransformer
         ? transformer_extended_apply(
             "runtime",
+            [],
             undefined /**WHAT?? */,
             currentAction.testAssertion.definition.resultTransformer,
             "value",
@@ -2574,6 +2581,7 @@ export class DomainController implements DomainControllerInterface {
           // );
           const resolvedActionTemplate: InstanceAction = transformer_extended_apply(
             "runtime",
+            [],
             currentAction.actionLabel ?? "NO NAME",
             currentAction as any as TransformerForRuntime, // TODO: correct type
             "value",

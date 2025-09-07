@@ -49,6 +49,7 @@ export function resolveExtractorTemplate(
       if (extractorOrCombinerTemplate.filter) {
         const filterValue = transformer_extended_apply_wrapper(
                 "build", // TODO: resolve for runtime transformer. Does it make sense?
+                [], // transformerPath
                 undefined,
                 extractorOrCombinerTemplate.filter.value,
                 queryParams,
@@ -64,6 +65,7 @@ export function resolveExtractorTemplate(
               ? extractorOrCombinerTemplate.parentUuid
               : transformer_InnerReference_resolve(
                   "build", // TODO: should this be "build" or "runtime"? "value" is not consistent with "build"
+                  [], // transformerPath
                   extractorOrCombinerTemplate.parentUuid,
                   "value",
                   queryParams,
@@ -83,6 +85,7 @@ export function resolveExtractorTemplate(
               ? extractorOrCombinerTemplate.parentUuid
               : transformer_InnerReference_resolve(
                   "build",
+                  [], // transformerPath
                   extractorOrCombinerTemplate.parentUuid,
                   "value",
                   queryParams,
@@ -101,6 +104,7 @@ export function resolveExtractorTemplate(
             ? extractorOrCombinerTemplate.parentUuid
             : transformer_InnerReference_resolve(
                 "build",
+                [], // transformerPath
                 extractorOrCombinerTemplate.parentUuid,
                 "value",
                 queryParams,
@@ -108,6 +112,7 @@ export function resolveExtractorTemplate(
               ), // TODO: check for failure!
         instanceUuid: transformer_InnerReference_resolve(
           "build",
+          [], // transformerPath
           extractorOrCombinerTemplate.instanceUuid,
           "value",
           queryParams,
@@ -157,6 +162,7 @@ export function resolveExtractorTemplate(
             ? extractorOrCombinerTemplate.parentUuid
             : transformer_InnerReference_resolve(
                 "build",
+                [], // transformerPath
                 extractorOrCombinerTemplate.parentUuid,
                 "value",
                 queryParams,
@@ -179,6 +185,7 @@ export function resolveExtractorTemplate(
             ? extractorOrCombinerTemplate.parentUuid
             : transformer_InnerReference_resolve(
                 "build",
+                [], // transformerPath
                 extractorOrCombinerTemplate.parentUuid,
                 "value",
                 queryParams,
@@ -201,6 +208,7 @@ export function resolveExtractorTemplate(
             ? extractorOrCombinerTemplate.parentUuid
             : transformer_InnerReference_resolve(
                 "build",
+                [], // transformerPath
                 extractorOrCombinerTemplate.parentUuid,
                 "value",
                 queryParams,

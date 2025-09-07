@@ -97,6 +97,7 @@ export const selectEntityInstanceFromReduxDeploymentsState: SyncBoxedExtractorRu
       // TODO: gives a condition for "build" resolution to yield value not constantTransformer, this is actually not relevant, the interface must be corrected.
       const referenceObject = transformer_InnerReference_resolve(
         "runtime",
+        [], // transformerPath
         {
           transformerType: "contextReference",
           interpolation: "runtime",

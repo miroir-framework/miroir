@@ -10,7 +10,7 @@ import {
   runTransformerTestSuite,
 } from "../../src/4_services/TestTools";
 import type { TransformerTestSuite } from '../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType';
-import { defaultMiroirModelEnviroment } from '../../src/1_core/Model';
+import { defaultMiroirModelEnvironment } from '../../src/1_core/Model';
 import { MiroirEventTracker } from '../../src/3_controllers/MiroirEventTracker';
 // const env:any = (import.meta as any).env
 // console.log("@@@@@@@@@@@@@@@@@@ env", env);
@@ -186,7 +186,7 @@ describe("menu.unit.test", () => {
         [],
         transformerTestSuite_applicativeTransformers,
         runTransformerTestInMemory,
-        defaultMiroirModelEnviroment,
+        defaultMiroirModelEnvironment,
         miroirEventTracker
       );
 

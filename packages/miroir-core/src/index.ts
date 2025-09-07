@@ -738,7 +738,7 @@ export {
 export {
   applicationModelEntities,
   defaultMiroirMetaModel,
-  defaultMiroirModelEnviroment,
+  defaultMiroirModelEnvironment,
   // getCurrentEntityDefinition,
   getReportsAndEntitiesDefinitionsForDeploymentUuid,
   metaModelEntities,

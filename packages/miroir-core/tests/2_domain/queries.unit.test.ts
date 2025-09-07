@@ -63,7 +63,7 @@ import {
   SyncQueryRunner,
   SyncQueryTemplateRunner,
 } from "../../dist";
-import { defaultMiroirModelEnviroment } from "../../src";
+import { defaultMiroirModelEnvironment } from "../../src";
 
 const domainState: DomainState = domainStateImport as DomainState;
 const deploymentEntityState: ReduxDeploymentsState = domainStateToReduxDeploymentsState(domainState);
@@ -1154,7 +1154,7 @@ describe("queries.unit", () => {
         const preResult = testParams.runQueryFromDomainState(
           domainState,
           testParams.getQueryRunnerParamsForDomainState(testParams.query),
-          defaultMiroirModelEnviroment,
+          defaultMiroirModelEnvironment,
           // getExtractorRunnerParamsForDomainState(testParams.query)
         );
         for (const [testAssertionName, testAssertionParams] of Object.entries(testParams.testAssertions)) {
@@ -1172,7 +1172,7 @@ describe("queries.unit", () => {
         const preResult = testParams.runQueryFromReduxDeploymentsState(
           deploymentEntityState,
           testParams.getQueryRunnerParamsForReduxDeploymentsState(testParams.query),
-          defaultMiroirModelEnviroment,
+          defaultMiroirModelEnvironment,
         );
         for (const [testAssertionName, testAssertionParams] of Object.entries(testParams.testAssertions)) {
         console.log(`############################################## running query for DEPLOYMENT ENTITY STATE test assertion: ${currentTestName} ${testAssertionName}`);
@@ -1193,7 +1193,7 @@ describe("queries.unit", () => {
         const preTemplateResult = testParams.runQueryTemplateFromDomainState(
           domainState,
           testParams.getQueryTemplateRunnerParamsForDomainState(testParams.queryTemplate),
-          defaultMiroirModelEnviroment,
+          defaultMiroirModelEnvironment,
         ) as any;
         for (const [testAssertionName, testAssertionParams] of Object.entries(testParams.testAssertions)) {
           console.log(`############################################## running query TEMPLATE for DOMAIN STATE test assertion: ${currentTestName} ${testAssertionName}`);
@@ -1211,7 +1211,7 @@ describe("queries.unit", () => {
         const preTemplateResult = testParams.runQueryTemplateFromReduxDeploymentsState(
           deploymentEntityState,
           testParams.getQueryTemplateRunnerParamsForReduxDeploymentsState(testParams.queryTemplate),
-          defaultMiroirModelEnviroment,
+          defaultMiroirModelEnvironment,
         ) as any;
         for (const [testAssertionName, testAssertionParams] of Object.entries(testParams.testAssertions)) {
           console.log(`############################################## running query TEMPLATE for DEPLOYMENT ENTITY STATE test assertion: ${currentTestName} ${testAssertionName}`);

@@ -5,7 +5,7 @@ import {
   TransformerForBuild
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
-import { defaultMiroirModelEnviroment } from "../1_core/Model";
+import { defaultMiroirModelEnvironment } from "../1_core/Model";
 import { MiroirLoggerFactory } from "../4_services/LoggerFactory";
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
@@ -68,9 +68,10 @@ export function resolveCompositeActionTemplate(
       const resolvedTemplate = transformer_extended_apply_wrapper(
         // "build",
         "runtime",
+        [],
         t[0],
         t[1] as any,
-        {...defaultMiroirModelEnviroment, ...actionParamValues}, // queryParams
+        {...defaultMiroirModelEnvironment, ...actionParamValues}, // queryParams
         newLocalParameters, // contextResults
         "value",
       );
@@ -90,6 +91,7 @@ export function resolveCompositeActionTemplate(
   const actionParamsAndTemplates = { ...localActionParams, ...resolvedCompositeActionTemplates };
   const resolvedCompositeActionDefinition: CompositeAction = transformer_extended_apply_wrapper(
     "build",
+    [],
     compositeActionLabel,
     (compositeActionTemplate as any).definition as any as TransformerForBuild,
     actionParamsAndTemplates,

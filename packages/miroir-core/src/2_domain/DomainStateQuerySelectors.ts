@@ -228,6 +228,7 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncBoxedExtract
     case "combinerForObjectByRelation": {
       const referenceObject = transformer_InnerReference_resolve(
         "runtime",
+        [], // transformerPath
         {
           transformerType: "contextReference",
           interpolation: "runtime",

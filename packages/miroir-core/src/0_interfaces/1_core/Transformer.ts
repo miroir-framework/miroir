@@ -19,6 +19,7 @@ export type ITransformerHandler<
     // | TransformerForRuntime_innerFullObjectTemplate
 > = (
   step: Step,
+  transformerPath: string[],
   label: string | undefined,
   transformer: T,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,

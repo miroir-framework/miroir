@@ -132,6 +132,7 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
         // TODO: we assume this ia a constant, get rid of resolution altogether (push it up)
         const referenceObject = transformer_InnerReference_resolve(
           "runtime",
+          [], // transformerPath
           {
             transformerType: "contextReference",
             interpolation: "runtime",

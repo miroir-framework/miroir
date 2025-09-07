@@ -31,7 +31,7 @@ import {
   TransformerForRuntime_objectEntries,
   TransformerForRuntime_objectValues,
   TransformerForRuntime_unique,
-  defaultMiroirModelEnviroment,
+  defaultMiroirModelEnvironment,
 } from "miroir-core";
 import { RecursiveStringRecords } from "../4_services/SqlDbQueryTemplateRunner";
 import { cleanLevel } from "../4_services/constants";
@@ -1051,9 +1051,10 @@ function sqlStringForMapperListToListTransformer(
             interpolation: "runtime",
             value: transformer_extended_apply_wrapper(
               "build", // TODO: resolve for runtime transformer. Does it make sense?
+              [], // tranformerPath
               undefined,
               actionRuntimeTransformer.elementTransformer,
-              {...defaultMiroirModelEnviroment, ...queryParams},
+              {...defaultMiroirModelEnvironment, ...queryParams},
               {}, // contextResults, we are evaluating a build transformer here, not a runtime transformer
               "value"
             ),
@@ -2531,6 +2532,7 @@ function sqlStringForParameterReferenceTransformer(
   // TODO: resolve each parameter as WITH clause, then only call the name of the clause in each reference?
   const resolvedReference = transformer_resolveReference(
     "runtime",
+    [], // transformerPath
     actionRuntimeTransformer,
     "param",
     queryParams,

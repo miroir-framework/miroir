@@ -40,7 +40,7 @@ import {
   InitApplicationParameters,
   PersistenceStoreAdminSectionInterface,
 } from "../../src/0_interfaces/4-services/PersistenceStoreControllerInterface.js";
-import { defaultMiroirMetaModel, defaultMiroirModelEnviroment } from '../../src/1_core/Model.js';
+import { defaultMiroirMetaModel, defaultMiroirModelEnvironment } from '../../src/1_core/Model.js';
 import { getBasicApplicationConfiguration, getBasicStoreUnitConfiguration } from '../../src/2_domain/Deployment.js';
 import { PersistenceStoreController } from '../../src/4_services/PersistenceStoreController.js';
 import {
@@ -249,7 +249,7 @@ if (RUN_TEST == testSuiteName) {
     [],
     currentTestSuite,
     runTransformerIntegrationTest(sqlDbDataStore),
-    defaultMiroirModelEnviroment,
+    defaultMiroirModelEnvironment,
     miroirEventTracker
   );
 } else {

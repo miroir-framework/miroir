@@ -16,7 +16,7 @@ import {
   MiroirLoggerFactory,
   resolvePathOnObject,
   SyncBoxedExtractorOrQueryRunnerMap,
-  defaultMiroirModelEnviroment
+  defaultMiroirModelEnvironment
 } from "miroir-core";
 
 import { getMemoizedReduxDeploymentsStateSelectorMap, ReduxStateWithUndoRedo } from "miroir-localcache-redux";
@@ -424,7 +424,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
           miroirFundamentalJzodSchema: currentMiroirFundamentalJzodSchema,
           currentModel,
           miroirMetaModel,
-        }: defaultMiroirModelEnviroment
+        }: defaultMiroirModelEnvironment
       )
   );
 

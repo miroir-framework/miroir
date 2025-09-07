@@ -19,6 +19,7 @@ import { getEntityInstancesUuidIndexNonHook } from "../../2_domain/ReduxDeployme
 import type { ResolveBuildTransformersTo, Step } from "../../2_domain/Transformers";
 import type { MiroirModelEnvironment } from "../../0_interfaces/1_core/Transformer";
 import { transformer_extended_apply_wrapper } from "../../2_domain/TransformersForRuntime";
+import { transformer } from "zod";
 
 // Error value types for resolveConditionalSchema
 export type ResolveConditionalSchemaError =
@@ -37,6 +38,7 @@ MiroirLoggerFactory.registerLoggerToStart(
 // ################################################################################################
 export function resolveConditionalSchemaTransformer(
   step: Step,
+  transformerPath: string[],
   label: string | undefined,
   transformer:
     | TransformerForBuild_resolveConditionalSchema
@@ -48,6 +50,7 @@ export function resolveConditionalSchemaTransformer(
 ): ResolveConditionalSchemaResult {
   return resolveConditionalSchema(
     step,
+    transformerPath,
     transformer.schema,
     transformer.valueObject, // Use rootObject from contextResults or an empty object
     transformer.valuePath || [], // Use currentValuePath from contextResults or an
@@ -61,14 +64,11 @@ export function resolveConditionalSchemaTransformer(
 // ################################################################################################
 export function resolveConditionalSchema(
   step: Step,
-  // label: string | undefined,
-  // transformer: T,
-  // resolveBuildTransformersTo: ResolveBuildTransformersTo,
+  transformerPath: string[],
   jzodSchema: JzodElement,
   rootObject: any, // Changed from currentDefaultValue to rootObject
   currentValuePath: string[],
-  // queryParams: Record<string, any>,
-  modelEnvironment: MiroirModelEnvironment & Record<string, any>,
+  modelEnvironment: MiroirModelEnvironment & Record<string, any>, // includes queryParams
   contextResults?: Record<string, any>,
   reduxDeploymentsState: ReduxDeploymentsState | undefined = undefined,
   deploymentUuid: Uuid | undefined = undefined,
@@ -153,6 +153,7 @@ export function resolveConditionalSchema(
       if (typeof parentUuid === "object" && "transformerType" in parentUuid) {
         parentUuidStr = transformer_extended_apply_wrapper(
           step,
+          transformerPath,
           "resolveConditionalSchema - parentUuid",
           parentUuid,
           // currentValuePath,

@@ -52,6 +52,7 @@ export class TransformerFailure implements ITransformerFailure {
 
   public queryFailure: TransformerFailureType;
   public query?: string | undefined;
+  public transformerPath?: string[] | undefined;
   public failureOrigin?: string[] | undefined;
   public failureMessage?: string | undefined;
   public queryReference?: string | undefined;
@@ -69,6 +70,7 @@ export class TransformerFailure implements ITransformerFailure {
   constructor(elementValue: ITransformerFailure) {
     this.queryFailure = elementValue.queryFailure;
     this.query = elementValue.query;
+    this.transformerPath = elementValue.transformerPath;
     this.failureOrigin = elementValue.failureOrigin;
     this.failureMessage = elementValue.failureMessage;
     this.queryReference = elementValue.queryReference;

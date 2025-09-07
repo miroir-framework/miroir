@@ -16,7 +16,7 @@ import {
 } from "../../../src/4_services/TestTools";
 
 import { MiroirEventTracker } from "../../../src/3_controllers/MiroirEventTracker";
-import { defaultMiroirModelEnviroment } from "../../../src/1_core/Model";
+import { defaultMiroirModelEnvironment } from "../../../src/1_core/Model";
 
 import transformerTestSuite_unfoldSchemaOnce from "../../../src/assets/miroir_data/681be9ca-c593-45f5-b45a-5f1d4969e91e/e8b5d1a2-9473-4f6c-b2e8-7f8a5c6d9e0f.json";
 
@@ -46,7 +46,7 @@ if (RUN_TEST == transformerTestSuite_unfoldSchemaOnce.definition.transformerTest
     [],
     effectiveTests,
     runTransformerTestInMemory,
-    defaultMiroirModelEnviroment,
+    defaultMiroirModelEnvironment,
     miroirEventTracker
   );
   transformerTestsDisplayResults(

@@ -5,7 +5,7 @@ import {
 import { displayTestSuiteResultsDetails, runTransformerTestInMemory, runTransformerTestSuite, transformerTestsDisplayResults } from '../../src/4_services/TestTools';
 import { MiroirEventTracker } from '../../src/3_controllers/MiroirEventTracker';
 import { MiroirModelEnvironment } from '../../src/0_interfaces/1_core/Transformer';
-import { defaultMiroirModelEnviroment } from '../../src/1_core/Model';
+import { defaultMiroirModelEnvironment } from '../../src/1_core/Model';
 
 type VitestNamespace = typeof vitest;
 
@@ -58,7 +58,7 @@ if (RUN_TEST == testSuiteName) {
     [],
     currentTestSuite,
     runTransformerTestInMemory,
-    defaultMiroirModelEnviroment,
+    defaultMiroirModelEnvironment,
     miroirEventTracker
   );
 } else {

@@ -302,6 +302,7 @@ export const extractzodSchemaForSingleSelectQueryTemplate = <StateType>(
       ? selectorParams.query.select.parentUuid
       : transformer_InnerReference_resolve(
           "build",
+          [], // transformerPath
           selectorParams.query.select.parentUuid,
           "value",
           {...modelEnvironment, ...selectorParams.query.queryParams},

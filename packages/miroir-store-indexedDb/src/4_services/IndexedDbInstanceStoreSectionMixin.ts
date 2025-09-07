@@ -5,6 +5,7 @@ import {
   Action2ReturnType,
   Action2VoidReturnType,
   ACTION_OK,
+  defaultMiroirModelEnvironment,
   EntityInstance,
   ExtractorRunnerInMemory,
   ExtractorTemplateRunnerInMemory,
@@ -50,7 +51,7 @@ export function IndexedDbInstanceStoreSectionMixin<TBase extends MixableIndexedD
     async handleBoxedExtractorAction(query: RunBoxedExtractorAction): Promise<Action2ReturnType> {
       log.info(this.logHeader,'handleBoxedExtractorAction', 'query',query);
       
-      const result: Action2ReturnType = await this.extractorRunner.handleBoxedExtractorAction(query);
+      const result: Action2ReturnType = await this.extractorRunner.handleBoxedExtractorAction(query,defaultMiroirModelEnvironment);
 
       log.info(this.logHeader,'handleBoxedExtractorAction','query',query, "result", result);
       return result;
@@ -60,7 +61,7 @@ export function IndexedDbInstanceStoreSectionMixin<TBase extends MixableIndexedD
     async handleBoxedQueryAction(query: RunBoxedQueryAction): Promise<Action2ReturnType> {
       log.info(this.logHeader,'handleBoxedQueryAction', 'query',query);
       
-      const result: Action2ReturnType = await this.extractorRunner.handleBoxedQueryAction(query);
+      const result: Action2ReturnType = await this.extractorRunner.handleBoxedQueryAction(query,defaultMiroirModelEnvironment);
 
       log.info(this.logHeader,'handleBoxedQueryAction','query',query, "result", result);
       return result;
@@ -70,7 +71,7 @@ export function IndexedDbInstanceStoreSectionMixin<TBase extends MixableIndexedD
     async handleQueryTemplateActionForServerONLY(query: RunBoxedQueryTemplateAction): Promise<Action2ReturnType> {
       log.info(this.logHeader,'handleQueryTemplateActionForServerONLY', 'query',query);
       
-      const result: Action2ReturnType = await this.extractorTemplateRunner.handleQueryTemplateActionForServerONLY(query);
+      const result: Action2ReturnType = await this.extractorTemplateRunner.handleQueryTemplateActionForServerONLY(query, defaultMiroirModelEnvironment);
 
       log.info(this.logHeader,'handleQueryTemplateActionForServerONLY','query',query, "result", result);
       return result;
@@ -80,7 +81,7 @@ export function IndexedDbInstanceStoreSectionMixin<TBase extends MixableIndexedD
     async handleBoxedExtractorTemplateActionForServerONLY(query: RunBoxedExtractorTemplateAction): Promise<Action2ReturnType> {
       log.info(this.logHeader,'handleBoxedExtractorTemplateActionForServerONLY', 'query',query);
       
-      const result: Action2ReturnType = await this.extractorTemplateRunner.handleBoxedExtractorTemplateActionForServerONLY(query);
+      const result: Action2ReturnType = await this.extractorTemplateRunner.handleBoxedExtractorTemplateActionForServerONLY(query, defaultMiroirModelEnvironment);
 
       log.info(this.logHeader,'handleBoxedExtractorTemplateActionForServerONLY','query',query, "result", result);
       return result;
@@ -92,7 +93,7 @@ export function IndexedDbInstanceStoreSectionMixin<TBase extends MixableIndexedD
       
       const result: Action2ReturnType =
         await this.extractorTemplateRunner.handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(
-          query
+          query, defaultMiroirModelEnvironment
         );
 
       log.info(this.logHeader,'handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY','query',query, "result", result);

@@ -25,6 +25,8 @@ import {
   type Entity,
   type EntityDefinition,
   type EntityDefinitionEntityDefinition,
+  type TransformerReturnType,
+  type TransformerFailure,
 } from 'miroir-core';
 import { valueToJzod } from '@miroir-framework/jzod';
 
@@ -232,7 +234,8 @@ const EntityInstancePanel = React.memo<{
 const TransformationResultPanel = React.memo<{
   transformationResult: any;
   transformationResultSchema?: JzodElement;
-  transformationError: string | null;
+  // transformationError: string | null;
+  transformationError: TransformerFailure | null;
   selectedEntityInstance: EntityInstance | undefined;
   deploymentUuid: Uuid;
   foldedObjectAttributeOrArrayItems: { [k: string]: boolean };
@@ -529,7 +532,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
   
   // State for transformation result
   const [transformationResult, setTransformationResult] = useState<any>(null);
-  const [transformationError, setTransformationError] = useState<string | null>(null);
+  const [transformationError, setTransformationError] = useState<TransformerFailure | null>(null);
   
   // Separate fold state management for each panel (with persistence)
   const [foldedEntityInstanceItems, setFoldedEntityInstanceItems] = useState<{ [k: string]: boolean }>(
@@ -671,8 +674,9 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
           instance: selectedEntityInstance
         });
 
-        const result: Domain2QueryReturnType<any> = transformer_extended_apply_wrapper(
+        const result: TransformerReturnType<any> = transformer_extended_apply_wrapper(
           "runtime", // step
+          [], // transformerPath
           "TransformerEditor", // label
           currentTransformerDefinition, // transformer
           {...currentMiroirModelEnvironment, ...contextResults}, // transformerParams
@@ -682,7 +686,8 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
 
         // Check for Domain2ElementFailed pattern
         if (result && typeof result === 'object' && 'queryFailure' in result) {
-          setTransformationError(`Transformation failed: ${safeStringify(result)}`);
+          // setTransformationError(`Transformation failed: ${safeStringify(result)}`);
+          setTransformationError(result);
           setTransformationResult(null);
         } else {
           setTransformationResult(result);
@@ -692,7 +697,12 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         log.error("Error applying transformer:", error);
-        setTransformationError(`Error: ${errorMessage}`);
+        setTransformationError({
+          queryFailure: "FailedTransformer",
+          elementType: "Transformer",
+          transformerPath: [],
+          failureMessage: errorMessage,
+        });
         setTransformationResult(null);
       }
     }, 300); // 300ms debounce

@@ -140,7 +140,7 @@ export const defaultMiroirMetaModel: MetaModel = {
 };
 
 // #################################################################################################
-export const defaultMiroirModelEnviroment: MiroirModelEnvironment = {
+export const defaultMiroirModelEnvironment: MiroirModelEnvironment = {
   miroirFundamentalJzodSchema: miroirFundamentalJzodSchema as JzodSchema,
   miroirMetaModel: defaultMiroirMetaModel,
 };

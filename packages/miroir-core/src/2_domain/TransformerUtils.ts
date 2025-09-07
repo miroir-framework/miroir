@@ -37,6 +37,7 @@ async function getTransformerExtendedApply() {
 // ################################################################################################
 export async function transformer_extended_apply_wrapper(
   step: Step,
+  transformerPath: string[],
   label: string | undefined,
   transformer: TransformerForBuild | TransformerForRuntime | ExtendedTransformerForRuntime | TransformerForBuildPlusRuntime,
   queryParams: Record<string, any>,
@@ -47,6 +48,7 @@ export async function transformer_extended_apply_wrapper(
     const transformer_extended_apply = await getTransformerExtendedApply();
     const result = transformer_extended_apply(
       step,
+      transformerPath,
       label,
       transformer,
       resolveBuildTransformersTo,
@@ -72,13 +74,11 @@ export async function transformer_extended_apply_wrapper(
         JSON.stringify(result, null, 2)
       );
       return new Domain2ElementFailed({
-        // queryFailure: "QueryNotExecutable",
         queryFailure: "FailedTransformer",
-        // queryFailure: result.queryFailure,
+        // transformerPath,
         failureOrigin: ["transformer_extended_apply"],
         innerError: result,
         queryContext: "failed to transform object attribute",
-        // queryParameters: JSON.stringify(transformer),
         queryParameters: transformer as any,
       });
     } else {
@@ -102,10 +102,9 @@ export async function transformer_extended_apply_wrapper(
       e
     );
     return new Domain2ElementFailed({
-      // queryFailure: "QueryNotExecutable",
       queryFailure: "FailedTransformer",
+      // transformerPath,
       failureOrigin: ["transformer_extended_apply"],
-      // innerError: e as any,
       innerError: serializeError(e) as any,
       queryContext: "failed to transform object attribute",
     });
