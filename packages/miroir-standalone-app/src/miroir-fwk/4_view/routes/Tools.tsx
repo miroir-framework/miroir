@@ -448,7 +448,7 @@ export const ToolsPage: React.FC<any> = (
 
   return (
     <PageContainer>
-      Tools page!
+      {/* Tools page! */}
       <div>
         {/* Transformer Editor */}
         <div style={{ margin: "20px 0" }}>

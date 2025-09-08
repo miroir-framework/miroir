@@ -113,6 +113,7 @@ const EntityInstancePanel = React.memo<{
   >;
   onNavigateNext: () => void;
   onNavigatePrevious: () => void;
+  onNavigateRandom: () => void;
 }>(
   ({
     entityInstances,
@@ -127,6 +128,7 @@ const EntityInstancePanel = React.memo<{
     setFoldedObjectAttributeOrArrayItems,
     onNavigateNext,
     onNavigatePrevious,
+    onNavigateRandom,
   }) => (
     <ThemedContainer style={{ flex: 1 }}>
       <ThemedHeaderSection style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -139,7 +141,33 @@ const EntityInstancePanel = React.memo<{
               </span>
             )}
           </ThemedTitle>
-          {entityInstances.length > 1 && (
+        </div>
+        
+        {/* Entity Selector */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <label style={{ fontSize: '14px', fontWeight: 'bold', minWidth: '60px' }}>
+            Entity:
+          </label>
+          <select
+            value={selectedEntityUuid}
+            onChange={(e) => onEntityChange(e.target.value as Uuid)}
+            style={{
+              padding: '6px 12px',
+              fontSize: '14px',
+              border: '1px solid #ccc',
+              borderRadius: '4px',
+              backgroundColor: 'white',
+              cursor: 'pointer',
+              minWidth: '200px'
+            }}
+          >
+            {availableEntities.map((entity) => (
+              <option key={entity.uuid} value={entity.uuid}>
+                {entity.name || entity.uuid}
+              </option>
+            ))}
+          </select>
+                    {entityInstances.length > 1 && (
             <div style={{ display: 'flex', gap: '8px' }}>
               <button
                 onClick={onNavigatePrevious}
@@ -175,34 +203,25 @@ const EntityInstancePanel = React.memo<{
               >
                 Next ↓
               </button>
+              <button
+                onClick={onNavigateRandom}
+                style={{
+                  padding: '4px 8px',
+                  fontSize: '14px',
+                  backgroundColor: '#f0f0f0',
+                  border: '1px solid #ccc',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '4px'
+                }}
+                title="Next instance"
+              >
+                Random 🔀
+              </button>
             </div>
           )}
-        </div>
-        
-        {/* Entity Selector */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <label style={{ fontSize: '14px', fontWeight: 'bold', minWidth: '60px' }}>
-            Entity:
-          </label>
-          <select
-            value={selectedEntityUuid}
-            onChange={(e) => onEntityChange(e.target.value as Uuid)}
-            style={{
-              padding: '6px 12px',
-              fontSize: '14px',
-              border: '1px solid #ccc',
-              borderRadius: '4px',
-              backgroundColor: 'white',
-              cursor: 'pointer',
-              minWidth: '200px'
-            }}
-          >
-            {availableEntities.map((entity) => (
-              <option key={entity.uuid} value={entity.uuid}>
-                {entity.name || entity.uuid}
-              </option>
-            ))}
-          </select>
         </div>
       </ThemedHeaderSection>
       {selectedEntityInstance ? (
@@ -323,16 +342,16 @@ const TransformationResultPanel = React.memo<{
   )
 );
 
-const DebugPanel = React.memo<{
-  currentTransformerDefinition: any;
-}>(({ currentTransformerDefinition }) => (
-  <ThemedContainer style={{ marginTop: "20px" }}>
-    <ThemedHeaderSection>
-      <ThemedTitle>Current Transformer Definition (Debug)</ThemedTitle>
-    </ThemedHeaderSection>
-    <ThemedCodeBlock>{safeStringify(currentTransformerDefinition, 2)}</ThemedCodeBlock>
-  </ThemedContainer>
-));
+// const DebugPanel = React.memo<{
+//   currentTransformerDefinition: any;
+// }>(({ currentTransformerDefinition }) => (
+//   <ThemedContainer style={{ marginTop: "20px" }}>
+//     <ThemedHeaderSection>
+//       <ThemedTitle>Current Transformer Definition (Debug)</ThemedTitle>
+//     </ThemedHeaderSection>
+//     <ThemedCodeBlock>{safeStringify(currentTransformerDefinition, 2)}</ThemedCodeBlock>
+//   </ThemedContainer>
+// ));
 
 // ################################################################################################
 /**
@@ -473,6 +492,16 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
   const navigateToPreviousInstance = useCallback(() => {
     if (entityInstances.length > 0) {
       const newIndex = (currentInstanceIndex - 1 + entityInstances.length) % entityInstances.length;
+      setCurrentInstanceIndex(newIndex);
+      // Persist to context
+      context.updateTransformerEditorState({ currentInstanceIndex: newIndex });
+    }
+  }, [entityInstances.length, currentInstanceIndex, context]);
+
+  const navigateToRandomInstance = useCallback(() => {
+    if (entityInstances.length > 0) {
+      // const newIndex = (currentInstanceIndex - 1 + entityInstances.length) % entityInstances.length;
+      const newIndex = Math.floor(Math.random() * entityInstances.length);
       setCurrentInstanceIndex(newIndex);
       // Persist to context
       context.updateTransformerEditorState({ currentInstanceIndex: newIndex });
@@ -802,6 +831,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
             setFoldedObjectAttributeOrArrayItems={setFoldedEntityInstanceItemsWithPersistence}
             onNavigateNext={navigateToNextInstance}
             onNavigatePrevious={navigateToPreviousInstance}
+            onNavigateRandom={navigateToRandomInstance}
           />
           <TransformationResultPanel
             transformationResult={transformationResult}
@@ -817,7 +847,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
 
       <TransformerEventsPanel />
 
-      <DebugPanel currentTransformerDefinition={currentTransformerDefinition} />
+      {/* <DebugPanel currentTransformerDefinition={currentTransformerDefinition} /> */}
     </ThemedContainer>
   );
 });
