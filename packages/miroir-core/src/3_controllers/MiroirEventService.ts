@@ -157,7 +157,7 @@ export interface MiroirEventServiceInterface {
 // export class MiroirEventService implements MiroirEventServiceInterface {
 export class MiroirEventService implements MiroirEventServiceInterface {
   public events: Map<string, MiroirEvent> = new Map(); // TODO: make private! should be accessed only via selectors / hooks
-  private eventEntries: Map<string, MiroirEventLog> = new Map();
+  public eventEntries: Map<string, MiroirEventLog> = new Map();
   private eventSubscribers: Set<(actionLogs: MiroirEvent[]) => void> = new Set();
   private cleanupInterval: NodeJS.Timeout;
   

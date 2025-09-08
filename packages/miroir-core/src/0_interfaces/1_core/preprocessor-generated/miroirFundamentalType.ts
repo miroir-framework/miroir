@@ -223,7 +223,7 @@ export type TransformerForBuildPlusRuntime =
   | TransformerForBuildPlusRuntime_objectEntries
   | TransformerForBuildPlusRuntime_objectValues
   | TransformerForBuildPlusRuntime_object_fullTemplate
-  // | TransformerForBuildPlusRuntime_parameterReference
+  | TransformerForBuildPlusRuntime_parameterReference
   | TransformerForBuildPlusRuntime_contextReference
   | TransformerForBuildPlusRuntime_unique
   | TransformerForBuildPlusRuntime_constantBigint
@@ -284,7 +284,7 @@ export const transformerForBuildPlusRuntime: z.ZodType<TransformerForBuildPlusRu
     transformerForBuildPlusRuntime_objectEntries,
     transformerForBuildPlusRuntime_objectValues,
     transformerForBuildPlusRuntime_object_fullTemplate,
-    // transformerForBuildPlusRuntime_parameterReference,
+    transformerForBuildPlusRuntime_parameterReference,
     transformerForBuildPlusRuntime_contextReference,
     transformerForBuildPlusRuntime_unique,
     transformerForBuildPlusRuntime_constantBigint,

@@ -235,3 +235,19 @@ export function mStringify(
 ): string {
   return doStringify?JSON.stringify(value, replacer??undefined, space??2):value;
 }
+
+// ################################################################################################
+export function cleanupObject(obj: any): any {
+  if (obj === null || typeof obj !== "object") return obj;
+  if (Array.isArray(obj)) {
+    return obj.map(item => cleanupObject(item));
+  }
+  const result: any = {};
+  for (const key of Object.keys(obj)) {
+    const value = obj[key];
+    if (value !== undefined) {
+      result[key] = cleanupObject(value);
+    }
+  }
+  return result;
+}

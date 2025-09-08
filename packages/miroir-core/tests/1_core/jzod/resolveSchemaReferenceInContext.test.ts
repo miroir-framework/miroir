@@ -1,4 +1,4 @@
-// import * as vitest from 'vitest';
+import * as vitest from 'vitest';
 // import { describe, expect, it } from "vitest";
 import {
   describe,
@@ -34,6 +34,7 @@ console.log("@@@@@@@@@@@@@@@@@@ RUN_TEST", RUN_TEST);
 const selectedTestName: string[] = [];
 
 // ################################################################################################
+// launch with: RUN_TEST=resolveSchemaReferenceInContext npm run testByFile -w miroir-core -- resolveSchemaReferenceInContext.test
 // const testSuiteName = "transformers.unit.test";
 if (RUN_TEST == transformerTestSuite_resolveSchemaReferenceInContext.definition.transformerTestLabel) {
   const testSuite: TransformerTestSuite = transformerTestSuite_resolveSchemaReferenceInContext.definition as TransformerTestSuite;
@@ -52,7 +53,8 @@ if (RUN_TEST == transformerTestSuite_resolveSchemaReferenceInContext.definition.
   const miroirEventTracker = new MiroirEventTracker();
   
   await runTransformerTestSuite(
-    { describe, expect} as any,//vitest,
+    // { describe, expect} as any,//vitest,
+    vitest,
     [],
     // transformerTestSuite_resolveSchemaReferenceInContext.definition as TransformerTestSuite,
     effectiveTests,
