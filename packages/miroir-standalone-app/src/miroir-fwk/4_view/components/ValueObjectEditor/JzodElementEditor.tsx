@@ -31,7 +31,7 @@ import {
   ThemedLineIconButton,
   ThemedSelect,
   ThemedSwitch,
-  ThemedTextField,
+  ThemedTextEditor,
   ThemedDisplayValue
 } from "../Themes/index"
 import { JzodAnyEditor } from "./JzodAnyEditor.js";
@@ -510,18 +510,32 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
 
   // Check if this element should be highlighted due to an error
   const hasPathError = useMemo(() => {
-    if (!props.valueObjectPathIssue || props.valueObjectPathIssue.length === 0) {
+    if (!props.displayError || props.displayError.errorPath.length === 0) {
       return false;
     }
     // Check if current path matches the error path
     const currentPath = props.rootLessListKeyArray || [];
-    if (currentPath.length !== props.valueObjectPathIssue.length) {
+    if (currentPath.length !== props.displayError.errorPath.length) {
       return false;
     }
     return currentPath.every((segment, index) => 
-      String(segment) === String(props.valueObjectPathIssue![index])
+      String(segment) === String(props.displayError!.errorPath[index])
     );
-  }, [props.valueObjectPathIssue, props.rootLessListKeyArray]);
+  }, [props.displayError, props.rootLessListKeyArray]);
+
+  // Enhanced label element with error tooltip for simple types
+  const enhancedLabelElement = useMemo(() => {
+    if (!props.labelElement || !hasPathError || !props.displayError) {
+      return props.labelElement ?? <></>;
+    }
+    
+    // For simple types, wrap the label with a span that has a title attribute
+    return (
+      <span title={props.displayError.errorMessage}>
+        {props.labelElement}
+      </span>
+    );
+  }, [props.labelElement, hasPathError, props.displayError]);
 
   // Get appropriate background and border colors for nested containers
   // This creates a Prettier-like visual effect where nested structures have alternating shades
@@ -541,8 +555,8 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
     count,
     "Rendering JzodElementEditor for rootLessListKeyArray",
     JSON.stringify(props.rootLessListKeyArray),
-    "valueObjectPathIssue",
-    JSON.stringify(props.valueObjectPathIssue),
+    "displayError",
+    JSON.stringify(props.displayError),
     "hasPathError",
     hasPathError,
     "borderColor", borderColor,
@@ -615,7 +629,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               typeCheckKeyMap={ props.typeCheckKeyMap }
               foreignKeyObjects={props.foreignKeyObjects}
               readOnly={props.readOnly}
-              valueObjectPathIssue={props.valueObjectPathIssue}
+              displayError={props.displayError}
             />
         );
       }
@@ -642,7 +656,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               deleteButtonElement={props.deleteButtonElement}
               maxRenderDepth={props.maxRenderDepth}
               readOnly={props.readOnly}
-              valueObjectPathIssue={props.valueObjectPathIssue}
+              displayError={props.displayError}
             />
           );
         }
@@ -671,7 +685,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               deleteButtonElement={props.deleteButtonElement}
               maxRenderDepth={props.maxRenderDepth}
               readOnly={props.readOnly}
-              valueObjectPathIssue={props.valueObjectPathIssue}
+              displayError={props.displayError}
             />
           );
           break;
@@ -680,7 +694,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
           const fieldProps = formik.getFieldProps(props.rootLessListKey);
           return (
             <ThemedLabeledEditor
-              labelElement={props.labelElement ?? <></>}
+              labelElement={enhancedLabelElement}
               editor={
                 props.readOnly ? (
                   <ThemedDisplayValue value={currentValue} type="boolean" />
@@ -705,12 +719,12 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
         case "number": {
           return (
             <ThemedLabeledEditor
-              labelElement={props.labelElement ?? <></>}
+              labelElement={enhancedLabelElement}
               editor={
                 props.readOnly ? (
                   <ThemedDisplayValue value={currentValue} type="number" />
                 ) : (
-                  <ThemedTextField
+                  <ThemedTextEditor
                     variant="standard"
                     data-testid="miroirInput"
                     id={props.rootLessListKey}
@@ -730,12 +744,12 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
         case "bigint": {
           return (
             <ThemedLabeledEditor
-              labelElement={props.labelElement ?? <></>}
+              labelElement={enhancedLabelElement}
               editor={
                 props.readOnly ? (
                   <ThemedDisplayValue value={currentValue} type="bigint" />
                 ) : (
-                  <ThemedTextField
+                  <ThemedTextEditor
                     variant="standard"
                     data-testid="miroirInput"
                     id={props.rootLessListKey}
@@ -760,12 +774,12 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
         case "string": {
           return (
             <ThemedLabeledEditor
-              labelElement={props.labelElement ?? <></>}
+              labelElement={enhancedLabelElement}
               editor={
                 props.readOnly ? (
                   <ThemedDisplayValue value={currentValue} type="string" />
                 ) : (
-                  <ThemedTextField
+                  <ThemedTextEditor
                     variant="standard"
                     data-testid="miroirInput"
                     id={props.rootLessListKey}
@@ -799,7 +813,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
 
             return (
               <ThemedLabeledEditor
-                labelElement={props.labelElement ?? <></>}
+                labelElement={enhancedLabelElement}
                 editor={
                   props.readOnly ? (
                     <ThemedDisplayValue value={currentValue} type="uuid" />
@@ -833,12 +847,12 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               
               return (
                 <ThemedLabeledEditor
-                  labelElement={props.labelElement ?? <></>}
+                  labelElement={enhancedLabelElement}
                   editor={
                     props.readOnly ? (
                       <ThemedDisplayValue value={currentValue} type="uuid" />
                     ) : (
-                      <ThemedTextField
+                      <ThemedTextEditor
                         variant="standard"
                         data-testid="miroirInput"
                         id={props.rootLessListKey}
@@ -879,7 +893,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                 // localRootLessListKeyMap={props.localRootLessListKeyMap}
                 insideAny={props.insideAny}
                 readOnly={props.readOnly}
-                valueObjectPathIssue={props.valueObjectPathIssue}
+                displayError={props.displayError}
               />
             // </div>
           );
@@ -910,7 +924,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                 forceTestingMode={props.forceTestingMode}
                 insideAny={props.insideAny}
                 readOnly={props.readOnly}
-                valueObjectPathIssue={props.valueObjectPathIssue}
+                displayError={props.displayError}
               />
             // </div>
           );
@@ -933,7 +947,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               resolvedElementJzodSchema={localResolvedElementJzodSchemaBasedOnValue}
               typeCheckKeyMap={ props.typeCheckKeyMap }
               readOnly={props.readOnly}
-              valueObjectPathIssue={props.valueObjectPathIssue}
+              displayError={props.displayError}
             />
           );
         }
@@ -956,7 +970,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
             : "";
           return (
             <ThemedLabeledEditor
-              labelElement={props.labelElement ?? <></>}
+              labelElement={enhancedLabelElement}
               editor={
                 props.readOnly ? (
                   <ThemedDisplayValue value={currentValue} type="date" />
@@ -1058,7 +1072,8 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
     foldedObjectAttributeOrArrayItems,
     setFoldedObjectAttributeOrArrayItems,
     itemsOrder,
-    stringSelectList
+    stringSelectList,
+    enhancedLabelElement
   ]);
   // ##############################################################################################
   // ##############################################################################################
@@ -1103,6 +1118,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
           <ThemedCard
             id={props.rootLessListKey}
             key={props.rootLessListKey}
+            title={hasPathError && props.displayError ? props.displayError.errorMessage : undefined}
             style={{
               padding: "1px",
               width: "calc(100% - 10px)",

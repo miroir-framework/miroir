@@ -305,7 +305,7 @@ export const ThemedSwitch: React.FC<ThemedComponentProps & {
   );
 };
 
-export const ThemedTextField: React.FC<ThemedComponentProps & {
+export const ThemedTextEditor: React.FC<ThemedComponentProps & {
   variant?: 'outlined' | 'filled' | 'standard';
   size?: 'small' | 'medium';
   fullWidth?: boolean;

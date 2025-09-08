@@ -85,7 +85,7 @@ export {
   ThemedStyledButton,
   ThemedMenuItemOption,
   ThemedSwitch,
-  ThemedTextField,
+  ThemedTextEditor,
 } from './UIComponents';
 
 // Material-UI wrapper components

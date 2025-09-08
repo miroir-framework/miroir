@@ -536,13 +536,8 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
   const [transformationError, setTransformationError] = useState<TransformerFailure | null>(null);
   
   // Extract error path for highlighting problematic elements
-  const errorPath = useMemo(() => {
-    if (transformationError) {
-      const innermostError = getInnermostTransformerError(transformationError);
-      return innermostError?.transformerPath || [];
-    }
-    return [];
-  }, [transformationError]);
+  const innermostError = useMemo(() => transformationError?getInnermostTransformerError(transformationError):undefined, [transformationError]);
+  const errorPath = innermostError?.transformerPath || [];
   
   log.info("TransformerEditor Transformation error path:", errorPath);
   // Separate fold state management for each panel (with persistence)
@@ -786,7 +781,10 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
           foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
           setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItemsWithPersistence}
           maxRenderDepth={Infinity} // Always render fully for editor
-          valueObjectPathIssue={errorPath}
+          displayError={errorPath && errorPath.length > 0 ? {
+            errorPath: errorPath,
+            errorMessage: `${innermostError?.queryFailure}: ${innermostError?.failureMessage}` // TODO: provide more specific error message
+          } : undefined}
         />
 
         {/* Bottom Panes: Side by side */}

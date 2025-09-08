@@ -142,7 +142,10 @@ interface ProgressiveArrayItemProps {
   setFoldedObjectAttributeOrArrayItems: React.Dispatch<React.SetStateAction<{ [k: string]: boolean }>>;
   maxRenderDepth?: number;
   readOnly?: boolean;
-  valueObjectPathIssue?: string[];
+  displayError?: {
+    errorPath: string[];
+    errorMessage: string;
+  };
 }
 
 const ProgressiveArrayItem: React.FC<ProgressiveArrayItemProps> = ({
@@ -167,7 +170,7 @@ const ProgressiveArrayItem: React.FC<ProgressiveArrayItemProps> = ({
   setFoldedObjectAttributeOrArrayItems: setHiddenFormItems,
   maxRenderDepth,
   readOnly,
-  valueObjectPathIssue,
+  displayError,
 }) => {
   const isTestMode = process.env.VITE_TEST_MODE === 'true';
   // const [isRendered, setIsRendered] = useState(false);
@@ -274,7 +277,7 @@ const ProgressiveArrayItem: React.FC<ProgressiveArrayItemProps> = ({
                 insideAny={insideAny}
                 maxRenderDepth={maxRenderDepth}
                 readOnly={readOnly}
-                valueObjectPathIssue={valueObjectPathIssue}
+                displayError={displayError}
                 // parentType={parentUnfoldedRawSchema.type}
               />
             </ErrorBoundary>
@@ -313,7 +316,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
     displayAsStructuredElementSwitch,
     maxRenderDepth,
     readOnly,
-    valueObjectPathIssue,
+    displayError,
     // setItemsOrder,
   }
 ) => {
@@ -619,7 +622,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
               setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
               maxRenderDepth={maxRenderDepth}
               readOnly={readOnly}
-              valueObjectPathIssue={valueObjectPathIssue}
+              displayError={displayError}
             />
           );
         })}

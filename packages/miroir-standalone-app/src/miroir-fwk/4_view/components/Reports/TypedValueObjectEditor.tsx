@@ -148,7 +148,10 @@ interface TypedValueObjectEditorProps {
   // readonly mode
   readonly?: boolean; // Whether the editor should be readonly (no submit button, no editing)
   // error highlighting
-  valueObjectPathIssue?: string[]; // Path to element that should be highlighted with red border due to error
+  displayError?: {
+    errorPath: string[]; // Path to element that should be highlighted with red border due to error
+    errorMessage: string; // Error message to display as tooltip or title
+  };
   // navigationCount: number;
 }
 
@@ -171,7 +174,7 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
   // readonly mode
   readonly = false,
   // error highlighting
-  valueObjectPathIssue,
+  displayError,
   // 
   formLabel: pageLabel, // TODO: remove
 }) => {
@@ -439,7 +442,7 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
                     setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
                     maxRenderDepth={maxRenderDepth}
                     readOnly={true}
-                    valueObjectPathIssue={valueObjectPathIssue}
+                    displayError={displayError}
                   />
                 </ErrorBoundary>
               </div>
@@ -492,7 +495,7 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
                       foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
                       setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
                       maxRenderDepth={maxRenderDepth}
-                      valueObjectPathIssue={valueObjectPathIssue}
+                      displayError={displayError}
                       submitButton={
                         <button
                           type="submit"

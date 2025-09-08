@@ -45,7 +45,10 @@ export interface JzodEditorPropsRoot {
   hasTypeError?: boolean; // used to control if the editor has a type error or not
   readOnly?: boolean; // used to switch between editable and read-only display modes
   // error highlighting
-  valueObjectPathIssue?: string[]; // Path to element that should be highlighted with red border due to error
+  displayError?: {
+    errorPath: string[]; // Path to element that should be highlighted with red border due to error
+    errorMessage: string; // Error message to display as tooltip or title
+  };
 }
 
 // ################################################################################################
