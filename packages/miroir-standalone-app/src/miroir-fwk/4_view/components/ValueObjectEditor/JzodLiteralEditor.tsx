@@ -276,6 +276,7 @@ export const JzodLiteralEditor: FC<JzodLiteralEditorProps> =  (
     currentDeploymentUuid,
     typeCheckKeyMap,
     readOnly,
+    hasPathError,
   }
 ) => {
   JzodLiteralEditorRenderCount++;
@@ -451,6 +452,7 @@ export const JzodLiteralEditor: FC<JzodLiteralEditorProps> =  (
               placeholder={`Select ${name}...`}
               filterPlaceholder="Type to filter options..."
               minWidth="200px"
+              // error={hasPathError}
             />
             <span style={{ fontSize: '1.2em', color: '#87CEEB' }} title="Literal discriminator">★</span>
           </>

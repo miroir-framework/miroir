@@ -27,6 +27,7 @@ import {
   type EntityDefinitionEntityDefinition,
   type TransformerReturnType,
   type TransformerFailure,
+  getInnermostTransformerError,
 } from 'miroir-core';
 import { valueToJzod } from '@miroir-framework/jzod';
 
@@ -534,6 +535,16 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
   const [transformationResult, setTransformationResult] = useState<any>(null);
   const [transformationError, setTransformationError] = useState<TransformerFailure | null>(null);
   
+  // Extract error path for highlighting problematic elements
+  const errorPath = useMemo(() => {
+    if (transformationError) {
+      const innermostError = getInnermostTransformerError(transformationError);
+      return innermostError?.transformerPath || [];
+    }
+    return [];
+  }, [transformationError]);
+  
+  log.info("TransformerEditor Transformation error path:", errorPath);
   // Separate fold state management for each panel (with persistence)
   const [foldedEntityInstanceItems, setFoldedEntityInstanceItems] = useState<{ [k: string]: boolean }>(
     persistedState?.foldedEntityInstanceItems || {}
@@ -775,6 +786,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
           foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
           setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItemsWithPersistence}
           maxRenderDepth={Infinity} // Always render fully for editor
+          valueObjectPathIssue={errorPath}
         />
 
         {/* Bottom Panes: Side by side */}

@@ -1,3 +1,4 @@
+import type { A } from "vitest/dist/chunks/environment.LoooBwUu";
 import { MiroirEventTrackerInterface } from "../0_interfaces/3_controllers/MiroirEventTrackerInterface";
 import{ LoggerGlobalContext } from "../4_services/LoggerContext";
 
@@ -60,27 +61,33 @@ interface MiroirEventBase {
   logCounts: LogCounts;
 }
 
+export type ActionEvent = MiroirEventBase & {
+  trackingType: 'action';
+};
+
+export type TestEvent = MiroirEventBase & {
+  trackingType: 'testSuite' | 'test' | 'testAssertion';
+  testSuite?: string;
+  test?: string;
+  testAssertion?: string;
+  testResult?: 'ok' | 'error';
+};
+
+export type TransformerEvent = MiroirEventBase & {
+  trackingType: 'transformer';
+  transformerName?: string;
+  transformerType?: string;
+  transformerStep?: 'build' | 'runtime';
+  transformerParams?: any;
+  transformerResult?: any;
+  transformerError?: string;
+};
 // Discriminated union for aggregated events
 export type MiroirEvent =
-  | (MiroirEventBase & {
-      trackingType: 'action';
-    })
-  | (MiroirEventBase & {
-      trackingType: 'testSuite' | 'test' | 'testAssertion';
-      testSuite?: string;
-      test?: string;
-      testAssertion?: string;
-      testResult?: 'ok' | 'error';
-    })
-  | (MiroirEventBase & {
-      trackingType: 'transformer';
-      transformerName?: string;
-      transformerType?: string;
-      transformerStep?: 'build' | 'runtime';
-      transformerParams?: any;
-      transformerResult?: any;
-      transformerError?: string;
-    });
+  | ActionEvent
+  | TestEvent
+  | TransformerEvent
+;
 
 // Filter criteria for action and test logs
 export interface EventFilter {

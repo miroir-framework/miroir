@@ -744,7 +744,7 @@ function resolveApplyTo<T extends MiroirModelEnvironment>(
     
       const resolvedReference = defaultTransformers.transformer_extended_apply(
         step,
-        [...transformerPath, transformer.transformerType],
+        [...transformerPath, "applyTo"],
         label,
         transformer.applyTo,
         resolveBuildTransformersTo,
@@ -772,7 +772,7 @@ function resolveApplyTo<T extends MiroirModelEnvironment>(
       // throw new Error("resolveApplyTo_legacy failed, unknown type for transformer.applyTo=" + transformer.applyTo);
       return new TransformerFailure({
         queryFailure: "FailedTransformer",
-        transformerPath: [...transformerPath, transformer.transformerType],
+        transformerPath: [...transformerPath, "applyTo"],
         failureOrigin: ["resolveApplyTo"],
         failureMessage: "resolveApplyTo failed, unknown type for transformer.applyTo=" + transformer.applyTo,
         queryContext: JSON.stringify(transformer),
@@ -877,7 +877,7 @@ export function resolveApplyTo_legacy<T extends MiroirModelEnvironment>(
     
       const resolvedReference = defaultTransformers.transformer_extended_apply(
         step,
-        transformerPath,
+        [...transformerPath, "applyTo"],
         label,
         transformer.applyTo,
         resolveBuildTransformersTo,
@@ -904,7 +904,7 @@ export function resolveApplyTo_legacy<T extends MiroirModelEnvironment>(
       // throw new Error("resolveApplyTo_legacy failed, unknown type for transformer.applyTo=" + transformer.applyTo);
       return new TransformerFailure({
         queryFailure: "FailedTransformer",
-        transformerPath: [...transformerPath, transformer.transformerType],
+        transformerPath: [...transformerPath, "applyTo"],
         failureOrigin: ["resolveApplyTo_legacy"],
         failureMessage: "resolveApplyTo failed, unknown type for transformer.applyTo=" + transformer.applyTo,
         queryContext: JSON.stringify(transformer),
@@ -934,7 +934,7 @@ function transformerForBuild_list_listMapperToList_apply<T extends MiroirModelEn
     );
     return new TransformerFailure({
       queryFailure: "FailedTransformer",
-      transformerPath: [...transformerPath, transformer.transformerType],
+      transformerPath, //: [...transformerPath, transformer.transformerType],
       failureOrigin: ["transformerForBuild_list_listMapperToList_apply"],
       queryContext:
         "transformerForBuild_list_listMapperToList_apply can not apply to failed resolvedReference",
@@ -989,7 +989,7 @@ function transformerForBuild_list_listMapperToList_apply<T extends MiroirModelEn
       log.error("transformerForBuild_list_listMapperToList_apply extractorTransformer can not work on resolvedReference", resolvedApplyTo);
       return new TransformerFailure({
         queryFailure: "FailedTransformer",
-        transformerPath: [...transformerPath, transformer.transformerType],
+        transformerPath, //: [...transformerPath, transformer.transformerType],
         failureOrigin: ["transformerForBuild_list_listMapperToList_apply"],
         failureMessage:
           "resolved reference is not instanceUuidIndex or object " + JSON.stringify(resolvedApplyTo, null, 2),
@@ -1045,7 +1045,7 @@ function transformer_object_listReducerToSpreadObject_apply<T extends MiroirMode
     );
     return new TransformerFailure({
       queryFailure: "FailedTransformer",
-      transformerPath: [...transformerPath, transformer.transformerType],
+      transformerPath, //: [...transformerPath, transformer.transformerType],
       failureOrigin: ["transformer_object_listReducerToSpreadObject_apply"],
       queryContext: "transformer_object_listReducerToSpreadObject_apply can not apply to failed resolvedReference",
       innerError: resolvedReference,
@@ -1061,7 +1061,7 @@ function transformer_object_listReducerToSpreadObject_apply<T extends MiroirMode
     );
     return new TransformerFailure({
       queryFailure: "FailedTransformer",
-      transformerPath: [...transformerPath, transformer.transformerType],
+      transformerPath, //: [...transformerPath, transformer.transformerType],
       failureOrigin: ["transformer_object_listReducerToSpreadObject_apply"],
       queryContext: "transformer_object_listReducerToSpreadObject_apply can not apply to resolvedReference of wrong type",
       queryParameters: resolvedReference,
@@ -1163,7 +1163,7 @@ function handleTransformer_object_fullTemplate<T extends MiroirModelEnvironment>
     );
     return new TransformerFailure({
       queryFailure: "FailedTransformer",
-      transformerPath: [...transformerPath, transformer.transformerType],
+      transformerPath, //: [...transformerPath, transformer.transformerType],
       failureOrigin: ["transformer_object_fullTemplate"],
       queryContext: "transformer_object_fullTemplate can not apply to failed resolvedApplyTo",
       innerError: resolvedApplyTo
@@ -1262,7 +1262,7 @@ function handleTransformer_object_fullTemplate<T extends MiroirModelEnvironment>
   } else {
     return new TransformerFailure({
       queryFailure: "ReferenceNotFound",
-      transformerPath: [...transformerPath, transformer.transformerType],
+      transformerPath, //: [...transformerPath, transformer.transformerType],
       failureOrigin: ["transformer_object_fullTemplate"],
       queryContext: "FullObjectTemplate error in " +
         objectName,
@@ -1379,7 +1379,6 @@ export function transformer_resolveReference(
       queryFailure: "ReferenceNotFound",
       transformerPath: [
         ...transformerPath,
-        transformerInnerReference.transformerType,
         usedReference,
       ],
       failureOrigin: ["transformer_resolveReference"],
@@ -1406,7 +1405,7 @@ export function transformer_resolveReference(
       // );
       return new TransformerFailure({
         queryFailure: "ReferenceNotFound",
-        transformerPath: [...transformerPath, transformerInnerReference.transformerType, usedReference],
+        transformerPath: [...transformerPath, usedReference],
         failureOrigin: ["transformer_resolveReference"],
         queryReference: transformerInnerReference.referenceName,
         failureMessage: "no referenceName " + transformerInnerReference.referenceName,
@@ -1448,7 +1447,7 @@ export function transformer_resolveReference(
       );
       return new TransformerFailure({
         queryFailure: "FailedTransformer_contextReference",
-        transformerPath: [...transformerPath, transformerInnerReference.transformerType, usedReference],
+        transformerPath: [...transformerPath, usedReference],
         failureOrigin: ["transformer_resolveReference"],
         queryReference: JSON.stringify(transformerInnerReference.referencePath),
         failureMessage:
@@ -1639,7 +1638,7 @@ export function transformer_mustacheStringTemplate_apply(
     // );
     return new TransformerFailure({
       queryFailure: "FailedTransformer_mustache",
-      transformerPath: [...transformerPath, transformer.transformerType],
+      transformerPath, //: [...transformerPath, transformer.transformerType],
       failureOrigin: ["transformer_mustacheStringTemplate_apply"],
       // queryReference: transformer,
       query: transformer as any,
@@ -1666,7 +1665,7 @@ export function transformer_dynamicObjectAccess_apply<T extends MiroirModelEnvir
           if (!acc) {
             return new TransformerFailure({
               queryFailure: "FailedTransformer_dynamicObjectAccess",
-              transformerPath: [...transformerPath, transformer.transformerType],
+              transformerPath, //: [...transformerPath, transformer.transformerType],
               failureOrigin: ["transformer_dynamicObjectAccess_apply"],
               query: currentPathElement,
               queryContext: "error in transformer_dynamicObjectAccess_apply, could not find key: " + JSON.stringify(currentPathElement, null, 2),
@@ -1692,7 +1691,7 @@ export function transformer_dynamicObjectAccess_apply<T extends MiroirModelEnvir
             // throw new Error("transformer_dynamicObjectAccess_apply can not handle arrays");
             return new TransformerFailure({
               queryFailure: "FailedTransformer_dynamicObjectAccess",
-              transformerPath: [...transformerPath, transformer.transformerType],
+              transformerPath, //: [...transformerPath, transformer.transformerType],
               failureOrigin: ["transformer_dynamicObjectAccess_apply"],
               query: transformer as any,
               queryContext: "error in transformer_dynamicObjectAccess_apply, could not find key: " + JSON.stringify(currentPathElement, null, 2),
@@ -1702,7 +1701,7 @@ export function transformer_dynamicObjectAccess_apply<T extends MiroirModelEnvir
             // throw new Error("transformer_dynamicObjectAccess_apply can not handle objects without transformerType");
             return new TransformerFailure({
               queryFailure: "FailedTransformer_dynamicObjectAccess",
-              transformerPath: [...transformerPath, transformer.transformerType],
+              transformerPath, //: [...transformerPath, transformer.transformerType],
               failureOrigin: ["transformer_dynamicObjectAccess_apply"],
               query: transformer as any,
               queryContext: "error in transformer_dynamicObjectAccess_apply, could not find attribute transformerType in: " + JSON.stringify(currentPathElement, null, 2),
@@ -1720,7 +1719,7 @@ export function transformer_dynamicObjectAccess_apply<T extends MiroirModelEnvir
           if (key instanceof TransformerFailure) {
             return new TransformerFailure({
               queryFailure: "FailedTransformer_dynamicObjectAccess",
-              transformerPath: [...transformerPath, transformer.transformerType],
+              transformerPath, //: [...transformerPath, transformer.transformerType],
               failureOrigin: ["transformer_dynamicObjectAccess_apply"],
               query: currentPathElement,
               queryContext:
@@ -1751,7 +1750,7 @@ export function transformer_dynamicObjectAccess_apply<T extends MiroirModelEnvir
           // throw new Error("transformer_dynamicObjectAccess_apply can not handle " + typeof currentPathElement);
           return new TransformerFailure({
             queryFailure: "FailedTransformer_dynamicObjectAccess",
-      transformerPath: [...transformerPath, transformer.transformerType],
+      transformerPath, //: [...transformerPath, transformer.transformerType],
             failureOrigin: ["transformer_dynamicObjectAccess_apply"],
             query: transformer as any,
             queryContext: "error in transformer_dynamicObjectAccess_apply, could not find key: " + JSON.stringify(currentPathElement, null, 2),
@@ -1782,7 +1781,7 @@ export function handleCountTransformer<T extends MiroirModelEnvironment>(
   const resolvedReference = resolveApplyTo_legacy(
     transformer,
     step,
-    [...transformerPath, "applyTo"],
+    transformerPath,
     resolveBuildTransformersTo,
     transformerParams,
     contextResults,
@@ -1799,7 +1798,7 @@ export function handleCountTransformer<T extends MiroirModelEnvironment>(
     );
     return new TransformerFailure({
       queryFailure: "FailedTransformer",
-      transformerPath: [...transformerPath, transformer.transformerType],
+      transformerPath, //: [...transformerPath, transformer.transformerType],
       failureOrigin: ["handleCountTransformer"],
       queryContext: "count can not apply to failed resolvedReference",
       innerError: resolvedReference,
@@ -1814,7 +1813,7 @@ export function handleCountTransformer<T extends MiroirModelEnvironment>(
     );
     return new TransformerFailure({
       queryFailure: "FailedTransformer",
-      transformerPath: [...transformerPath, transformer.transformerType],
+      transformerPath, //: [...transformerPath, transformer.transformerType],
       failureOrigin: ["handleCountTransformer"],
       queryContext:
         "count can not apply to resolvedReference of wrong type: " + typeof resolvedReference,
@@ -1891,7 +1890,7 @@ export function handleUniqueTransformer<T extends MiroirModelEnvironment>(
     );
     return new TransformerFailure({
       queryFailure: "FailedTransformer",
-      transformerPath: [...transformerPath, transformer.transformerType],
+      transformerPath, //: [...transformerPath, transformer.transformerType],
       failureOrigin: ["handleUniqueTransformer"],
       queryContext: "unique can not apply to resolvedReference",
       innerError: resolvedReference,
@@ -1905,7 +1904,7 @@ export function handleUniqueTransformer<T extends MiroirModelEnvironment>(
     );
     return new TransformerFailure({
       queryFailure: "FailedTransformer",
-      transformerPath: [...transformerPath, transformer.transformerType],
+      transformerPath, //: [...transformerPath, transformer.transformerType],
       failureOrigin: ["handleUniqueTransformer"],
       queryContext:
         "unique can not apply to resolvedReference, wrong type: " + typeof resolvedReference,
@@ -1966,7 +1965,7 @@ export function handleListPickElementTransformer<T extends MiroirModelEnvironmen
     );
     return new TransformerFailure({
       queryFailure: "FailedTransformer",
-      transformerPath: [...transformerPath, transformer.transformerType],
+      transformerPath, //: [...transformerPath, transformer.transformerType],
       failureOrigin: ["innerTransformer_apply"],
       queryContext: "listPickElement can not apply to resolvedReference",
       innerError: resolvedReference,
@@ -1980,7 +1979,7 @@ export function handleListPickElementTransformer<T extends MiroirModelEnvironmen
     );
     return new TransformerFailure({
       queryFailure: "FailedTransformer",
-      transformerPath: [...transformerPath, transformer.transformerType],
+      transformerPath, //: [...transformerPath, transformer.transformerType],
       failureOrigin: ["innerTransformer_apply"],
       queryContext:
         "listPickElement can not apply to resolvedReference, wrong type: " +
@@ -2071,7 +2070,7 @@ export function handleTransformer_FreeObjectTemplate<T extends MiroirModelEnviro
     log.error("handleTransformer_FreeObjectTemplate freeObjectTemplate hasFailures", hasFailures);
     return new TransformerFailure({
       queryFailure: "FailedTransformer",
-      transformerPath: [...transformerPath, transformer.transformerType],
+      transformerPath, //: [...transformerPath, transformer.transformerType],
       failureOrigin: ["handleTransformer_FreeObjectTemplate"],
       queryContext: "freeObjectTemplate hasFailures",
       innerError: hasFailures,
@@ -2104,7 +2103,7 @@ export function handleTransformer_objectEntries<T extends MiroirModelEnvironment
   const resolvedReference = resolveApplyTo_legacy(
     transformer,
     step,
-    [...transformerPath, transformer.transformerType],
+    transformerPath,
     resolveBuildTransformersTo,
     transformerParams,
     contextResults,
@@ -2119,7 +2118,7 @@ export function handleTransformer_objectEntries<T extends MiroirModelEnvironment
     );
     return new TransformerFailure({
       queryFailure: "FailedTransformer",
-      transformerPath: [...transformerPath, transformer.transformerType],
+      transformerPath, //: [...transformerPath, transformer.transformerType],
       failureOrigin: ["handleTransformer_objectEntries"],
       queryContext: "handleTransformer_objectEntries can not apply to resolvedReference",
       innerError: resolvedReference,
@@ -2129,7 +2128,7 @@ export function handleTransformer_objectEntries<T extends MiroirModelEnvironment
   if (!(typeof resolvedReference == "object") || Array.isArray(resolvedReference)) {
     const failure: TransformerFailure = new TransformerFailure({
       queryFailure: "FailedTransformer_objectEntries",
-      transformerPath: [...transformerPath, transformer.transformerType],
+      transformerPath, //: [...transformerPath, transformer.transformerType],
       failureMessage:
         "handleTransformer_objectEntries called on something that is not an object: " +
         typeof resolvedReference,
@@ -2165,7 +2164,7 @@ export function handleTransformer_objectValues<T extends MiroirModelEnvironment>
   const resolvedReference = resolveApplyTo_legacy(
     transformer,
     step,
-    [...transformerPath, "applyTo"],
+    transformerPath,
     resolveBuildTransformersTo,
     transformerParams,
     contextResults,
@@ -2178,7 +2177,7 @@ export function handleTransformer_objectValues<T extends MiroirModelEnvironment>
     );
     return new TransformerFailure({
       queryFailure: "FailedTransformer",
-      transformerPath: [...transformerPath, transformer.transformerType],
+      transformerPath, //: [...transformerPath, transformer.transformerType],
       failureOrigin: ["handleTransformer_objectValues"],
       queryContext: "handleTransformer_objectValues failed ro resolve resolvedReference",
       innerError: resolvedReference,
@@ -2192,7 +2191,7 @@ export function handleTransformer_objectValues<T extends MiroirModelEnvironment>
     );
     return new TransformerFailure({
       queryFailure: "FailedTransformer",
-      transformerPath: [...transformerPath, transformer.transformerType],
+      transformerPath, //: [...transformerPath, transformer.transformerType],
       failureOrigin: ["handleTransformer_objectValues"],
       queryContext:
         "handleTransformer_objectValues resolvedReference is not an object: " + typeof resolvedReference,
@@ -2305,7 +2304,7 @@ export function handleTransformer_constant(
     case "function": {
       return new TransformerFailure({
         queryFailure: "FailedTransformer_constant",
-      transformerPath: [...transformerPath, transformer.transformerType],
+      transformerPath, //: [...transformerPath, transformer.transformerType],
         failureOrigin: ["handleTransformer_constant"],
         queryContext: "constantValue is not a string, number, bigint, boolean, or object",
       });
@@ -2314,7 +2313,7 @@ export function handleTransformer_constant(
     default: {
       return new TransformerFailure({
         queryFailure: "FailedTransformer_constant",
-      transformerPath: [...transformerPath, transformer.transformerType],
+      transformerPath, //: [...transformerPath, transformer.transformerType],
         failureOrigin: ["handleTransformer_constant"],
         queryContext: "constantValue could not be handled",
       });
@@ -2683,7 +2682,7 @@ export function transformer_extended_apply<T extends MiroirModelEnvironment>(
             );
             preResult = new TransformerFailure({
               queryFailure: "TransformerNotFound",
-      transformerPath: [...transformerPath, transformer.transformerType],
+      transformerPath, //: [...transformerPath, transformer.transformerType],
               failureOrigin: ["transformer_extended_apply"],
               queryContext: "transformer " + (transformer as any).transformerType + " not found",
               queryParameters: JSON.stringify(transformer),
@@ -2708,7 +2707,7 @@ export function transformer_extended_apply<T extends MiroirModelEnvironment>(
             );
             preResult = new TransformerFailure({
               queryFailure: "FailedTransformer",
-      transformerPath: [...transformerPath, transformer.transformerType],
+      transformerPath, //: [...transformerPath, transformer.transformerType],
               failureOrigin: ["transformer_extended_apply"],
               queryContext:
                 "transformerImplementation for transformer" +
@@ -2776,7 +2775,7 @@ export function transformer_extended_apply<T extends MiroirModelEnvironment>(
                 preResult = new TransformerFailure({
                   // queryFailure: "FailedTransformer",
                   queryFailure: "TransformerNotFound",
-      transformerPath: [...transformerPath, transformer.transformerType],
+      transformerPath, //: [...transformerPath, transformer.transformerType],
                   failureOrigin: ["transformer_extended_apply"],
                   queryContext:
                     "transformerImplementation " +
@@ -2833,7 +2832,7 @@ export function transformer_extended_apply<T extends MiroirModelEnvironment>(
                 );
                 preResult = new TransformerFailure({
                   queryFailure: "FailedTransformer",
-      transformerPath: [...transformerPath, transformer.transformerType],
+      transformerPath, //: [...transformerPath, transformer.transformerType],
                   failureOrigin: ["transformer_extended_apply"],
                   queryContext:
                     "transformer " + (transformer as any).transformerType + " not found",
@@ -2878,7 +2877,7 @@ export function transformer_extended_apply<T extends MiroirModelEnvironment>(
               return new TransformerFailure({
                 // queryFailure: "FailedTransformer",
                 queryFailure: "FailedTransformer",
-      transformerPath: [...transformerPath, transformer.transformerType],
+      transformerPath, //: [...transformerPath, transformer.transformerType],
                 failureOrigin: ["transformer_extended_apply"],
                 queryContext:
                   "transformerImplementation " +

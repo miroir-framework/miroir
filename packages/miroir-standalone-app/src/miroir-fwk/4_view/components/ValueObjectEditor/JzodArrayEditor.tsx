@@ -142,6 +142,7 @@ interface ProgressiveArrayItemProps {
   setFoldedObjectAttributeOrArrayItems: React.Dispatch<React.SetStateAction<{ [k: string]: boolean }>>;
   maxRenderDepth?: number;
   readOnly?: boolean;
+  valueObjectPathIssue?: string[];
 }
 
 const ProgressiveArrayItem: React.FC<ProgressiveArrayItemProps> = ({
@@ -166,6 +167,7 @@ const ProgressiveArrayItem: React.FC<ProgressiveArrayItemProps> = ({
   setFoldedObjectAttributeOrArrayItems: setHiddenFormItems,
   maxRenderDepth,
   readOnly,
+  valueObjectPathIssue,
 }) => {
   const isTestMode = process.env.VITE_TEST_MODE === 'true';
   // const [isRendered, setIsRendered] = useState(false);
@@ -272,6 +274,7 @@ const ProgressiveArrayItem: React.FC<ProgressiveArrayItemProps> = ({
                 insideAny={insideAny}
                 maxRenderDepth={maxRenderDepth}
                 readOnly={readOnly}
+                valueObjectPathIssue={valueObjectPathIssue}
                 // parentType={parentUnfoldedRawSchema.type}
               />
             </ErrorBoundary>
@@ -310,6 +313,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
     displayAsStructuredElementSwitch,
     maxRenderDepth,
     readOnly,
+    valueObjectPathIssue,
     // setItemsOrder,
   }
 ) => {
@@ -490,6 +494,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
       
 
       const newItem = getDefaultValueForJzodSchemaWithResolutionNonHook(
+        "build",
         newItemSchema, // TODO: not correct with runtimeTypes
         formik.values,
         rootLessListKey,
@@ -614,6 +619,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
               setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
               maxRenderDepth={maxRenderDepth}
               readOnly={readOnly}
+              valueObjectPathIssue={valueObjectPathIssue}
             />
           );
         })}

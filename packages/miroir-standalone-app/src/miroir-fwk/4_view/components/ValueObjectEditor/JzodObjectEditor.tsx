@@ -168,6 +168,7 @@ const ProgressiveAttribute: FC<{
   measuredUnfoldJzodSchemaOnce: any;
   foldedObjectAttributeOrArrayItems: { [k: string]: boolean };
   setFoldedObjectAttributeOrArrayItems: React.Dispatch<React.SetStateAction<{ [k: string]: boolean }>>;
+  valueObjectPathIssue?: string[];
 }> = ({
   attribute,
   attributeNumber,
@@ -190,6 +191,7 @@ const ProgressiveAttribute: FC<{
   measuredUnfoldJzodSchemaOnce,
   foldedObjectAttributeOrArrayItems,
   setFoldedObjectAttributeOrArrayItems,
+  valueObjectPathIssue,
 }) => {
   const isTestMode = process.env.VITE_TEST_MODE === 'true';
   const [isRendered, setIsRendered] = useState(isTestMode);
@@ -305,6 +307,7 @@ const ProgressiveAttribute: FC<{
             optional={definedOptionalAttributes.has(attribute[0])}
             maxRenderDepth={props.maxRenderDepth}
             readOnly={props.readOnly}
+            valueObjectPathIssue={props.valueObjectPathIssue}
             // parentType={currentKeyMap?.rawSchema?.type}
             deleteButtonElement={
               !props.readOnly ? (
@@ -361,6 +364,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
     deleteButtonElement,
     foldedObjectAttributeOrArrayItems,
     setFoldedObjectAttributeOrArrayItems,
+    valueObjectPathIssue,
   } = props;
 
   // count++;
@@ -794,6 +798,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
             measuredUnfoldJzodSchemaOnce={measuredUnfoldJzodSchemaOnce}
             foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
             setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
+            valueObjectPathIssue={props.valueObjectPathIssue}
           />
         ))}
     </>

@@ -44,6 +44,8 @@ export interface JzodEditorPropsRoot {
   deleteButtonElement?: JSX.Element; // used to display a delete button in the editor
   hasTypeError?: boolean; // used to control if the editor has a type error or not
   readOnly?: boolean; // used to switch between editable and read-only display modes
+  // error highlighting
+  valueObjectPathIssue?: string[]; // Path to element that should be highlighted with red border due to error
 }
 
 // ################################################################################################
@@ -88,6 +90,7 @@ export interface JzodEnumEditorProps extends JzodEditorPropsRoot {
 
 // #################################################################################################
 export interface JzodLiteralEditorProps extends JzodEditorPropsRoot {
+  hasPathError?: boolean;
 }
 
 // #################################################################################################

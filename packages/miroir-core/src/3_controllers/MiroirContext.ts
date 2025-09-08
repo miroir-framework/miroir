@@ -6,13 +6,13 @@ import { ConsoleInterceptor } from "../4_services/ConsoleInterceptor";
 import { TransformerGlobalContext } from "../4_services/TransformerContext";
 import { MiroirEventService, MiroirEventServiceInterface } from "./MiroirEventService";
 import { MiroirEventTracker } from "./MiroirEventTracker";
-import { TransformerEventService } from "./TransformerEventService";
+// import { TransformerEventService } from "./TransformerEventService";
 
 
 export class MiroirContext implements MiroirContextInterface {
   public miroirEventTracker: MiroirEventTrackerInterface;
   public miroirEventService: MiroirEventService;
-  public transformerEventService: TransformerEventServiceInterface;
+  // public transformerEventService: TransformerEventServiceInterface;
   public logInterceptor: ConsoleInterceptor;
 
   constructor(public miroirConfig?: MiroirConfigClient | MiroirConfigServer | undefined) {
@@ -26,7 +26,7 @@ export class MiroirContext implements MiroirContextInterface {
     this.miroirEventService = new MiroirEventService(this.miroirEventTracker);
     
     // Create TransformerEventService
-    this.transformerEventService = new TransformerEventService(this.miroirEventService, this.miroirEventTracker);
+    // this.transformerEventService = new TransformerEventService(this.miroirEventService, this.miroirEventTracker);
     
     // Create unified log interceptor for action tracking only
     this.logInterceptor = new ConsoleInterceptor({

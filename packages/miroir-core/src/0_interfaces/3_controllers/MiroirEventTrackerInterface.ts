@@ -8,7 +8,7 @@ import type { Domain2QueryReturnType } from "../2_domain/DomainElement";
 // Import other interface elements only
 
 // Base interface for common tracking fields
-interface MiroirEventTrackingDataBase {
+interface MiroirEventTrackingDataRoot {
   id: string;
   parentId?: string;
   actionType: string;
@@ -24,10 +24,10 @@ interface MiroirEventTrackingDataBase {
 
 // Discriminated union for event tracking data
 export type MiroirEventTrackingData =
-  | (MiroirEventTrackingDataBase & {
+  | (MiroirEventTrackingDataRoot & {
       trackingType: 'action';
     })
-  | (MiroirEventTrackingDataBase & {
+  | (MiroirEventTrackingDataRoot & {
       trackingType: 'testSuite' | 'test' | 'testAssertion';
       testSuite?: string;
       test?: string;
@@ -35,7 +35,7 @@ export type MiroirEventTrackingData =
       testResult?: 'ok' | 'error';
       testAssertionsResults?: TestAssertionsResults;
     })
-  | (MiroirEventTrackingDataBase & {
+  | (MiroirEventTrackingDataRoot & {
       trackingType: 'transformer';
       transformerName?: string;
       transformerType?: string;

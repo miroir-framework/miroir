@@ -508,12 +508,47 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
            elementType === "tuple";
   }, [localResolvedElementJzodSchemaBasedOnValue?.type]);
 
+  // Check if this element should be highlighted due to an error
+  const hasPathError = useMemo(() => {
+    if (!props.valueObjectPathIssue || props.valueObjectPathIssue.length === 0) {
+      return false;
+    }
+    // Check if current path matches the error path
+    const currentPath = props.rootLessListKeyArray || [];
+    if (currentPath.length !== props.valueObjectPathIssue.length) {
+      return false;
+    }
+    return currentPath.every((segment, index) => 
+      String(segment) === String(props.valueObjectPathIssue![index])
+    );
+  }, [props.valueObjectPathIssue, props.rootLessListKeyArray]);
+
   // Get appropriate background and border colors for nested containers
   // This creates a Prettier-like visual effect where nested structures have alternating shades
   // The colors cycle through 3 levels: A -> B -> C -> A -> B -> C...
+  // Override with error colors if this element has a path error
   const backgroundColor = useMiroirNestingColor(isNestableType ? props.indentLevel || 0 : 0);
-  const borderColor = useMiroirNestingBorderColor(props.indentLevel || 0);
-  const leftBorderColor = useMiroirNestingBorderColor((props.indentLevel || 0) + 1);
+  const normalBorderColor = useMiroirNestingBorderColor(props.indentLevel || 0);
+  const normalLeftBorderColor = useMiroirNestingBorderColor((props.indentLevel || 0) + 1);
+  
+  // Use error colors if this element has a path error
+  const errorBorderColor = "#f44336"; // Red color from theme for errors
+  const borderColor = hasPathError ? errorBorderColor : normalBorderColor;
+  const leftBorderColor = hasPathError ? errorBorderColor : normalLeftBorderColor;
+
+    log.info(
+    "JzodElementEditor",
+    count,
+    "Rendering JzodElementEditor for rootLessListKeyArray",
+    JSON.stringify(props.rootLessListKeyArray),
+    "valueObjectPathIssue",
+    JSON.stringify(props.valueObjectPathIssue),
+    "hasPathError",
+    hasPathError,
+    "borderColor", borderColor,
+    "leftBorderColor",
+    leftBorderColor,
+  );
 
 
   // Create the main element based on the schema type
@@ -580,6 +615,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               typeCheckKeyMap={ props.typeCheckKeyMap }
               foreignKeyObjects={props.foreignKeyObjects}
               readOnly={props.readOnly}
+              valueObjectPathIssue={props.valueObjectPathIssue}
             />
         );
       }
@@ -606,6 +642,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               deleteButtonElement={props.deleteButtonElement}
               maxRenderDepth={props.maxRenderDepth}
               readOnly={props.readOnly}
+              valueObjectPathIssue={props.valueObjectPathIssue}
             />
           );
         }
@@ -634,6 +671,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               deleteButtonElement={props.deleteButtonElement}
               maxRenderDepth={props.maxRenderDepth}
               readOnly={props.readOnly}
+              valueObjectPathIssue={props.valueObjectPathIssue}
             />
           );
           break;
@@ -657,6 +695,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                       formik.setFieldValue(props.rootLessListKey, e.target.checked);
                     }}
+                    // error={hasPathError}
                   />
                 )
               }
@@ -681,6 +720,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                     fullWidth={true}
                     {...formik.getFieldProps(props.rootLessListKey)}
                     name={props.rootLessListKey}
+                    error={hasPathError}
                   />
                 )
               }
@@ -710,6 +750,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                       formik.setFieldValue(props.rootLessListKey, value ? BigInt(value) : BigInt(0));
                     }}
                     name={props.rootLessListKey}
+                    error={hasPathError}
                   />
                 )
               }
@@ -731,6 +772,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                     key={props.rootLessListKey}
                     {...formik.getFieldProps(props.rootLessListKey)}
                     name={props.rootLessListKey}
+                    error={hasPathError}
                   />
                 )
               }
@@ -779,6 +821,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                         formik.setFieldValue(props.rootLessListKey, e.target.value);
                       }}
                       name={props.rootLessListKey}
+                      // error={hasPathError}
                     />
                   )
                 }
@@ -810,6 +853,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                         }}
                         {...formik.getFieldProps(props.rootLessListKey)}
                         name={props.rootLessListKey}
+                        error={hasPathError}
                       />
                     )
                   }
@@ -835,6 +879,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                 // localRootLessListKeyMap={props.localRootLessListKeyMap}
                 insideAny={props.insideAny}
                 readOnly={props.readOnly}
+                valueObjectPathIssue={props.valueObjectPathIssue}
               />
             // </div>
           );
@@ -865,6 +910,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                 forceTestingMode={props.forceTestingMode}
                 insideAny={props.insideAny}
                 readOnly={props.readOnly}
+                valueObjectPathIssue={props.valueObjectPathIssue}
               />
             // </div>
           );
@@ -887,6 +933,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               resolvedElementJzodSchema={localResolvedElementJzodSchemaBasedOnValue}
               typeCheckKeyMap={ props.typeCheckKeyMap }
               readOnly={props.readOnly}
+              valueObjectPathIssue={props.valueObjectPathIssue}
             />
           );
         }

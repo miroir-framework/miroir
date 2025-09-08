@@ -2,11 +2,10 @@ import {
   getInnermostTransformerError,
   LoggerInterface,
   MiroirLoggerFactory,
-  TransformerEntry,
-  TransformerEvent,
-  TransformerEventFilter,
   type EventFilter,
   type MiroirEvent,
+  type MiroirEventLog,
+  type TransformerEvent,
   type TransformerFailure
 } from 'miroir-core';
 import React, { useMemo, useState } from 'react';
@@ -34,7 +33,7 @@ export interface TransformerEventsPanelProps {
    * Optional filter for which transformer events to display
    * If not provided, shows all transformer events
    */
-  transformerFilter?: TransformerEventFilter;
+  transformerFilter?: EventFilter;
 }
 
 // ################################################################################################
@@ -50,7 +49,7 @@ const TransformerEventEntry: React.FC<{
 }> = React.memo(({ event, depth }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   
-  const hasDetails = event.transformerParams || event.transformerResult || event.transformerError || event.logs?.length > 0;
+  const hasDetails = event.transformerParams || event.transformerResult || event.transformerError || event.eventLogs?.length > 0;
   
   const statusColor = event.status === 'error' ? '#ff6b6b' : 
                      event.status === 'completed' ? '#51cf66' : '#ffd43b';
@@ -66,7 +65,7 @@ const TransformerEventEntry: React.FC<{
   // const preciseError: Domain2ElementFailed | undefined = useMemo(() => {
   const preciseError: TransformerFailure | undefined = useMemo(() => {
     if (event.transformerError) {
-      return getInnermostTransformerError(event.transformerResult as any);
+      return getInnermostTransformerError(event.transformerError as any);
     }
   }, [event.transformerError]);
 
@@ -116,11 +115,12 @@ const TransformerEventEntry: React.FC<{
           )}
           
           {/* LOGS */}
-          {event.logs && event.logs.length > 0 && (
+          {event.eventLogs && event.eventLogs.length > 0 && (
             <div>
-              <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>Logs ({event.logs.length}):</div>
+              <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>Logs ({event.eventLogs.length}):</div>
               <div style={{ maxHeight: '200px', overflowY: 'auto' }}>
-                {event.logs.map((logEntry: TransformerEntry, index: number) => (
+                {/* {event.eventLogs.map((logEntry: TransformerEntry, index: number) => ( */}
+                {event.eventLogs.map((logEntry: MiroirEventLog, index: number) => (
                   <div key={index} style={{ 
                     padding: '4px 8px', 
                     marginBottom: '2px',
@@ -159,7 +159,7 @@ const TransformerEventEntry: React.FC<{
       )}
       
       {/* Render child events */}
-      {event.children && event.children.length > 0 && (
+      {/* {event.children && event.children.length > 0 && (
         <div style={{ marginTop: '8px' }}>
           {event.children.map((childId: string) => (
             <div key={childId} style={{ marginLeft: '20px', opacity: 0.8 }}>
@@ -169,7 +169,7 @@ const TransformerEventEntry: React.FC<{
             </div>
           ))}
         </div>
-      )}
+      )} */}
     </div>
   );
 });
@@ -193,7 +193,7 @@ export const TransformerEventsPanel: React.FC<TransformerEventsPanelProps> = ({
       .sort((a, b) => (b.startTime || 0) - (a.startTime || 0));
   }, [allEvents]);
 
-  if (!miroirContext.transformerEventService) {
+  if (!miroirContext.miroirEventService) {
     return (
       <ThemedContainer style={{ marginTop: '16px' }}>
         <ThemedHeaderSection>
