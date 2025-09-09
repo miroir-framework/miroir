@@ -841,16 +841,6 @@ export function jzodTypeCheck(
           }, // map the current value path to the resolved schema
         },
       };
-        // : {
-        //     status: "error",
-        //     error: typeCheck.error,
-        //     rawJzodSchemaType: effectiveSchema.type,
-        //     valuePath: currentValuePath,
-        //     typePath: currentTypePath,
-        //     innerError: typeCheck,
-        //     value: valueObject,
-        //     rawSchema: effectiveSchema,
-        //   };
       break;
     }
     case "object": {
@@ -869,9 +859,6 @@ export function jzodTypeCheck(
       const jzodObjectFlattenedSchema: JzodObject = jzodObjectFlatten(
         effectiveRawSchema,
         modelEnvironment,
-        // miroirFundamentalJzodSchema,
-        // currentModel,
-        // miroirMetaModel,
         relativeReferenceJzodContext
       );
       // log.info("jzodTypeCheck object extendedJzodSchema",JSON.stringify(extendedJzodSchema, null, 2));
@@ -887,13 +874,9 @@ export function jzodTypeCheck(
             [...currentValuePath, e[0]],
             [...currentTypePath, e[0]],
             modelEnvironment,
-            // miroirFundamentalJzodSchema,
-            // currentModel,
-            // miroirMetaModel,
             relativeReferenceJzodContext,
             currentDefaultValue,
             reduxDeploymentsState,
-            // getEntityInstancesUuidIndex,
             deploymentUuid,
             rootObject
           );
@@ -1294,12 +1277,15 @@ export function jzodTypeCheck(
           //   "validates",
           //   JSON.stringify(valueObject, null, 2)
           // );
-          const objectUniondiscriminatorValues = effectiveRawSchema.discriminator?getObjectUniondiscriminatorValuesFromResolvedSchema(
-            subResolvedSchemas.resolvedSchema,
-            effectiveRawSchema,
-            recursivelyUnfoldedUnionSchema?.result ?? [],
-            resolveUnionResult.objectUnionChoices
-          ):[];
+          const objectUniondiscriminatorValues =
+            subResolvedSchemas.resolvedSchema.type == "object" && effectiveRawSchema.discriminator
+              ? getObjectUniondiscriminatorValuesFromResolvedSchema(
+                  // subResolvedSchemas.resolvedSchema,
+                  effectiveRawSchema,
+                  recursivelyUnfoldedUnionSchema?.result ?? [],
+                  resolveUnionResult.objectUnionChoices
+                )
+              : [];
 
           return {
             status: "ok",

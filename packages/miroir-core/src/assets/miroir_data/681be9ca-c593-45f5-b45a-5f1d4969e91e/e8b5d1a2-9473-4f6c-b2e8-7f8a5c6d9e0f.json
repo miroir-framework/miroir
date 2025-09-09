@@ -26,7 +26,19 @@
           "unfoldingReference": [],
           "depth": 0,
           "miroirFundamentalJzodSchema": {
-            "type": "any"
+            "uuid": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "parentName": "JzodSchema",
+            "parentUuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf",
+            "name": "miroirFundamentalJzodSchema",
+            "defaultLabel": "The Jzod Schema of Miroir Fundamental Schemas",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "jzodElement"
+              },
+              "context": {}
+            }
           }
         },
         "transformerParams": {},
@@ -53,7 +65,19 @@
           "unfoldingReference": [],
           "depth": 0,
           "miroirFundamentalJzodSchema": {
-            "type": "any"
+            "uuid": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "parentName": "JzodSchema",
+            "parentUuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf",
+            "name": "miroirFundamentalJzodSchema",
+            "defaultLabel": "The Jzod Schema of Miroir Fundamental Schemas",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "jzodElement"
+              },
+              "context": {}
+            }
           }
         },
         "transformerParams": {},
@@ -87,7 +111,19 @@
           "unfoldingReference": [],
           "depth": 0,
           "miroirFundamentalJzodSchema": {
-            "type": "any"
+            "uuid": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "parentName": "JzodSchema",
+            "parentUuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf",
+            "name": "miroirFundamentalJzodSchema",
+            "defaultLabel": "The Jzod Schema of Miroir Fundamental Schemas",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "jzodElement"
+              },
+              "context": {}
+            }
           },
           "relativeReferenceJzodContext": {}
         },
@@ -132,7 +168,19 @@
           "unfoldingReference": [],
           "depth": 0,
           "miroirFundamentalJzodSchema": {
-            "type": "any"
+            "uuid": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "parentName": "JzodSchema",
+            "parentUuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf",
+            "name": "miroirFundamentalJzodSchema",
+            "defaultLabel": "The Jzod Schema of Miroir Fundamental Schemas",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "jzodElement"
+              },
+              "context": {}
+            }
           },
           "relativeReferenceJzodContext": {}
         },
@@ -180,7 +228,19 @@
           "unfoldingReference": [],
           "depth": 0,
           "miroirFundamentalJzodSchema": {
-            "type": "any"
+            "uuid": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "parentName": "JzodSchema",
+            "parentUuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf",
+            "name": "miroirFundamentalJzodSchema",
+            "defaultLabel": "The Jzod Schema of Miroir Fundamental Schemas",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "jzodElement"
+              },
+              "context": {}
+            }
           },
           "relativeReferenceJzodContext": {}
         },
@@ -235,7 +295,19 @@
           "unfoldingReference": [],
           "depth": 0,
           "miroirFundamentalJzodSchema": {
-            "type": "any"
+            "uuid": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "parentName": "JzodSchema",
+            "parentUuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf",
+            "name": "miroirFundamentalJzodSchema",
+            "defaultLabel": "The Jzod Schema of Miroir Fundamental Schemas",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "jzodElement"
+              },
+              "context": {}
+            }
           },
           "relativeReferenceJzodContext": {}
         },
@@ -320,7 +392,19 @@
           "unfoldingReference": [],
           "depth": 0,
           "miroirFundamentalJzodSchema": {
-            "type": "any"
+            "uuid": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "parentName": "JzodSchema",
+            "parentUuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf",
+            "name": "miroirFundamentalJzodSchema",
+            "defaultLabel": "The Jzod Schema of Miroir Fundamental Schemas",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "jzodElement"
+              },
+              "context": {}
+            }
           },
           "relativeReferenceJzodContext": {}
         },
@@ -390,7 +474,19 @@
           "unfoldingReference": [],
           "depth": 0,
           "miroirFundamentalJzodSchema": {
-            "type": "any"
+            "uuid": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "parentName": "JzodSchema",
+            "parentUuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf",
+            "name": "miroirFundamentalJzodSchema",
+            "defaultLabel": "The Jzod Schema of Miroir Fundamental Schemas",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "jzodElement"
+              },
+              "context": {}
+            }
           },
           "relativeReferenceJzodContext": {}
         },

@@ -26,14 +26,25 @@ function safeStringify(obj: any, maxLength: number = 1000): string {
 
 // #####################################################################################################
 export function getObjectUniondiscriminatorValuesFromResolvedSchema(
-  resolvedElementJzodSchema: JzodElement | undefined, // is it needed?
+  // resolvedElementJzodSchema: JzodElement | undefined, // is it needed?
   unfoldedRawSchema: JzodElement | undefined, // is it needed?
   recursivelyUnfoldedRawSchemaList: JzodElement[],
   unionObjectChoices: (JzodObject | JzodRecord)[],
 ): string[][] {
-  if (
-    resolvedElementJzodSchema?.type == "object"
-  ) {
+  log.info(
+    "getObjectUniondiscriminatorValuesFromResolvedSchema called with",
+    // "resolvedElementJzodSchema:",
+    // resolvedElementJzodSchema,
+    "unfoldedRawSchema:",
+    unfoldedRawSchema,
+    "recursivelyUnfoldedRawSchemaList:",
+    recursivelyUnfoldedRawSchemaList,
+    "unionObjectChoices",
+    unionObjectChoices
+  );
+  // if (
+  //   resolvedElementJzodSchema?.type == "object"
+  // ) {
     const discriminator: string | string[] = (unfoldedRawSchema as any).discriminator;
     if (!discriminator) {
       throw new Error(
@@ -73,6 +84,7 @@ export function getObjectUniondiscriminatorValuesFromResolvedSchema(
             // return branch && branch.definition && branch.definition[discriminator];
             return branch && branch.definition;
           })
+          .filter((branch: any /** JzodObject */) => branch && branch.type == "union") // keep only union branches
           .flatMap((branch: any /** JzodObject */) => {
             // return (a.definition as any)[(unfoldedRawSchema as any).discriminator].definition}
             if (!branch || !branch.definition || !branch.definition[discriminator]) {
@@ -131,15 +143,15 @@ export function getObjectUniondiscriminatorValuesFromResolvedSchema(
               default: {
                 throw new Error(
                   "getObjectUniondiscriminatorValuesFromResolvedSchema could not handle union branch object:" +
-                  " discriminator " +
+                  " string discriminator '" +
                     discriminator +
                   // " discriminator type " +
                   //   branch.definition[discriminator]?.type +
-                    ", found branch discriminator " +
+                    "', found branch discriminator " +
                     safeStringify(branch.definition[discriminator], 200) +
-                    ", for branch " +
+                    "\n for branch " +
                     safeStringify(branch, 500) +
-                    ", for union " +
+                    "\n for union " +
                     safeStringify(recursivelyUnfoldedRawSchemaList, 1000)
                 );
                 // return [];
@@ -237,7 +249,7 @@ export function getObjectUniondiscriminatorValuesFromResolvedSchema(
                 default: {
                   throw new Error(
                     "getObjectUniondiscriminatorValuesFromResolvedSchema could not handle union branch object:" +
-                    " discriminator " +
+                    " array discriminator " +
                     disc +
                     ", found branch discriminator " +
                     safeStringify(branch.definition[disc], 200) +
@@ -277,7 +289,7 @@ export function getObjectUniondiscriminatorValuesFromResolvedSchema(
         ", for union " +
         safeStringify(recursivelyUnfoldedRawSchemaList, 1000)
     );
-  } else {
-    return [];
-  }
+  // } else {
+  //   return [];
+  // }
 }

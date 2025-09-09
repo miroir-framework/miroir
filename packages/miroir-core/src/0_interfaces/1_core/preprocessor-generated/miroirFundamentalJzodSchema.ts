@@ -3946,10 +3946,6 @@ export const miroirFundamentalJzodSchema = {
               "type": "string"
             }
           },
-          "reduxDeploymentsState": {
-            "type": "any",
-            "optional": true
-          },
           "deploymentUuid": {
             "type": "uuid",
             "optional": true
@@ -3983,6 +3979,7 @@ export const miroirFundamentalJzodSchema = {
           },
           "jzodReference": {
             "type": "union",
+            "discriminator": "type",
             "definition": [
               {
                 "type": "schemaReference",
@@ -4002,6 +3999,7 @@ export const miroirFundamentalJzodSchema = {
                 "type": "array",
                 "definition": {
                   "type": "union",
+                  "discriminator": "type",
                   "definition": [
                     {
                       "type": "schemaReference",
@@ -5454,10 +5452,6 @@ export const miroirFundamentalJzodSchema = {
               "type": "string"
             }
           },
-          "reduxDeploymentsState": {
-            "type": "any",
-            "optional": true
-          },
           "deploymentUuid": {
             "type": "uuid",
             "optional": true
@@ -5491,6 +5485,7 @@ export const miroirFundamentalJzodSchema = {
           },
           "jzodReference": {
             "type": "union",
+            "discriminator": "type",
             "definition": [
               {
                 "type": "schemaReference",
@@ -5510,6 +5505,7 @@ export const miroirFundamentalJzodSchema = {
                 "type": "array",
                 "definition": {
                   "type": "union",
+                  "discriminator": "type",
                   "definition": [
                     {
                       "type": "schemaReference",
@@ -7010,10 +7006,6 @@ export const miroirFundamentalJzodSchema = {
               "type": "string"
             }
           },
-          "reduxDeploymentsState": {
-            "type": "any",
-            "optional": true
-          },
           "deploymentUuid": {
             "type": "uuid",
             "optional": true
@@ -7047,6 +7039,7 @@ export const miroirFundamentalJzodSchema = {
           },
           "jzodReference": {
             "type": "union",
+            "discriminator": "type",
             "definition": [
               {
                 "type": "schemaReference",
@@ -7066,6 +7059,7 @@ export const miroirFundamentalJzodSchema = {
                 "type": "array",
                 "definition": {
                   "type": "union",
+                  "discriminator": "type",
                   "definition": [
                     {
                       "type": "schemaReference",
@@ -11782,6 +11776,7 @@ export const miroirFundamentalJzodSchema = {
       },
       "jzodObjectOrReference": {
         "type": "union",
+        "discriminator": "type",
         "definition": [
           {
             "type": "schemaReference",
@@ -11896,6 +11891,7 @@ export const miroirFundamentalJzodSchema = {
             "context": {
               "jzodObjectOrReference": {
                 "type": "union",
+                "discriminator": "type",
                 "definition": [
                   {
                     "type": "schemaReference",
@@ -34367,6 +34363,7 @@ export const miroirFundamentalJzodSchema = {
                     "context": {
                       "jzodObjectOrReference": {
                         "type": "union",
+                        "discriminator": "type",
                         "definition": [
                           {
                             "type": "schemaReference",
@@ -39448,22 +39445,6 @@ export const miroirFundamentalJzodSchema = {
                   }
                 ]
               },
-              "reduxDeploymentsState": {
-                "type": "union",
-                "optional": true,
-                "definition": [
-                  {
-                    "type": "any",
-                    "optional": true
-                  },
-                  {
-                    "type": "schemaReference",
-                    "definition": {
-                      "relativePath": "transformerForBuildCarryOnObject"
-                    }
-                  }
-                ]
-              },
               "deploymentUuid": {
                 "type": "union",
                 "optional": true,
@@ -39541,6 +39522,7 @@ export const miroirFundamentalJzodSchema = {
               },
               "jzodReference": {
                 "type": "union",
+                "discriminator": "type",
                 "definition": [
                   {
                     "type": "schemaReference",
@@ -39560,6 +39542,7 @@ export const miroirFundamentalJzodSchema = {
                     "type": "array",
                     "definition": {
                       "type": "union",
+                      "discriminator": "type",
                       "definition": [
                         {
                           "type": "schemaReference",
@@ -42287,22 +42270,6 @@ export const miroirFundamentalJzodSchema = {
                   }
                 ]
               },
-              "reduxDeploymentsState": {
-                "type": "union",
-                "optional": true,
-                "definition": [
-                  {
-                    "type": "any",
-                    "optional": true
-                  },
-                  {
-                    "type": "schemaReference",
-                    "definition": {
-                      "relativePath": "transformerForBuildCarryOnObject"
-                    }
-                  }
-                ]
-              },
               "deploymentUuid": {
                 "type": "union",
                 "optional": true,
@@ -42380,6 +42347,7 @@ export const miroirFundamentalJzodSchema = {
               },
               "jzodReference": {
                 "type": "union",
+                "discriminator": "type",
                 "definition": [
                   {
                     "type": "schemaReference",
@@ -42399,6 +42367,7 @@ export const miroirFundamentalJzodSchema = {
                     "type": "array",
                     "definition": {
                       "type": "union",
+                      "discriminator": "type",
                       "definition": [
                         {
                           "type": "schemaReference",
@@ -43215,6 +43184,7 @@ export const miroirFundamentalJzodSchema = {
       },
       "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodObjectOrReference": {
         "type": "union",
+        "discriminator": "type",
         "definition": [
           {
             "type": "schemaReference",
@@ -56982,6 +56952,7 @@ export const miroirFundamentalJzodSchema = {
           },
           "jzodReference": {
             "type": "union",
+            "discriminator": "type",
             "definition": [
               {
                 "type": "schemaReference",
@@ -57001,6 +56972,7 @@ export const miroirFundamentalJzodSchema = {
                 "type": "array",
                 "definition": {
                   "type": "union",
+                  "discriminator": "type",
                   "definition": [
                     {
                       "type": "schemaReference",
@@ -57419,6 +57391,7 @@ export const miroirFundamentalJzodSchema = {
           },
           "jzodReference": {
             "type": "union",
+            "discriminator": "type",
             "definition": [
               {
                 "type": "schemaReference",
@@ -57438,6 +57411,7 @@ export const miroirFundamentalJzodSchema = {
                 "type": "array",
                 "definition": {
                   "type": "union",
+                  "discriminator": "type",
                   "definition": [
                     {
                       "type": "schemaReference",
@@ -65304,6 +65278,7 @@ export const miroirFundamentalJzodSchema = {
           },
           "jzodReference": {
             "type": "union",
+            "discriminator": "type",
             "definition": [
               {
                 "type": "schemaReference",
@@ -65323,6 +65298,7 @@ export const miroirFundamentalJzodSchema = {
                 "type": "array",
                 "definition": {
                   "type": "union",
+                  "discriminator": "type",
                   "definition": [
                     {
                       "type": "schemaReference",
@@ -65741,6 +65717,7 @@ export const miroirFundamentalJzodSchema = {
           },
           "jzodReference": {
             "type": "union",
+            "discriminator": "type",
             "definition": [
               {
                 "type": "schemaReference",
@@ -65760,6 +65737,7 @@ export const miroirFundamentalJzodSchema = {
                 "type": "array",
                 "definition": {
                   "type": "union",
+                  "discriminator": "type",
                   "definition": [
                     {
                       "type": "schemaReference",
@@ -73668,6 +73646,7 @@ export const miroirFundamentalJzodSchema = {
           },
           "jzodReference": {
             "type": "union",
+            "discriminator": "type",
             "definition": [
               {
                 "type": "schemaReference",
@@ -73687,6 +73666,7 @@ export const miroirFundamentalJzodSchema = {
                 "type": "array",
                 "definition": {
                   "type": "union",
+                  "discriminator": "type",
                   "definition": [
                     {
                       "type": "schemaReference",
@@ -74105,6 +74085,7 @@ export const miroirFundamentalJzodSchema = {
           },
           "jzodReference": {
             "type": "union",
+            "discriminator": "type",
             "definition": [
               {
                 "type": "schemaReference",
@@ -74124,6 +74105,7 @@ export const miroirFundamentalJzodSchema = {
                 "type": "array",
                 "definition": {
                   "type": "union",
+                  "discriminator": "type",
                   "definition": [
                     {
                       "type": "schemaReference",

@@ -23,6 +23,7 @@
         "definition": {
           "jzodReference": {
             "type": "union",
+            "discriminator": "type",
             "definition": [
               {
                 "type": "schemaReference",
@@ -42,6 +43,7 @@
                 "type": "array",
                 "definition": {
                   "type": "union",
+                  "discriminator": "type",
                   "definition": [
                     {
                       "type": "schemaReference",
