@@ -2,6 +2,16 @@
 
 **caveat: developments are still ongoing, only a fraction of the goals described below have been reached yet. First official release is not yet available (soon)**
 
+## Introduction
+
+**Miroir is an end-to-end, low code, agentic development platform for data-centric applications.**
+
+- Miroir is **end-to-end** as it allows to define concepts used across storage (database, NoSQL), presentation (Web UI, web Services) and "business" code (e.g. computed attributes, business presentation functions, batch data updates)
+- Miroir will be **low-code** as value-adding behavior can be created, modified and tested at run-time, without the need to build a new package or redeploy a running application. Miroir provides the necessary interpreters and visual reprensentation (yet to be provided) to muster all aspects of an application. JSON is presently available as textual representation for all model elements.
+- Miroir will be **agentic**, being available to any A.I. client implementing the **Model Context Protocol (MCP)**, it allows one to use natural language to manipulate and define business-related behavior, freely combining "structured" and "loose" code.
+- Miroir is **data-centric** and **Language-oriented**, fostering the creation of **Domain-Specific Languages** for Model manipulation, using these languages in low-code or natural language code.
+
+## "Technical" View
 This is the monorepo for the Miroir Framework. The Miroir Framework aims at becoming a comprehensive web application development environment that integrates development-time and runtime activities, inspired by Smalltalk's interactive development model.
 
 The foreseen first use case for the framework is the need for automation or data-management "in the small" that often takes the form of a spreadsheet and, as the developed "software" gains traction, needs to migrate to a more sturdy development environment. In speadsheets indeed, means to address ubiquitous software development issues such as non-regression, automated testing, or changing technical environment are scant, if any exist at all. The Miroir Frameworks integrates all activities taking place during of software creation, at any scale, providing opinionated solutions and tools while keeping the requirement to use them at a minimum. Along the way, it ensures the development and runtime environments to be as close as possible, guaranteeing instantaneous feedback that fosters an experimental to software creation. One can then concentrate on the problem to be solved, being rid of usual chores like compiling every time before getting feedback.
