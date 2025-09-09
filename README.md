@@ -6,15 +6,19 @@
 
 **Miroir is an end-to-end, low code, agentic development platform for data-centric applications.**
 
-- Miroir is **end-to-end** as it allows to define concepts used across storage (database, NoSQL), presentation (Web UI, web Services) and "business" code (e.g. computed attributes, business presentation functions, batch data updates)
+- Miroir is **end-to-end** as it allows to define concepts used across both storage (database, NoSQL) and presentation (Web UI, web Services) and to leverage the same concepts in "business" code (e.g. computed attributes, business presentation functions, data migration, etc.).
 - Miroir will be **low-code** as value-adding behavior can be created, modified and tested at run-time, without the need to build a new package or redeploy a running application. Miroir provides the necessary interpreters and visual reprensentation (yet to be provided) to muster all aspects of an application. JSON is presently available as textual representation for all model elements.
-- Miroir will be **agentic**, being available to any A.I. client implementing the **Model Context Protocol (MCP)**, it allows one to use natural language to manipulate and define business-related behavior, freely combining "structured" and "loose" code.
+- Miroir will be **agentic**, being available to any A.I. client implementing the **Model Context Protocol (MCP)**. Miroir thus allows one to use natural language to manipulate and define business-related behavior, freely combining "structured" and "loose" code.
 - Miroir is **data-centric** and **Language-oriented**, fostering the creation of **Domain-Specific Languages** for Model manipulation, using these languages in low-code or natural language code.
 
-## "Technical" View
-This is the monorepo for the Miroir Framework. The Miroir Framework aims at becoming a comprehensive web application development environment that integrates development-time and runtime activities, inspired by Smalltalk's interactive development model.
+## Use case: start small, grow seamlessly
 
-The foreseen first use case for the framework is the need for automation or data-management "in the small" that often takes the form of a spreadsheet and, as the developed "software" gains traction, needs to migrate to a more sturdy development environment. In speadsheets indeed, means to address ubiquitous software development issues such as non-regression, automated testing, or changing technical environment are scant, if any exist at all. The Miroir Frameworks integrates all activities taking place during of software creation, at any scale, providing opinionated solutions and tools while keeping the requirement to use them at a minimum. Along the way, it ensures the development and runtime environments to be as close as possible, guaranteeing instantaneous feedback that fosters an experimental to software creation. One can then concentrate on the problem to be solved, being rid of usual chores like compiling every time before getting feedback.
+The foreseen first use case for the framework is the need for automation or data-management "in the small" that often takes the form of a spreadsheet and, as the developed "software" gains traction, needs to migrate to a more sturdy development environment. In speadsheets indeed, means to address ubiquitous software development issues such as non-regression, automated testing, or changing technical environment are scant, if any exist at all. The Miroir Frameworks integrates all activities taking place during of software creation, at any scale, providing opinionated solutions and tools while keeping the requirement to use them at a minimum. Along the way, it ensures the development and runtime environments to be as close as possible, guaranteeing instantaneous feedback that fosters an experimental to software creation. One can then concentrate on the problem to be solved, being rid of usual chores like compiling every time before getting feedback. 
+
+## This Repository
+This is the monorepo for the Miroir Framework.
+
+
 
 Activities encompassed by the Miroir Framework are (tentatively):
 
@@ -63,7 +67,7 @@ Here's an overview, browse the [issues](https://github.com/miroir-framework/miro
 - support for a Miroir Command Line Interface
 - support connection to software versioning tools: local Git repos, Github.
 - support connection to issue-tracking and project management tools (Github, Jira, etc.)
-- support for LLM-based tools
+- support for LLM-based tools & MCP client
 - "Freezing" code to Javascript: generate js libraries from Miroir Transformers, Queries and Actions giving a proper escape hatch or enabling to use Miroir as an Application generator
 - "Freezing" code to Rust: enabling the production of industrial web services implemented in Rust, maybe even a Rust-based Desktop / Web Application?
 - develop "example" applications and tools: a relational DB model manager, an interface to the R programming platform
