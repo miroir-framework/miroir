@@ -23,7 +23,7 @@ import currentModel from "../currentModel.json";
 import { unfoldJzodSchemaOnce } from "../../../src/1_core/jzod/JzodUnfoldSchemaOnce";
 import { entity } from "../../../dist";
 import { defaultMiroirMetaModel } from "../../test_assets/defaultMiroirMetaModel";
-import { defaultMiroirModelEnvironment } from "../../../src/1_core/Model";
+import { defaultMetaModelEnvironment } from "../../../src/1_core/Model";
 
 const castMiroirFundamentalJzodSchema = miroirFundamentalJzodSchema as JzodSchema;
 
@@ -45,7 +45,7 @@ function local_jzodUnion_recursivelyUnfold(
     schema,
     // unfoldedSchema as JzodUnion,
     new Set(),
-    defaultMiroirModelEnvironment,
+    defaultMetaModelEnvironment,
     // castMiroirFundamentalJzodSchema,
     // currentModel as any as MetaModel,
     // currentMiroirModel as any as MetaModel,

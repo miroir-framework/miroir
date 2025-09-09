@@ -550,19 +550,19 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
   const borderColor = hasPathError ? errorBorderColor : normalBorderColor;
   const leftBorderColor = hasPathError ? errorBorderColor : normalLeftBorderColor;
 
-    log.info(
-    "JzodElementEditor",
-    count,
-    "Rendering JzodElementEditor for rootLessListKeyArray",
-    JSON.stringify(props.rootLessListKeyArray),
-    "displayError",
-    JSON.stringify(props.displayError),
-    "hasPathError",
-    hasPathError,
-    "borderColor", borderColor,
-    "leftBorderColor",
-    leftBorderColor,
-  );
+  //   log.info(
+  //   "JzodElementEditor",
+  //   count,
+  //   "Rendering JzodElementEditor for rootLessListKeyArray",
+  //   JSON.stringify(props.rootLessListKeyArray),
+  //   "displayError",
+  //   JSON.stringify(props.displayError),
+  //   "hasPathError",
+  //   hasPathError,
+  //   "borderColor", borderColor,
+  //   "leftBorderColor",
+  //   leftBorderColor,
+  // );
 
 
   // Create the main element based on the schema type

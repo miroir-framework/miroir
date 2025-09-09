@@ -21,13 +21,13 @@ The technically-inclined reader can refer to the defined [LLM-agent instructions
 
 ### What already exists
 
-- The Meta-Language [jzod](https://github.com/miroir-framework/jzod)
-- The Miroir Meta-model, used to define an application's logical data model: Entity and EntityDefinitions.
+- The Meta-Language [jzod](https://github.com/miroir-framework/jzod), also called MML for Miroir Meta-Language.
+- The Miroir Meta-model, used to define an application's logical data model: Entity and EntityDefinitions. Attributes and other properties of an Entity are defined using an MML (jzod) Schema.
 - Connectors to PostgreSQL, to an indexedDB key-value datastore, and to a JSON file-based datastore.
-- The core of the Miroir application model use to define business-domain data presentation and behavior: Transformer, Query, Report, Endpoint & Action, Test, Application
-- An interpreter for Actions, Transformers and Queries (in-memory and SQL)
+- The core of the Miroir application model use to define business-domain data presentation and behavior: Transformer, Query, Report, Endpoint & Action, Test, Application.
+- An interpreter for Actions, Transformers and Queries (in-memory and SQL).
 - A Web Application and a server leveraging the mentioned interpreters and providing rudimentary local cache management for data (to be used as working space).
-- A substancial set of tests for non-regression on core features
+- A substancial set of tests for non-regression on core features.
 - An Event system to monitor activities and troubleshoot issues.
 - A desktop application using Electron providing the same functionality as the Web App / Web Server combination.
 
@@ -36,9 +36,9 @@ The technically-inclined reader can refer to the defined [LLM-agent instructions
 Today's on-going effort are centered on the identifcation and provision of actual workflows in the web interface:
 
 - finalize the Event system, allowing to monitor activities and troubleshoot issue while during the development phase.
-- providing an interactive, instant-feedback giving Transformer editor, enabling to create Transformer that encode the domain logic in a straightforward and confident way
-- provide similar editors for Queries and Actions
-- Provide a read/write connector to Spreadsheets (ODS and other formats) to store an Application's model and data
+- providing an interactive, instant-feedback giving Transformer editor, enabling to create Transformer that encode the domain logic in a straightforward and confident way.
+- provide similar editors for Queries and Actions.
+- Provide a read/write connector to Spreadsheets (ODS and other formats) to store an Application's model and data.
 - make a first official release ecompassing the above points.
 
 ### Future Developments

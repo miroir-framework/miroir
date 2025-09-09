@@ -5,7 +5,7 @@ import {
   TransformerForBuild
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
-import { defaultMiroirModelEnvironment } from "../1_core/Model";
+import { defaultMetaModelEnvironment } from "../1_core/Model";
 import { MiroirLoggerFactory } from "../4_services/LoggerFactory";
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
@@ -71,7 +71,7 @@ export function resolveCompositeActionTemplate(
         [],
         t[0],
         t[1] as any,
-        {...defaultMiroirModelEnvironment, ...actionParamValues}, // queryParams
+        {...defaultMetaModelEnvironment, ...actionParamValues}, // queryParams
         newLocalParameters, // contextResults
         "value",
       );

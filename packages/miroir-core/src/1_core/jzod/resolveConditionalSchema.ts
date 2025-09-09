@@ -90,7 +90,10 @@ export function resolveConditionalSchema(
   //   "contextResults",
   //   contextResults,
   //   "modelEnvironment",
-  //   modelEnvironment,
+  //   Object.keys(modelEnvironment),
+  //   // JSON.stringify(modelEnvironment, null, 2),
+  //   // modelEnvironment.currentModel,
+  //   // modelEnvironment.currentModel?.entityDefinitions.length,
   //   "context",
   //   context
   // );
@@ -99,9 +102,10 @@ export function resolveConditionalSchema(
     const conditionalConfig = jzodSchema.tag.value.conditionalMMLS;
     // the runtime path is given by the parentUuid, to be found in the reduxDeploymentsState
     if (conditionalConfig.parentUuid && typeof conditionalConfig.parentUuid === "object") {
-      if (!reduxDeploymentsState) {
+      if (!modelEnvironment.currentModel || modelEnvironment.currentModel.entityDefinitions.length === 0) {
         return { error: 'NO_REDUX_DEPLOYMENTS_STATE' };
       }
+
       if (!deploymentUuid) {
         return { error: 'NO_DEPLOYMENT_UUID' };
       }
@@ -137,6 +141,7 @@ export function resolveConditionalSchema(
         pathToUse.split(".") as RelativePath
       );
 
+      log.info("resolveConditionalSchema resolved parentUuid", parentUuid);
       // Check if parentUuid is invalid or an error
       if (
         parentUuid === undefined ||
@@ -167,13 +172,7 @@ export function resolveConditionalSchema(
       }
 
       log.info("resolveConditionalSchema found parentUuid", parentUuid, "parentUuidStr", parentUuidStr);
-      const currentDeploymentEntityDefinitions: EntityDefinition[] =
-        getEntityInstancesUuidIndexNonHook(
-          reduxDeploymentsState,
-          modelEnvironment,
-          deploymentUuid,
-          entityEntityDefinition.uuid,
-        ) as EntityDefinition[];
+      const currentDeploymentEntityDefinitions: EntityDefinition[] = modelEnvironment.currentModel?.entityDefinitions || [];
       log.info(
         "resolveConditionalSchema currentDeploymentEntityDefinitions",
         currentDeploymentEntityDefinitions

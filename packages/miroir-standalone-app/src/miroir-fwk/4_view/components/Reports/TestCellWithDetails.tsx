@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 
 import { useMiroirTheme } from "../../contexts/MiroirThemeContext.js";
@@ -12,6 +12,14 @@ import { formatValue, SideBySideDiff } from './SideBySideDiff.js';
 
 // ################################################################################################
 // Test Cell Components with Hover functionality and Side-by-Side Diff Display
+// 
+// IMPORTANT: Modal behavior controls
+// - Modal should only close when:
+//   1. The close button (×) is clicked
+//   2. A click outside the modal content area (on the backdrop) occurs
+//   3. The ESC key is pressed
+// - Component uses React.memo to prevent unnecessary re-renders that could cause
+//   spontaneous modal closure due to state resets
 // ################################################################################################
 export interface TestCellWithDetailsProps {
   value: string;
@@ -21,7 +29,7 @@ export interface TestCellWithDetailsProps {
 }
 
 
-export const TestCellWithDetails: React.FC<TestCellWithDetailsProps> = ({ 
+export const TestCellWithDetails: React.FC<TestCellWithDetailsProps> = React.memo(({ 
   value, 
   testData, 
   testName, 
@@ -30,8 +38,27 @@ export const TestCellWithDetails: React.FC<TestCellWithDetailsProps> = ({
   const [showTooltip, setShowTooltip] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
+  const [copyFeedback, setCopyFeedback] = useState<string | null>(null);
+  const [feedbackFading, setFeedbackFading] = useState(false);
   const cellRef = useRef<HTMLDivElement>(null);
   const { currentTheme } = useMiroirTheme();
+
+  // Handle ESC key press to close modal
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && isExpanded) {
+        setIsExpanded(false);
+      }
+    };
+
+    if (isExpanded) {
+      document.addEventListener('keydown', handleKeyDown);
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isExpanded]);
   
   const formatDetailedTooltipContent = () => {
     if (!testData.fullAssertionsResults) return "No detailed assertion data available";
@@ -68,7 +95,7 @@ export const TestCellWithDetails: React.FC<TestCellWithDetailsProps> = ({
   };
 
   // Calculate tooltip position when showing
-  const updateTooltipPosition = () => {
+  const updateTooltipPosition = useCallback(() => {
     if (cellRef.current) {
       const rect = cellRef.current.getBoundingClientRect();
       const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
@@ -79,16 +106,34 @@ export const TestCellWithDetails: React.FC<TestCellWithDetailsProps> = ({
         y: rect.top + scrollTop - 10, // 10px above the cell
       });
     }
-  };
+  }, []);
 
-  const handleMouseEnter = () => {
+  const handleMouseEnter = useCallback(() => {
     updateTooltipPosition();
     setShowTooltip(true);
-  };
+  }, [updateTooltipPosition]);
 
-  const handleMouseLeave = () => {
+  const handleMouseLeave = useCallback(() => {
     setShowTooltip(false);
-  };
+  }, []);
+
+  const handleClick = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsExpanded(!isExpanded);
+    setShowTooltip(false); // Hide tooltip when expanding
+  }, [isExpanded]);
+
+  const handleCloseExpanded = useCallback((e: React.MouseEvent) => {
+    // Only close if clicking on the backdrop (not inside the modal content)
+    if (e.target === e.currentTarget) {
+      e.stopPropagation();
+      setIsExpanded(false);
+    }
+  }, []);
+
+  const handleCloseButton = useCallback(() => {
+    setIsExpanded(false);
+  }, []);
 
   const cellStyle: React.CSSProperties = {
     cursor: 'pointer',
@@ -137,9 +182,19 @@ export const TestCellWithDetails: React.FC<TestCellWithDetailsProps> = ({
     border: `1px solid ${currentTheme.colors.primary}`,
   };
 
-  const handleCopyToClipboard = () => {
+  const showCopyFeedback = useCallback((message: string) => {
+    setCopyFeedback(message);
+    setFeedbackFading(false);
+    // Start fade-out after 2.5 seconds
+    setTimeout(() => setFeedbackFading(true), 2500);
+    // Remove message after fade completes
+    setTimeout(() => setCopyFeedback(null), 3000);
+  }, []);
+
+  const handleCopyToClipboard = useCallback(() => {
     navigator.clipboard.writeText(formatDetailedTooltipContent());
-  };
+    showCopyFeedback('All details copied to clipboard!');
+  }, [formatDetailedTooltipContent, showCopyFeedback]);
 
   // Helper function to extract all expected results
   const getExpectedResults = () => {
@@ -191,24 +246,15 @@ export const TestCellWithDetails: React.FC<TestCellWithDetailsProps> = ({
     return content;
   };
 
-  const handleCopyExpectedResults = () => {
+  const handleCopyExpectedResults = useCallback(() => {
     navigator.clipboard.writeText(getExpectedResults());
-  };
+    showCopyFeedback('Expected results copied to clipboard!');
+  }, [testName, testData, showCopyFeedback]);
 
-  const handleCopyActualResults = () => {
+  const handleCopyActualResults = useCallback(() => {
     navigator.clipboard.writeText(getActualResults());
-  };
-
-  const handleClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setIsExpanded(!isExpanded);
-    setShowTooltip(false); // Hide tooltip when expanding
-  };
-
-  const handleCloseExpanded = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setIsExpanded(false);
-  };
+    showCopyFeedback('Actual results copied to clipboard!');
+  }, [testName, testData, showCopyFeedback]);
 
   // Render expanded modal content with side-by-side diffs
   const renderExpandedContent = () => {
@@ -224,7 +270,7 @@ export const TestCellWithDetails: React.FC<TestCellWithDetailsProps> = ({
     return (
       <div>
         {/* Test summary */}
-        <div style={{ 
+        {/* <div style={{ 
           marginBottom: currentTheme.spacing.lg, 
           padding: currentTheme.spacing.md,
           backgroundColor: currentTheme.colors.background,
@@ -237,7 +283,7 @@ export const TestCellWithDetails: React.FC<TestCellWithDetailsProps> = ({
           <div>Test: {testName}</div>
           <div>Result: {testData.testResult} {testData.status}</div>
           <div>Total Assertions: {testData.assertionCount}</div>
-        </div>
+        </div> */}
 
         {/* Assertions with side-by-side diffs for failures */}
         {assertions.map(([assertionName, assertion]: [string, any]) => {
@@ -303,101 +349,145 @@ export const TestCellWithDetails: React.FC<TestCellWithDetailsProps> = ({
         elevation={3}
         style={{
           position: 'relative',
-          maxWidth: '95vw',
-          maxHeight: '90vh',
-          minWidth: '800px',
-          minHeight: '500px',
-          overflow: 'auto',
-          margin: currentTheme.spacing.lg,
+          width: '98vw',
+          height: '95vh',
+          maxWidth: '98vw',
+          maxHeight: '95vh',
+          minWidth: '1000px',
+          minHeight: '600px',
+          overflow: 'hidden', // Changed to hidden to prevent external scrollbars
+          margin: '1vh 1vw',
         }}
         onClick={(e) => e.stopPropagation()}
       >
         <ThemedBox 
           padding={currentTheme.spacing.lg}
-          style={{ position: 'relative' }}
+          style={{ 
+            position: 'relative',
+            height: '100%',
+            display: 'flex',
+            flexDirection: 'column'
+          }}
         >
-          <ThemedStyledButton
-            style={{
-              position: 'absolute',
-              top: '8px',
-              right: '140px',
-              backgroundColor: currentTheme.colors.success || '#2e7d32',
-              color: 'white',
-              border: 'none',
-              borderRadius: currentTheme.borderRadius.sm,
-              padding: '4px 8px',
-              fontSize: '12px',
-              cursor: 'pointer',
-            }}
-            onClick={handleCopyExpectedResults}
-            title="Copy Expected Results"
-          >
-            📋 Expected
-          </ThemedStyledButton>
-
-          <ThemedStyledButton
-            style={{
-              position: 'absolute',
-              top: '8px',
-              right: '90px',
-              backgroundColor: currentTheme.colors.error || '#d32f2f',
-              color: 'white',
-              border: 'none',
-              borderRadius: currentTheme.borderRadius.sm,
-              padding: '4px 8px',
-              fontSize: '12px',
-              cursor: 'pointer',
-            }}
-            onClick={handleCopyActualResults}
-            title="Copy Actual Results"
-          >
-            📋 Actual
-          </ThemedStyledButton>
-          
-          <ThemedStyledButton
-            style={{
-              position: 'absolute',
-              top: '8px',
-              right: '40px',
-              backgroundColor: currentTheme.colors.primary,
-              color: 'white',
-              border: 'none',
-              borderRadius: currentTheme.borderRadius.sm,
-              padding: '4px 8px',
-              fontSize: '12px',
-              cursor: 'pointer',
-            }}
-            onClick={handleCopyToClipboard}
-            title="Copy All Details"
-          >
-            📋 All
-          </ThemedStyledButton>
-          
-          <ThemedStyledButton
-            style={{
-              position: 'absolute',
-              top: '8px',
-              right: '8px',
-              background: 'none',
-              border: 'none',
-              fontSize: '24px',
-              cursor: 'pointer',
-              color: currentTheme.colors.textSecondary,
-            }}
-            onClick={() => setIsExpanded(false)}
-            aria-label="Close"
-          >
-            ×
-          </ThemedStyledButton>
-          
-          <ThemedTitle style={{ marginTop: 0, marginBottom: currentTheme.spacing.md }}>
-            Test Details: {testName}
-          </ThemedTitle>
-          
+          {/* Header with title and copy buttons on same line */}
           <div style={{
-            maxHeight: 'calc(90vh - 150px)',
+            display: 'flex',
+            alignItems: 'flex-start',
+            justifyContent: 'space-between',
+            marginBottom: currentTheme.spacing.md,
+            flexWrap: 'wrap',
+            gap: currentTheme.spacing.sm,
+            minHeight: '40px'
+          }}>
+            <ThemedTitle style={{ 
+              margin: 0,
+              flexGrow: 1,
+              minWidth: '200px',
+              wordWrap: 'break-word',
+              lineHeight: '1.2'
+            }}>
+              Test Details: {testName}
+            </ThemedTitle>
+            
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              flexShrink: 0
+            }}>
+              <ThemedStyledButton
+                style={{
+                  backgroundColor: currentTheme.colors.success || '#2e7d32',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: currentTheme.borderRadius.sm,
+                  padding: '6px 12px',
+                  fontSize: '12px',
+                  cursor: 'pointer',
+                  minWidth: '80px',
+                }}
+                onClick={handleCopyExpectedResults}
+                title="Copy Expected Results"
+              >
+                📋 Expected
+              </ThemedStyledButton>
+
+              <ThemedStyledButton
+                style={{
+                  backgroundColor: currentTheme.colors.error || '#d32f2f',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: currentTheme.borderRadius.sm,
+                  padding: '6px 12px',
+                  fontSize: '12px',
+                  cursor: 'pointer',
+                  minWidth: '70px',
+                }}
+                onClick={handleCopyActualResults}
+                title="Copy Actual Results"
+              >
+                📋 Actual
+              </ThemedStyledButton>
+              
+              <ThemedStyledButton
+                style={{
+                  backgroundColor: currentTheme.colors.primary,
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: currentTheme.borderRadius.sm,
+                  padding: '6px 12px',
+                  fontSize: '12px',
+                  cursor: 'pointer',
+                  minWidth: '50px',
+                }}
+                onClick={handleCopyToClipboard}
+                title="Copy All Details"
+              >
+                📋 All
+              </ThemedStyledButton>
+              
+              <ThemedStyledButton
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  fontSize: '24px',
+                  cursor: 'pointer',
+                  color: currentTheme.colors.textSecondary,
+                  padding: '4px 8px',
+                }}
+                onClick={handleCloseButton}
+                aria-label="Close"
+              >
+                ×
+              </ThemedStyledButton>
+            </div>
+          </div>
+
+          {/* Copy feedback message with fade animation */}
+          {copyFeedback && (
+            <div style={{
+              backgroundColor: currentTheme.colors.success + '20' || '#4caf5020',
+              color: currentTheme.colors.success || '#4caf50',
+              padding: '8px 12px',
+              borderRadius: currentTheme.borderRadius.sm,
+              marginBottom: currentTheme.spacing.md,
+              fontSize: '14px',
+              fontWeight: 'bold',
+              textAlign: 'center',
+              border: `1px solid ${currentTheme.colors.success || '#4caf50'}`,
+              opacity: feedbackFading ? 0 : 1,
+              transition: 'opacity 0.5s ease-out',
+            }}>
+              ✓ {copyFeedback}
+            </div>
+          )}
+          
+          {/* Auto-resizing content area */}
+          <div style={{
+            flex: 1,
             overflow: 'auto',
-            padding: currentTheme.spacing.sm
+            padding: currentTheme.spacing.sm,
+            minHeight: 0 // Allow flex child to shrink
           }}>
             {renderExpandedContent()}
           </div>
@@ -423,4 +513,4 @@ export const TestCellWithDetails: React.FC<TestCellWithDetailsProps> = ({
       {modalPortal}
     </>
   );
-};
+});

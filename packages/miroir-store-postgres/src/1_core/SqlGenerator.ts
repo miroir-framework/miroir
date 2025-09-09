@@ -31,7 +31,7 @@ import {
   TransformerForRuntime_objectEntries,
   TransformerForRuntime_objectValues,
   TransformerForRuntime_unique,
-  defaultMiroirModelEnvironment,
+  defaultMetaModelEnvironment,
 } from "miroir-core";
 import { RecursiveStringRecords } from "../4_services/SqlDbQueryTemplateRunner";
 import { cleanLevel } from "../4_services/constants";
@@ -1054,7 +1054,7 @@ function sqlStringForMapperListToListTransformer(
               [], // tranformerPath
               undefined,
               actionRuntimeTransformer.elementTransformer,
-              {...defaultMiroirModelEnvironment, ...queryParams},
+              {...defaultMetaModelEnvironment, ...queryParams},
               {}, // contextResults, we are evaluating a build transformer here, not a runtime transformer
               "value"
             ),

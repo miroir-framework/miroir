@@ -24,7 +24,7 @@ import { defaultMiroirMetaModel } from '../../test_assets/defaultMiroirMetaModel
 //   uuid: "mock",
 //   definition: { context: {} }
 // } as JzodSchema;
-import { defaultMiroirModelEnvironment } from '../../../src/1_core/Model';
+import { defaultMetaModelEnvironment } from '../../../src/1_core/Model';
 
 const castMiroirFundamentalJzodSchema = miroirFundamentalJzodSchema as JzodSchema;
 
@@ -36,7 +36,7 @@ describe("unionObjectChoices", () => {
 
     const result = unionObjectChoices(
       union.definition,
-      defaultMiroirModelEnvironment,
+      defaultMetaModelEnvironment,
       {}
     );
     expect(result).toEqual([obj1, obj2]);
@@ -82,7 +82,7 @@ describe("unionObjectChoices", () => {
 
     const result = unionObjectChoices(
       union.definition,
-      defaultMiroirModelEnvironment,
+      defaultMetaModelEnvironment,
       {}
     );
     expect(result).toEqual([obj1, obj2, obj3]);
@@ -109,7 +109,7 @@ describe("unionObjectChoices", () => {
 
     const result = unionObjectChoices(
       union.definition,
-      defaultMiroirModelEnvironment,
+      defaultMetaModelEnvironment,
       { refObj: referencedObj }
       // { mock: referencedObj }
     );
@@ -124,7 +124,7 @@ describe("unionObjectChoices", () => {
     const union: JzodUnion = { type: "union", definition: [{ type: "string" }, { type: "number" }] };
     const result = unionObjectChoices(
       union.definition,
-      defaultMiroirModelEnvironment,
+      defaultMetaModelEnvironment,
       {}
     );
     expect(result).toEqual([]);

@@ -18,13 +18,15 @@ import {
   transformerTestsDisplayResults,
 } from "../../src/4_services/TestTools";
 import transformerTestSuite_defaultValueForMLSchema from "../../src/assets/miroir_data/681be9ca-c593-45f5-b45a-5f1d4969e91e/753afec9-f786-4f51-8c46-bd022551a8dd.json";
-import { defaultMiroirModelEnvironment } from '../../src/1_core/Model';
+import { defaultMetaModelEnvironment } from '../../src/1_core/Model';
 import { MiroirEventTracker } from "../../src/3_controllers/MiroirEventTracker";
 
 
 const RUN_TEST= process.env.RUN_TEST
 console.log("@@@@@@@@@@@@@@@@@@ RUN_TEST", RUN_TEST);
 const eventTracker = new MiroirEventTracker();
+
+// ################################################################################################
 afterAll(async () => {
   if (RUN_TEST) {
     transformerTestsDisplayResults(
@@ -32,7 +34,7 @@ afterAll(async () => {
       RUN_TEST,
       transformerTestSuite_defaultValueForMLSchema.definition.transformerTestLabel,
       eventTracker
-      // defaultMiroirModelEnvironment,
+      // defaultMetaModelEnvironment,
     );
   }
 });
@@ -42,13 +44,12 @@ afterAll(async () => {
 // launch with: RUN_TEST=defaultValueForMLSchema npm run testByFile -w miroir-core -- defaultValueForJzodSchema
 if (RUN_TEST == transformerTestSuite_defaultValueForMLSchema.definition.transformerTestLabel) {
   await runTransformerTestSuite(
-    // {describe, expect, custom: true},// vitest,
-    // TestFramework,
     vitest,
     [],
     transformerTestSuite_defaultValueForMLSchema.definition as TransformerTestSuite,
+    undefined, // filter
     runTransformerTestInMemory,
-    defaultMiroirModelEnvironment,
+    defaultMetaModelEnvironment,
     eventTracker
   );
   transformerTestsDisplayResults(
@@ -56,7 +57,7 @@ if (RUN_TEST == transformerTestSuite_defaultValueForMLSchema.definition.transfor
     RUN_TEST,
     transformerTestSuite_defaultValueForMLSchema.definition.transformerTestLabel,
     eventTracker
-    // defaultMiroirModelEnvironment,
+    // defaultMetaModelEnvironment,
   );
 } else {
   console.log("################################ skipping test suite:", transformerTestSuite_defaultValueForMLSchema.definition.transformerTestLabel);

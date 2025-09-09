@@ -1,5 +1,8 @@
 import * as vitest from 'vitest';
 type VitestNamespace = typeof vitest;
+import chalk from 'chalk';
+// chalk.enabled = true
+chalk.level = 3;
 
 import {
   TransformerForRuntime,
@@ -120,7 +123,7 @@ export async function runTransformerTestInMemory(
 ) {
   const testName = transformerTest.transformerTestLabel ?? transformerTest.transformerName;
   const assertionName = transformerTest.transformerTestLabel ?? transformerTest.transformerName;
-  console.log(
+  log.info(
     "#################################### runTransformerTestInMemory test",
     assertionName,
     "START"
@@ -134,16 +137,16 @@ export async function runTransformerTestInMemory(
       // Get the current active test suite ID as parent
       const testParentId = miroirEventTracker.getCurrentEventId();
       testTrackingId = miroirEventTracker.startTest(testName, testParentId);
-      console.log(`🧪 Started tracking test ${testName} with ID: ${testTrackingId}, parent: ${testParentId}`);
+      log.info(`🧪 Started tracking test ${testName} with ID: ${testTrackingId}, parent: ${testParentId}`);
       const testAssertionParentId = miroirEventTracker.getCurrentEventId();
       testAssertionTrackingId = miroirEventTracker.startTestAssertion(assertionName, testTrackingId);
-      console.log(`🧪 Started tracking test assertion ${assertionName} with ID: ${testAssertionTrackingId}, parent: ${testAssertionParentId}`);
+      log.info(`🧪 Started tracking test assertion ${assertionName} with ID: ${testAssertionTrackingId}, parent: ${testAssertionParentId}`);
     } catch (error) {
       console.warn(`Failed to start tracking test ${testName}:`, error);
       console.warn(`Failed to start tracking test assertion ${assertionName}:`, error);
     }
   }
-  // console.log(
+  // log.info(
   //   "################################ runTransformerTestInMemory vitest",
   //   JSON.stringify(vitest, null, 2)
   // );
@@ -155,10 +158,10 @@ export async function runTransformerTestInMemory(
   // const transformer: TransformerForBuild | TransformerForRuntime = transformerTest.transformer;
   const transformer: TransformerForBuildPlusRuntime = transformerTest.transformer;
   const runtimeTransformer: TransformerForRuntime = transformer as any;
-  console.log(
-    "################################ runTransformerTestInMemory transformerTestParams",
-    JSON.stringify(transformerTest, null, 2)
-  );
+  // log.info(
+  //   "################################ runTransformerTestInMemory transformerTestParams",
+  //   JSON.stringify(transformerTest, null, 2)
+  // );
 
   const interpolation = transformerTest.runTestStep ?? "runtime";
   let rawResult: Domain2QueryReturnType<any>;
@@ -173,9 +176,10 @@ export async function runTransformerTestInMemory(
     transformerTest.transformerRuntimeContext ?? {},
     "value"
   );
-  console.log(
-    "################################ runTransformerTestInMemory convertedTransformer",
-    JSON.stringify(convertedTransformer, null, 2)
+  log.info(
+    "################################ runTransformerTestInMemory convertedTransformer after applying build step",
+    JSON.stringify(convertedTransformer, null, 2),
+    "effective interpolation", interpolation
   );
 
   if (interpolation == "runtime" && !convertedTransformer["elementType"]) {
@@ -192,23 +196,23 @@ export async function runTransformerTestInMemory(
     rawResult = convertedTransformer;
   }
 
-  console.log(
+  log.info(
     "################################ runTransformerTestInMemory raw result",
     JSON.stringify(rawResult, null, 2)
   );
-  console.log(
-    "################################ runTransformerTestInMemory expectedResult",
-    JSON.stringify(transformerTest.expectedValue, null, 2)
-  );
+  // log.info(
+  //   "################################ runTransformerTestInMemory expectedResult",
+  //   JSON.stringify(transformerTest.expectedValue, null, 2)
+  // );
   const resultWithIgnored = ignorePostgresExtraAttributes(rawResult, transformerTest.ignoreAttributes);
   const resultWithRetain = transformerTest.retainAttributes?
     Object.fromEntries(
       Object.entries(resultWithIgnored).filter(([key]) => transformerTest.retainAttributes!.includes(key))
     ): resultWithIgnored;
-  console.log(
+  log.info(
     "################################ runTransformerTestInMemory result",
-    resultWithRetain
-    // JSON.stringify(result, null, 2)
+    // resultWithRetain
+    JSON.stringify(resultWithRetain, null, 2)
   );
   const testSuiteNamePathAsString = MiroirEventTracker.testPathName(testNamePath);
   const jsonifiedResult = jsonify(resultWithRetain);
@@ -221,7 +225,7 @@ export async function runTransformerTestInMemory(
   let testAssertionResult: TestAssertionResult;
   try {
     // real vitest throws an exception if the assertion fails, simulated vitest does not throw an exception
-    // console.log(
+    // log.info(
       //   "################################ runTransformerTestInMemory calling localVitest.expect"
       // );
     
@@ -231,13 +235,13 @@ export async function runTransformerTestInMemory(
     
     const expectForm = localVitest
       .expect(normalizedResult, `${testSuiteNamePathAsString} > ${assertionName}`)
-    // console.log(
+    // log.info(
     //   "################################ runTransformerTestInMemory localVitest.expect called expectForm", expectForm
     // );
     // const testResult = expectForm.toEqual(transformerTest.expectedValue);
     // vitest returns void, simulated vitest returns an object with a "result" boolean
     const testResult: any = expectForm.toEqual(normalizedExpected);
-    console.log(
+    log.info(
       "################################ runTransformerTestInMemory testResult",
       JSON.stringify(testResult, circularReplacer, 2)
     );
@@ -268,7 +272,7 @@ export async function runTransformerTestInMemory(
       };
     }
   } catch (error) {
-    console.log(
+    log.info(
       "################################ runTransformerTestInMemory caught error from localVitest.expect",
       error
     );
@@ -292,7 +296,7 @@ export async function runTransformerTestInMemory(
       const errorMessage = hasError ? "Test assertion failed" : undefined;
       miroirEventTracker.endEvent(testTrackingId, errorMessage);
       miroirEventTracker.endEvent(testAssertionTrackingId, errorMessage);
-      console.log(`🧪 Ended tracking test ${assertionName} with ID: ${testTrackingId}, result: ${hasError ? "error" : "ok"}`);
+      log.info(`🧪 Ended tracking test ${assertionName} with ID: ${testTrackingId}, result: ${hasError ? "error" : "ok"}`);
     } catch (error) {
       console.warn(`Failed to end tracking test ${testName}:`, error);
       console.warn(`Failed to end tracking test assertion ${assertionName}:`, error);
@@ -304,17 +308,20 @@ export async function runTransformerTestInMemory(
   }
 
   miroirEventTracker.setTestAssertion(undefined);
-  console.log("############################ test", assertionName, "END");
+  log.info("############################ test", assertionName, "END");
   miroirEventTracker.setTest(undefined);
   // as there is only 1 assertion per test, we use the test name as the assertion name
   return Promise.resolve();
 }
+
+export type TestSuiteListFilter = string[] | {[x: string]: TestSuiteListFilter};
 
 // ################################################################################################
 export async function runTransformerTestSuite(
   localVitest: VitestNamespace,
   testSuitePath: string[],
   transformerTestSuite: TransformerTestSuite,
+  filter: { testList?: TestSuiteListFilter, match?: RegExp } | undefined,
   runTransformerTest: (
     vitest: any,
     testSuitePath: string[],
@@ -326,11 +333,12 @@ export async function runTransformerTestSuite(
   modelEnvironment: MiroirModelEnvironment,
   miroirEventTracker: MiroirEventTrackerInterface, // Optional unified tracker for test execution tracking
 ) {
+  // const testSuitePath: string[] = [];
   const testSuitePathAsString = MiroirEventTracker.testPathName(testSuitePath);
   const testSuiteName =
     transformerTestSuite.transformerTestLabel ?? transformerTestSuite.transformerTestType;
-  console.log(
-    `@@@@@@@@@@@@@@@@@@@@ running transformer test suite called ${testSuitePathAsString} transformerTestType=${transformerTestSuite.transformerTestType}`
+  log.info(
+    `@@@@@@@@@@@@@@@@@@@@ runTransformerTestSuite running transformer test suite called "${testSuiteName}" transformerTestType=${transformerTestSuite.transformerTestType} filter=${JSON.stringify(filter)}`
   );
   if (!localVitest.expect) {
     throw new Error(
@@ -338,12 +346,16 @@ export async function runTransformerTestSuite(
     );
   } else {
     log.info(
-      `runTransformerTestSuite called for ${testSuitePathAsString} with transformerTestType=${transformerTestSuite.transformerTestType}`,
+      `runTransformerTestSuite called for "${testSuiteName}" path "${testSuitePathAsString}" with transformerTestType=${
+        transformerTestSuite.transformerTestType
+      }, filter=${JSON.stringify(filter)}, transformerTests: ${
+        Object.values((transformerTestSuite as any)?.transformerTests).length
+      }`
       // "vitest",
       // localVitest
     );
   }
-
+  
   miroirEventTracker.setTestSuite(testSuitePathAsString);
   
   // Start tracking test suite execution in unified tracker if available
@@ -353,7 +365,7 @@ export async function runTransformerTestSuite(
       // Get current action ID as parent (for nested test suites)
       const parentId = miroirEventTracker.getCurrentEventId();
       testSuiteTrackingId = miroirEventTracker.startTestSuite(testSuiteName, parentId);
-      console.log(`🧪🧪 Started tracking test suite ${testSuiteName} with ID: ${testSuiteTrackingId}, parent: ${parentId}`);
+      log.info(`🧪🧪 Started tracking test suite ${testSuiteName} with ID: ${testSuiteTrackingId}, parent: ${parentId}`);
     } catch (error) {
       console.warn(`Failed to start tracking test suite ${testSuiteName}:`, error);
     }
@@ -361,6 +373,8 @@ export async function runTransformerTestSuite(
     throw new Error("runTransformerTestSuite called without actionOrTestTracker.startTestSuite, cannot start tracking test suite execution");
   }
   
+  // log.info(`transformer test suite ${testSuiteName} suite Tests: ${JSON.stringify(transformerTestSuite, null, 2)}`);
+
   try {
     if (transformerTestSuite.transformerTestType == "transformerTest") {
       miroirEventTracker.setTest(transformerTestSuite.transformerTestLabel);
@@ -374,29 +388,61 @@ export async function runTransformerTestSuite(
       
       await runTransformerTest(localVitest, testSuitePath, transformerTestSuite, modelEnvironment, miroirEventTracker, testAssertionPath);
       miroirEventTracker.setTest(undefined);
-    } else {
-      // console.log(`running transformer test suite ${testSuiteName} with ${JSON.stringify(Object.keys(transformerTestSuite.transformerTests))} tests`);
+    } else { // transformerTestSuite.transformerTestType == "transformerTestSuite"
+      // log.info(`running transformer test suite ${testSuiteName} with ${JSON.stringify(Object.keys(transformerTestSuite.transformerTests))} tests`);
 
-      console.log(
-        `handling transformer test suite ${testSuitePath} with transformerTests=${JSON.stringify(
-          Object.values(transformerTestSuite.transformerTests),
-          null,
-          2
-        )} tests`
-      );
+      // log.info(`transformer test suite ${testSuiteName} suite Tests: ${Object.values(transformerTestSuite.transformerTests).map(t => t.transformerTestLabel).join(", ")}`);
+      // log.info(
+      //   `handling transformer test suite ${testSuiteName} with transformerTests=${JSON.stringify(
+      //     Object.values(transformerTestSuite.transformerTests),
+      //     null,
+      //     2
+      //   )} tests`
+      // );
       // replace the describe.each(...) call body with this:
-      localVitest.describe.each(Object.values(transformerTestSuite.transformerTests))(
-        "test $transformerTestLabel",
-        (transformerTestParam: TransformerTestSuite) => {
-          // if it's an individual test register a vitest.test that runs it
-          if (transformerTestParam.transformerTestType === "transformerTest") {
-            localVitest.test(
+      const innerFilter =
+        filter?.testList &&
+        typeof filter.testList === "object" &&
+        !Array.isArray(filter.testList) &&
+        Object.hasOwn(filter.testList, transformerTestSuite.transformerTestLabel)?
+        filter.testList[transformerTestSuite.transformerTestLabel]: undefined;
+
+      const selectedTests = Object.values(transformerTestSuite.transformerTests).filter(
+        (e) =>
+          !innerFilter ||
+          (Array.isArray(innerFilter) && innerFilter.includes(e.transformerTestLabel)) ||
+          (!Array.isArray(innerFilter) && typeof innerFilter === 'object' &&
+            Object.hasOwn(innerFilter, e.transformerTestLabel))
+      );
+      log.info(
+        `runTransformerTestSuite for suite ${testSuitePathAsString} with ${
+          selectedTests.length
+        } selected tests out of ${
+          Object.values(transformerTestSuite.transformerTests).length
+        } total tests, innerFilter=${JSON.stringify(innerFilter)}`
+      );
+      // localVitest.describe.each(selectedTests)(
+      // Sequentially run each selected test/suite instead of describe.each (which is parallel)
+      for (const transformerTestParam of selectedTests) {
+        if (transformerTestParam.transformerTestType === "transformerTest") {
+          if (
+            !innerFilter ||
+            (Array.isArray(innerFilter) &&
+              innerFilter.includes(transformerTestParam.transformerTestLabel))
+          ) {
+            log.info(
+              `runTransformerTestSuite calling further test ${transformerTestParam.transformerTestLabel} in suite ${testSuitePath}`
+            );
+            await localVitest.test(
               transformerTestParam.transformerTestLabel,
               async () => {
                 // Build the explicit TestAssertionPath and run the test
-                const testAssertionPath: TestAssertionPath = MiroirEventTracker.stringArrayToTestAssertionPath(testSuitePath);
+                const testAssertionPath: TestAssertionPath =
+                  MiroirEventTracker.stringArrayToTestAssertionPath(testSuitePath);
                 testAssertionPath.push({ test: transformerTestParam.transformerTestLabel });
-                testAssertionPath.push({ testAssertion: transformerTestParam.transformerTestLabel });
+                testAssertionPath.push({
+                  testAssertion: transformerTestParam.transformerTestLabel,
+                });
                 await runTransformerTest(
                   localVitest,
                   [...testSuitePath, transformerTestParam.transformerTestLabel],
@@ -409,27 +455,33 @@ export async function runTransformerTestSuite(
               globalTimeOut
             );
           } else {
-            // nested suite -> register nested describes (no await)
-            runTransformerTestSuite(
-              localVitest,
-              [...testSuitePath, transformerTestParam.transformerTestLabel],
-              transformerTestParam,
-              runTransformerTest,
-              modelEnvironment,
-              miroirEventTracker
+            log.info(
+              `runTransformerTestSuite skipping test ${
+                transformerTestParam.transformerTestLabel
+              } as not in filter ${JSON.stringify(filter)}`
             );
           }
-        },
-        globalTimeOut
-      );
-      console.log(`finished registering transformer subtests for test suite ${testSuitePath}`);
+        } else {
+          // nested suite -> register nested describes (no await)
+          await runTransformerTestSuite(
+            localVitest,
+            [...testSuitePath, transformerTestParam.transformerTestLabel],
+            transformerTestParam,
+            { testList: innerFilter }, // filter
+            runTransformerTest,
+            modelEnvironment,
+            miroirEventTracker
+          );
+        }
+      }
+      log.info(`finished registering transformer subtests for test suite ${testSuitePath}`);
     }
     
     // End tracking test suite execution if tracker was used
     if (miroirEventTracker && testSuiteTrackingId) {
       try {
         miroirEventTracker.endEvent(testSuiteTrackingId);
-        console.log(`Ended tracking test suite ${testSuitePathAsString} with ID: ${testSuiteTrackingId}`);
+        log.info(`Ended tracking test suite ${testSuitePathAsString} with ID: ${testSuiteTrackingId}`);
       } catch (error) {
         console.warn(`Failed to end tracking test suite ${testSuitePathAsString}:`, error);
       }
@@ -440,14 +492,14 @@ export async function runTransformerTestSuite(
       try {
         const errorMessage = error instanceof Error ? error.message : String(error) || 'Test suite execution failed';
         miroirEventTracker.endEvent(testSuiteTrackingId, errorMessage);
-        console.log(`Ended tracking test suite ${testSuitePathAsString} with error`);
+        log.info(`Ended tracking test suite ${testSuitePathAsString} with error`);
       } catch (trackerError) {
         console.warn(`Failed to end tracking test suite ${testSuitePathAsString} with error:`, trackerError);
       }
     }
     throw error; // Re-throw the original error
   }
-  console.log(
+  log.info(
     `@@@@@@@@@@@@@@@@@@@@ finished running transformer test suite ${JSON.stringify(testSuitePath)}`
   );
   // miroirEventTracker.resetContext();
@@ -473,7 +525,7 @@ export function runTransformerIntegrationTest(sqlDbDataStore: any) {
     // const runAsSql = false;
     const runAsSql = true;
 
-    console.log("runTransformerIntegrationTest called for", testPathName, "START");
+    log.info("runTransformerIntegrationTest called for", testPathName, "START");
 
     if (!vitest.expect) {
       throw new Error(
@@ -494,7 +546,7 @@ export function runTransformerIntegrationTest(sqlDbDataStore: any) {
     }
 
     let queryResult: Action2ReturnType;
-    console.log(
+    log.info(
       "runTransformerIntegrationTest",
       testPathName,
       "running runtime on sql transformerTest",
@@ -514,7 +566,7 @@ export function runTransformerIntegrationTest(sqlDbDataStore: any) {
         "value" // resolveBuildTransformerTo
       );
 
-    console.log(
+    log.info(
       "runTransformerIntegrationTest",
       testPathName,
       "resolvedTransformer",
@@ -522,7 +574,7 @@ export function runTransformerIntegrationTest(sqlDbDataStore: any) {
     );
 
     if (resolvedTransformer instanceof Domain2ElementFailed) {
-      console.log(
+      log.info(
         "runTransformerIntegrationTest",
         testPathName,
         "build step found failed: resolvedTransformer",
@@ -598,13 +650,13 @@ export function runTransformerIntegrationTest(sqlDbDataStore: any) {
       });
     }
 
-    // console.log(testSuitePathName, "WWWWWWWWWWWWWWWWWW queryResult", JSON.stringify(queryResult, null, 2));
-    console.log(
+    // log.info(testSuitePathName, "WWWWWWWWWWWWWWWWWW queryResult", JSON.stringify(queryResult, null, 2));
+    log.info(
       testPathName,
       "WWWWWWWWWWWWWWWWWW queryResult",
       JSON.stringify(queryResult, null, 2)
     );
-    // console.log(testSuitePathName, "WWWWWWWWWWWWWWWWWW queryResult cannot use 'instanceof' to determine error", queryResult instanceof Action2Error, Object.hasOwn(queryResult,"errorType"));
+    // log.info(testSuitePathName, "WWWWWWWWWWWWWWWWWW queryResult cannot use 'instanceof' to determine error", queryResult instanceof Action2Error, Object.hasOwn(queryResult,"errorType"));
     let resultToCompare: any;
     try {
       // if (queryResult instanceof Action2Error) { // DOES NOT WORK, because we use the local version of the class, not the version of the class that is available in the miroir-core package
@@ -614,7 +666,7 @@ export function runTransformerIntegrationTest(sqlDbDataStore: any) {
           (queryResult as any).innerError,
           transformerTest.ignoreAttributes
         );
-        console.log(
+        log.info(
           testPathName,
           "WWWWWWWWWWWWWWWWWW queryResult instance of Action2Error:",
           JSON.stringify(resultToCompare, null, 2)
@@ -627,7 +679,7 @@ export function runTransformerIntegrationTest(sqlDbDataStore: any) {
           )
           .toEqual(transformerTest.expectedValue);
       } else {
-        console.log(testPathName, "WWWWWWWWWWWWWWWWWW query Succeeded!");
+        log.info(testPathName, "WWWWWWWWWWWWWWWWWW query Succeeded!");
         resultToCompare =
           testRunStep == "runtime"
             ? ignorePostgresExtraAttributes(
@@ -635,8 +687,8 @@ export function runTransformerIntegrationTest(sqlDbDataStore: any) {
                 transformerTest.ignoreAttributes
               )
             : (queryResult as Action2Success).returnedDomainElement;
-        console.log(testPathName, "testResult", JSON.stringify(resultToCompare, null, 2));
-        console.log(testPathName, "expectedValue", transformerTest.expectedValue);
+        log.info(testPathName, "testResult", JSON.stringify(resultToCompare, null, 2));
+        log.info(testPathName, "expectedValue", transformerTest.expectedValue);
         vitest.expect(resultToCompare, testPathName).toEqual(transformerTest.expectedValue);
       }
       miroirEventTracker.setTestAssertionResult(currentTestAssertionPath,{
@@ -659,7 +711,7 @@ export function runTransformerIntegrationTest(sqlDbDataStore: any) {
     // as there is only 1 assertion per test, we use the test name as the assertion name
     miroirEventTracker.setTestAssertion(undefined);
 
-    console.log(testPath, "END");
+    log.info(testPath, "END");
   };
 }
 
@@ -717,10 +769,10 @@ export const displayTestSuiteResultsDetails = async (
   currentTestSuitePath: TestAssertionPath,
   miroirEventTracker: MiroirEventTrackerInterface, // Optional unified tracker for test execution tracking
 ) => {
-  console.log("#################################### displayTestSuiteResultsDetails ####################################");
+  log.info("#################################### displayTestSuiteResultsDetails ####################################");
   
   // Import chalk for colors
-  const chalk = (await import('chalk')).default;
+  // const chalk = (await import('chalk')).default;
   
   // Retrieve results for the requested suite path (fallback to root if not provided)
   const allResults = miroirEventTracker.getTestAssertionsResults(currentTestSuitePath ?? []);
@@ -810,64 +862,64 @@ export const displayTestSuiteResultsDetails = async (
       const symbol = item.status === "ok" ? chalk.green("✓") : chalk.red("✗");
       const statusText = item.status === "ok" ? chalk.green("[ok]") : chalk.red("[error]");
       
-      console.log(`${symbol} ${item.path} ${statusText}`);
+      log.info(`${symbol} ${item.path} ${statusText}`);
       
       // Show detailed assertion results for failed assertions
       if (item.status === "error" && item.assertion) {
-        console.log(chalk.red("    Expected:"));
+        log.info(chalk.red("    Expected:"));
         try {
-          console.log("   ", JSON.stringify(item.assertion.assertionExpectedValue, null, 4));
+          log.info("   ", JSON.stringify(item.assertion.assertionExpectedValue, null, 4));
         } catch (e) {
-          console.log("    (unserializable)");
+          log.info("    (unserializable)");
         }
-        console.log(chalk.red("    Actual:"));
+        log.info(chalk.red("    Actual:"));
         try {
-          console.log("   ", JSON.stringify(item.assertion.assertionActualValue, circularReplacer, 4));
+          log.info("   ", JSON.stringify(item.assertion.assertionActualValue, circularReplacer, 4));
         } catch (e) {
-          console.log("    (unserializable)");
+          log.info("    (unserializable)");
         }
-        console.log(""); // Add spacing between failed assertions
+        log.info(""); // Add spacing between failed assertions
       }
     }
   }
   
   // Display comprehensive statistics
-  console.log("\n" + chalk.bold("═══════════════════════════════════════════════════════════════════════════════════════════════════"));
-  console.log(chalk.bold.blue("                                   DETAILED TEST ASSERTIONS SUMMARY"));
-  console.log(chalk.bold("═══════════════════════════════════════════════════════════════════════════════════════════════════"));
+  log.info("\n" + chalk.bold("═══════════════════════════════════════════════════════════════════════════════════════════════════"));
+  log.info(chalk.bold.blue("                                   DETAILED TEST ASSERTIONS SUMMARY"));
+  log.info(chalk.bold("═══════════════════════════════════════════════════════════════════════════════════════════════════"));
   
   if (totalTestSuites > 0) {
-    console.log(chalk.bold("Test Suites:"));
+    log.info(chalk.bold("Test Suites:"));
     const suitePassRate = totalTestSuites > 0 ? ((passedTestSuites / totalTestSuites) * 100).toFixed(1) : "0.0";
-    console.log(`  ${chalk.green("✓ Passed:")} ${passedTestSuites}/${totalTestSuites} (${suitePassRate}%)`);
+    log.info(`  ${chalk.green("✓ Passed:")} ${passedTestSuites}/${totalTestSuites} (${suitePassRate}%)`);
     if (totalTestSuites - passedTestSuites > 0) {
-      console.log(`  ${chalk.red("✗ Failed:")} ${totalTestSuites - passedTestSuites}/${totalTestSuites}`);
+      log.info(`  ${chalk.red("✗ Failed:")} ${totalTestSuites - passedTestSuites}/${totalTestSuites}`);
     }
   }
   
   if (totalTests > 0) {
-    console.log(chalk.bold("\nTests:"));
+    log.info(chalk.bold("\nTests:"));
     const testPassRate = totalTests > 0 ? ((passedTests / totalTests) * 100).toFixed(1) : "0.0";
-    console.log(`  ${chalk.green("✓ Passed:")} ${passedTests}/${totalTests} (${testPassRate}%)`);
+    log.info(`  ${chalk.green("✓ Passed:")} ${passedTests}/${totalTests} (${testPassRate}%)`);
     if (totalTests - passedTests > 0) {
-      console.log(`  ${chalk.red("✗ Failed:")} ${totalTests - passedTests}/${totalTests}`);
+      log.info(`  ${chalk.red("✗ Failed:")} ${totalTests - passedTests}/${totalTests}`);
     }
   }
   
-  console.log(chalk.bold("\nAssertions (Detailed):"));
+  log.info(chalk.bold("\nAssertions (Detailed):"));
   const assertionPassRate = totalAssertions > 0 ? ((passedAssertions / totalAssertions) * 100).toFixed(1) : "0.0";
-  console.log(`  ${chalk.green("✓ Passed:")} ${passedAssertions}/${totalAssertions} (${assertionPassRate}%)`);
+  log.info(`  ${chalk.green("✓ Passed:")} ${passedAssertions}/${totalAssertions} (${assertionPassRate}%)`);
   if (totalAssertions - passedAssertions > 0) {
-    console.log(`  ${chalk.red("✗ Failed:")} ${totalAssertions - passedAssertions}/${totalAssertions}`);
+    log.info(`  ${chalk.red("✗ Failed:")} ${totalAssertions - passedAssertions}/${totalAssertions}`);
   }
   
   // Overall status
   const overallStatus = (passedTests === totalTests && passedAssertions === totalAssertions) ? "PASSED" : "FAILED";
   const statusColor = overallStatus === "PASSED" ? chalk.green : chalk.red;
-  console.log(chalk.bold(`\nOverall Status: ${statusColor(overallStatus)}`));
+  log.info(chalk.bold(`\nOverall Status: ${statusColor(overallStatus)}`));
   
-  console.log(chalk.bold("═══════════════════════════════════════════════════════════════════════════════════════════════════"));
-  console.log("#################################### End of displayTestSuiteResultsDetails ####################################");
+  log.info(chalk.bold("═══════════════════════════════════════════════════════════════════════════════════════════════════"));
+  log.info("#################################### End of displayTestSuiteResultsDetails ####################################");
 };
 
 // ################################################################################################
@@ -878,10 +930,10 @@ export const transformerTestsDisplayResults = async (
   miroirEventTracker: MiroirEventTrackerInterface, // Optional unified tracker for test execution tracking
 ) => {
   if (RUN_TEST == testSuiteName) {
-    console.log("#################################### transformerTestsDisplayResults ####################################");
+    log.info("#################################### transformerTestsDisplayResults ####################################");
     
     // Import chalk for colors
-    const chalk = (await import('chalk')).default;
+    // const chalk = (await import('chalk')).default;
     
     const allResults = miroirEventTracker.getTestAssertionsResults([]);
     
@@ -969,48 +1021,48 @@ export const transformerTestsDisplayResults = async (
         const symbol = test.status === "ok" ? chalk.green("✓") : chalk.red("✗");
         const statusText = test.status === "ok" ? chalk.green("[ok]") : chalk.red("[error]");
         
-        console.log(`${symbol} ${test.path} ${statusText}`);
+        log.info(`${symbol} ${test.path} ${statusText}`);
         
         // Show failed assertions if any
         if (test.failedAssertions && test.failedAssertions.length > 0) {
-          console.log(chalk.red(`    Failed assertions: ${test.failedAssertions.join(", ")}`));
+          log.info(chalk.red(`    Failed assertions: ${test.failedAssertions.join(", ")}`));
         }
       }
     }
     
     // Display comprehensive statistics
-    console.log("\n" + chalk.bold("═══════════════════════════════════════════════════════════════════════════════════════════════════"));
-    console.log(chalk.bold.blue("                                        TEST EXECUTION SUMMARY"));
-    console.log(chalk.bold("═══════════════════════════════════════════════════════════════════════════════════════════════════"));
+    log.info("\n" + chalk.bold("═══════════════════════════════════════════════════════════════════════════════════════════════════"));
+    log.info(chalk.bold.blue("                                        TEST EXECUTION SUMMARY"));
+    log.info(chalk.bold("═══════════════════════════════════════════════════════════════════════════════════════════════════"));
     
-    console.log(chalk.bold("Test Suites:"));
+    log.info(chalk.bold("Test Suites:"));
     const suitePassRate = totalTestSuites > 0 ? ((passedTestSuites / totalTestSuites) * 100).toFixed(1) : "0.0";
-    console.log(`  ${chalk.green("✓ Passed:")} ${passedTestSuites}/${totalTestSuites} (${suitePassRate}%)`);
+    log.info(`  ${chalk.green("✓ Passed:")} ${passedTestSuites}/${totalTestSuites} (${suitePassRate}%)`);
     if (totalTestSuites - passedTestSuites > 0) {
-      console.log(`  ${chalk.red("✗ Failed:")} ${totalTestSuites - passedTestSuites}/${totalTestSuites}`);
+      log.info(`  ${chalk.red("✗ Failed:")} ${totalTestSuites - passedTestSuites}/${totalTestSuites}`);
     }
     
-    console.log(chalk.bold("\nTests:"));
+    log.info(chalk.bold("\nTests:"));
     const testPassRate = totalTests > 0 ? ((passedTests / totalTests) * 100).toFixed(1) : "0.0";
-    console.log(`  ${chalk.green("✓ Passed:")} ${passedTests}/${totalTests} (${testPassRate}%)`);
+    log.info(`  ${chalk.green("✓ Passed:")} ${passedTests}/${totalTests} (${testPassRate}%)`);
     if (totalTests - passedTests > 0) {
-      console.log(`  ${chalk.red("✗ Failed:")} ${totalTests - passedTests}/${totalTests}`);
+      log.info(`  ${chalk.red("✗ Failed:")} ${totalTests - passedTests}/${totalTests}`);
     }
     
-    console.log(chalk.bold("\nAssertions:"));
+    log.info(chalk.bold("\nAssertions:"));
     const assertionPassRate = totalAssertions > 0 ? ((passedAssertions / totalAssertions) * 100).toFixed(1) : "0.0";
-    console.log(`  ${chalk.green("✓ Passed:")} ${passedAssertions}/${totalAssertions} (${assertionPassRate}%)`);
+    log.info(`  ${chalk.green("✓ Passed:")} ${passedAssertions}/${totalAssertions} (${assertionPassRate}%)`);
     if (totalAssertions - passedAssertions > 0) {
-      console.log(`  ${chalk.red("✗ Failed:")} ${totalAssertions - passedAssertions}/${totalAssertions}`);
+      log.info(`  ${chalk.red("✗ Failed:")} ${totalAssertions - passedAssertions}/${totalAssertions}`);
     }
     
     // Overall status
     const overallStatus = (passedTests === totalTests && passedAssertions === totalAssertions) ? "PASSED" : "FAILED";
     const statusColor = overallStatus === "PASSED" ? chalk.green : chalk.red;
-    console.log(chalk.bold(`\nOverall Status: ${statusColor(overallStatus)}`));
+    log.info(chalk.bold(`\nOverall Status: ${statusColor(overallStatus)}`));
     
-    console.log(chalk.bold("═══════════════════════════════════════════════════════════════════════════════════════════════════"));
-    console.log("#################################### End of transformerTestsDisplayResults ####################################");
+    log.info(chalk.bold("═══════════════════════════════════════════════════════════════════════════════════════════════════"));
+    log.info("#################################### End of transformerTestsDisplayResults ####################################");
     
     miroirEventTracker.resetResults();
   }

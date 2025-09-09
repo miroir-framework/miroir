@@ -23,7 +23,7 @@ import {
   TestCompositeActionParams,
   adminConfigurationDeploymentAdmin,
   adminConfigurationDeploymentMiroir,
-  defaultMiroirModelEnvironment,
+  defaultMetaModelEnvironment,
   displayTestSuiteResultsDetails,
   entityApplicationForAdmin,
   entityBook,
@@ -178,7 +178,7 @@ export const ToolsPage: React.FC<any> = (
 
   const deploymentEntityState: ReduxDeploymentsState = useSelector(
     (state: ReduxStateWithUndoRedo) =>
-      deploymentEntityStateSelectorMap?.extractState(state.presentModelSnapshot.current, () => ({}), defaultMiroirModelEnvironment)
+      deploymentEntityStateSelectorMap?.extractState(state.presentModelSnapshot.current, () => ({}), defaultMetaModelEnvironment)
   );
   
   const entityTransformerTestKey = adminConfigurationDeploymentMiroir.uuid + "_data_" + entityTransformerTest.uuid
@@ -213,7 +213,7 @@ export const ToolsPage: React.FC<any> = (
               },
             },
           },
-          defaultMiroirModelEnvironment
+          defaultMetaModelEnvironment
         ) as Domain2QueryReturnType<TransformerTestSuite>)
       : undefined;
   log.info(

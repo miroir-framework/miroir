@@ -344,6 +344,85 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
     // }
   );
 
+  // Create stable cell renderer functions to prevent ag-grid from recreating components
+  // CRITICAL: These must be useCallback to maintain stable references, otherwise ag-grid
+  // will destroy and recreate cell components on every parent re-render, causing modals to close
+  const testNameCellRenderer = useCallback((params: any) => (
+    <TestCellWithDetails
+      value={params.value}
+      testData={params.data.rawValue}
+      testName={params.data.rawValue.testName}
+      type="testName"
+    />
+  ), []);
+
+  const statusCellRenderer = useCallback((params: any) => (
+    <TestCellWithDetails
+      value={params.value}
+      testData={params.data.rawValue}
+      testName={params.data.rawValue.testName}
+      type="status"
+    />
+  ), []);
+
+  const resultCellRenderer = useCallback((params: any) => (
+    <TestResultCellWithActualValue
+      value={params.value}
+      testData={params.data.rawValue}
+      testName={params.data.rawValue.testName}
+    />
+  ), []);
+
+  const summaryTestCellRenderer = useCallback((params: any) => (
+    <div
+      style={{
+        maxWidth: "200px",
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+        whiteSpace: "nowrap",
+        cursor: "pointer",
+      }}
+      title="Click test name or status for full details"
+    >
+      {params.value}
+    </div>
+  ), []);
+
+  // Memoize column definitions to prevent recreation on every render
+  const testResultsColumnDefs = useMemo(() => ({
+    columnDefs: [
+      {
+        field: "testName",
+        headerName: "Test Name",
+        cellRenderer: testNameCellRenderer,
+        width: 200,
+      },
+      {
+        field: "status",
+        headerName: "Status", 
+        cellRenderer: statusCellRenderer,
+        width: 100,
+      },
+      {
+        field: "testResult",
+        headerName: "Result",
+        cellRenderer: resultCellRenderer,
+        width: 100,
+      },
+      {
+        field: "assertionCount",
+        headerName: "Assertions",
+        width: 100,
+      },
+      {
+        field: "assertions",
+        headerName: "Summary",
+        cellRenderer: summaryTestCellRenderer,
+        width: 250,
+      },
+    ],
+  }), [testNameCellRenderer, statusCellRenderer, resultCellRenderer, summaryTestCellRenderer]);
+
   // ##############################################################################################
   if (instance) {
     return (
@@ -415,72 +494,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                           },
                         },
                       }}
-                      columnDefs={{
-                        columnDefs: [
-                          {
-                            field: "testName",
-                            headerName: "Test Name",
-                            cellRenderer: (params: any) => (
-                              <TestCellWithDetails
-                                value={params.value}
-                                testData={params.data.rawValue}
-                                testName={params.data.rawValue.testName}
-                                type="testName"
-                              />
-                            ),
-                            width: 200,
-                          },
-                          {
-                            field: "status",
-                            headerName: "Status",
-                            cellRenderer: (params: any) => (
-                              <TestCellWithDetails
-                                value={params.value}
-                                testData={params.data.rawValue}
-                                testName={params.data.rawValue.testName}
-                                type="status"
-                              />
-                            ),
-                            width: 100,
-                          },
-                          {
-                            field: "testResult",
-                            headerName: "Result",
-                            cellRenderer: (params: any) => (
-                              <TestResultCellWithActualValue
-                                value={params.value}
-                                testData={params.data.rawValue}
-                                testName={params.data.rawValue.testName}
-                              />
-                            ),
-                            width: 100,
-                          },
-                          {
-                            field: "assertionCount",
-                            headerName: "Assertions",
-                            width: 100,
-                          },
-                          {
-                            field: "assertions",
-                            headerName: "Summary",
-                            cellRenderer: (params: any) => (
-                              <div
-                                style={{
-                                  maxWidth: "200px",
-                                  overflow: "hidden",
-                                  textOverflow: "ellipsis",
-                                  whiteSpace: "nowrap",
-                                  cursor: "pointer",
-                                }}
-                                title="Click test name or status for full details"
-                              >
-                                {params.value}
-                              </div>
-                            ),
-                            width: 250,
-                          },
-                        ],
-                      }}
+                      columnDefs={testResultsColumnDefs}
                       styles={{
                         height: "400px",
                         width: "100%",

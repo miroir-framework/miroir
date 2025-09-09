@@ -37,10 +37,6 @@
               "type": "string"
             }
           },
-          "reduxDeploymentsState": {
-            "type": "any",
-            "optional": true
-          },
           "deploymentUuid": {
             "type": "uuid",
             "optional": true

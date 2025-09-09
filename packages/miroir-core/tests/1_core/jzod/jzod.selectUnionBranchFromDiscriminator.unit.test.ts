@@ -5,7 +5,7 @@ import {
   JzodObject
 } from "../../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { selectUnionBranchFromDiscriminator } from '../../../src/1_core/jzod/jzodTypeCheck';
-import { defaultMiroirModelEnvironment } from '../../../src/1_core/Model';
+import { defaultMetaModelEnvironment } from '../../../src/1_core/Model';
 
 // Helper to create a JzodObject with a literal discriminator
 function makeObjectWithLiteralDiscriminators(discriminators: [string, string][]): JzodObject {
@@ -52,7 +52,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
       valueObject,
       [], // valueObjectPath
       [], // typePath 
-      defaultMiroirModelEnvironment,
+      defaultMetaModelEnvironment,
       {}
     );
 
@@ -74,7 +74,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
       valueObject,
       [], // valueObjectPath
       [], // typePath 
-      defaultMiroirModelEnvironment,
+      defaultMetaModelEnvironment,
       {}
     );
 
@@ -95,7 +95,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
       valueObject,
       [], // valueObjectPath
       [], // typePath 
-      defaultMiroirModelEnvironment,
+      defaultMetaModelEnvironment,
       {}
     );
 
@@ -116,7 +116,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
       valueObject,
       [], // valueObjectPath
       [], // typePath 
-      defaultMiroirModelEnvironment,
+      defaultMetaModelEnvironment,
       {}
     );
 
@@ -137,7 +137,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
       valueObject,
       [], // valueObjectPath
       [], // typePath 
-      defaultMiroirModelEnvironment,
+      defaultMetaModelEnvironment,
       {}
     );
 
@@ -163,7 +163,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
       valueObject,
       [], // valueObjectPath
       [], // typePath 
-      defaultMiroirModelEnvironment,
+      defaultMetaModelEnvironment,
       {}
     );
     expect(result.status).toBe("ok");
@@ -187,7 +187,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
       valueObject,
       [], // valueObjectPath
       [], // typePath 
-      defaultMiroirModelEnvironment,
+      defaultMetaModelEnvironment,
       {}
     );
 
@@ -211,7 +211,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
       valueObject,
       [], // valueObjectPath
       [], // typePath 
-      defaultMiroirModelEnvironment,
+      defaultMetaModelEnvironment,
       {}
     );
 
@@ -234,7 +234,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
       valueObject,
       [], // valueObjectPath
       [], // typePath 
-      defaultMiroirModelEnvironment,
+      defaultMetaModelEnvironment,
       {}
     );
 
@@ -258,7 +258,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
       valueObject,
       [], // valueObjectPath
       [], // typePath 
-      defaultMiroirModelEnvironment,
+      defaultMetaModelEnvironment,
       {}
     );
 
@@ -282,7 +282,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
       valueObject,
       [], // valueObjectPath
       [], // typePath 
-      defaultMiroirModelEnvironment,
+      defaultMetaModelEnvironment,
       {}
     );
     
@@ -322,7 +322,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
       valueObject,
       [], // valueObjectPath
       [], // typePath 
-      defaultMiroirModelEnvironment,
+      defaultMetaModelEnvironment,
       {
         abstractObject: {
           type: "object",
@@ -723,7 +723,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
       valueObject,
       [], // valueObjectPath
       [], // typePath
-      defaultMiroirModelEnvironment,
+      defaultMetaModelEnvironment,
       {
       }
     );
@@ -1233,7 +1233,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
       valueObject,
       [], // valueObjectPath
       [], // typePath
-      defaultMiroirModelEnvironment,
+      defaultMetaModelEnvironment,
       {}
     );
 

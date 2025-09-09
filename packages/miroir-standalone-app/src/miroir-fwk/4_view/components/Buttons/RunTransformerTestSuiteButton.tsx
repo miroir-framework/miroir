@@ -2,6 +2,7 @@
 import {
   MiroirLoggerFactory,
   TestFramework,
+  defaultLibraryModelEnvironment,
   defaultMiroirMetaModel,
   miroirFundamentalJzodSchema,
   runTransformerTestInMemory,
@@ -209,18 +210,22 @@ export const RunTransformerTestSuiteButton: React.FC<RunTransformerTestSuiteButt
     }
     
     // Run the test suite
-    const testSuitePath = [testSuiteKey];
+    // const testSuitePath = [testSuiteKey];
     await runTransformerTestSuite(
       // { expect, describe, test } as any, // vitest-like interface
       TestFramework as any, // vitest-like interface
-      testSuitePath,
+      [], // testSuitePath,
       (transformerTestSuite as TransformerTestDefinition).definition,
+      undefined, // filter
+      // {testList: {"resolveConditionalSchema": ["error if no value found at given parentUuid path"]}}, // filter
       runTransformerTestInMemory,
-      {
-        miroirFundamentalJzodSchema: miroirFundamentalJzodSchema as JzodSchema,
-        miroirMetaModel: defaultMiroirMetaModel
-        // TODO: current app schema
-      },
+      // {
+      //   miroirFundamentalJzodSchema: miroirFundamentalJzodSchema as JzodSchema,
+      //   miroirMetaModel: defaultMiroirMetaModel
+      //   // TODO: current app schema
+      // },
+      // defaultMiroirModelEnvironment,
+      defaultLibraryModelEnvironment,
       miroirContextService.miroirContext.miroirEventTracker // Pass the unified tracker
     );
 

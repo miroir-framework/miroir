@@ -739,8 +739,13 @@ export {
   getInnermostTypeCheckError,
 } from "./1_core/jzod/mlsTypeCheckError";
 export {
+  defaultLibraryAppModel,
+  defaultLibraryModelEnvironment,
+} from "./1_core/Library";
+export {
   applicationModelEntities,
   defaultMiroirMetaModel,
+  defaultMetaModelEnvironment,
   defaultMiroirModelEnvironment,
   // getCurrentEntityDefinition,
   getReportsAndEntitiesDefinitionsForDeploymentUuid,

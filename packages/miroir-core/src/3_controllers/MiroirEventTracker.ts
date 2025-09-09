@@ -1,3 +1,5 @@
+import chalk from 'chalk';
+
 import {
   TestAssertionResult,
   TestResult,
@@ -414,10 +416,14 @@ export class MiroirEventTracker implements MiroirEventTrackerInterface {
       "MiroirEventTracker.setTestAssertionResult called for testAssertionPath",
       testAssertionPath,
       "testAssertionResult",
-      JSON.stringify(testAssertionResult, null, 2),
       // "old this.testAssertionsResults",
       // JSON.stringify(this.testAssertionsResults, null, 2)
     );
+    console.log(testAssertionResult?.assertionResult == "ok"
+        ? chalk.green(JSON.stringify(testAssertionResult, null, 2))
+        : chalk.red(JSON.stringify(testAssertionResult, null, 2))
+    );
+
 
     if (testAssertionPath.length === 0) {
       throw new Error("testAssertionPath cannot be empty");

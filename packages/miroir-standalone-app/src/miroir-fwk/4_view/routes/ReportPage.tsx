@@ -80,7 +80,7 @@ export const ReportPage = () => {
   // Get outline context from RootComponent
   const outlineContext = useDocumentOutlineContext();
 
-  log.info("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& ReportPage rendering", "navigationCount", navigationCount, "totalCount", totalCount, "params", pageParams);
+  // log.info("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& ReportPage rendering", "navigationCount", navigationCount, "totalCount", totalCount, "params", pageParams);
   useEffect(() => context.setDeploymentUuid(pageParams.deploymentUuid ? pageParams.deploymentUuid : ""));
   useEffect(() => context.setApplicationSection((pageParams.applicationSection as ApplicationSection) ?? "data"));
 
@@ -127,7 +127,7 @@ export const ReportPage = () => {
     (d) => d.uuid == pageParams.deploymentUuid
   );
 
-  log.info("displayedDeploymentDefinition", displayedDeploymentDefinition);
+  // log.info("displayedDeploymentDefinition", displayedDeploymentDefinition);
 
   const deploymentUuidToReportsEntitiesDefinitionsMapping = useMemo(
     () => (
@@ -190,7 +190,7 @@ export const ReportPage = () => {
     pageParams.applicationSection,
   ]);
 
-  log.info("context.deploymentUuidToReportsEntitiesDefinitionsMapping", context.deploymentUuidToReportsEntitiesDefinitionsMapping);
+  // log.info("context.deploymentUuidToReportsEntitiesDefinitionsMapping", context.deploymentUuidToReportsEntitiesDefinitionsMapping);
 
   const { availableReports, entities, entityDefinitions } = useMemo(() => {
     return displayedDeploymentDefinition &&
@@ -212,10 +212,10 @@ export const ReportPage = () => {
   const currentMiroirReport: Report =
     availableReports?.find((r: Report) => r.uuid == pageParams.reportUuid) ?? defaultReport;
 
-  log.info("currentMiroirReport", currentMiroirReport);
+  // log.info("currentMiroirReport", currentMiroirReport);
 
   if (pageParams.applicationSection) {
-    log.info("ReportPage rendering", "navigationCount", navigationCount, "totalCount", totalCount, "params", pageParams);
+    // log.info("ReportPage rendering", "navigationCount", navigationCount, "totalCount", totalCount, "params", pageParams);
     // log.info("ReportPage current metrics:", RenderPerformanceMetrics.renderMetrics);
     return (
       <PageContainer

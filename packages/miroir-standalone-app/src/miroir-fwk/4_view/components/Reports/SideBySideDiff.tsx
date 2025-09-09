@@ -1,5 +1,5 @@
 import * as Diff from "diff";
-import React from 'react';
+import React, { useRef, useCallback } from 'react';
 
 import { useMiroirTheme } from "../../contexts/MiroirThemeContext.js";
 
@@ -17,13 +17,53 @@ export const formatValue = (value: any): string => {
   }
 };
 
-// Themed component for side-by-side diff display with syntax highlighting
+// Themed component for side-by-side diff display with syntax highlighting and synchronized scrolling
 export const SideBySideDiff: React.FC<{ expected: any; actual: any; assertionName: string }> = ({ 
   expected, 
   actual, 
   assertionName 
 }) => {
   const { currentTheme } = useMiroirTheme();
+  const expectedScrollRef = useRef<HTMLDivElement>(null);
+  const actualScrollRef = useRef<HTMLDivElement>(null);
+  const isScrollingSyncRef = useRef(false);
+  
+  // Synchronized scrolling handlers
+  const handleExpectedScroll = useCallback(() => {
+    if (isScrollingSyncRef.current) return;
+    
+    const expectedEl = expectedScrollRef.current;
+    const actualEl = actualScrollRef.current;
+    
+    if (expectedEl && actualEl) {
+      isScrollingSyncRef.current = true;
+      actualEl.scrollTop = expectedEl.scrollTop;
+      actualEl.scrollLeft = expectedEl.scrollLeft;
+      
+      // Reset the sync flag after a brief delay
+      setTimeout(() => {
+        isScrollingSyncRef.current = false;
+      }, 10);
+    }
+  }, []);
+  
+  const handleActualScroll = useCallback(() => {
+    if (isScrollingSyncRef.current) return;
+    
+    const expectedEl = expectedScrollRef.current;
+    const actualEl = actualScrollRef.current;
+    
+    if (expectedEl && actualEl) {
+      isScrollingSyncRef.current = true;
+      expectedEl.scrollTop = actualEl.scrollTop;
+      expectedEl.scrollLeft = actualEl.scrollLeft;
+      
+      // Reset the sync flag after a brief delay
+      setTimeout(() => {
+        isScrollingSyncRef.current = false;
+      }, 10);
+    }
+  }, []);
   
   const expectedFormatted = formatValue(expected);
   const actualFormatted = formatValue(actual);
@@ -114,7 +154,9 @@ export const SideBySideDiff: React.FC<{ expected: any; actual: any; assertionNam
     fontFamily: 'Monaco, Consolas, "Courier New", monospace',
     whiteSpace: 'pre-wrap',
     lineHeight: '1.4',
-    maxHeight: '300px',
+    minHeight: '300px', // Minimum height for good visibility
+    maxHeight: '60vh', // Maximum height to prevent excessive growth
+    height: 'auto', // Allow content to determine height within constraints
     overflow: 'auto',
     backgroundColor: currentTheme.colors.background,
   };
@@ -130,6 +172,15 @@ export const SideBySideDiff: React.FC<{ expected: any; actual: any; assertionNam
     <div style={containerStyles}>
       <div style={headerStyles}>
         ❌ {assertionName}: FAIL
+        <div style={{ 
+          fontSize: '10px', 
+          fontWeight: 'normal', 
+          fontStyle: 'italic', 
+          marginTop: '4px',
+          color: currentTheme.colors.text + '80' || '#666666'
+        }}>
+          💡 Tip: Left and right sides scroll together for easy comparison
+        </div>
       </div>
       
       <div style={gridStyles}>
@@ -138,7 +189,11 @@ export const SideBySideDiff: React.FC<{ expected: any; actual: any; assertionNam
           <div style={columnHeaderStyles('expected')}>
             Expected
           </div>
-          <div style={contentStyles}>
+          <div 
+            ref={expectedScrollRef}
+            style={contentStyles}
+            onScroll={handleExpectedScroll}
+          >
             {renderDiffContent('expected')}
           </div>
         </div>
@@ -148,7 +203,11 @@ export const SideBySideDiff: React.FC<{ expected: any; actual: any; assertionNam
           <div style={columnHeaderStyles('actual')}>
             Actual
           </div>
-          <div style={contentStyles}>
+          <div 
+            ref={actualScrollRef}
+            style={contentStyles}
+            onScroll={handleActualScroll}
+          >
             {renderDiffContent('actual')}
           </div>
         </div>

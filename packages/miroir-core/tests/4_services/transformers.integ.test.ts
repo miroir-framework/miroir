@@ -40,7 +40,7 @@ import {
   InitApplicationParameters,
   PersistenceStoreAdminSectionInterface,
 } from "../../src/0_interfaces/4-services/PersistenceStoreControllerInterface.js";
-import { defaultMiroirMetaModel, defaultMiroirModelEnvironment } from '../../src/1_core/Model.js';
+import { defaultMiroirMetaModel, defaultMetaModelEnvironment } from '../../src/1_core/Model.js';
 import { getBasicApplicationConfiguration, getBasicStoreUnitConfiguration } from '../../src/2_domain/Deployment.js';
 import { PersistenceStoreController } from '../../src/4_services/PersistenceStoreController.js';
 import {
@@ -57,10 +57,10 @@ import { MiroirEventTracker } from '../../src/3_controllers/MiroirEventTracker';
 const RUN_TEST= process.env.RUN_TEST
 console.log("@@@@@@@@@@@@@@@@@@ RUN_TEST", RUN_TEST);
 
+const miroirEventTracker = new MiroirEventTracker();
 // console.log("@@@@@@@@@@@@@@@@@@ miroirConfig", miroirConfig);
 
 // describe.sequential("templatesDEFUNCT.unit.test", () => {
-const miroirEventTracker = new MiroirEventTracker();
 
 const testSuiteName = "transformers.integ.test";
 
@@ -219,7 +219,7 @@ afterAll(async () => {
     // await persistenceStoreController.deleteStore(testStoreConfig.model);
     // await persistenceStoreController.deleteStore(testStoreConfig.admin);
     // await persistenceStoreController.close();
-    transformerTestsDisplayResults(currentTestSuite, RUN_TEST, testSuiteName);
+    transformerTestsDisplayResults(currentTestSuite, RUN_TEST, testSuiteName, miroirEventTracker);
   }
   console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ afterAll DONE");
 });
@@ -248,8 +248,9 @@ if (RUN_TEST == testSuiteName) {
     vitest,
     [],
     currentTestSuite,
+    undefined, // filter
     runTransformerIntegrationTest(sqlDbDataStore),
-    defaultMiroirModelEnvironment,
+    defaultMetaModelEnvironment,
     miroirEventTracker
   );
 } else {

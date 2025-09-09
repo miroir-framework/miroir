@@ -1,3 +1,4 @@
+import * as vitest from 'vitest';
 import {
   describe as localDescribe,
   expect as localExpect,
@@ -19,12 +20,16 @@ import {
 
 import transformerTestSuite_jzodTypeCheck from "../../../src/assets/miroir_data/681be9ca-c593-45f5-b45a-5f1d4969e91e/f8e3c7a1-2b9d-4e6f-8c2a-5d7b9e4f1a8c.json";
 import { defaultMiroirMetaModel } from "../../../src/1_core/Model";
+import { MiroirEventTracker } from '../../../src/3_controllers/MiroirEventTracker';
 
 const RUN_TEST= process.env.RUN_TEST
 console.log("@@@@@@@@@@@@@@@@@@ RUN_TEST", RUN_TEST);
 
 const selectedTestName: string[] = [];
 const testSuiteName = transformerTestSuite_jzodTypeCheck.definition.transformerTestLabel;
+
+const eventTracker = new MiroirEventTracker();
+
 // ################################################################################################
 if (RUN_TEST == testSuiteName) {
   // const testSuite: TransformerTestSuite = transformerTestSuite_jzodTypeCheck.definition as TransformerTestSuite;
@@ -40,19 +45,23 @@ if (RUN_TEST == testSuiteName) {
     transformerTests: selectedTests as any
   } as any;
   await runTransformerTestSuite(
-    { describe: localDescribe, expect: localExpect},
+    // { describe: localDescribe, expect: localExpect },
+    vitest,
     [],
     effectiveTests,
+    undefined, // filter
     runTransformerTestInMemory,
     {
       miroirFundamentalJzodSchema: miroirFundamentalJzodSchema as JzodSchema,
-      currentModel: defaultMiroirMetaModel, 
-    }
+      currentModel: defaultMiroirMetaModel,
+    },
+    eventTracker,
   );
   transformerTestsDisplayResults(
     effectiveTests,
     RUN_TEST,
-    testSuiteName
+    testSuiteName,
+    eventTracker
   );
 } else {
   console.log(

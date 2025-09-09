@@ -42,34 +42,20 @@
         "transformerParams": {},
         "expectedValue": { "type": "string", "tag": { "value": { "conditionalMMLS": {} } } }
       },
-      "error if reduxDeploymentsState is missing when parentUuid is present": {
+      "error if parentUuid path specified but not given deploymentUuid": {
         "transformerTestType": "transformerTest",
-        "transformerTestLabel": "error if reduxDeploymentsState is missing when parentUuid is present",
+        "transformerTestLabel": "error if parentUuid path specified but not given deploymentUuid",
         "transformerName": "resolveConditionalSchema",
         "runTestStep": "build",
         "transformer": {
           "transformerType": "resolveConditionalSchema",
           "interpolation": "build",
           "schema": {
-            "type": "object",
-            "definition": {
-              "a": {
-                "type": "object",
-                "definition": { "b": { "type": "string" } }
-              },
-              "c": {
-                "type": "object",
-                "definition": {
-                  "d": {
-                    "type": "any",
-                    "tag": {
-                      "value": {
-                        "conditionalMMLS": {
-                          "parentUuid": { "path": "#.notExistingAttribute" }
-                        }
-                      }
-                    }
-                  }
+            "type": "any",
+            "tag": {
+              "value": {
+                "conditionalMMLS": {
+                  "parentUuid": { "path": "#.notExistingAttribute" }
                 }
               }
             }
@@ -79,7 +65,9 @@
           "valuePath": ["c", "d"]
         },
         "transformerParams": {},
-        "expectedValue": { "error": "NO_REDUX_DEPLOYMENTS_STATE" }
+        "expectedValue": {
+          "error": "NO_DEPLOYMENT_UUID"
+        }
       },
       "error if no value found at given parentUuid path": {
         "transformerTestType": "transformerTest",
@@ -89,26 +77,13 @@
         "transformer": {
           "transformerType": "resolveConditionalSchema",
           "interpolation": "build",
+          "deploymentUuid": "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
           "schema": {
-            "type": "object",
-            "definition": {
-              "a": {
-                "type": "object",
-                "definition": { "b": { "type": "string" } }
-              },
-              "c": {
-                "type": "object",
-                "definition": {
-                  "d": {
-                    "type": "any",
-                    "tag": {
-                      "value": {
-                        "conditionalMMLS": {
-                          "parentUuid": { "path": "#.notExistingAttribute" }
-                        }
-                      }
-                    }
-                  }
+            "type": "any",
+            "tag": {
+              "value": {
+                "conditionalMMLS": {
+                  "parentUuid": { "path": "#.notExistingAttribute" }
                 }
               }
             }
@@ -120,7 +95,46 @@
         "transformerParams": {},
         "expectedValue": {
           "error": "INVALID_PARENT_UUID_CONFIG",
-          "details": "parentUuid resolution failed: {\n  \"error\": \"PATH_SEGMENT_NOT_FOUND\",\n  \"segment\": \"notExistingAttribute\",\n  \"acc\": {}\n}"
+          "details": "parentUuid resolution failed: {\n  \"error\": \"INITIAL_PATH_SEGMENT_NOT_FOUND\",\n  \"segment\": \"c\",\n  \"current\": {}\n}"
+        }
+      },
+      "fails when wrong parentUuid is given": {
+        "transformerTestType": "transformerTest",
+        "transformerTestLabel": "fails when wrong parentUuid is given",
+        "transformerName": "resolveConditionalSchema",
+        "runTestStep": "build",
+        "transformer": {
+          "transformerType": "resolveConditionalSchema",
+          "interpolation": "build",
+          "schema": {
+            "type": "any",
+            "tag": {
+              "value": { "conditionalMMLS": { "parentUuid": { "path": "#.e" } } }
+            }
+          },
+          "deploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+          "valueObject": {
+            "a": { "b": "test" },
+            "c": { 
+              "e": "WRONG_UUID",
+              "d": {
+                "uuid": "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
+                "parentName": "Book",
+                "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                "conceptLevel": "Data",
+                "name": "Et dans l'éternité je ne m'ennuierai pas",
+                "author": "ce7b601d-be5f-4bc6-a5af-14091594046a",
+                "publisher": "516a7366-39e7-4998-82cb-80199a7fa667"
+              }
+           }
+          },
+          "context": "defaultValue",
+          "valuePath": ["c", "d"]
+        },
+        "transformerParams": {},
+        "expectedValue": {
+          "error": "PARENT_NOT_FOUND",
+          "details": "No entity definition found for parentUuid WRONG_UUID in deployment f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
         }
       },
       "resolves schema using legacy single path configuration": {
@@ -132,27 +146,27 @@
           "transformerType": "resolveConditionalSchema",
           "interpolation": "build",
           "schema": {
-            "type": "object",
-            "definition": {
-              "a": {
-                "type": "object",
-                "definition": { "b": { "type": "string" } }
-              },
-              "c": {
-                "type": "object",
-                "definition": {
-                  "d": {
-                    "type": "any",
-                    "tag": {
-                      "value": { "conditionalMMLS": { "parentUuid": { "path": "#.e" } } }
-                    }
-                  },
-                  "e": { "type": "string" }
-                }
-              }
+            "type": "any",
+            "tag": {
+              "value": { "conditionalMMLS": { "parentUuid": { "path": "#.e" } } }
             }
           },
-          "valueObject": {},
+          "deploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+          "valueObject": {
+            "a": { "b": "test" },
+            "c": { 
+              "e": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+              "d": {
+                "uuid": "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
+                "parentName": "Book",
+                "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                "conceptLevel": "Data",
+                "name": "Et dans l'éternité je ne m'ennuierai pas",
+                "author": "ce7b601d-be5f-4bc6-a5af-14091594046a",
+                "publisher": "516a7366-39e7-4998-82cb-80199a7fa667"
+              }
+           }
+          },
           "context": "defaultValue",
           "valuePath": ["c", "d"]
         },
@@ -161,58 +175,88 @@
           "type": "object",
           "definition": {
             "uuid": {
-              "type": "simpleType",
-              "definition": "string",
-              "validations": [{ "type": "uuid" }],
-              "tag": { "id": 1, "defaultLabel": "Uuid", "editable": false }
+              "type": "uuid",
+              "tag": {
+                "value": {
+                  "id": 1,
+                  "defaultLabel": "Uuid",
+                  "editable": false
+                }
+              }
             },
             "parentName": {
-              "type": "simpleType",
-              "definition": "string",
-              "optional": true,
-              "tag": { "id": 2, "defaultLabel": "Entity Name", "editable": false }
-            },
-            "parentUuid": {
-              "type": "simpleType",
-              "definition": "string",
-              "validations": [{ "type": "uuid" }],
-              "tag": { "id": 3, "defaultLabel": "Entity Uuid", "editable": false }
-            },
-            "name": {
-              "type": "simpleType",
-              "definition": "string",
-              "tag": { "id": 4, "defaultLabel": "Name", "editable": true }
-            },
-            "author": {
-              "type": "simpleType",
-              "definition": "string",
-              "validations": [
-                {
-                  "type": "uuid"
-                }
-              ],
+              "type": "string",
               "optional": true,
               "tag": {
-                "id": 5,
-                "defaultLabel": "Author",
-                "targetEntity": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
-                "editable": true
+                "value": {
+                  "id": 2,
+                  "defaultLabel": "Entity Name",
+                  "editable": false
+                }
+              }
+            },
+            "parentUuid": {
+              "type": "uuid",
+              "tag": {
+                "value": {
+                  "id": 3,
+                  "defaultLabel": "Entity Uuid",
+                  "editable": false
+                }
+              }
+            },
+            "conceptLevel": {
+              "type": "enum",
+              "definition": ["MetaModel", "Model", "Data"],
+              "optional": true,
+              "tag": {
+                "value": {
+                  "id": 5,
+                  "defaultLabel": "Concept Level",
+                  "editable": false
+                }
+              }
+            },
+            "name": {
+              "type": "string",
+              "tag": {
+                "value": {
+                  "id": 4,
+                  "defaultLabel": "Name",
+                  "editable": true
+                }
+              }
+            },
+            "author": {
+              "type": "uuid",
+              "optional": true,
+              "tag": {
+                "value": {
+                  "id": 5,
+                  "editable": true,
+                  "defaultLabel": "Author",
+                  "targetEntity": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+                  "selectorParams": {
+                    "targetEntity": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+                    "targetEntityOrderInstancesBy": "name"
+                  }
+                }
               }
             },
             "publisher": {
-              "type": "simpleType",
-              "definition": "string",
-              "validations": [
-                {
-                  "type": "uuid"
-                }
-              ],
+              "type": "uuid",
               "optional": true,
               "tag": {
-                "id": 5,
-                "defaultLabel": "Publisher",
-                "targetEntity": "a027c379-8468-43a5-ba4d-bf618be25cab",
-                "editable": true
+                "value": {
+                  "id": 5,
+                  "editable": true,
+                  "defaultLabel": "Publisher",
+                  "targetEntity": "a027c379-8468-43a5-ba4d-bf618be25cab",
+                  "selectorParams": {
+                    "targetEntity": "a027c379-8468-43a5-ba4d-bf618be25cab",
+                    "targetEntityOrderInstancesBy": "name"
+                  }
+                }
               }
             }
           }

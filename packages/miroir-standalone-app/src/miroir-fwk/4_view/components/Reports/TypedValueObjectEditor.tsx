@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux';
 import {
   adminConfigurationDeploymentMiroir,
   ApplicationSection,
-  defaultMiroirModelEnvironment,
+  defaultMetaModelEnvironment,
   Domain2QueryReturnType,
   DomainElementSuccess,
   dummyDomainManyQueryWithDeploymentUuid,
@@ -240,7 +240,7 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
   
   const reduxDeploymentsState: ReduxDeploymentsState = useSelector(
     (state: ReduxStateWithUndoRedo) =>
-      deploymentEntityStateSelectorMap.extractState(state.presentModelSnapshot.current, () => ({}), defaultMiroirModelEnvironment)
+      deploymentEntityStateSelectorMap.extractState(state.presentModelSnapshot.current, () => ({}), defaultMetaModelEnvironment)
   );
 
 
@@ -298,7 +298,7 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
                     formik.values,
                     [],
                     [],
-                    // defaultMiroirModelEnvironment,
+                    // defaultMetaModelEnvironment,
                     {
                       miroirFundamentalJzodSchema: context.miroirFundamentalJzodSchema,
                       currentModel,

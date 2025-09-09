@@ -68,8 +68,7 @@ export const ReportView = (props: ReportViewProps) => {
   const outlineContext = useDocumentOutlineContext();
 
   const paramsAsdomainElements: Domain2QueryReturnType<Record<string,any>> = props.pageParams;
-  // log.info("########################## ReportView rendering", count, "props", props);
-  log.info("########################## ReportView rendering", "navigationCount", navigationCount, "totalCount", totalCount);
+  // log.info("########################## ReportView rendering", "navigationCount", navigationCount, "totalCount", totalCount);
 
   // log.info(
   //   "deploymentUuid",
@@ -181,7 +180,7 @@ export const ReportView = (props: ReportViewProps) => {
     deploymentEntityStateFetchQueryParams
   );
 
-  log.info("deploymentEntityStateQueryResults", deploymentEntityStateQueryResults);
+  // log.info("deploymentEntityStateQueryResults", deploymentEntityStateQueryResults);
 
 
   const jzodSchemaSelectorMap: QueryRunnerMapForJzodSchema<ReduxDeploymentsState> = useMemo(

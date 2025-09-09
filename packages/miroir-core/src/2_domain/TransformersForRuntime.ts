@@ -240,12 +240,9 @@ export function getDefaultValueForJzodSchemaWithResolution<T extends MiroirModel
     const result = transformer_extended_apply_wrapper(
       "build",
       [...currentValuePath, 'initializeTo'],
-      undefined,
+      undefined, // label
       effectiveSchema.tag.value.initializeTo.transformer,
       {
-        // miroirFundamentalJzodSchema,
-        // currentModel,
-        // miroirMetaModel,
         ...miroirEnvironment,
         deploymentUuid,
         rootObject
@@ -529,6 +526,7 @@ export function getDefaultValueForJzodSchemaWithResolution<T extends MiroirModel
   }
 }
 
+// ################################################################################################
 export function getDefaultValueForJzodSchemaWithResolutionNonHook<T extends MiroirModelEnvironment>(
   step: Step,
   jzodSchema: JzodElement,
@@ -570,9 +568,9 @@ export function getDefaultValueForJzodSchemaWithResolutionNonHook<T extends Miro
       rootLessListKey,
       currentDefaultValue,
       currentValuePath,
-      undefined,
+      undefined, // reduxDeploymentsState
       forceOptional,
-      undefined,
+      undefined, // deploymentUuid
       miroirEnvironment,
       relativeReferenceJzodContext,
     );

@@ -22,6 +22,7 @@ export interface DraggableContainerProps {
 }
 
 // Generic draggable container component
+// IMPORTANT: ESC key support added - container closes when ESC is pressed (if onClose is provided)
 export const DraggableContainer: React.FC<DraggableContainerProps> = ({
   title = "Performance Stats",
   children,
@@ -31,6 +32,20 @@ export const DraggableContainer: React.FC<DraggableContainerProps> = ({
   onClose
 }) => {
   const { currentTheme } = useMiroirTheme();
+
+  // Handle ESC key press to close draggable container
+  React.useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && onClose) {
+        onClose();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [onClose]);
   
   const [position, setPosition] = React.useState(() => {
     // Load position from sessionStorage

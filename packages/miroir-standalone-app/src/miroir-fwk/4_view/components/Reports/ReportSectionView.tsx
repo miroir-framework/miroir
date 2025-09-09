@@ -90,7 +90,7 @@ export const ReportSectionView = (props: ReportSectionViewProps) => {
   const currentNavigationKey = `${props.deploymentUuid}-${props.applicationSection}`;
   const { navigationCount, totalCount } = useRenderTracker("ReportSectionView", currentNavigationKey);
 
-  log.info("########################## ReportSectionView render", "navigationCount", navigationCount, "totalCount", totalCount, "props", props);
+  // log.info("########################## ReportSectionView render", "navigationCount", navigationCount, "totalCount", totalCount, "props", props);
 
 
   // ##############################################################################################
