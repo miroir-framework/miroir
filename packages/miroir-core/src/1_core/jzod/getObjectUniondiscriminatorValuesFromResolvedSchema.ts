@@ -84,7 +84,7 @@ export function getObjectUniondiscriminatorValuesFromResolvedSchema(
             // return branch && branch.definition && branch.definition[discriminator];
             return branch && branch.definition;
           })
-          .filter((branch: any /** JzodObject */) => branch && branch.type == "union") // keep only union branches
+          .filter((branch: any /** JzodObject */) => branch && (branch.type == "object" || branch.type == "union")) // keep only union branches
           .flatMap((branch: any /** JzodObject */) => {
             // return (a.definition as any)[(unfoldedRawSchema as any).discriminator].definition}
             if (!branch || !branch.definition || !branch.definition[discriminator]) {

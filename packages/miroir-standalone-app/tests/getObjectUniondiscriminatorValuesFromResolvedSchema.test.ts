@@ -89,61 +89,61 @@ function local_test(schema: JzodUnion, instance: any): string[][] {
 }
 
 describe("getObjectUniondiscriminatorValuesFromResolvedSchema", () => {
-  // it("returns correct result for a simple union of objects with discriminator", () => {
-  //   const schema: JzodUnion = {
-  //     type: "union",
-  //     discriminator: "objectType",
-  //     definition: [
-  //       {
-  //         type: "object",
-  //         definition: {
-  //           objectType: { type: "literal", definition: "A" },
-  //           value: { type: "string" },
-  //         },
-  //       },
-  //       {
-  //         type: "object",
-  //         definition: {
-  //           objectType: { type: "literal", definition: "B" },
-  //           value: { type: "number" },
-  //         },
-  //       },
-  //     ],
-  //   };
-  //   const instance = { objectType: "A", value: "test" };
-  //   const result = local_test(schema, instance);
-  //   console.log("Result for simple union:", JSON.stringify(result, null, 2));
-  //   expect(result).toEqual([["A", "B"]]);
-  // });
+  it("returns correct result for a simple union of objects with discriminator", () => {
+    const schema: JzodUnion = {
+      type: "union",
+      discriminator: "objectType",
+      definition: [
+        {
+          type: "object",
+          definition: {
+            objectType: { type: "literal", definition: "A" },
+            value: { type: "string" },
+          },
+        },
+        {
+          type: "object",
+          definition: {
+            objectType: { type: "literal", definition: "B" },
+            value: { type: "number" },
+          },
+        },
+      ],
+    };
+    const instance = { objectType: "A", value: "test" };
+    const result = local_test(schema, instance);
+    console.log("Result for simple union:", JSON.stringify(result, null, 2));
+    expect(result).toEqual([["A", "B"]]);
+  });
 
-  // it("composite discriminator", () => {
-  //   const schema: JzodUnion = {
-  //     type: "union",
-  //     discriminator: ["objectType", "interpolation"],
-  //     definition: [
-  //       {
-  //         type: "object",
-  //         definition: {
-  //           objectType: { type: "literal", definition: "A" },
-  //           interpolation: { type: "literal", definition: "build" },
-  //           value: { type: "string" },
-  //         },
-  //       },
-  //       {
-  //         type: "object",
-  //         definition: {
-  //           objectType: { type: "literal", definition: "B" },
-  //           interpolation: { type: "literal", definition: "runtime" },
-  //           value: { type: "number" },
-  //         },
-  //       },
-  //     ],
-  //   };
-  //   const instance = { objectType: "A", interpolation: "build", value: "test" };
-  //   const result = local_test(schema, instance);
-  //   console.log("Result for simple union:", JSON.stringify(result, null, 2));
-  //   expect(result).toEqual([["A", "B"], ["build", "runtime"]]);
-  // });
+  it("composite discriminator", () => {
+    const schema: JzodUnion = {
+      type: "union",
+      discriminator: ["objectType", "interpolation"],
+      definition: [
+        {
+          type: "object",
+          definition: {
+            objectType: { type: "literal", definition: "A" },
+            interpolation: { type: "literal", definition: "build" },
+            value: { type: "string" },
+          },
+        },
+        {
+          type: "object",
+          definition: {
+            objectType: { type: "literal", definition: "B" },
+            interpolation: { type: "literal", definition: "runtime" },
+            value: { type: "number" },
+          },
+        },
+      ],
+    };
+    const instance = { objectType: "A", interpolation: "build", value: "test" };
+    const result = local_test(schema, instance);
+    console.log("Result for simple union:", JSON.stringify(result, null, 2));
+    expect(result).toEqual([["A", "B"], ["build", "runtime"]]);
+  });
 
   it("discriminated union with array opt-in", () => {
     const schema: JzodUnion = {
@@ -205,7 +205,7 @@ describe("getObjectUniondiscriminatorValuesFromResolvedSchema", () => {
     };
     const result = local_test(schema, instance);
     console.log("Result for simple union:", JSON.stringify(result, null, 2));
-    expect(result).toEqual([]);
+    expect(result).toEqual([["schemaReference", "object"]]);
   });
 
 });
