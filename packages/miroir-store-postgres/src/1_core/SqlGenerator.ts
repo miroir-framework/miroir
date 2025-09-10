@@ -431,6 +431,11 @@ function sqlStringForApplyTo(
   useAccessPathForContextReference: boolean = true,
   topLevelTransformer: boolean = true
 ): Domain2QueryReturnType<SqlStringForTransformerElementValue> {
+  log.info(
+    "sqlStringForApplyTo called with",
+    "actionRuntimeTransformer",
+    JSON.stringify(actionRuntimeTransformer, null, 2),
+  );
   switch (typeof actionRuntimeTransformer.applyTo) {
     case "string":
     case "number":
@@ -469,24 +474,42 @@ function sqlStringForApplyTo(
           topLevelTransformer
         );
       }
-      if (actionRuntimeTransformer.applyTo.transformerType != "contextReference") {
-        return new Domain2ElementFailed({
-          queryFailure: "QueryNotExecutable",
-          query: actionRuntimeTransformer as any,
-          failureMessage:
-            "sqlStringForRuntimeTransformer sqlStringForApplyTo implemented only for contextReference type: " + JSON.stringify(actionRuntimeTransformer.applyTo),
-        });
+      if (
+        ["constantAsExtractor", "constant", "contextReference", "parameterReference"].includes(
+          actionRuntimeTransformer.applyTo.transformerType || ""
+        )
+      ) {
+        return sqlStringForRuntimeTransformer(
+          actionRuntimeTransformer.applyTo as any, // TODO: fix types of sqlStringForApplyTo and sqlStringForRuntimeTransformer
+          preparedStatementParametersIndex,
+          indentLevel,
+          queryParams,
+          definedContextEntries,
+          useAccessPathForContextReference,
+          topLevelTransformer
+        );
       }
-      const referenceQuery = sqlStringForRuntimeTransformer(
-              actionRuntimeTransformer.applyTo,
-              preparedStatementParametersIndex,
-              indentLevel,
-              queryParams,
-              definedContextEntries,
-              useAccessPathForContextReference,
-              topLevelTransformer
-            );
-      return referenceQuery;
+      // if (actionRuntimeTransformer.applyTo.transformerType != "contextReference") {
+      return new Domain2ElementFailed({
+        queryFailure: "QueryNotExecutable",
+        query: actionRuntimeTransformer as any,
+        failureMessage:
+          "sqlStringForRuntimeTransformer sqlStringForApplyTo not implemented for " +
+          actionRuntimeTransformer.applyTo.transformerType +
+          " type: " +
+          JSON.stringify(actionRuntimeTransformer.applyTo),
+      });
+      // }
+      // const referenceQuery = sqlStringForRuntimeTransformer(
+      //   actionRuntimeTransformer.applyTo,
+      //   preparedStatementParametersIndex,
+      //   indentLevel,
+      //   queryParams,
+      //   definedContextEntries,
+      //   useAccessPathForContextReference,
+      //   topLevelTransformer
+      // );
+      // return referenceQuery;
     
     }
     case "symbol":

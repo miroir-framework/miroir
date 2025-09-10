@@ -1,9 +1,9 @@
-// import * as vitest from 'vitest';
+import * as vitest from 'vitest';
 // import { describe, expect, it } from "vitest";
-import {
-  describe,
-  expect,
-} from "../../../src/1_core/test-expect";
+// import {
+//   describe,
+//   expect,
+// } from "../../../src/1_core/test-expect";
 
 import {
   type TransformerTestSuite,
@@ -20,14 +20,24 @@ import { defaultMetaModelEnvironment } from "../../../src/1_core/Model";
 
 import transformerTestSuite_unfoldSchemaOnce from "../../../src/assets/miroir_data/681be9ca-c593-45f5-b45a-5f1d4969e91e/e8b5d1a2-9473-4f6c-b2e8-7f8a5c6d9e0f.json";
 
-const RUN_TEST= process.env.RUN_TEST
-console.log("@@@@@@@@@@@@@@@@@@ RUN_TEST", RUN_TEST);
+// Access the test file pattern from Vitest's process arguments
+const vitestArgs = process.argv.slice(2);
+const filePattern = vitestArgs.find(arg => !arg.startsWith('-')) || '';
+console.log("@@@@@@@@@@@@@@@@@@ File Pattern:", filePattern);
 
 const selectedTestName: string[] = [];
 
 // ################################################################################################
-// const testSuiteName = "transformers.unit.test";
-if (RUN_TEST == transformerTestSuite_unfoldSchemaOnce.definition.transformerTestLabel) {
+const testSuiteName = transformerTestSuite_unfoldSchemaOnce.definition.transformerTestLabel;
+
+// Skip this test when running resolveConditionalSchema pattern  
+const shouldSkip = filePattern.includes('resolveConditionalSchema');
+
+if (shouldSkip) {
+  console.log("################################ skipping test suite:", transformerTestSuite_unfoldSchemaOnce.definition.transformerTestLabel);
+  console.log("################################ File pattern:", filePattern);
+  describe.skip(testSuiteName, () => {});
+} else {
   const miroirEventTracker = new MiroirEventTracker();
   
   const testSuite: TransformerTestSuite = transformerTestSuite_unfoldSchemaOnce.definition as TransformerTestSuite;
@@ -42,7 +52,7 @@ if (RUN_TEST == transformerTestSuite_unfoldSchemaOnce.definition.transformerTest
     transformerTests: selectedTests as any
   } as any;
   await runTransformerTestSuite(
-    { describe, expect } as any, //vitest,
+    vitest,//{ describe, expect } as any, //vitest,
     [],
     effectiveTests,
     undefined, // filter
@@ -52,13 +62,8 @@ if (RUN_TEST == transformerTestSuite_unfoldSchemaOnce.definition.transformerTest
   );
   transformerTestsDisplayResults(
     effectiveTests,
-    RUN_TEST,
+    filePattern || "",
     transformerTestSuite_unfoldSchemaOnce.definition.transformerTestLabel,
     miroirEventTracker
-  );
-} else {
-  console.log(
-    "################################ skipping test suite:",
-    transformerTestSuite_unfoldSchemaOnce.definition.transformerTestLabel
   );
 }

@@ -1,13 +1,12 @@
+import chalk from 'chalk';
 import * as vitest from 'vitest';
 type VitestNamespace = typeof vitest;
-import chalk from 'chalk';
 // chalk.enabled = true
 chalk.level = 3;
 
 import {
   TransformerForRuntime,
   type TestAssertionResult,
-  type TestsResults,
   type TestSuiteResult,
   type TransformerForBuildPlusRuntime,
   type TransformerTest,
@@ -17,8 +16,8 @@ import { type MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer"
 import {
   Action2ReturnType,
   Action2Success,
-  Domain2ElementFailed,
-  Domain2QueryReturnType,
+  TransformerFailure,
+  type TransformerReturnType
 } from "../0_interfaces/2_domain/DomainElement";
 import type { MiroirEventTrackerInterface, TestAssertionPath } from "../0_interfaces/3_controllers/MiroirEventTrackerInterface";
 import type { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
@@ -26,10 +25,10 @@ import { jsonify } from "../1_core/test-expect";
 import { transformer_extended_apply_wrapper } from "../2_domain/TransformersForRuntime";
 import { MiroirEventTracker } from "../3_controllers/MiroirEventTracker";
 import { packageName } from "../constants";
+import { circularReplacer } from '../tools';
 import { cleanLevel } from "./constants";
 import { MiroirLoggerFactory } from "./LoggerFactory";
 import { ignorePostgresExtraAttributes, isJson, isJsonArray, removeUndefinedProperties, unNullify } from "./otherTools";
-import { circularReplacer } from '../tools';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -164,7 +163,7 @@ export async function runTransformerTestInMemory(
   // );
 
   const interpolation = transformerTest.runTestStep ?? "runtime";
-  let rawResult: Domain2QueryReturnType<any>;
+  let rawResult: TransformerReturnType<any>;
 
   const convertedTransformer = transformer_extended_apply_wrapper(
     "build",
@@ -209,11 +208,11 @@ export async function runTransformerTestInMemory(
     Object.fromEntries(
       Object.entries(resultWithIgnored).filter(([key]) => transformerTest.retainAttributes!.includes(key))
     ): resultWithIgnored;
-  log.info(
-    "################################ runTransformerTestInMemory result",
-    // resultWithRetain
-    JSON.stringify(resultWithRetain, null, 2)
-  );
+  // log.info(
+  //   "################################ runTransformerTestInMemory result",
+  //   // resultWithRetain
+  //   JSON.stringify(resultWithRetain, null, 2)
+  // );
   const testSuiteNamePathAsString = MiroirEventTracker.testPathName(testNamePath);
   const jsonifiedResult = jsonify(resultWithRetain);
   
@@ -230,9 +229,19 @@ export async function runTransformerTestInMemory(
       // );
     
     // Normalize both actual and expected values to handle undefined properties consistently
+    const expectedValue = transformerTest.unitTestExpectedValue??transformerTest.expectedValue;
+
     const normalizedResult = removeUndefinedProperties(jsonifiedResult);
-    const normalizedExpected = removeUndefinedProperties(unNullify(transformerTest.expectedValue));
-    
+    const normalizedExpected = removeUndefinedProperties(unNullify(expectedValue));
+
+      log.info(
+        "################################ runTransformerTestInMemory result",
+        // resultWithRetain
+        JSON.stringify(normalizedResult, null, 2),
+        "expected",
+        JSON.stringify(normalizedExpected, null, 2)
+      );
+
     const expectForm = localVitest
       .expect(normalizedResult, `${testSuiteNamePathAsString} > ${assertionName}`)
     // log.info(
@@ -545,7 +554,6 @@ export function runTransformerIntegrationTest(sqlDbDataStore: any) {
       );
     }
 
-    let queryResult: Action2ReturnType;
     log.info(
       "runTransformerIntegrationTest",
       testPathName,
@@ -554,13 +562,13 @@ export function runTransformerIntegrationTest(sqlDbDataStore: any) {
     );
 
     // resolve the transformer to be used in the test
-    const resolvedTransformer: Domain2QueryReturnType<TransformerForRuntime> =
+    const resolvedTransformer: TransformerReturnType<TransformerForRuntime> =
       transformer_extended_apply_wrapper(
         "build",
         [], // transformerPath
         (transformerTest.transformer as any)?.label,
         transformerTest.transformer,
-        modelEnvironment,
+        {...modelEnvironment, ...transformerTest.transformerParams},
         // transformerTest.transformerParams,
         transformerTest.transformerRuntimeContext ?? {},
         "value" // resolveBuildTransformerTo
@@ -569,39 +577,60 @@ export function runTransformerIntegrationTest(sqlDbDataStore: any) {
     log.info(
       "runTransformerIntegrationTest",
       testPathName,
-      "resolvedTransformer",
+      "#### resolvedTransformer",
       JSON.stringify(resolvedTransformer, null, 2)
     );
 
-    if (resolvedTransformer instanceof Domain2ElementFailed) {
+    const expectedValue = transformerTest.integrationTestExpectedValue??transformerTest.expectedValue;
+    if (resolvedTransformer instanceof TransformerFailure) {
       log.info(
         "runTransformerIntegrationTest",
         testPathName,
         "build step found failed: resolvedTransformer",
         resolvedTransformer
       );
+      const resultWithIgnored = ignorePostgresExtraAttributes(
+        resolvedTransformer as any,
+        transformerTest.ignoreAttributes
+      );
+      const resultWithRetain = transformerTest.retainAttributes
+        ? Object.fromEntries(
+            Object.entries(resultWithIgnored).filter(([key]) =>
+              transformerTest.retainAttributes!.includes(key)
+            )
+          )
+        : resultWithIgnored;
       try {
-        const resultToCompare = ignorePostgresExtraAttributes(
-          resolvedTransformer as any,
-          transformerTest.ignoreAttributes
+        log.info(
+          "runTransformerIntegrationTest",
+          testPathName,
+          "WWWWWWWWWWWWWWWWWW queryResult instance of TransformerFailure:",
+          JSON.stringify(resultWithRetain, null, 2), 
+          "expected", expectedValue
         );
-
-        vitest.expect(resultToCompare, testPathName).toEqual(transformerTest.expectedValue);
+        vitest.expect(resultWithRetain, testPathName).toEqual(expectedValue);
         miroirEventTracker.setTestAssertionResult(currentTestAssertionPath, {
           assertionName: testPathName,
           assertionResult: "ok",
         });
       } catch (error) {
+        log.error(
+          "runTransformerIntegrationTest",
+          testPathName,
+          "caught error from vitest.expect",
+          error
+        );
         miroirEventTracker.setTestAssertionResult(currentTestAssertionPath,{
           assertionName: testPathName,
           assertionResult: "error",
-          assertionExpectedValue: transformerTest.expectedValue,
-          assertionActualValue: resolvedTransformer,
+          assertionExpectedValue: expectedValue,
+          assertionActualValue: resultWithRetain,
         });
       }
       return;
     }
-
+    
+    let queryResult: Action2ReturnType;
     if (testRunStep == "build") {
       queryResult = {
         status: "ok",
@@ -657,39 +686,56 @@ export function runTransformerIntegrationTest(sqlDbDataStore: any) {
       JSON.stringify(queryResult, null, 2)
     );
     // log.info(testSuitePathName, "WWWWWWWWWWWWWWWWWW queryResult cannot use 'instanceof' to determine error", queryResult instanceof Action2Error, Object.hasOwn(queryResult,"errorType"));
-    let resultToCompare: any;
+    let resultWithIgnored: any;
+    let resultWithRetain: any;
     try {
       // if (queryResult instanceof Action2Error) { // DOES NOT WORK, because we use the local version of the class, not the version of the class that is available in the miroir-core package
       if (queryResult["status"] == "error") {
         // cannot use 'instanceof' to determine error because we use the local version of the class, not the version of the class that is available in the miroir-core package
-        resultToCompare = ignorePostgresExtraAttributes(
+        resultWithIgnored = ignorePostgresExtraAttributes(
           (queryResult as any).innerError,
           transformerTest.ignoreAttributes
         );
+        resultWithRetain = transformerTest.retainAttributes
+          ? Object.fromEntries(
+              Object.entries(resultWithIgnored).filter(([key]) =>
+                transformerTest.retainAttributes!.includes(key)
+              )
+            )
+          : resultWithIgnored;
+
         log.info(
           testPathName,
           "WWWWWWWWWWWWWWWWWW queryResult instance of Action2Error:",
-          JSON.stringify(resultToCompare, null, 2)
+          JSON.stringify(resultWithRetain, null, 2)
         );
 
         vitest
           .expect(
-            resultToCompare,
+            resultWithRetain,
             testPathName + "comparing received query error to expected result"
           )
-          .toEqual(transformerTest.expectedValue);
+          .toEqual(expectedValue);
       } else {
         log.info(testPathName, "WWWWWWWWWWWWWWWWWW query Succeeded!");
-        resultToCompare =
+        resultWithIgnored =
           testRunStep == "runtime"
             ? ignorePostgresExtraAttributes(
                 (queryResult as Action2Success).returnedDomainElement.transformer,
                 transformerTest.ignoreAttributes
               )
             : (queryResult as Action2Success).returnedDomainElement;
-        log.info(testPathName, "testResult", JSON.stringify(resultToCompare, null, 2));
-        log.info(testPathName, "expectedValue", transformerTest.expectedValue);
-        vitest.expect(resultToCompare, testPathName).toEqual(transformerTest.expectedValue);
+        resultWithRetain = transformerTest.retainAttributes
+          ? Object.fromEntries(
+              Object.entries(resultWithIgnored).filter(([key]) =>
+                transformerTest.retainAttributes!.includes(key)
+              )
+            )
+          : resultWithIgnored;
+
+        log.info(testPathName, "testResult", JSON.stringify(resultWithRetain, null, 2));
+        log.info(testPathName, "expectedValue", expectedValue);
+        vitest.expect(resultWithRetain, testPathName).toEqual(expectedValue);
       }
       miroirEventTracker.setTestAssertionResult(currentTestAssertionPath,{
         assertionName: testPathName,
@@ -699,8 +745,8 @@ export function runTransformerIntegrationTest(sqlDbDataStore: any) {
       miroirEventTracker.setTestAssertionResult(currentTestAssertionPath,{
         assertionName: testPathName,
         assertionResult: "error",
-        assertionExpectedValue: transformerTest.expectedValue,
-        assertionActualValue: resultToCompare,
+        assertionExpectedValue: expectedValue,
+        assertionActualValue: resultWithRetain,
       });
     } finally {
       miroirEventTracker.setTestAssertion(undefined);

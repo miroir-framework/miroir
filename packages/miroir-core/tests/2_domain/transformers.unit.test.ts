@@ -1,20 +1,28 @@
 import * as vitest from 'vitest';
+import { defaultMetaModelEnvironment } from '../../src/1_core/Model';
+import { MiroirEventTracker } from '../../src/3_controllers/MiroirEventTracker';
+import {
+  runTransformerTestInMemory,
+  runTransformerTestSuite,
+  transformerTestsDisplayResults
+} from "../../src/4_services/TestTools";
 import {
   currentTestSuite,
 } from "./transformersTests_miroir.data";
-import { displayTestSuiteResultsDetails, runTransformerTestInMemory, runTransformerTestSuite, transformerTestsDisplayResults } from '../../src/4_services/TestTools';
-import { MiroirEventTracker } from '../../src/3_controllers/MiroirEventTracker';
-import { MiroirModelEnvironment } from '../../src/0_interfaces/1_core/Transformer';
-import { defaultMetaModelEnvironment } from '../../src/1_core/Model';
 
 type VitestNamespace = typeof vitest;
 
-// const env:any = (import.meta as any).env
-// const env:any = (process as any).env
-// console.log("@@@@@@@@@@@@@@@@@@ env", JSON.stringify(env, null, 2));
+// Access the test file pattern from Vitest's process arguments
+const vitestArgs = process.argv.slice(2);
+const filePattern = vitestArgs.find(arg => !arg.startsWith('-')) || '';
+console.log("@@@@@@@@@@@@@@@@@@ File Pattern:", filePattern);
 
-const RUN_TEST= process.env.RUN_TEST
-console.log("@@@@@@@@@@@@@@@@@@ RUN_TEST", RUN_TEST);
+const testSuiteName = "transformers.unit.test";
+
+// Skip this test when running resolveConditionalSchema pattern
+const shouldSkip = filePattern.includes('resolveConditionalSchema');
+
+// ##################################################################################################
 function getCommandLineArgs() {
   const args = process.argv.slice(2);
   const params: { [key: string]: string } = {};
@@ -29,30 +37,24 @@ function getCommandLineArgs() {
 
 // Get command line parameters
 const params = getCommandLineArgs();
-// // console.log('@@@@@@@@@@@@@@@@@@@@@@@ Command line parameters:', JSON.stringify(params, null, 2));
-// console.log('@@@@@@@@@@@@@@@@@@@@@@@ Command line parameters:', JSON.stringify(process.argv, null, 2));
-// // console.log("@@@@@@@@@@@@@@@@@@ miroirConfig", miroirConfig);
-// console.log("@@@@@@@@@@@@@@@@@@ vitest",vitest.describe)
-// describe.sequential("templatesDEFUNCT.unit.test", () => {
 const miroirEventTracker = new MiroirEventTracker();
 
-afterAll(async () => {
-  if (RUN_TEST) {
-    await transformerTestsDisplayResults(currentTestSuite, RUN_TEST, testSuiteName, miroirEventTracker);
-    // await displayTestSuiteResultsDetails(
-    //   // currentTestSuite,
-    //   RUN_TEST,
-    //   // testSuiteName,
-    //   [],
-    //   miroirEventTracker
-    // );
+afterAll(() => {
+  if (!shouldSkip) {
+    transformerTestsDisplayResults(
+      currentTestSuite,
+      filePattern || "",
+      testSuiteName,
+      miroirEventTracker
+    );
   }
 });
-
 // ################################################################################################
-const testSuiteName = "transformers.unit.test";
 
-if (RUN_TEST == testSuiteName) {
+if (shouldSkip) {
+  console.log("################################ skipping test suite:", testSuiteName);
+  console.log("################################ File pattern:", filePattern);
+} else {
   await runTransformerTestSuite(
     vitest,
     [],
@@ -62,6 +64,5 @@ if (RUN_TEST == testSuiteName) {
     defaultMetaModelEnvironment,
     miroirEventTracker
   );
-} else {
-  console.log("################################ skipping test suite:", testSuiteName);
+  
 }

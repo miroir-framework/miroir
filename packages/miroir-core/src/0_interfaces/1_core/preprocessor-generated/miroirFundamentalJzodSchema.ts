@@ -8401,7 +8401,16 @@ export const miroirFundamentalJzodSchema = {
             "optional": true
           },
           "expectedValue": {
-            "type": "any"
+            "type": "any",
+            "optional": true
+          },
+          "integrationTestExpectedValue": {
+            "type": "any",
+            "optional": true
+          },
+          "unitTestExpectedValue": {
+            "type": "any",
+            "optional": true
           },
           "retainAttributes": {
             "type": "array",
@@ -8586,7 +8595,16 @@ export const miroirFundamentalJzodSchema = {
                     "optional": true
                   },
                   "expectedValue": {
-                    "type": "any"
+                    "type": "any",
+                    "optional": true
+                  },
+                  "integrationTestExpectedValue": {
+                    "type": "any",
+                    "optional": true
+                  },
+                  "unitTestExpectedValue": {
+                    "type": "any",
+                    "optional": true
                   },
                   "retainAttributes": {
                     "type": "array",

@@ -1107,6 +1107,29 @@ function transformer_object_listReducerToIndexObject_apply<T extends MiroirModel
   );
 
   // TODO: test if resolvedReference is a list
+  if (resolvedReference instanceof TransformerFailure) {
+    return new TransformerFailure({
+      queryFailure: "FailedTransformer",
+      transformerPath, //: [...transformerPath, transformer.transformerType],
+      failureOrigin: ["transformer_object_listReducerToIndexObject_apply"],
+      queryContext: "transformer_object_listReducerToIndexObject_apply can not apply to failed resolvedReference",
+      innerError: resolvedReference,
+    });
+  } else {
+    log.info(
+      "transformer_object_listReducerToIndexObject_apply found resolvedReference",
+      resolvedReference
+    );
+  }
+  if (!Array.isArray(resolvedReference)) {
+    return new TransformerFailure({
+      queryFailure: "FailedTransformer",
+      transformerPath, //: [...transformerPath, transformer.transformerType],
+      failureOrigin: ["transformer_object_listReducerToIndexObject_apply"],
+      queryContext: "transformer_object_listReducerToIndexObject_apply can not apply to resolvedReference of wrong type",
+      queryParameters: resolvedReference,
+    });
+  }
   const result = Object.fromEntries(
     resolvedReference.map((entry: Record<string, any>) => {
       return [entry[transformer.indexAttribute], entry];

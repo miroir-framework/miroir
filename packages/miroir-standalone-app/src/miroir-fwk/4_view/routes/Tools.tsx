@@ -191,10 +191,7 @@ export const ToolsPage: React.FC<any> = (
     "deploymentEntityState",
     deploymentEntityState,
   );
-  // const transformerTestSuite_resolveConditionalSchema = deploymentEntityStateSelectorMap.extractEntityInstance(
-  // const transformerTestSuite_resolveConditionalSchema: Domain2QueryReturnType<TransformerTestSuite> | undefined =
   const transformerTestSuite_resolveConditionalSchema: Domain2QueryReturnType<any> | undefined =
-    // const transformerTestSuite_resolveConditionalSchema: Domain2QueryReturnType<TransformerTest> | undefined =
     Object.keys(deploymentEntityState).includes(entityTransformerTestKey)
       ? (deploymentEntityStateSelectorMap.extractEntityInstance(
           deploymentEntityState,

@@ -3,6 +3,8 @@ import {
   Action2Error,
   Domain2ElementFailed,
   Domain2QueryReturnType,
+  TransformerFailure,
+  type TransformerReturnType,
 } from "../0_interfaces/2_domain/DomainElement";
 import {
   ExtendedTransformerForRuntime,
@@ -43,7 +45,7 @@ export async function transformer_extended_apply_wrapper(
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>,
   resolveBuildTransformersTo: ResolveBuildTransformersTo = "constantTransformer",
-): Promise<Domain2QueryReturnType<any>> {
+): Promise<TransformerReturnType<any>> {
   try {
     const transformer_extended_apply = await getTransformerExtendedApply();
     const result = transformer_extended_apply(
@@ -62,7 +64,7 @@ export async function transformer_extended_apply_wrapper(
     //   JSON.stringify(result, null, 2),
     // );  
 
-    if (result instanceof Domain2ElementFailed) {
+    if (result instanceof TransformerFailure) {
       log.error(
         "transformer_extended_apply_wrapper failed for",
         label??(transformer as any)["transformerType"],
@@ -73,7 +75,7 @@ export async function transformer_extended_apply_wrapper(
         "result",
         JSON.stringify(result, null, 2)
       );
-      return new Domain2ElementFailed({
+      return new TransformerFailure({
         queryFailure: "FailedTransformer",
         // transformerPath,
         failureOrigin: ["transformer_extended_apply"],

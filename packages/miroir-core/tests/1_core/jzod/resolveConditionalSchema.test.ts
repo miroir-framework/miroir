@@ -37,7 +37,13 @@ const reduxDeploymentsState: ReduxDeploymentsState = domainStateToReduxDeploymen
 
 
 const RUN_TEST= process.env.RUN_TEST
+const VITEST_FILTER= process.env.VITEST_FILTER
+// Access the test file pattern from Vitest's process arguments
+const vitestArgs = process.argv.slice(2);
+const filePattern = vitestArgs.find(arg => !arg.startsWith('-')) || '';
 console.log("@@@@@@@@@@@@@@@@@@ RUN_TEST", RUN_TEST);
+console.log("@@@@@@@@@@@@@@@@@@ VITEST_FILTER", VITEST_FILTER);
+console.log("@@@@@@@@@@@@@@@@@@ File Pattern:", filePattern);
 
 // const selectedTestName: string[] = ["error if reduxDeploymentsState is missing when parentUuid is present"];
 const selectedTestName: string[] = [];
@@ -65,8 +71,13 @@ afterAll(() => {
 });
 
 // ################################################################################################
-// const testSuiteName = "transformers.unit.test";
-if (RUN_TEST == transformerTestSuite_resolveConditionalSchema.definition.transformerTestLabel) {
+const testSuiteName = transformerTestSuite_resolveConditionalSchema.definition.transformerTestLabel;
+const currentFileName = import.meta.url.split('/').pop()?.replace('.ts', '') || '';
+const shouldRun = !filePattern || currentFileName.includes(filePattern) || testSuiteName.includes(filePattern) || 
+                  (VITEST_FILTER && testSuiteName.match(VITEST_FILTER));
+
+// if (RUN_TEST == transformerTestSuite_resolveConditionalSchema.definition.transformerTestLabel) {
+if (shouldRun) {
   // if (!Object.hasOwn(testSuite, "transformerTestType") || (testSuite as any).transformerTests === undefined) {
   if (!Object.hasOwn(testSuite, "transformerTestType") || testSuite.transformerTestType !== "transformerTestSuite" ) {
     throw new Error("No transformerTests found in the test suite definition" +  JSON.stringify(testSuite));
@@ -101,4 +112,6 @@ if (RUN_TEST == transformerTestSuite_resolveConditionalSchema.definition.transfo
     "################################ skipping test suite:",
     transformerTestSuite_resolveConditionalSchema.definition.transformerTestLabel
   );
+  console.log("################################ File pattern:", filePattern, "Current file:", currentFileName);
+  vitest.test.skip(testSuiteName, () => {});
 }

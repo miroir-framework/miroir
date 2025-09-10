@@ -1,4 +1,3 @@
-import type { A } from "vitest/dist/chunks/environment.LoooBwUu";
 import { MiroirEventTrackerInterface } from "../0_interfaces/3_controllers/MiroirEventTrackerInterface";
 import{ LoggerGlobalContext } from "../4_services/LoggerContext";
 

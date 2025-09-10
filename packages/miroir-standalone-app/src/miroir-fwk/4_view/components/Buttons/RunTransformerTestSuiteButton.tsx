@@ -3,23 +3,19 @@ import {
   MiroirLoggerFactory,
   TestFramework,
   defaultLibraryModelEnvironment,
-  defaultMiroirMetaModel,
-  miroirFundamentalJzodSchema,
   runTransformerTestInMemory,
   runTransformerTestSuite,
-  type Domain2QueryReturnType,
-  type JzodSchema,
   type LoggerInterface,
   type TestSuiteResult,
+  type TransformerReturnType,
   type TransformerTestDefinition
 } from "miroir-core";
 
-import { describe, expect } from "miroir-core";
 
-import { ActionButton } from "../../components/Page/ActionButton.js";
 import { packageName } from "../../../../constants.js";
+import { ActionButton } from "../../components/Page/ActionButton.js";
 import { cleanLevel } from "../../constants.js";
-import { useSnackbar, useMiroirContextService } from "../../MiroirContextReactProvider.js";
+import { useMiroirContextService, useSnackbar } from "../../MiroirContextReactProvider.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -178,7 +174,7 @@ export function generateTestReport(
 
 // ################################################################################################
 interface RunTransformerTestSuiteButtonProps {
-  transformerTestSuite: Domain2QueryReturnType<any> | undefined;
+  transformerTestSuite: TransformerReturnType<any> | undefined;
   testSuiteKey: string;
   useSnackBar: boolean;
   onTestComplete?: (testSuiteKey: string, structuredResults: any[]) => void;

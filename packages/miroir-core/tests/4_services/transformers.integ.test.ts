@@ -52,10 +52,11 @@ import {
   currentTestSuite,
 } from "../2_domain/transformersTests_miroir.data";
 import { MiroirEventTracker } from '../../src/3_controllers/MiroirEventTracker';
-// const env:any = (import.meta as any).env
-// console.log("@@@@@@@@@@@@@@@@@@ env", env);
-const RUN_TEST= process.env.RUN_TEST
-console.log("@@@@@@@@@@@@@@@@@@ RUN_TEST", RUN_TEST);
+
+// Access the test file pattern from Vitest's process arguments
+const vitestArgs = process.argv.slice(2);
+const filePattern = vitestArgs.find(arg => !arg.startsWith('-')) || '';
+console.log("@@@@@@@@@@@@@@@@@@ File Pattern:", filePattern);
 
 const miroirEventTracker = new MiroirEventTracker();
 // console.log("@@@@@@@@@@@@@@@@@@ miroirConfig", miroirConfig);
@@ -63,6 +64,9 @@ const miroirEventTracker = new MiroirEventTracker();
 // describe.sequential("templatesDEFUNCT.unit.test", () => {
 
 const testSuiteName = "transformers.integ.test";
+
+// Skip this test when running resolveConditionalSchema pattern
+const shouldSkip = filePattern.includes(testSuiteName);
 
 const testApplicationName = "testApplication"
 const sqlDbStoreName = "testStoreName"
@@ -118,7 +122,7 @@ const libraryEntitesAndInstances = [
 ];
 
 const beforeAll = async () => {
-  if (RUN_TEST == testSuiteName) {
+  if (!shouldSkip) {
     console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ beforeAll");
     // sqlDbAdminStore = new SqlDbDataStoreSection("data", sqlDbStoreName, connectionString, schema);
     sqlDbAdminStore = new SqlDbAdminStore("data", sqlDbStoreName, connectionString, schema);
@@ -130,10 +134,6 @@ const beforeAll = async () => {
     const testApplicationConfig: InitApplicationParameters = getBasicApplicationConfiguration(
       testApplicationName,
       paramSelfApplicationUuid,
-      // {
-      //   emulatedServerType: "sql",
-      //   connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
-      // },
       paramAdminConfigurationDeploymentUuid,
       applicationModelBranchUuid,
       selfApplicationVersionUuid
@@ -214,12 +214,12 @@ const beforeAll = async () => {
 
 afterAll(async () => {
   console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ afterAll");
-  if (RUN_TEST == testSuiteName) {
+  if (!shouldSkip) {
     // await persistenceStoreController.deleteStore(testStoreConfig.data);
     // await persistenceStoreController.deleteStore(testStoreConfig.model);
     // await persistenceStoreController.deleteStore(testStoreConfig.admin);
     // await persistenceStoreController.close();
-    transformerTestsDisplayResults(currentTestSuite, RUN_TEST, testSuiteName, miroirEventTracker);
+    transformerTestsDisplayResults(currentTestSuite, testSuiteName, testSuiteName, miroirEventTracker);
   }
   console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ afterAll DONE");
 });
@@ -235,10 +235,10 @@ const extractors: ExtractorOrCombinerRecord = {
   },
 };
 
-
-
-// (async () => {
-if (RUN_TEST == testSuiteName) {
+if (shouldSkip) {
+  console.log("################################ skipping test suite:", testSuiteName);
+  console.log("################################ File pattern:", filePattern);
+} else {
   await beforeAll(); // beforeAll is a function, not the call to the jest/vitest hook
   // await runTransformerTestSuite(vitest, [], transformerTestSuite_miroirTransformers, runTransformerIntegrationTest);
   if (!sqlDbDataStore) {
@@ -253,6 +253,6 @@ if (RUN_TEST == testSuiteName) {
     defaultMetaModelEnvironment,
     miroirEventTracker
   );
-} else {
-  console.log("################################ skipping test suite:", testSuiteName, "RUN_TEST=", RUN_TEST);
+  
+  // await transformerTestsDisplayResults(currentTestSuite, filePattern || "", testSuiteName, miroirEventTracker);
 }

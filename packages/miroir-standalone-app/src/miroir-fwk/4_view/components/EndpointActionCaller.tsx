@@ -11,43 +11,33 @@ import { useSelector } from "react-redux";
 
 import {
   adminConfigurationDeploymentAdmin,
-  adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
   defaultMiroirMetaModel,
-  ReduxDeploymentsState,
-  Domain2QueryReturnType,
   DomainControllerInterface,
-  DomainElementSuccess,
   EndpointDefinition,
-  EntityInstancesUuidIndex,
-  getApplicationSection,
-  getDefaultValueForJzodSchemaWithResolution,
   getDefaultValueForJzodSchemaWithResolutionNonHook,
-  getQueryRunnerParamsForReduxDeploymentsState,
   instanceEndpointVersionV1,
   JzodObject,
   LoggerInterface,
   MetaModel,
+  miroirFundamentalJzodSchema,
   MiroirLoggerFactory,
   queryEndpointVersionV1,
+  ReduxDeploymentsState,
   SelfApplicationDeploymentConfiguration,
   SyncBoxedExtractorOrQueryRunnerMap,
-  SyncQueryRunner,
-  SyncQueryRunnerParams,
-  Uuid,
-  type MiroirModelEnvironment,
-  miroirFundamentalJzodSchema,
-  type JzodSchema
+  type JzodSchema,
+  type MiroirModelEnvironment
 } from 'miroir-core';
 import { Action } from 'miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js';
+import { getMemoizedReduxDeploymentsStateSelectorMap, ReduxStateWithUndoRedo } from 'miroir-localcache-redux';
 import { FC, useMemo, useState } from 'react';
 import { deployments, packageName } from '../../../constants.js';
 import { useDomainControllerService, useMiroirContextService, useSnackbar } from '../MiroirContextReactProvider.js';
+import { useCurrentModel } from '../ReduxHooks.js';
 import { cleanLevel } from '../constants.js';
 import { TypedValueObjectEditor } from './Reports/TypedValueObjectEditor.js';
 import { ThemedFormControl, ThemedInputLabel, ThemedMUISelect, ThemedPaper } from './Themes/index.js';
-import { useCurrentModel, useReduxDeploymentsStateQuerySelectorForCleanedResult } from '../ReduxHooks.js';
-import { getMemoizedReduxDeploymentsStateSelectorMap, ReduxStateWithUndoRedo } from 'miroir-localcache-redux';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

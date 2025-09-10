@@ -22,8 +22,10 @@ import transformerTestSuite_jzodTypeCheck from "../../../src/assets/miroir_data/
 import { defaultMiroirMetaModel } from "../../../src/1_core/Model";
 import { MiroirEventTracker } from '../../../src/3_controllers/MiroirEventTracker';
 
-const RUN_TEST= process.env.RUN_TEST
-console.log("@@@@@@@@@@@@@@@@@@ RUN_TEST", RUN_TEST);
+// Access the test file pattern from Vitest's process arguments
+const vitestArgs = process.argv.slice(2);
+const filePattern = vitestArgs.find(arg => !arg.startsWith('-')) || '';
+console.log("@@@@@@@@@@@@@@@@@@ File Pattern:", filePattern);
 
 const selectedTestName: string[] = [];
 const testSuiteName = transformerTestSuite_jzodTypeCheck.definition.transformerTestLabel;
@@ -31,7 +33,13 @@ const testSuiteName = transformerTestSuite_jzodTypeCheck.definition.transformerT
 const eventTracker = new MiroirEventTracker();
 
 // ################################################################################################
-if (RUN_TEST == testSuiteName) {
+// Skip this test when running resolveConditionalSchema pattern
+const shouldSkip = filePattern.includes('resolveConditionalSchema');
+
+if (shouldSkip) {
+  console.log("################################ skipping test suite:", testSuiteName);
+  console.log("################################ File pattern:", filePattern);
+} else {
   // const testSuite: TransformerTestSuite = transformerTestSuite_jzodTypeCheck.definition as TransformerTestSuite;
   const testSuite: TransformerTestSuite = transformerTestSuite_jzodTypeCheck.definition as any as TransformerTestSuite;
   if (!Object.hasOwn(testSuite, "transformerTestType") || testSuite.transformerTestType !== "transformerTestSuite" ) {
@@ -45,7 +53,7 @@ if (RUN_TEST == testSuiteName) {
     transformerTests: selectedTests as any
   } as any;
   await runTransformerTestSuite(
-    // { describe: localDescribe, expect: localExpect },
+    // { describe: localDescribe, expect: localExpected },
     vitest,
     [],
     effectiveTests,
@@ -59,14 +67,8 @@ if (RUN_TEST == testSuiteName) {
   );
   transformerTestsDisplayResults(
     effectiveTests,
-    RUN_TEST,
+    filePattern || "",
     testSuiteName,
     eventTracker
-  );
-} else {
-  console.log(
-    "################################ skipping test suite:",
-    testSuiteName,
-    "RUN_TEST=", RUN_TEST
   );
 }

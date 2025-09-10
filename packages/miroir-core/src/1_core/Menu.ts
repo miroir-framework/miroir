@@ -5,7 +5,7 @@ import {
   TransformerForBuild_menu_addItem,
   TransformerForRuntime_menu_addItem
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import { Domain2QueryReturnType } from "../0_interfaces/2_domain/DomainElement";
+import { Domain2QueryReturnType, type TransformerReturnType } from "../0_interfaces/2_domain/DomainElement";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { type MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import { defaultTransformers, ResolveBuildTransformersTo, Step } from "../2_domain/TransformersForRuntime";
@@ -36,7 +36,7 @@ export function handleTransformer_menu_AddItem(
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   queryParams: MiroirModelEnvironment & Record<string, any>,
   contextResults?: Record<string, any>,
-): Domain2QueryReturnType<Menu> {
+): TransformerReturnType<Menu> {
   // TODO: DO A COPY OF THE MENU, DO NOT UPDATE VIA REFERENCE, IT MODIFIES THE "OLD" MENU
   log.info(
     "handleTransformer_menu_AddItem called with",

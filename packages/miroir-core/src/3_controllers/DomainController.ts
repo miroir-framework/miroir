@@ -28,11 +28,9 @@ import {
   ApplicationVersion,
   BuildPlusRuntimeCompositeAction,
   CompositeAction,
-  CompositeActionDefinition,
   CompositeActionTemplate,
   DomainAction,
   EntityInstance,
-  EntityInstanceCollection,
   InstanceAction,
   MetaModel,
   ModelAction,
@@ -44,7 +42,6 @@ import {
   RunBoxedQueryTemplateOrBoxedExtractorTemplateAction,
   RuntimeCompositeAction,
   SelfApplicationDeploymentConfiguration,
-  Test,
   TestAssertion,
   TestBuildPlusRuntimeCompositeAction,
   TestBuildPlusRuntimeCompositeActionSuite,
@@ -58,11 +55,11 @@ import {
   TransformerForRuntime,
   UndoRedoAction
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { type MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { ACTION_OK } from "../1_core/constants";
 import { defaultMiroirMetaModel, metaModelEntities, miroirModelEntities } from "../1_core/Model";
 import { resolveCompositeActionTemplate } from "../2_domain/ResolveCompositeActionTemplate";
-import { type MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import { transformer_extended_apply, transformer_extended_apply_wrapper } from "../2_domain/TransformersForRuntime.js";
 import { LoggerGlobalContext } from '../4_services/LoggerContext.js';
 import { MiroirLoggerFactory } from "../4_services/LoggerFactory";
@@ -79,17 +76,17 @@ import { cleanLevel } from "./constants";
 import { Endpoint } from "./Endpoint";
 import { CallUtils } from "./ErrorHandling/CallUtils";
 // import { TestSuiteContext } from '../4_services/TestSuiteContext.js';
-import { resolveTestCompositeActionTemplateSuite } from '../2_domain/TestSuiteTemplate.js';
 import {
   Action2Error,
   Action2ReturnType,
   Action2VoidReturnType,
   Domain2ElementFailed,
-  Domain2QueryReturnType,
+  TransformerFailure,
+  type TransformerReturnType
 } from "../0_interfaces/2_domain/DomainElement.js";
+import { resolveTestCompositeActionTemplateSuite } from '../2_domain/TestSuiteTemplate.js';
 import { ignorePostgresExtraAttributesOnList, ignorePostgresExtraAttributesOnObject } from '../4_services/otherTools.js';
 import { ConfigurationService } from './ConfigurationService.js';
-import { miroirFundamentalJzodSchema } from '../0_interfaces/1_core/preprocessor-generated/miroirFundamentalJzodSchema.js';
 
 
 
@@ -2091,8 +2088,7 @@ export class DomainController implements DomainControllerInterface {
       }
     }
 
-    // const resolvedActionDefinition: Domain2QueryReturnType<RuntimeCompositeAction> = transformer_extended_apply(
-    const resolvedActionDefinition: Domain2QueryReturnType<any> =
+    const resolvedActionDefinition: TransformerReturnType<any> =
       transformer_extended_apply_wrapper(
         "build",
         [],
@@ -2108,7 +2104,7 @@ export class DomainController implements DomainControllerInterface {
     //   JSON.stringify(resolvedActionDefinition, null, 2)
     // );
     // if (resolvedActionDefinition instanceof Action2Error) {
-    if (resolvedActionDefinition instanceof Domain2ElementFailed) {
+    if (resolvedActionDefinition instanceof TransformerFailure) {
       log.error(
         "handleBuildPlusRuntimeCompositeAction Error on action",
         JSON.stringify(buildPlusRuntimeCompositeAction, null, 2),
@@ -2129,7 +2125,7 @@ export class DomainController implements DomainControllerInterface {
           buildPlusRuntimeCompositeAction.actionLabel ?? buildPlusRuntimeCompositeAction.actionType,
           ...(resolvedActionDefinition.errorStack ?? ([] as any)),
         ],
-        resolvedActionDefinition
+        resolvedActionDefinition as any // TODO: Action2Error can not be constructed from TransformerFailure, should this be allowed?
       );
     } else {
       log.info(

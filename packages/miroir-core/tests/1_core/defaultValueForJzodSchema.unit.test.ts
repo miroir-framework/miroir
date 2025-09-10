@@ -22,27 +22,26 @@ import { defaultMetaModelEnvironment } from '../../src/1_core/Model';
 import { MiroirEventTracker } from "../../src/3_controllers/MiroirEventTracker";
 
 
-const RUN_TEST= process.env.RUN_TEST
-console.log("@@@@@@@@@@@@@@@@@@ RUN_TEST", RUN_TEST);
+// Access the test file pattern from Vitest's process arguments
+const vitestArgs = process.argv.slice(2);
+const filePattern = vitestArgs.find(arg => !arg.startsWith('-')) || '';
+console.log("@@@@@@@@@@@@@@@@@@ File Pattern:", filePattern);
+
 const eventTracker = new MiroirEventTracker();
 
 // ################################################################################################
-afterAll(async () => {
-  if (RUN_TEST) {
-    transformerTestsDisplayResults(
-      transformerTestSuite_defaultValueForMLSchema.definition as TransformerTestSuite,
-      RUN_TEST,
-      transformerTestSuite_defaultValueForMLSchema.definition.transformerTestLabel,
-      eventTracker
-      // defaultMetaModelEnvironment,
-    );
-  }
-});
+const testSuiteName = transformerTestSuite_defaultValueForMLSchema.definition.transformerTestLabel;
+const currentFileName = import.meta.url.split('/').pop()?.replace('.ts', '') || '';
 
-// ################################################################################################
-// const testSuiteName = "transformers.unit.test";
-// launch with: RUN_TEST=defaultValueForMLSchema npm run testByFile -w miroir-core -- defaultValueForJzodSchema
-if (RUN_TEST == transformerTestSuite_defaultValueForMLSchema.definition.transformerTestLabel) {
+// Only run defaultValueForMLSchema test when running resolveConditionalSchema pattern
+// This is the opposite logic - we want this test to run ONLY when the pattern matches resolveConditionalSchema
+const shouldRun = filePattern.includes('resolveConditionalSchema') || !filePattern;
+
+if (!shouldRun) {
+  console.log("################################ skipping test suite:", transformerTestSuite_defaultValueForMLSchema.definition.transformerTestLabel);
+  console.log("################################ File pattern:", filePattern, "Current file:", currentFileName);
+  vitest.test.skip(testSuiteName, () => {});
+} else {
   await runTransformerTestSuite(
     vitest,
     [],
@@ -54,13 +53,10 @@ if (RUN_TEST == transformerTestSuite_defaultValueForMLSchema.definition.transfor
   );
   transformerTestsDisplayResults(
     transformerTestSuite_defaultValueForMLSchema.definition as TransformerTestSuite,
-    RUN_TEST,
+    filePattern || "",
     transformerTestSuite_defaultValueForMLSchema.definition.transformerTestLabel,
     eventTracker
-    // defaultMetaModelEnvironment,
   );
-} else {
-  console.log("################################ skipping test suite:", transformerTestSuite_defaultValueForMLSchema.definition.transformerTestLabel);
 }
 
 
