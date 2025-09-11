@@ -206,7 +206,7 @@ const ProgressiveAttribute: FC<{
         if ('requestIdleCallback' in window) {
           (window as any).requestIdleCallback(() => setIsRendered(true), { timeout: 1000 });
         } else {
-          setTimeout(() => setIsRendered(true), 250);
+          setTimeout(() => setIsRendered(true), 500);
         }
       };
       
@@ -392,8 +392,15 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
     definedOptionalAttributes,
     // stringSelectList,
     undefinedOptionalAttributes,
-    } = useJzodElementEditorHooks(props, count, "JzodElementEditor");
-  // } = measuredUseJzodElementEditorHooks(props, count, "JzodElementEditor");
+    // } = useJzodElementEditorHooks(props, count, "JzodElementEditor");
+  } = useJzodElementEditorHooks(
+    rootLessListKey,
+    rootLessListKeyArray,
+    typeCheckKeyMap,
+    currentDeploymentUuid,
+    count,
+    "JzodElementEditor"
+  );
 
   const currentTypeCheckKeyMap = typeCheckKeyMap ? typeCheckKeyMap[rootLessListKey] : undefined;
 

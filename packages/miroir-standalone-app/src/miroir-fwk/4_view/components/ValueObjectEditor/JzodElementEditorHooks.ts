@@ -20,7 +20,8 @@ import {
   dummyDomainManyQueryWithDeploymentUuid,
   getApplicationSection,
   getQueryRunnerParamsForReduxDeploymentsState,
-  resolvePathOnObject
+  resolvePathOnObject,
+  type Uuid
 } from "miroir-core";
 import { JzodObject } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { getMemoizedReduxDeploymentsStateSelectorMap } from "miroir-localcache-redux";
@@ -86,14 +87,24 @@ export function getItemsOrder(currentValue: any, jzodSchema: JzodElement | undef
 let count = 0;
 
 export function useJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
-  props: P,
+  // props: P,
+  rootLessListKey: string,
+  rootLessListKeyArray: (string | number)[],
+  typeCheckKeyMap: Record<string, KeyMapEntry> | undefined,
+  currentDeploymentUuid: Uuid | undefined,
+  // {
+  //   currentDeploymentUuid,
+  //   typeCheckKeyMap,
+  //   rootLessListKey,
+  //   rootLessListKeyArray,
+  // }: P,
   count: number, // used for debugging
   caller: string,
 ): JzodElementEditorHooks {
   // general use
   count++;
   const context = useMiroirContextService();
-  const currentModel: MetaModel = useCurrentModel(props.currentDeploymentUuid);
+  const currentModel: MetaModel = useCurrentModel(currentDeploymentUuid);
   const miroirMetaModel: MetaModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
   let dbgInt = 0;
   // log.info("useJzodElementEditorHooks ", dbgInt++, "count", count, "caller", caller);
@@ -104,14 +115,14 @@ export function useJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
   
   const currentValue = useMemo(() => {
     try {
-      return props.rootLessListKeyArray.length > 0
-        ? resolvePathOnObject(formik.values, props.rootLessListKeyArray)
+      return rootLessListKeyArray.length > 0
+        ? resolvePathOnObject(formik.values, rootLessListKeyArray)
         : formik.values;
     } catch (e) {
       log.warn(
         "useJzodElementEditorHooks resolvePathOnObject error",
         "rootLessListKeyArray",
-        props.rootLessListKeyArray,
+        rootLessListKeyArray,
         "count",
         count,
         "caller",
@@ -123,11 +134,11 @@ export function useJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
       );
       return formik.values; // fallback to formik.values if the path resolution fails
     }
-  }, [formik.values, props.rootLessListKeyArray]);
+  }, [formik.values, rootLessListKeyArray]);
 
   const currentTypecheckKeyMap: KeyMapEntry | undefined =
-    props.typeCheckKeyMap && props.typeCheckKeyMap[props.rootLessListKey]
-      ? props.typeCheckKeyMap[props.rootLessListKey]
+    typeCheckKeyMap && typeCheckKeyMap[rootLessListKey]
+      ? typeCheckKeyMap[rootLessListKey]
       : undefined;
 
   const [codeMirrorValue, setCodeMirrorValue] = useState<string>("");
@@ -144,8 +155,8 @@ export function useJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
   // value schema
   // const localResolvedElementJzodSchemaBasedOnValue: JzodElement | undefined = useMemo(() => {
     const localResolvedElementJzodSchemaBasedOnValue: JzodElement | undefined =
-    props.typeCheckKeyMap && props.typeCheckKeyMap[props.rootLessListKey]
-    ? props.typeCheckKeyMap[props.rootLessListKey]?.resolvedSchema
+    typeCheckKeyMap && typeCheckKeyMap[rootLessListKey]
+    ? typeCheckKeyMap[rootLessListKey]?.resolvedSchema
     : undefined;
     // for objects, records
     const itemsOrder: any[] = useMemo(
@@ -160,14 +171,14 @@ export function useJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
   const foreignKeyObjectsFetchQueryParams: SyncQueryRunnerParams<ReduxDeploymentsState> = useMemo(
     () =>
       getQueryRunnerParamsForReduxDeploymentsState(
-        props.currentDeploymentUuid &&
+        currentDeploymentUuid &&
         currentTypecheckKeyMap &&
         currentTypecheckKeyMap.rawSchema &&
         currentTypecheckKeyMap.rawSchema.type == "uuid" &&
         currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetEntity
           ? {
               queryType: "boxedQueryWithExtractorCombinerTransformer",
-              deploymentUuid: currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetDeploymentUuid??props.currentDeploymentUuid,
+              deploymentUuid: currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetDeploymentUuid??currentDeploymentUuid,
               pageParams: {},
               queryParams: {},
               contextResults: {},
@@ -175,7 +186,7 @@ export function useJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
                 [currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetEntity]: {
                   extractorOrCombinerType: "extractorByEntityReturningObjectList",
                   applicationSection: getApplicationSection(
-                    currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetDeploymentUuid??props.currentDeploymentUuid,
+                    currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetDeploymentUuid??currentDeploymentUuid,
                     currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetEntity
                   ),
                   parentName: "",
@@ -190,7 +201,7 @@ export function useJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
           : dummyDomainManyQueryWithDeploymentUuid,
         deploymentEntityStateSelectorMap
       ),
-    [deploymentEntityStateSelectorMap, props.currentDeploymentUuid, currentTypecheckKeyMap?.rawSchema]
+    [deploymentEntityStateSelectorMap, currentDeploymentUuid, currentTypecheckKeyMap?.rawSchema]
   );
 
   const foreignKeyObjects: Record<string, EntityInstancesUuidIndex> =
@@ -203,18 +214,18 @@ export function useJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
   );
 
   const typeCheckMapJzodObjectFlattenedSchema: JzodObject | undefined =
-    props.typeCheckKeyMap !== undefined &&
-    props.typeCheckKeyMap[props.rootLessListKey] !== undefined &&
-    props.typeCheckKeyMap[props.rootLessListKey].jzodObjectFlattenedSchema !== undefined
-      ? props.typeCheckKeyMap[props.rootLessListKey].jzodObjectFlattenedSchema
+    typeCheckKeyMap !== undefined &&
+    typeCheckKeyMap[rootLessListKey] !== undefined &&
+    typeCheckKeyMap[rootLessListKey].jzodObjectFlattenedSchema !== undefined
+      ? typeCheckKeyMap[rootLessListKey].jzodObjectFlattenedSchema
       : undefined;
 
   const typeCheckKeyMapChosenUnionBranchObjectSchema: JzodObject | undefined = // defined when rawSchema.type == "union" && resolvedElementJzodSchema.type == "object"
-    props.typeCheckKeyMap !== undefined &&
-    props.typeCheckKeyMap[props.rootLessListKey] !== undefined &&
-    props.typeCheckKeyMap[props.rootLessListKey].chosenUnionBranchRawSchema !== undefined &&
-    props.typeCheckKeyMap[props.rootLessListKey].chosenUnionBranchRawSchema?.type == "object"
-      ? props.typeCheckKeyMap[props.rootLessListKey].chosenUnionBranchRawSchema as JzodObject
+    typeCheckKeyMap !== undefined &&
+    typeCheckKeyMap[rootLessListKey] !== undefined &&
+    typeCheckKeyMap[rootLessListKey].chosenUnionBranchRawSchema !== undefined &&
+    typeCheckKeyMap[rootLessListKey].chosenUnionBranchRawSchema?.type == "object"
+      ? typeCheckKeyMap[rootLessListKey].chosenUnionBranchRawSchema as JzodObject
       : undefined;
 
   const undefinedOptionalAttributes: string[] = useMemo(() => {

@@ -4,18 +4,18 @@ import {
   getQueryRunnerParamsForReduxDeploymentsState,
   jzodTypeCheck,
   measurePerformance,
-  rootLessListKeyMapDEFUNCT,
+  // rootLessListKeyMapDEFUNCT,
   unfoldJzodSchemaOnce,
 } from "miroir-core";
 import { useJzodElementEditorHooks } from "../components/ValueObjectEditor/JzodElementEditorHooks";
 
 // Create measured versions of key functions used in this component
 export const measuredJzodTypeCheck = measurePerformance("jzodTypeCheck", jzodTypeCheck, 100);
-export const measuredRootLessListKeyMap = measurePerformance(
-  "rootLessListKeyMapDEFUNCT",
-  rootLessListKeyMapDEFUNCT,
-  100
-);
+// export const measuredRootLessListKeyMap = measurePerformance(
+//   "rootLessListKeyMapDEFUNCT",
+//   rootLessListKeyMapDEFUNCT,
+//   100
+// );
 // export const measuredGetApplicationSection = measurePerformance(
 //   "getApplicationSection",
 //   getApplicationSection,

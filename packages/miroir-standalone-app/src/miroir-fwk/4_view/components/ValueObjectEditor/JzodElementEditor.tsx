@@ -363,7 +363,15 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
     foreignKeyObjects,
     itemsOrder,
     stringSelectList,
-  } = useJzodElementEditorHooks(props, count, "JzodElementEditor");
+    // } = useJzodElementEditorHooks(props, count, "JzodElementEditor");
+  } = useJzodElementEditorHooks(
+    props.rootLessListKey,
+    props.rootLessListKeyArray,
+    props.typeCheckKeyMap,
+    props.currentDeploymentUuid,
+    count,
+    "JzodElementEditor"
+  );
   
   // Extract hiddenFormItems and setHiddenFormItems from props
   const { foldedObjectAttributeOrArrayItems, setFoldedObjectAttributeOrArrayItems } = props;

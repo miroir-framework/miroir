@@ -295,26 +295,44 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
         const typeCheckKeyMap: ResolvedJzodSchemaReturnType | undefined = useMemo(() => {
           let result: ResolvedJzodSchemaReturnType | undefined = undefined;
           try {
-            result =
-              context.miroirFundamentalJzodSchema && displaySchema && formik.values && currentModel
-                ? jzodTypeCheck(
-                    displaySchema,
-                    formik.values,
-                    [],
-                    [],
-                    // defaultMetaModelEnvironment,
-                    {
-                      miroirFundamentalJzodSchema: context.miroirFundamentalJzodSchema,
-                      currentModel,
-                      miroirMetaModel: currentMiroirModel,
-                    },
-                    {}, // relativeReferenceJzodContext
-                    formik.values, // currentDefaultValue
-                    reduxDeploymentsState,
-                    deploymentUuid, // Now passing the actual deploymentUuid
-                    hasZoomPath ? valueObject : formik.values // rootObject - use full object for context, but validate the subset
-                  )
-                : undefined;
+            result = 
+            // useMemo(
+            //   () =>
+                context.miroirFundamentalJzodSchema &&
+                displaySchema &&
+                formik.values &&
+                currentModel
+                  ? jzodTypeCheck(
+                      displaySchema,
+                      formik.values,
+                      [],
+                      [],
+                      // defaultMetaModelEnvironment,
+                      {
+                        miroirFundamentalJzodSchema: context.miroirFundamentalJzodSchema,
+                        currentModel,
+                        miroirMetaModel: currentMiroirModel,
+                      },
+                      {}, // relativeReferenceJzodContext
+                      formik.values, // currentDefaultValue
+                      reduxDeploymentsState,
+                      deploymentUuid, // Now passing the actual deploymentUuid
+                      hasZoomPath ? valueObject : formik.values // rootObject - use full object for context, but validate the subset
+                    )
+                  : undefined;
+                  // ,
+            //   [
+            //     displaySchema,
+            //     formik.values,
+            //     context.miroirFundamentalJzodSchema,
+            //     currentModel,
+            //     currentMiroirModel,
+            //     reduxDeploymentsState,
+            //     deploymentUuid,
+            //     hasZoomPath,
+            //     valueObject,
+            //   ]
+            // );
           } catch (e) {
             log.error("TypedValueObjectEditor useMemo error", e, context);
             result = {

@@ -185,9 +185,9 @@ const ProgressiveArrayItem: React.FC<ProgressiveArrayItemProps> = ({
       // Use requestIdleCallback if available, otherwise setTimeout
       const scheduleRender = () => {
         if (typeof requestIdleCallback !== "undefined") {
-          requestIdleCallback(() => setIsRendered(true), { timeout: 100 });
+          requestIdleCallback(() => setIsRendered(true), { timeout: 1000 });
         } else {
-          setTimeout(() => setIsRendered(true), 0);
+          setTimeout(() => setIsRendered(true), 500);
         }
       };
 
