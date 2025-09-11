@@ -9,8 +9,8 @@
   "definition": {
     "transformerTestType": "transformerTestSuite",
     "transformerTestLabel": "resolveSchemaReferenceInContext",
-    "transformerTests": {
-      "simple string reference resolution": {
+    "transformerTests": [
+      {
         "transformerTestType": "transformerTest",
         "transformerTestLabel": "simple string reference resolution",
         "transformerName": "resolveSchemaReferenceInContext",
@@ -55,7 +55,7 @@
           "type": "string"
         }
       },
-      "recursive object reference resolution": {
+      {
         "transformerTestType": "transformerTest",
         "transformerTestLabel": "recursive object reference resolution",
         "transformerName": "resolveSchemaReferenceInContext",
@@ -148,7 +148,7 @@
           }
         }
       },
-      "mutually recursive objects resolution": {
+      {
         "transformerTestType": "transformerTest",
         "transformerTestLabel": "mutually recursive objects resolution",
         "transformerName": "resolveSchemaReferenceInContext",
@@ -279,6 +279,6 @@
           }
         }
       }
-    }
+    ]
   }
 }

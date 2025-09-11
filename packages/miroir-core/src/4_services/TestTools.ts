@@ -417,7 +417,11 @@ export async function runTransformerTestSuite(
         ? filter.testList[transformerTestSuite.transformerTestLabel]
         : undefined;
 
-    const selectedTests = Object.values(transformerTestSuite.transformerTests).filter(
+    const allTests = transformerTestSuite.transformerTests
+    // const allTests = Array.isArray(transformerTestSuite.transformerTests)
+    //   ? transformerTestSuite.transformerTests
+    //   : Object.values(transformerTestSuite.transformerTests);
+    const selectedTests = allTests.filter(
       (e) =>
         !innerFilter ||
         (Array.isArray(innerFilter) && innerFilter.includes(e.transformerTestLabel)) ||

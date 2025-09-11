@@ -9,8 +9,8 @@
   "definition": {
     "transformerTestType": "transformerTestSuite",
     "transformerTestLabel": "resolveConditionalSchema",
-    "transformerTests": {
-      "returns the original schema if no conditionalMMLS tag is present": {
+    "transformerTests": [
+      {
         "transformerTestType": "transformerTest",
         "transformerTestLabel": "returns the original schema if no conditionalMMLS tag is present",
         "transformerName": "resolveConditionalSchema",
@@ -26,7 +26,7 @@
         "transformerParams": {},
         "expectedValue": { "type": "string" }
       },
-      "returns the original schema if conditionalMMLS tag is present but no parentUuid": {
+      {
         "transformerTestType": "transformerTest",
         "transformerTestLabel": "returns the original schema if conditionalMMLS tag is present but no parentUuid",
         "transformerName": "resolveConditionalSchema",
@@ -42,7 +42,7 @@
         "transformerParams": {},
         "expectedValue": { "type": "string", "tag": { "value": { "conditionalMMLS": {} } } }
       },
-      "error if parentUuid path specified but not given deploymentUuid": {
+      {
         "transformerTestType": "transformerTest",
         "transformerTestLabel": "error if parentUuid path specified but not given deploymentUuid",
         "transformerName": "resolveConditionalSchema",
@@ -69,7 +69,7 @@
           "error": "NO_DEPLOYMENT_UUID"
         }
       },
-      "error if no value found at given parentUuid path": {
+      {
         "transformerTestType": "transformerTest",
         "transformerTestLabel": "error if no value found at given parentUuid path",
         "transformerName": "resolveConditionalSchema",
@@ -98,7 +98,7 @@
           "details": "parentUuid resolution failed: {\n  \"error\": \"INITIAL_PATH_SEGMENT_NOT_FOUND\",\n  \"segment\": \"c\",\n  \"current\": {}\n}"
         }
       },
-      "fails when wrong parentUuid is given": {
+      {
         "transformerTestType": "transformerTest",
         "transformerTestLabel": "fails when wrong parentUuid is given",
         "transformerName": "resolveConditionalSchema",
@@ -137,7 +137,7 @@
           "details": "No entity definition found for parentUuid WRONG_UUID in deployment f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
         }
       },
-      "resolves schema using legacy single path configuration": {
+      {
         "transformerTestType": "transformerTest",
         "transformerTestLabel": "resolves schema using legacy single path configuration",
         "transformerName": "resolveConditionalSchema",
@@ -262,6 +262,6 @@
           }
         }
       }
-    }
+    ]
   }
 }

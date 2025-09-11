@@ -9,8 +9,8 @@
   "definition": {
     "transformerTestType": "transformerTestSuite",
     "transformerTestLabel": "unfoldSchemaOnce",
-    "transformerTests": {
-      "literal schema remains unchanged": {
+    "transformerTests": [
+      {
         "transformerTestType": "transformerTest",
         "transformerTestLabel": "literal schema remains unchanged",
         "transformerName": "unfoldSchemaOnce",
@@ -50,7 +50,7 @@
           }
         }
       },
-      "simple string schema remains unchanged": {
+      {
         "transformerTestType": "transformerTest",
         "transformerTestLabel": "simple string schema remains unchanged",
         "transformerName": "unfoldSchemaOnce",
@@ -88,7 +88,7 @@
           }
         }
       },
-      "simple schema reference resolution": {
+      {
         "transformerTestType": "transformerTest",
         "transformerTestLabel": "simple schema reference resolution",
         "transformerName": "unfoldSchemaOnce",
@@ -135,7 +135,7 @@
           }
         }
       },
-      "object with schema reference unfolding": {
+      {
         "transformerTestType": "transformerTest",
         "transformerTestLabel": "object with schema reference unfolding",
         "transformerName": "unfoldSchemaOnce",
@@ -202,7 +202,7 @@
           }
         }
       },
-      "array with schema reference unfolding": {
+      {
         "transformerTestType": "transformerTest",
         "transformerTestLabel": "array with schema reference unfolding",
         "transformerName": "unfoldSchemaOnce",
@@ -255,7 +255,7 @@
           }
         }
       },
-      "recursive schema reference unfolding": {
+      {
         "transformerTestType": "transformerTest",
         "transformerTestLabel": "recursive schema reference unfolding",
         "transformerName": "unfoldSchemaOnce",
@@ -358,7 +358,7 @@
           }
         }
       },
-      "record with union unfolding": {
+      {
         "transformerTestType": "transformerTest",
         "transformerTestLabel": "record with union unfolding",
         "transformerName": "unfoldSchemaOnce",
@@ -435,7 +435,7 @@
           }
         }
       },
-      "union with simple schema references": {
+      {
         "transformerTestType": "transformerTest",
         "transformerTestLabel": "union with simple schema references",
         "transformerName": "unfoldSchemaOnce",
@@ -506,6 +506,6 @@
           }
         }
       }
-    }
+    ]
   }
 }

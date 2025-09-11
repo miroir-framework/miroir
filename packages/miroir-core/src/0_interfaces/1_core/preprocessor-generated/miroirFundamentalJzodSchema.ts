@@ -8454,7 +8454,7 @@ export const miroirFundamentalJzodSchema = {
             "type": "string"
           },
           "transformerTests": {
-            "type": "record",
+            "type": "array",
             "definition": {
               "type": "union",
               "discriminator": "transformerTestType",
@@ -8663,7 +8663,7 @@ export const miroirFundamentalJzodSchema = {
                     "type": "string"
                   },
                   "transformerTests": {
-                    "type": "record",
+                    "type": "array",
                     "definition": {
                       "type": "union",
                       "discriminator": "transformerTestType",

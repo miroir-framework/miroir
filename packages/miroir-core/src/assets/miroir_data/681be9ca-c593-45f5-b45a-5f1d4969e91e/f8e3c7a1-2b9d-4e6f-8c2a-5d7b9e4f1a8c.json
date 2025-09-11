@@ -8,8 +8,8 @@
   "definition": {
     "transformerTestType": "transformerTestSuite",
     "transformerTestLabel": "jzodTypeCheck",
-    "transformerTests": {
-      "test010_literal": {
+    "transformerTests": [
+      {
         "transformerTestType": "transformerTest",
         "transformerTestLabel": "test010_literal",
         "transformerName": "jzodTypeCheck",
@@ -54,7 +54,7 @@
           }
         }
       },
-      "test020_string": {
+      {
         "transformerTestType": "transformerTest",
         "transformerTestLabel": "test020_string",
         "transformerName": "jzodTypeCheck",
@@ -94,7 +94,7 @@
           }
         }
       },
-      "test022_boolean_true": {
+      {
         "transformerTestType": "transformerTest",
         "transformerTestLabel": "test022_boolean_true",
         "transformerName": "jzodTypeCheck",
@@ -134,7 +134,7 @@
           }
         }
       },
-      "test024_boolean_false": {
+      {
         "transformerTestType": "transformerTest",
         "transformerTestLabel": "test024_boolean_false",
         "transformerName": "jzodTypeCheck",
@@ -174,7 +174,7 @@
           }
         }
       },
-      "test030_schemaReference": {
+      {
         "transformerTestType": "transformerTest",
         "transformerTestLabel": "test030_schemaReference",
         "transformerName": "jzodTypeCheck",
@@ -240,7 +240,7 @@
           }
         }
       },
-      "test040": {
+      {
         "transformerTestType": "transformerTest",
         "transformerTestLabel": "test040",
         "transformerName": "jzodTypeCheck",
@@ -627,7 +627,7 @@
           }
         }
       },
-      "test050": {
+      {
         "transformerTestType": "transformerTest",
         "transformerTestLabel": "test050",
         "transformerName": "jzodTypeCheck",
@@ -1442,7 +1442,7 @@
           }
         }
       },
-      "test060": {
+      {
         "transformerTestType": "transformerTest",
         "transformerTestLabel": "test060",
         "transformerName": "jzodTypeCheck",
@@ -2444,7 +2444,7 @@
           }
         }
       },
-      "test070": {
+      {
         "transformerTestType": "transformerTest",
         "transformerTestLabel": "test070",
         "transformerName": "jzodTypeCheck",
@@ -3624,7 +3624,7 @@
           }
         }
       },
-      "test120_union": {
+      {
         "transformerTestType": "transformerTest",
         "transformerTestLabel": "test120_union",
         "transformerName": "jzodTypeCheck",
@@ -3703,6 +3703,6 @@
           }
         }
       }
-    }
+    ]
   }
 }

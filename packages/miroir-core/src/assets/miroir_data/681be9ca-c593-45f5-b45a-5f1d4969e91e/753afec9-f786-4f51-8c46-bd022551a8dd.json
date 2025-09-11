@@ -9,8 +9,8 @@
   "definition": {
     "transformerTestType": "transformerTestSuite",
     "transformerTestLabel": "defaultValueForMLSchema",
-    "transformerTests": {
-      "returns undefined for an optional string MLS": {
+    "transformerTests": [
+      {
         "transformerTestType": "transformerTest",
         "transformerTestLabel": "returns undefined for an optional string MLS",
         "transformerName": "defaultValueForMLSchema",
@@ -26,7 +26,7 @@
         "transformerParams": {},
         "expectedValue": null
       },
-      "returns undefined for an optional number MLS": {
+      {
         "transformerTestType": "transformerTest",
         "transformerTestLabel": "returns undefined for an optional number MLS",
         "transformerName": "defaultValueForMLSchema",
@@ -42,7 +42,7 @@
         "transformerParams": {},
         "expectedValue": null
       },
-      "returns undefined for an optional bigint MLS": {
+      {
         "transformerTestType": "transformerTest",
         "transformerTestLabel": "returns undefined for an optional bigint MLS",
         "transformerName": "defaultValueForMLSchema",
@@ -58,7 +58,7 @@
         "transformerParams": {},
         "expectedValue": null
       },
-      "returns undefined for an optional object MLS": {
+      {
         "transformerTestType": "transformerTest",
         "transformerTestLabel": "returns undefined for an optional object MLS",
         "transformerName": "defaultValueForMLSchema",
@@ -79,7 +79,7 @@
         "transformerParams": {},
         "expectedValue": null
       },
-      "returns an empty string for a mandatory string MLS": {
+      {
         "transformerTestType": "transformerTest",
         "transformerTestLabel": "returns an empty string for a string MLS",
         "transformerName": "defaultValueForMLSchema",
@@ -94,7 +94,7 @@
         "transformerParams": {},
         "expectedValue": ""
       },
-      "returns a simple object for an object MLS": {
+      {
         "transformerTestType": "transformerTest",
         "transformerTestLabel": "returns a simple object for an object MLS",
         "transformerName": "defaultValueForMLSchema",
@@ -120,7 +120,7 @@
           "b": 0
         }
       },
-      "returns correct object for an object MLS with optional attribute": {
+      {
         "transformerTestType": "transformerTest",
         "transformerTestLabel": "returns correct object for an object MLS with optional attribute",
         "transformerName": "defaultValueForMLSchema",
@@ -146,7 +146,7 @@
           "a": ""
         }
       },
-      "returns correct object for nested object MLS": {
+      {
         "transformerTestType": "transformerTest",
         "transformerTestLabel": "returns correct object for nested object MLS",
         "transformerName": "defaultValueForMLSchema",
@@ -179,7 +179,7 @@
           }
         }
       },
-      "returns empty array for array MLS": {
+      {
         "transformerTestType": "transformerTest",
         "transformerTestLabel": "returns empty array for array MLS",
         "transformerName": "defaultValueForMLSchema",
@@ -197,7 +197,7 @@
         "transformerParams": {},
         "expectedValue": []
       },
-      "returns empty object MLS definition for mlsObject MLS": {
+      {
         "transformerTestType": "transformerTest",
         "transformerTestLabel": "returns empty object MLS definition for mlsObject MLS",
         "transformerName": "defaultValueForMLSchema",
@@ -219,7 +219,7 @@
           "definition": {}
         }
       },
-      "returns empty Transformer defintion for transformerDefinition MLS": {
+      {
         "transformerTestType": "transformerTest",
         "transformerTestLabel": "returns empty transformer defintion for transformerDefinition MLS",
         "transformerName": "defaultValueForMLSchema",
@@ -243,6 +243,6 @@
           "menuItemReference": ""
         }
       }
-    }
+    ]
   }
 }
