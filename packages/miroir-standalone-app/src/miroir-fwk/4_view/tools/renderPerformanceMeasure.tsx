@@ -3,6 +3,7 @@ import { css } from '@emotion/react';
 import * as React from 'react';
 import { DraggableContainer } from '../components/DraggableContainer.js';
 import { useMiroirTheme } from '../contexts/MiroirThemeContext.js';
+import { getPerformanceConfig } from './performanceConfig.js';
 
 // Performance tracking for JzodElementEditor renders
 export interface RenderPerformanceMetricsElement {
@@ -26,66 +27,37 @@ const emptyRenderMetrics: RenderPerformanceMetricsElement = {
 
 // ################################################################################################
 export class RenderPerformanceMetrics {
-  // private static renderMetrics: Record<string, RenderPerformanceMetricsElement> = {};
   static renderMetrics: Record<string, RenderPerformanceMetricsElement> = {};
-  static changeCallbacks: (() => void)[] = [];
-  static notifyTimer: NodeJS.Timeout | null = null;
-
-  static addChangeCallback(callback: () => void) {
-    this.changeCallbacks.push(callback);
+  
+  // Configuration methods using global config
+  static isEnabled(): boolean {
+    return getPerformanceConfig().enabled;
   }
-
-  static removeChangeCallback(callback: () => void) {
-    this.changeCallbacks = this.changeCallbacks.filter((cb) => cb !== callback);
+  
+  static getRenderThreshold(): number {
+    return getPerformanceConfig().renderThresholdMs;
   }
-
-  static notifyCallbacks() {
-    // Throttle notifications to avoid excessive re-renders
-    if (this.notifyTimer) {
-      return;
-    }
-
-    this.notifyTimer = setTimeout(() => {
-      // console.log('RenderPerformanceMetrics notifying callbacks, count:', this.changeCallbacks.length);
-      this.changeCallbacks.forEach((callback) => callback());
-      this.notifyTimer = null;
-    }, 100); // Throttle to 100ms
+  
+  static getConfiguration() {
+    return getPerformanceConfig();
   }
 
   static resetMetrics() {
-    // Clear any pending timer
-    if (this.notifyTimer) {
-      clearTimeout(this.notifyTimer);
-      this.notifyTimer = null;
-    }
-
-    this.renderMetrics = this.renderMetrics
-      ? Object.fromEntries(
-          Object.keys(this.renderMetrics).map((k) => [
-            k,
-            {
-              renderCount: 0,
-              totalRenderTime: 0,
-              lastRenderTime: 0,
-              maxRenderTime: 0,
-              minRenderTime: Infinity,
-              averageRenderTime: 0,
-            },
-          ])
-        )
-      : {};
-    this.notifyCallbacks();
+    this.renderMetrics = {};
   }
-  // static trackRender(componentKey: string, renderTime: number): RenderPerformanceMetricsElement {
-  //   return trackRenderPerformance(componentKey, renderTime);
-  // }
-  // Function to track render performance
+  
+  // Simple, passive tracking - no callbacks or notifications
   static trackRenderPerformance(
     componentKey: string,
     renderTime: number
   ): RenderPerformanceMetricsElement {
+    // Early return if disabled or below threshold
+    if (!this.isEnabled() || renderTime < this.getRenderThreshold()) {
+      return emptyRenderMetrics;
+    }
+    
     if (!this.renderMetrics[componentKey]) {
-      this.renderMetrics[componentKey] = emptyRenderMetrics;
+      this.renderMetrics[componentKey] = { ...emptyRenderMetrics };
     }
 
     const metrics = this.renderMetrics[componentKey];
@@ -96,8 +68,13 @@ export class RenderPerformanceMetrics {
     metrics.minRenderTime = Math.min(metrics.minRenderTime, renderTime);
     metrics.averageRenderTime = metrics.totalRenderTime / metrics.renderCount;
 
-    this.notifyCallbacks();
+    // No callbacks - just return the metrics
     return metrics;
+  }
+  
+  // Snapshot method for the display container to read current state
+  static getMetricsSnapshot(): Record<string, RenderPerformanceMetricsElement> {
+    return { ...this.renderMetrics };
   }
 
   // Component to display render performance metrics
@@ -138,23 +115,12 @@ export class RenderPerformanceMetrics {
   // Global performance summary display - now uses the standalone DraggableContainer
   static GlobalRenderPerformanceDisplay = DraggableContainer;
 
-  // Specific render metrics display component
-  static RenderMetricsContent: React.FC = () => {
+  // Specific render metrics display component - now just displays static data
+  static RenderMetricsContent: React.FC<{ metrics?: Record<string, RenderPerformanceMetricsElement> }> = ({ metrics }) => {
     const { currentTheme } = useMiroirTheme();
-    const [, forceUpdate] = React.useReducer(x => x + 1, 0);
 
-    React.useEffect(() => {
-      // Subscribe to metrics changes
-      RenderPerformanceMetrics.addChangeCallback(forceUpdate);
-      
-      return () => {
-        // Cleanup subscription
-        RenderPerformanceMetrics.removeChangeCallback(forceUpdate);
-      };
-    }, []);
-
-    // Read directly from the static renderMetrics
-    const renderMetrics = RenderPerformanceMetrics.renderMetrics;
+    // Use provided metrics or get current snapshot
+    const renderMetrics = metrics || RenderPerformanceMetrics.getMetricsSnapshot();
 
     const totalRenders = Object.values(renderMetrics).reduce(
       (sum, metrics) => sum + metrics.renderCount,
@@ -168,7 +134,7 @@ export class RenderPerformanceMetrics {
 
     if (totalRenders === 0) return <div key="no-stats">No stats yet!</div>;
 
-    // Create a unique key based on current metrics to ensure React re-renders parent naturally
+    // Create a unique key based on current metrics
     const metricsKey = `metrics-${totalRenders}-${totalTime.toFixed(2)}`;
 
     const summaryStyles = css({

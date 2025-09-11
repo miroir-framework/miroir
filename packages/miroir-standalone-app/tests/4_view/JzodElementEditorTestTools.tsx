@@ -183,6 +183,7 @@ export const testThemeParams = {
 };
 
 // Helper function to wait for progressive rendering to complete
+// TODO: hasn't progressive rendering been disabled for tests?
 export const waitForProgressiveRendering = async () => {
   // Wait for loading messages to disappear with more attempts
   await waitFor(

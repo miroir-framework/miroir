@@ -206,12 +206,12 @@ const ProgressiveAttribute: FC<{
         if ('requestIdleCallback' in window) {
           (window as any).requestIdleCallback(() => setIsRendered(true), { timeout: 1000 });
         } else {
-          setTimeout(() => setIsRendered(true), 50);
+          setTimeout(() => setIsRendered(true), 250);
         }
       };
       
       scheduleRender();
-    }, [isTestMode]);
+    }, []); // Empty dependency array to run once on mount
   }
 
   // Original attribute rendering logic - always extract props to avoid hook issues

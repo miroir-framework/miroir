@@ -25,6 +25,7 @@ import {
 import { RestPersistenceClientAndRestClient, setupMiroirDomainController } from "miroir-localcache-redux";
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
 
+import { initializePerformanceConfig } from "./miroir-fwk/4_view/tools/performanceConfig.js";
 import { loglevelnext } from './loglevelnextImporter.js';
 import { MiroirEventsPage } from "./miroir-fwk/4_view/pages/MiroirEventsPage.js";
 import { ErrorPage } from "./miroir-fwk/4_view/ErrorPage.js";
@@ -275,6 +276,9 @@ export const themeParams = {
 
 // ###################################################################################
 async function startWebApp(root:Root) {
+  // Initialize performance monitoring configuration
+  initializePerformanceConfig();
+  
   // Start our mock API server
   // const mServer: IndexedDbObjectStore = new IndexedDbObjectStore(miroirConfig.rootApiUrl);
 

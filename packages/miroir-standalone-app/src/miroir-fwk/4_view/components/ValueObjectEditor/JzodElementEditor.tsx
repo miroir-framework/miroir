@@ -22,6 +22,7 @@ import {
   useMiroirNestingBorderColor,
   useMiroirNestingColor
 } from "../../contexts/MiroirThemeContext.js";
+import { useMiroirContextService } from "../../MiroirContextReactProvider.js";
 import { RenderPerformanceMetrics } from "../../tools/renderPerformanceMeasure.js";
 import { ErrorFallbackComponent } from "../ErrorFallbackComponent.js";
 import {
@@ -327,8 +328,8 @@ FoldUnfoldAllObjectAttributesOrArrayItems.displayName = "FoldUnfoldAllObjectAttr
 // let count = 0;
 
 export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
-  // Start measuring render time
   const renderStartTime = performance.now();
+  // const context = useMiroirContextService();
   
   // count++;
   const [count, setCount] = useState(0);
@@ -1086,24 +1087,27 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
     return <></>;
   }
 
-  // useEffect(() => {
-  //     // Track render performance at the end of render
-  //   const renderEndTime = performance.now();
-  //   const renderDuration = renderEndTime - renderStartTime;
-  //   const currentMetrics = trackRenderPerformance(componentKey, renderDuration);
+  // Track render performance at the end of render
+ useEffect(() => {
+      // Track render performance at the end of render
+    if (context.showPerformanceDisplay) {
+      const renderEndTime = performance.now();
+      const renderDuration = renderEndTime - renderStartTime;
+      const currentMetrics = RenderPerformanceMetrics.trackRenderPerformance(componentKey, renderDuration);
 
-  //   // Log performance every 50 renders or if render took longer than 10ms
-  //   if (currentMetrics.renderCount % 50 === 0 || renderDuration > 10) {
-  //     log.info(
-  //       `JzodElementEditor render performance - ${componentKey}: ` +
-  //       `#${currentMetrics.renderCount} renders, ` +
-  //       `Current: ${renderDuration.toFixed(2)}ms, ` +
-  //       `Total: ${currentMetrics.totalRenderTime.toFixed(2)}ms, ` +
-  //       `Avg: ${currentMetrics.averageRenderTime.toFixed(2)}ms, ` +
-  //       `Min/Max: ${currentMetrics.minRenderTime.toFixed(2)}ms/${currentMetrics.maxRenderTime.toFixed(2)}ms`
-  //     );
-  //   }
-  // });
+      // Log performance every 50 renders or if render took longer than 10ms
+      if (currentMetrics.renderCount % 50 === 0 || renderDuration > 10) {
+        log.info(
+          `JzodElementEditor render performance - ${componentKey}: ` +
+          `#${currentMetrics.renderCount} renders, ` +
+          `Current: ${renderDuration.toFixed(2)}ms, ` +
+          `Total: ${currentMetrics.totalRenderTime.toFixed(2)}ms, ` +
+          `Avg: ${currentMetrics.averageRenderTime.toFixed(2)}ms, ` +
+          `Min/Max: ${currentMetrics.minRenderTime.toFixed(2)}ms/${currentMetrics.maxRenderTime.toFixed(2)}ms`
+        );
+      }
+    }
+  });
 
   return (
     <div>

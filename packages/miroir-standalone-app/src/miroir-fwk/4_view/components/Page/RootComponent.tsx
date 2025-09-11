@@ -13,12 +13,8 @@ import { Outlet, useNavigate } from 'react-router-dom';
 import { EventTimelineContainer } from '../EventTimelineContainer';
 import {
   ThemedButton,
-  ThemedFormControl,
   ThemedGrid,
-  ThemedInputLabel,
   ThemedMain,
-  ThemedMenuItem,
-  ThemedMUISelect,
   ThemedText
 } from '../Themes/index';
 import { ActionButton } from './ActionButton';
@@ -61,7 +57,7 @@ import { MiroirThemeProvider, useMiroirTheme } from '../../contexts/MiroirThemeC
 import { useRenderTracker } from "../../tools/renderCountTracker.js";
 import AppBar from './AppBar.js';
 
-import { deployments, packageName } from '../../../../constants.js';
+import { packageName } from '../../../../constants.js';
 import { useCurrentModel, useReduxDeploymentsStateQuerySelectorForCleanedResult } from "../../ReduxHooks.js";
 import { cleanLevel } from '../../constants.js';
 import { usePageConfiguration } from '../../services/index.js';

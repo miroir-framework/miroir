@@ -8,14 +8,14 @@ export const EventTimelineContainer = () => {
   const context = useMiroirContextService();
 
   // Debug logging to track timeline visibility and re-renders
-  console.log('EventTimelineContainer render:', { 
-    showActionTimeline: context.showActionTimeline,
-    timestamp: new Date().toISOString()
-  });
+  // console.log('EventTimelineContainer render:', { 
+  //   showActionTimeline: context.showActionTimeline,
+  //   timestamp: new Date().toISOString()
+  // });
 
   // Only render if action timeline display is enabled
   if (!context.showActionTimeline) {
-    console.log('EventTimelineContainer returning null (timeline should be hidden)');
+    // console.log('EventTimelineContainer returning null (timeline should be hidden)');
     return null;
   }
 
