@@ -8444,30 +8444,30 @@ export const miroirFundamentalJzodSchema = {
         }
       },
       "transformerTestSuite": {
-        "type": "union",
-        "discriminator": "transformerTestType",
-        "definition": [
-          {
-            "type": "schemaReference",
-            "definition": {
-              "relativePath": "transformerTest",
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
-            },
-            "context": {}
+        "type": "object",
+        "definition": {
+          "transformerTestType": {
+            "type": "literal",
+            "definition": "transformerTestSuite"
           },
-          {
-            "type": "object",
+          "transformerTestLabel": {
+            "type": "string"
+          },
+          "transformerTests": {
+            "type": "record",
             "definition": {
-              "transformerTestType": {
-                "type": "literal",
-                "definition": "transformerTestSuite"
-              },
-              "transformerTestLabel": {
-                "type": "string"
-              },
-              "transformerTests": {
-                "type": "record",
-                "definition": {
+              "type": "union",
+              "discriminator": "transformerTestType",
+              "definition": [
+                {
+                  "type": "schemaReference",
+                  "definition": {
+                    "relativePath": "transformerTest",
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+                  },
+                  "context": {}
+                },
+                {
                   "type": "schemaReference",
                   "definition": {
                     "relativePath": "transformerTestSuite",
@@ -8475,10 +8475,10 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "context": {}
                 }
-              }
+              ]
             }
           }
-        ]
+        }
       },
       "transformerTestDefinition": {
         "type": "object",
@@ -8653,37 +8653,37 @@ export const miroirFundamentalJzodSchema = {
                 }
               },
               "transformerTestSuite": {
-                "type": "union",
-                "discriminator": "transformerTestType",
-                "definition": [
-                  {
-                    "type": "schemaReference",
-                    "definition": {
-                      "relativePath": "transformerTest"
-                    }
+                "type": "object",
+                "definition": {
+                  "transformerTestType": {
+                    "type": "literal",
+                    "definition": "transformerTestSuite"
                   },
-                  {
-                    "type": "object",
+                  "transformerTestLabel": {
+                    "type": "string"
+                  },
+                  "transformerTests": {
+                    "type": "record",
                     "definition": {
-                      "transformerTestType": {
-                        "type": "literal",
-                        "definition": "transformerTestSuite"
-                      },
-                      "transformerTestLabel": {
-                        "type": "string"
-                      },
-                      "transformerTests": {
-                        "type": "record",
-                        "definition": {
+                      "type": "union",
+                      "discriminator": "transformerTestType",
+                      "definition": [
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "relativePath": "transformerTest"
+                          }
+                        },
+                        {
                           "type": "schemaReference",
                           "definition": {
                             "relativePath": "transformerTestSuite"
                           }
                         }
-                      }
+                      ]
                     }
                   }
-                ]
+                }
               }
             },
             "definition": {
