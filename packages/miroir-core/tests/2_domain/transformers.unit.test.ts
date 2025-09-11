@@ -23,20 +23,6 @@ const testSuiteName = "transformers.unit.test";
 const shouldSkip = filePattern.includes('resolveConditionalSchema');
 
 // ##################################################################################################
-function getCommandLineArgs() {
-  const args = process.argv.slice(2);
-  const params: { [key: string]: string } = {};
-  args.forEach(arg => {
-    const [key, value] = arg.split('=');
-    if (key.startsWith('--')) {
-      params[key.slice(2)] = value;
-    }
-  });
-  return params;
-}
-
-// Get command line parameters
-const params = getCommandLineArgs();
 const miroirEventTracker = new MiroirEventTracker();
 
 afterAll(() => {

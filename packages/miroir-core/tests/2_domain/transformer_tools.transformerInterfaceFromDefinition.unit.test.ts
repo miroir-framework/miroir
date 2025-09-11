@@ -81,10 +81,13 @@ describe("transformerInterfaceFromDefinition", () => {
         },
       },
       transformerResultSchema: {
-        type: "record",
+        returns: "mlSchema",
         definition: {
-          type: "any",
-        },
+          type: "record",
+          definition: {
+            type: "any",
+          },
+        }
       },
     },
     transformerImplementation: {
@@ -96,7 +99,7 @@ describe("transformerInterfaceFromDefinition", () => {
 
   it("should return a valid JzodElement for runtime target", () => {
     const result = transformerInterfaceFromDefinition(transformerDefinition, "runtime", runtimeReferenceMap);
-
+    // console.log("result", JSON.stringify(result, null, 2));
     expect(result).toEqual({
       type: "object",
       extend: [
@@ -110,12 +113,12 @@ describe("transformerInterfaceFromDefinition", () => {
         },
         {
           type: "schemaReference",
-          context: {},
           definition: {
             eager: true,
             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
             relativePath: "transformerForRuntime_Abstract",
           },
+          context: {},
         },
       ],
       definition: {
@@ -124,32 +127,12 @@ describe("transformerInterfaceFromDefinition", () => {
           definition: "object_fullTemplate",
         },
         applyTo: {
-          type: "union",
-          discriminator: "referenceType",
-          definition: [
-            {
-              type: "record",
-              definition: {
-                type: "any",
-              },
-            },
-            // {
-            //   type: "schemaReference",
-            //   definition: {
-            //     relativePath: "transformer_inner_referenced_extractor",
-            //     absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            //   },
-            //   context: {},
-            // },
-            {
-              type: "schemaReference",
-              definition: {
-                relativePath: "transformer_inner_referenced_transformerForRuntime",
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              },
-              context: {},
-            },
-          ],
+          type: "schemaReference",
+          definition: {
+            relativePath: "transformerForRuntime",
+            absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          },
+          context: {},
         },
         referenceToOuterObject: {
           type: "string",
@@ -180,9 +163,8 @@ describe("transformerInterfaceFromDefinition", () => {
 
   it("should return a valid JzodElement for build target", () => {
     const result = transformerInterfaceFromDefinition(transformerDefinition, "build", buildReferenceMap);
-
-    expect(result).toEqual(
-      {
+    console.log("result", JSON.stringify(result, null, 2));
+    expect(result).toEqual({
       type: "object",
       extend: [
         {
@@ -195,12 +177,12 @@ describe("transformerInterfaceFromDefinition", () => {
         },
         {
           type: "schemaReference",
-          context: {},
           definition: {
             eager: true,
             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
             relativePath: "transformerForBuild_Abstract",
           },
+          context: {},
         },
       ],
       definition: {
@@ -209,32 +191,12 @@ describe("transformerInterfaceFromDefinition", () => {
           definition: "object_fullTemplate",
         },
         applyTo: {
-          type: "union",
-          discriminator: "referenceType",
-          definition: [
-            {
-              type: "record",
-              definition: {
-                type: "any",
-              },
-            },
-            // {
-            //   type: "schemaReference",
-            //   definition: {
-            //     relativePath: "transformer_inner_referenced_extractor",
-            //     absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            //   },
-            //   context: {},
-            // },
-            {
-              type: "schemaReference",
-              definition: {
-                relativePath: "transformer_inner_referenced_transformerForBuild",
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              },
-              context: {},
-            },
-          ],
+          type: "schemaReference",
+          definition: {
+            relativePath: "transformerForBuild",
+            absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          },
+          context: {},
         },
         referenceToOuterObject: {
           type: "string",

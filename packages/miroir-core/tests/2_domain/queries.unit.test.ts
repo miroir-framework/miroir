@@ -130,7 +130,8 @@ export interface TestExtractorParams {
   >;
 }
 
-const testExtractorTools: TestExtractorParams = {
+// const testExtractorTools: Partial<TestExtractorParams> = {
+const testExtractorTools = {
     // Domain State
     getQueryTemplateRunnerParamsForDomainState: getQueryTemplateRunnerParamsForDomainState,
     runQueryTemplateFromDomainState: runQueryTemplateFromDomainState,
@@ -1222,7 +1223,6 @@ describe("queries.unit", () => {
         }
       }
     }
-
   });
 });
 

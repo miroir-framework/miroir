@@ -20,20 +20,20 @@ import {
 
 
 // import { adminConfigurationDeploymentLibrary } from "../../../dist/index.cjs";
-import { DomainState } from "../../../src/0_interfaces/2_domain/DomainControllerInterface";
-import { ReduxDeploymentsState } from "../../../src/0_interfaces/2_domain/ReduxDeploymentsStateInterface";
-import { domainStateToReduxDeploymentsState } from "../../../src/tools";
-import domainStateImport from "../../2_domain/domainState.json";
+// import { DomainState } from "../../../src/0_interfaces/2_domain/DomainControllerInterface";
+// import { ReduxDeploymentsState } from "../../../src/0_interfaces/2_domain/ReduxDeploymentsStateInterface";
+// import { domainStateToReduxDeploymentsState } from "../../../src/tools";
+// import domainStateImport from "../../2_domain/domainState.json";
 
 
-import { defaultMiroirModelEnvironment } from '../../../src/1_core/Model';
+// import { defaultMiroirModelEnvironment } from '../../../src/1_core/Model';
 import { MiroirEventTracker } from '../../../src/3_controllers/MiroirEventTracker';
 import transformerTestSuite_resolveConditionalSchema from "../../../src/assets/miroir_data/681be9ca-c593-45f5-b45a-5f1d4969e91e/3f025c6c-982d-47ed-8061-50009788773a.json";
 import { defaultLibraryModelEnvironment } from '../../../src/1_core/Library';
 
 
-const domainState: DomainState = domainStateImport as DomainState;
-const reduxDeploymentsState: ReduxDeploymentsState = domainStateToReduxDeploymentsState(domainState);
+// const domainState: DomainState = domainStateImport as DomainState;
+// const reduxDeploymentsState: ReduxDeploymentsState = domainStateToReduxDeploymentsState(domainState);
 
 
 const RUN_TEST= process.env.RUN_TEST

@@ -39,7 +39,7 @@ export const transformerTestSuite_applicativeTransformers: TransformerTestSuite 
           },
           menuSectionItemInsertionIndex: -1,
       },
-      transformerParams: {
+      transformerRuntimeContext: {
         menu: {
           uuid: "eaac459c-6c2b-475c-8ae4-c6c3032dae00",
           parentName: "Menu",
@@ -168,39 +168,38 @@ export const transformerTestSuite_applicativeTransformers: TransformerTestSuite 
   }
 }
 
-
-describe("menu.unit.test", () => {
+const testSuiteName = "menu.unit.test";
+// const testSuiteName = "transformer_menu_addItem";
+// describe("menu.unit.test", () => {
   // Skip this test when running resolveConditionalSchema pattern
-  const shouldSkip = filePattern.includes('resolveConditionalSchema');
+const shouldSkip = filePattern.includes('resolveConditionalSchema');
   
-  if (shouldSkip) {
-    console.log("################################ skipping test suite: menu.unit.test");
-    console.log("################################ File pattern:", filePattern);
-    return;
-  }
-
-  // ################################################################################################
-  it("transformer_menu_addItem", async () => { // TODO: test failure cases!
-      console.log("transformer_menu_addItem START")
-
-      const miroirEventTracker = new MiroirEventTracker();
-
-      // console.log("################################ result", JSON.stringify(result,null,2))
-      // console.log("################################ expectedResult", JSON.stringify(expectedResult,null,2))
-      await runTransformerTestSuite(
-        vitest,
-        [],
-        transformerTestSuite_applicativeTransformers,
-        undefined, // filter
-        runTransformerTestInMemory,
-        defaultMetaModelEnvironment,
-        miroirEventTracker
-      );
-
-      // expect(result).toEqual(expectedResult);
-
-      console.log("transformer_menu_addItem END")
-    }
+if (shouldSkip) {
+  console.log("################################ skipping test suite: menu.unit.test");
+  console.log("################################ File pattern:", filePattern);
+  // return;
+} else {
+  console.log("transformer_menu_addItem START")
+  
+  const miroirEventTracker = new MiroirEventTracker();
+  
+  // console.log("################################ result", JSON.stringify(result,null,2))
+  // console.log("################################ expectedResult", JSON.stringify(expectedResult,null,2))
+  await runTransformerTestSuite(
+    vitest,
+    [],
+    transformerTestSuite_applicativeTransformers,
+    undefined, // filter
+    runTransformerTestInMemory,
+    defaultMetaModelEnvironment,
+    miroirEventTracker
   );
+  
+  // expect(result).toEqual(expectedResult);
+  
+  console.log("transformer_menu_addItem END")
 
-});
+}
+
+
+// });
