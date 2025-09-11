@@ -8374,6 +8374,21 @@ export const miroirFundamentalJzodSchema = {
           "transformerName": {
             "type": "string"
           },
+          "testTag": {
+            "type": "union",
+            "optional": true,
+            "definition": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "array",
+                "definition": {
+                  "type": "string"
+                }
+              }
+            ]
+          },
           "transformer": {
             "type": "schemaReference",
             "definition": {
@@ -8568,6 +8583,21 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "transformerName": {
                     "type": "string"
+                  },
+                  "testTag": {
+                    "type": "union",
+                    "optional": true,
+                    "definition": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "array",
+                        "definition": {
+                          "type": "string"
+                        }
+                      }
+                    ]
                   },
                   "transformer": {
                     "type": "schemaReference",
