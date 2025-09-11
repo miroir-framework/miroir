@@ -37,11 +37,14 @@ import {
 import { useCurrentModel } from "../../ReduxHooks";
 import { FoldUnfoldObjectOrArray, FoldUnfoldAllObjectAttributesOrArrayItems, JzodElementEditor } from "./JzodElementEditor";
 import { JzodArrayEditorProps } from "./JzodElementEditorInterface";
+import { getFoldedDisplayValue } from "./JzodElementEditorHooks";
 import { ErrorFallbackComponent } from "../ErrorFallbackComponent";
 import { 
   ThemedSizedButton, 
   ThemedAddIcon,
-  ThemedStyledButton 
+  ThemedStyledButton,
+  ThemedFoldedValueDisplay,
+  ThemedFlexRow
 } from "../Themes/index"
 import { useMiroirTheme } from '../../contexts/MiroirThemeContext';
 import { getMemoizedReduxDeploymentsStateSelectorMap, ReduxStateWithUndoRedo } from "miroir-localcache-redux";
@@ -549,6 +552,13 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
       arrayValueObject,
     ]
   );
+  
+  // ##############################################################################################
+  // Get displayed value when array/tuple is folded using the shared utility function
+  const foldedDisplayValue = useMemo(() => {
+    return getFoldedDisplayValue(currentTypeCheckKeyMap?.resolvedSchema, currentValue);
+  }, [currentTypeCheckKeyMap?.resolvedSchema, currentValue]);
+
   // ##############################################################################################
   const arrayItems: JSX.Element = useMemo(()=>(
   // const arrayItems: JSX.Element = (
@@ -648,25 +658,28 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
   return (
     <div id={rootLessListKey} key={rootLessListKey}>
       <div>
-        <span
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "start",
-            alignItems: "center",
-          }}
+        <ThemedFlexRow
+          justify="start"
+          align="center"
         >
           <span>
-            <span
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                alignContent: "start",
-                alignItems: "center",
-              }}
+            <ThemedFlexRow
+              align="center"
             >
               {label}
-            </span>
+              {/* Show folded display value when array is folded and a value is available */}
+              {foldedObjectAttributeOrArrayItems &&
+                foldedObjectAttributeOrArrayItems[listKey] &&
+                (() => {
+                  return foldedDisplayValue !== null ? (
+                    <ThemedFoldedValueDisplay
+                      value={String(foldedDisplayValue)}
+                      title={`Folded value: ${foldedDisplayValue}`}
+                      maxLength={100}
+                    />
+                  ) : null;
+                })()}
+            </ThemedFlexRow>
           </span>
           <span id={rootLessListKey + "head"} key={rootLessListKey + "head"}>
             {/* Only show controls in edit mode */}
@@ -733,7 +746,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
             {/* Only show switch in edit mode */}
             {!readOnly && (displayAsStructuredElementSwitch ?? <></>)}
           </span>
-        </span>
+        </ThemedFlexRow>
         <div
           id={listKey + ".inner"}
           style={{

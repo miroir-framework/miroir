@@ -44,7 +44,7 @@ import {
 } from "../Themes/index"
 import { indentShift } from "./JzodArrayEditor";
 import { FoldUnfoldAllObjectAttributesOrArrayItems, FoldUnfoldObjectOrArray, JzodElementEditor } from "./JzodElementEditor";
-import { useJzodElementEditorHooks } from "./JzodElementEditorHooks";
+import { useJzodElementEditorHooks, getFoldedDisplayValue } from "./JzodElementEditorHooks";
 import { JzodObjectEditorProps } from "./JzodElementEditorInterface";
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -714,31 +714,10 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
     ]
   );
 
-  // ##############################################################################################
-  // Get displayed value when object is folded
-  const getFoldedDisplayValue = useCallback(() => {
-    // Check if there's a displayedAttributeValueWhenFolded path in the schema's tag
-    const displayPath = localResolvedElementJzodSchemaBasedOnValue?.tag?.value?.display?.displayedAttributeValueWhenFolded;
-    
-    if (!displayPath || !currentValue) {
-      return null;
-    }
-
-    try {
-      // Convert string path to array if needed (e.g., "name" or "user.name" -> ["name"] or ["user", "name"])
-      const pathArray = Array.isArray(displayPath) ? displayPath : displayPath.split('.');
-      const displayValue = resolvePathOnObject(currentValue, pathArray);
-      
-      // Only return the value if it exists and is not null/undefined
-      if (displayValue !== null && displayValue !== undefined) {
-        return displayValue;
-      }
-    } catch (error) {
-      // If path resolution fails, don't show anything
-      log.warn("Failed to resolve displayedAttributeValueWhenFolded path:", displayPath, "on object:", currentValue, "error:", error);
-    }
-
-    return null;
+  // // ##############################################################################################
+  // // Get displayed value when object is folded using the shared utility function
+  const foldedDisplayValue = useMemo(() => {
+    return getFoldedDisplayValue(localResolvedElementJzodSchemaBasedOnValue, currentValue);
   }, [localResolvedElementJzodSchemaBasedOnValue, currentValue]);
 
   // ##############################################################################################
@@ -844,7 +823,6 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
               {foldedObjectAttributeOrArrayItems &&
                 foldedObjectAttributeOrArrayItems[listKey] &&
                 (() => {
-                  const foldedDisplayValue = getFoldedDisplayValue();
                   return foldedDisplayValue !== null ? (
                     <ThemedFoldedValueDisplay
                       value={String(foldedDisplayValue)}

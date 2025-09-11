@@ -104,6 +104,16 @@
         "context": {
           "transformerTest": {
             "type": "object",
+            "tag": {
+              "value": {
+                "defaultLabel": "TransformerTest",
+                "description": "A test of a Transformer",
+                "editable": true,
+                "display": {
+                  "displayedAttributeValueWhenFolded": "transformerTestLabel"
+                }
+              }
+            },
             "definition": {
               "transformerTestType": {
                 "type": "literal",
@@ -185,6 +195,16 @@
           },
           "transformerTestSuite": {
             "type": "object",
+            "tag": {
+              "value": {
+                "defaultLabel": "TransformerTestSuite",
+                "description": "A suite of TransformerTests or nested TransformerTestSuites",
+                "editable": true,
+                "display": {
+                  "displayedAttributeValueWhenFolded": "transformerTestLabel"
+                }
+              }
+            },
             "definition": {
               "transformerTestType": {
                 "type": "literal",

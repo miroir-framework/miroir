@@ -304,3 +304,41 @@ export function useJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
     undefinedOptionalAttributes,
   };
 }
+
+// ################################################################################################
+/**
+ * Shared utility function to get the displayed value when an object/array is folded.
+ * Uses the schema's tag.value.display.displayedAttributeValueWhenFolded path to resolve a display value from the current value.
+ * 
+ * @param schema - The Jzod schema element that may contain the display configuration
+ * @param currentValue - The current data value to resolve the display path on
+ * @returns The display value if found and valid, null otherwise
+ */
+export function getFoldedDisplayValue(schema: JzodElement | undefined, currentValue: any): any {
+  if (!schema || !currentValue) {
+    return null;
+  }
+
+  // Check if there's a displayedAttributeValueWhenFolded path in the schema's tag
+  const displayPath = (schema as any)?.tag?.value?.display?.displayedAttributeValueWhenFolded;
+  
+  if (!displayPath) {
+    return null;
+  }
+
+  try {
+    // Convert string path to array if needed (e.g., "name" or "user.name" -> ["name"] or ["user", "name"])
+    const pathArray = Array.isArray(displayPath) ? displayPath : displayPath.split('.');
+    const displayValue = resolvePathOnObject(currentValue, pathArray);
+    
+    // Only return the value if it exists and is not null/undefined
+    if (displayValue !== null && displayValue !== undefined) {
+      return displayValue;
+    }
+  } catch (error) {
+    // If path resolution fails, don't show anything
+    log.warn("Failed to resolve displayedAttributeValueWhenFolded path:", displayPath, "on value:", currentValue, "error:", error);
+  }
+
+  return null;
+}
