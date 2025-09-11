@@ -55,26 +55,26 @@ export const GenderCellEditor = memo(
       }
     };
 
-    useEffect(() => {
-      (ReactDOM.findDOMNode(refContainer.current) as any).focus();
-      log.info('GenderCellEditor2 ready for edit',props,ref);
+    // useEffect(() => {
+    //   (ReactDOM.findDOMNode(refContainer.current) as any).focus();
+    //   log.info('GenderCellEditor2 ready for edit',props,ref);
 
-      setReady(true);
-    }, []);
+    //   setReady(true);
+    // }, []);
+
+    // // useEffect(() => {
+    // //   window.addEventListener('keydown', checkAndToggleMoodIfLeftRight);
+
+    // //   return () => {
+    // //     window.removeEventListener('keydown', checkAndToggleMoodIfLeftRight);
+    // //   };
+    // // }, [checkAndToggleMoodIfLeftRight, ready]);
 
     // useEffect(() => {
-    //   window.addEventListener('keydown', checkAndToggleMoodIfLeftRight);
-
-    //   return () => {
-    //     window.removeEventListener('keydown', checkAndToggleMoodIfLeftRight);
-    //   };
-    // }, [checkAndToggleMoodIfLeftRight, ready]);
-
-    useEffect(() => {
-      if (female !== null) {
-        props.stopEditing();
-      }
-    }, [female]);
+    //   if (female !== null) {
+    //     props.stopEditing();
+    //   }
+    // }, [female]);
 
     useImperativeHandle(ref, () => {
       return {

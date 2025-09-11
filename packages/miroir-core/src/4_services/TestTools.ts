@@ -122,11 +122,11 @@ export async function runTransformerTestInMemory(
 ) {
   const testName = transformerTest.transformerTestLabel ?? transformerTest.transformerName;
   const assertionName = transformerTest.transformerTestLabel ?? transformerTest.transformerName;
-  log.info(
-    "#################################### runTransformerTestInMemory test",
-    assertionName,
-    "START"
-  );
+  // log.info(
+  //   "#################################### runTransformerTestInMemory test",
+  //   assertionName,
+  //   "START"
+  // );
   
   // Start tracking individual test execution in unified tracker if available
   let testTrackingId: string | undefined;
@@ -175,11 +175,11 @@ export async function runTransformerTestInMemory(
     transformerTest.transformerRuntimeContext ?? {},
     "value"
   );
-  log.info(
-    "################################ runTransformerTestInMemory convertedTransformer after applying build step",
-    JSON.stringify(convertedTransformer, null, 2),
-    "effective interpolation", interpolation
-  );
+  // log.info(
+  //   "################################ runTransformerTestInMemory convertedTransformer after applying build step",
+  //   JSON.stringify(convertedTransformer, null, 2),
+  //   "effective interpolation", interpolation
+  // );
 
   if (interpolation == "runtime" && !convertedTransformer["elementType"]) {
     rawResult = transformer_extended_apply_wrapper(
@@ -197,7 +197,8 @@ export async function runTransformerTestInMemory(
 
   log.info(
     "################################ runTransformerTestInMemory raw result",
-    JSON.stringify(rawResult, null, 2)
+    // JSON.stringify(rawResult, null, 2)
+    rawResult
   );
   // log.info(
   //   "################################ runTransformerTestInMemory expectedResult",
@@ -234,13 +235,13 @@ export async function runTransformerTestInMemory(
     const normalizedResult = removeUndefinedProperties(jsonifiedResult);
     const normalizedExpected = removeUndefinedProperties(unNullify(expectedValue));
 
-      log.info(
-        "################################ runTransformerTestInMemory result",
-        // resultWithRetain
-        JSON.stringify(normalizedResult, null, 2),
-        "expected",
-        JSON.stringify(normalizedExpected, null, 2)
-      );
+      // log.info(
+      //   "################################ runTransformerTestInMemory result",
+      //   // resultWithRetain
+      //   JSON.stringify(normalizedResult, null, 2),
+      //   "expected",
+      //   JSON.stringify(normalizedExpected, null, 2)
+      // );
 
     const expectForm = localVitest
       .expect(normalizedResult, `${testSuiteNamePathAsString} > ${assertionName}`)
@@ -252,7 +253,8 @@ export async function runTransformerTestInMemory(
     const testResult: any = expectForm.toEqual(normalizedExpected);
     log.info(
       "################################ runTransformerTestInMemory testResult",
-      JSON.stringify(testResult, circularReplacer, 2)
+      testResult
+      // JSON.stringify(testResult, circularReplacer, 2)
     );
 
     if (!testResult || !Object.hasOwn(testResult, "result")) {
@@ -281,7 +283,7 @@ export async function runTransformerTestInMemory(
       };
     }
   } catch (error) {
-    log.info(
+    log.error(
       "################################ runTransformerTestInMemory caught error from localVitest.expect",
       error
     );

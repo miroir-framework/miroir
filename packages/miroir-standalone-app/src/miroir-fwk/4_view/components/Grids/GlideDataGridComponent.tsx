@@ -237,7 +237,7 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
   }, [selectedColumnId, addFilterCondition, filterState.columnGroups]);
 
   // Monitor container width changes (only if containerWidth not provided from parent)
-  React.useEffect(() => {
+  useEffect(() => {
     if (propContainerWidth || (calculatedColumnWidths && calculatedColumnWidths.length > 0)) {
       // Skip internal width measurement if parent provides width OR we have pre-calculated widths
       return;

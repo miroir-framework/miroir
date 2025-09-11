@@ -199,23 +199,20 @@ const ProgressiveAttribute: FC<{
   const isTestMode = process.env.VITE_TEST_MODE === 'true';
   const [isRendered, setIsRendered] = useState(isTestMode);
   
-  useEffect(() => {
-    // Skip progressive rendering in test mode to avoid timing issues
-    if (isTestMode) {
-      return;
-    }
-    
-    // Use requestIdleCallback for better performance, fallback to setTimeout
-    const scheduleRender = () => {
-      if ('requestIdleCallback' in window) {
-        (window as any).requestIdleCallback(() => setIsRendered(true), { timeout: 1000 });
-      } else {
-        setTimeout(() => setIsRendered(true), 50);
-      }
-    };
-    
-    scheduleRender();
-  }, [isTestMode]);
+  if (!isTestMode) {
+    useEffect(() => {
+      // Use requestIdleCallback for better performance, fallback to setTimeout
+      const scheduleRender = () => {
+        if ('requestIdleCallback' in window) {
+          (window as any).requestIdleCallback(() => setIsRendered(true), { timeout: 1000 });
+        } else {
+          setTimeout(() => setIsRendered(true), 50);
+        }
+      };
+      
+      scheduleRender();
+    }, [isTestMode]);
+  }
 
   // Original attribute rendering logic - always extract props to avoid hook issues
   const {

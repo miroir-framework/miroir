@@ -521,6 +521,7 @@ export const EntityInstanceGrid = (props: TableComponentProps & { theme?: DeepPa
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState<number>(1200);
 
+  // ##############################################################################################
   // Monitor container width changes for dynamic table width calculation
   useEffect(() => {
     let updateTimer: NodeJS.Timeout;

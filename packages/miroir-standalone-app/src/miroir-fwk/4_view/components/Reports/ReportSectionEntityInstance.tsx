@@ -141,15 +141,15 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   // Track performance immediately for initial render
   const componentKey = `ReportSectionEntityInstance-${props.instance?.uuid || props.entityUuid}`;
 
-  log.info(
-    "++++++++++++++++++++++++++++++++ render",
-    "navigationCount",
-    navigationCount,
-    "totalCount",
-    totalCount,
-    "with props",
-    props
-  );
+  // log.info(
+  //   "++++++++++++++++++++++++++++++++ render",
+  //   "navigationCount",
+  //   navigationCount,
+  //   "totalCount",
+  //   totalCount,
+  //   "with props",
+  //   props
+  // );
 
   const [displayAsStructuredElement, setDisplayAsStructuredElement] = useState(true);
   const [displayEditor, setDisplayEditor] = useState(true);
@@ -250,7 +250,6 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
       }
     }
   }, [props.instance, props.entityUuid]);
-  // });
 
   // ##############################################################################################
   const handleDisplayEditorSwitchChange = useCallback(
@@ -323,26 +322,26 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
     isTransformerTestEntity && instance?.parentUuid === entityTransformerTest.uuid;
 
   // Log for debugging
-  log.info(
-    "ReportSectionEntityInstance - TransformerTest detection:",
-    "currentReportTargetEntity",
-    currentReportTargetEntity,
-    "entityUuid",
-    currentReportTargetEntity?.uuid,
-    "entityTransformerTest",
-    entityTransformerTest,
-    "instance",
-    instance,
-    "isTransformerTest",
-    isTransformerTest
-    //   {
-    //   transformerTestEntityUuid: entityTransformerTest.uuid,
-    //   isTransformerTestEntity,
-    //   instanceTransformerTestType: instance?.transformerTestType,
-    //   instanceName: instance?.name,
-    //   transformerTestLabel: instance?.transformerTestLabel
-    // }
-  );
+  // log.info(
+  //   "ReportSectionEntityInstance - TransformerTest detection:",
+  //   "currentReportTargetEntity",
+  //   currentReportTargetEntity,
+  //   "entityUuid",
+  //   currentReportTargetEntity?.uuid,
+  //   "entityTransformerTest",
+  //   entityTransformerTest,
+  //   "instance",
+  //   instance,
+  //   "isTransformerTest",
+  //   isTransformerTest
+  //   //   {
+  //   //   transformerTestEntityUuid: entityTransformerTest.uuid,
+  //   //   isTransformerTestEntity,
+  //   //   instanceTransformerTestType: instance?.transformerTestType,
+  //   //   instanceName: instance?.name,
+  //   //   transformerTestLabel: instance?.transformerTestLabel
+  //   // }
+  // );
 
   // Create stable cell renderer functions to prevent ag-grid from recreating components
   // CRITICAL: These must be useCallback to maintain stable references, otherwise ag-grid

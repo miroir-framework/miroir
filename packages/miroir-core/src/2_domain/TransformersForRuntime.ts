@@ -837,17 +837,17 @@ export function resolveApplyTo_legacy<T extends MiroirModelEnvironment>(
   contextResults: Record<string, any> | undefined,
   label: string | undefined
 ) {
-  log.info(
-    "resolveApplyTo_legacy",
-    "label",
-    label,
-    "called for transformer",
-    JSON.stringify(transformer, null, 2),
-    "step",
-    step,
-    "resolveBuildTransformersTo",
-    resolveBuildTransformersTo
-  );
+  // log.info(
+  //   "resolveApplyTo_legacy",
+  //   "label",
+  //   label,
+  //   "called for transformer",
+  //   JSON.stringify(transformer, null, 2),
+  //   "step",
+  //   step,
+  //   "resolveBuildTransformersTo",
+  //   resolveBuildTransformersTo
+  // );
   switch (typeof transformer.applyTo) {
     case 'string':
     case 'number':
@@ -882,17 +882,16 @@ export function resolveApplyTo_legacy<T extends MiroirModelEnvironment>(
         queryParams,
         contextResults
       );
-            // log.info("resolveApplyTo_legacy resolvedReference", resolvedReference);
-      log.info(
-        "resolveApplyTo_legacy resolved for transformer",
-        transformer,
-        "step",
-        step,
-        "label",
-        label,
-        "resolvedReference",
-        resolvedReference
-      );
+      // log.info(
+      //   "resolveApplyTo_legacy resolved for transformer",
+      //   transformer,
+      //   "step",
+      //   step,
+      //   "label",
+      //   label,
+      //   "resolvedReference",
+      //   resolvedReference
+      // );
       return resolvedReference;
       break;
     }
@@ -2641,24 +2640,24 @@ export function transformer_extended_apply<T extends MiroirModelEnvironment>(
   transformerParams: T,
   contextResults?: Record<string, any>,
 ): TransformerReturnType<any> {
-  log.info(
-    "transformer_extended_apply called for label",
-    label,
-    "step:",
-    step,
-    "transformer.interpolation:",
-    (transformer as any)?.interpolation ?? "build",
-    ((transformer as any)?.interpolation ?? "build") == step,
-    typeof transformer,
-    "transformer",
-    JSON.stringify(transformer, null, 2),
-    "queryParams elements",
-    Object.keys(transformerParams ?? {})
-    // // JSON.stringify(Object.keys(queryParams??{}), null, 2),
-    // "contextResults elements",
-    // Object.keys(contextResults??{})
-    // // JSON.stringify(Object.keys(contextResults??{}), null, 2)
-  );
+  // log.info(
+  //   "transformer_extended_apply called for label",
+  //   label,
+  //   "step:",
+  //   step,
+  //   "transformer.interpolation:",
+  //   (transformer as any)?.interpolation ?? "build",
+  //   ((transformer as any)?.interpolation ?? "build") == step,
+  //   typeof transformer,
+  //   "transformer",
+  //   JSON.stringify(transformer, null, 2),
+  //   "queryParams elements",
+  //   Object.keys(transformerParams ?? {})
+  //   // // JSON.stringify(Object.keys(queryParams??{}), null, 2),
+  //   // "contextResults elements",
+  //   // Object.keys(contextResults??{})
+  //   // // JSON.stringify(Object.keys(contextResults??{}), null, 2)
+  // );
   let result: TransformerReturnType<any> = undefined as any;
 
   if (typeof transformer == "object" && transformer != null) {
@@ -2733,7 +2732,7 @@ export function transformer_extended_apply<T extends MiroirModelEnvironment>(
             );
             preResult = new TransformerFailure({
               queryFailure: "FailedTransformer",
-      transformerPath, //: [...transformerPath, transformer.transformerType],
+              transformerPath, //: [...transformerPath, transformer.transformerType],
               failureOrigin: ["transformer_extended_apply"],
               queryContext:
                 "transformerImplementation for transformer" +
@@ -2815,7 +2814,7 @@ export function transformer_extended_apply<T extends MiroirModelEnvironment>(
               //   foundApplicationTransformer.transformerImplementation
               //     .inMemoryImplementationFunctionName
               // ](
-              log.info("transformer_extended_apply calling transformerFunction");
+              // log.info("transformer_extended_apply calling transformerFunction");
               const result = transformerFunction(
                 step,
                 transformerPath,
@@ -2825,11 +2824,11 @@ export function transformer_extended_apply<T extends MiroirModelEnvironment>(
                 transformerParams,
                 contextResults
               );
-              log.info(
-                "transformer_extended_apply called transformerFunction",
-                "result",
-                JSON.stringify(result, null, 2)
-              );
+              // log.info(
+              //   "transformer_extended_apply called transformerFunction",
+              //   "result",
+              //   JSON.stringify(result, null, 2)
+              // );
               return result;
               // throw new Error(
               //   "transformer_extended_apply failed for " +
@@ -2858,7 +2857,7 @@ export function transformer_extended_apply<T extends MiroirModelEnvironment>(
                 );
                 preResult = new TransformerFailure({
                   queryFailure: "FailedTransformer",
-      transformerPath, //: [...transformerPath, transformer.transformerType],
+                  transformerPath, //: [...transformerPath, transformer.transformerType],
                   failureOrigin: ["transformer_extended_apply"],
                   queryContext:
                     "transformer " + (transformer as any).transformerType + " not found",
@@ -2893,7 +2892,6 @@ export function transformer_extended_apply<T extends MiroirModelEnvironment>(
                   newResolveBuildTransformersTo,
                   transformerParams,
                   { ...contextResults, ...evaluatedParams }
-                  // {...contextResults, ...(transformer as any)} // inner definitions do not have parameter references, only context references
                 );
               }
               // }
@@ -2901,9 +2899,8 @@ export function transformer_extended_apply<T extends MiroirModelEnvironment>(
             }
             default: {
               return new TransformerFailure({
-                // queryFailure: "FailedTransformer",
                 queryFailure: "FailedTransformer",
-      transformerPath, //: [...transformerPath, transformer.transformerType],
+                transformerPath, //: [...transformerPath, transformer.transformerType],
                 failureOrigin: ["transformer_extended_apply"],
                 queryContext:
                   "transformerImplementation " +
@@ -3078,13 +3075,13 @@ export function transformer_extended_apply_wrapper<T extends MiroirModelEnvironm
       transformerParams,
       contextResults,
     );
-    log.info(
-      "transformer_extended_apply_wrapper called for",
-      label,
-      "transformer_extended_apply result",
-      result
-      // JSON.stringify(result, null, 2),
-    );  
+    // log.info(
+    //   "transformer_extended_apply_wrapper called for",
+    //   label,
+    //   "transformer_extended_apply result",
+    //   result
+    //   // JSON.stringify(result, null, 2),
+    // );  
     // if (result instanceof TransformerFailure) {
     if (result instanceof TransformerFailure) {
       // End transformer tracking with error

@@ -180,24 +180,20 @@ const ProgressiveArrayItem: React.FC<ProgressiveArrayItemProps> = ({
   const [isRendered, setIsRendered] = useState(isTestMode);
 
 
-  useEffect(() => {
-    // Skip progressive rendering in test mode
-    if (isTestMode) {
-      // setIsRendered(true);
-      return;
-    }
+  if (!isTestMode) {
+    useEffect(() => {
+      // Use requestIdleCallback if available, otherwise setTimeout
+      const scheduleRender = () => {
+        if (typeof requestIdleCallback !== "undefined") {
+          requestIdleCallback(() => setIsRendered(true), { timeout: 100 });
+        } else {
+          setTimeout(() => setIsRendered(true), 0);
+        }
+      };
 
-    // Use requestIdleCallback if available, otherwise setTimeout
-    const scheduleRender = () => {
-      if (typeof requestIdleCallback !== 'undefined') {
-        requestIdleCallback(() => setIsRendered(true), { timeout: 100 });
-      } else {
-        setTimeout(() => setIsRendered(true), 0);
-      }
-    };
-
-    scheduleRender();
-  }, []);
+      scheduleRender();
+    }, []);
+  }
 
   return (
     <div key={rootLessListKey + "." + index}>

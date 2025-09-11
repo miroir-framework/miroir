@@ -79,125 +79,125 @@ export const DefaultCellRenderer =  memo((props: ICellRendererParams<TableCompon
   }
 })
 
-// ################################################################################################
-export const SelectEntityInstanceEditorNotUsed = memo(
-  forwardRef((props: ICellEditorParams, ref) => {
-    log.info('SelectEntityInstanceEditor',props,ref);
-    const context = useMiroirContextService();
-    const deploymentUuid = context.deploymentUuid;
+// // ################################################################################################
+// export const SelectEntityInstanceEditorNotUsed = memo(
+//   forwardRef((props: ICellEditorParams, ref) => {
+//     log.info('SelectEntityInstanceEditor',props,ref);
+//     const context = useMiroirContextService();
+//     const deploymentUuid = context.deploymentUuid;
 
-    const selectorParams:LocalCacheExtractor = useMemo(
-      () => ({
-        queryType: "localCacheEntityInstancesExtractor",
-        definition: {
-          deploymentUuid,
-          applicationSection: "data",
-          entityUuid: (props as any).entityUuid,
-        }
-      } as LocalCacheExtractor),
-      [deploymentUuid, (props as any).entityUuid]
-    );
-    const instancesToDisplay: EntityInstanceWithName[] = useSelector((state: ReduxStateWithUndoRedo) =>
-      selectInstanceArrayForDeploymentSectionEntity(state, selectorParams)
-    ) as EntityInstanceWithName[];
+//     const selectorParams:LocalCacheExtractor = useMemo(
+//       () => ({
+//         queryType: "localCacheEntityInstancesExtractor",
+//         definition: {
+//           deploymentUuid,
+//           applicationSection: "data",
+//           entityUuid: (props as any).entityUuid,
+//         }
+//       } as LocalCacheExtractor),
+//       [deploymentUuid, (props as any).entityUuid]
+//     );
+//     const instancesToDisplay: EntityInstanceWithName[] = useSelector((state: ReduxStateWithUndoRedo) =>
+//       selectInstanceArrayForDeploymentSectionEntity(state, selectorParams)
+//     ) as EntityInstanceWithName[];
       
-    const [ready, setReady] = useState(false);
-    const [interimValue, setInterimValue] = useState(props.value);
-    const [selectedElement, setSelectedElement] = useState<any>(null);
-    const refContainer = useRef(null);
+//     const [ready, setReady] = useState(false);
+//     const [interimValue, setInterimValue] = useState(props.value);
+//     const [selectedElement, setSelectedElement] = useState<any>(null);
+//     const refContainer = useRef(null);
 
-    useEffect(() => {
-      (ReactDOM.findDOMNode(refContainer.current) as any).focus();
-      log.info('SelectEntityInstanceEditor ready for edit',props,ref);
+//     useEffect(() => {
+//       (ReactDOM.findDOMNode(refContainer.current) as any).focus();
+//       log.info('SelectEntityInstanceEditor ready for edit',props,ref);
 
-      setReady(true);
-    }, []);
+//       setReady(true);
+//     }, []);
 
-    useEffect(() => {
-      if (selectedElement !== null) {
-        props.stopEditing();
-      }
-    }, [selectedElement]);
+//     useEffect(() => {
+//       if (selectedElement !== null) {
+//         props.stopEditing();
+//       }
+//     }, [selectedElement]);
 
-    useImperativeHandle(ref, () => {
-      return {
-        resolvePathOnObject() {
-          return selectedElement ? selectedElement : '';
-        },
-      };
-    });
+//     useImperativeHandle(ref, () => {
+//       return {
+//         resolvePathOnObject() {
+//           return selectedElement ? selectedElement : '';
+//         },
+//       };
+//     });
 
-    const mood = {
-      borderRadius: 15,
-      border: '1px solid grey',
-      background: '#e6e6e6',
-      padding: 15,
-      textAlign: 'center' as const,
-      display: 'inline-block',
-    };
+//     const mood = {
+//       borderRadius: 15,
+//       border: '1px solid grey',
+//       background: '#e6e6e6',
+//       padding: 15,
+//       textAlign: 'center' as const,
+//       display: 'inline-block',
+//     };
 
-    const unselected = {
-      paddingLeft: 10,
-      paddingRight: 10,
-      border: '1px solid transparent',
-      padding: 4,
-    };
+//     const unselected = {
+//       paddingLeft: 10,
+//       paddingRight: 10,
+//       border: '1px solid transparent',
+//       padding: 4,
+//     };
 
-    const selected = {
-      paddingLeft: 10,
-      paddingRight: 10,
-      border: '1px solid lightgreen',
-      padding: 4,
-    };
+//     const selected = {
+//       paddingLeft: 10,
+//       paddingRight: 10,
+//       border: '1px solid lightgreen',
+//       padding: 4,
+//     };
 
-    // const femaleStyle = interimValue ? selected : unselected;
-    // const maleStyle = !interimValue ? selected : unselected;
+//     // const femaleStyle = interimValue ? selected : unselected;
+//     // const maleStyle = !interimValue ? selected : unselected;
 
-    const selectData = instancesToDisplay.map(
-      (i: EntityInstanceWithName) => (
-        {
-          key:i.name,
-          label:i.name,
-          src:"",
-          onClick:() => {
-            setSelectedElement(i.uuid);
-          },
-          // style:femaleStyle
-        }
-      )
-    );
+//     const selectData = instancesToDisplay.map(
+//       (i: EntityInstanceWithName) => (
+//         {
+//           key:i.name,
+//           label:i.name,
+//           src:"",
+//           onClick:() => {
+//             setSelectedElement(i.uuid);
+//           },
+//           // style:femaleStyle
+//         }
+//       )
+//     );
 
-    return (
-      <div
-        ref={refContainer}
-        style={mood}
-        tabIndex={1} // important - without this the key presses wont be caught
-      >
-        <Autocomplete
-          id="combo-box-demo"
-          options={selectData}
-          sx={{ width: 300 }}
-          autoHighlight
-          getOptionLabel={(option) => option.label}
-          onChange={(event,value,reason,details) => value?.onClick()}
-          isOptionEqualToValue={(o,v)=>o.key == v.key}
-          renderOption={(props, option) => {
-            // log.info('SelectEntityInstanceEditor renderOption props',props,'option',option);
-            return (
-              <Box component="li" sx={{ '& > img': { mr: 2, flexShrink: 0 } }} {...props}>
-                <img
-                  loading="lazy"
-                  width="20"
-                  src={option.src}
-                  alt=""
-                />
-                {option.label} 
-              </Box>
-            )
-          }}
-          renderInput={(params) => <TextField {...params} label="Gender" />}
-        ></Autocomplete>
-      </div>
-    );
-  })
-);
+//     return (
+//       <div
+//         ref={refContainer}
+//         style={mood}
+//         tabIndex={1} // important - without this the key presses wont be caught
+//       >
+//         <Autocomplete
+//           id="combo-box-demo"
+//           options={selectData}
+//           sx={{ width: 300 }}
+//           autoHighlight
+//           getOptionLabel={(option) => option.label}
+//           onChange={(event,value,reason,details) => value?.onClick()}
+//           isOptionEqualToValue={(o,v)=>o.key == v.key}
+//           renderOption={(props, option) => {
+//             // log.info('SelectEntityInstanceEditor renderOption props',props,'option',option);
+//             return (
+//               <Box component="li" sx={{ '& > img': { mr: 2, flexShrink: 0 } }} {...props}>
+//                 <img
+//                   loading="lazy"
+//                   width="20"
+//                   src={option.src}
+//                   alt=""
+//                 />
+//                 {option.label} 
+//               </Box>
+//             )
+//           }}
+//           renderInput={(params) => <TextField {...params} label="Gender" />}
+//         ></Autocomplete>
+//       </div>
+//     );
+//   })
+// );

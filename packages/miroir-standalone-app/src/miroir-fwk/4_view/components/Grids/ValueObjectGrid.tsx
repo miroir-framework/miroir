@@ -287,8 +287,8 @@ export const ValueObjectGrid = (props: ValueObjectGridProps & { theme?: DeepPart
     handleEditDialogFormClose('');
   }, [props.onRowDelete]);
 
-  // ##############################################################################################
-  // Container width tracking
+  // // ##############################################################################################
+  // // Container width tracking
   useEffect(() => {
     let updateTimer: NodeJS.Timeout;
     
