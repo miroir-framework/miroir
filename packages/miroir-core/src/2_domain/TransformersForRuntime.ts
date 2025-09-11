@@ -1967,7 +1967,6 @@ export function handleListPickElementTransformer<T extends MiroirModelEnvironmen
   | TransformerForRuntime_listPickElement,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   transformerParams: T,
-  // queryParams: Record<string, any>,
   contextResults?: Record<string, any>
 ): TransformerReturnType<any> {
   const resolvedReference = resolveApplyTo_legacy(
@@ -2019,40 +2018,46 @@ export function handleListPickElementTransformer<T extends MiroirModelEnvironmen
         )
     : (a: any[]) => a;
 
-  // try {
-  const sortedResultArray = sortByAttribute(resolvedReference);
-  if (transformer.index < 0 || sortedResultArray.length < transformer.index) {
-    return undefined;
-    // return new TransformerFailure({
-    //   queryFailure: "FailedTransformer_listPickElement",
-    //   failureOrigin: ["innerTransformer_apply"],
-    //   queryContext: "listPickElement index out of bounds",
-    // });
-  } else {
+  try {
+    const resolvedReferenceCopy = [...resolvedReference];
+    const sortedResultArray = sortByAttribute(resolvedReferenceCopy);
+    const accessIndex = transformer.index < 0? sortedResultArray.length - transformer.index: transformer.index;
+    // if (transformer.index < 0 || sortedResultArray.length < transformer.index) {
+      //   // return undefined;
+      //   return new TransformerFailure({
+    //     queryFailure: "FailedTransformer_listPickElement",
+    //     failureOrigin: ["innerTransformer_apply"],
+    //     queryContext: "listPickElement index out of bounds",
+    //   });
+    // } else {
+    // POSTGERS SQL DOES NOT FAIL IF INDEX OUT OF BOUNDS, IT JUST RETURNS NO RESULT
+    if (accessIndex < 0 || sortedResultArray.length <= accessIndex) {
+      return undefined;
+    }
     const result = sortedResultArray[transformer.index];
-    // log.info(
-    //   "handleListPickElementTransformer extractorTransformer listPickElement sorted resolvedReference",
-    //   sortedResultArray,
-    //   "index",
-    //   transformer.index,
-    //   "result",
-    //   result,
-    //   "transformer",
-    //   JSON.stringify(transformer, null, 2)
-    // );
+      // log.info(
+      //   "handleListPickElementTransformer extractorTransformer listPickElement sorted resolvedReference",
+      //   sortedResultArray,
+      //   "index",
+      //   transformer.index,
+      //   "result",
+      //   result,
+      //   "transformer",
+      //   JSON.stringify(transformer, null, 2)
+      // );
     return result;
+    // }
+  } catch (error) {
+    log.error(
+      "innerTransformer_apply extractorTransformer listPickElement failed",
+      error
+    )
+    return new TransformerFailure({
+      queryFailure: "FailedTransformer_listPickElement",
+      failureOrigin: ["innerTransformer_apply"],
+      queryContext: "listPickElement failed: " + error,
+    });
   }
-  // } catch (error) {
-  //   log.error(
-  //     "innerTransformer_apply extractorTransformer listPickElement failed",
-  //     error
-  //   )
-  //   return new TransformerFailure({
-  //     queryFailure: "FailedTransformer_listPickElement",
-  //     failureOrigin: ["innerTransformer_apply"],
-  //     queryContext: "listPickElement failed: " + error,
-  //   });
-  // }
   // break;
 }
 

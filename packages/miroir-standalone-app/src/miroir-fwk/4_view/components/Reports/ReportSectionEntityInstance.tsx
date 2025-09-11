@@ -423,6 +423,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
     ],
   }), [testNameCellRenderer, statusCellRenderer, resultCellRenderer, summaryTestCellRenderer]);
 
+  const testLabel = instance.transformerTestLabel || instance.name || "TransformerTest"
   // ##############################################################################################
   if (instance) {
     return (
@@ -453,13 +454,13 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
               </div>
               <RunTransformerTestSuiteButton
                 transformerTestSuite={instance}
-                testSuiteKey={instance.transformerTestLabel || instance.name || "TransformerTest"}
+                testSuiteKey={testLabel}
                 useSnackBar={true}
                 onTestComplete={(testSuiteKey, structuredResults) => {
                   setResolveConditionalSchemaResultsData(structuredResults);
                   log.info(`Test completed for ${testSuiteKey}:`, structuredResults);
                 }}
-                label={`▶️ Run ${instance.transformerTestLabel || "Transformer Test"}`}
+                label={`▶️ Run ${testLabel}`}
                 style={{
                   backgroundColor: "#1976d2",
                   color: "white",
@@ -473,7 +474,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
               {resolveConditionalSchemaResultsData &&
                 resolveConditionalSchemaResultsData.length > 0 && (
                   <div style={{ margin: "20px 0", width: "100%" }}>
-                    <h3>resolveConditionalSchema Test Results:</h3>
+                    <h3>{testLabel} Test Results:</h3>
                     <ValueObjectGrid
                       valueObjects={resolveConditionalSchemaResultsData}
                       jzodSchema={{

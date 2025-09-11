@@ -640,13 +640,13 @@ export const RootComponent = (props: RootComponentProps) => {
               outlineWidth={outlineWidth}
             >
               <ThemedText>uuid: {uuidv4()}</ThemedText>
-              <ThemedText>transactions: {JSON.stringify(transactions)}</ThemedText>
+              {transactions && transactions.length > 0 && (<ThemedText> transactions: {JSON.stringify(transactions)}</ThemedText>)}
               {context.showPerformanceDisplay && (
                 <div>
                   RootComponent renders: {navigationCount} (total: {totalCount})
                 </div>
               )}
-              <ThemedFormControl fullWidth>
+              {/* <ThemedFormControl fullWidth>
                 <ThemedInputLabel id="demo-simple-select-label">
                   Chosen selfApplication Deployment
                 </ThemedInputLabel>
@@ -665,7 +665,7 @@ export const RootComponent = (props: RootComponentProps) => {
                     );
                   })}
                 </ThemedMUISelect>
-              </ThemedFormControl>
+              </ThemedFormControl> */}
               <span>
                 {/* <ThemedButton
                         onClick={() =>
