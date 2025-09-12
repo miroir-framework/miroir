@@ -66,7 +66,8 @@ import { ViewParamsUpdateQueue, ViewParamsUpdateQueueConfig } from '../ViewParam
 import { Sidebar } from "./Sidebar.js";
 import { SidebarWidth } from "./SidebarSection.js";
 import { object } from 'prop-types';
-import { DocumentOutlineContext, DocumentOutlineContextDefault, type DocumentOutlineContextType } from '../ValueObjectEditor/InstanceEditorOutlineContext';
+import { DocumentOutlineContext, DocumentOutlineContextDefault, DocumentOutlineContextProvider, type DocumentOutlineContextType } from '../ValueObjectEditor/InstanceEditorOutlineContext';
+import { useReportPageContext } from '../Reports/ReportPageContext';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -115,8 +116,8 @@ export const RootComponent = (props: RootComponentProps) => {
   // InstanceEditorOutline state
   const [isOutlineOpen, setIsOutlineOpen] = useState(false);
   const [outlineWidth, setOutlineWidth] = useState(300);
-  const [outlineData, setOutlineData] = useState<any>(null);
-  const [outlineTitle, setOutlineTitle] = useState<string>("Document Structure");
+  // const [outlineData, setOutlineData] = useState<any>(null);
+  // const [outlineTitle, setOutlineTitle] = useState<string>("Document Structure");
   // Remember sidebar state before outline was opened
   const [sidebarStateBeforeOutline, setSidebarStateBeforeOutline] = useState<boolean | null>(null);
 
@@ -245,8 +246,8 @@ export const RootComponent = (props: RootComponentProps) => {
       path,
       "rootLessListKey:",
       rootLessListKey,
-      "context.foldedObjectAttributeOrArrayItems",
-      context.foldedObjectAttributeOrArrayItems
+      // "reportContext.foldedObjectAttributeOrArrayItems",
+      // reportContext.foldedObjectAttributeOrArrayItems
     );
 
     // Helper function to escape CSS selectors
@@ -401,29 +402,8 @@ export const RootComponent = (props: RootComponentProps) => {
     }
   }, []);
 
+  // ##############################################################################################
   // Document outline context value
-  const outlineContextValue: DocumentOutlineContextType = useMemo(
-    () =>
-      new DocumentOutlineContextDefault(
-        isOutlineOpen,
-        outlineWidth,
-        outlineData,
-        outlineTitle,
-        handleToggleOutline,
-        handleNavigateToPath,
-        setOutlineData,
-        setOutlineTitle
-      ),
-    [
-      isOutlineOpen,
-      outlineWidth,
-      outlineData,
-      outlineTitle,
-      handleToggleOutline,
-      handleNavigateToPath,
-    ]
-  );
-
   const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> =
     useMemo(() => getMemoizedReduxDeploymentsStateSelectorMap(), []);
 
@@ -589,8 +569,42 @@ export const RootComponent = (props: RootComponentProps) => {
     };
   }, [updateQueue]);
 
+  // const outlineContextValue: DocumentOutlineContextType = useMemo(
+  //   () =>
+  //     new DocumentOutlineContextDefault(
+  //       isOutlineOpen,
+  //       outlineWidth,
+  //       outlineData,
+  //       outlineTitle,
+  //       handleToggleOutline,
+  //       handleNavigateToPath,
+  //       setOutlineData,
+  //       setOutlineTitle,
+  //       ()=>{},
+  //       ()=>{}
+  //     ),
+  //   [
+  //     isOutlineOpen,
+  //     outlineWidth,
+  //     outlineData,
+  //     outlineTitle,
+  //     handleToggleOutline,
+  //     handleNavigateToPath,
+  //   ]
+  // );
+
+  // ##############################################################################################
+  // ##############################################################################################
+  // ##############################################################################################
+  // ##############################################################################################
+  // ##############################################################################################
   return (
-    <DocumentOutlineContext.Provider value={outlineContextValue}>
+    // <DocumentOutlineContext.Provider value={outlineContextValue}>
+    <DocumentOutlineContextProvider
+      isOutlineOpen={isOutlineOpen}
+      onToggleOutline={handleToggleOutline}
+      onNavigateToPath={handleNavigateToPath}
+    >
       <MiroirThemeProvider
         currentThemeId={defaultViewParamsFromAdminStorage?.appTheme || "default"}
         onThemeChange={handleAppThemeChange}
@@ -626,7 +640,9 @@ export const RootComponent = (props: RootComponentProps) => {
               outlineWidth={outlineWidth}
             >
               <ThemedText>uuid: {uuidv4()}</ThemedText>
-              {transactions && transactions.length > 0 && (<ThemedText> transactions: {JSON.stringify(transactions)}</ThemedText>)}
+              {transactions && transactions.length > 0 && (
+                <ThemedText> transactions: {JSON.stringify(transactions)}</ThemedText>
+              )}
               {context.showPerformanceDisplay && (
                 <div>
                   RootComponent renders: {navigationCount} (total: {totalCount})
@@ -797,10 +813,10 @@ export const RootComponent = (props: RootComponentProps) => {
           <InstanceEditorOutline
             isOpen={isOutlineOpen}
             onToggle={handleToggleOutline}
-            data={outlineData}
-            rootObjectKey={Object.keys(outlineData || {})[0] || ""}
+            // data={outlineData}
+            // rootObjectKey={Object.keys(outlineData || {})[0] || ""}
             onNavigate={handleNavigateToPath}
-            title={outlineTitle}
+            // title={outlineTitle}
             width={outlineWidth}
             onWidthChange={setOutlineWidth}
           />
@@ -818,6 +834,6 @@ export const RootComponent = (props: RootComponentProps) => {
           <EventTimelineContainer key={`action-timeline-${context.showActionTimeline}`} />
         </>
       </MiroirThemeProvider>
-    </DocumentOutlineContext.Provider>
+    </DocumentOutlineContextProvider>
   );
 };

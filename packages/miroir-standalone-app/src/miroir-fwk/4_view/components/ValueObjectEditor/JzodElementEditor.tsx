@@ -43,6 +43,7 @@ import { JzodElementEditorReactCodeMirror } from "./JzodElementEditorReactCodeMi
 import { JzodEnumEditor } from "./JzodEnumEditor.js";
 import { JzodLiteralEditor } from "./JzodLiteralEditor.js";
 import { JzodObjectEditor } from "./JzodObjectEditor.js";
+import { useReportPageContext } from "../Reports/ReportPageContext.js";
 
 
 
@@ -102,6 +103,7 @@ export const FoldUnfoldObjectOrArray = (props: {
   unfoldingDepth?: number; // Optional depth limit for unfolding (default: no limit)
 }): JSX.Element => {
   const context = useMiroirContextService();
+  const reportContext = useReportPageContext();
   /**
    * Handles the click event for folding or unfolding an object attribute or array item in a hierarchical editor.
    *
@@ -126,9 +128,10 @@ export const FoldUnfoldObjectOrArray = (props: {
       e.stopPropagation();
       e.preventDefault();
 
+      log.info("FoldUnfoldObjectOrArray handleClick", props.listKey, "unfoldingDepth", props.unfoldingDepth);
       const isCurrentlyFolded =
-        (context.foldedObjectAttributeOrArrayItems &&
-          context.foldedObjectAttributeOrArrayItems[props.listKey]) ||
+        (reportContext.foldedObjectAttributeOrArrayItems &&
+          reportContext.foldedObjectAttributeOrArrayItems[props.listKey]) ||
         false;
       // log.info(
       //   "FoldUnfoldObjectOrArray",
@@ -142,7 +145,7 @@ export const FoldUnfoldObjectOrArray = (props: {
       // );
       if (isCurrentlyFolded) {
         // Unfolding
-        context.setFoldedObjectAttributeOrArrayItems((prev) => {
+        reportContext.setFoldedObjectAttributeOrArrayItems((prev) => {
           const newState = { ...prev };
           delete newState[props.listKey];
 
@@ -182,7 +185,7 @@ export const FoldUnfoldObjectOrArray = (props: {
         });
       } else {
         // Folding
-        context.setFoldedObjectAttributeOrArrayItems((prev) => {
+        reportContext.setFoldedObjectAttributeOrArrayItems((prev) => {
           const newState = { ...prev };
           newState[props.listKey] = true;
           if (props.unfoldingDepth === Infinity) {
@@ -199,13 +202,13 @@ export const FoldUnfoldObjectOrArray = (props: {
     },
     [
       props.listKey,
-      context.foldedObjectAttributeOrArrayItems,
-      context.setFoldedObjectAttributeOrArrayItems,
+      reportContext.foldedObjectAttributeOrArrayItems,
+      reportContext.setFoldedObjectAttributeOrArrayItems,
       props.unfoldingDepth,
     ]
   );
 
-  const isFolded = context.foldedObjectAttributeOrArrayItems && context.foldedObjectAttributeOrArrayItems[props.listKey];
+  const isFolded = reportContext.foldedObjectAttributeOrArrayItems && reportContext.foldedObjectAttributeOrArrayItems[props.listKey];
   const isInfiniteDepth = props.unfoldingDepth === Infinity;
 
   return (
@@ -244,6 +247,8 @@ export const FoldUnfoldAllObjectAttributesOrArrayItems = (props: {
 }): JSX.Element => {
   const maxDepthToUnfold = props.maxDepth ?? 1;
   const context = useMiroirContextService();
+  const reportContext = useReportPageContext();
+  log.info("FoldUnfoldAllObjectAttributesOrArrayItems listKey", props.listKey, "maxDepthToUnfold", maxDepthToUnfold);
   const handleClick = useCallback(
     (e: React.MouseEvent) => {
       e.stopPropagation();
@@ -257,13 +262,13 @@ export const FoldUnfoldAllObjectAttributesOrArrayItems = (props: {
       // Check if any child is currently unfolded (visible)
       const hasUnfoldedChildren = childKeys.some(
         (key) =>
-          !context.foldedObjectAttributeOrArrayItems || !context.foldedObjectAttributeOrArrayItems[key]
+          !reportContext.foldedObjectAttributeOrArrayItems || !reportContext.foldedObjectAttributeOrArrayItems[key]
       );
 
       // If any child is unfolded, fold all; otherwise unfold to the specified depth
       const shouldFoldAll = hasUnfoldedChildren;
 
-      context.setFoldedObjectAttributeOrArrayItems((prev) => {
+      reportContext.setFoldedObjectAttributeOrArrayItems((prev) => {
         const newState = { ...prev };
         
         if (shouldFoldAll) {
@@ -285,8 +290,8 @@ export const FoldUnfoldAllObjectAttributesOrArrayItems = (props: {
     [
       props.listKey,
       props.itemsOrder,
-      context.foldedObjectAttributeOrArrayItems,
-      context.setFoldedObjectAttributeOrArrayItems,
+      reportContext.foldedObjectAttributeOrArrayItems,
+      reportContext.setFoldedObjectAttributeOrArrayItems,
       maxDepthToUnfold,
     ]
   );
@@ -297,7 +302,7 @@ export const FoldUnfoldAllObjectAttributesOrArrayItems = (props: {
     childKeys.length > 0 &&
     childKeys.every(
       (key) =>
-        context.foldedObjectAttributeOrArrayItems && context.foldedObjectAttributeOrArrayItems[key]
+        reportContext.foldedObjectAttributeOrArrayItems && reportContext.foldedObjectAttributeOrArrayItems[key]
     );
 
   const title = allChildrenFolded 
@@ -376,7 +381,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
   
   // Extract hiddenFormItems and setHiddenFormItems from props
   // const { foldedObjectAttributeOrArrayItems, setFoldedObjectAttributeOrArrayItems } = props;
-  
+  const reportContext = useReportPageContext();
   // Handle switch for structured element display
   const handleDisplayAsStructuredElementSwitchChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -631,8 +636,6 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               listKey={props.listKey}
               rootLessListKey={props.rootLessListKey}
               rootLessListKeyArray={props.rootLessListKeyArray}
-              // foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
-              // setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
               currentDeploymentUuid={props.currentDeploymentUuid}
               currentApplicationSection={props.currentApplicationSection}
               resolvedElementJzodSchema={localResolvedElementJzodSchemaBasedOnValue}
@@ -661,8 +664,6 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               foreignKeyObjects={foreignKeyObjects}
               hidden={hideSubJzodEditor}
               displayAsStructuredElementSwitch={displayAsStructuredElementSwitch}
-              // foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
-              // setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
               deleteButtonElement={props.deleteButtonElement}
               maxRenderDepth={props.maxRenderDepth}
               readOnly={props.readOnly}
@@ -684,8 +685,6 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               typeCheckKeyMap={ props.typeCheckKeyMap }
               indentLevel={props.indentLevel + 1}
               itemsOrder={itemsOrder}
-              // foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
-              // setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
               currentApplicationSection={props.currentApplicationSection}
               currentDeploymentUuid={props.currentDeploymentUuid}
               foreignKeyObjects={props.foreignKeyObjects}
@@ -952,8 +951,6 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               foreignKeyObjects={props.foreignKeyObjects}
               currentApplicationSection={props.currentApplicationSection}
               currentDeploymentUuid={props.currentDeploymentUuid}
-              // foldedObjectAttributeOrArrayItems={props.foldedObjectAttributeOrArrayItems}
-              // setFoldedObjectAttributeOrArrayItems={props.setFoldedObjectAttributeOrArrayItems}
               resolvedElementJzodSchema={localResolvedElementJzodSchemaBasedOnValue}
               typeCheckKeyMap={ props.typeCheckKeyMap }
               readOnly={props.readOnly}
@@ -1079,8 +1076,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
     foreignKeyObjects,
     hideSubJzodEditor,
     displayAsStructuredElementSwitch,
-    // foldedObjectAttributeOrArrayItems,
-    // setFoldedObjectAttributeOrArrayItems,
+    reportContext.foldedObjectAttributeOrArrayItems,
     itemsOrder,
     stringSelectList,
     enhancedLabelElement

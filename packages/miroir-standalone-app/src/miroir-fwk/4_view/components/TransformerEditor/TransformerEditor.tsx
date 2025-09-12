@@ -49,6 +49,7 @@ import { getMemoizedReduxDeploymentsStateSelectorMap, type ReduxStateWithUndoRed
 import { useSelector } from 'react-redux';
 import { TypedValueObjectEditor } from '../Reports/TypedValueObjectEditor';
 import { TransformerEventsPanel } from './TransformerEventsPanel';
+import { useReportPageContext } from '../Reports/ReportPageContext';
 
 // ################################################################################################
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -107,10 +108,6 @@ const EntityInstancePanel = React.memo<{
   availableEntities: Entity[];
   selectedEntityUuid: Uuid;
   onEntityChange: (entityUuid: Uuid) => void;
-  // foldedObjectAttributeOrArrayItems: { [k: string]: boolean };
-  // setFoldedObjectAttributeOrArrayItems: React.Dispatch<
-  //   React.SetStateAction<{ [k: string]: boolean }>
-  // >;
   onNavigateNext: () => void;
   onNavigatePrevious: () => void;
   onNavigateRandom: () => void;
@@ -124,8 +121,6 @@ const EntityInstancePanel = React.memo<{
     availableEntities,
     selectedEntityUuid,
     onEntityChange,
-    // foldedObjectAttributeOrArrayItems,
-    // setFoldedObjectAttributeOrArrayItems,
     onNavigateNext,
     onNavigatePrevious,
     onNavigateRandom,
@@ -236,8 +231,6 @@ const EntityInstancePanel = React.memo<{
           applicationSection={"data"}
           formLabel={"Entity Instance Viewer"}
           onSubmit={async () => {}} // No-op for readonly
-          // foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
-          // setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
           maxRenderDepth={3}
           readonly={true}
         />
@@ -258,10 +251,6 @@ const TransformationResultPanel = React.memo<{
   transformationError: TransformerFailure | null;
   selectedEntityInstance: EntityInstance | undefined;
   deploymentUuid: Uuid;
-  // foldedObjectAttributeOrArrayItems: { [k: string]: boolean };
-  // setFoldedObjectAttributeOrArrayItems: React.Dispatch<
-  //   React.SetStateAction<{ [k: string]: boolean }>
-  // >;
 }>(
   ({
     transformationResult,
@@ -269,8 +258,6 @@ const TransformationResultPanel = React.memo<{
     transformationError,
     selectedEntityInstance,
     deploymentUuid,
-    // foldedObjectAttributeOrArrayItems,
-    // setFoldedObjectAttributeOrArrayItems,
   }) => (
     <ThemedContainer style={{ flex: 1, maxWidth: '50%' }}>
       <ThemedHeaderSection>
@@ -297,8 +284,6 @@ const TransformationResultPanel = React.memo<{
           applicationSection={"data"}
           formLabel={"Transformation Result Viewer"}
           onSubmit={async () => {}} // No-op for readonly
-          // foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
-          // setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
           maxRenderDepth={3}
           readonly={true}
         />
@@ -386,6 +371,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
   const { deploymentUuid, entityUuid: initialEntityUuid } = props;
   const context = useMiroirContextService();
   const currentModel = useCurrentModel(deploymentUuid);
+  const reportContext = useReportPageContext();
   const miroirMetaModel: MetaModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
 
   // Get persisted state from context
@@ -562,7 +548,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
 
   useEffect(() => {
     if (persistedState && persistedState?.foldedObjectAttributeOrArrayItems) {
-      context.setFoldedObjectAttributeOrArrayItems(
+      reportContext.setFoldedObjectAttributeOrArrayItems(
         persistedState?.foldedObjectAttributeOrArrayItems
       );
     }
@@ -643,13 +629,13 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
   // Wrapper functions for folded state setters with persistence
   const setFoldedObjectAttributeOrArrayItemsWithPersistence = useCallback(
     (updates: React.SetStateAction<{ [k: string]: boolean }>) => {
-      context.setFoldedObjectAttributeOrArrayItems((prev) => {
+      reportContext.setFoldedObjectAttributeOrArrayItems((prev) => {
         const newState = typeof updates === "function" ? updates(prev) : updates;
         context.updateTransformerEditorState({ foldedObjectAttributeOrArrayItems: newState });
         return newState;
       });
     },
-    [context]
+    [context, reportContext]
   );
 
   const setFoldedEntityInstanceItemsWithPersistence = useCallback((updates: React.SetStateAction<{ [k: string]: boolean }>) => {
@@ -817,8 +803,6 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
           applicationSection={"model"}
           formLabel={"Transformer Definition Editor"}
           onSubmit={handleTransformerDefinitionChange}
-          // foldedObjectAttributeOrArrayItems={context.foldedObjectAttributeOrArrayItems}
-          // setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItemsWithPersistence}
           maxRenderDepth={Infinity} // Always render fully for editor
           displayError={errorPath && errorPath.length > 0 ? {
             errorPath: errorPath,
@@ -837,8 +821,6 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
             availableEntities={currentReportDeploymentSectionEntities || []}
             selectedEntityUuid={selectedEntityUuid}
             onEntityChange={handleEntityChange}
-            // foldedObjectAttributeOrArrayItems={foldedEntityInstanceItems}
-            // setFoldedObjectAttributeOrArrayItems={setFoldedEntityInstanceItemsWithPersistence}
             onNavigateNext={navigateToNextInstance}
             onNavigatePrevious={navigateToPreviousInstance}
             onNavigateRandom={navigateToRandomInstance}
@@ -849,8 +831,6 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
             transformationError={transformationError}
             selectedEntityInstance={selectedEntityInstance}
             deploymentUuid={deploymentUuid}
-            // foldedObjectAttributeOrArrayItems={foldedTransformationResultItems}
-            // setFoldedObjectAttributeOrArrayItems={setFoldedTransformationResultItemsWithPersistence}
           />
         </div>
       </div>

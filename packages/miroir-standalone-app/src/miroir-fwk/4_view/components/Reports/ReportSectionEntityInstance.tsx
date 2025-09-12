@@ -49,6 +49,7 @@ import { TestCellWithDetails } from './TestCellWithDetails.js';
 import { TestResultCellWithActualValue } from './TestResultCellWithActualValue.js';
 import { TypedValueObjectEditor } from './TypedValueObjectEditor.js';
 import { useDocumentOutlineContext } from '../ValueObjectEditor/InstanceEditorOutlineContext.js';
+import { useReportPageContext } from './ReportPageContext.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -160,6 +161,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
 
   // Use outline context for outline state management
   const outlineContext = useDocumentOutlineContext();
+  const reportContext = useReportPageContext();
   const isOutlineOpen = outlineContext.isOutlineOpen;
   const handleToggleOutline = outlineContext.onToggleOutline;
 
@@ -189,7 +191,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
     );
 
   useEffect(() => {
-    context.setFoldedObjectAttributeOrArrayItems(
+    reportContext.setFoldedObjectAttributeOrArrayItems(
       currentReportTargetEntityDefinition?.display?.foldSubLevels
       ? Object.fromEntries(
           Object.entries(currentReportTargetEntityDefinition?.display?.foldSubLevels).map(
@@ -198,7 +200,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
         )
       : {}
   );
-  }, [currentReportTargetEntityDefinition?.display?.foldSubLevels, context]);
+  }, [currentReportTargetEntityDefinition?.display?.foldSubLevels, reportContext.setFoldedObjectAttributeOrArrayItems]);
   // const [foldedObjectAttributeOrArrayItems, setFoldedObjectAttributeOrArrayItems] = useState<{
   //   [k: string]: boolean;
   //   // }>({"ROOT": true}); // Initialize with empty key to handle root object folding

@@ -31,6 +31,7 @@ import { ThemedBox, ThemedSpan } from '../components/Themes/index.js';
 import { useMiroirTheme } from '../contexts/MiroirThemeContext.js';
 import { usePageConfiguration } from '../services/index.js';
 import { useDocumentOutlineContext } from '../components/ValueObjectEditor/InstanceEditorOutlineContext.js';
+import { ReportPageContextProvider } from '../components/Reports/ReportPageContext.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -218,58 +219,60 @@ export const ReportPage = () => {
     // log.info("ReportPage rendering", "navigationCount", navigationCount, "totalCount", totalCount, "params", pageParams);
     // log.info("ReportPage current metrics:", RenderPerformanceMetrics.renderMetrics);
     return (
-      <PageContainer
-        withSidebar={true}
-        withDocumentOutline={true} // ReportPage has document outline
-        customSx={{
-          // ReportPage specific styling
-          "& .miroir-table-container": {
-            maxWidth: "100%",
-            overflow: "hidden",
-          },
-        }}
-      >
-        <ThemedBox>
-          {context.showPerformanceDisplay && (
-            <>
-              <ThemedBox>
-                deploymentUuid={pageParams.deploymentUuid}, applicationSection=
-                {pageParams.applicationSection}, reportUuid={pageParams.reportUuid}, instanceUuid=
-                {pageParams.instanceUuid}
-              </ThemedBox>
-              <span>
-                ReportPage renders: {navigationCount} (total: {totalCount})
-              </span>
-            </>
-          )}
-          {(errorLog as any)?.errorLogs.length !== 0 && <h3>erreurs: {JSON.stringify(errorLog)}</h3>}
-        </ThemedBox>
-        <ThemedBox style={{ flex: 1, overflow: 'auto', minHeight: 0 }}>
-          {pageParams.deploymentUuid &&
-          pageParams.applicationSection &&
-          pageParams.reportUuid &&
-          pageParams.reportUuid != "undefined" ? (
-            <>
-              <ReportView
-                applicationSection={pageParams.applicationSection as ApplicationSection}
-                deploymentUuid={pageParams.deploymentUuid}
-                instanceUuid={pageParams.instanceUuid}
-                pageParams={pageParams}
-                reportDefinition={currentMiroirReport?.definition}
-              />
-              {context.showPerformanceDisplay && <PerformanceDisplayContainer />}
-            </>
-          ) : (
-            <ThemedSpan
-              style={{ color: theme.currentTheme.colors.error }}
-            >
-              ReportDisplay: no report to display, deploymentUuid={pageParams.deploymentUuid},
-              applicationSection=
-              {pageParams.applicationSection}, reportUuid={pageParams.reportUuid}
-            </ThemedSpan>
-          )}
-        </ThemedBox>
-      </PageContainer>
+      <ReportPageContextProvider>
+        <PageContainer
+          withSidebar={true}
+          withDocumentOutline={true} // ReportPage has document outline
+          customSx={{
+            // ReportPage specific styling
+            "& .miroir-table-container": {
+              maxWidth: "100%",
+              overflow: "hidden",
+            },
+          }}
+        >
+          <ThemedBox>
+            {context.showPerformanceDisplay && (
+              <>
+                <ThemedBox>
+                  deploymentUuid={pageParams.deploymentUuid}, applicationSection=
+                  {pageParams.applicationSection}, reportUuid={pageParams.reportUuid}, instanceUuid=
+                  {pageParams.instanceUuid}
+                </ThemedBox>
+                <span>
+                  ReportPage renders: {navigationCount} (total: {totalCount})
+                </span>
+              </>
+            )}
+            {(errorLog as any)?.errorLogs.length !== 0 && <h3>erreurs: {JSON.stringify(errorLog)}</h3>}
+          </ThemedBox>
+          <ThemedBox style={{ flex: 1, overflow: 'auto', minHeight: 0 }}>
+            {pageParams.deploymentUuid &&
+            pageParams.applicationSection &&
+            pageParams.reportUuid &&
+            pageParams.reportUuid != "undefined" ? (
+              <>
+                <ReportView
+                  applicationSection={pageParams.applicationSection as ApplicationSection}
+                  deploymentUuid={pageParams.deploymentUuid}
+                  instanceUuid={pageParams.instanceUuid}
+                  pageParams={pageParams}
+                  reportDefinition={currentMiroirReport?.definition}
+                />
+                {context.showPerformanceDisplay && <PerformanceDisplayContainer />}
+              </>
+            ) : (
+              <ThemedSpan
+                style={{ color: theme.currentTheme.colors.error }}
+              >
+                ReportDisplay: no report to display, deploymentUuid={pageParams.deploymentUuid},
+                applicationSection=
+                {pageParams.applicationSection}, reportUuid={pageParams.reportUuid}
+              </ThemedSpan>
+            )}
+          </ThemedBox>
+        </PageContainer>
+      </ReportPageContextProvider>
     );
   } else {
     return <>ReportPage Invalid parameters! {JSON.stringify(pageParams)}</>;

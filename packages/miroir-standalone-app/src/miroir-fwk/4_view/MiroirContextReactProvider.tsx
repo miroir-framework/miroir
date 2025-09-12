@@ -84,10 +84,10 @@ export interface MiroirReactContext {
   // outline for instance editor
   typeCheckKeyMap: Record<string, KeyMapEntry>,
   setTypeCheckKeyMap: React.Dispatch<React.SetStateAction<Record<string, KeyMapEntry>>>,
-  foldedObjectAttributeOrArrayItems: { [k: string]: boolean };
-  setFoldedObjectAttributeOrArrayItems: React.Dispatch<
-      React.SetStateAction<{ [k: string]: boolean }>
-    >;
+  // foldedObjectAttributeOrArrayItems: { [k: string]: boolean };
+  // setFoldedObjectAttributeOrArrayItems: React.Dispatch<
+  //   React.SetStateAction<{ [k: string]: boolean }>
+  // >;
   // ###################################################################################################
   // ToolsPage state management
   toolsPageState: ToolsPageState,
@@ -110,6 +110,11 @@ export interface MiroirReactContext {
   errorLogService: typeof ErrorLogService,
 }
 
+// #############################################################################################
+// #############################################################################################
+// #############################################################################################
+// #############################################################################################
+// #############################################################################################
 const miroirReactContext = createContext<MiroirReactContext | undefined>(undefined);
 
 // #############################################################################################
@@ -160,7 +165,8 @@ export function MiroirContextReactProvider(props: {
   
   // ##############################################################################################
   //  outline for Instance Editor
-  const [foldedObjectAttributeOrArrayItems, setFoldedObjectAttributeOrArrayItems] = useState<{ [k: string]: boolean }>({});
+  // const [foldedObjectAttributeOrArrayItems, setFoldedObjectAttributeOrArrayItems] = useState<{ [k: string]: boolean }>({});
+  
   // const [setFoldedObjectAttributeOrArrayItems, setSetFoldedObjectAttributeOrArrayItems] = useState<
   //   React.Dispatch<React.SetStateAction<{ [k: string]: boolean }>>
   // >(() => () => {});
@@ -335,8 +341,8 @@ export function MiroirContextReactProvider(props: {
       // Outline for Instance Editor
       typeCheckKeyMap,
       setTypeCheckKeyMap,
-      foldedObjectAttributeOrArrayItems,
-      setFoldedObjectAttributeOrArrayItems,
+      // foldedObjectAttributeOrArrayItems,
+      // setFoldedObjectAttributeOrArrayItems,
       // ###################################################################################################
       // Snackbar functionality
       snackbarOpen,
@@ -361,6 +367,7 @@ export function MiroirContextReactProvider(props: {
       toolsPageState,
       updateToolsPageState,
       updateTransformerEditorState,
+      // foldedObjectAttributeOrArrayItems,
       showPerformanceDisplay,
       showActionTimeline,
       snackbarOpen,

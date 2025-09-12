@@ -38,6 +38,7 @@ import { useCurrentModel } from '../ReduxHooks.js';
 import { cleanLevel } from '../constants.js';
 import { TypedValueObjectEditor } from './Reports/TypedValueObjectEditor.js';
 import { ThemedFormControl, ThemedInputLabel, ThemedMUISelect, ThemedPaper } from './Themes/index.js';
+import { useReportPageContext } from './Reports/ReportPageContext.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -91,10 +92,10 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
   const [selectedDeploymentUuid, setSelectedDeploymentUuid] = useState<string>('');
   const [selectedEndpointUuid, setSelectedEndpointUuid] = useState<string>('');
   const [selectedActionIndex, setSelectedActionIndex] = useState<number>(-1);
-  // const [foldedObjectAttributeOrArrayItems, setFoldedObjectAttributeOrArrayItems] = useState<{[k: string]: boolean}>({});
   const [actionFormInitialValues, setActionFormInitialValues] = useState<Record<string, any>>({});
 
   const domainController: DomainControllerInterface = useDomainControllerService();
+  const reportContext = useReportPageContext();
   const context = useMiroirContextService();
   const { showSnackbar } = useSnackbar();
   const currentModel: MetaModel = useCurrentModel(
@@ -168,19 +169,19 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
     setSelectedDeploymentUuid(event.target.value);
     setSelectedEndpointUuid('');
     setSelectedActionIndex(-1);
-    context.setFoldedObjectAttributeOrArrayItems({});
+    reportContext.setFoldedObjectAttributeOrArrayItems({});
   };
 
   const handleEndpointChange = (event: SelectChangeEvent<string>) => {
     setSelectedEndpointUuid(event.target.value);
     setSelectedActionIndex(-1);
-    context.setFoldedObjectAttributeOrArrayItems({});
+    reportContext.setFoldedObjectAttributeOrArrayItems({});
   };
 
   const handleActionChange = (event: SelectChangeEvent) => {
     log.info('EndpointActionCaller: handleActionChange', event.target.value);
     setSelectedActionIndex(parseInt(event.target.value));
-    context.setFoldedObjectAttributeOrArrayItems({});
+    reportContext.setFoldedObjectAttributeOrArrayItems({});
     
     const selectedActionIndex = parseInt(event.target.value);
     const currentAction =
@@ -378,8 +379,6 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
               // 
               formLabel={"formLabel"}
               onSubmit={handleSubmit}
-              // foldedObjectAttributeOrArrayItems={context.foldedObjectAttributeOrArrayItems}
-              // setFoldedObjectAttributeOrArrayItems={context.setFoldedObjectAttributeOrArrayItems}
             />
           </Box>
         )}

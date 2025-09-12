@@ -247,7 +247,6 @@ const JsonElementEditorDialog: React.FC<JsonElementEditorDialogProps> = ({
   onSubmit,
 }) => {
   // Add state for folded object attributes/array items
-  // const [foldedObjectAttributeOrArrayItems, setFoldedObjectAttributeOrArrayItems] = useState<{ [k: string]: boolean }>({});
   const context = useMiroirContextService();
 
   const onCodeEditorChange = useCallback((values: any, viewUpdate: any) => {
@@ -378,8 +377,6 @@ const JsonElementEditorDialog: React.FC<JsonElementEditorDialogProps> = ({
                           : {}
                       }
                       foreignKeyObjects={foreignKeyObjects}
-                      // foldedObjectAttributeOrArrayItems={context.foldedObjectAttributeOrArrayItems}
-                      // setFoldedObjectAttributeOrArrayItems={context.setFoldedObjectAttributeOrArrayItems}
                       indentLevel={0}
                       submitButton={
                         <button type="submit" name={label} form={"form." + label}>
