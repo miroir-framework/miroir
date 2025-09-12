@@ -25,7 +25,6 @@ import {
 
 import { useReduxDeploymentsStateJzodSchemaSelector, useReduxDeploymentsStateQuerySelector } from '../../ReduxHooks.js';
 import { ReportSectionView } from './ReportSectionView.js';
-import { useDocumentOutlineContext } from '../Page/RootComponent.js';
 import { useMiroirContextService } from "../../MiroirContextReactProvider.js";
 import { ThemedBox, ThemedSpan } from '../Themes/index.js';
 
@@ -36,6 +35,7 @@ import {
 import { packageName, ReportUrlParamKeys } from '../../../../constants.js';
 import { cleanLevel } from '../../constants.js';
 import { useRenderTracker } from '../../tools/renderCountTracker.js';
+import { useDocumentOutlineContext } from '../ValueObjectEditor/InstanceEditorOutlineContext.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

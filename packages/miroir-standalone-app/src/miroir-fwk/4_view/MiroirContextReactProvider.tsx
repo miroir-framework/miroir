@@ -84,6 +84,10 @@ export interface MiroirReactContext {
   // outline for instance editor
   typeCheckKeyMap: Record<string, KeyMapEntry>,
   setTypeCheckKeyMap: React.Dispatch<React.SetStateAction<Record<string, KeyMapEntry>>>,
+  foldedObjectAttributeOrArrayItems: { [k: string]: boolean };
+  setFoldedObjectAttributeOrArrayItems: React.Dispatch<
+      React.SetStateAction<{ [k: string]: boolean }>
+    >;
   // ###################################################################################################
   // ToolsPage state management
   toolsPageState: ToolsPageState,
@@ -154,6 +158,13 @@ export function MiroirContextReactProvider(props: {
     return saved ? JSON.parse(saved) : false;
   });
   
+  // ##############################################################################################
+  //  outline for Instance Editor
+  const [foldedObjectAttributeOrArrayItems, setFoldedObjectAttributeOrArrayItems] = useState<{ [k: string]: boolean }>({});
+  // const [setFoldedObjectAttributeOrArrayItems, setSetFoldedObjectAttributeOrArrayItems] = useState<
+  //   React.Dispatch<React.SetStateAction<{ [k: string]: boolean }>>
+  // >(() => () => {});
+
   // Snackbar state
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
@@ -324,6 +335,8 @@ export function MiroirContextReactProvider(props: {
       // Outline for Instance Editor
       typeCheckKeyMap,
       setTypeCheckKeyMap,
+      foldedObjectAttributeOrArrayItems,
+      setFoldedObjectAttributeOrArrayItems,
       // ###################################################################################################
       // Snackbar functionality
       snackbarOpen,

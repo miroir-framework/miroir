@@ -31,7 +31,6 @@ import { useRenderTracker } from '../../tools/renderCountTracker.js';
 import { RenderPerformanceMetrics } from '../../tools/renderPerformanceMeasure.js';
 import { RunTransformerTestSuiteButton } from '../Buttons/RunTransformerTestSuiteButton.js';
 import { ValueObjectGrid } from '../Grids/ValueObjectGrid.js';
-import { useDocumentOutlineContext } from '../Page/RootComponent.js';
 import {
   ThemedCodeBlock,
   // ThemedCodeBlock,
@@ -49,6 +48,7 @@ import {
 import { TestCellWithDetails } from './TestCellWithDetails.js';
 import { TestResultCellWithActualValue } from './TestResultCellWithActualValue.js';
 import { TypedValueObjectEditor } from './TypedValueObjectEditor.js';
+import { useDocumentOutlineContext } from '../ValueObjectEditor/InstanceEditorOutlineContext.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -188,18 +188,29 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
       (e) => e?.entityUuid === currentReportTargetEntity?.uuid
     );
 
-  const [foldedObjectAttributeOrArrayItems, setFoldedObjectAttributeOrArrayItems] = useState<{
-    [k: string]: boolean;
-    // }>({"ROOT": true}); // Initialize with empty key to handle root object folding
-  }>(
-    currentReportTargetEntityDefinition?.display?.foldSubLevels
+  useEffect(() => {
+    context.setFoldedObjectAttributeOrArrayItems(
+      currentReportTargetEntityDefinition?.display?.foldSubLevels
       ? Object.fromEntries(
           Object.entries(currentReportTargetEntityDefinition?.display?.foldSubLevels).map(
             ([keyMapEntry, value]) => [keyMapEntry.replace("#", "."), value]
           )
         )
       : {}
-  ); // Initialize with empty key to handle root object folding
+  );
+  }, [currentReportTargetEntityDefinition?.display?.foldSubLevels, context]);
+  // const [foldedObjectAttributeOrArrayItems, setFoldedObjectAttributeOrArrayItems] = useState<{
+  //   [k: string]: boolean;
+  //   // }>({"ROOT": true}); // Initialize with empty key to handle root object folding
+  // }>(
+  //   currentReportTargetEntityDefinition?.display?.foldSubLevels
+  //     ? Object.fromEntries(
+  //         Object.entries(currentReportTargetEntityDefinition?.display?.foldSubLevels).map(
+  //           ([keyMapEntry, value]) => [keyMapEntry.replace("#", "."), value]
+  //         )
+  //       )
+  //     : {}
+  // ); // Initialize with empty key to handle root object folding
 
   const formLabel: string =
     props.applicationSection +
@@ -212,6 +223,13 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
     if (currentReportTargetEntity?.name) {
       outlineContext.setOutlineTitle(currentReportTargetEntity.name + " details");
     }
+    // if (context && context.setFoldedObjectAttributeOrArrayItems) {
+    //   log.info(
+    //     "ReportSectionEntityInstance: useEffect setting outlineContext.setFoldedObjectAttributeOrArrayItems",
+    //     setFoldedObjectAttributeOrArrayItems.toString()
+    //   );
+    //   context.setSetFoldedObjectAttributeOrArrayItems(setFoldedObjectAttributeOrArrayItems);
+    // }
   }, [currentReportTargetEntity?.name, outlineContext.setOutlineTitle]);
 
   const labelElement = useMemo(() => {
@@ -535,8 +553,6 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                 //
                 formLabel={formLabel}
                 onSubmit={onEditValueObjectFormSubmit}
-                foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
-                setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
                 zoomInPath={props.zoomInPath}
                 maxRenderDepth={Infinity} // Always render fully for editor
               />

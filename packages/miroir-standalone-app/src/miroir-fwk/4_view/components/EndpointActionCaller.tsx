@@ -91,7 +91,7 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
   const [selectedDeploymentUuid, setSelectedDeploymentUuid] = useState<string>('');
   const [selectedEndpointUuid, setSelectedEndpointUuid] = useState<string>('');
   const [selectedActionIndex, setSelectedActionIndex] = useState<number>(-1);
-  const [foldedObjectAttributeOrArrayItems, setFoldedObjectAttributeOrArrayItems] = useState<{[k: string]: boolean}>({});
+  // const [foldedObjectAttributeOrArrayItems, setFoldedObjectAttributeOrArrayItems] = useState<{[k: string]: boolean}>({});
   const [actionFormInitialValues, setActionFormInitialValues] = useState<Record<string, any>>({});
 
   const domainController: DomainControllerInterface = useDomainControllerService();
@@ -168,19 +168,19 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
     setSelectedDeploymentUuid(event.target.value);
     setSelectedEndpointUuid('');
     setSelectedActionIndex(-1);
-    setFoldedObjectAttributeOrArrayItems({});
+    context.setFoldedObjectAttributeOrArrayItems({});
   };
 
   const handleEndpointChange = (event: SelectChangeEvent<string>) => {
     setSelectedEndpointUuid(event.target.value);
     setSelectedActionIndex(-1);
-    setFoldedObjectAttributeOrArrayItems({});
+    context.setFoldedObjectAttributeOrArrayItems({});
   };
 
   const handleActionChange = (event: SelectChangeEvent) => {
     log.info('EndpointActionCaller: handleActionChange', event.target.value);
     setSelectedActionIndex(parseInt(event.target.value));
-    setFoldedObjectAttributeOrArrayItems({});
+    context.setFoldedObjectAttributeOrArrayItems({});
     
     const selectedActionIndex = parseInt(event.target.value);
     const currentAction =
@@ -378,8 +378,8 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
               // 
               formLabel={"formLabel"}
               onSubmit={handleSubmit}
-              foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
-              setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
+              // foldedObjectAttributeOrArrayItems={context.foldedObjectAttributeOrArrayItems}
+              // setFoldedObjectAttributeOrArrayItems={context.setFoldedObjectAttributeOrArrayItems}
             />
           </Box>
         )}

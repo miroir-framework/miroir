@@ -25,12 +25,12 @@ import { ReportView } from '../components/Reports/ReportView.js';
 import { PerformanceDisplayContainer } from '../components/PerformanceDisplayContainer.js';
 import { cleanLevel } from '../constants.js';
 import { RenderPerformanceMetrics } from '../tools/renderPerformanceMeasure.js';
-import { useDocumentOutlineContext } from '../components/Page/RootComponent.js';
 import { useRenderTracker } from '../tools/renderCountTracker.js';
 import { PageContainer } from '../components/Page/PageContainer.js';
 import { ThemedBox, ThemedSpan } from '../components/Themes/index.js';
 import { useMiroirTheme } from '../contexts/MiroirThemeContext.js';
 import { usePageConfiguration } from '../services/index.js';
+import { useDocumentOutlineContext } from '../components/ValueObjectEditor/InstanceEditorOutlineContext.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -78,7 +78,7 @@ export const ReportPage = () => {
   const { navigationCount, totalCount } = useRenderTracker("ReportPage", currentNavigationKey);
 
   // Get outline context from RootComponent
-  const outlineContext = useDocumentOutlineContext();
+  // const outlineContext = useDocumentOutlineContext();
 
   // log.info("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& ReportPage rendering", "navigationCount", navigationCount, "totalCount", totalCount, "params", pageParams);
   useEffect(() => context.setDeploymentUuid(pageParams.deploymentUuid ? pageParams.deploymentUuid : ""));

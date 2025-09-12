@@ -166,8 +166,8 @@ const ProgressiveAttribute: FC<{
   currentModel: any;
   miroirMetaModel: any;
   measuredUnfoldJzodSchemaOnce: any;
-  foldedObjectAttributeOrArrayItems: { [k: string]: boolean };
-  setFoldedObjectAttributeOrArrayItems: React.Dispatch<React.SetStateAction<{ [k: string]: boolean }>>;
+  // foldedObjectAttributeOrArrayItems: { [k: string]: boolean };
+  // setFoldedObjectAttributeOrArrayItems: React.Dispatch<React.SetStateAction<{ [k: string]: boolean }>>;
   displayError?: {
     errorPath: string[];
     errorMessage: string;
@@ -192,8 +192,8 @@ const ProgressiveAttribute: FC<{
   currentModel,
   miroirMetaModel,
   measuredUnfoldJzodSchemaOnce,
-  foldedObjectAttributeOrArrayItems,
-  setFoldedObjectAttributeOrArrayItems,
+  // foldedObjectAttributeOrArrayItems,
+  // setFoldedObjectAttributeOrArrayItems,
   displayError,
 }) => {
   const isTestMode = process.env.VITE_TEST_MODE === 'true';
@@ -301,8 +301,8 @@ const ProgressiveAttribute: FC<{
             currentApplicationSection={currentApplicationSection}
             resolvedElementJzodSchema={currentAttributeDefinition}
             foreignKeyObjects={foreignKeyObjects}
-            foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
-            setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
+            // foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
+            // setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
             insideAny={insideAny}
             optional={definedOptionalAttributes.has(attribute[0])}
             maxRenderDepth={props.maxRenderDepth}
@@ -362,8 +362,8 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
     insideAny,
     displayAsStructuredElementSwitch,
     deleteButtonElement,
-    foldedObjectAttributeOrArrayItems,
-    setFoldedObjectAttributeOrArrayItems,
+    // foldedObjectAttributeOrArrayItems,
+    // setFoldedObjectAttributeOrArrayItems,
     displayError,
   } = props;
 
@@ -754,9 +754,11 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
 
   // ##############################################################################################
   // Memoize the array of rendered attributes to prevent unnecessary re-renders
-  const attributeElements = useMemo(() => (
+  const attributeElements = useMemo(() => {
+    log.info("JzodObjectEditor rendering attributes for", rootLessListKey, "foldedObjectAttributeOrArrayItems", context.foldedObjectAttributeOrArrayItems);
+    return (
     <>
-      {(!foldedObjectAttributeOrArrayItems || !foldedObjectAttributeOrArrayItems[listKey]) && itemsOrder
+      {(!context.foldedObjectAttributeOrArrayItems || !context.foldedObjectAttributeOrArrayItems[listKey]) && itemsOrder
         .map((i): [string, JzodElement] => [
           i,
           formik.values[rootLessListKey.length > 0 ? rootLessListKey + "." + i[0] : i[0]],
@@ -782,13 +784,13 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
             currentModel={currentModel}
             miroirMetaModel={miroirMetaModel}
             measuredUnfoldJzodSchemaOnce={measuredUnfoldJzodSchemaOnce}
-            foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
-            setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
+            // foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
+            // setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
             displayError={props.displayError}
           />
         ))}
     </>
-  ), [
+  )}, [
     itemsOrder,
     formik.values,
     rootLessListKey,
@@ -807,8 +809,15 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
     currentModel,
     miroirMetaModel,
     measuredUnfoldJzodSchemaOnce,
-    foldedObjectAttributeOrArrayItems // This is the key addition!
+    context.foldedObjectAttributeOrArrayItems // This is the key addition!
   ]);
+  useEffect(() => {
+    log.info("JzodObjectEditor context.foldedObjectAttributeOrArrayItems changed:", 
+      rootLessListKey, 
+      context.foldedObjectAttributeOrArrayItems
+    );
+  }, [context.foldedObjectAttributeOrArrayItems]);
+
   return (
     <div id={rootLessListKey} key={rootLessListKey}>
       {/* <span>JzodObjectEditor: {count}</span> */}
@@ -824,8 +833,8 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
             >
               {labelElement}
               {/* Show folded display value when object is folded and a value is available */}
-              {foldedObjectAttributeOrArrayItems &&
-                foldedObjectAttributeOrArrayItems[listKey] &&
+              {context.foldedObjectAttributeOrArrayItems &&
+                context.foldedObjectAttributeOrArrayItems[listKey] &&
                 (() => {
                   return foldedDisplayValue !== null ? (
                     <ThemedFoldedValueDisplay
@@ -839,25 +848,25 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
           </span>
           <span id={rootLessListKey + "head"} key={rootLessListKey + "head"}>
             <FoldUnfoldObjectOrArray
-              foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
-              setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
+              // foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
+              // setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
               listKey={listKey}
               currentValue={currentValue}
               unfoldingDepth={unfoldingDepth}
             ></FoldUnfoldObjectOrArray>
             <FoldUnfoldObjectOrArray
-              foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
-              setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
+              // foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
+              // setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
               listKey={listKey}
               currentValue={currentValue}
               unfoldingDepth={Infinity}
             ></FoldUnfoldObjectOrArray>
-            {(!foldedObjectAttributeOrArrayItems || !foldedObjectAttributeOrArrayItems[listKey]) &&
+            {(!context.foldedObjectAttributeOrArrayItems || !context.foldedObjectAttributeOrArrayItems[listKey]) &&
             itemsOrder.length >= 2 &&
             foldableItemsCount > 1 ? (
               <FoldUnfoldAllObjectAttributesOrArrayItems
-                foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
-                setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
+                // foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
+                // setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
                 listKey={listKey}
                 itemsOrder={itemsOrder}
                 maxDepth={props.maxRenderDepth ?? 1}
@@ -869,7 +878,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
           <span>
             {/* add record attribute button for records */}
             {!props.readOnly && currentTypeCheckKeyMap?.rawSchema.type == "record" &&
-            !foldedObjectAttributeOrArrayItems[listKey] ? (
+            !context.foldedObjectAttributeOrArrayItems[listKey] ? (
               <ThemedSizedButton
                 id={rootLessListKey + ".addRecordAttribute"}
                 aria-label={rootLessListKey + ".addRecordAttribute"}
@@ -886,7 +895,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
             {/* add optional attributes buttons */}
             {!props.readOnly && currentTypeCheckKeyMap?.rawSchema.type != "record" &&
             undefinedOptionalAttributes.length > 0 &&
-            (!foldedObjectAttributeOrArrayItems || !foldedObjectAttributeOrArrayItems[listKey]) ? (
+            (!context.foldedObjectAttributeOrArrayItems || !context.foldedObjectAttributeOrArrayItems[listKey]) ? (
               <ThemedOptionalAttributeContainer>
                 {undefinedOptionalAttributes.map((attributeName) => (
                   <ThemedOptionalAttributeItem key={attributeName}>
@@ -917,7 +926,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
           id={listKey + ".inner"}
           marginLeft={`calc(${indentShift})`}
           isVisible={
-            !foldedObjectAttributeOrArrayItems || !foldedObjectAttributeOrArrayItems[listKey]
+            !context.foldedObjectAttributeOrArrayItems || !context.foldedObjectAttributeOrArrayItems[listKey]
           }
           key={`${rootLessListKey}|body`}
         >

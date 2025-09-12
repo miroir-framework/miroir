@@ -66,6 +66,7 @@ import { ViewParamsUpdateQueue, ViewParamsUpdateQueueConfig } from '../ViewParam
 import { Sidebar } from "./Sidebar.js";
 import { SidebarWidth } from "./SidebarSection.js";
 import { object } from 'prop-types';
+import { DocumentOutlineContext, DocumentOutlineContextDefault, type DocumentOutlineContextType } from '../ValueObjectEditor/InstanceEditorOutlineContext';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -74,27 +75,7 @@ MiroirLoggerFactory.registerLoggerToStart(
 
 export const emptyDomainElementObject: Domain2QueryReturnType<Record<string,any>> = {}
 
-// Document Outline Context
-export interface DocumentOutlineContextType {
-  isOutlineOpen: boolean;
-  outlineWidth: number;
-  outlineData: any;
-  outlineTitle: string;
-  onToggleOutline: () => void;
-  onNavigateToPath: (path: string[]) => void;
-  setOutlineData: (data: any) => void;
-  setOutlineTitle: (title: string) => void;
-}
 
-const DocumentOutlineContext = createContext<DocumentOutlineContextType | null>(null);
-
-export const useDocumentOutlineContext = () => {
-  const context = useContext(DocumentOutlineContext);
-  if (!context) {
-    throw new Error('useDocumentOutlineContext must be used within a DocumentOutlineProvider');
-  }
-  return context;
-};
 
 export interface RootComponentProps {
   // store:any;
@@ -259,7 +240,14 @@ export const RootComponent = (props: RootComponentProps) => {
   const handleNavigateToPath = useCallback((path: string[]) => {
     const rootLessListKey = path.join(".");
 
-    console.log("Attempting to navigate to path:", path, "rootLessListKey:", rootLessListKey);
+    console.log(
+      "Attempting to navigate to path:",
+      path,
+      "rootLessListKey:",
+      rootLessListKey,
+      "context.foldedObjectAttributeOrArrayItems",
+      context.foldedObjectAttributeOrArrayItems
+    );
 
     // Helper function to escape CSS selectors
     const escapeCSS = (str: string) => {
@@ -415,16 +403,17 @@ export const RootComponent = (props: RootComponentProps) => {
 
   // Document outline context value
   const outlineContextValue: DocumentOutlineContextType = useMemo(
-    () => ({
-      isOutlineOpen,
-      outlineWidth,
-      outlineData,
-      outlineTitle,
-      onToggleOutline: handleToggleOutline,
-      onNavigateToPath: handleNavigateToPath,
-      setOutlineData,
-      setOutlineTitle,
-    }),
+    () =>
+      new DocumentOutlineContextDefault(
+        isOutlineOpen,
+        outlineWidth,
+        outlineData,
+        outlineTitle,
+        handleToggleOutline,
+        handleNavigateToPath,
+        setOutlineData,
+        setOutlineTitle
+      ),
     [
       isOutlineOpen,
       outlineWidth,

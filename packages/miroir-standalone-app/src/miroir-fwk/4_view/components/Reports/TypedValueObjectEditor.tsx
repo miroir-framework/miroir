@@ -140,8 +140,8 @@ interface TypedValueObjectEditorProps {
   formLabel: string;
   onSubmit: (data: any) => Promise<void>;
   // fold / unfold element
-  foldedObjectAttributeOrArrayItems: { [k: string]: boolean };
-  setFoldedObjectAttributeOrArrayItems: React.Dispatch<React.SetStateAction<{ [k: string]: boolean }>>;
+  // foldedObjectAttributeOrArrayItems: { [k: string]: boolean };
+  // setFoldedObjectAttributeOrArrayItems: React.Dispatch<React.SetStateAction<{ [k: string]: boolean }>>;
   // zoom functionality
   zoomInPath?: string; // Optional path like "x.y.z" to zoom into a subset of the instance
   // depth control
@@ -166,8 +166,8 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
   applicationSection,
   // functions
   onSubmit,
-  foldedObjectAttributeOrArrayItems,
-  setFoldedObjectAttributeOrArrayItems,
+  // foldedObjectAttributeOrArrayItems,
+  // setFoldedObjectAttributeOrArrayItems,
   // zoom
   zoomInPath, // display only a subset of the valueObject, like "x.y.z"
   // depth control
@@ -472,8 +472,8 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
                         : {}
                     }
                     foreignKeyObjects={foreignKeyObjects}
-                    foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
-                    setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
+                    // foldedObjectAttributeOrArrayItems={context.foldedObjectAttributeOrArrayItems}
+                    // setFoldedObjectAttributeOrArrayItems={context.setFoldedObjectAttributeOrArrayItems}
                     maxRenderDepth={maxRenderDepth}
                     readOnly={true}
                     displayError={displayError}
@@ -526,8 +526,8 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
                           : {}
                       }
                       foreignKeyObjects={foreignKeyObjects}
-                      foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
-                      setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
+                      // foldedObjectAttributeOrArrayItems={context.foldedObjectAttributeOrArrayItems}
+                      // setFoldedObjectAttributeOrArrayItems={context.setFoldedObjectAttributeOrArrayItems}
                       maxRenderDepth={maxRenderDepth}
                       displayError={displayError}
                       submitButton={
