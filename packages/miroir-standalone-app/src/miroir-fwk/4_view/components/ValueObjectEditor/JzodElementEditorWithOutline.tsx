@@ -20,7 +20,7 @@ export interface JzodElementEditorWithOutlineProps extends JzodElementEditorProp
   onExternalOutlineToggle?: () => void;
 }
 
-export const JzodElementEditorWithOutline: React.FC<JzodElementEditorWithOutlineProps> = ({
+export const JzodElementEditorWithOutlineNOTUSED: React.FC<JzodElementEditorWithOutlineProps> = ({
   showOutlineToggle = true,
   outlineTitle = "Document Structure",
   data,
@@ -123,6 +123,7 @@ export const JzodElementEditorWithOutline: React.FC<JzodElementEditorWithOutline
           data={data}
           onNavigate={handleNavigateToPath}
           title={outlineTitle}
+          typeCheckKeyMap={editorProps.typeCheckKeyMap}
         />
       )}
     </ThemedBox>
@@ -173,4 +174,4 @@ const JzodElementEditorWithCustomHeader: React.FC<JzodElementEditorProps & {
   );
 };
 
-export default JzodElementEditorWithOutline;
+export default JzodElementEditorWithOutlineNOTUSED;

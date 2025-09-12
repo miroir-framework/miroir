@@ -19,7 +19,8 @@ import {
   Uuid,
   ViewParams,
   GridType,
-  type MiroirEvent
+  type MiroirEvent,
+  type KeyMapEntry
 } from "miroir-core";
 import {
   ReduxStateChanges,
@@ -80,6 +81,10 @@ export interface MiroirReactContext {
   setDeploymentUuidToReportsEntitiesDefinitionsMapping: React.Dispatch<React.SetStateAction<DeploymentUuidToReportsEntitiesDefinitionsMapping>>,
   updateTransformerEditorState: (updates: Partial<ToolsPageState['transformerEditor']>) => void,
   // ###################################################################################################
+  // outline for instance editor
+  typeCheckKeyMap: Record<string, KeyMapEntry>,
+  setTypeCheckKeyMap: React.Dispatch<React.SetStateAction<Record<string, KeyMapEntry>>>,
+  // ###################################################################################################
   // ToolsPage state management
   toolsPageState: ToolsPageState,
   updateToolsPageState: (updates: Partial<ToolsPageState>) => void,
@@ -117,6 +122,8 @@ export function MiroirContextReactProvider(props: {
   const [applicationSection, setApplicationSection] = useState<ApplicationSection>("data");
   const [innerFormOutput, setInnerFormOutput] = useState<any>({});
   const [formHelperState, setformHelperState] = useState<any>({});
+  const [typeCheckKeyMap, setTypeCheckKeyMap] = useState<Record<string, KeyMapEntry>>({});
+
   const [
     deploymentUuidToReportsEntitiesDefinitionsMapping,
     setDeploymentUuidToReportsEntitiesDefinitionsMapping,
@@ -313,6 +320,11 @@ export function MiroirContextReactProvider(props: {
         setShowActionTimeline(newValue);
         sessionStorage.setItem('showActionTimeline', JSON.stringify(newValue));
       },
+      // ###################################################################################################
+      // Outline for Instance Editor
+      typeCheckKeyMap,
+      setTypeCheckKeyMap,
+      // ###################################################################################################
       // Snackbar functionality
       snackbarOpen,
       snackbarMessage,

@@ -292,7 +292,7 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
     >
       {(formik: FormikProps<Record<string, any>>) => {
         let typeError: JSX.Element | undefined = undefined;
-        const typeCheckKeyMap: ResolvedJzodSchemaReturnType | undefined = useMemo(() => {
+        const jzodTypeCheckResult: ResolvedJzodSchemaReturnType | undefined = useMemo(() => {
           let result: ResolvedJzodSchemaReturnType | undefined = undefined;
           try {
             result = 
@@ -352,14 +352,26 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
         //   "resolvedJzodSchema",
         //   typeCheckKeyMap
         // );
-        if (!typeCheckKeyMap || typeCheckKeyMap.status != "ok") {
+        useEffect(() => {
+          if (
+            jzodTypeCheckResult &&
+            jzodTypeCheckResult.status == "ok" &&
+            jzodTypeCheckResult.keyMap &&
+            context.typeCheckKeyMap !== jzodTypeCheckResult.keyMap
+          ) {
+            log.info("Outline: TypedValueObjectEditor updating context typeCheckKeyMap", jzodTypeCheckResult.keyMap);
+            context.setTypeCheckKeyMap(jzodTypeCheckResult.keyMap);
+          }
+        }, [jzodTypeCheckResult]);
+
+        if (!jzodTypeCheckResult || jzodTypeCheckResult.status != "ok") {
           log.error(
             "TypedValueObjectEditor could not resolve jzod schema",
-            typeCheckKeyMap
+            jzodTypeCheckResult
           );
           // const jsonString = JSON.stringify(typeCheckKeyMap, null, 2);
-          if (typeCheckKeyMap) {
-            const jsonString: string = JSON.stringify(getInnermostTypeCheckError(typeCheckKeyMap as any), null, 2);
+          if (jzodTypeCheckResult) {
+            const jsonString: string = JSON.stringify(getInnermostTypeCheckError(jzodTypeCheckResult as any), null, 2);
             typeError = <CodeBlock_ReadOnly value={jsonString} />;
           } else {
             typeError = <div>Could not resolve jzod schema</div>;
@@ -373,10 +385,10 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
             () =>
               getQueryRunnerParamsForReduxDeploymentsState(
                 deploymentUuid &&
-                  typeCheckKeyMap &&
-                  typeCheckKeyMap.status == "ok" &&
-                  typeCheckKeyMap.resolvedSchema.type == "uuid" &&
-                  typeCheckKeyMap.resolvedSchema.tag?.value?.selectorParams?.targetEntity
+                  jzodTypeCheckResult &&
+                  jzodTypeCheckResult.status == "ok" &&
+                  jzodTypeCheckResult.resolvedSchema.type == "uuid" &&
+                  jzodTypeCheckResult.resolvedSchema.tag?.value?.selectorParams?.targetEntity
                   ? {
                       queryType: "boxedQueryWithExtractorCombinerTransformer",
                       deploymentUuid: deploymentUuid,
@@ -384,21 +396,21 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
                       queryParams: {},
                       contextResults: {},
                       extractors: {
-                        [typeCheckKeyMap.resolvedSchema.tag?.value?.selectorParams?.targetEntity]: {
+                        [jzodTypeCheckResult.resolvedSchema.tag?.value?.selectorParams?.targetEntity]: {
                           extractorOrCombinerType: "extractorByEntityReturningObjectList",
                           applicationSection: getApplicationSection(
                             deploymentUuid,
-                            typeCheckKeyMap.resolvedSchema.tag?.value?.selectorParams?.targetEntity
+                            jzodTypeCheckResult.resolvedSchema.tag?.value?.selectorParams?.targetEntity
                           ),
                           parentName: "",
-                          parentUuid: typeCheckKeyMap.resolvedSchema.tag?.value?.selectorParams?.targetEntity,
+                          parentUuid: jzodTypeCheckResult.resolvedSchema.tag?.value?.selectorParams?.targetEntity,
                         },
                       },
                     }
                   : dummyDomainManyQueryWithDeploymentUuid,
                 deploymentEntityStateSelectorMap
               ),
-            [deploymentEntityStateSelectorMap, deploymentUuid, typeCheckKeyMap]
+            [deploymentEntityStateSelectorMap, deploymentUuid, jzodTypeCheckResult]
           );
 
         const foreignKeyObjects: Record<string, EntityInstancesUuidIndex> =
@@ -431,8 +443,8 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
                         formikValues: undefined,
                         rawJzodSchema: displaySchema,
                         localResolvedElementJzodSchemaBasedOnValue:
-                          typeCheckKeyMap?.status == "ok"
-                            ? typeCheckKeyMap.resolvedSchema
+                          jzodTypeCheckResult?.status == "ok"
+                            ? jzodTypeCheckResult.resolvedSchema
                             : undefined,
                       }}
                     />
@@ -449,14 +461,14 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
                     currentDeploymentUuid={deploymentUuid}
                     currentApplicationSection={applicationSection}
                     resolvedElementJzodSchema={
-                      typeCheckKeyMap?.status == "ok"
-                        ? typeCheckKeyMap.resolvedSchema
+                      jzodTypeCheckResult?.status == "ok"
+                        ? jzodTypeCheckResult.resolvedSchema
                         : undefined
                     }
                     hasTypeError={typeError != undefined}
                     typeCheckKeyMap={
-                      typeCheckKeyMap?.status == "ok"
-                        ? typeCheckKeyMap.keyMap
+                      jzodTypeCheckResult?.status == "ok"
+                        ? jzodTypeCheckResult.keyMap
                         : {}
                     }
                     foreignKeyObjects={foreignKeyObjects}
@@ -485,8 +497,8 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
                           formikValues: undefined,
                           rawJzodSchema: displaySchema,
                           localResolvedElementJzodSchemaBasedOnValue:
-                            typeCheckKeyMap?.status == "ok"
-                              ? typeCheckKeyMap.resolvedSchema
+                            jzodTypeCheckResult?.status == "ok"
+                              ? jzodTypeCheckResult.resolvedSchema
                               : undefined,
                         }}
                       />
@@ -503,14 +515,14 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
                       currentDeploymentUuid={deploymentUuid}
                       currentApplicationSection={applicationSection}
                       resolvedElementJzodSchema={
-                        typeCheckKeyMap?.status == "ok"
-                          ? typeCheckKeyMap.resolvedSchema
+                        jzodTypeCheckResult?.status == "ok"
+                          ? jzodTypeCheckResult.resolvedSchema
                           : undefined
                       }
                       hasTypeError={typeError != undefined}
                       typeCheckKeyMap={
-                        typeCheckKeyMap?.status == "ok"
-                          ? typeCheckKeyMap.keyMap
+                        jzodTypeCheckResult?.status == "ok"
+                          ? jzodTypeCheckResult.keyMap
                           : {}
                       }
                       foreignKeyObjects={foreignKeyObjects}

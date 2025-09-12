@@ -65,6 +65,7 @@ import { InstanceEditorOutline } from '../InstanceEditorOutline.js';
 import { ViewParamsUpdateQueue, ViewParamsUpdateQueueConfig } from '../ViewParamsUpdateQueue.js';
 import { Sidebar } from "./Sidebar.js";
 import { SidebarWidth } from "./SidebarSection.js";
+import { object } from 'prop-types';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -808,6 +809,7 @@ export const RootComponent = (props: RootComponentProps) => {
             isOpen={isOutlineOpen}
             onToggle={handleToggleOutline}
             data={outlineData}
+            rootObjectKey={Object.keys(outlineData || {})[0] || ""}
             onNavigate={handleNavigateToPath}
             title={outlineTitle}
             width={outlineWidth}

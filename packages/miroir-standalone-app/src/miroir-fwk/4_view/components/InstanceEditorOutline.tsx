@@ -1,43 +1,42 @@
-/**
- * InstanceEditorOutline Component - Optimized for Performance
- * 
- * Performance optimizations implemented:
- * 1. React.memo on main component and TreeNodeComponent
- * 2. useMemo for expensive computations (tree building, icons, colors)
- * 3. useCallback for event handlers to prevent unnecessary re-renders
- * 4. Throttled resize handling for smooth interaction
- * 5. Stable references for tree nodes and expanded state
- * 6. Removed tooltips and replaced with simple instruction note
- */
-
-import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import {
+  Close,
+  Code,
+  DataObject,
+  ExpandLess,
+  ExpandMore,
+  Folder,
+  FolderOpen,
+  MenuOpen,
+  Settings,
+  ViewList
+} from '@mui/icons-material';
+import {
+  Box,
+  Collapse,
+  Divider,
   Drawer,
+  IconButton,
   List,
   ListItem,
   ListItemButton,
-  ListItemText,
   ListItemIcon,
-  Collapse,
+  ListItemText,
   Typography,
-  IconButton,
-  Divider,
-  Box,
 } from '@mui/material';
-import {
-  ExpandLess,
-  ExpandMore,
-  FolderOpen,
-  Folder,
-  Description,
-  Code,
-  DataObject,
-  ViewList,
-  Settings,
-  Close,
-  MenuOpen,
-} from '@mui/icons-material';
+import { MiroirLoggerFactory, type KeyMapEntry, type LoggerInterface } from 'miroir-core';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { packageName } from '../../../constants.js';
+import { cleanLevel } from '../constants.js';
 import { useMiroirTheme } from '../contexts/MiroirThemeContext.js';
+import { useMiroirContext, useMiroirContextService } from '../MiroirContextReactProvider.js';
+import { getFoldedDisplayValue } from './ValueObjectEditor/JzodElementEditorHooks.js';
+
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "InstanceEditorOutline")
+).then((logger: LoggerInterface) => {
+  log = logger;
+});
 
 // Types for tree structure
 export interface TreeNode {
@@ -54,12 +53,14 @@ export interface DocumentOutlineProps {
   isOpen: boolean;
   onToggle: () => void;
   data: any;
+  rootObjectKey: string; // The key of the root object in the data, added to distinguish potential outlines for multiple ReportSectionEntityInstances
   onNavigate?: (path: string[]) => void;
   title?: string;
   width?: number;
   minWidth?: number;
   maxWidth?: number;
   onWidthChange?: (width: number) => void;
+  // typeCheckKeyMap?: Record<string, KeyMapEntry>; // Schema information for display names
 }
 
 // Helper functions - optimized with useMemo in components
@@ -89,12 +90,15 @@ const getTypeColor = (type: string, theme: any) => {
   }
 };
 
+// ################################################################################################
 // Tree building function - optimized for performance
 const buildTreeFromObject = (
   obj: any,
-  path: string[] = [],
+  treePath: string[] = [],
+  rootObjectKey: string, // The key of the root object in the data, added to distinguish potential outlines for multiple ReportSectionEntityInstances
   level: number = 0,
-  maxDepth: number = 10
+  maxDepth: number = 10,
+  typeCheckKeyMap?: Record<string, KeyMapEntry>
 ): TreeNode[] => {
   if (level > maxDepth || obj === null || obj === undefined) {
     return [];
@@ -106,16 +110,57 @@ const buildTreeFromObject = (
     obj.forEach((item, index) => {
       // Only include objects and arrays, skip primitives
       if (item && (typeof item === 'object' || Array.isArray(item))) {
-        const currentPath = [...path, index.toString()];
-        const children = buildTreeFromObject(item, currentPath, level + 1, maxDepth);
+        const currentPath = [...treePath, index.toString()];
+        const children = buildTreeFromObject(
+          item,
+          currentPath,
+          rootObjectKey,
+          level + 1,
+          maxDepth,
+          typeCheckKeyMap
+        );
+        
+        // Build the rootLessListKey for schema lookup, similar to how JzodArrayEditor does it
+        const rootLessListKey = treePath.length > 0 ? treePath.slice(1).join('.') : ''; // ignore the first element which is the rootObjectKey
+        const itemRootLessListKey = rootLessListKey.length > 0 ? `${rootLessListKey}.${index}` : `${index}`;
+        
+        // Get the schema for this array item
+        // const itemSchema = typeCheckKeyMap?.[itemRootLessListKey]?.rawSchema;
+        const itemSchema = typeCheckKeyMap?.[itemRootLessListKey]?.resolvedSchema;
+        
+        // Try to get folded display value using the schema
+        let displayName = `[${index}]`;
+        const foldedDisplayValue = getFoldedDisplayValue(itemSchema, item);
+        
+        if ("transformerTestLabel" in item) {
+          log.info(
+            `Outline: Processing array item at ${itemRootLessListKey}, foldedDisplayValue: ${foldedDisplayValue}, item:`,
+            item,
+            "itemSchema:",
+            itemSchema
+          );
+        }
+        if (foldedDisplayValue !== null) {
+          // Use the schema-based display value
+          displayName = `[${index}] - ${foldedDisplayValue}`;
+        } else {
+          // Fall back to the existing hardcoded logic
+          if (item && typeof item === 'object') {
+            if (item.name) {
+              displayName = `[${index}] - ${item.name}`;
+            } else if (item.actionLabel) {
+              displayName = `[${index}] - ${item.actionLabel}`;
+            } else if (item.actionType) {
+              displayName = `[${index}] - ${item.actionType}`;
+            } else if (item.type) {
+              displayName = `[${index}] - ${item.type}`;
+            }
+          }
+        }
         
         nodes.push({
           id: currentPath.join('.'),
-          label: `[${index}]${item && typeof item === 'object' ? 
-            (item.name ? ` - ${item.name}` : 
-             item.actionLabel ? ` - ${item.actionLabel}` :
-             item.actionType ? ` - ${item.actionType}` :
-             item.type ? ` - ${item.type}` : '') : ''}`,
+          label: displayName,
           type: Array.isArray(item) ? 'array' : 'object',
           path: currentPath,
           children,
@@ -127,9 +172,10 @@ const buildTreeFromObject = (
   } else if (obj && typeof obj === 'object') {
     Object.entries(obj).forEach(([key, value]) => {
       // Only include objects and arrays, skip primitives
+      log.info("Outline: Processing object with path", treePath, "key:", key);
       if (value && (typeof value === 'object' || Array.isArray(value))) {
-        const currentPath = [...path, key];
-        const children = buildTreeFromObject(value, currentPath, level + 1, maxDepth);
+        const currentPath = [...treePath, key];
+        const children = buildTreeFromObject(value, currentPath, rootObjectKey, level + 1, maxDepth, typeCheckKeyMap);
         
         nodes.push({
           id: currentPath.join('.'),
@@ -147,6 +193,7 @@ const buildTreeFromObject = (
   return nodes;
 };
 
+// ################################################################################################
 // Optimized Tree node component with React.memo
 const TreeNodeComponent = React.memo<{
   node: TreeNode;
@@ -259,6 +306,7 @@ export const InstanceEditorOutline = React.memo<DocumentOutlineProps>(({
   isOpen,
   onToggle,
   data,
+  rootObjectKey,
   onNavigate,
   title = "Document Outline",
   width = 300,
@@ -267,6 +315,7 @@ export const InstanceEditorOutline = React.memo<DocumentOutlineProps>(({
   onWidthChange,
 }) => {
   const miroirTheme = useMiroirTheme();
+  const context = useMiroirContextService();
   const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set());
   const [selectedPath, setSelectedPath] = useState<string>('');
   const [currentWidth, setCurrentWidth] = useState(width);
@@ -277,13 +326,19 @@ export const InstanceEditorOutline = React.memo<DocumentOutlineProps>(({
   // Build tree structure from data with stable reference
   const treeNodes = useMemo(() => {
     try {
-      return buildTreeFromObject(data, [], 0, 10);
+      log.info("Outline: ##############################################################");
+      log.info("Outline: ##############################################################");
+      log.info("Outline: ##############################################################");
+      log.info("Outline: ##############################################################");
+      log.info("Outline: Rebuilding tree structure from data:", data);
+      return buildTreeFromObject(data, [], rootObjectKey, 0, 10, context.typeCheckKeyMap);
     } catch (error) {
       console.error('Error building tree structure:', error);
       return [];
     }
-  }, [data]);
+  }, [data, context.typeCheckKeyMap]);
 
+  log.info("Outline: Built tree structure treeNodes:", treeNodes);
   // Initialize expanded nodes based on auto-expand logic - optimized
   const autoExpandedNodes = useMemo(() => {
     const expandedSet = new Set<string>();
