@@ -22,6 +22,7 @@ import { measuredUseJzodElementEditorHooks } from "../../tools/hookPerformanceMe
 import { ChangeValueTypeSelect } from "../ChangeValueTypeSelect";
 import { JzodElementEditor } from "./JzodElementEditor";
 import { JzodAnyEditorProps } from "./JzodElementEditorInterface";
+import { useJzodElementEditorHooks } from "./JzodElementEditorHooks";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -51,8 +52,12 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
     insideAny,
     typeCheckKeyMap,
   } = props;
-  const { formik, currentModel, miroirMetaModel } = measuredUseJzodElementEditorHooks(
-    props,
+  // const { formik, currentModel, miroirMetaModel } = measuredUseJzodElementEditorHooks(
+  const { formik, currentModel, miroirMetaModel } = useJzodElementEditorHooks(
+    props.rootLessListKey,
+    props.rootLessListKeyArray,
+    props.typeCheckKeyMap,
+    props.currentDeploymentUuid,
     JzodAnyEditorRenderCount,
     "JzodAnyEditor"
   );
@@ -86,6 +91,7 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
           onChange={(type: JzodElement) => {
             log.info(`JzodAnyEditor: Change value type to ${type} for ${rootLessListKey}`);
             const defaultValue = getDefaultValueForJzodSchemaWithResolutionNonHook(
+              "build",
               type,
               formik.values,
               rootLessListKey,
