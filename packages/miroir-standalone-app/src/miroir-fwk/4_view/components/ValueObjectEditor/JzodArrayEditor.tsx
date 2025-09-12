@@ -559,7 +559,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
   const arrayItems: JSX.Element = useMemo(()=>(
   // const arrayItems: JSX.Element = (
     <>
-      {(itemsOrder as number[])
+      {(!foldedObjectAttributeOrArrayItems || !foldedObjectAttributeOrArrayItems[listKey]) && (itemsOrder as number[])
         .map((i: number): [number, JzodElement] => [i, arrayValueObject[i]])
         .map((attributeParam: [number, JzodElement]) => {
           const index: number = attributeParam[0];

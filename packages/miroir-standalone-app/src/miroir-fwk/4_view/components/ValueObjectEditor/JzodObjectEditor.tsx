@@ -756,7 +756,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
   // Memoize the array of rendered attributes to prevent unnecessary re-renders
   const attributeElements = useMemo(() => (
     <>
-      {itemsOrder
+      {(!foldedObjectAttributeOrArrayItems || !foldedObjectAttributeOrArrayItems[listKey]) && itemsOrder
         .map((i): [string, JzodElement] => [
           i,
           formik.values[rootLessListKey.length > 0 ? rootLessListKey + "." + i[0] : i[0]],
