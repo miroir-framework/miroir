@@ -542,10 +542,6 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
     );
   });
 
-  // const [foldedObjectAttributeOrArrayItems, setFoldedObjectAttributeOrArrayItems] = useState<{
-  //     [k: string]: boolean;
-  //   }>(persistedState?.foldedObjectAttributeOrArrayItems || {});
-
   useEffect(() => {
     if (persistedState && persistedState?.foldedObjectAttributeOrArrayItems) {
       reportContext.setFoldedObjectAttributeOrArrayItems(

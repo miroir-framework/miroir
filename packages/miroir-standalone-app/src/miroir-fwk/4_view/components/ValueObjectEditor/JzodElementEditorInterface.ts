@@ -57,12 +57,6 @@ export interface JzodElementEditorProps extends JzodEditorPropsRoot {
   unresolvedJzodSchema?: JzodElement | undefined;
   indentLevel: number;
   submitButton?: JSX.Element; // used to display a submit button in the editor
-  // foldedObjectAttributeOrArrayItems: { [k: string]: boolean };  
-  // setFoldedObjectAttributeOrArrayItems: React.Dispatch<
-  //   React.SetStateAction<{
-  //     [k: string]: boolean;
-  //   }>
-  // >;
   maxRenderDepth?: number; // Optional max depth for initial rendering, default 1
 }
 
@@ -73,13 +67,6 @@ export interface JzodArrayEditorProps extends JzodEditorPropsRoot {
   resolvedElementJzodSchema: JzodElement | undefined;
   // unfoldedRawSchema: JzodArray;
   indentLevel?: number;
-  // foldedObjectAttributeOrArrayItems: { [k: string]: boolean };  
-  // setFoldedObjectAttributeOrArrayItems: React.Dispatch<
-  //   React.SetStateAction<{
-  //     [k: string]: boolean;
-  //   }>
-  // >;
-  // setItemsOrder: React.Dispatch<React.SetStateAction<any[]>>
   itemsOrder: any[];
   displayAsStructuredElementSwitch?: JSX.Element; // used to display switches in the editor
   maxRenderDepth?: number; // Optional max depth for initial rendering, default 1
@@ -99,12 +86,6 @@ export interface JzodLiteralEditorProps extends JzodEditorPropsRoot {
 // #################################################################################################
 export interface JzodAnyEditorProps extends JzodEditorPropsRoot {
   // visible?: boolean;
-  // foldedObjectAttributeOrArrayItems: { [k: string]: boolean };  
-  // setFoldedObjectAttributeOrArrayItems: React.Dispatch<
-  //   React.SetStateAction<{
-  //     [k: string]: boolean;
-  //   }>
-  // >;
 }
 
 // #################################################################################################
@@ -113,12 +94,6 @@ export interface JzodObjectEditorProps extends JzodEditorPropsRoot {
   deleteButtonElement?: JSX.Element; // used to display a delete button in the editor
   displayAsStructuredElementSwitch?: JSX.Element; // used to display switches in the editor
   jzodSchemaTooltip?: JSX.Element; // used to display the actual raw jzod schema as a tooltip
-  // foldedObjectAttributeOrArrayItems: { [k: string]: boolean };  
-  // setFoldedObjectAttributeOrArrayItems: React.Dispatch<
-  //   React.SetStateAction<{
-  //     [k: string]: boolean;
-  //   }>
-  // >;
   maxRenderDepth?: number; // Optional max depth for initial rendering, default 1
 }
 

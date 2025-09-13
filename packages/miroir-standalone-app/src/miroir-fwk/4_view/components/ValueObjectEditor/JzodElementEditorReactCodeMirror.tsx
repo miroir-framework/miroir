@@ -100,10 +100,10 @@ export const JzodElementEditorReactCodeMirror: React.FC<JzodElementEditorReactCo
   }, [codeMirrorValue, setCodeMirrorValue, setCodeMirrorIsValidJson]);
 
   const handleChange = useCallback((value: string) => {
-    log.info(
-      "handleChange CodeMirror value changed:",
-      value
-    );
+    // log.info(
+    //   "handleChange CodeMirror value changed:",
+    //   value
+    // );
     try {
       JSON.parse(value);
       setCodeMirrorIsValidJson(true);

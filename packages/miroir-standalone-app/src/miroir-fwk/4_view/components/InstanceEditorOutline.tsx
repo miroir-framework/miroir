@@ -45,6 +45,7 @@ export interface TreeNode {
   id: string;
   label: string;
   type: 'object' | 'array' | 'root';
+  targetElement: any;
   path: string[];
   children?: TreeNode[];
   level: number;
@@ -95,21 +96,21 @@ const getTypeColor = (type: string, theme: any) => {
 // ################################################################################################
 // Tree building function - optimized for performance
 const buildTreeFromObject = (
-  obj: any,
+  targetElement: any,
   treePath: string[] = [],
   rootObjectKey: string, // The key of the root object in the data, added to distinguish potential outlines for multiple ReportSectionEntityInstances
   level: number = 0,
   maxDepth: number = 10,
   typeCheckKeyMap?: Record<string, KeyMapEntry>
 ): TreeNode[] => {
-  if (level > maxDepth || obj === null || obj === undefined) {
+  if (level > maxDepth || targetElement === null || targetElement === undefined) {
     return [];
   }
 
   const nodes: TreeNode[] = [];
 
-  if (Array.isArray(obj)) {
-    obj.forEach((item, index) => {
+  if (Array.isArray(targetElement)) {
+    targetElement.forEach((item, index) => {
       // Only include objects and arrays, skip primitives
       if (item && (typeof item === 'object' || Array.isArray(item))) {
         const currentPath = [...treePath, index.toString()];
@@ -162,6 +163,7 @@ const buildTreeFromObject = (
         
         nodes.push({
           id: currentPath.join('.'),
+          targetElement:item,
           label: displayName,
           type: Array.isArray(item) ? 'array' : 'object',
           path: currentPath,
@@ -171,8 +173,8 @@ const buildTreeFromObject = (
         });
       }
     });
-  } else if (obj && typeof obj === 'object') {
-    Object.entries(obj).forEach(([key, value]) => {
+  } else if (targetElement && typeof targetElement === 'object') {
+    Object.entries(targetElement).forEach(([key, value]) => {
       // Only include objects and arrays, skip primitives
       // log.info("Outline: Processing object with path", treePath, "key:", key);
       if (value && (typeof value === 'object' || Array.isArray(value))) {
@@ -182,6 +184,7 @@ const buildTreeFromObject = (
         nodes.push({
           id: currentPath.join('.'),
           label: key,
+          targetElement:value,
           type: Array.isArray(value) ? 'array' : 'object',
           path: currentPath,
           children,

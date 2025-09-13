@@ -610,8 +610,6 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
                   itemsOrder={itemsOrder}
                   formik={formik}
                   currentValue={currentValue}
-                  // foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
-                  // setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
                   maxRenderDepth={maxRenderDepth}
                   readOnly={readOnly}
                   displayError={displayError}
@@ -641,14 +639,9 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
   return (
     <div id={rootLessListKey} key={rootLessListKey}>
       <div>
-        <ThemedFlexRow
-          justify="start"
-          align="center"
-        >
+        <ThemedFlexRow justify="start" align="center">
           <span>
-            <ThemedFlexRow
-              align="center"
-            >
+            <ThemedFlexRow align="center">
               {label}
               {/* Show folded display value when array is folded and a value is available */}
               {reportContext.foldedObjectAttributeOrArrayItems &&
@@ -678,24 +671,24 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
                   currentValue={currentValue}
                   unfoldingDepth={Infinity}
                 ></FoldUnfoldObjectOrArray>
-                {!reportContext.foldedObjectAttributeOrArrayItems || !reportContext.foldedObjectAttributeOrArrayItems[listKey]  ? 
-                (
+                {!reportContext.foldedObjectAttributeOrArrayItems ||
+                !reportContext.foldedObjectAttributeOrArrayItems[listKey] ? (
                   <>
-                  {
-                    itemsOrder.length >= 2 && foldableItemsCount > 1?(
-                        <FoldUnfoldAllObjectAttributesOrArrayItems
-                          listKey={listKey}
-                          itemsOrder={itemsOrder.map(i => i.toString())}
-                          maxDepth={maxRenderDepth ?? 1}
-                        ></FoldUnfoldAllObjectAttributesOrArrayItems>
-                    ): <></>
-                  }
+                    {itemsOrder.length >= 2 && foldableItemsCount > 1 ? (
+                      <FoldUnfoldAllObjectAttributesOrArrayItems
+                        listKey={listKey}
+                        itemsOrder={itemsOrder.map((i) => i.toString())}
+                        maxDepth={maxRenderDepth ?? 1}
+                      ></FoldUnfoldAllObjectAttributesOrArrayItems>
+                    ) : (
+                      <></>
+                    )}
                     <ThemedSizedButton
                       aria-label={rootLessListKey + ".add"}
                       name={rootLessListKey + ".add"}
                       onClick={addNewArrayItem}
                       title="Add new array item"
-                      style={{ 
+                      style={{
                         flexShrink: 0,
                         marginLeft: "1em",
                       }}
@@ -728,7 +721,11 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
           id={listKey + ".inner"}
           style={{
             marginLeft: `calc(${indentShift})`,
-            display: reportContext.foldedObjectAttributeOrArrayItems && reportContext.foldedObjectAttributeOrArrayItems[listKey] ? "none" : "block",
+            display:
+              reportContext.foldedObjectAttributeOrArrayItems &&
+              reportContext.foldedObjectAttributeOrArrayItems[listKey]
+                ? "none"
+                : "block",
           }}
           key={`${rootLessListKey}|body`}
         >

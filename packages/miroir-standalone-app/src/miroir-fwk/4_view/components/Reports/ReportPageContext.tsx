@@ -3,14 +3,6 @@ import { useDocumentOutlineContext } from "../ValueObjectEditor/InstanceEditorOu
 
 // Document Outline Context
 export interface ReportPageContextType {
-  // isOutlineOpen: boolean;
-  // outlineWidth: number;
-  // outlineData: any;
-  // outlineTitle: string;
-  // onToggleOutline: () => void;
-  // onNavigateToPath: (path: string[]) => void;
-  // setOutlineData: (data: any) => void;
-  // setOutlineTitle: (title: string) => void;
   foldedObjectAttributeOrArrayItems: { [k: string]: boolean };
   setFoldedObjectAttributeOrArrayItems: React.Dispatch<
       React.SetStateAction<{ [k: string]: boolean }>
@@ -29,16 +21,7 @@ export class ReportPageContextDefault implements ReportPageContextType {
 
 export const ReportPageContext = createContext<ReportPageContextType | null>(null);
 
-// export const useDocumentOutlineContext = () => {
-//   const context = useContext(ReportPageContext);
-//   if (!context) {
-//     throw new Error('useDocumentOutlineContext must be used within a DocumentOutlineProvider');
-//   }
-//   return context;
-// };
-
 export function ReportPageContextProvider(props: {
-  // value: ReportPageContextType;
   children: React.ReactNode;
 }) {
   const [foldedObjectAttributeOrArrayItems, setFoldedObjectAttributeOrArrayItems] =

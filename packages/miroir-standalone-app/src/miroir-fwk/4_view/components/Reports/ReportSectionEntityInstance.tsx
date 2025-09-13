@@ -201,18 +201,6 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
       : {}
   );
   }, [currentReportTargetEntityDefinition?.display?.foldSubLevels, reportContext.setFoldedObjectAttributeOrArrayItems]);
-  // const [foldedObjectAttributeOrArrayItems, setFoldedObjectAttributeOrArrayItems] = useState<{
-  //   [k: string]: boolean;
-  //   // }>({"ROOT": true}); // Initialize with empty key to handle root object folding
-  // }>(
-  //   currentReportTargetEntityDefinition?.display?.foldSubLevels
-  //     ? Object.fromEntries(
-  //         Object.entries(currentReportTargetEntityDefinition?.display?.foldSubLevels).map(
-  //           ([keyMapEntry, value]) => [keyMapEntry.replace("#", "."), value]
-  //         )
-  //       )
-  //     : {}
-  // ); // Initialize with empty key to handle root object folding
 
   const formLabel: string =
     props.applicationSection +
@@ -225,13 +213,6 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
     if (currentReportTargetEntity?.name) {
       outlineContext.setOutlineTitle(currentReportTargetEntity.name + " details");
     }
-    // if (context && context.setFoldedObjectAttributeOrArrayItems) {
-    //   log.info(
-    //     "ReportSectionEntityInstance: useEffect setting outlineContext.setFoldedObjectAttributeOrArrayItems",
-    //     setFoldedObjectAttributeOrArrayItems.toString()
-    //   );
-    //   context.setSetFoldedObjectAttributeOrArrayItems(setFoldedObjectAttributeOrArrayItems);
-    // }
   }, [currentReportTargetEntity?.name, outlineContext.setOutlineTitle]);
 
   const labelElement = useMemo(() => {

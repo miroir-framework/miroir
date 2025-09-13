@@ -215,6 +215,7 @@ export const RootComponent = (props: RootComponentProps) => {
     [setDisplayedDeploymentUuid, setDisplayedApplicationSection]
   );
 
+  // ##############################################################################################
   // InstanceEditorOutline handlers with sidebar coordination
   const handleToggleOutline = useCallback(() => {
     setIsOutlineOpen((prev) => {
@@ -238,6 +239,7 @@ export const RootComponent = (props: RootComponentProps) => {
     });
   }, [drawerIsOpen, sidebarStateBeforeOutline]);
 
+  // ##############################################################################################
   const handleNavigateToPath = useCallback((path: string[]) => {
     const rootLessListKey = path.join(".");
 
@@ -246,8 +248,6 @@ export const RootComponent = (props: RootComponentProps) => {
       path,
       "rootLessListKey:",
       rootLessListKey,
-      // "reportContext.foldedObjectAttributeOrArrayItems",
-      // reportContext.foldedObjectAttributeOrArrayItems
     );
 
     // Helper function to escape CSS selectors

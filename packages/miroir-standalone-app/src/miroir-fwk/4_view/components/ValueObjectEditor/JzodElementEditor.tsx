@@ -92,12 +92,6 @@ export interface EditorAttribute {
 
 // ################################################################################################
 export const FoldUnfoldObjectOrArray = (props: {
-  // foldedObjectAttributeOrArrayItems: { [k: string]: boolean };
-  // setFoldedObjectAttributeOrArrayItems: React.Dispatch<
-  //   React.SetStateAction<{
-  //     [k: string]: boolean;
-  //   }>
-  // >;
   listKey: string;
   currentValue: EntityInstance | Array<any>;
   unfoldingDepth?: number; // Optional depth limit for unfolding (default: no limit)
@@ -128,7 +122,7 @@ export const FoldUnfoldObjectOrArray = (props: {
       e.stopPropagation();
       e.preventDefault();
 
-      log.info("FoldUnfoldObjectOrArray handleClick", props.listKey, "unfoldingDepth", props.unfoldingDepth);
+      // log.info("FoldUnfoldObjectOrArray handleClick", props.listKey, "unfoldingDepth", props.unfoldingDepth);
       const isCurrentlyFolded =
         (reportContext.foldedObjectAttributeOrArrayItems &&
           reportContext.foldedObjectAttributeOrArrayItems[props.listKey]) ||
@@ -235,12 +229,6 @@ FoldUnfoldObjectOrArray.displayName = "FoldUnfoldObjectOrArray";
 
 // ################################################################################################
 export const FoldUnfoldAllObjectAttributesOrArrayItems = (props: {
-  // foldedObjectAttributeOrArrayItems: { [k: string]: boolean };
-  // setFoldedObjectAttributeOrArrayItems: React.Dispatch<
-  //   React.SetStateAction<{
-  //     [k: string]: boolean;
-  //   }>
-  // >;
   listKey: string;
   itemsOrder: Array<string>;
   maxDepth?: number; // Optional: how many levels deep to unfold (default: 1)
@@ -248,7 +236,7 @@ export const FoldUnfoldAllObjectAttributesOrArrayItems = (props: {
   const maxDepthToUnfold = props.maxDepth ?? 1;
   const context = useMiroirContextService();
   const reportContext = useReportPageContext();
-  log.info("FoldUnfoldAllObjectAttributesOrArrayItems listKey", props.listKey, "maxDepthToUnfold", maxDepthToUnfold);
+  // log.info("FoldUnfoldAllObjectAttributesOrArrayItems listKey", props.listKey, "maxDepthToUnfold", maxDepthToUnfold);
   const handleClick = useCallback(
     (e: React.MouseEvent) => {
       e.stopPropagation();
@@ -380,7 +368,6 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
   );
   
   // Extract hiddenFormItems and setHiddenFormItems from props
-  // const { foldedObjectAttributeOrArrayItems, setFoldedObjectAttributeOrArrayItems } = props;
   const reportContext = useReportPageContext();
   // Handle switch for structured element display
   const handleDisplayAsStructuredElementSwitchChange = useCallback(

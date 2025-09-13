@@ -105,8 +105,8 @@ export function getJzodArrayEditorTests(
         // TODO: there seems to be 2 labels displayed!
         "renders array input with label when label prop is provided": {
           tests: async (expect: ExpectStatic, container: Container) => {
-            // expect(screen.getByText(/Test Label/)).toBeInTheDocument();
-            expect(screen.getAllByText(/Test Label/).length).toBe(2); // There should be only one label, actually there are two, one for the array and one for the first item
+            screen.debug(undefined, Infinity); // Prints entire DOM with no size limit
+            expect(screen.getAllByText(/Test Label/).length).toBe(1); // There should be only one label, actually there are two, one for the array and one for the first item
           },
         },
         "renders all array values, in the right order": {
@@ -411,7 +411,7 @@ export function getJzodEnumEditorTests(
         "renders enum input with label when label prop is provided": {
           tests: async (expect: ExpectStatic, container: Container) => {
             // expect(screen.getByText(/Test Label/)).toBeInTheDocument();
-            expect(screen.getAllByText(/Test Label/).length).toBe(2); // There should be only one label, actually there are two, one for the enum and one for the select
+            expect(screen.getAllByText(/Test Label/).length).toBe(1); // There should be only one label, actually there are two, one for the enum and one for the select
           },
         },
         "renders input without label when label prop is not provided": {
@@ -534,7 +534,7 @@ export function getJzodLiteralEditorTests(
             } as JzodElementEditorProps_Test),
           tests: async (expect, container) => {
             // expect(screen.getByText(/Test Label/)).toBeInTheDocument();
-            expect(screen.getAllByText(/Test Label/).length).toBe(2); // There should be only one label, actually there are two, one for the literal and one for the input
+            expect(screen.getAllByText(/Test Label/).length).toBe(1); // There should be only one label, actually there are two, one for the literal and one for the input
             expect(screen.getByRole("textbox")).toBeInTheDocument();
           },
           // tests: {

@@ -46,8 +46,6 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
     currentApplicationSection,
     foreignKeyObjects,
     resolvedElementJzodSchema, // handleSelectLiteralChange,
-    // foldedObjectAttributeOrArrayItems,
-    // setFoldedObjectAttributeOrArrayItems,
     labelElement,
     insideAny,
     typeCheckKeyMap,
@@ -118,8 +116,6 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
           currentApplicationSection={currentApplicationSection}
           resolvedElementJzodSchema={resolvedElementJzodSchema}
           typeCheckKeyMap={typeCheckKeyMap}
-          // foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
-          // setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
           labelElement={<></>}
           foreignKeyObjects={foreignKeyObjects}
           insideAny={true}

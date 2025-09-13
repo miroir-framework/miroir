@@ -191,8 +191,6 @@ const ProgressiveAttribute: FC<{
   currentModel,
   miroirMetaModel,
   measuredUnfoldJzodSchemaOnce,
-  // foldedObjectAttributeOrArrayItems,
-  // setFoldedObjectAttributeOrArrayItems,
   displayError,
 }) => {
   const isTestMode = process.env.VITE_TEST_MODE === 'true';
@@ -750,12 +748,12 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
   // ##############################################################################################
   // Memoize the array of rendered attributes to prevent unnecessary re-renders
   const attributeElements = useMemo(() => {
-    log.info(
-      "JzodObjectEditor rendering attributes for",
-      rootLessListKey,
-      "foldedObjectAttributeOrArrayItems",
-      reportContext.foldedObjectAttributeOrArrayItems
-    );
+    // log.info(
+    //   "JzodObjectEditor rendering attributes for",
+    //   rootLessListKey,
+    //   "foldedObjectAttributeOrArrayItems",
+    //   reportContext.foldedObjectAttributeOrArrayItems
+    // );
     return (
       <>
         {(!reportContext.foldedObjectAttributeOrArrayItems ||
@@ -813,12 +811,6 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
     measuredUnfoldJzodSchemaOnce,
     reportContext.foldedObjectAttributeOrArrayItems // This is the key addition!
   ]);
-  useEffect(() => {
-    log.info("JzodObjectEditor context.foldedObjectAttributeOrArrayItems changed:", 
-      rootLessListKey, 
-      reportContext.foldedObjectAttributeOrArrayItems
-    );
-  }, [reportContext.foldedObjectAttributeOrArrayItems]);
 
   return (
     <div id={rootLessListKey} key={rootLessListKey}>
