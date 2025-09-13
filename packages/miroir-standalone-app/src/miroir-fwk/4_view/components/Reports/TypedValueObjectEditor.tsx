@@ -416,7 +416,7 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
               Domain2QueryReturnType<DomainElementSuccess>
             >,
             foreignKeyObjectsFetchQueryParams
-          );
+          ) || {};
 
         return (
           <>
@@ -487,6 +487,7 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
                           origin: "TypedValueObjectEditor",
                           objectType: "root_editor",
                           rootLessListKey: "ROOT",
+                          rootLessListKeyArray: [],
                           currentValue: displayValueObject,
                           formikValues: undefined,
                           rawJzodSchema: displaySchema,

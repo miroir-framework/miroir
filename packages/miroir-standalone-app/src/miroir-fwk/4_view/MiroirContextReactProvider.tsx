@@ -1,4 +1,5 @@
 import { ReactNode, createContext, useContext, useMemo, useState, startTransition, useEffect } from "react";
+import { FoldedStateTree } from "./components/Reports/FoldedStateTreeUtils";
 
 import { useSelector } from "react-redux";
 import { Alert, AlertColor, Snackbar } from "@mui/material";
@@ -42,7 +43,7 @@ export interface ToolsPageState {
     selectedEntityUuid?: string;
     currentInstanceIndex?: number;
     currentTransformerDefinition?: any;
-    foldedObjectAttributeOrArrayItems?: { [k: string]: boolean };
+    foldedObjectAttributeOrArrayItems?: FoldedStateTree;
     foldedEntityInstanceItems?: { [k: string]: boolean };
     foldedTransformationResultItems?: { [k: string]: boolean };
   };

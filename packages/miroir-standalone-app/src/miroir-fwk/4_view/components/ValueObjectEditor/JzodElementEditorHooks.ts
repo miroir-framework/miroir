@@ -211,7 +211,7 @@ export function useJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
         Domain2QueryReturnType<DomainElementSuccess>
       >,
       foreignKeyObjectsFetchQueryParams
-  );
+  ) || {};
 
   const typeCheckMapJzodObjectFlattenedSchema: JzodObject | undefined =
     typeCheckKeyMap !== undefined &&

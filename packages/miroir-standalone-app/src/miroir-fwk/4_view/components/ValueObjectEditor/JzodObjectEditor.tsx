@@ -4,8 +4,9 @@ import { ErrorBoundary } from "react-error-boundary";
 
 import {
   alterObjectAtPath,
+  ApplicationSection,
   deleteObjectAtPath,
-  ReduxDeploymentsState,
+  EntityInstancesUuidIndex,
   foldableElementTypes,
   getDefaultValueForJzodSchemaWithResolutionNonHook,
   JzodElement,
@@ -14,8 +15,10 @@ import {
   KeyMapEntry,
   LoggerInterface,
   MiroirLoggerFactory,
+  ReduxDeploymentsState,
   resolvePathOnObject,
   SyncBoxedExtractorOrQueryRunnerMap,
+  Uuid,
   defaultMetaModelEnvironment
 } from "miroir-core";
 
@@ -150,7 +153,6 @@ const EditableAttributeName: FC<{
 const ProgressiveAttribute: FC<{
   attribute: [string, JzodElement];
   attributeNumber: number;
-  props: JzodObjectEditorProps;
   listKey: string;
   rootLessListKey: string;
   rootLessListKeyArray: (string | number)[];
@@ -167,6 +169,14 @@ const ProgressiveAttribute: FC<{
   currentModel: any;
   miroirMetaModel: any;
   measuredUnfoldJzodSchemaOnce: any;
+  // Add direct props from JzodObjectEditorProps that are used
+  currentDeploymentUuid?: Uuid;
+  currentApplicationSection?: ApplicationSection;
+  foreignKeyObjects: Record<string, EntityInstancesUuidIndex>;
+  insideAny?: boolean;
+  maxRenderDepth?: number;
+  readOnly?: boolean;
+
   displayError?: {
     errorPath: string[];
     errorMessage: string;
@@ -174,7 +184,6 @@ const ProgressiveAttribute: FC<{
 }> = ({
   attribute,
   attributeNumber,
-  props,
   listKey,
   rootLessListKey,
   rootLessListKeyArray,
@@ -191,6 +200,13 @@ const ProgressiveAttribute: FC<{
   currentModel,
   miroirMetaModel,
   measuredUnfoldJzodSchemaOnce,
+  maxRenderDepth,
+  readOnly,
+  // Direct props
+  currentDeploymentUuid,
+  currentApplicationSection,
+  foreignKeyObjects,
+  insideAny,
   displayError,
 }) => {
   const isTestMode = process.env.VITE_TEST_MODE === 'true';
@@ -210,16 +226,6 @@ const ProgressiveAttribute: FC<{
       scheduleRender();
     }, []); // Empty dependency array to run once on mount
   }
-
-  // Original attribute rendering logic - always extract props to avoid hook issues
-  const {
-    currentDeploymentUuid,
-    currentApplicationSection,
-    // localRootLessListKeyMap,
-    foreignKeyObjects,
-    insideAny,
-    // rawJzodSchema,
-  } = props;
 
   const currentAttributeDefinition = localResolvedElementJzodSchemaBasedOnValue.definition[attribute[0]];
   const attributeListKey = listKey + "." + attribute[0];
@@ -300,11 +306,11 @@ const ProgressiveAttribute: FC<{
             foreignKeyObjects={foreignKeyObjects}
             insideAny={insideAny}
             optional={definedOptionalAttributes.has(attribute[0])}
-            maxRenderDepth={props.maxRenderDepth}
-            readOnly={props.readOnly}
-            displayError={props.displayError}
+            maxRenderDepth={maxRenderDepth}
+            readOnly={readOnly}
+            displayError={displayError}
             deleteButtonElement={
-              !props.readOnly ? (
+              !readOnly ? (
                 <>
                   <ThemedSmallIconButton
                     id={attributeRootLessListKey + "-removeOptionalAttributeOrRecordEntry"}
@@ -357,6 +363,9 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
     displayAsStructuredElementSwitch,
     deleteButtonElement,
     displayError,
+    maxRenderDepth,
+    readOnly,
+    foreignKeyObjects = {}, // Add default empty object
   } = props;
 
   // count++;
@@ -395,6 +404,16 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
   );
 
   const reportContext = useReportPageContext();
+
+  // log.info("JzodObjectEditor",
+  //   count,
+  //   "Rendering JzodObjectEditor for props.rootLessListKeyArray",
+  //   props.rootLessListKeyArray,
+  //   reportContext.isNodeFolded(props.rootLessListKeyArray),
+  //   "reportContext.foldedObjectAttributeOrArrayItems",
+  //   reportContext.foldedObjectAttributeOrArrayItems,
+  // );
+
   const currentTypeCheckKeyMap = typeCheckKeyMap ? typeCheckKeyMap[rootLessListKey] : undefined;
 
   const currentMiroirFundamentalJzodSchema = context.miroirFundamentalJzodSchema;
@@ -756,8 +775,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
     // );
     return (
       <>
-        {(!reportContext.foldedObjectAttributeOrArrayItems ||
-          !reportContext.foldedObjectAttributeOrArrayItems[listKey]) &&
+        {!reportContext.isNodeFolded(rootLessListKeyArray) &&
           itemsOrder
             .map((i): [string, JzodElement] => [
               i,
@@ -768,7 +786,10 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
                 key={attribute[0]}
                 attribute={attribute}
                 attributeNumber={attributeNumber}
-                props={props}
+                currentDeploymentUuid={currentDeploymentUuid}
+                currentApplicationSection={currentApplicationSection}
+                foreignKeyObjects={foreignKeyObjects || {}}
+                insideAny={insideAny}
                 listKey={listKey}
                 rootLessListKey={rootLessListKey}
                 rootLessListKeyArray={rootLessListKeyArray}
@@ -781,12 +802,14 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
                 definedOptionalAttributes={definedOptionalAttributes}
                 handleAttributeNameChange={handleAttributeNameChange}
                 deleteElement={deleteElement}
+                maxRenderDepth={maxRenderDepth}
+                readOnly={readOnly}
                 formik={formik}
                 currentMiroirFundamentalJzodSchema={currentMiroirFundamentalJzodSchema}
                 currentModel={currentModel}
                 miroirMetaModel={miroirMetaModel}
                 measuredUnfoldJzodSchemaOnce={measuredUnfoldJzodSchemaOnce}
-                displayError={props.displayError}
+                displayError={displayError}
               />
             ))}
       </>
@@ -794,11 +817,15 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
     itemsOrder,
     formik.values,
     rootLessListKey,
-    props,
     listKey,
     rootLessListKeyArray,
     localResolvedElementJzodSchemaBasedOnValue,
     typeCheckKeyMap,
+    currentDeploymentUuid,
+    currentApplicationSection,
+    foreignKeyObjects,
+    insideAny,
+    displayError,
     currentValue,
     usedIndentLevel,
     definedOptionalAttributes,
@@ -827,8 +854,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
             >
               {labelElement}
               {/* Show folded display value when object is folded and a value is available */}
-              {reportContext.foldedObjectAttributeOrArrayItems &&
-                reportContext.foldedObjectAttributeOrArrayItems[listKey] &&
+              {reportContext.isNodeFolded(rootLessListKeyArray) &&
                 (() => {
                   return foldedDisplayValue !== null ? (
                     <ThemedFoldedValueDisplay
@@ -843,21 +869,24 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
           <span id={rootLessListKey + "head"} key={rootLessListKey + "head"}>
             <FoldUnfoldObjectOrArray
               listKey={listKey}
+              rootLessListKeyArray={rootLessListKeyArray}
               currentValue={currentValue}
               unfoldingDepth={unfoldingDepth}
             ></FoldUnfoldObjectOrArray>
             <FoldUnfoldObjectOrArray
               listKey={listKey}
+              rootLessListKeyArray={rootLessListKeyArray}
               currentValue={currentValue}
               unfoldingDepth={Infinity}
             ></FoldUnfoldObjectOrArray>
-            {(!reportContext.foldedObjectAttributeOrArrayItems || !reportContext.foldedObjectAttributeOrArrayItems[listKey]) &&
+            {!reportContext.isNodeFolded(rootLessListKeyArray) &&
             itemsOrder.length >= 2 &&
             foldableItemsCount > 1 ? (
               <FoldUnfoldAllObjectAttributesOrArrayItems
                 listKey={listKey}
+                rootLessListKeyArray={rootLessListKeyArray}
                 itemsOrder={itemsOrder}
-                maxDepth={props.maxRenderDepth ?? 1}
+                maxDepth={maxRenderDepth ?? 1}
               ></FoldUnfoldAllObjectAttributesOrArrayItems>
             ) : (
               <></>
@@ -865,8 +894,8 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
           </span>
           <span>
             {/* add record attribute button for records */}
-            {!props.readOnly && currentTypeCheckKeyMap?.rawSchema.type == "record" &&
-            !reportContext.foldedObjectAttributeOrArrayItems[listKey] ? (
+            {!readOnly && currentTypeCheckKeyMap?.rawSchema.type == "record" &&
+            !reportContext.isNodeFolded(rootLessListKeyArray) ? (
               <ThemedSizedButton
                 id={rootLessListKey + ".addRecordAttribute"}
                 aria-label={rootLessListKey + ".addRecordAttribute"}
@@ -881,9 +910,9 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
           </span>
           <span>
             {/* add optional attributes buttons */}
-            {!props.readOnly && currentTypeCheckKeyMap?.rawSchema.type != "record" &&
+            {!readOnly && currentTypeCheckKeyMap?.rawSchema.type != "record" &&
             undefinedOptionalAttributes.length > 0 &&
-            (!reportContext.foldedObjectAttributeOrArrayItems || !reportContext.foldedObjectAttributeOrArrayItems[listKey]) ? (
+            !reportContext.isNodeFolded(rootLessListKeyArray) ? (
               <ThemedOptionalAttributeContainer>
                 {undefinedOptionalAttributes.map((attributeName) => (
                   <ThemedOptionalAttributeItem key={attributeName}>
@@ -914,7 +943,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
           id={listKey + ".inner"}
           marginLeft={`calc(${indentShift})`}
           isVisible={
-            !reportContext.foldedObjectAttributeOrArrayItems || !reportContext.foldedObjectAttributeOrArrayItems[listKey]
+            !reportContext.isNodeFolded(rootLessListKeyArray)
           }
           key={`${rootLessListKey}|body`}
         >

@@ -50,6 +50,7 @@ import { TestResultCellWithActualValue } from './TestResultCellWithActualValue.j
 import { TypedValueObjectEditor } from './TypedValueObjectEditor.js';
 import { useDocumentOutlineContext } from '../ValueObjectEditor/InstanceEditorOutlineContext.js';
 import { useReportPageContext } from './ReportPageContext.js';
+import type { FoldedStateTree } from './FoldedStateTreeUtils.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -191,16 +192,51 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
     );
 
   useEffect(() => {
+    // log.info("Setting initial folded paths from entity definition:", currentReportTargetEntityDefinition?.display?.foldSubLevels);
+    const foldedStringPaths = currentReportTargetEntityDefinition?.display?.foldSubLevels
+    ? Object.entries(currentReportTargetEntityDefinition?.display?.foldSubLevels).filter(([key, value]) => value): [];
+    
+    // log.info("Setting initial folded paths foldedStringPaths:", foldedStringPaths);
+    const foldedPaths = foldedStringPaths.map(([key, value]) => key.split("#"));
+    // log.info("Setting initial folded paths foldedPaths:", foldedPaths);
+    const newFoldedObjectAttributeOrArrayItems: FoldedStateTree = {};
+    foldedPaths.forEach((pathArr) => {
+      let node = newFoldedObjectAttributeOrArrayItems;
+      pathArr.forEach((segment, idx) => {
+        if (idx === pathArr.length - 1) {
+          (node as any)[segment] = "folded";
+        } else {
+          if (!node[segment] || typeof node[segment] !== "object") {
+            node[segment] = {};
+          }
+          node = node[segment];
+        }
+      });
+    });
+    log.info("Setting initial folded paths newFoldedObjectAttributeOrArrayItems:", newFoldedObjectAttributeOrArrayItems);
+
     reportContext.setFoldedObjectAttributeOrArrayItems(
-      currentReportTargetEntityDefinition?.display?.foldSubLevels
-      ? Object.fromEntries(
-          Object.entries(currentReportTargetEntityDefinition?.display?.foldSubLevels).map(
-            ([keyMapEntry, value]) => [keyMapEntry.replace("#", "."), value]
-          )
-        )
-      : {}
+      newFoldedObjectAttributeOrArrayItems
+      // currentReportTargetEntityDefinition?.display?.foldSubLevels
+      // ? Object.fromEntries(
+      //     Object.entries(currentReportTargetEntityDefinition?.display?.foldSubLevels).map(
+      //       ([keyMapEntry, value]) => [keyMapEntry.replace("#", "."), value]
+      //     )
+      //   )
+      // : {}
   );
   }, [currentReportTargetEntityDefinition?.display?.foldSubLevels, reportContext.setFoldedObjectAttributeOrArrayItems]);
+  // useEffect(() => {
+  //   reportContext.setFoldedObjectAttributeOrArrayItems(
+  //     currentReportTargetEntityDefinition?.display?.foldSubLevels
+  //     ? Object.fromEntries(
+  //         Object.entries(currentReportTargetEntityDefinition?.display?.foldSubLevels).map(
+  //           ([keyMapEntry, value]) => [keyMapEntry.replace("#", "."), value]
+  //         )
+  //       )
+  //     : {}
+  // );
+  // }, [currentReportTargetEntityDefinition?.display?.foldSubLevels, reportContext.setFoldedObjectAttributeOrArrayItems]);
 
   const formLabel: string =
     props.applicationSection +
@@ -212,6 +248,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   useEffect(() => {
     if (currentReportTargetEntity?.name) {
       outlineContext.setOutlineTitle(currentReportTargetEntity.name + " details");
+      outlineContext.setReportInstance(instance);
     }
   }, [currentReportTargetEntity?.name, outlineContext.setOutlineTitle]);
 

@@ -259,7 +259,7 @@ export const ReportView = (props: ReportViewProps) => {
   // );
   // log.info("ReportView props.reportSection", props.reportDefinition);
 
-  const outlineElement = useMemo(() => {
+  const outlineElement = useMemo(() => { // TODO: belongs to the outline!
     if (
       deploymentEntityStateQueryResults &&
       deploymentEntityStateQueryResults.elementType !== "failure"

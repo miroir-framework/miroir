@@ -245,7 +245,7 @@
   },
   "display": {
     "foldSubLevels": {
-      "ROOT#definition": true
+      "definition": true
     }
   }
 }

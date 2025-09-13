@@ -1,21 +1,24 @@
 import { createContext, useContext, useMemo, useState } from "react";
+import { FoldedStateTree } from "../Reports/FoldedStateTreeUtils";
 
 // Document Outline Context
 export interface DocumentOutlineContextType {
   isOutlineOpen: boolean;
   // outlineWidth: number;
   outlineData: any;
+  reportInstance: any; // The root object being edited in the report, which structure is reflected in the outline
   outlineTitle: string;
   onToggleOutline: () => void;
   onNavigateToPath: (path: string[]) => void;
   setOutlineData: (data: any) => void;
+  setReportInstance: (instance: any) => void;
   setOutlineTitle: (title: string) => void;
   setFoldedObjectAttributeOrArrayItems: React.Dispatch<
-      React.SetStateAction<{ [k: string]: boolean }>
+      React.SetStateAction<FoldedStateTree>
     > | undefined;
   setSetFoldedObjectAttributeOrArrayItems: (
     setFoldedObjectAttributeOrArrayItems: React.Dispatch<
-      React.SetStateAction<{ [k: string]: boolean }>
+      React.SetStateAction<FoldedStateTree>
     >
   ) => void;
 }
@@ -25,16 +28,18 @@ export class DocumentOutlineContextDefault implements DocumentOutlineContextType
     public outlineWidth = 300,
     public outlineData = null,
     public outlineTitle = "Document Outline",
+    public reportInstance = null,
     public onToggleOutline = () => {},
     public onNavigateToPath = (path: string[]) => {},
     public setOutlineData = (data: any) => {},
     public setOutlineTitle = (title: string) => {},
+    public setReportInstance = (instance: any) => {},
     public setFoldedObjectAttributeOrArrayItems: React.Dispatch<
-        React.SetStateAction<{ [k: string]: boolean }>
+        React.SetStateAction<FoldedStateTree>
       > | undefined,
     public setSetFoldedObjectAttributeOrArrayItems: (
       setFoldedObjectAttributeOrArrayItems: React.Dispatch<
-        React.SetStateAction<{ [k: string]: boolean }>
+        React.SetStateAction<FoldedStateTree>
       >
     ) => void,
   ) {
@@ -60,16 +65,13 @@ export function DocumentOutlineContextProvider(props: {
   children: React.ReactNode;
 }) {
   const [setFoldedObjectAttributeOrArrayItems, setSetFoldedObjectAttributeOrArrayItems] =
-    useState<React.Dispatch<React.SetStateAction<{ [k: string]: boolean }>>>();
+    useState<React.Dispatch<React.SetStateAction<FoldedStateTree>>>();
 
-  // const [isOutlineOpen, setIsOutlineOpen] = useState<boolean>(props.value.isOutlineOpen);
-  // const [outlineWidth, setOutlineWidth] = useState<number>(props.value.outlineWidth);
   const [outlineData, setOutlineData] = useState<any>(null);
+  const [reportInstance, setReportInstance] = useState<any>(null);
   const [outlineTitle, setOutlineTitle] = useState<string>("Document Outline");
   const [isOutlineOpen, setIsOutlineOpen] = useState(false);
   const [outlineWidth, setOutlineWidth] = useState(300);
-  // const [outlineData, setOutlineData] = useState<any>(null);
-  // const [outlineTitle, setOutlineTitle] = useState<string>("Document Structure");
   const [onToggleOutline, setOnToggleOutline] = useState<() => void>(() => {});
   const [onNavigateToPath, setOnNavigateToPath] = useState<(path: string[]) => void>(() => {});
 
@@ -78,25 +80,29 @@ export function DocumentOutlineContextProvider(props: {
       isOutlineOpen,
       // outlineWidth,
       outlineData,
+      reportInstance,
       outlineTitle,
       onToggleOutline,
       onNavigateToPath,
-      setOutlineData,
-      setOutlineTitle,
       setIsOutlineOpen,
       setFoldedObjectAttributeOrArrayItems,
+      setOutlineData,
+      setOutlineTitle,
+      setReportInstance,
       setSetFoldedObjectAttributeOrArrayItems,
     }),
     [
       isOutlineOpen,
       outlineWidth,
       outlineData,
-      setOutlineData,
       outlineTitle,
+      reportInstance,
       onNavigateToPath,
       onToggleOutline,
       setIsOutlineOpen,
       setFoldedObjectAttributeOrArrayItems,
+      setOutlineData,
+      setReportInstance,
       setSetFoldedObjectAttributeOrArrayItems,
     ]
   );

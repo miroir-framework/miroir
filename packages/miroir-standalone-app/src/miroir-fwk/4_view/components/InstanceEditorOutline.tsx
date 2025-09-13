@@ -32,6 +32,8 @@ import { useMiroirContext, useMiroirContextService } from '../MiroirContextReact
 import { getFoldedDisplayValue } from './ValueObjectEditor/JzodElementEditorHooks.js';
 import { useDocumentOutlineContext } from './ValueObjectEditor/InstanceEditorOutlineContext.js';
 import { useReportPageContext } from './Reports/ReportPageContext.js';
+import { exclusivelyUnfoldPath, setNodeFolded } from './Reports/FoldedStateTreeUtils.js';
+import { report } from 'process';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -223,30 +225,27 @@ const TreeNodeComponent:React.FC<{
   }, [node.id, hasChildren, onToggleExpand]);
 
   const handleDoubleClick = useCallback(() => {
-    log.info("Outline: Node double-clicked:", node, outlineContext.setFoldedObjectAttributeOrArrayItems?.toString());
+    log.info("Outline: Node double-clicked:", node, outlineContext.reportInstance);
     if (outlineContext.setFoldedObjectAttributeOrArrayItems) {
-      const listKey = "ROOT." + node.path.slice(1).join("."); // ignore the first element which is the rootObjectKey
+      const newFoldedObjectAttributeOrArrayItems = exclusivelyUnfoldPath(
+      {},
+      outlineContext.reportInstance,
+      node.path.slice(1)
+      );
+      log.info("Outline: New foldedObjectAttributeOrArrayItems state after double-click:", newFoldedObjectAttributeOrArrayItems);
+      outlineContext.setFoldedObjectAttributeOrArrayItems(newFoldedObjectAttributeOrArrayItems);
 
-      outlineContext.setFoldedObjectAttributeOrArrayItems((prev) => {
-        log.info("Outline: Node double-clicked:", node, listKey, "prev", prev);
-        const newState = { ...prev };
-        // Toggle the folded state of the clicked node
-        ["ROOT", ...node.path.slice(1)].forEach((key, index, arr) => {
-          const path = arr.slice(0, index + 1).join(".");
-          log.info("Outline: Toggling folded state for path:", path);
-          if (newState[path]) {
-            delete newState[path];
-          }
-        });
-        log.info("Outline: New folded state after toggle:", newState);
-        // if (newState[listKey]) {
-        //   delete newState[listKey];
-        // }
-        // else {
-        //   newState[node.path.join('.')] = true;
-        // }
-        return newState;
-      });
+      // Leave some time before calling onNavigate to ensure main panel has been unfolded
+      if (onNavigate) {
+      setTimeout(() => {
+        onNavigate(node.path);
+      }, 500); // 100ms delay, adjust if needed
+      }
+    } else {
+      log.warn("Outline: No setFoldedObjectAttributeOrArrayItems function available in context");
+      if (onNavigate) {
+      onNavigate(node.path);
+      }
     }
     if (onNavigate) {
       onNavigate(node.path);

@@ -542,8 +542,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
     () => (
       // const arrayItems: JSX.Element = (
       <>
-        {(!reportContext.foldedObjectAttributeOrArrayItems ||
-          !reportContext.foldedObjectAttributeOrArrayItems[listKey]) &&
+        {!reportContext.isNodeFolded(rootLessListKeyArray) &&
           (itemsOrder as number[])
             .map((i: number): [number, JzodElement] => [i, arrayValueObject[i]])
             .map((attributeParam: [number, JzodElement]) => {
@@ -628,7 +627,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
       currentApplicationSection,
       usedIndentLevel,
       foreignKeyObjects,
-      reportContext.foldedObjectAttributeOrArrayItems,
+      reportContext.isNodeFolded,
       itemsOrder,
       insideAny,
       displayAsStructuredElementSwitch,
@@ -644,8 +643,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
             <ThemedFlexRow align="center">
               {label}
               {/* Show folded display value when array is folded and a value is available */}
-              {reportContext.foldedObjectAttributeOrArrayItems &&
-                reportContext.foldedObjectAttributeOrArrayItems[listKey] &&
+              {reportContext.isNodeFolded(rootLessListKeyArray) &&
                 (() => {
                   return foldedDisplayValue !== null ? (
                     <ThemedFoldedValueDisplay
@@ -663,20 +661,22 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
               <>
                 <FoldUnfoldObjectOrArray
                   listKey={listKey}
+                  rootLessListKeyArray={rootLessListKeyArray}
                   currentValue={currentValue}
                   unfoldingDepth={unfoldingDepth}
                 ></FoldUnfoldObjectOrArray>
                 <FoldUnfoldObjectOrArray
                   listKey={listKey}
+                  rootLessListKeyArray={rootLessListKeyArray}
                   currentValue={currentValue}
                   unfoldingDepth={Infinity}
                 ></FoldUnfoldObjectOrArray>
-                {!reportContext.foldedObjectAttributeOrArrayItems ||
-                !reportContext.foldedObjectAttributeOrArrayItems[listKey] ? (
+                {!reportContext.isNodeFolded(rootLessListKeyArray) ? (
                   <>
                     {itemsOrder.length >= 2 && foldableItemsCount > 1 ? (
                       <FoldUnfoldAllObjectAttributesOrArrayItems
                         listKey={listKey}
+                        rootLessListKeyArray={rootLessListKeyArray}
                         itemsOrder={itemsOrder.map((i) => i.toString())}
                         maxDepth={maxRenderDepth ?? 1}
                       ></FoldUnfoldAllObjectAttributesOrArrayItems>
@@ -722,8 +722,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
           style={{
             marginLeft: `calc(${indentShift})`,
             display:
-              reportContext.foldedObjectAttributeOrArrayItems &&
-              reportContext.foldedObjectAttributeOrArrayItems[listKey]
+              reportContext.isNodeFolded(rootLessListKeyArray)
                 ? "none"
                 : "block",
           }}

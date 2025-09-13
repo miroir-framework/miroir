@@ -93,6 +93,7 @@ export interface EditorAttribute {
 // ################################################################################################
 export const FoldUnfoldObjectOrArray = (props: {
   listKey: string;
+  rootLessListKeyArray: (string | number)[];
   currentValue: EntityInstance | Array<any>;
   unfoldingDepth?: number; // Optional depth limit for unfolding (default: no limit)
 }): JSX.Element => {
@@ -123,10 +124,9 @@ export const FoldUnfoldObjectOrArray = (props: {
       e.preventDefault();
 
       // log.info("FoldUnfoldObjectOrArray handleClick", props.listKey, "unfoldingDepth", props.unfoldingDepth);
-      const isCurrentlyFolded =
-        (reportContext.foldedObjectAttributeOrArrayItems &&
-          reportContext.foldedObjectAttributeOrArrayItems[props.listKey]) ||
-        false;
+      // Use the provided rootLessListKeyArray
+      const pathArray = props.rootLessListKeyArray;
+      const isCurrentlyFolded = reportContext.isNodeFolded(pathArray);
       // log.info(
       //   "FoldUnfoldObjectOrArray",
       //   props.listKey,
@@ -137,72 +137,44 @@ export const FoldUnfoldObjectOrArray = (props: {
       //   "foldedObjectAttributeOrArrayItems",
       //   props.foldedObjectAttributeOrArrayItems
       // );
+      // Convert the string key to a path array
+      // const pathArray = props.listKey.split('.').filter(Boolean);
+      
       if (isCurrentlyFolded) {
         // Unfolding
-        reportContext.setFoldedObjectAttributeOrArrayItems((prev) => {
-          const newState = { ...prev };
-          delete newState[props.listKey];
-
-          if (props.unfoldingDepth === Infinity) {
-            // Remove folding state for all descendants
-            Object.keys(prev).forEach((key) => {
-              if (key.startsWith(props.listKey + ".")) {
-                delete newState[key];
-              }
-            });
-          } else {
-            const prevKeys = Object.keys(prev);
-            // For finite depth, only unfold current item (children remain as is)
-            // If currentValue is an array, we can fold all items
-            if (Array.isArray(props.currentValue)) {
-              props.currentValue.forEach((_, index) => {
-                const childKey = `${props.listKey}.${index}`;
-                if (!prevKeys.some((key) => key.startsWith(childKey))) {
-                  // Only fold if it has no children already folded
-                  newState[childKey] = true; // unfold this item
-                }
-              });
-            } else {
-              // If currentValue is an object, fold all attributes
-              Object.keys(props.currentValue).forEach((attributeName) => {
-                const childKey = `${props.listKey}.${attributeName}`;
-                if (!prevKeys.some((key) => key.startsWith(childKey))) {
-                  // Only fold if it has no children already folded
-                  newState[childKey] = true; // unfold this attribute
-                }
-              });
-            }
+        reportContext.setNodeFolded(pathArray, "unfold");
+        
+        // Handle infinite depth unfolding
+        if (props.unfoldingDepth === Infinity) {
+          // Nothing else needed - setNodeFolded will remove the node and children
+        } else {
+          // For finite depth unfolding - fold the immediate children
+          // If currentValue is an array, fold all items
+          if (Array.isArray(props.currentValue)) {
+            const childIndices = props.currentValue.map((_, index) => index);
+            reportContext.foldAllChildren(pathArray, childIndices);
+          } else if (typeof props.currentValue === 'object' && props.currentValue !== null) {
+            // If currentValue is an object, fold all attributes
+            const childKeys = Object.keys(props.currentValue);
+            reportContext.foldAllChildren(pathArray, childKeys);
           }
-
-          // For finite depth, only unfold current item (children remain as is)
-          return newState;
-        });
+        }
       } else {
         // Folding
-        reportContext.setFoldedObjectAttributeOrArrayItems((prev) => {
-          const newState = { ...prev };
-          newState[props.listKey] = true;
-          if (props.unfoldingDepth === Infinity) {
-            // Remove folding state for all descendants
-            Object.keys(prev).forEach((key) => {
-              if (key.startsWith(props.listKey + ".")) {
-                delete newState[key];
-              }
-            });
-          }
-          return newState;
-        });
+        reportContext.setNodeFolded(pathArray, "fold");
       }
     },
     [
       props.listKey,
-      reportContext.foldedObjectAttributeOrArrayItems,
-      reportContext.setFoldedObjectAttributeOrArrayItems,
       props.unfoldingDepth,
+      props.currentValue,
+      reportContext.isNodeFolded,
+      reportContext.setNodeFolded,
+      reportContext.foldAllChildren
     ]
   );
 
-  const isFolded = reportContext.foldedObjectAttributeOrArrayItems && reportContext.foldedObjectAttributeOrArrayItems[props.listKey];
+  const isFolded = reportContext.isNodeFolded(props.rootLessListKeyArray);
   const isInfiniteDepth = props.unfoldingDepth === Infinity;
 
   return (
@@ -230,6 +202,7 @@ FoldUnfoldObjectOrArray.displayName = "FoldUnfoldObjectOrArray";
 // ################################################################################################
 export const FoldUnfoldAllObjectAttributesOrArrayItems = (props: {
   listKey: string;
+  rootLessListKeyArray?: (string | number)[]; // Added root-less list key array
   itemsOrder: Array<string>;
   maxDepth?: number; // Optional: how many levels deep to unfold (default: 1)
 }): JSX.Element => {
@@ -247,50 +220,41 @@ export const FoldUnfoldAllObjectAttributesOrArrayItems = (props: {
         (attributeName) => `${props.listKey}.${attributeName}`
       );
 
+      // Use rootLessListKeyArray if available, otherwise fall back to split path
+      const pathArray = props.rootLessListKeyArray || props.listKey.split('.').filter(Boolean);
+      const childKeysAsArrays = props.itemsOrder.map(attributeName => attributeName);
+      
       // Check if any child is currently unfolded (visible)
-      const hasUnfoldedChildren = childKeys.some(
-        (key) =>
-          !reportContext.foldedObjectAttributeOrArrayItems || !reportContext.foldedObjectAttributeOrArrayItems[key]
+      const hasUnfoldedChildren = childKeysAsArrays.some(
+        (attributeName) => !reportContext.isNodeFolded([...pathArray, attributeName])
       );
 
       // If any child is unfolded, fold all; otherwise unfold to the specified depth
-      const shouldFoldAll = hasUnfoldedChildren;
-
-      reportContext.setFoldedObjectAttributeOrArrayItems((prev) => {
-        const newState = { ...prev };
-        
-        if (shouldFoldAll) {
-          // Fold all children
-          childKeys.forEach((key) => {
-            newState[key] = true;
-          });
-        } else {
-          // Unfold to the specified depth (only first level for now)
-          // TODO: Implement proper recursive unfolding by inspecting actual data structure
-          childKeys.forEach((key) => {
-            newState[key] = false; // Unfold this level
-          });
-        }
-        
-        return newState;
-      });
+      if (hasUnfoldedChildren) {
+        // Fold all children
+        reportContext.foldAllChildren(pathArray, childKeysAsArrays);
+      } else {
+        // Unfold all children
+        reportContext.unfoldAllChildren(pathArray, childKeysAsArrays);
+      }
     },
     [
       props.listKey,
+      props.rootLessListKeyArray,
       props.itemsOrder,
-      reportContext.foldedObjectAttributeOrArrayItems,
-      reportContext.setFoldedObjectAttributeOrArrayItems,
+      reportContext.isNodeFolded,
+      reportContext.foldAllChildren,
+      reportContext.unfoldAllChildren,
       maxDepthToUnfold,
     ]
   );
 
   // Check if all children are folded
-  const childKeys = props.itemsOrder.map(attributeName => `${props.listKey}.${attributeName}`);
+  const pathArray = props.rootLessListKeyArray || props.listKey.split('.').filter(Boolean);
   const allChildrenFolded =
-    childKeys.length > 0 &&
-    childKeys.every(
-      (key) =>
-        reportContext.foldedObjectAttributeOrArrayItems && reportContext.foldedObjectAttributeOrArrayItems[key]
+    props.itemsOrder.length > 0 &&
+    props.itemsOrder.every(
+      (attributeName) => reportContext.isNodeFolded([...pathArray, attributeName])
     );
 
   const title = allChildrenFolded 
@@ -370,6 +334,14 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
   // Extract hiddenFormItems and setHiddenFormItems from props
   const reportContext = useReportPageContext();
   // Handle switch for structured element display
+  // log.info("JzodElementEditor",
+  //   count,
+  //   "Rendering JzodElementEditor for listKey",
+  //   props.listKey,
+  //   "reportContext.foldedObjectAttributeOrArrayItems",
+  //   reportContext.foldedObjectAttributeOrArrayItems,
+  // );
+
   const handleDisplayAsStructuredElementSwitchChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       log.info(

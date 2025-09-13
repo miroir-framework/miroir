@@ -50,6 +50,7 @@ import { useSelector } from 'react-redux';
 import { TypedValueObjectEditor } from '../Reports/TypedValueObjectEditor';
 import { TransformerEventsPanel } from './TransformerEventsPanel';
 import { useReportPageContext } from '../Reports/ReportPageContext';
+import type { FoldedStateTree } from '../Reports/FoldedStateTreeUtils';
 
 // ################################################################################################
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -624,7 +625,8 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
   
   // Wrapper functions for folded state setters with persistence
   const setFoldedObjectAttributeOrArrayItemsWithPersistence = useCallback(
-    (updates: React.SetStateAction<{ [k: string]: boolean }>) => {
+    // (updates: React.SetStateAction<{ [k: string]: boolean }>) => {
+    (updates: React.SetStateAction<FoldedStateTree>) => {
       reportContext.setFoldedObjectAttributeOrArrayItems((prev) => {
         const newState = typeof updates === "function" ? updates(prev) : updates;
         context.updateTransformerEditorState({ foldedObjectAttributeOrArrayItems: newState });
