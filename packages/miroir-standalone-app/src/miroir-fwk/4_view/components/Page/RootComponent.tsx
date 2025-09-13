@@ -7,7 +7,7 @@ import {
   createContext,
   useCallback,
   useContext,
-  useEffect, useMemo, useState
+  useEffect, useMemo, useRef, useState
 } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 import { EventTimelineContainer } from '../EventTimelineContainer';
@@ -118,6 +118,10 @@ export const RootComponent = (props: RootComponentProps) => {
   const [outlineWidth, setOutlineWidth] = useState(300);
   // const [outlineData, setOutlineData] = useState<any>(null);
   // const [outlineTitle, setOutlineTitle] = useState<string>("Document Structure");
+  
+  // Track current highlight timeout and element for proper cleanup
+  const highlightTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const highlightedElementRef = useRef<HTMLElement | null>(null);
   // Remember sidebar state before outline was opened
   const [sidebarStateBeforeOutline, setSidebarStateBeforeOutline] = useState<boolean | null>(null);
 
@@ -354,6 +358,25 @@ export const RootComponent = (props: RootComponentProps) => {
       }
     }
     if (targetElement) {
+      // Clear any existing highlight and timeout
+      if (highlightTimeoutRef.current) {
+        clearTimeout(highlightTimeoutRef.current);
+        highlightTimeoutRef.current = null;
+      }
+      
+      // Remove highlight from previously highlighted element if it exists
+      if (highlightedElementRef.current) {
+        const prevElement = highlightedElementRef.current;
+        // Only clear styles if they haven't been modified by other code
+        if (prevElement.style.backgroundColor.includes(theme.currentTheme.colors.warningLight) ||
+            prevElement.style.border.includes(theme.currentTheme.colors.warning)) {
+          prevElement.style.backgroundColor = '';
+          prevElement.style.border = '';
+          prevElement.style.borderRadius = '';
+          prevElement.style.transition = '';
+        }
+      }
+      
       // Scroll the element into view with smooth behavior
       targetElement.scrollIntoView({
         behavior: "smooth",
@@ -361,22 +384,30 @@ export const RootComponent = (props: RootComponentProps) => {
         inline: "nearest",
       });
 
-      // Optional: Add a temporary highlight effect
+      // Store original styles for restoration
       const originalBackgroundColor = targetElement.style.backgroundColor;
       const originalBorder = targetElement.style.border;
       const originalBorderRadius = targetElement.style.borderRadius;
 
+      // Apply highlight styles
       targetElement.style.backgroundColor = theme.currentTheme.colors.warningLight;
       targetElement.style.border = `2px solid ${theme.currentTheme.colors.warning}`;
       targetElement.style.borderRadius = "4px";
       targetElement.style.transition = "all 0.3s ease";
 
+      // Store reference to currently highlighted element
+      highlightedElementRef.current = targetElement;
+
       // Remove the highlight after 2 seconds
-      setTimeout(() => {
-        targetElement!.style.backgroundColor = originalBackgroundColor;
-        targetElement!.style.border = originalBorder;
-        targetElement!.style.borderRadius = originalBorderRadius;
-        targetElement!.style.transition = "";
+      highlightTimeoutRef.current = setTimeout(() => {
+        if (targetElement === highlightedElementRef.current) {
+          targetElement.style.backgroundColor = originalBackgroundColor;
+          targetElement.style.border = originalBorder;
+          targetElement.style.borderRadius = originalBorderRadius;
+          targetElement.style.transition = "";
+          highlightedElementRef.current = null;
+        }
+        highlightTimeoutRef.current = null;
       }, 2000);
     } else {
       console.warn("Element not found for path:", path, "rootLessListKey:", rootLessListKey);
@@ -400,7 +431,7 @@ export const RootComponent = (props: RootComponentProps) => {
         console.log("Potentially related IDs:", relatedIds);
       }
     }
-  }, []);
+  }, [theme]);
 
   // ##############################################################################################
   // Document outline context value
@@ -488,6 +519,26 @@ export const RootComponent = (props: RootComponentProps) => {
       // log.info("RootComponent: Updated sidebar width from database", dbSidebarWidth);
     }
   }, [dbSidebarWidth, userHasChangedSidebarWidth, sidebarWidth]);
+
+  // Cleanup highlight timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (highlightTimeoutRef.current) {
+        clearTimeout(highlightTimeoutRef.current);
+      }
+      if (highlightedElementRef.current) {
+        const element = highlightedElementRef.current;
+        // Clear highlight styles if they match our theme colors
+        if (element.style.backgroundColor.includes(theme.currentTheme.colors.warningLight) ||
+            element.style.border.includes(theme.currentTheme.colors.warning)) {
+          element.style.backgroundColor = '';
+          element.style.border = '';
+          element.style.borderRadius = '';
+          element.style.transition = '';
+        }
+      }
+    };
+  }, [theme.currentTheme.colors.warningLight, theme.currentTheme.colors.warning]);
 
   const handleSidebarWidthChange = useMemo(
     () => (width: number) => {

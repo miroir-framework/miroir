@@ -237,18 +237,15 @@ const TreeNodeComponent:React.FC<{
 
       // Leave some time before calling onNavigate to ensure main panel has been unfolded
       if (onNavigate) {
-      setTimeout(() => {
-        onNavigate(node.path);
-      }, 500); // 100ms delay, adjust if needed
+        setTimeout(() => {
+          onNavigate(node.path);
+        }, 500); // 500ms delay to allow unfolding to complete
       }
     } else {
       log.warn("Outline: No setFoldedObjectAttributeOrArrayItems function available in context");
       if (onNavigate) {
-      onNavigate(node.path);
+        onNavigate(node.path);
       }
-    }
-    if (onNavigate) {
-      onNavigate(node.path);
     }
   }, [node.path, outlineContext.setFoldedObjectAttributeOrArrayItems, onNavigate]);
 
