@@ -291,32 +291,29 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
         const jzodTypeCheckResult: ResolvedJzodSchemaReturnType | undefined = useMemo(() => {
           let result: ResolvedJzodSchemaReturnType | undefined = undefined;
           try {
-            result = 
-            // useMemo(
-            //   () =>
-                context.miroirFundamentalJzodSchema &&
-                displaySchema &&
-                formik.values &&
-                currentModel
-                  ? jzodTypeCheck(
-                      displaySchema,
-                      formik.values,
-                      [],
-                      [],
-                      // defaultMetaModelEnvironment,
-                      {
-                        miroirFundamentalJzodSchema: context.miroirFundamentalJzodSchema,
-                        currentModel,
-                        miroirMetaModel: currentMiroirModel,
-                      },
-                      {}, // relativeReferenceJzodContext
-                      formik.values, // currentDefaultValue
-                      reduxDeploymentsState,
-                      deploymentUuid, // Now passing the actual deploymentUuid
-                      hasZoomPath ? valueObject : formik.values // rootObject - use full object for context, but validate the subset
-                    )
-                  : undefined;
-                  // ,
+            result =
+              // useMemo(
+              //   () =>
+              context.miroirFundamentalJzodSchema && displaySchema && formik.values && currentModel
+                ? jzodTypeCheck(
+                    displaySchema,
+                    formik.values,
+                    [],
+                    [],
+                    // defaultMetaModelEnvironment,
+                    {
+                      miroirFundamentalJzodSchema: context.miroirFundamentalJzodSchema,
+                      currentModel,
+                      miroirMetaModel: currentMiroirModel,
+                    },
+                    {}, // relativeReferenceJzodContext
+                    formik.values, // currentDefaultValue
+                    reduxDeploymentsState,
+                    deploymentUuid, // Now passing the actual deploymentUuid
+                    hasZoomPath ? valueObject : formik.values // rootObject - use full object for context, but validate the subset
+                  )
+                : undefined;
+            // ,
             //   [
             //     displaySchema,
             //     formik.values,
@@ -348,15 +345,20 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
         //   "resolvedJzodSchema",
         //   typeCheckKeyMap
         // );
+        // extruding typeCheckKeyMap to context for Outline usage
         useEffect(() => {
           if (
             jzodTypeCheckResult &&
             jzodTypeCheckResult.status == "ok" &&
-            jzodTypeCheckResult.keyMap &&
-            context.typeCheckKeyMap !== jzodTypeCheckResult.keyMap
+            jzodTypeCheckResult.keyMap
+            // context.typeCheckKeyMap !== jzodTypeCheckResult.keyMap
           ) {
             log.info("Outline: TypedValueObjectEditor updating context typeCheckKeyMap", jzodTypeCheckResult.keyMap);
-            context.setTypeCheckKeyMap(jzodTypeCheckResult.keyMap);
+            if (context.setTypeCheckKeyMap) {
+              context.setTypeCheckKeyMap(jzodTypeCheckResult.keyMap);
+            } else {
+              log.warn("TypedValueObjectEditor context.setTypeCheckKeyMap is undefined, cannot set typeCheckKeyMap");
+            }
           }
         }, [jzodTypeCheckResult]);
 

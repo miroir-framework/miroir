@@ -4,9 +4,7 @@ import {
   Snackbar
 } from '@mui/material';
 import {
-  createContext,
   useCallback,
-  useContext,
   useEffect, useMemo, useRef, useState
 } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
@@ -62,12 +60,10 @@ import { useCurrentModel, useReduxDeploymentsStateQuerySelectorForCleanedResult 
 import { cleanLevel } from '../../constants.js';
 import { usePageConfiguration } from '../../services/index.js';
 import { InstanceEditorOutline } from '../InstanceEditorOutline.js';
+import { DocumentOutlineContextProvider } from '../ValueObjectEditor/InstanceEditorOutlineContext';
 import { ViewParamsUpdateQueue, ViewParamsUpdateQueueConfig } from '../ViewParamsUpdateQueue.js';
 import { Sidebar } from "./Sidebar.js";
 import { SidebarWidth } from "./SidebarSection.js";
-import { object } from 'prop-types';
-import { DocumentOutlineContext, DocumentOutlineContextDefault, DocumentOutlineContextProvider, type DocumentOutlineContextType } from '../ValueObjectEditor/InstanceEditorOutlineContext';
-import { useReportPageContext } from '../Reports/ReportPageContext';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

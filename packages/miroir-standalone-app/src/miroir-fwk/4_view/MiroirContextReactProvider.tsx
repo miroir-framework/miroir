@@ -1,4 +1,4 @@
-import { ReactNode, createContext, useContext, useMemo, useState, startTransition, useEffect } from "react";
+import { ReactNode, createContext, useContext, useMemo, useState, startTransition, useEffect, type Dispatch, type SetStateAction } from "react";
 import { FoldedStateTree } from "./components/Reports/FoldedStateTreeUtils";
 
 import { useSelector } from "react-redux";
@@ -82,9 +82,22 @@ export interface MiroirReactContext {
   setDeploymentUuidToReportsEntitiesDefinitionsMapping: React.Dispatch<React.SetStateAction<DeploymentUuidToReportsEntitiesDefinitionsMapping>>,
   updateTransformerEditorState: (updates: Partial<ToolsPageState['transformerEditor']>) => void,
   // ###################################################################################################
-  // outline for instance editor
-  typeCheckKeyMap: Record<string, KeyMapEntry>,
-  setTypeCheckKeyMap: React.Dispatch<React.SetStateAction<Record<string, KeyMapEntry>>>,
+  // outline <-> instance editor
+  // typeCheckKeyMap: Record<string, KeyMapEntry>,
+  // setTypeCheckKeyMap: React.Dispatch<React.SetStateAction<Record<string, KeyMapEntry>>>,
+    setTypeCheckKeyMap: React.Dispatch<React.SetStateAction<Record<string, KeyMapEntry>>> | undefined,
+    setSetTypeCheckKeyMap: (
+      setTypeCheckKeyMap: React.Dispatch<React.SetStateAction<Record<string, KeyMapEntry>>>
+    ) => void;
+    setFoldedObjectAttributeOrArrayItems: React.Dispatch<
+        React.SetStateAction<FoldedStateTree>
+      > | undefined,
+    setSetFoldedObjectAttributeOrArrayItems: (
+      setFoldedObjectAttributeOrArrayItems: React.Dispatch<
+        React.SetStateAction<FoldedStateTree>
+      >
+    ) => void,
+
   // ###################################################################################################
   // ToolsPage state management
   toolsPageState: ToolsPageState,
@@ -128,8 +141,20 @@ export function MiroirContextReactProvider(props: {
   const [applicationSection, setApplicationSection] = useState<ApplicationSection>("data");
   const [innerFormOutput, setInnerFormOutput] = useState<any>({});
   const [formHelperState, setformHelperState] = useState<any>({});
-  const [typeCheckKeyMap, setTypeCheckKeyMap] = useState<Record<string, KeyMapEntry>>({});
+  // const [typeCheckKeyMap, setTypeCheckKeyMap] = useState<Record<string, KeyMapEntry>>({});
 
+  const [setTypeCheckKeyMap, setSetTypeCheckKeyMap] =
+    useState<Dispatch<SetStateAction<Record<string, KeyMapEntry>>>>();
+
+  const [setFoldedObjectAttributeOrArrayItems, setSetFoldedObjectAttributeOrArrayItems] =
+    useState<Dispatch<SetStateAction<FoldedStateTree>>>();
+
+    //     setTypeCheckKeyMap: React.Dispatch<React.SetStateAction<Record<string, KeyMapEntry>>>,
+    // setSetTypeCheckKeyMap: (
+    //   setTypeCheckKeyMap: React.Dispatch<React.SetStateAction<Record<string, KeyMapEntry>>>
+    // ) => void;
+
+  
   const [
     deploymentUuidToReportsEntitiesDefinitionsMapping,
     setDeploymentUuidToReportsEntitiesDefinitionsMapping,
@@ -326,9 +351,13 @@ export function MiroirContextReactProvider(props: {
         setShowActionTimeline(newValue);
         sessionStorage.setItem('showActionTimeline', JSON.stringify(newValue));
       },
-      // ###################################################################################################
-      // Outline for Instance Editor
-      typeCheckKeyMap,
+      // // ###################################################################################################
+      // // Outline for Instance Editor
+      // typeCheckKeyMap,
+      // setTypeCheckKeyMap,
+      setFoldedObjectAttributeOrArrayItems,
+      setSetFoldedObjectAttributeOrArrayItems,
+      setSetTypeCheckKeyMap,
       setTypeCheckKeyMap,
       // ###################################################################################################
       // Snackbar functionality
@@ -351,14 +380,21 @@ export function MiroirContextReactProvider(props: {
       props.miroirContext,
       props.domainController,
       viewParams,
-      toolsPageState,
-      updateToolsPageState,
-      updateTransformerEditorState,
+      setFoldedObjectAttributeOrArrayItems,
+      setSetFoldedObjectAttributeOrArrayItems,
+      setTypeCheckKeyMap,
+      setSetTypeCheckKeyMap,
+      formHelperState,
+      showSnackbar,
+      handleAsyncAction,
       showPerformanceDisplay,
       showActionTimeline,
       snackbarOpen,
       snackbarMessage,
       snackbarSeverity,
+      toolsPageState,
+      updateToolsPageState,
+      updateTransformerEditorState,
     ]
   );
 

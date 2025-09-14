@@ -136,7 +136,10 @@ const buildTreeFromObject = (
         // Try to get folded display value using the schema
         let displayName = `[${index}]`;
         const foldedDisplayValue = getFoldedDisplayValue(itemSchema, item);
-        
+        log.info(`Outline: Processing array item at ${itemRootLessListKey}, foldedDisplayValue: ${foldedDisplayValue}, item:`, item, "itemSchema:", itemSchema,
+          "typeCheckKeyMap",
+          typeCheckKeyMap,
+        );
         // if ("transformerTestLabel" in item) {
         //   log.info(
         //     `Outline: Processing array item at ${itemRootLessListKey}, foldedDisplayValue: ${foldedDisplayValue}, item:`,
@@ -226,14 +229,14 @@ const TreeNodeComponent:React.FC<{
 
   const handleDoubleClick = useCallback(() => {
     log.info("Outline: Node double-clicked:", node, outlineContext.reportInstance);
-    if (outlineContext.setFoldedObjectAttributeOrArrayItems) {
+    if (context.setFoldedObjectAttributeOrArrayItems) {
       const newFoldedObjectAttributeOrArrayItems = exclusivelyUnfoldPath(
       {},
       outlineContext.reportInstance,
       node.path.slice(1)
       );
       log.info("Outline: New foldedObjectAttributeOrArrayItems state after double-click:", newFoldedObjectAttributeOrArrayItems);
-      outlineContext.setFoldedObjectAttributeOrArrayItems(newFoldedObjectAttributeOrArrayItems);
+      context.setFoldedObjectAttributeOrArrayItems(newFoldedObjectAttributeOrArrayItems);
 
       // Leave some time before calling onNavigate to ensure main panel has been unfolded
       if (onNavigate) {
@@ -247,7 +250,7 @@ const TreeNodeComponent:React.FC<{
         onNavigate(node.path);
       }
     }
-  }, [node.path, outlineContext.setFoldedObjectAttributeOrArrayItems, onNavigate]);
+  }, [node.path, context.setFoldedObjectAttributeOrArrayItems, onNavigate]);
 
   const indentLevel = node.level * 16;
 
@@ -332,6 +335,7 @@ const TreeNodeComponent:React.FC<{
 // ################################################################################################
 // ################################################################################################
 // Main Document Outline component - optimized with React.memo
+// export const InstanceEditorOutline = React.memo<DocumentOutlineProps>(({
 export const InstanceEditorOutline = React.memo<DocumentOutlineProps>(({
   isOpen,
   onToggle,
@@ -345,7 +349,7 @@ export const InstanceEditorOutline = React.memo<DocumentOutlineProps>(({
   onWidthChange,
 }) => {
   const miroirTheme = useMiroirTheme();
-  const context = useMiroirContextService();
+  // const context = useMiroirContextService();
   const outlineContext = useDocumentOutlineContext();
   // const [outlineData, setOutlineData] = useState<any>(null);
   // const [outlineTitle, setOutlineTitle] = useState<string>("Document Structure");
@@ -366,12 +370,12 @@ export const InstanceEditorOutline = React.memo<DocumentOutlineProps>(({
       // log.info("Outline: ##############################################################");
       // log.info("Outline: ##############################################################");
       // log.info("Outline: Rebuilding tree structure from data:", data);
-      return buildTreeFromObject(outlineContext.outlineData, [], rootObjectKey, 0, 10, context.typeCheckKeyMap);
+      return buildTreeFromObject(outlineContext.outlineData, [], rootObjectKey, 0, 10, outlineContext.typeCheckKeyMap);
     } catch (error) {
       console.error('Error building tree structure:', error);
       return [];
     }
-  }, [outlineContext.outlineData, context.typeCheckKeyMap]);
+  }, [outlineContext.outlineData, rootObjectKey, outlineContext.typeCheckKeyMap]);
 
   // log.info("Outline: Built tree structure treeNodes:", treeNodes);
   // Initialize expanded nodes based on auto-expand logic - optimized

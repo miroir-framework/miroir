@@ -5,6 +5,7 @@ import type { FoldAction } from "./FoldedStateTreeDebug";
 import { LoggerInterface, MiroirLoggerFactory } from "miroir-core";
 import { packageName } from "../../../../constants";
 import { cleanLevel } from "../../constants";
+import { useMiroirContextService } from "../../MiroirContextReactProvider";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -47,14 +48,15 @@ export function ReportPageContextProvider(props: {
 }) {
   const [foldedObjectAttributeOrArrayItems, setFoldedObjectAttributeOrArrayItems] =
     useState<FoldedStateTree>({});
-  const outlineContext = useDocumentOutlineContext();
+
+  const context = useMiroirContextService();
 
   useEffect(() =>
-    outlineContext.setSetFoldedObjectAttributeOrArrayItems((a) =>{
+    context.setSetFoldedObjectAttributeOrArrayItems((a) =>{
       // console.log("ReportPageContextProvider Outline: called setFoldedObjectAttributeOrArrayItems in outlineContext");
       return setFoldedObjectAttributeOrArrayItems
     })
-  , [outlineContext.setSetFoldedObjectAttributeOrArrayItems]);
+  , [context.setSetFoldedObjectAttributeOrArrayItems]);
 
   // // Node folding state handlers
   const handleIsNodeFolded = useCallback((path: (string | number)[]): boolean => {
