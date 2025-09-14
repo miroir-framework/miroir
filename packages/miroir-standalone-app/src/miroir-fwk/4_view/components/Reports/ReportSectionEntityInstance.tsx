@@ -12,7 +12,8 @@ import {
   MiroirLoggerFactory,
   Uuid,
   adminConfigurationDeploymentMiroir,
-  entityTransformerTest
+  entityTransformerTest,
+  miroirFundamentalJzodSchema
 } from "miroir-core";
 
 import {
@@ -191,8 +192,14 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
       (e) => e?.entityUuid === currentReportTargetEntity?.uuid
     );
 
+  log.info(
+    "ReportSectionEntityInstance: currentReportTargetEntityDefinition:",
+    currentReportTargetEntityDefinition,
+    "miroirFundamentalJzodSchema",
+    miroirFundamentalJzodSchema
+  );
+
   useEffect(() => {
-    // log.info("Setting initial folded paths from entity definition:", currentReportTargetEntityDefinition?.display?.foldSubLevels);
     const foldedStringPaths = currentReportTargetEntityDefinition?.display?.foldSubLevels
     ? Object.entries(currentReportTargetEntityDefinition?.display?.foldSubLevels).filter(([key, value]) => value): [];
     
@@ -217,26 +224,8 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
 
     reportContext.setFoldedObjectAttributeOrArrayItems(
       newFoldedObjectAttributeOrArrayItems
-      // currentReportTargetEntityDefinition?.display?.foldSubLevels
-      // ? Object.fromEntries(
-      //     Object.entries(currentReportTargetEntityDefinition?.display?.foldSubLevels).map(
-      //       ([keyMapEntry, value]) => [keyMapEntry.replace("#", "."), value]
-      //     )
-      //   )
-      // : {}
   );
   }, [currentReportTargetEntityDefinition?.display?.foldSubLevels, reportContext.setFoldedObjectAttributeOrArrayItems]);
-  // useEffect(() => {
-  //   reportContext.setFoldedObjectAttributeOrArrayItems(
-  //     currentReportTargetEntityDefinition?.display?.foldSubLevels
-  //     ? Object.fromEntries(
-  //         Object.entries(currentReportTargetEntityDefinition?.display?.foldSubLevels).map(
-  //           ([keyMapEntry, value]) => [keyMapEntry.replace("#", "."), value]
-  //         )
-  //       )
-  //     : {}
-  // );
-  // }, [currentReportTargetEntityDefinition?.display?.foldSubLevels, reportContext.setFoldedObjectAttributeOrArrayItems]);
 
   const formLabel: string =
     props.applicationSection +

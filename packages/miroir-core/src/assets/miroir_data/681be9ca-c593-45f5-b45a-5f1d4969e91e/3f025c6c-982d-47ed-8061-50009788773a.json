@@ -17,7 +17,6 @@
         "runTestStep": "build",
         "transformer": {
           "transformerType": "resolveConditionalSchema",
-          "interpolation": "build",
           "schema": { "type": "string" },
           "valueObject": "test",
           "context": "defaultValue",
@@ -33,7 +32,6 @@
         "runTestStep": "build",
         "transformer": {
           "transformerType": "resolveConditionalSchema",
-          "interpolation": "build",
           "schema": { "type": "string", "tag": { "value": { "conditionalMMLS": {} } } },
           "valueObject": "test",
           "context": "defaultValue",
@@ -49,7 +47,6 @@
         "runTestStep": "build",
         "transformer": {
           "transformerType": "resolveConditionalSchema",
-          "interpolation": "build",
           "schema": {
             "type": "any",
             "tag": {
@@ -76,7 +73,6 @@
         "runTestStep": "build",
         "transformer": {
           "transformerType": "resolveConditionalSchema",
-          "interpolation": "build",
           "deploymentUuid": "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
           "schema": {
             "type": "any",
@@ -105,7 +101,6 @@
         "runTestStep": "build",
         "transformer": {
           "transformerType": "resolveConditionalSchema",
-          "interpolation": "build",
           "schema": {
             "type": "any",
             "tag": {
@@ -144,7 +139,6 @@
         "runTestStep": "build",
         "transformer": {
           "transformerType": "resolveConditionalSchema",
-          "interpolation": "build",
           "schema": {
             "type": "any",
             "tag": {

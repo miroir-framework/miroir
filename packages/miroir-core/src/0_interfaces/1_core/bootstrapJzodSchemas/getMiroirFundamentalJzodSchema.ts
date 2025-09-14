@@ -352,7 +352,6 @@ export function getExtendedSchemas(jzodSchemajzodMiroirBootstrapSchema: any) {
     "transformerForBuild_optional_Abstract",
     "transformerForRuntime_Abstract",
     "transformerForRuntime_optional_Abstract",
-    "transformerForBuildPlusRuntime_Abstract",
     "transformerForBuildPlusRuntime_optional_Abstract",
     "transformerForBuild_objectDynamicAccess",
     "transformerForRuntime_contextReference",
@@ -426,7 +425,7 @@ function createLocalizedInnerResolutionStoreForExtendedSchemas(
       }
       if (localizedResolutionStore.context[e] === undefined) {
         throw new Error(
-          `createLocalizedInnerResolutionStoreForExtendedSchemas: localizedResolutionStore.context["${e}"] is undefined`
+          `createLocalizedInnerResolutionStoreForExtendedSchemas: localizedResolutionStore.context["${e}"] is undefined in`
         );
       }
 
@@ -986,7 +985,7 @@ export function getMiroirFundamentalJzodSchema(
         // MLS
         ...Object.fromEntries(Object.entries(mlsTransformers).map(([key, value]) => [
           key.replace("transformer_", "transformerForBuildPlusRuntime_"),
-          miroirTransformersForBuild[key as keyof typeof miroirTransformersForBuildPlusRuntime]])),
+          miroirTransformersForBuildPlusRuntime[key as keyof typeof miroirTransformersForBuildPlusRuntime]])),
         transformerForBuildPlusRuntime: {
           type: "union",
           optInDiscriminator: true,

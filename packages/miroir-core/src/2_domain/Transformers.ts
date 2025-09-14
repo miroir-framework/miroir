@@ -186,7 +186,7 @@ export const miroirTransformersForBuildPlusRuntime: Record<string, JzodElement> 
       transformer,
       "buildPlusRuntime",
       buildPlusRuntimeReferenceMap,
-      ["transformer_contextReference", "transformer_parameterReference"].includes(key)
+      true, // ["transformer_contextReference", "transformer_parameterReference"].includes(key)
     ),
   ])
 );

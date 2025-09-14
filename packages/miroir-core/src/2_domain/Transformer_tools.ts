@@ -50,26 +50,31 @@ export function transformerInterfaceFromDefinition(
   referenceMap: Record<string, string> = {},
   optionalInterpolation: boolean = false
 ): JzodElement {
+  let relativePath
   let innerReferenceRelativePath:
     | "transformerForBuild"
     | "transformerForRuntime"
     | "transformerForBuildPlusRuntime"
-    // | "transformer_inner_referenced_transformerForBuild"
-    // | "transformer_inner_referenced_transformerForRuntime"
-    // | "transformer_inner_referenced_transformerForBuildPlusRuntime"
     | undefined = undefined;
   switch (target) {
-    case "build":
-      // innerReferenceRelativePath = "transformer_inner_referenced_transformerForBuild";
+    case "build": {
       innerReferenceRelativePath = "transformerForBuild";
+      relativePath = optionalInterpolation
+        ? "transformerForBuild_optional_Abstract"
+        : "transformerForBuild_Abstract";
       break;
-    case "runtime":
+    }
+    case "runtime": {
       // innerReferenceRelativePath = "transformer_inner_referenced_transformerForRuntime";
       innerReferenceRelativePath = "transformerForRuntime";
+      relativePath = optionalInterpolation
+        ? "transformerForRuntime_optional_Abstract"
+        : "transformerForRuntime_Abstract";
       break;
+    }
     case "buildPlusRuntime":
-      // innerReferenceRelativePath = "transformer_inner_referenced_transformerForBuildPlusRuntime";
       innerReferenceRelativePath = "transformerForBuildPlusRuntime";
+      relativePath = "transformerForBuildPlusRuntime_optional_Abstract";
       break;
     default:
       throw new Error(`Unknown target: ${target}`);
@@ -79,14 +84,6 @@ export function transformerInterfaceFromDefinition(
     transformerDefinition.transformerInterface.transformerParameterSchema
       .transformerDefinition.definition as any
   ).applyTo?{
-    // type: "union",
-    // discriminator: "referenceType",
-    // definition: [
-    //   (
-    //     transformerDefinition.transformerInterface.transformerParameterSchema
-    //       .transformerDefinition.definition as any
-    //   ).applyTo,
-    //   {
     type: "schemaReference",
     definition: {
       relativePath: innerReferenceRelativePath,
@@ -102,18 +99,6 @@ export function transformerInterfaceFromDefinition(
     referenceMap
   ).definition;
 
-  const relativePath =
-    target == "buildPlusRuntime"
-      ? optionalInterpolation
-        ? "transformerForBuildPlusRuntime_optional_Abstract"
-        : "transformerForBuildPlusRuntime_Abstract"
-      : target == "runtime"
-      ? optionalInterpolation
-        ? "transformerForRuntime_optional_Abstract"
-        : "transformerForRuntime_Abstract"
-      : optionalInterpolation
-      ? "transformerForBuild_optional_Abstract"
-      : "transformerForBuild_Abstract";
   const result: JzodElement = {
     type: "object",
     extend: transformerDefinition.transformerInterface.transformerParameterSchema

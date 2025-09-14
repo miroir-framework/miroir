@@ -136,18 +136,10 @@ const buildTreeFromObject = (
         // Try to get folded display value using the schema
         let displayName = `[${index}]`;
         const foldedDisplayValue = getFoldedDisplayValue(itemSchema, item);
-        log.info(`Outline: Processing array item at ${itemRootLessListKey}, foldedDisplayValue: ${foldedDisplayValue}, item:`, item, "itemSchema:", itemSchema,
-          "typeCheckKeyMap",
-          typeCheckKeyMap,
-        );
-        // if ("transformerTestLabel" in item) {
-        //   log.info(
-        //     `Outline: Processing array item at ${itemRootLessListKey}, foldedDisplayValue: ${foldedDisplayValue}, item:`,
-        //     item,
-        //     "itemSchema:",
-        //     itemSchema
-        //   );
-        // }
+        // log.info(`Outline: Processing array item at ${itemRootLessListKey}, foldedDisplayValue: ${foldedDisplayValue}, item:`, item, "itemSchema:", itemSchema,
+        //   "typeCheckKeyMap",
+        //   typeCheckKeyMap,
+        // );
         if (foldedDisplayValue !== null) {
           // Use the schema-based display value
           displayName = `[${index}] - ${foldedDisplayValue}`;

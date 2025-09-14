@@ -89,7 +89,7 @@ export function ReportPageContextProvider(props: {
 
   const outlineContextValue: ReportPageContextType = useMemo(
     () => {
-      log.info("ReportPageContextProvider: Providing context with folded state foldedObjectAttributeOrArrayItems:", foldedObjectAttributeOrArrayItems);
+      // log.info("ReportPageContextProvider: Providing context with folded state foldedObjectAttributeOrArrayItems:", foldedObjectAttributeOrArrayItems);
       return new ReportPageContextDefault(
         foldedObjectAttributeOrArrayItems,
         setFoldedObjectAttributeOrArrayItems,
