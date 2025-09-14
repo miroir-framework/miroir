@@ -1509,7 +1509,7 @@ export function transformer_InnerReference_resolve<T extends MiroirModelEnvironm
   // );
   const localQueryParams = transformerParams ?? {};
   const localContextResults = contextResults ?? {};
-  if (step == "build" && (transformerInnerReference as any).interpolation == "runtime") {
+  if (step == "build" && (((transformerInnerReference as any).interpolation??"build") == "runtime")) {
     log.warn(
       "transformer_InnerReference_resolve called for runtime interpolation in build step",
       transformerInnerReference
@@ -1643,7 +1643,10 @@ export function transformer_mustacheStringTemplate_apply(
     //   "contextResults",
     //   JSON.stringify(contextResults, null, 2)
     // );
-    const result = mustache.render(transformer.definition, (transformer as any)["interpolation"] == "runtime"?contextResults: queryParams);
+    const result = mustache.render(
+      transformer.definition,
+      ((transformer as any)["interpolation"]??"build") == "runtime" ? contextResults : queryParams
+    );
     return result;
   } catch (error: any) {
     // log.error(
@@ -2678,12 +2681,12 @@ export function transformer_extended_apply<T extends MiroirModelEnvironment>(
     } else {
       // TODO: improve test, refuse interpretation of build transformer in runtime step
       const newResolveBuildTransformersTo: ResolveBuildTransformersTo =
-        (transformer as any)["interpolation"] == "build" &&
+        ((transformer as any)["interpolation"]??"build" == "build") &&
         resolveBuildTransformersTo == "constantTransformer"
           ? "value" // HACK!
           : resolveBuildTransformersTo;
       if (transformer["transformerType"] != undefined) {
-        if (step == "runtime" || (transformer as any)["interpolation"] == "build") {
+        if (step == "runtime" || ((transformer as any)["interpolation"]??"build" == "build")) {
           // log.info("transformer_extended_apply interpreting transformer!");
           let preResult;
           const foundApplicationTransformer =
@@ -2935,7 +2938,7 @@ export function transformer_extended_apply<T extends MiroirModelEnvironment>(
             return preResult;
           } else {
             if (
-              (transformer as any)["interpolation"] == "build" &&
+              ((transformer as any)["interpolation"]??"build" == "build") &&
               resolveBuildTransformersTo == "constantTransformer"
             ) {
               const value = preResult;

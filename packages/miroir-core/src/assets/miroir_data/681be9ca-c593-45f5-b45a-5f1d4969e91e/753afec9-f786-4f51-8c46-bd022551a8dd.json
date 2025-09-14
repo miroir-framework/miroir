@@ -237,7 +237,6 @@
         },
         "transformerParams": {},
         "expectedValue": {
-          "interpolation": "build",
           "transformerType": "transformer_menu_addItem",
           "menuReference": "",
           "menuItemReference": ""

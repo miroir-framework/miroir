@@ -1049,7 +1049,7 @@ function sqlStringForMapperListToListTransformer(
   const sqlStringForElementTransformer =
     typeof actionRuntimeTransformer.elementTransformer == "object" &&
     Object.hasOwn(actionRuntimeTransformer.elementTransformer, "transformerType") &&
-    (actionRuntimeTransformer.elementTransformer as any)["interpolation"] == "runtime"
+    ((actionRuntimeTransformer.elementTransformer as any)["interpolation"]??"build") == "runtime"
       ? sqlStringForRuntimeTransformer(
           actionRuntimeTransformer.elementTransformer as TransformerForRuntime,
           newPreparedStatementParametersCount,
