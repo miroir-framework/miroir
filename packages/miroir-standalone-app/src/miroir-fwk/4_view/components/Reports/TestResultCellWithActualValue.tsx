@@ -26,7 +26,15 @@ export const TestResultCellWithActualValue: React.FC<TestResultCellWithActualVal
   const cellRef = useRef<HTMLDivElement>(null);
   const { currentTheme } = useMiroirTheme();
   
+  // Check if this test is skipped
+  const isSkipped = testData?.testResult === "skipped" || testData?.status === "skipped";
+  
   const formatDetailedTooltipContent = () => {
+    // Handle skipped tests
+    if (isSkipped) {
+      return `Test: ${testName}\nResult: ⏭ SKIPPED\n\nThis test was skipped during execution.`;
+    }
+    
     if (!testData.fullAssertionsResults) return "No detailed assertion data available";
     
     const assertions = Object.entries(testData.fullAssertionsResults);
@@ -130,8 +138,9 @@ export const TestResultCellWithActualValue: React.FC<TestResultCellWithActualVal
       ? `2px solid ${currentTheme.colors.warning}` 
       : `1px solid transparent`,
     boxShadow: showActualResultContainer ? currentTheme.elevation.medium : 'none',
-    color: currentTheme.colors.text,
+    color: isSkipped ? currentTheme.colors.textSecondary || '#999' : currentTheme.colors.text,
     fontFamily: currentTheme.typography.fontFamily,
+    opacity: isSkipped ? 0.6 : 1,
   };
 
   const tooltipStyle: React.CSSProperties = {
@@ -272,7 +281,11 @@ export const TestResultCellWithActualValue: React.FC<TestResultCellWithActualVal
         onMouseLeave={handleMouseLeave}
         onClick={handleClick}
       >
-        {value}
+        {isSkipped ? (
+          <span>⏭ {value}</span>
+        ) : (
+          value
+        )}
       </div>
       
       {tooltipPortal}

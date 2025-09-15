@@ -226,14 +226,14 @@ afterAll(async () => {
 
 
 
-const extractors: ExtractorOrCombinerRecord = {
-  books: {
-    extractorOrCombinerType: "extractorByEntityReturningObjectList",
-    applicationSection: "data",
-    parentName: "Book",
-    parentUuid: entityBook.uuid,
-  },
-};
+// const extractors: ExtractorOrCombinerRecord = {
+//   books: {
+//     extractorOrCombinerType: "extractorByEntityReturningObjectList",
+//     applicationSection: "data",
+//     parentName: "Book",
+//     parentUuid: entityBook.uuid,
+//   },
+// };
 
 if (shouldSkip) {
   console.log("################################ skipping test suite:", testSuiteName);

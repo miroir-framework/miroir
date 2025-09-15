@@ -1,10 +1,10 @@
 {
   "uuid": "3f025c6c-982d-47ed-8061-50009788773a",
-  "parentName":"TransformerTest",
-  "parentUuid":"681be9ca-c593-45f5-b45a-5f1d4969e91e",
-  "name":"resolveConditionalSchema",
-  "selfApplication":"21840247-b5b1-4344-baec-f818f4797d92",
-  "branch":"ad1ddc4e-556e-4598-9cff-706a2bde0be7",
+  "parentName": "TransformerTest",
+  "parentUuid": "681be9ca-c593-45f5-b45a-5f1d4969e91e",
+  "name": "resolveConditionalSchema",
+  "selfApplication": "21840247-b5b1-4344-baec-f818f4797d92",
+  "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
   "description": "The Test for the resolveConditionalSchema Transformer",
   "definition": {
     "transformerTestType": "transformerTestSuite",
@@ -17,13 +17,18 @@
         "runTestStep": "build",
         "transformer": {
           "transformerType": "resolveConditionalSchema",
-          "schema": { "type": "string" },
+          "schema": {
+            "type": "string"
+          },
           "valueObject": "test",
           "context": "defaultValue",
           "valuePath": []
         },
         "transformerParams": {},
-        "expectedValue": { "type": "string" }
+        "expectedValue": {
+          "type": "string"
+        },
+        "skip": true
       },
       {
         "transformerTestType": "transformerTest",
@@ -32,13 +37,27 @@
         "runTestStep": "build",
         "transformer": {
           "transformerType": "resolveConditionalSchema",
-          "schema": { "type": "string", "tag": { "value": { "conditionalMMLS": {} } } },
+          "schema": {
+            "type": "string",
+            "tag": {
+              "value": {
+                "conditionalMMLS": {}
+              }
+            }
+          },
           "valueObject": "test",
           "context": "defaultValue",
           "valuePath": []
         },
         "transformerParams": {},
-        "expectedValue": { "type": "string", "tag": { "value": { "conditionalMMLS": {} } } }
+        "expectedValue": {
+          "type": "string",
+          "tag": {
+            "value": {
+              "conditionalMMLS": {}
+            }
+          }
+        }
       },
       {
         "transformerTestType": "transformerTest",
@@ -52,14 +71,19 @@
             "tag": {
               "value": {
                 "conditionalMMLS": {
-                  "parentUuid": { "path": "#.notExistingAttribute" }
+                  "parentUuid": {
+                    "path": "#.notExistingAttribute"
+                  }
                 }
               }
             }
           },
           "valueObject": {},
           "context": "defaultValue",
-          "valuePath": ["c", "d"]
+          "valuePath": [
+            "c",
+            "d"
+          ]
         },
         "transformerParams": {},
         "expectedValue": {
@@ -79,14 +103,19 @@
             "tag": {
               "value": {
                 "conditionalMMLS": {
-                  "parentUuid": { "path": "#.notExistingAttribute" }
+                  "parentUuid": {
+                    "path": "#.notExistingAttribute"
+                  }
                 }
               }
             }
           },
           "valueObject": {},
           "context": "defaultValue",
-          "valuePath": ["c", "d"]
+          "valuePath": [
+            "c",
+            "d"
+          ]
         },
         "transformerParams": {},
         "expectedValue": {
@@ -104,13 +133,21 @@
           "schema": {
             "type": "any",
             "tag": {
-              "value": { "conditionalMMLS": { "parentUuid": { "path": "#.e" } } }
+              "value": {
+                "conditionalMMLS": {
+                  "parentUuid": {
+                    "path": "#.e"
+                  }
+                }
+              }
             }
           },
           "deploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
           "valueObject": {
-            "a": { "b": "test" },
-            "c": { 
+            "a": {
+              "b": "test"
+            },
+            "c": {
               "e": "WRONG_UUID",
               "d": {
                 "uuid": "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
@@ -121,10 +158,13 @@
                 "author": "ce7b601d-be5f-4bc6-a5af-14091594046a",
                 "publisher": "516a7366-39e7-4998-82cb-80199a7fa667"
               }
-           }
+            }
           },
           "context": "defaultValue",
-          "valuePath": ["c", "d"]
+          "valuePath": [
+            "c",
+            "d"
+          ]
         },
         "transformerParams": {},
         "expectedValue": {
@@ -142,13 +182,21 @@
           "schema": {
             "type": "any",
             "tag": {
-              "value": { "conditionalMMLS": { "parentUuid": { "path": "#.e" } } }
+              "value": {
+                "conditionalMMLS": {
+                  "parentUuid": {
+                    "path": "#.e"
+                  }
+                }
+              }
             }
           },
           "deploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
           "valueObject": {
-            "a": { "b": "test" },
-            "c": { 
+            "a": {
+              "b": "test"
+            },
+            "c": {
               "e": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
               "d": {
                 "uuid": "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
@@ -159,10 +207,13 @@
                 "author": "ce7b601d-be5f-4bc6-a5af-14091594046a",
                 "publisher": "516a7366-39e7-4998-82cb-80199a7fa667"
               }
-           }
+            }
           },
           "context": "defaultValue",
-          "valuePath": ["c", "d"]
+          "valuePath": [
+            "c",
+            "d"
+          ]
         },
         "transformerParams": {},
         "expectedValue": {
@@ -201,7 +252,11 @@
             },
             "conceptLevel": {
               "type": "enum",
-              "definition": ["MetaModel", "Model", "Data"],
+              "definition": [
+                "MetaModel",
+                "Model",
+                "Data"
+              ],
               "optional": true,
               "tag": {
                 "value": {

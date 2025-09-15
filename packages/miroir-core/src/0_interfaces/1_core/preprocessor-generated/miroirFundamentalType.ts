@@ -3749,7 +3749,7 @@ export type EntityInstancesUuidIndexUuidIndex = {
 export type ______________________________________________tests_____________________________________________ = never;
 export type TestAssertionResult = {
     assertionName: string;
-    assertionResult: "ok" | "error";
+    assertionResult: "ok" | "error" | "skipped";
     assertionExpectedValue?: any;
     assertionActualValue?: any;
 };
@@ -3758,7 +3758,7 @@ export type TestAssertionsResults = {
 };
 export type TestResult = {
     testLabel: string;
-    testResult: "ok" | "error";
+    testResult: "ok" | "error" | "skipped";
     testAssertionsResults: TestAssertionsResults;
 };
 export type TestsResults = {
@@ -3777,6 +3777,7 @@ export type TransformerTest = {
     transformerTestLabel: string;
     transformerName: string;
     testTag?: (string | string[]) | undefined;
+    skip?: boolean | undefined;
     transformer: TransformerForBuildPlusRuntime;
     runTestStep?: string | undefined;
     transformerParams?: {
@@ -3794,6 +3795,7 @@ export type TransformerTest = {
 export type TransformerTestSuite = {
     transformerTestType: "transformerTestSuite";
     transformerTestLabel: string;
+    skip?: boolean | undefined;
     transformerTests: (TransformerTest | TransformerTestSuite)[];
 };
 export type TransformerTestDefinition = {
@@ -3803,6 +3805,7 @@ export type TransformerTestDefinition = {
     selfApplication: string;
     branch: string;
     name?: string | undefined;
+    skip?: boolean | undefined;
     description?: string | undefined;
     definition: TransformerTestSuite;
 };
@@ -14115,16 +14118,16 @@ export const entityInstanceUuid: z.ZodType<EntityInstanceUuid> = z.string();
 export const entityInstancesUuidIndex: z.ZodType<EntityInstancesUuidIndex> = z.record(z.string(),z.lazy(() =>entityInstance));
 export const entityInstancesUuidIndexUuidIndex: z.ZodType<EntityInstancesUuidIndexUuidIndex> = z.record(z.string(),z.lazy(() =>entityInstancesUuidIndex));
 export const ______________________________________________tests_____________________________________________: z.ZodType<______________________________________________tests_____________________________________________> = z.never();
-export const testAssertionResult: z.ZodType<TestAssertionResult> = z.object({assertionName:z.string(), assertionResult:z.enum(["ok","error"]), assertionExpectedValue:z.any(), assertionActualValue:z.any()}).strict();
+export const testAssertionResult: z.ZodType<TestAssertionResult> = z.object({assertionName:z.string(), assertionResult:z.enum(["ok","error","skipped"]), assertionExpectedValue:z.any(), assertionActualValue:z.any()}).strict();
 export const testAssertionsResults: z.ZodType<TestAssertionsResults> = z.record(z.string(),z.lazy(() =>testAssertionResult));
-export const testResult: z.ZodType<TestResult> = z.object({testLabel:z.string(), testResult:z.enum(["ok","error"]), testAssertionsResults:z.lazy(() =>testAssertionsResults)}).strict();
+export const testResult: z.ZodType<TestResult> = z.object({testLabel:z.string(), testResult:z.enum(["ok","error","skipped"]), testAssertionsResults:z.lazy(() =>testAssertionsResults)}).strict();
 export const testsResults: z.ZodType<TestsResults> = z.record(z.string(),z.lazy(() =>testResult));
 export const testSuiteResult: z.ZodType<TestSuiteResult> = z.object({testsResults:z.lazy(() =>testsResults).optional(), testsSuiteResults:z.lazy(() =>innerTestSuitesResults).optional()}).strict();
 export const innerTestSuitesResults: z.ZodType<InnerTestSuitesResults> = z.record(z.string(),z.lazy(() =>testSuiteResult));
 export const testSuitesResults: z.ZodType<TestSuitesResults> = z.lazy(() =>innerTestSuitesResults);
-export const transformerTest: z.ZodType<TransformerTest> = z.object({transformerTestType:z.literal("transformerTest"), transformerTestLabel:z.string(), transformerName:z.string(), testTag:z.union([z.string(), z.array(z.string())]).optional(), transformer:z.lazy(() =>transformerForBuildPlusRuntime), runTestStep:z.string().optional(), transformerParams:z.record(z.string(),z.any()).optional(), transformerRuntimeContext:z.record(z.string(),z.any()).optional(), expectedValue:z.any().optional(), integrationTestExpectedValue:z.any().optional(), unitTestExpectedValue:z.any().optional(), retainAttributes:z.array(z.string()).optional(), ignoreAttributes:z.array(z.string()).optional()}).strict();
-export const transformerTestSuite: z.ZodType<TransformerTestSuite> = z.object({transformerTestType:z.literal("transformerTestSuite"), transformerTestLabel:z.string(), transformerTests:z.array(z.union([z.lazy(() =>transformerTest), z.lazy(() =>transformerTestSuite)]))}).strict();
-export const transformerTestDefinition: z.ZodType<TransformerTestDefinition> = z.object({uuid:z.string(), parentName:z.string().optional(), parentUuid:z.string(), selfApplication:z.string().uuid(), branch:z.string().uuid(), name:z.string().optional(), description:z.string().optional(), definition:z.lazy(() =>transformerTestSuite)}).strict();
+export const transformerTest: z.ZodType<TransformerTest> = z.object({transformerTestType:z.literal("transformerTest"), transformerTestLabel:z.string(), transformerName:z.string(), testTag:z.union([z.string(), z.array(z.string())]).optional(), skip:z.boolean().optional(), transformer:z.lazy(() =>transformerForBuildPlusRuntime), runTestStep:z.string().optional(), transformerParams:z.record(z.string(),z.any()).optional(), transformerRuntimeContext:z.record(z.string(),z.any()).optional(), expectedValue:z.any().optional(), integrationTestExpectedValue:z.any().optional(), unitTestExpectedValue:z.any().optional(), retainAttributes:z.array(z.string()).optional(), ignoreAttributes:z.array(z.string()).optional()}).strict();
+export const transformerTestSuite: z.ZodType<TransformerTestSuite> = z.object({transformerTestType:z.literal("transformerTestSuite"), transformerTestLabel:z.string(), skip:z.boolean().optional(), transformerTests:z.array(z.union([z.lazy(() =>transformerTest), z.lazy(() =>transformerTestSuite)]))}).strict();
+export const transformerTestDefinition: z.ZodType<TransformerTestDefinition> = z.object({uuid:z.string(), parentName:z.string().optional(), parentUuid:z.string(), selfApplication:z.string().uuid(), branch:z.string().uuid(), name:z.string().optional(), skip:z.boolean().optional(), description:z.string().optional(), definition:z.lazy(() =>transformerTestSuite)}).strict();
 export const ______________________________________________entities_____________________________________________: z.ZodType<______________________________________________entities_____________________________________________> = z.never();
 export const adminApplication: z.ZodType<AdminApplication> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), name:z.string(), defaultLabel:z.string(), description:z.string().optional(), selfApplication:z.string().uuid()}).strict();
 export const selfApplication: z.ZodType<SelfApplication> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), name:z.string(), defaultLabel:z.string(), description:z.string().optional()}).strict();

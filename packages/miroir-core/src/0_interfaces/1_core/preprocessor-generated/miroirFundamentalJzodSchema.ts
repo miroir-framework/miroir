@@ -8258,20 +8258,25 @@ export const miroirFundamentalJzodSchema = {
         "type": "object",
         "definition": {
           "assertionName": {
-            "type": "string"
+            "type": "string",
+            "description": "The name of the assertion"
           },
           "assertionResult": {
             "type": "enum",
+            "description": "The result of the assertion",
             "definition": [
               "ok",
-              "error"
+              "error",
+              "skipped"
             ]
           },
           "assertionExpectedValue": {
-            "type": "any"
+            "type": "any",
+            "description": "The expected value of the assertion"
           },
           "assertionActualValue": {
-            "type": "any"
+            "type": "any",
+            "description": "The actual value of the assertion"
           }
         }
       },
@@ -8296,7 +8301,8 @@ export const miroirFundamentalJzodSchema = {
             "type": "enum",
             "definition": [
               "ok",
-              "error"
+              "error",
+              "skipped"
             ]
           },
           "testAssertionsResults": {
@@ -8399,6 +8405,22 @@ export const miroirFundamentalJzodSchema = {
               }
             ]
           },
+          "skip": {
+            "type": "boolean",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 1,
+                "defaultLabel": "Skip",
+                "editable": true,
+                "description": "If true, this test will be skipped when running tests",
+                "initializeTo": {
+                  "type": "value",
+                  "definition": true
+                }
+              }
+            }
+          },
           "transformer": {
             "type": "schemaReference",
             "definition": {
@@ -8472,6 +8494,22 @@ export const miroirFundamentalJzodSchema = {
           },
           "transformerTestLabel": {
             "type": "string"
+          },
+          "skip": {
+            "type": "boolean",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 1,
+                "defaultLabel": "Skip",
+                "editable": true,
+                "description": "If true, this test suite will be skipped when running tests",
+                "initializeTo": {
+                  "type": "value",
+                  "definition": true
+                }
+              }
+            }
           },
           "transformerTests": {
             "type": "array",
@@ -8577,6 +8615,22 @@ export const miroirFundamentalJzodSchema = {
               }
             }
           },
+          "skip": {
+            "type": "boolean",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 1,
+                "defaultLabel": "Skip",
+                "editable": true,
+                "description": "If true, this test will be skipped when running tests",
+                "initializeTo": {
+                  "type": "value",
+                  "definition": true
+                }
+              }
+            }
+          },
           "description": {
             "type": "string",
             "optional": true,
@@ -8628,6 +8682,22 @@ export const miroirFundamentalJzodSchema = {
                         }
                       }
                     ]
+                  },
+                  "skip": {
+                    "type": "boolean",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "id": 1,
+                        "defaultLabel": "Skip",
+                        "editable": true,
+                        "description": "If true, this test will be skipped when running tests",
+                        "initializeTo": {
+                          "type": "value",
+                          "definition": true
+                        }
+                      }
+                    }
                   },
                   "transformer": {
                     "type": "schemaReference",
@@ -8701,6 +8771,22 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "transformerTestLabel": {
                     "type": "string"
+                  },
+                  "skip": {
+                    "type": "boolean",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "id": 1,
+                        "defaultLabel": "Skip",
+                        "editable": true,
+                        "description": "If true, this test suite will be skipped when running tests",
+                        "initializeTo": {
+                          "type": "value",
+                          "definition": true
+                        }
+                      }
+                    }
                   },
                   "transformerTests": {
                     "type": "array",

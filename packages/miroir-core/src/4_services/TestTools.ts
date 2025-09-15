@@ -154,6 +154,44 @@ export async function runTransformerTestInMemory(
   // as there is only 1 assertion per test, we use the test name as the assertion name
   miroirEventTracker.setTestAssertion(transformerTest.transformerTestLabel);
 
+  // Check if test should be skipped
+  if (transformerTest.skip) {
+    log.info(`⏭️  Skipping test: ${assertionName}`);
+    
+    // Use the explicitly passed testAssertionPath or fall back to current tracker path
+    const currentTestAssertionPath = testAssertionPath || miroirEventTracker.getCurrentTestAssertionPath();
+    if (!currentTestAssertionPath) {
+      throw new Error("runTransformerTestInMemory called without testAssertionPath and no currentTestAssertionPath available, cannot set test assertion result");
+    }
+
+    const testAssertionResult: TestAssertionResult = {
+      assertionName,
+      assertionResult: "skipped",
+    };
+    
+    miroirEventTracker.setTestAssertionResult(currentTestAssertionPath, testAssertionResult);
+
+    // End tracking individual test execution if tracker was used
+    if (miroirEventTracker && testTrackingId && testAssertionTrackingId) {
+      try {
+        miroirEventTracker.endEvent(testTrackingId, undefined);
+        miroirEventTracker.endEvent(testAssertionTrackingId, undefined);
+        log.info(`🧪 Ended tracking test ${assertionName} with ID: ${testTrackingId}, result: skipped`);
+      } catch (error) {
+        console.warn(`Failed to end tracking test ${testName}:`, error);
+        console.warn(`Failed to end tracking test assertion ${assertionName}:`, error);
+      } finally {
+        miroirEventTracker.setTest(undefined);
+        miroirEventTracker.setTestAssertion(undefined);
+      }
+    }
+
+    miroirEventTracker.setTestAssertion(undefined);
+    log.info("############################ test", assertionName, "SKIPPED");
+    miroirEventTracker.setTest(undefined);
+    return Promise.resolve();
+  }
+
   // const transformer: TransformerForBuild | TransformerForRuntime = transformerTest.transformer;
   const transformer: TransformerForBuildPlusRuntime = transformerTest.transformer;
   const runtimeTransformer: TransformerForRuntime = transformer as any;
@@ -343,13 +381,18 @@ export async function runTransformerTestSuite(
   ) => Promise<void>,
   modelEnvironment: MiroirModelEnvironment,
   miroirEventTracker: MiroirEventTrackerInterface, // Optional unified tracker for test execution tracking
+  parentSkip?: boolean, // Skip flag inherited from parent test suite
 ) {
   // const testSuitePath: string[] = [];
   const testSuitePathAsString = MiroirEventTracker.testPathName(testSuitePath);
   const testSuiteName =
     transformerTestSuite.transformerTestLabel ?? transformerTestSuite.transformerTestType;
+    
+  // Determine if this suite should be skipped (either its own skip flag or inherited from parent)
+  const shouldSkipSuite = transformerTestSuite.skip || parentSkip;
+    
   log.info(
-    `@@@@@@@@@@@@@@@@@@@@ runTransformerTestSuite running transformer test suite called "${testSuiteName}" transformerTestType=${transformerTestSuite.transformerTestType} filter=${JSON.stringify(filter)}`
+    `@@@@@@@@@@@@@@@@@@@@ runTransformerTestSuite running transformer test suite called "${testSuiteName}" transformerTestType=${transformerTestSuite.transformerTestType} skip=${shouldSkipSuite} filter=${JSON.stringify(filter)}`
   );
   if (!localVitest.expect) {
     throw new Error(
@@ -442,13 +485,18 @@ export async function runTransformerTestSuite(
     // Sequentially run each selected test/suite instead of describe.each (which is parallel)
     for (const transformerTestParam of selectedTests) {
       if (transformerTestParam.transformerTestType === "transformerTest") {
+        // Inherit skip flag from parent suite to child test
+        const effectiveTransformerTest: TransformerTest = shouldSkipSuite 
+          ? { ...transformerTestParam, skip: true }
+          : transformerTestParam;
+          
         if (
           !innerFilter ||
           (Array.isArray(innerFilter) &&
             innerFilter.includes(transformerTestParam.transformerTestLabel))
         ) {
           log.info(
-            `runTransformerTestSuite calling further test ${transformerTestParam.transformerTestLabel} in suite ${testSuitePath}`
+            `runTransformerTestSuite calling further test ${transformerTestParam.transformerTestLabel} in suite ${testSuitePath} (skip: ${effectiveTransformerTest.skip})`
           );
           await localVitest.test(
             transformerTestParam.transformerTestLabel,
@@ -463,7 +511,7 @@ export async function runTransformerTestSuite(
               await runTransformerTest(
                 localVitest,
                 [...testSuitePath, transformerTestParam.transformerTestLabel],
-                transformerTestParam,
+                effectiveTransformerTest,
                 modelEnvironment,
                 miroirEventTracker,
                 testAssertionPath
@@ -487,7 +535,8 @@ export async function runTransformerTestSuite(
           { testList: innerFilter }, // filter
           runTransformerTest,
           modelEnvironment,
-          miroirEventTracker
+          miroirEventTracker,
+          shouldSkipSuite // Pass down the skip flag to child suites
         );
       }
     }
@@ -839,6 +888,9 @@ export const displayTestSuiteResultsDetails = async (
   let passedTestSuites = 0;
   let passedTests = 0;
   let passedAssertions = 0;
+  let skippedTestSuites = 0;
+  let skippedTests = 0;
+  let skippedAssertions = 0;
 
   // Collect all test information for processing
   const collectTestInfo = (
@@ -847,7 +899,7 @@ export const displayTestSuiteResultsDetails = async (
   ): Array<{
     type: 'suite' | 'test' | 'assertion';
     path: string;
-    status: 'ok' | 'error';
+    status: 'ok' | 'error' | 'skipped';
     assertion?: TestAssertionResult;
   }> => {
     const testInfo: Array<any> = [];
@@ -858,13 +910,18 @@ export const displayTestSuiteResultsDetails = async (
         const currentPath = [...pathPrefix, suiteName];
         totalTestSuites++;
         
-        // Determine suite status (ok if all tests in suite pass)
+        // Determine suite status (ok if all tests in suite pass, skipped if any are skipped, error if any fail)
         const hasFailedTests = suiteResult.testsResults && 
-          Object.values(suiteResult.testsResults).some(test => test.testResult !== "ok");
-        const suiteStatus = hasFailedTests ? "error" : "ok";
+          Object.values(suiteResult.testsResults).some(test => test.testResult === "error");
+        const hasSkippedTests = suiteResult.testsResults && 
+          Object.values(suiteResult.testsResults).some(test => test.testResult === "skipped");
+        
+        const suiteStatus = hasFailedTests ? "error" : hasSkippedTests ? "skipped" : "ok";
         
         if (suiteStatus === "ok") {
           passedTestSuites++;
+        } else if (suiteStatus === "skipped") {
+          skippedTestSuites++;
         }
         
         // Recursively collect from child suites
@@ -878,10 +935,12 @@ export const displayTestSuiteResultsDetails = async (
         totalTests++;
         
         const testPath = [...pathPrefix, testName].join(" > ");
-        const testStatus = testResult.testResult === "ok" ? "ok" : "error";
+        const testStatus = testResult.testResult === "ok" ? "ok" : testResult.testResult === "skipped" ? "skipped" : "error";
         
         if (testStatus === "ok") {
           passedTests++;
+        } else if (testStatus === "skipped") {
+          skippedTests++;
         }
         
         // Process assertions for this test
@@ -890,10 +949,12 @@ export const displayTestSuiteResultsDetails = async (
         
         for (const [assertionName, assertion] of assertions) {
           const assertionPath = [...pathPrefix, testName, assertionName].join(" > ");
-          const assertionStatus = assertion.assertionResult === "ok" ? "ok" : "error";
+          const assertionStatus = assertion.assertionResult === "ok" ? "ok" : assertion.assertionResult === "skipped" ? "skipped" : "error";
           
           if (assertionStatus === "ok") {
             passedAssertions++;
+          } else if (assertionStatus === "skipped") {
+            skippedAssertions++;
           }
           
           testInfo.push({
@@ -915,10 +976,11 @@ export const displayTestSuiteResultsDetails = async (
   // Display detailed assertion results
   for (const item of allTestInfo) {
     if (item.type === 'assertion') {
-      const symbol = item.status === "ok" ? chalk.green("✓") : chalk.red("✗");
-      const statusText = item.status === "ok" ? chalk.green("[ok]") : chalk.red("[error]");
+      const symbol = item.status === "ok" ? chalk.green("✓") : item.status === "skipped" ? chalk.gray("⏭") : chalk.red("✗");
+      const statusText = item.status === "ok" ? chalk.green("[ok]") : item.status === "skipped" ? chalk.gray("[skipped]") : chalk.red("[error]");
       
-      log.info(`${symbol} ${item.path} ${statusText}`);
+      const displayPath = item.status === "skipped" ? chalk.gray(item.path) : item.path;
+      log.info(`${symbol} ${displayPath} ${statusText}`);
       
       // Show detailed assertion results for failed assertions
       if (item.status === "error" && item.assertion) {
@@ -948,8 +1010,12 @@ export const displayTestSuiteResultsDetails = async (
     log.info(chalk.bold("Test Suites:"));
     const suitePassRate = totalTestSuites > 0 ? ((passedTestSuites / totalTestSuites) * 100).toFixed(1) : "0.0";
     log.info(`  ${chalk.green("✓ Passed:")} ${passedTestSuites}/${totalTestSuites} (${suitePassRate}%)`);
-    if (totalTestSuites - passedTestSuites > 0) {
-      log.info(`  ${chalk.red("✗ Failed:")} ${totalTestSuites - passedTestSuites}/${totalTestSuites}`);
+    if (skippedTestSuites > 0) {
+      const suiteSkipRate = ((skippedTestSuites / totalTestSuites) * 100).toFixed(1);
+      log.info(`  ${chalk.gray("⏭ Skipped:")} ${skippedTestSuites}/${totalTestSuites} (${suiteSkipRate}%)`);
+    }
+    if (totalTestSuites - passedTestSuites - skippedTestSuites > 0) {
+      log.info(`  ${chalk.red("✗ Failed:")} ${totalTestSuites - passedTestSuites - skippedTestSuites}/${totalTestSuites}`);
     }
   }
   
@@ -957,20 +1023,28 @@ export const displayTestSuiteResultsDetails = async (
     log.info(chalk.bold("\nTests:"));
     const testPassRate = totalTests > 0 ? ((passedTests / totalTests) * 100).toFixed(1) : "0.0";
     log.info(`  ${chalk.green("✓ Passed:")} ${passedTests}/${totalTests} (${testPassRate}%)`);
-    if (totalTests - passedTests > 0) {
-      log.info(`  ${chalk.red("✗ Failed:")} ${totalTests - passedTests}/${totalTests}`);
+    if (skippedTests > 0) {
+      const testSkipRate = ((skippedTests / totalTests) * 100).toFixed(1);
+      log.info(`  ${chalk.gray("⏭ Skipped:")} ${skippedTests}/${totalTests} (${testSkipRate}%)`);
+    }
+    if (totalTests - passedTests - skippedTests > 0) {
+      log.info(`  ${chalk.red("✗ Failed:")} ${totalTests - passedTests - skippedTests}/${totalTests}`);
     }
   }
   
   log.info(chalk.bold("\nAssertions (Detailed):"));
   const assertionPassRate = totalAssertions > 0 ? ((passedAssertions / totalAssertions) * 100).toFixed(1) : "0.0";
   log.info(`  ${chalk.green("✓ Passed:")} ${passedAssertions}/${totalAssertions} (${assertionPassRate}%)`);
-  if (totalAssertions - passedAssertions > 0) {
-    log.info(`  ${chalk.red("✗ Failed:")} ${totalAssertions - passedAssertions}/${totalAssertions}`);
+  if (skippedAssertions > 0) {
+    const assertionSkipRate = ((skippedAssertions / totalAssertions) * 100).toFixed(1);
+    log.info(`  ${chalk.gray("⏭ Skipped:")} ${skippedAssertions}/${totalAssertions} (${assertionSkipRate}%)`);
+  }
+  if (totalAssertions - passedAssertions - skippedAssertions > 0) {
+    log.info(`  ${chalk.red("✗ Failed:")} ${totalAssertions - passedAssertions - skippedAssertions}/${totalAssertions}`);
   }
   
   // Overall status
-  const overallStatus = (passedTests === totalTests && passedAssertions === totalAssertions) ? "PASSED" : "FAILED";
+  const overallStatus = (passedTests + skippedTests === totalTests && passedAssertions + skippedAssertions === totalAssertions) ? "PASSED" : "FAILED";
   const statusColor = overallStatus === "PASSED" ? chalk.green : chalk.red;
   log.info(chalk.bold(`\nOverall Status: ${statusColor(overallStatus)}`));
   
@@ -1000,6 +1074,9 @@ export const transformerTestsDisplayResults = async (
     let passedTestSuites = 0;
     let passedTests = 0;
     let passedAssertions = 0;
+    let skippedTestSuites = 0;
+    let skippedTests = 0;
+    let skippedAssertions = 0;
     
     // Collect all test information for processing
     const collectTestInfo = (
@@ -1008,7 +1085,7 @@ export const transformerTestsDisplayResults = async (
     ): Array<{
       type: 'suite' | 'test';
       path: string;
-      status: 'ok' | 'error';
+      status: 'ok' | 'error' | 'skipped';
       failedAssertions?: string[];
     }> => {
       const testInfo: Array<any> = [];
@@ -1019,12 +1096,20 @@ export const transformerTestsDisplayResults = async (
           const currentPath = [...pathPrefix, suiteName];
           totalTestSuites++;
           
-          // Determine suite status (ok if all tests in suite pass)
-          const hasFailedTests = suiteResult.testsResults && 
-            Object.values(suiteResult.testsResults).some(test => test.testResult !== "ok");
-          const suiteStatus = hasFailedTests ? "error" : "ok";
+          // Determine suite status (ok if all tests in suite pass, skipped if all are skipped)
+          const testResults = suiteResult.testsResults ? Object.values(suiteResult.testsResults) : [];
+          const hasFailedTests = testResults.some(test => test.testResult === "error");
+          const hasPassedTests = testResults.some(test => test.testResult === "ok");
+          const allSkipped = testResults.length > 0 && testResults.every(test => test.testResult === "skipped");
           
-          if (suiteStatus === "ok") {
+          let suiteStatus: 'ok' | 'error' | 'skipped';
+          if (hasFailedTests) {
+            suiteStatus = "error";
+          } else if (allSkipped) {
+            suiteStatus = "skipped";
+            skippedTestSuites++;
+          } else {
+            suiteStatus = "ok";
             passedTestSuites++;
           }
           
@@ -1039,10 +1124,16 @@ export const transformerTestsDisplayResults = async (
           totalTests++;
           
           const testPath = [...pathPrefix, testName].join(" > ");
-          const testStatus = testResult.testResult === "ok" ? "ok" : "error";
+          let testStatus: 'ok' | 'error' | 'skipped';
           
-          if (testStatus === "ok") {
+          if (testResult.testResult === "skipped") {
+            testStatus = "skipped";
+            skippedTests++;
+          } else if (testResult.testResult === "ok") {
+            testStatus = "ok";
             passedTests++;
+          } else {
+            testStatus = "error";
           }
           
           // Count assertions for this test
@@ -1050,11 +1141,18 @@ export const transformerTestsDisplayResults = async (
           totalAssertions += assertions.length;
           
           const failedAssertions = assertions
-            .filter(([_, assertion]) => assertion.assertionResult !== "ok")
+            .filter(([_, assertion]) => assertion.assertionResult === "error")
             .map(([name, _]) => name);
+            
+          const skippedAssertionsCount = assertions
+            .filter(([_, assertion]) => assertion.assertionResult === "skipped").length;
+            
+          const passedAssertionsCount = assertions
+            .filter(([_, assertion]) => assertion.assertionResult === "ok").length;
           
-          // Count passed assertions
-          passedAssertions += assertions.length - failedAssertions.length;
+          // Count passed and skipped assertions
+          passedAssertions += passedAssertionsCount;
+          skippedAssertions += skippedAssertionsCount;
           
           testInfo.push({
             type: 'test',
@@ -1074,10 +1172,22 @@ export const transformerTestsDisplayResults = async (
     // Display test results
     for (const test of allTestInfo) {
       if (test.type === 'test') {
-        const symbol = test.status === "ok" ? chalk.green("✓") : chalk.red("✗");
-        const statusText = test.status === "ok" ? chalk.green("[ok]") : chalk.red("[error]");
+        let symbol: string;
+        let statusText: string;
         
-        log.info(`${symbol} ${test.path} ${statusText}`);
+        if (test.status === "ok") {
+          symbol = chalk.green("✓");
+          statusText = chalk.green("[ok]");
+        } else if (test.status === "skipped") {
+          symbol = chalk.gray("⏭");
+          statusText = chalk.gray("[skipped]");
+        } else {
+          symbol = chalk.red("✗");
+          statusText = chalk.red("[error]");
+        }
+        
+        const displayPath = test.status === "skipped" ? chalk.gray(test.path) : test.path;
+        log.info(`${symbol} ${displayPath} ${statusText}`);
         
         // Show failed assertions if any
         if (test.failedAssertions && test.failedAssertions.length > 0) {
@@ -1091,29 +1201,43 @@ export const transformerTestsDisplayResults = async (
     log.info(chalk.bold.blue("                                        TEST EXECUTION SUMMARY"));
     log.info(chalk.bold("═══════════════════════════════════════════════════════════════════════════════════════════════════"));
     
-    log.info(chalk.bold("Test Suites:"));
-    const suitePassRate = totalTestSuites > 0 ? ((passedTestSuites / totalTestSuites) * 100).toFixed(1) : "0.0";
-    log.info(`  ${chalk.green("✓ Passed:")} ${passedTestSuites}/${totalTestSuites} (${suitePassRate}%)`);
-    if (totalTestSuites - passedTestSuites > 0) {
-      log.info(`  ${chalk.red("✗ Failed:")} ${totalTestSuites - passedTestSuites}/${totalTestSuites}`);
+    if (totalTestSuites > 0) {
+      log.info(chalk.bold("Test Suites:"));
+      const suitePassRate = totalTestSuites > 0 ? ((passedTestSuites / totalTestSuites) * 100).toFixed(1) : "0.0";
+      log.info(`  ${chalk.green("✓ Passed:")} ${passedTestSuites}/${totalTestSuites} (${suitePassRate}%)`);
+      if (skippedTestSuites > 0) {
+        const suiteSkipRate = ((skippedTestSuites / totalTestSuites) * 100).toFixed(1);
+        log.info(`  ${chalk.gray("⏭ Skipped:")} ${skippedTestSuites}/${totalTestSuites} (${suiteSkipRate}%)`);
+      }
+      if (totalTestSuites - passedTestSuites - skippedTestSuites > 0) {
+        log.info(`  ${chalk.red("✗ Failed:")} ${totalTestSuites - passedTestSuites - skippedTestSuites}/${totalTestSuites}`);
+      }
     }
     
     log.info(chalk.bold("\nTests:"));
     const testPassRate = totalTests > 0 ? ((passedTests / totalTests) * 100).toFixed(1) : "0.0";
     log.info(`  ${chalk.green("✓ Passed:")} ${passedTests}/${totalTests} (${testPassRate}%)`);
-    if (totalTests - passedTests > 0) {
-      log.info(`  ${chalk.red("✗ Failed:")} ${totalTests - passedTests}/${totalTests}`);
+    if (skippedTests > 0) {
+      const testSkipRate = ((skippedTests / totalTests) * 100).toFixed(1);
+      log.info(`  ${chalk.gray("⏭ Skipped:")} ${skippedTests}/${totalTests} (${testSkipRate}%)`);
+    }
+    if (totalTests - passedTests - skippedTests > 0) {
+      log.info(`  ${chalk.red("✗ Failed:")} ${totalTests - passedTests - skippedTests}/${totalTests}`);
     }
     
     log.info(chalk.bold("\nAssertions:"));
     const assertionPassRate = totalAssertions > 0 ? ((passedAssertions / totalAssertions) * 100).toFixed(1) : "0.0";
     log.info(`  ${chalk.green("✓ Passed:")} ${passedAssertions}/${totalAssertions} (${assertionPassRate}%)`);
-    if (totalAssertions - passedAssertions > 0) {
-      log.info(`  ${chalk.red("✗ Failed:")} ${totalAssertions - passedAssertions}/${totalAssertions}`);
+    if (skippedAssertions > 0) {
+      const assertionSkipRate = ((skippedAssertions / totalAssertions) * 100).toFixed(1);
+      log.info(`  ${chalk.gray("⏭ Skipped:")} ${skippedAssertions}/${totalAssertions} (${assertionSkipRate}%)`);
+    }
+    if (totalAssertions - passedAssertions - skippedAssertions > 0) {
+      log.info(`  ${chalk.red("✗ Failed:")} ${totalAssertions - passedAssertions - skippedAssertions}/${totalAssertions}`);
     }
     
     // Overall status
-    const overallStatus = (passedTests === totalTests && passedAssertions === totalAssertions) ? "PASSED" : "FAILED";
+    const overallStatus = (passedTests + skippedTests === totalTests && passedAssertions + skippedAssertions === totalAssertions) ? "PASSED" : "FAILED";
     const statusColor = overallStatus === "PASSED" ? chalk.green : chalk.red;
     log.info(chalk.bold(`\nOverall Status: ${statusColor(overallStatus)}`));
     

@@ -419,10 +419,17 @@ export class MiroirEventTracker implements MiroirEventTrackerInterface {
       // "old this.testAssertionsResults",
       // JSON.stringify(this.testAssertionsResults, null, 2)
     );
-    console.log(testAssertionResult?.assertionResult == "ok"
-        ? chalk.green(JSON.stringify(testAssertionResult, null, 2))
-        : chalk.red(JSON.stringify(testAssertionResult, null, 2))
-    );
+    
+    // Color output based on assertion result
+    let coloredOutput;
+    if (testAssertionResult?.assertionResult == "ok") {
+      coloredOutput = chalk.green(JSON.stringify(testAssertionResult, null, 2));
+    } else if (testAssertionResult?.assertionResult == "skipped") {
+      coloredOutput = chalk.gray("⏭ " + JSON.stringify(testAssertionResult, null, 2));
+    } else {
+      coloredOutput = chalk.red(JSON.stringify(testAssertionResult, null, 2));
+    }
+    console.log(coloredOutput);
 
 
     if (testAssertionPath.length === 0) {
@@ -477,10 +484,28 @@ export class MiroirEventTracker implements MiroirEventTrackerInterface {
         current.testAssertionsResults[testAssertionResult.assertionName] = testAssertionResult;
         
         // Update the test result based on assertion results
-        const hasErrors = Object.values(current.testAssertionsResults).some(
+        const assertionResults = Object.values(current.testAssertionsResults);
+        const hasErrors = assertionResults.some(
           (result: any) => result.assertionResult === "error"
         );
-        current.testResult = hasErrors ? "error" : "ok";
+        const hasSkipped = assertionResults.some(
+          (result: any) => result.assertionResult === "skipped"
+        );
+        const allSkipped = assertionResults.every(
+          (result: any) => result.assertionResult === "skipped"
+        );
+        
+        // Priority: error > skipped > ok
+        if (hasErrors) {
+          current.testResult = "error";
+        } else if (allSkipped) {
+          current.testResult = "skipped";
+        } else if (hasSkipped) {
+          // Mixed results: some passed, some skipped
+          current.testResult = "ok"; // Could be "mixed" but keeping "ok" for now
+        } else {
+          current.testResult = "ok";
+        }
         break;
       }
     }

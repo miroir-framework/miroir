@@ -2643,24 +2643,25 @@ export function transformer_extended_apply<T extends MiroirModelEnvironment>(
   transformerParams: T,
   contextResults?: Record<string, any>,
 ): TransformerReturnType<any> {
-  // log.info(
-  //   "transformer_extended_apply called for label",
-  //   label,
-  //   "step:",
-  //   step,
-  //   "transformer.interpolation:",
-  //   (transformer as any)?.interpolation ?? "build",
-  //   ((transformer as any)?.interpolation ?? "build") == step,
-  //   typeof transformer,
-  //   "transformer",
-  //   JSON.stringify(transformer, null, 2),
-  //   "queryParams elements",
-  //   Object.keys(transformerParams ?? {})
-  //   // // JSON.stringify(Object.keys(queryParams??{}), null, 2),
-  //   // "contextResults elements",
-  //   // Object.keys(contextResults??{})
-  //   // // JSON.stringify(Object.keys(contextResults??{}), null, 2)
-  // );
+  log.info(
+    "transformer_extended_apply called for label",
+    label,
+    "step:",
+    step,
+    "transformer.interpolation:",
+    (transformer as any)?.interpolation ?? "build",
+    " step==transformer.interpolation ",
+    ((transformer as any)?.interpolation ?? "build") == step,
+    typeof transformer,
+    "transformer",
+    JSON.stringify(transformer, null, 2),
+    // "queryParams elements",
+    // Object.keys(transformerParams ?? {})
+    // // JSON.stringify(Object.keys(queryParams??{}), null, 2),
+    // "contextResults elements",
+    // Object.keys(contextResults??{})
+    // // JSON.stringify(Object.keys(contextResults??{}), null, 2)
+  );
   let result: TransformerReturnType<any> = undefined as any;
 
   if (typeof transformer == "object" && transformer != null) {
@@ -2681,12 +2682,13 @@ export function transformer_extended_apply<T extends MiroirModelEnvironment>(
     } else {
       // TODO: improve test, refuse interpretation of build transformer in runtime step
       const newResolveBuildTransformersTo: ResolveBuildTransformersTo =
-        ((transformer as any)["interpolation"]??"build" == "build") &&
+        // ((transformer as any)["interpolation"]??"build" == "build") &&
+        ((transformer as any)["interpolation"]??"build" == step) &&
         resolveBuildTransformersTo == "constantTransformer"
           ? "value" // HACK!
           : resolveBuildTransformersTo;
       if (transformer["transformerType"] != undefined) {
-        if (step == "runtime" || ((transformer as any)["interpolation"]??"build" == "build")) {
+        if (step == "runtime" || (((transformer as any)["interpolation"]??"build") == "build")) {
           // log.info("transformer_extended_apply interpreting transformer!");
           let preResult;
           const foundApplicationTransformer =

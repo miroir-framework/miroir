@@ -38,23 +38,22 @@ export function generateTestReport(
 ) {
   let resultText = `=== ${testSuiteKey} Test Results ===\n\n`;
   
-  interface StructuredTestResult {
-    testName: string;
-    testResult: "ok" | "error";
-    status: "✅ Pass" | "❌ Fail";
-    failedAssertions?: string[];
-    assertionCount: number;
-    assertions: string; // Summary text for assertions
-    fullAssertionsResults?: any; // Include full assertion results for detailed hover/diff view
-  }
-  
-  const structuredResults: StructuredTestResult[] = [];
+interface StructuredTestResult {
+  testName: string;
+  testResult: "ok" | "error" | "skipped";
+  status: string;
+  failedAssertions: string[] | undefined;
+  assertionCount: number;
+  assertions: string;
+  fullAssertionsResults: any;
+}  const structuredResults: StructuredTestResult[] = [];
   
   // Statistics
   let totalTestSuites = 0;
   let totalTests = 0;
   let passedTestSuites = 0;
   let passedTests = 0;
+  let skippedTests = 0;
   
   // Collect all test information for processing (similar to transformerTestsDisplayResults)
   const collectTestInfo = (
@@ -63,7 +62,7 @@ export function generateTestReport(
   ): Array<{
     type: 'suite' | 'test';
     path: string;
-    status: 'ok' | 'error';
+    status: 'ok' | 'error' | 'skipped';
     failedAssertions?: string[];
     assertionCount?: number;
     fullAssertionsResults?: any; // Include full assertion results
@@ -76,12 +75,19 @@ export function generateTestReport(
         const currentPath = [...pathPrefix, suiteName];
         totalTestSuites++;
         
-        // Determine suite status (ok if all tests in suite pass)
-        const hasFailedTests = suiteResult.testsResults && 
-          Object.values(suiteResult.testsResults).some(test => test.testResult !== "ok");
-        const suiteStatus = hasFailedTests ? "error" : "ok";
+        // Determine suite status (ok if all tests in suite pass, skipped if all are skipped)
+        const testResults = suiteResult.testsResults ? Object.values(suiteResult.testsResults) : [];
+        const hasFailedTests = testResults.some(test => test.testResult === "error");
+        const hasPassedTests = testResults.some(test => test.testResult === "ok");
+        const allSkipped = testResults.length > 0 && testResults.every(test => test.testResult === "skipped");
         
-        if (suiteStatus === "ok") {
+        let suiteStatus: 'ok' | 'error' | 'skipped';
+        if (hasFailedTests) {
+          suiteStatus = "error";
+        } else if (allSkipped) {
+          suiteStatus = "skipped";
+        } else {
+          suiteStatus = "ok";
           passedTestSuites++;
         }
         
@@ -96,16 +102,23 @@ export function generateTestReport(
         totalTests++;
         
         const testPath = [...pathPrefix, testName].join(" > ");
-        const testStatus = testResult.testResult === "ok" ? "ok" : "error";
         
-        if (testStatus === "ok") {
+        // Properly handle skipped, ok, and error status
+        let testStatus: 'ok' | 'error' | 'skipped';
+        if (testResult.testResult === "skipped") {
+          testStatus = "skipped";
+          skippedTests++;
+        } else if (testResult.testResult === "ok") {
+          testStatus = "ok";
           passedTests++;
+        } else {
+          testStatus = "error";
         }
         
         // Count assertions for this test
         const assertions = Object.entries(testResult.testAssertionsResults);
         const failedAssertions = assertions
-          .filter(([_, assertion]) => assertion.assertionResult !== "ok")
+          .filter(([_, assertion]) => assertion.assertionResult === "error")
           .map(([name, _]) => name);
         
         testInfo.push({
@@ -128,8 +141,20 @@ export function generateTestReport(
   // Generate text results focusing on tests (not detailed assertions)
   for (const test of allTestInfo) {
     if (test.type === 'test') {
-      const symbol = test.status === "ok" ? "✅" : "❌";
-      const statusText = test.status === "ok" ? "Pass" : "Fail";
+      let symbol, statusText, statusDisplay;
+      if (test.status === "skipped") {
+        symbol = "⏭";
+        statusText = "Skipped";
+        statusDisplay = "⏭ Skipped";
+      } else if (test.status === "ok") {
+        symbol = "✅";
+        statusText = "Pass";
+        statusDisplay = "✅ Pass";
+      } else {
+        symbol = "❌";
+        statusText = "Fail";
+        statusDisplay = "❌ Fail";
+      }
       
       resultText += `${symbol} ${test.path} - ${statusText}\n`;
       
@@ -137,12 +162,14 @@ export function generateTestReport(
       structuredResults.push({
         testName: test.path,
         testResult: test.status,
-        status: test.status === "ok" ? "✅ Pass" : "❌ Fail",
+        status: statusDisplay,
         failedAssertions: test.failedAssertions,
         assertionCount: test.assertionCount || 0,
-        assertions: test.failedAssertions && test.failedAssertions.length > 0 
-          ? `${test.failedAssertions.length} failed: ${test.failedAssertions.join(", ")}` 
-          : `All ${test.assertionCount || 0} assertions passed`,
+        assertions: test.status === "skipped" 
+          ? "Test skipped"
+          : test.failedAssertions && test.failedAssertions.length > 0 
+            ? `${test.failedAssertions.length} failed: ${test.failedAssertions.join(", ")}` 
+            : `All ${test.assertionCount || 0} assertions passed`,
         fullAssertionsResults: test.fullAssertionsResults // Include full assertion results for hover/diff functionality
       });
       
@@ -157,12 +184,26 @@ export function generateTestReport(
   resultText += "\n=== Test Summary ===\n";
   if (totalTestSuites > 0) {
     const suitePassRate = totalTestSuites > 0 ? ((passedTestSuites / totalTestSuites) * 100).toFixed(1) : "0.0";
-    resultText += `Test Suites: ${passedTestSuites}/${totalTestSuites} passed (${suitePassRate}%)\n`;
+    resultText += `Test Suites: ✓ Passed: ${passedTestSuites}/${totalTestSuites} (${suitePassRate}%)\n`;
   }
   
   if (totalTests > 0) {
     const testPassRate = totalTests > 0 ? ((passedTests / totalTests) * 100).toFixed(1) : "0.0";
-    resultText += `Tests: ${passedTests}/${totalTests} passed (${testPassRate}%)\n`;
+    const failedTests = totalTests - passedTests - skippedTests;
+    
+    let testSummary = `Tests: ✓ Passed: ${passedTests}/${totalTests} (${testPassRate}%)`;
+    
+    if (failedTests > 0) {
+      const failedRate = ((failedTests / totalTests) * 100).toFixed(1);
+      testSummary += `, ✗ Failed: ${failedTests}/${totalTests} (${failedRate}%)`;
+    }
+    
+    if (skippedTests > 0) {
+      const skippedRate = ((skippedTests / totalTests) * 100).toFixed(1);
+      testSummary += `, ⏭ Skipped: ${skippedTests}/${totalTests} (${skippedRate}%)`;
+    }
+    
+    resultText += testSummary + "\n";
   }
   
   const overallStatus = (passedTests === totalTests) ? "PASSED" : "FAILED";

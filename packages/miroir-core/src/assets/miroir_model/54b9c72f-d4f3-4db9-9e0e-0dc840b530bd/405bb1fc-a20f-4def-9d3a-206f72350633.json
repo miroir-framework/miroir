@@ -88,6 +88,22 @@
           }
         }
       },
+      "skip": {
+        "type": "boolean",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 1,
+            "defaultLabel": "Skip",
+            "editable": true,
+            "description": "If true, this test will be skipped when running tests",
+            "initializeTo": {
+              "type": "value",
+              "definition": true
+            }
+          }
+        }
+      },
       "description": {
         "type": "string",
         "optional": true,
@@ -139,6 +155,22 @@
                     }
                   }
                 ]
+              },
+              "skip": {
+                "type": "boolean",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "Skip",
+                    "editable": true,
+                    "description": "If true, this test will be skipped when running tests",
+                    "initializeTo": {
+                      "type": "value",
+                      "definition": true
+                    }
+                  }
+                }
               },
               "transformer": {
                 "type": "schemaReference",
@@ -212,6 +244,22 @@
               },
               "transformerTestLabel": {
                 "type": "string"
+              },
+              "skip": {
+                "type": "boolean",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "Skip",
+                    "editable": true,
+                    "description": "If true, this test suite will be skipped when running tests",
+                    "initializeTo": {
+                      "type": "value",
+                      "definition": true
+                    }
+                  }
+                }
               },
               "transformerTests": {
                 "type": "array",
