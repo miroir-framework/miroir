@@ -140,7 +140,7 @@ interface StructuredTestResult {
   };
   
   // Collect all test information
-  const allTestInfo = collectTestInfo(allResults);
+  const allTestInfo = collectTestInfo(allResults, [testSuiteKey]);
   
   // Generate text results focusing on tests (not detailed assertions)
   for (const test of allTestInfo) {
