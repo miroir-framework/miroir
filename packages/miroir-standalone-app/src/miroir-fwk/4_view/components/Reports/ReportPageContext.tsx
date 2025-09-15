@@ -10,9 +10,8 @@ import { useMiroirContextService } from "../../MiroirContextReactProvider";
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ReportPageContext")
-).then((logger: LoggerInterface) => {
-  log = logger;
-});
+).then((logger: LoggerInterface) => {log = logger});
+
 
 // Document Outline Context
 export interface ReportPageContextType {
@@ -35,7 +34,7 @@ export class ReportPageContextDefault implements ReportPageContextType {
     public isNodeFolded: (path: (string | number)[]) => boolean,
     public setNodeFolded: (path: (string | number)[], folded: FoldAction) => void,
     public foldAllChildren: (path: (string | number)[], childKeys: (string | number)[]) => void,
-    public unfoldAllChildren: (path: (string | number)[], childKeys: (string | number)[]) => void
+    public unfoldAllChildren: (path: (string | number)[], childKeys: (string | number)[]) => void,
   ) {
     // Empty constructor
   }
@@ -48,7 +47,7 @@ export function ReportPageContextProvider(props: {
 }) {
   const [foldedObjectAttributeOrArrayItems, setFoldedObjectAttributeOrArrayItems] =
     useState<FoldedStateTree>({});
-
+    
   const context = useMiroirContextService();
 
   useEffect(() =>
@@ -96,7 +95,7 @@ export function ReportPageContextProvider(props: {
         handleIsNodeFolded,
         handleSetNodeFoldedState,
         handleFoldAllChildren,
-        handleUnfoldAllChildren
+        handleUnfoldAllChildren,
       );
     },
     [
@@ -105,7 +104,7 @@ export function ReportPageContextProvider(props: {
       handleIsNodeFolded,
       handleSetNodeFoldedState,
       handleFoldAllChildren,
-      handleUnfoldAllChildren
+      handleUnfoldAllChildren,
     ]
   );
 

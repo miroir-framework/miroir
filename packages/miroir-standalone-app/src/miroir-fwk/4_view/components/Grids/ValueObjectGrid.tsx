@@ -637,6 +637,7 @@ export const ValueObjectGrid = (props: ValueObjectGridProps & { theme?: DeepPart
             animateRows={true}
             skipHeaderOnAutoSize={true}
             suppressHorizontalScroll={false}
+            // rowSelection="multiple" // Enable multiple row selection for checkboxes
           />
         </div>
       ) : (

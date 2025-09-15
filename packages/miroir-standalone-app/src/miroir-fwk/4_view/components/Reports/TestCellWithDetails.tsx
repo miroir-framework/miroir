@@ -26,6 +26,7 @@ export interface TestCellWithDetailsProps {
   testData: any;
   testName: string;
   type: 'testName' | 'status' | 'result';
+  isSelected?: boolean; // Add optional selection state
 }
 
 
@@ -33,7 +34,8 @@ export const TestCellWithDetails: React.FC<TestCellWithDetailsProps> = React.mem
   value, 
   testData, 
   testName, 
-  type 
+  type,
+  isSelected
 }) => {
   const [showTooltip, setShowTooltip] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
@@ -159,7 +161,11 @@ export const TestCellWithDetails: React.FC<TestCellWithDetailsProps> = React.mem
       ? `2px solid ${currentTheme.colors.warning}` 
       : `1px solid transparent`,
     boxShadow: isExpanded ? currentTheme.elevation.medium : 'none',
+    // Fix color logic: for testName cells, use black when selected, grey when not selected or skipped
     color: isSkipped ? currentTheme.colors.textSecondary || '#999' : currentTheme.colors.text,
+    // color: type === 'testName' 
+    //   ? (isSelected && !isSkipped ? currentTheme.colors.text : currentTheme.colors.textSecondary || '#999')
+    //   : (isSkipped ? currentTheme.colors.textSecondary || '#999' : currentTheme.colors.text),
     fontFamily: currentTheme.typography.fontFamily,
     opacity: isSkipped ? 0.6 : 1,
   };

@@ -230,6 +230,17 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   );
   }, [currentReportTargetEntityDefinition?.display?.foldSubLevels, reportContext.setFoldedObjectAttributeOrArrayItems]);
 
+  // // Initialize test selections when test results are available
+  // useEffect(() => {
+  //   if (resolveConditionalSchemaResultsData && resolveConditionalSchemaResultsData.length > 0) {
+  //     reportContext.initializeTestSelections(resolveConditionalSchemaResultsData, (testPath) => {
+  //       // Don't select tests that were originally skipped
+  //       const test = resolveConditionalSchemaResultsData.find(t => t.testName === testPath);
+  //       return test ? test.testResult !== "skipped" : true;
+  //     });
+  //   }
+  // }, [resolveConditionalSchemaResultsData, reportContext.initializeTestSelections]);
+
   const formLabel: string =
     props.applicationSection +
     "." +
