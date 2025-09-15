@@ -256,12 +256,6 @@ export const RunTransformerTestSuiteButton: React.FC<RunTransformerTestSuiteButt
       undefined, // filter
       // {testList: {"resolveConditionalSchema": ["error if no value found at given parentUuid path"]}}, // filter
       runTransformerTestInMemory,
-      // {
-      //   miroirFundamentalJzodSchema: miroirFundamentalJzodSchema as JzodSchema,
-      //   miroirMetaModel: defaultMiroirMetaModel
-      //   // TODO: current app schema
-      // },
-      // defaultMiroirModelEnvironment,
       defaultLibraryModelEnvironment,
       miroirContextService.miroirContext.miroirEventTracker // Pass the unified tracker
     );
