@@ -28,6 +28,7 @@ export type TestSelectionSummary = {
 
 export type ResolveConditionalSchemaResult = {
   testName: string;
+  testPath: string[];
   testResult: "ok" | "error" | "skipped";
   status: string;
   failedAssertions: string[] | undefined;
@@ -57,6 +58,10 @@ const resolveConditionalSchemaResultSchema: JzodElement = {
   type: "object",
   definition: {
     testName: { type: "string" },
+    testPath: {
+      type: "array",
+      definition: { type: "string" },
+    },
     testResult: { type: "string" },
     status: { type: "string" },
     assertionCount: { type: "number" },
@@ -194,6 +199,37 @@ export const TransformerTestResults: React.FC<TransformerTestResultsProps> = ({
           filter: false,
           resizable: false,
           pinned: "left" as const,
+        },
+        {
+          headerName: "Test Path",
+          field: "testPath",
+          flex: 2,
+          cellRenderer: (params: any) => {
+            const testPath = params.data.rawValue.testPath;
+            if (testPath && Array.isArray(testPath)) {
+              const pathString = testPath.join(" > ");
+              return (
+                <div
+                  style={{
+                    maxWidth: "300px",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                    cursor: "pointer",
+                    fontFamily: "monospace",
+                    fontSize: "0.9em",
+                    color: "#666",
+                  }}
+                  title={pathString}
+                >
+                  {pathString}
+                </div>
+              );
+            }
+            return <span>-</span>;
+          },
+          sortable: true,
+          filter: true,
         },
         {
           headerName: "Test Name",

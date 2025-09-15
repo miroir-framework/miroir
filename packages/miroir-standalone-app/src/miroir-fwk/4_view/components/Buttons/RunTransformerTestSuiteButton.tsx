@@ -40,6 +40,7 @@ export function generateTestReport(
   
 interface StructuredTestResult {
   testName: string;
+  testPath: string[];
   testResult: "ok" | "error" | "skipped";
   status: string;
   failedAssertions: string[] | undefined;
@@ -62,6 +63,7 @@ interface StructuredTestResult {
   ): Array<{
     type: 'suite' | 'test';
     path: string;
+    testPath: string[]; // Full path as array
     status: 'ok' | 'error' | 'skipped';
     failedAssertions?: string[];
     assertionCount?: number;
@@ -102,6 +104,7 @@ interface StructuredTestResult {
         totalTests++;
         
         const testPath = [...pathPrefix, testName].join(" > ");
+        const testPathArray = [...pathPrefix, testName];
         
         // Properly handle skipped, ok, and error status
         let testStatus: 'ok' | 'error' | 'skipped';
@@ -124,6 +127,7 @@ interface StructuredTestResult {
         testInfo.push({
           type: 'test',
           path: testPath,
+          testPath: testPathArray,
           status: testStatus,
           failedAssertions: failedAssertions.length > 0 ? failedAssertions : undefined,
           assertionCount: assertions.length,
@@ -161,6 +165,7 @@ interface StructuredTestResult {
       // Create structured data
       structuredResults.push({
         testName: test.path,
+        testPath: test.testPath,
         testResult: test.status,
         status: statusDisplay,
         failedAssertions: test.failedAssertions,
