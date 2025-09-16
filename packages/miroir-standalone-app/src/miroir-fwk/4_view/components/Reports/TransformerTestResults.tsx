@@ -1,22 +1,18 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { MiroirLoggerFactory, type JzodElement, type LoggerInterface } from 'miroir-core';
+import { MiroirLoggerFactory, resolvePathOnObject, transformerTestDefinition, type JzodElement, type LoggerInterface, type TestSuiteListFilter, type TransformerReturnType, type TransformerTest, type TransformerTestDefinition, type TransformerTestSuite } from 'miroir-core';
 import { ValueObjectGrid } from '../Grids/ValueObjectGrid.js';
 import { TestCellWithDetails } from './TestCellWithDetails.js';
 import { TestResultCellWithActualValue } from './TestResultCellWithActualValue.js';
 import { packageName } from '../../../../constants.js';
 import { cleanLevel } from '../../constants.js';
+import type { TransformerTestResultData } from '../Buttons/RunTransformerTestSuiteButton.js';
+import type { TestSelectionState } from './ReportSectionEntityInstance.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "TransformerTestResults")
 ).then((logger: LoggerInterface) => {log = logger});
 
-// Test Selection Types
-export type TestSuiteListFilter = string[] | {[x: string]: TestSuiteListFilter};
-
-export type TestSelectionState = {
-  [path: string]: boolean; // Full test path -> selected state
-};
 
 export type TestSelectionSummary = {
   totalTests: number;
@@ -26,24 +22,29 @@ export type TestSelectionSummary = {
   partiallySelected: boolean;
 };
 
-export type ResolveConditionalSchemaResult = {
-  testName: string;
-  testPath: string[];
-  testResult: "ok" | "error" | "skipped";
-  status: string;
-  failedAssertions: string[] | undefined;
-  assertionCount: number;
-  assertions: string;
-  fullAssertionsResults: any;
+export type TestResultDataAndSelect = TransformerTestResultData & {
+  // testName: string;
+  // testPath: string[];
+  // testResult: "ok" | "error" | "skipped";
+  // status: string;
+  // failedAssertions: string[] | undefined;
+  // assertionCount: number;
+  // assertions: string;
+  // fullAssertionsResults: any;
   selected: boolean;
 };
 
 export interface TransformerTestResultsProps {
-  resolveConditionalSchemaResultsData: ResolveConditionalSchemaResult[];
+  // transformerTestSuite: TransformerTestDefinition | undefined;
+  transformerTestSuite: TransformerTestSuite | TransformerTest | undefined;
+  transformerTestResultsData: TestResultDataAndSelect[];
   testLabel?: string;
+  // onTestFilterChange?: (filter: { testList?: TestSuiteListFilter } | undefined) => void;
   // onTestSelectionChange?: (testPath: string, selected: boolean) => void;
   // onSelectAllChange?: (selected: boolean) => void;
   // onResetSelections?: () => void;
+  testSelectionsState: TestSelectionState;
+  setTestSelectionsState: React.Dispatch<React.SetStateAction<TestSelectionState>>;
   selectionSummary?: {
     totalTests: number;
     selectedTests: number;
@@ -84,8 +85,12 @@ const resolveConditionalSchemaResultSchema: JzodElement = {
 // ################################################################################################
 // ################################################################################################
 export const TransformerTestResults: React.FC<TransformerTestResultsProps> = ({
-  resolveConditionalSchemaResultsData,
+  transformerTestSuite,
+  transformerTestResultsData,
   testLabel = "Test Results",
+  // onTestFilterChange,
+  testSelectionsState,
+  setTestSelectionsState,
   // onTestSelectionChange,
   // onSelectAllChange,
   // onResetSelections,
@@ -93,16 +98,19 @@ export const TransformerTestResults: React.FC<TransformerTestResultsProps> = ({
   // testSelections = {}
 }) => {
 
-  const [testSelections, setTestSelectionsState] = useState<TestSelectionState>({});
-  
   // Don't render if no test results
-  if (!resolveConditionalSchemaResultsData || resolveConditionalSchemaResultsData.length === 0) {
+  if (!transformerTestResultsData || transformerTestResultsData.length === 0) {
     return null;
   }
 
 
 
-
+  const transformerTestResultsDataWithSelection = useMemo(() => {
+    return transformerTestResultsData.map(test => ({
+      ...test,
+      selected: testSelectionsState[test.testName] !== false // Default to true if not specified
+    }));
+  }, [transformerTestResultsData, testSelectionsState]);
 
   // testSelections={reportContext.testSelections}
   // onTestSelectionChange={reportContext.setTestSelection}
@@ -133,7 +141,7 @@ export const TransformerTestResults: React.FC<TransformerTestResultsProps> = ({
   
   const testNameCellRenderer = useCallback((params: any) => {
     const testName = params.data.rawValue.testName;
-    const isSelected = testSelections[testName] !== false; // Default to true if not specified
+    const isSelected = testSelectionsState[testName] !== false; // Default to true if not specified
     
     return (
       <TestCellWithDetails
@@ -144,7 +152,7 @@ export const TransformerTestResults: React.FC<TransformerTestResultsProps> = ({
         isSelected={isSelected} // Pass selection state
       />
     );
-  }, [testSelections]);
+  }, [testSelectionsState]);
 
   const statusCellRenderer = useCallback((params: any) => (
     <TestCellWithDetails
@@ -297,9 +305,10 @@ export const TransformerTestResults: React.FC<TransformerTestResultsProps> = ({
       "handleSetAllTestsSelection: selected=",
       selected,
       ", resolveConditionalSchemaResultsData=",
-      resolveConditionalSchemaResultsData,
+      transformerTestResultsData,
       " testPaths=",
-      JSON.stringify(testPaths)
+      testPaths,
+      "testSelectionsState=", testSelectionsState
     );
     setTestSelectionsState(prev => {
       const pathsToUpdate = testPaths || Object.keys(prev);
@@ -309,12 +318,14 @@ export const TransformerTestResults: React.FC<TransformerTestResultsProps> = ({
       });
       return { ...prev, ...updates };
     });
+    // if (onTestFilterChange) {onTestFilterChange(handleBuildTestFilter());}
+
   }, []);
 
   // ##############################################################################################
   const handleGetTestSelectionSummary = useCallback((testPaths?: string[]): TestSelectionSummary => {
-    const pathsToCheck = testPaths || Object.keys(testSelections);
-    const selectedPaths = pathsToCheck.filter(path => testSelections[path]);
+    const pathsToCheck = testPaths || Object.keys(testSelectionsState);
+    const selectedPaths = pathsToCheck.filter(path => testSelectionsState[path]);
     
     return {
       totalTests: pathsToCheck.length,
@@ -323,24 +334,13 @@ export const TransformerTestResults: React.FC<TransformerTestResultsProps> = ({
       noneSelected: selectedPaths.length === 0,
       partiallySelected: selectedPaths.length > 0 && selectedPaths.length < pathsToCheck.length
     };
-  }, [testSelections]);
+  }, [testSelectionsState]);
 
-  // ##############################################################################################
-  const handleBuildTestFilter = useCallback((): TestSuiteListFilter | undefined => {
-    const selectedPaths = Object.entries(testSelections)
-      .filter(([_, selected]) => selected)
-      .map(([path, _]) => path);
-    
-    log.info(`handleBuildTestFilter: testSelections=${JSON.stringify(testSelections)}, selectedPaths=${JSON.stringify(selectedPaths)}`);
-    
-    // Always return an array - empty array means no tests selected (all should be skipped)
-    return selectedPaths;
-  }, [testSelections]);
 
   // ##############################################################################################
   const handleInitializeTestSelections = useCallback((testResults: any[], defaultSelected?: (testPath: string) => boolean): void => {
     // Only initialize if no selections exist yet (don't overwrite existing selections)
-    if (Object.keys(testSelections).length === 0) {
+    if (Object.keys(testSelectionsState).length === 0) {
       const newSelections: TestSelectionState = {};
       
       testResults.forEach(test => {
@@ -349,37 +349,111 @@ export const TransformerTestResults: React.FC<TransformerTestResultsProps> = ({
       });
       
       setTestSelectionsState(newSelections);
+      // if (onTestFilterChange) {onTestFilterChange(handleBuildTestFilter());}
     }
-  }, [testSelections]);
+  }, [testSelectionsState]);
 
   // ##############################################################################################
-  const handleResetTestSelections = useCallback((testResults: any[], defaultSelected?: (testPath: string) => boolean): void => {
-    const newSelections: TestSelectionState = {};
-    
-    testResults.forEach(test => {
-      const isSelected = defaultSelected ? defaultSelected(test.testName) : true; // Default to selected
-      newSelections[test.testName] = isSelected;
-    });
-    
-    setTestSelectionsState(newSelections);
-  }, []);
+  const resolveTestPath = useCallback(
+    (
+      transformerTestSuite: TransformerTestSuite | TransformerTest | undefined,
+      transformerTestPath: string[],
+    ): TransformerTestSuite | TransformerTest | undefined => {
+      if (transformerTestPath.length === 0
+        || !transformerTestSuite
+      ) {
+        return undefined;
+      }
+      if (transformerTestPath.length === 1) {
+        if (
+          // transformerTest.transformerTestType === "transformerTest" &&
+          transformerTestSuite.transformerTestLabel === transformerTestPath[0]
+        ) {
+          return transformerTestSuite;
+        }
+      }
+      const [currentSegment, nextSegment, ...restPath] = transformerTestPath;
+      if (
+        transformerTestSuite.transformerTestType === "transformerTestSuite" &&
+        transformerTestSuite.transformerTestLabel &&
+        transformerTestSuite.transformerTestLabel === currentSegment
+      ) {
+        const nextTest = transformerTestSuite.transformerTests.find(
+          (test) => test.transformerTestLabel === nextSegment
+        );
+        // log.info(
+        //   "resolveTestPath: currentSegment=",
+        //   currentSegment,
+        //   " nextSegment=",
+        //   nextSegment,
+        //   " nextTest=",
+        //   nextTest,
+        //   "restPath.lenth=", restPath.length
+        // );
+        if (nextTest && restPath.length > 0) {
+          return resolveTestPath(nextTest, restPath);
+        } else {
+          return nextTest;
+        }
+      }
+      return undefined; 
+    },
+    []
+  );
+  // ##############################################################################################
+  const handleResetTestSelections = useCallback(
+    (testResults: TestResultDataAndSelect[], defaultSelected?: (testPath: string) => boolean): void => {
+      log.info(
+        "handleResetTestSelections: testResults=",
+        testResults,
+        // " defaultSelected=",
+        // defaultSelected,
+        "transformerTestSuite=",
+        transformerTestSuite
+      );
+      const newSelections: TestSelectionState = {};
+
+      testResults.forEach((test) => {
+        const currentTest = resolveTestPath(
+          transformerTestSuite,
+          test.testPath
+        ) as TransformerTest | TransformerTestSuite | undefined;
+        // const isSelected = !currentTest?.skip && (defaultSelected ? defaultSelected(test.testName) : true); // Default to selected
+        const isSelected = !currentTest?.skip; // select if not skipped
+        log.info("handleResetTestSelections: test=", test.testPath, " currentTest=", currentTest, " isSelected=", isSelected);
+        newSelections[test.testName] = isSelected;
+      });
+
+      setTestSelectionsState(newSelections);
+      // if (onTestFilterChange) {onTestFilterChange(handleBuildTestFilter());}
+    },
+    [transformerTestSuite]
+  );
 
       // Initialize test selections when test results are available
-  useEffect(() => {
-    if (resolveConditionalSchemaResultsData && resolveConditionalSchemaResultsData.length > 0) {
-      // initializeTestSelections(resolveConditionalSchemaResultsData, (testPath: string) => {
-      handleInitializeTestSelections(resolveConditionalSchemaResultsData, (testPath: string) => {
-        // Don't select tests that were originally skipped
-        const test = resolveConditionalSchemaResultsData.find(t => t.testName === testPath);
-        return test ? test.testResult !== "skipped" : true;
-      });
-    }
-  }, [resolveConditionalSchemaResultsData]);
+  // useEffect(() => {
+  //   if (resolveConditionalSchemaResultsData && resolveConditionalSchemaResultsData.length > 0) {
+  //     // initializeTestSelections(resolveConditionalSchemaResultsData, (testPath: string) => {
+  //     handleInitializeTestSelections(resolveConditionalSchemaResultsData, (testPath: string) => {
+  //       // Don't select tests that were originally skipped
+  //       const test = resolveConditionalSchemaResultsData.find(t => t.testName === testPath);
+  //       return test ? test.testResult !== "skipped" : true;
+  //     });
+  //   }
+  // }, [resolveConditionalSchemaResultsData]);
+
+  // // Call onTestFilterChange when test selections change
+  // useEffect(() => {
+  //   if (onTestFilterChange && Object.keys(testSelectionsState).length > 0) {
+  //     // const currentFilter = handleBuildTestFilter();
+  //     onTestFilterChange(handleBuildTestFilter());
+  //   }
+  // }, [testSelectionsState, onTestFilterChange, handleBuildTestFilter]);
 
   const onResetSelections = () =>
-    handleResetTestSelections(resolveConditionalSchemaResultsData, (testPath) => {
+    handleResetTestSelections(transformerTestResultsData, (testPath) => {
       // Don't select tests that were originally skipped
-      const test = resolveConditionalSchemaResultsData.find((t) => t.testName === testPath);
+      const test = transformerTestResultsData.find((t) => t.testName === testPath);
       return test ? test.testResult !== "skipped" : true;
     });
 
@@ -387,10 +461,10 @@ export const TransformerTestResults: React.FC<TransformerTestResultsProps> = ({
   const onSelectAllChange = (selected: any) =>
     handleSetAllTestsSelection(
       selected,
-      resolveConditionalSchemaResultsData.map((test) => test.testName)
+      transformerTestResultsData.map((test) => test.testName)
     );
 
-  const selectionSummary=handleGetTestSelectionSummary(resolveConditionalSchemaResultsData.map(test => test.testName));
+  const selectionSummary=handleGetTestSelectionSummary(transformerTestResultsData.map(test => test.testName));
 
   return (
     <div>
@@ -463,6 +537,24 @@ export const TransformerTestResults: React.FC<TransformerTestResultsProps> = ({
                 Reset
               </button>
             )}
+            
+            {/* <button
+              onClick={() => {
+                const filter = handleBuildTestFilter();
+                console.log("Current Test Filter:", filter);
+                alert(`Filter: ${JSON.stringify(filter, null, 2)}`);
+              }}
+              style={{
+                padding: "4px 8px",
+                fontSize: "12px",
+                border: "1px solid #ccc",
+                borderRadius: "4px",
+                backgroundColor: "#e3f2fd",
+                cursor: "pointer",
+              }}
+            >
+              Show Filter
+            </button> */}
           </div>
         </div>
       </div>
@@ -470,7 +562,7 @@ export const TransformerTestResults: React.FC<TransformerTestResultsProps> = ({
       {/* Test Results Grid */}
       <div style={{ width: "100%" }}>
         <ValueObjectGrid
-          valueObjects={resolveConditionalSchemaResultsData}
+          valueObjects={transformerTestResultsDataWithSelection}
           jzodSchema={resolveConditionalSchemaResultSchema}
           columnDefs={columnDefs}
           // rowSelection="multiple"

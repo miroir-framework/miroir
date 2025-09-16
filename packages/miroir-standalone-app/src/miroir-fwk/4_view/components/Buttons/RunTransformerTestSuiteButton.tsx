@@ -7,6 +7,7 @@ import {
   runTransformerTestSuite,
   type LoggerInterface,
   type TestSuiteResult,
+  type TestSuiteListFilter,
   type TransformerReturnType,
   type TransformerTestDefinition
 } from "miroir-core";
@@ -31,14 +32,7 @@ MiroirLoggerFactory.registerLoggerToStart(
 // ################################################################################################
 // ################################################################################################
 // ################################################################################################
-export function generateTestReport(
-  testSuiteKey: string,
-  allResults: TestSuiteResult,
-  setResolveConditionalSchemaResults: React.Dispatch<React.SetStateAction<string>>
-) {
-  let resultText = `=== ${testSuiteKey} Test Results ===\n\n`;
-  
-interface StructuredTestResult {
+export interface TransformerTestResultData {
   testName: string;
   testPath: string[];
   testResult: "ok" | "error" | "skipped";
@@ -47,7 +41,17 @@ interface StructuredTestResult {
   assertionCount: number;
   assertions: string;
   fullAssertionsResults: any;
-}  const structuredResults: StructuredTestResult[] = [];
+}
+
+// ################################################################################################
+export function generateTestReport(
+  testSuiteKey: string,
+  allResults: TestSuiteResult,
+  setResolveConditionalSchemaResults: React.Dispatch<React.SetStateAction<string>>
+) {
+  const transfomerTestResults: TransformerTestResultData[] = [];
+  let resultText = `=== ${testSuiteKey} Test Results ===\n\n`;
+  
   
   // Statistics
   let totalTestSuites = 0;
@@ -163,7 +167,7 @@ interface StructuredTestResult {
       resultText += `${symbol} ${test.path} - ${statusText}\n`;
       
       // Create structured data
-      structuredResults.push({
+      transfomerTestResults.push({
         testName: test.path,
         testPath: test.testPath,
         testResult: test.status,
@@ -215,15 +219,16 @@ interface StructuredTestResult {
   resultText += `\nOverall Status: ${overallStatus}\n`;
   
   setResolveConditionalSchemaResults(resultText);
-  return structuredResults;
+  return transfomerTestResults;
 };
 
 // ################################################################################################
 interface RunTransformerTestSuiteButtonProps {
-  transformerTestSuite: TransformerReturnType<any> | undefined;
+  transformerTestSuite: TransformerReturnType<TransformerTestDefinition> | undefined;
   testSuiteKey: string;
   useSnackBar: boolean;
   onTestComplete?: (testSuiteKey: string, structuredResults: any[]) => void;
+  testFilter?: { testList?: TestSuiteListFilter, match?: RegExp } | undefined;
   label?: string;
   [key: string]: any; // for passing extra props to ActionButton
 }
@@ -237,6 +242,7 @@ export const RunTransformerTestSuiteButton: React.FC<RunTransformerTestSuiteButt
   testSuiteKey,
   useSnackBar,
   onTestComplete,
+  testFilter,
   label,
   ...buttonProps
 }) => {
@@ -258,7 +264,7 @@ export const RunTransformerTestSuiteButton: React.FC<RunTransformerTestSuiteButt
       TestFramework as any, // vitest-like interface
       [], // testSuitePath,
       (transformerTestSuite as TransformerTestDefinition).definition,
-      undefined, // filter
+      testFilter, // Use the provided filter
       // {testList: {"resolveConditionalSchema": ["error if no value found at given parentUuid path"]}}, // filter
       runTransformerTestInMemory,
       defaultLibraryModelEnvironment,
@@ -270,7 +276,7 @@ export const RunTransformerTestSuiteButton: React.FC<RunTransformerTestSuiteButt
     log.info("All test results:", allResults);
 
     // Format results for display using the new structure
-    const structuredResults = generateTestReport(
+    const structuredResults: TransformerTestResultData[] = generateTestReport(
       testSuiteKey,
       allResults,
       () => {} // Placeholder setter function

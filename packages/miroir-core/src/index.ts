@@ -942,6 +942,7 @@ export {
   runTransformerTestSuite,
   testSuites,
   transformerTestsDisplayResults,
+  type TestSuiteListFilter,
 } from "./4_services/TestTools.js";
 export { defaultViewParamsFromAdminStorageFetchQueryParams } from "./4_views/viewParams";
 

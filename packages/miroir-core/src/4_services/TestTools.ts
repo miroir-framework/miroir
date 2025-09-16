@@ -419,7 +419,14 @@ export async function runTransformerTestSuite(
       // Get current action ID as parent (for nested test suites)
       const parentId = miroirEventTracker.getCurrentEventId();
       testSuiteTrackingId = miroirEventTracker.startTestSuite(testSuiteName, parentId);
-      log.info(`🧪🧪 Started tracking test suite ${testSuiteName} with ID: ${testSuiteTrackingId}, parent: ${parentId}`);
+      log.info(
+        "🧪🧪 Started tracking test suite",
+        testSuiteName,
+        "with ID:",
+        testSuiteTrackingId,
+        "parent:",
+        parentId
+      );
     } catch (error) {
       console.warn(`Failed to start tracking test suite ${testSuiteName}:`, error);
     }
@@ -454,13 +461,13 @@ export async function runTransformerTestSuite(
     //   )} tests`
     // );
     // replace the describe.each(...) call body with this:
-    const innerFilter =
-      filter?.testList &&
-      typeof filter.testList === "object" &&
-      !Array.isArray(filter.testList) &&
-      Object.hasOwn(filter.testList, transformerTestSuite.transformerTestLabel)
+    const innerFilter: TestSuiteListFilter | undefined = filter?.testList
+      ? typeof filter.testList === "object" &&
+        !Array.isArray(filter.testList) &&
+        Object.hasOwn(filter.testList, transformerTestSuite.transformerTestLabel)
         ? filter.testList[transformerTestSuite.transformerTestLabel]
-        : undefined;
+        : { testList: {} }
+      : undefined;
 
     const allTests = transformerTestSuite.transformerTests
     // const allTests = Array.isArray(transformerTestSuite.transformerTests)
@@ -475,57 +482,59 @@ export async function runTransformerTestSuite(
           Object.hasOwn(innerFilter, e.transformerTestLabel))
     );
     log.info(
-      `runTransformerTestSuite for suite ${testSuitePathAsString} with ${
-        selectedTests.length
-      } selected tests out of ${
-        Object.values(transformerTestSuite.transformerTests).length
-      } total tests, innerFilter=${JSON.stringify(innerFilter)}`
+      "runTransformerTestSuite for suite",
+      testSuitePathAsString,
+      "with",
+      selectedTests.length,
+      "selected tests out of",
+      Object.values(transformerTestSuite.transformerTests).length,
+      "total tests,",
+      "filter",
+      JSON.stringify(filter),
+      "innerFilter=",
+      JSON.stringify(innerFilter),
+      "selectedTests=",
+      selectedTests
     );
     // localVitest.describe.each(selectedTests)(
     // Sequentially run each selected test/suite instead of describe.each (which is parallel)
-    for (const transformerTestParam of selectedTests) {
+    // for (const transformerTestParam of selectedTests) {
+    for (const transformerTestParam of allTests) {
       if (transformerTestParam.transformerTestType === "transformerTest") {
         // Inherit skip flag from parent suite to child test
-        const effectiveTransformerTest: TransformerTest = shouldSkipSuite 
-          ? { ...transformerTestParam, skip: true }
-          : transformerTestParam;
+        const effectiveTransformerTest: TransformerTest =
+          { ...transformerTestParam, skip: !selectedTests.includes(transformerTestParam) };
           
-        if (
-          !innerFilter ||
-          (Array.isArray(innerFilter) &&
-            innerFilter.includes(transformerTestParam.transformerTestLabel))
-        ) {
-          log.info(
-            `runTransformerTestSuite calling further test ${transformerTestParam.transformerTestLabel} in suite ${testSuitePath} (skip: ${effectiveTransformerTest.skip})`
-          );
-          await localVitest.test(
-            transformerTestParam.transformerTestLabel,
-            async () => {
-              // Build the explicit TestAssertionPath and run the test
-              const testAssertionPath: TestAssertionPath =
-                MiroirEventTracker.stringArrayToTestAssertionPath(testSuitePath);
-              testAssertionPath.push({ test: transformerTestParam.transformerTestLabel });
-              testAssertionPath.push({
-                testAssertion: transformerTestParam.transformerTestLabel,
-              });
-              await runTransformerTest(
-                localVitest,
-                [...testSuitePath, transformerTestParam.transformerTestLabel],
-                effectiveTransformerTest,
-                modelEnvironment,
-                miroirEventTracker,
-                testAssertionPath
-              );
-            },
-            globalTimeOut
-          );
-        } else {
-          log.info(
-            `runTransformerTestSuite skipping test ${
-              transformerTestParam.transformerTestLabel
-            } as not in filter ${JSON.stringify(filter)}`
-          );
-        }
+        log.info(
+          "runTransformerTestSuite calling further test",
+          transformerTestParam.transformerTestLabel,
+          " in suite ",
+          testSuitePath,
+          "(skip: ",
+          effectiveTransformerTest.skip,
+          ")"
+        );
+        await localVitest.test(
+          transformerTestParam.transformerTestLabel,
+          async () => {
+            // Build the explicit TestAssertionPath and run the test
+            const testAssertionPath: TestAssertionPath =
+              MiroirEventTracker.stringArrayToTestAssertionPath(testSuitePath);
+            testAssertionPath.push({ test: transformerTestParam.transformerTestLabel });
+            testAssertionPath.push({
+              testAssertion: transformerTestParam.transformerTestLabel,
+            });
+            await runTransformerTest(
+              localVitest,
+              [...testSuitePath, transformerTestParam.transformerTestLabel],
+              effectiveTransformerTest,
+              modelEnvironment,
+              miroirEventTracker,
+              testAssertionPath
+            );
+          },
+          globalTimeOut
+        );
       } else {
         // nested suite -> register nested describes (no await)
         await runTransformerTestSuite(

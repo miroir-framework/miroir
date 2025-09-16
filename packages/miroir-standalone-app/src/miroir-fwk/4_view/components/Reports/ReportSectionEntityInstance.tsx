@@ -14,7 +14,8 @@ import {
   adminConfigurationDeploymentMiroir,
   entityTransformerTest,
   miroirFundamentalJzodSchema,
-  type JzodElement
+  type JzodElement,
+  type TestSuiteListFilter
 } from "miroir-core";
 
 import {
@@ -50,7 +51,7 @@ import {
 import { TestCellWithDetails } from './TestCellWithDetails.js';
 import { TestResultCellWithActualValue } from './TestResultCellWithActualValue.js';
 import { TransformerTestResultExecutionSummary } from './TransformerTestResultExecutionSummary.js';
-import { TransformerTestResults, type ResolveConditionalSchemaResult } from './TransformerTestResults.js';
+import { TransformerTestResults, type TestResultDataAndSelect } from './TransformerTestResults.js';
 import { TypedValueObjectEditor } from './TypedValueObjectEditor.js';
 import { useDocumentOutlineContext } from '../ValueObjectEditor/InstanceEditorOutlineContext.js';
 import { useReportPageContext } from './ReportPageContext.js';
@@ -128,6 +129,71 @@ export interface ReportSectionEntityInstanceProps {
   maxRenderDepth?: number; // Optional max depth for initial rendering, default 1
 }
 
+// Test Selection Types
+export type TestSelectionState = {
+  [testPath: string]: boolean; // Full test path -> selected state
+};
+
+// ###############################################################################################################
+// ###############################################################################################################
+// ###############################################################################################################
+// ###############################################################################################################
+/**
+ * 
+ * @param testSelectionsState 
+ * @param transformerTestResultsData 
+ * @returns undefined if no selection happened (run all tests that are non-skipped), or { testList: { suiteName: [testName, ...], ... } }
+ */
+const handleBuildTestFilter = (
+  testSelectionsState: TestSelectionState,
+  transformerTestResultsData: TestResultDataAndSelect[]
+): { testList?: TestSuiteListFilter } | undefined => {
+  // Get the list of selected test data (not just test names)
+  const selectedTestData = transformerTestResultsData.filter(
+    (test) => testSelectionsState[test.testName] === true
+  );
+
+  if (selectedTestData.length === 0) {
+    // return undefined;
+    return { testList: {} }; 
+  }
+
+  // Build simple hierarchical filter: suite name -> array of test names
+  const testList: { [key: string]: string[] } = {};
+
+  selectedTestData.forEach((test) => {
+    if (test.testPath && test.testPath.length >= 2) {
+      const suiteName = test.testPath[0]; // First element is the suite name
+      const testName = test.testPath[test.testPath.length - 1]; // Last element is the actual test name (not the display name)
+
+      if (!testList[suiteName]) {
+        testList[suiteName] = [];
+      }
+
+      if (!testList[suiteName].includes(testName)) {
+        testList[suiteName].push(testName);
+      }
+    }
+  });
+
+  const filterResult = { testList: testList as TestSuiteListFilter };
+
+  log.info(
+    "handleBuildTestFilter: testSelectionsState=",
+    testSelectionsState,
+    ", selectedTestData=",
+    selectedTestData.map((t) => ({ name: t.testName, path: t.testPath })),
+    "filterResult=",
+    filterResult
+  );
+
+  return filterResult;
+};
+
+// ###############################################################################################################
+// ###############################################################################################################
+// ###############################################################################################################
+// ###############################################################################################################
 // ###############################################################################################################
 export const ReportSectionEntityInstance = (props: ReportSectionEntityInstanceProps) => {
   const renderStartTime = performance.now();
@@ -160,10 +226,17 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   const [displayAsStructuredElement, setDisplayAsStructuredElement] = useState(true);
   const [displayEditor, setDisplayEditor] = useState(true);
   // const [maxRenderDepth, setMaxRenderDepth] = useState<number>(props.maxRenderDepth ?? 1);
-  const [resolveConditionalSchemaResultsData, setResolveConditionalSchemaResultsData] = useState<
-    ResolveConditionalSchemaResult[]
+  const [transformerTestResultsData, setTransformerTestResultsData] = useState<
+    TestResultDataAndSelect[]
   >([]); // TODO: use a precise type!
+  // const [currentTestFilter, setCurrentTestFilter] = useState<{ testList?: TestSuiteListFilter } | undefined>(undefined);
+  const [testSelectionState, setTestSelectionsState] = useState<TestSelectionState>({});
 
+  const currentTestFilter = useMemo(() => {
+    return handleBuildTestFilter(testSelectionState, transformerTestResultsData);
+  }, [testSelectionState]);
+
+  log.info("ReportSectionEntityInstance: currentTestFilter:", currentTestFilter, "testSelectionState:", testSelectionState, "transformerTestResultsData:", transformerTestResultsData);
   // Use outline context for outline state management
   const outlineContext = useDocumentOutlineContext();
   const reportContext = useReportPageContext();
@@ -202,6 +275,11 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
     miroirFundamentalJzodSchema
   );
 
+  // ##############################################################################################
+  // ################################################################################################
+  // ################################################################################################
+  // ################################################################################################
+  // CALLS setFoldedObjectAttributeOrArrayItems
   useEffect(() => {
     const foldedStringPaths = currentReportTargetEntityDefinition?.display?.foldSubLevels
     ? Object.entries(currentReportTargetEntityDefinition?.display?.foldSubLevels).filter(([key, value]) => value): [];
@@ -247,7 +325,9 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
     currentReportTargetEntity?.name +
     (props.zoomInPath ? ` (${props.zoomInPath})` : "");
 
-  // Update the outline title when the current entity changes
+
+  // ###############################################################################################
+  // CALLS setOutlineTitle and setReportInstance
   useEffect(() => {
     if (currentReportTargetEntity?.name) {
       outlineContext.setOutlineTitle(currentReportTargetEntity.name + " details");
@@ -393,11 +473,12 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                 transformerTestSuite={instance}
                 testSuiteKey={testLabel}
                 useSnackBar={true}
+                testFilter={currentTestFilter}
                 onTestComplete={(testSuiteKey, structuredResults) => {
-                  setResolveConditionalSchemaResultsData(structuredResults);
+                  setTransformerTestResultsData(structuredResults);
                   log.info(`Test completed for ${testSuiteKey}:`, structuredResults);
                 }}
-                label={`▶️ Run ${testLabel}`}
+                label={`▶️ Run All ${testLabel} Tests`}
                 style={{
                   backgroundColor: "#1976d2",
                   color: "white",
@@ -405,21 +486,47 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                   borderRadius: "6px",
                   padding: "8px 16px",
                   fontWeight: "bold",
+                  marginRight: "8px",
                 }}
               />
+              {/* {currentTestFilter && (
+                <RunTransformerTestSuiteButton
+                  transformerTestSuite={instance}
+                  testSuiteKey={testLabel}
+                  useSnackBar={true}
+                  testFilter={currentTestFilter}
+                  onTestComplete={(testSuiteKey, structuredResults) => {
+                    setTransformerTestResultsData(structuredResults);
+                    log.info(`Selected tests completed for ${testSuiteKey}:`, structuredResults);
+                  }}
+                  label={`▶️ Run Selected ${testLabel} Tests`}
+                  style={{
+                    backgroundColor: "#4caf50",
+                    color: "white",
+                    border: "none",
+                    borderRadius: "6px",
+                    padding: "8px 16px",
+                    fontWeight: "bold",
+                  }}
+                />
+              )} */}
               {/* Test Results Display */}
-              {resolveConditionalSchemaResultsData &&
-                resolveConditionalSchemaResultsData.length > 0 && (
+              {transformerTestResultsData &&
+                transformerTestResultsData.length > 0 && (
                   <div style={{ margin: "20px 0", width: "100%" }}>
                     {/* Test Execution Summary */}
                     <TransformerTestResultExecutionSummary
-                      resolveConditionalSchemaResultsData={resolveConditionalSchemaResultsData}
+                      resolveConditionalSchemaResultsData={transformerTestResultsData}
                       testLabel={testLabel}
                     />
 
                     <TransformerTestResults
-                      resolveConditionalSchemaResultsData={resolveConditionalSchemaResultsData}
+                      transformerTestSuite={instance.definition}
+                      transformerTestResultsData={transformerTestResultsData}
                       testLabel={testLabel}
+                      // onTestFilterChange={setCurrentTestFilter}
+                      testSelectionsState={testSelectionState}
+                      setTestSelectionsState={setTestSelectionsState}
                     />
                   </div>
                 )}

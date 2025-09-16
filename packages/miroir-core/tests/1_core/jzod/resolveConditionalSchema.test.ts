@@ -86,13 +86,13 @@ if (shouldRun) {
     vitest,
     [],
     effectiveTests,
-    undefined, // filter
-    // {testList: {"resolveConditionalSchema": [
-    //   "fails when wrong parentUuid is given",
-    //   "error if parentUuid path specified but not given deploymentUuid",
-    //   "error if no value found at given parentUuid path",
-    //   "resolves schema using legacy single path configuration",
-    // ]}}, // filter
+    // undefined, // filter
+    {testList: {"resolveConditionalSchema": [
+      // "fails when wrong parentUuid is given",
+      // "error if parentUuid path specified but not given deploymentUuid",
+      // "error if no value found at given parentUuid path",
+      "resolves schema using legacy single path configuration",
+    ]}}, // filter
     runTransformerTestInMemory,
     // defaultMiroirModelEnvironment,
     defaultLibraryModelEnvironment,
