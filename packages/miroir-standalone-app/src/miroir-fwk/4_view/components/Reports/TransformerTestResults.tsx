@@ -43,8 +43,8 @@ export interface TransformerTestResultsProps {
   // onTestSelectionChange?: (testPath: string, selected: boolean) => void;
   // onSelectAllChange?: (selected: boolean) => void;
   // onResetSelections?: () => void;
-  testSelectionsState: TestSelectionState;
-  setTestSelectionsState: React.Dispatch<React.SetStateAction<TestSelectionState>>;
+  testSelectionsState: TestSelectionState | undefined;
+  setTestSelectionsState: React.Dispatch<React.SetStateAction<TestSelectionState | undefined>>;
   selectionSummary?: {
     totalTests: number;
     selectedTests: number;
@@ -108,7 +108,7 @@ export const TransformerTestResults: React.FC<TransformerTestResultsProps> = ({
   const transformerTestResultsDataWithSelection = useMemo(() => {
     return transformerTestResultsData.map(test => ({
       ...test,
-      selected: testSelectionsState[test.testName] !== false // Default to true if not specified
+      selected: !testSelectionsState || testSelectionsState[test.testName] !== false // Default to true if not specified
     }));
   }, [transformerTestResultsData, testSelectionsState]);
 
@@ -141,7 +141,7 @@ export const TransformerTestResults: React.FC<TransformerTestResultsProps> = ({
   
   const testNameCellRenderer = useCallback((params: any) => {
     const testName = params.data.rawValue.testName;
-    const isSelected = testSelectionsState[testName] !== false; // Default to true if not specified
+    const isSelected = !testSelectionsState || testSelectionsState[testName] !== false; // Default to true if not specified
     
     return (
       <TestCellWithDetails
@@ -208,37 +208,38 @@ export const TransformerTestResults: React.FC<TransformerTestResultsProps> = ({
           resizable: false,
           pinned: "left" as const,
         },
-        {
-          headerName: "Test Path",
-          field: "testPath",
-          flex: 2,
-          cellRenderer: (params: any) => {
-            const testPath = params.data.rawValue.testPath;
-            if (testPath && Array.isArray(testPath)) {
-              const pathString = testPath.join(" > ");
-              return (
-                <div
-                  style={{
-                    maxWidth: "300px",
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                    whiteSpace: "nowrap",
-                    cursor: "pointer",
-                    fontFamily: "monospace",
-                    fontSize: "0.9em",
-                    color: "#666",
-                  }}
-                  title={pathString}
-                >
-                  {pathString}
-                </div>
-              );
-            }
-            return <span>-</span>;
-          },
-          sortable: true,
-          filter: true,
-        },
+        // {
+        //   headerName: "Test Path",
+        //   field: "testPath",
+        //   flex: 2,
+        //   cellRenderer: testNameCellRenderer,
+        //   // cellRenderer: (params: any) => {
+        //   //   const testPath = params.data.rawValue.testPath;
+        //   //   if (testPath && Array.isArray(testPath)) {
+        //   //     const pathString = testPath.join(" > ");
+        //   //     return (
+        //   //       <div
+        //   //         style={{
+        //   //           maxWidth: "300px",
+        //   //           overflow: "hidden",
+        //   //           textOverflow: "ellipsis",
+        //   //           whiteSpace: "nowrap",
+        //   //           cursor: "pointer",
+        //   //           fontFamily: "monospace",
+        //   //           fontSize: "0.9em",
+        //   //           color: "#666",
+        //   //         }}
+        //   //         title={pathString}
+        //   //       >
+        //   //         {pathString}
+        //   //       </div>
+        //   //     );
+        //   //   }
+        //   //   return <span>-</span>;
+        //   // },
+        //   sortable: true,
+        //   filter: true,
+        // },
         {
           headerName: "Test Name",
           field: "testName",
@@ -311,7 +312,7 @@ export const TransformerTestResults: React.FC<TransformerTestResultsProps> = ({
       "testSelectionsState=", testSelectionsState
     );
     setTestSelectionsState(prev => {
-      const pathsToUpdate = testPaths || Object.keys(prev);
+      const pathsToUpdate = testPaths || Object.keys(prev??{});
       const updates: TestSelectionState = {};
       pathsToUpdate.forEach(path => {
         updates[path] = selected;
@@ -324,8 +325,8 @@ export const TransformerTestResults: React.FC<TransformerTestResultsProps> = ({
 
   // ##############################################################################################
   const handleGetTestSelectionSummary = useCallback((testPaths?: string[]): TestSelectionSummary => {
-    const pathsToCheck = testPaths || Object.keys(testSelectionsState);
-    const selectedPaths = pathsToCheck.filter(path => testSelectionsState[path]);
+    const pathsToCheck = testPaths || Object.keys(testSelectionsState??{});
+    const selectedPaths = pathsToCheck.filter(path => !testSelectionsState || testSelectionsState[path]);
     
     return {
       totalTests: pathsToCheck.length,
@@ -340,7 +341,7 @@ export const TransformerTestResults: React.FC<TransformerTestResultsProps> = ({
   // ##############################################################################################
   const handleInitializeTestSelections = useCallback((testResults: any[], defaultSelected?: (testPath: string) => boolean): void => {
     // Only initialize if no selections exist yet (don't overwrite existing selections)
-    if (Object.keys(testSelectionsState).length === 0) {
+    if (Object.keys(testSelectionsState??{}).length === 0) {
       const newSelections: TestSelectionState = {};
       
       testResults.forEach(test => {
@@ -565,8 +566,6 @@ export const TransformerTestResults: React.FC<TransformerTestResultsProps> = ({
           valueObjects={transformerTestResultsDataWithSelection}
           jzodSchema={resolveConditionalSchemaResultSchema}
           columnDefs={columnDefs}
-          // rowSelection="multiple"
-          // maxHeight="600px"
           styles={{
             height: "400px",
             width: "100%",

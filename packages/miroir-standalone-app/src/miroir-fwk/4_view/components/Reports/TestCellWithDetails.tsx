@@ -9,10 +9,19 @@ import {
   ThemedTitle
 } from "../Themes/index"
 import { formatValue, SideBySideDiff } from './SideBySideDiff.js';
+import { LoggerInterface, MiroirLoggerFactory } from 'miroir-core';
+import { packageName } from '../../../../constants.js';
+import { cleanLevel } from '../../constants.js';
+
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "TestCellWithDetails")
+).then((logger: LoggerInterface) => {log = logger});
 
 // ################################################################################################
 // Test Cell Components with Hover functionality and Side-by-Side Diff Display
 // 
+// TODO: I'm no sure the following is still useful, maybe delete it?
 // IMPORTANT: Modal behavior controls
 // - Modal should only close when:
 //   1. The close button (×) is clicked
@@ -45,10 +54,14 @@ export const TestCellWithDetails: React.FC<TestCellWithDetailsProps> = React.mem
   const cellRef = useRef<HTMLDivElement>(null);
   const { currentTheme } = useMiroirTheme();
 
+  if (type === 'testName')
+    log.info("TestCellWithDetails: rendering for test=", testName, " isSelected=", isSelected, "testData=", testData);
   // Check if this test is skipped
-  const isSkipped = testData?.testResult === "skipped" || testData?.status === "skipped";
+  // const isSkipped = testData?.testResult === "skipped" || testData?.status === "skipped";
+  const isSkipped = testData?.testResult === "skipped";
 
   // Handle ESC key press to close modal
+  // TODO: useful?
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape' && isExpanded) {
@@ -56,6 +69,7 @@ export const TestCellWithDetails: React.FC<TestCellWithDetailsProps> = React.mem
       }
     };
 
+    // TODO: useful?
     if (isExpanded) {
       document.addEventListener('keydown', handleKeyDown);
     }

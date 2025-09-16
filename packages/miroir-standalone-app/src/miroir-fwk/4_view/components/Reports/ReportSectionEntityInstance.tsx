@@ -145,10 +145,14 @@ export type TestSelectionState = {
  * @returns undefined if no selection happened (run all tests that are non-skipped), or { testList: { suiteName: [testName, ...], ... } }
  */
 const handleBuildTestFilter = (
-  testSelectionsState: TestSelectionState,
+  testSelectionsState: TestSelectionState | undefined,
   transformerTestResultsData: TestResultDataAndSelect[]
 ): { testList?: TestSuiteListFilter } | undefined => {
   // Get the list of selected test data (not just test names)
+  if (!testSelectionsState) {
+    return undefined;
+  }
+
   const selectedTestData = transformerTestResultsData.filter(
     (test) => testSelectionsState[test.testName] === true
   );
@@ -230,7 +234,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
     TestResultDataAndSelect[]
   >([]); // TODO: use a precise type!
   // const [currentTestFilter, setCurrentTestFilter] = useState<{ testList?: TestSuiteListFilter } | undefined>(undefined);
-  const [testSelectionState, setTestSelectionsState] = useState<TestSelectionState>({});
+  const [testSelectionState, setTestSelectionsState] = useState<TestSelectionState | undefined>(undefined);
 
   const currentTestFilter = useMemo(() => {
     return handleBuildTestFilter(testSelectionState, transformerTestResultsData);
