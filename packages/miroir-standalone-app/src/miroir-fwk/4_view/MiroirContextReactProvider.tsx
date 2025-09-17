@@ -30,7 +30,7 @@ import {
 
 import { packageName } from "../../constants.js";
 import { cleanLevel } from "./constants.js";
-import { ErrorLogService, ErrorLogEntry, logStartupError, logServerError, logClientError } from "./services/ErrorLogService.js";
+import { errorLogService, ErrorLogEntry, logStartupError, logServerError, logClientError } from "./services/ErrorLogService.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -85,18 +85,18 @@ export interface MiroirReactContext {
   // outline <-> instance editor
   // typeCheckKeyMap: Record<string, KeyMapEntry>,
   // setTypeCheckKeyMap: React.Dispatch<React.SetStateAction<Record<string, KeyMapEntry>>>,
-    setTypeCheckKeyMap: React.Dispatch<React.SetStateAction<Record<string, KeyMapEntry>>> | undefined,
-    setSetTypeCheckKeyMap: (
-      setTypeCheckKeyMap: React.Dispatch<React.SetStateAction<Record<string, KeyMapEntry>>>
-    ) => void;
+  setTypeCheckKeyMap: React.Dispatch<React.SetStateAction<Record<string, KeyMapEntry>>> | undefined,
+  setSetTypeCheckKeyMap: (
+    setTypeCheckKeyMap: React.Dispatch<React.SetStateAction<Record<string, KeyMapEntry>>>
+  ) => void;
+  setFoldedObjectAttributeOrArrayItems: React.Dispatch<
+      React.SetStateAction<FoldedStateTree>
+    > | undefined,
+  setSetFoldedObjectAttributeOrArrayItems: (
     setFoldedObjectAttributeOrArrayItems: React.Dispatch<
-        React.SetStateAction<FoldedStateTree>
-      > | undefined,
-    setSetFoldedObjectAttributeOrArrayItems: (
-      setFoldedObjectAttributeOrArrayItems: React.Dispatch<
-        React.SetStateAction<FoldedStateTree>
-      >
-    ) => void,
+      React.SetStateAction<FoldedStateTree>
+    >
+  ) => void,
 
   // ###################################################################################################
   // ToolsPage state management
@@ -117,7 +117,7 @@ export interface MiroirReactContext {
   handleSnackbarClose: () => void,
   handleAsyncAction: (action: () => Promise<any>, successMessage: string, actionName: string) => Promise<void>,
   // Error logging service access
-  errorLogService: typeof ErrorLogService,
+  errorLogService: typeof errorLogService,
 }
 
 // #############################################################################################
@@ -274,7 +274,7 @@ export function MiroirContextReactProvider(props: {
 
       // Log error to global error service
       const errorMessage = error instanceof Error ? error.message : String(error);
-      const errorEntry = ErrorLogService.logError(error instanceof Error ? error : new Error(String(error)), {
+      const errorEntry = errorLogService.logError(error instanceof Error ? error : new Error(String(error)), {
         category: errorCategory,
         severity: errorCategory === 'startup' ? 'critical' : 'error',
         context: {
@@ -368,7 +368,7 @@ export function MiroirContextReactProvider(props: {
       handleSnackbarClose,
       handleAsyncAction,
       // Error logging service access
-      errorLogService: ErrorLogService,
+      errorLogService: errorLogService,
     }),
     [
       deploymentUuid,
@@ -398,23 +398,23 @@ export function MiroirContextReactProvider(props: {
     ]
   );
 
-  // TODO: This belongs to the Root component
-  // Subscribe to global error notifications
-  useEffect(() => {
-    const unsubscribe = ErrorLogService.subscribe((errorEntry: ErrorLogEntry) => {
-      // Only show snackbar if the error indicates it should be shown
-      if (errorEntry.userMessage || errorEntry.severity === 'critical' || errorEntry.severity === 'error') {
-        startTransition(() => {
-          const message = errorEntry.userMessage || errorEntry.errorMessage;
-          const severity = errorEntry.severity === 'critical' ? 'error' : 
-                          errorEntry.severity === 'warning' ? 'error' : 'error';  // Map to valid types
-          showSnackbar(message, severity);
-        });
-      }
-    });
+  // // TODO: This belongs to the Root component
+  // // Subscribe to global error notifications
+  // useEffect(() => {
+  //   const unsubscribe = errorLogService.subscribe((errorEntry: ErrorLogEntry) => {
+  //     // Only show snackbar if the error indicates it should be shown
+  //     if (errorEntry.userMessage || errorEntry.severity === 'critical' || errorEntry.severity === 'error') {
+  //       startTransition(() => {
+  //         const message = errorEntry.userMessage || errorEntry.errorMessage;
+  //         const severity = errorEntry.severity === 'critical' ? 'error' : 
+  //                         errorEntry.severity === 'warning' ? 'error' : 'error';  // Map to valid types
+  //         showSnackbar(message, severity);
+  //       });
+  //     }
+  //   });
 
-    return unsubscribe;
-  }, [showSnackbar]);
+  //   return unsubscribe;
+  // }, [showSnackbar]);
 
   return (
     <miroirReactContext.Provider value={value}>

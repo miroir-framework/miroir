@@ -29,7 +29,7 @@ import { initializePerformanceConfig } from "./miroir-fwk/4_view/tools/performan
 import { loglevelnext } from './loglevelnextImporter.js';
 import { MiroirEventsPage } from "./miroir-fwk/4_view/pages/MiroirEventsPage.js";
 import { ErrorPage } from "./miroir-fwk/4_view/ErrorPage.js";
-import { ErrorLogsPage } from "./miroir-fwk/4_view/ErrorLogsPage.js";
+import { ErrorLogsPageDEFUNCT } from "./miroir-fwk/4_view/ErrorLogsPageDEFUNCT.js";
 import { MiroirContextReactProvider } from "./miroir-fwk/4_view/MiroirContextReactProvider.js";
 import { RootComponent } from "./miroir-fwk/4_view/components/Page/RootComponent.js";
 import { HomePage } from "./miroir-fwk/4_view/routes/HomePage.js";
@@ -150,7 +150,7 @@ const router = createBrowserRouter([
       },
       {
         path: "error-logs",
-        element: <ErrorLogsPage />,
+        element: <ErrorLogsPageDEFUNCT />,
         // errorElement: <ErrorPage />,
       },
       {

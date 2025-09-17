@@ -10,12 +10,14 @@ import {
   MiroirEventTrackingData,
   type TestAssertionPath,
 } from "../0_interfaces/3_controllers/MiroirEventTrackerInterface";
+import type { MiroirEventServiceInterface } from './MiroirEventService';
 
 
 export class MiroirEventTracker implements MiroirEventTrackerInterface {
   private readonly CLEANUP_INTERVAL_MS = 60000; // 1 minute
   private readonly MAX_AGE_MS = 20 * 60 * 1000; // 20 minutes
 
+  private miroirEventService: MiroirEventServiceInterface | undefined;
   private eventTrackingData: Map<string, MiroirEventTrackingData> = new Map();
   private currentEvenStack: string[] = []; // Stack to track nested actions
 
@@ -44,23 +46,27 @@ export class MiroirEventTracker implements MiroirEventTrackerInterface {
     }, this.CLEANUP_INTERVAL_MS);
   }
 
+  // ##############################################################################################
+  setMiroirEventService(service: MiroirEventServiceInterface): void {
+    this.miroirEventService = service;
+  }
   // ###############################################################################################
   // ###############################################################################################
   // EVENTS
   // ###############################################################################################
   // ###############################################################################################
   endEvent(trackingId: string, error?: string): void {
-    const action = this.eventTrackingData.get(trackingId);
-    if (!action) {
+    const event = this.eventTrackingData.get(trackingId);
+    if (!event) {
       return;
     }
 
     const now = Date.now();
-    action.endTime = now;
-    action.duration = now - action.startTime;
-    action.status = error ? "error" : "completed";
+    event.endTime = now;
+    event.duration = now - event.startTime;
+    event.status = error ? "error" : "completed";
     if (error) {
-      action.error = error;
+      event.error = error;
     }
 
     // Remove from action stack
@@ -69,10 +75,14 @@ export class MiroirEventTracker implements MiroirEventTrackerInterface {
       this.currentEvenStack.splice(index, 1);
     }
 
-    if (["testSuite", "test", "testAssertion" ].includes(action.trackingType)) {
+    if (["testSuite", "test", "testAssertion" ].includes(event.trackingType)) {
       this.currentTestPath.pop();
     }
-    this.notifySubscribersDEFUNCT();
+    this.miroirEventService?.pushEventFromLogTrackingData(event);
+  }
+
+  getAllEventIndex(): Map<string, MiroirEventTrackingData> {
+    return this.eventTrackingData;
   }
 
   getAllEvents(): MiroirEventTrackingData[] {
@@ -125,15 +135,14 @@ export class MiroirEventTracker implements MiroirEventTrackerInterface {
     this.currentTest = undefined;
     this.currentTestAssertion = undefined;
     this.testAssertionsResults = {};
-    this.notifySubscribersDEFUNCT();
   }
 
-  subscribe(callback: (actions: MiroirEventTrackingData[]) => void): () => void {
-    this.subscribers.add(callback);
-    return () => {
-      this.subscribers.delete(callback);
-    };
-  }
+  // subscribe(callback: (actions: MiroirEventTrackingData[]) => void): () => void {
+  //   this.subscribers.add(callback);
+  //   return () => {
+  //     this.subscribers.delete(callback);
+  //   };
+  // }
 
   getCurrentEventId(): string | undefined {
     return this.currentEvenStack[this.currentEvenStack.length - 1];
@@ -171,7 +180,7 @@ export class MiroirEventTracker implements MiroirEventTrackerInterface {
       ? (this.eventTrackingData.get(effectiveParentId)?.depth ?? 0) + 1
       : 0;
 
-    const actionData: MiroirEventTrackingData = {
+    const eventTrackingData: MiroirEventTrackingData = {
       id,
       parentId: effectiveParentId,
       trackingType: "action",
@@ -183,7 +192,7 @@ export class MiroirEventTracker implements MiroirEventTrackerInterface {
       children: [],
     };
 
-    this.eventTrackingData.set(id, actionData);
+    this.eventTrackingData.set(id, eventTrackingData);
 
     // Add to parent's children if there's a parent
     if (effectiveParentId) {
@@ -196,7 +205,7 @@ export class MiroirEventTracker implements MiroirEventTrackerInterface {
     // Push to action stack
     this.currentEvenStack.push(id);
 
-    this.notifySubscribersDEFUNCT();
+    this.miroirEventService?.pushEventFromLogTrackingData(eventTrackingData);
     return id;
   }
 
@@ -249,7 +258,7 @@ export class MiroirEventTracker implements MiroirEventTrackerInterface {
       ? (this.eventTrackingData.get(effectiveParentId)?.depth ?? 0) + 1
       : 0;
 
-    const testSuiteData: MiroirEventTrackingData = {
+    const eventTrackingData: MiroirEventTrackingData = {
       id,
       parentId: effectiveParentId,
       trackingType: "testSuite",
@@ -262,7 +271,7 @@ export class MiroirEventTracker implements MiroirEventTrackerInterface {
       children: [],
     };
 
-    this.eventTrackingData.set(id, testSuiteData);
+    this.eventTrackingData.set(id, eventTrackingData);
 
     if (effectiveParentId) {
       const parent = this.eventTrackingData.get(effectiveParentId);
@@ -274,7 +283,7 @@ export class MiroirEventTracker implements MiroirEventTrackerInterface {
     this.currentEvenStack.push(id);
     this.currentTestSuite = testSuite;
     this.currentTestPath.push({ testSuite });
-    this.notifySubscribersDEFUNCT();
+    this.miroirEventService?.pushEventFromLogTrackingData(eventTrackingData);
     return id;
   }
 
@@ -297,7 +306,6 @@ export class MiroirEventTracker implements MiroirEventTrackerInterface {
 
   setTestSuite(testSuite: string | undefined): void {
     this.currentTestSuite = testSuite;
-    this.notifySubscribersDEFUNCT();
   }
 
   getTestSuite(): string | undefined {
@@ -357,7 +365,7 @@ export class MiroirEventTracker implements MiroirEventTrackerInterface {
       ? (this.eventTrackingData.get(effectiveParentId)?.depth ?? 0) + 1
       : 0;
 
-    const testAssertionData: MiroirEventTrackingData = {
+    const event: MiroirEventTrackingData = {
       id,
       parentId: effectiveParentId,
       trackingType: "testAssertion",
@@ -372,7 +380,7 @@ export class MiroirEventTracker implements MiroirEventTrackerInterface {
       children: [],
     };
 
-    this.eventTrackingData.set(id, testAssertionData);
+    this.eventTrackingData.set(id, event);
 
     if (effectiveParentId) {
       const parent = this.eventTrackingData.get(effectiveParentId);
@@ -396,7 +404,8 @@ export class MiroirEventTracker implements MiroirEventTrackerInterface {
     // }
     
     this.currentTestPath.push({ testAssertion });
-    this.notifySubscribersDEFUNCT();
+    this.miroirEventService?.pushEventFromLogTrackingData(event);
+
     return id;
   }
 
@@ -514,8 +523,6 @@ export class MiroirEventTracker implements MiroirEventTrackerInterface {
     //   "MiroirEventTracker.setTestAssertionResult new this.testAssertionsResults",
     //   JSON.stringify(this.testAssertionsResults, null, 2)
     // );
-
-    this.notifySubscribersDEFUNCT();
   }
 
   // ##############################################################################################
@@ -617,7 +624,7 @@ export class MiroirEventTracker implements MiroirEventTrackerInterface {
       ? (this.eventTrackingData.get(effectiveParentId)?.depth ?? 0) + 1
       : 0;
 
-    const testData: MiroirEventTrackingData = {
+    const event: MiroirEventTrackingData = {
       id,
       parentId: effectiveParentId,
       trackingType: "test",
@@ -631,7 +638,7 @@ export class MiroirEventTracker implements MiroirEventTrackerInterface {
       children: [],
     };
 
-    this.eventTrackingData.set(id, testData);
+    this.eventTrackingData.set(id, event);
 
     if (effectiveParentId) {
       const parent = this.eventTrackingData.get(effectiveParentId);
@@ -655,13 +662,13 @@ export class MiroirEventTracker implements MiroirEventTrackerInterface {
     // }
     
     this.currentTestPath.push({test});
-    this.notifySubscribersDEFUNCT();
+    this.miroirEventService?.pushEventFromLogTrackingData(event);
+
     return id;
   }
 
   setTest(test: string | undefined): void {
     this.currentTest = test;
-    this.notifySubscribersDEFUNCT();
   }
 
   getTest(): string | undefined {
@@ -670,7 +677,6 @@ export class MiroirEventTracker implements MiroirEventTrackerInterface {
 
   setTestAssertion(testAssertion: string | undefined): void {
     this.currentTestAssertion = testAssertion;
-    this.notifySubscribersDEFUNCT();
   }
 
   getTestAssertion(): string | undefined {
@@ -689,7 +695,6 @@ export class MiroirEventTracker implements MiroirEventTrackerInterface {
     this.currentTestSuite = undefined;
     this.currentTest = undefined;
     this.currentTestAssertion = undefined;
-    this.notifySubscribersDEFUNCT();
   }
 
   // ##############################################################################################
@@ -744,7 +749,6 @@ export class MiroirEventTracker implements MiroirEventTrackerInterface {
 
     this.currentEvenStack.push(id);
     this.currentTransformerPath.push(transformerName);
-    this.notifySubscribersDEFUNCT();
     return id;
   }
 
@@ -784,7 +788,6 @@ export class MiroirEventTracker implements MiroirEventTrackerInterface {
     }
 
     this.currentTransformerPath.pop();
-    this.notifySubscribersDEFUNCT();
   }
 
   isTransformerTrackingEnabled(): boolean {
@@ -793,28 +796,16 @@ export class MiroirEventTracker implements MiroirEventTrackerInterface {
 
   setTransformerTrackingEnabled(enabled: boolean): void {
     this.transformerTrackingEnabled = enabled;
-    this.notifySubscribersDEFUNCT();
   }
 
   private generateId(): string {
     return `action_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   }
 
-  // ##############################################################################################
-  // ##############################################################################################
-  // ##############################################################################################
-  // ##############################################################################################
-  private notifySubscribersDEFUNCT(): void {
-    const events = this.getAllEvents();
-    this.subscribers.forEach((callback) => {
-      try {
-        callback(events);
-      } catch (error) {
-        console.error("Error in MiroirEventTracker subscriber:", error);
-      }
-    });
-  }
-
+  // // ##############################################################################################
+  // // ##############################################################################################
+  // // ##############################################################################################
+  // // ##############################################################################################
   private cleanup(): void {
     const now = Date.now();
     const cutoff = now - this.MAX_AGE_MS;
@@ -843,9 +834,6 @@ export class MiroirEventTracker implements MiroirEventTrackerInterface {
       this.eventTrackingData.delete(id);
     });
 
-    if (toRemove.length > 0) {
-      this.notifySubscribersDEFUNCT();
-    }
   }
 
   destroy(): void {

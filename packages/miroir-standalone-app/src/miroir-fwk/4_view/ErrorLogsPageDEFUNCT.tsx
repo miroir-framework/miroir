@@ -54,10 +54,10 @@ import { ErrorLogEntry } from './services/ErrorLogService.js';
 // Error Logs Page - Comprehensive error management and viewing interface
 // ##############################################################################################
 
-export const ErrorLogsPage: React.FC = () => {
+export const ErrorLogsPageDEFUNCT: React.FC = () => {
   const errorLogService = useErrorLogService();
   const [errors, setErrors] = useState<ErrorLogEntry[]>([]);
-  const [filteredErrors, setFilteredErrors] = useState<ErrorLogEntry[]>([]);
+  // filteredErrors is now derived via useMemo
   const [selectedError, setSelectedError] = useState<ErrorLogEntry | null>(null);
   const [detailsOpen, setDetailsOpen] = useState(false);
   
@@ -84,21 +84,16 @@ export const ErrorLogsPage: React.FC = () => {
     return unsubscribe;
   }, [errorLogService]);
 
-  // Filter errors based on current filters
-  useEffect(() => {
+  // Filter errors based on current filters using useMemo
+  const filteredErrors = useMemo(() => {
     let filtered = errors;
 
-    // Category filter
     if (categoryFilter !== 'all') {
       filtered = filtered.filter(error => error.category === categoryFilter);
     }
-
-    // Severity filter
     if (severityFilter !== 'all') {
       filtered = filtered.filter(error => error.severity === severityFilter);
     }
-
-    // Search term filter
     if (searchTerm) {
       const searchLower = searchTerm.toLowerCase();
       filtered = filtered.filter(error => 
@@ -107,13 +102,10 @@ export const ErrorLogsPage: React.FC = () => {
         (error.userMessage && error.userMessage.toLowerCase().includes(searchLower))
       );
     }
-
-    // Resolved filter
     if (!showResolved) {
       filtered = filtered.filter(error => !error.isResolved);
     }
-
-    setFilteredErrors(filtered);
+    return filtered;
   }, [errors, categoryFilter, severityFilter, searchTerm, showResolved]);
 
   // Get error statistics

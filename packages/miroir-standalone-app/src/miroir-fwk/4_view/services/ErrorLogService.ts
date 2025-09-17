@@ -217,11 +217,11 @@ class ErrorLogServiceClass {
 }
 
 // Singleton instance
-export const ErrorLogService = new ErrorLogServiceClass();
+export const errorLogService = new ErrorLogServiceClass();
 
 // Helper functions for common error types
 export const logStartupError = (error: Error | string, context?: Record<string, any>) => {
-  return ErrorLogService.logError(error, {
+  return errorLogService.logError(error, {
     category: 'startup',
     severity: 'critical',
     context,
@@ -231,7 +231,7 @@ export const logStartupError = (error: Error | string, context?: Record<string, 
 };
 
 export const logServerError = (error: Error | string, context?: Record<string, any>) => {
-  return ErrorLogService.logError(error, {
+  return errorLogService.logError(error, {
     category: 'server',
     severity: 'error',
     context,
@@ -241,7 +241,7 @@ export const logServerError = (error: Error | string, context?: Record<string, a
 };
 
 export const logClientError = (error: Error | string, context?: Record<string, any>) => {
-  return ErrorLogService.logError(error, {
+  return errorLogService.logError(error, {
     category: 'client',
     severity: 'error',
     context,
@@ -250,7 +250,7 @@ export const logClientError = (error: Error | string, context?: Record<string, a
 };
 
 export const logNetworkError = (error: Error | string, context?: Record<string, any>) => {
-  return ErrorLogService.logError(error, {
+  return errorLogService.logError(error, {
     category: 'network',
     severity: 'warning',
     context,
@@ -260,7 +260,7 @@ export const logNetworkError = (error: Error | string, context?: Record<string, 
 };
 
 export const logValidationError = (error: Error | string, context?: Record<string, any>) => {
-  return ErrorLogService.logError(error, {
+  return errorLogService.logError(error, {
     category: 'validation',
     severity: 'warning',
     context,

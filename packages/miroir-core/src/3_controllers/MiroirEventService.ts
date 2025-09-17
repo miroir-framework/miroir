@@ -1,4 +1,4 @@
-import { MiroirEventTrackerInterface } from "../0_interfaces/3_controllers/MiroirEventTrackerInterface";
+import { MiroirEventTrackerInterface, type MiroirEventActionTrackingData, type MiroirEventTestTrackingData, type MiroirEventTrackingData, type MiroirEventTransformerTrackingData } from "../0_interfaces/3_controllers/MiroirEventTrackerInterface";
 import{ LoggerGlobalContext } from "../4_services/LoggerContext";
 
 // Base interface for common log entry fields
@@ -50,37 +50,18 @@ export interface LogCounts {
 
 // Base interface for common event fields
 interface MiroirEventBase {
-  eventId: string;
-  actionType: string;
-  actionLabel?: string;
-  startTime: number;
-  endTime?: number;
-  status: 'running' | 'completed' | 'error';
   eventLogs: MiroirEventLog[];
   logCounts: LogCounts;
 }
 
 export type ActionEvent = MiroirEventBase & {
-  trackingType: 'action';
+  trackingData: MiroirEventActionTrackingData;
 };
 
-export type TestEvent = MiroirEventBase & {
-  trackingType: 'testSuite' | 'test' | 'testAssertion';
-  testSuite?: string;
-  test?: string;
-  testAssertion?: string;
-  testResult?: 'ok' | 'error';
-};
+export type TestEvent = MiroirEventBase & { trackingData: MiroirEventTestTrackingData};
 
-export type TransformerEvent = MiroirEventBase & {
-  trackingType: 'transformer';
-  transformerName?: string;
-  transformerType?: string;
-  transformerStep?: 'build' | 'runtime';
-  transformerParams?: any;
-  transformerResult?: any;
-  transformerError?: string;
-};
+export type TransformerEvent = MiroirEventBase & { trackingData: MiroirEventTransformerTrackingData}
+
 // Discriminated union for aggregated events
 export type MiroirEvent =
   | ActionEvent
@@ -114,6 +95,14 @@ export interface MiroirEventServiceInterface {
   ): void;
 
   /**
+   * 
+   * @param trackingData The MiroirEventTrackingData object representing the action or test to log
+   */
+  pushEventFromLogTrackingData(
+    trackingData:MiroirEventTrackingData
+  ): void;
+
+  /**
    * Get logs for a specific action
    */
   getEvent(eventId: string): MiroirEvent | undefined;
@@ -128,10 +117,10 @@ export interface MiroirEventServiceInterface {
    */
   getFilteredEvents(filter: EventFilter, events?: MiroirEvent[]): MiroirEvent[];
 
-  /**
-   * Subscribe to action log updates
-   */
-  subscribe(callback: (actionLogs: MiroirEvent[]) => void): () => void;
+  // /**
+  //  * Subscribe to action log updates
+  //  */
+  // subscribe(callback: (actionLogs: MiroirEvent[]) => void): () => void;
 
   /**
    * Clear all logs
@@ -171,11 +160,9 @@ export class MiroirEventService implements MiroirEventServiceInterface {
       this.cleanup();
     }, this.CLEANUP_INTERVAL_MS);
 
-    // Subscribe to action tracker to create action log containers
-    this.eventTracker.subscribe((actions) => {
-      this.updateEventContainers(actions);
-    });
+    this.eventTracker.setMiroirEventService(this);
   }
+
 
   // ##############################################################################################
   pushEventFromLog(
@@ -190,7 +177,8 @@ export class MiroirEventService implements MiroirEventServiceInterface {
       return;
     }
 
-    const currentActionData = this.eventTracker.getAllEvents().find(a => a.id === currentActionId);
+    // const currentActionData = this.eventTracker.getAllEvents().find(a => a.id === currentActionId);
+    const currentActionData = this.eventTracker.getAllEventIndex().get(currentActionId);
     if (!currentActionData) {
       return;
     }
@@ -292,7 +280,7 @@ export class MiroirEventService implements MiroirEventServiceInterface {
         }
       }
 
-      this.notifyEventSubscribers();
+      // this.notifyEventSubscribers();
     }
   }
 
@@ -302,25 +290,21 @@ export class MiroirEventService implements MiroirEventServiceInterface {
   }
 
   getAllEvents(): MiroirEvent[] {
-    return Array.from(this.events.values()).sort((a, b) => b.startTime - a.startTime);
+    return Array.from(this.events.values()).sort((a, b) => b.trackingData.startTime - a.trackingData.startTime);
   }
-
-  // getAllTestLogs(): TestLogs[] {
-  //   return Array.from(this.actionOrTestLogs.values()).sort((a, b) => b.startTime - a.startTime);
-  // }
 
   getFilteredEvents(filter: EventFilter, events?: MiroirEvent[]): MiroirEvent[] {
     return this.getAllEvents().filter(actionLogs => {
-      if (filter.eventId && actionLogs.eventId !== filter.eventId) {
+      if (filter.eventId && actionLogs.trackingData.id !== filter.eventId) {
         return false;
       }
-      if (filter.actionType && actionLogs.actionType !== filter.actionType) {
+      if (filter.actionType && actionLogs.trackingData.actionType !== filter.actionType) {
         return false;
       }
-      if (filter.trackingType && actionLogs.trackingType !== filter.trackingType) {
+      if (filter.trackingType && actionLogs.trackingData.trackingType !== filter.trackingType) {
         return false;
       }
-      if (filter.since && actionLogs.startTime < filter.since) {
+      if (filter.since && actionLogs.trackingData.startTime < filter.since) {
         return false;
       }
       if (filter.level) {
@@ -373,17 +357,10 @@ export class MiroirEventService implements MiroirEventServiceInterface {
     });
   }
 
-  subscribe(callback: (actionEvents: MiroirEvent[]) => void): () => void {
-    this.eventSubscribers.add(callback);
-    return () => {
-      this.eventSubscribers.delete(callback);
-    };
-  }
-
   clear(): void {
     this.events.clear();
     this.eventEntries.clear();
-    this.notifyEventSubscribers();
+    // this.notifyEventSubscribers();
   }
 
   exportEvents(): string {
@@ -408,123 +385,44 @@ export class MiroirEventService implements MiroirEventServiceInterface {
     this.eventSubscribers.clear();
   }
 
-  private updateEventContainers(events: any[]): void {
+  pushEventFromLogTrackingData(
+    trackingData:MiroirEventTrackingData
+  ) {
+    if (!this.events.has(trackingData.id)) {
+      // copies MiroirEventTrackingData to MiroirEvent
+      // Create event based on tracking type
+      let event: MiroirEvent = {
+        trackingData,
+        eventLogs: [],
+        logCounts: {
+          trace: 0,
+          debug: 0,
+          info: 0,
+          warn: 0,
+          error: 0,
+          total: 0
+        }
+      } as MiroirEvent;
+
+      this.events.set(trackingData.id, event);
+    } else {
+      // Update existing action status/timing and transformer results
+      const existing = this.events.get(trackingData.id)!;
+      existing.trackingData.endTime = trackingData.endTime;
+      existing.trackingData.status = trackingData.status;
+      // Update transformer-specific fields if they exist
+      if (trackingData.trackingType === "transformer" && existing.trackingData.trackingType === "transformer") {
+        existing.trackingData.transformerResult = trackingData.transformerResult;
+        existing.trackingData.transformerError = trackingData.transformerError;
+      }
+    }
+
+  }
+
+  private updateEventContainers(events: MiroirEventTrackingData[]): void {
     // Create action log containers for new actions and tests
     events.forEach(action => {
-      if (!this.events.has(action.id)) {
-        // Create event based on tracking type
-        let event: MiroirEvent;
-        
-        switch (action.trackingType) {
-          case 'action':
-            event = {
-              trackingType: 'action',
-              eventId: action.id,
-              actionType: action.actionType,
-              actionLabel: action.actionLabel,
-              startTime: action.startTime,
-              endTime: action.endTime,
-              status: action.status,
-              eventLogs: [],
-              logCounts: {
-                trace: 0,
-                debug: 0,
-                info: 0,
-                warn: 0,
-                error: 0,
-                total: 0
-              }
-            };
-            break;
-            
-          case 'testSuite':
-          case 'test':
-          case 'testAssertion':
-            event = {
-              trackingType: action.trackingType,
-              eventId: action.id,
-              actionType: action.actionType,
-              actionLabel: action.actionLabel,
-              startTime: action.startTime,
-              endTime: action.endTime,
-              status: action.status,
-              eventLogs: [],
-              logCounts: {
-                trace: 0,
-                debug: 0,
-                info: 0,
-                warn: 0,
-                error: 0,
-                total: 0
-              },
-              testSuite: action.testSuite,
-              test: action.test,
-              testAssertion: action.testAssertion,
-              testResult: action.testResult
-            };
-            break;
-            
-          case 'transformer':
-            event = {
-              trackingType: 'transformer',
-              eventId: action.id,
-              actionType: action.actionType,
-              actionLabel: action.actionLabel,
-              startTime: action.startTime,
-              endTime: action.endTime,
-              status: action.status,
-              eventLogs: [],
-              logCounts: {
-                trace: 0,
-                debug: 0,
-                info: 0,
-                warn: 0,
-                error: 0,
-                total: 0
-              },
-              transformerName: action.transformerName,
-              transformerType: action.transformerType,
-              transformerStep: action.transformerStep,
-              transformerParams: action.transformerParams,
-              transformerResult: action.transformerResult,
-              transformerError: action.transformerError
-            };
-            break;
-            
-          default:
-            // Fallback to action type
-            event = {
-              trackingType: 'action',
-              eventId: action.id,
-              actionType: action.actionType,
-              actionLabel: action.actionLabel,
-              startTime: action.startTime,
-              endTime: action.endTime,
-              status: action.status,
-              eventLogs: [],
-              logCounts: {
-                trace: 0,
-                debug: 0,
-                info: 0,
-                warn: 0,
-                error: 0,
-                total: 0
-              }
-            };
-        }
-        
-        this.events.set(action.id, event);
-      } else {
-        // Update existing action status/timing and transformer results
-        const existing = this.events.get(action.id)!;
-        existing.endTime = action.endTime;
-        existing.status = action.status;
-        // Update transformer-specific fields if they exist
-        if (action.trackingType === 'transformer' && existing.trackingType === 'transformer') {
-          existing.transformerResult = action.transformerResult;
-          existing.transformerError = action.transformerError;
-        }
-      }
+      this.pushEventFromLogTrackingData(action);
     });
   }
 
@@ -578,28 +476,6 @@ export class MiroirEventService implements MiroirEventServiceInterface {
     }
   }
 
-  private notifyEventSubscribers(): void {
-    const actionLogs = this.getAllEvents();
-    this.eventSubscribers.forEach(callback => {
-      try {
-        callback(actionLogs);
-      } catch (error) {
-        console.error('Error in MiroirEventService subscriber:', error);
-      }
-    });
-  }
-
-  // private notifyTestSubscribers(): void {
-  //   const testLogs = this.getAllTestLogs();
-  //   this.testSubscribers.forEach(callback => {
-  //     try {
-  //       callback(testLogs);
-  //     } catch (error) {
-  //       console.error('Error in MiroirEventService subscriber:', error);
-  //     }
-  //   });
-  // }
-
   private cleanup(): void {
     const now = Date.now();
     const cutoff = now - this.MAX_AGE_MS;
@@ -608,7 +484,7 @@ export class MiroirEventService implements MiroirEventServiceInterface {
     const actionsToRemove: string[] = [];
     
     for (const [eventId, actionLogs] of Array.from(this.events.entries())) {
-      if (actionLogs.status !== 'running' && actionLogs.startTime < cutoff) {
+      if (actionLogs.trackingData.status !== 'running' && actionLogs.trackingData.startTime < cutoff) {
         actionsToRemove.push(eventId);
       }
     }
@@ -624,9 +500,5 @@ export class MiroirEventService implements MiroirEventServiceInterface {
         this.events.delete(eventId);
       }
     });
-
-    if (actionsToRemove.length > 0) {
-      this.notifyEventSubscribers();
-    }
   }
 }

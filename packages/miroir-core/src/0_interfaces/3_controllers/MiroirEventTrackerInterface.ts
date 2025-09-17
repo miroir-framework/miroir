@@ -1,3 +1,4 @@
+import type { MiroirEventServiceInterface } from "../../3_controllers/MiroirEventService";
 import {
   TestAssertionResult,
   TestAssertionsResults,
@@ -23,31 +24,44 @@ interface MiroirEventTrackingDataRoot {
 }
 
 // Discriminated union for event tracking data
+export type MiroirEventActionTrackingData = MiroirEventTrackingDataRoot & {
+  trackingType: "action";
+};
+
+export type MiroirEventTestTrackingData = MiroirEventTrackingDataRoot & {
+  trackingType: "testSuite" | "test" | "testAssertion";
+  testSuite?: string;
+  test?: string;
+  testAssertion?: string;
+  testResult?: "ok" | "error";
+  testAssertionsResults?: TestAssertionsResults;
+};
+
+export type MiroirEventTransformerTrackingData = MiroirEventTrackingDataRoot & {
+  trackingType: 'transformer';
+  transformerName?: string;
+  transformerType?: string;
+  transformerStep?: 'build' | 'runtime';
+  transformerParams?: any;
+  transformerResult?: Domain2QueryReturnType<any>;
+  transformerError?: string;
+};
+
 export type MiroirEventTrackingData =
-  | (MiroirEventTrackingDataRoot & {
-      trackingType: 'action';
-    })
-  | (MiroirEventTrackingDataRoot & {
-      trackingType: 'testSuite' | 'test' | 'testAssertion';
-      testSuite?: string;
-      test?: string;
-      testAssertion?: string;
-      testResult?: 'ok' | 'error';
-      testAssertionsResults?: TestAssertionsResults;
-    })
-  | (MiroirEventTrackingDataRoot & {
-      trackingType: 'transformer';
-      transformerName?: string;
-      transformerType?: string;
-      transformerStep?: 'build' | 'runtime';
-      transformerParams?: any;
-      transformerResult?: Domain2QueryReturnType<any>;
-      transformerError?: string;
-    });
+  | MiroirEventActionTrackingData
+  | MiroirEventTestTrackingData
+  | MiroirEventTransformerTrackingData;
 
 export type TestAssertionPath = {testSuite?: string, test?: string, testAssertion?: string}[];
 
 export interface MiroirEventTrackerInterface {
+
+  /**
+   * 
+   * @param service The MiroirEventService instance to use for event notifications
+   */
+  setMiroirEventService(service: MiroirEventServiceInterface): void;
+  
   /**
    * Start tracking an action
    * @param actionType The type of action being tracked
@@ -71,6 +85,12 @@ export interface MiroirEventTrackerInterface {
   getAllEvents(): MiroirEventTrackingData[];
   
   /**
+   * Get all currently tracked actions as a Map of ID to data
+   * @returns Map of action ID to action tracking data
+   */
+  getAllEventIndex(): Map<string, MiroirEventTrackingData>;
+
+  /**
    * Get actions filtered by criteria
    * @param filter Filter criteria
    * @returns Filtered array of action tracking data
@@ -89,12 +109,12 @@ export interface MiroirEventTrackerInterface {
    */
   clear(): void;
   
-  /**
-   * Subscribe to tracking data changes
-   * @param callback Function to call when tracking data changes
-   * @returns Unsubscribe function
-   */
-  subscribe(callback: (actions: MiroirEventTrackingData[]) => void): () => void;
+  // /**
+  //  * Subscribe to tracking data changes
+  //  * @param callback Function to call when tracking data changes
+  //  * @returns Unsubscribe function
+  //  */
+  // subscribe(callback: (actions: MiroirEventTrackingData[]) => void): () => void;
   
   /**
    * Get the current active action ID (for parent-child relationships)
