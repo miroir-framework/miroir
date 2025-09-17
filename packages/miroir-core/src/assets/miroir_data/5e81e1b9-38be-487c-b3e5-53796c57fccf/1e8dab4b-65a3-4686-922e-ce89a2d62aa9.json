@@ -449,9 +449,29 @@
             "relativePath": "jzodBaseObject"
           }
         },
+        "tag": {
+          "value": {
+            "description": "A plain attribute (not object, not array) with no validation.",
+            "editable": true,
+            "initializeTo": {
+              "initializeToType": "value",
+              "value": null
+            }
+          }
+        },
         "definition": {
           "type": {
             "type": "enum",
+            "tag": {
+              "value": {
+                "description": "The type of a plain attribute (not object, not array) with no validation.",
+                "editable": true,
+                "initializeTo": {
+                  "initializeToType": "value",
+                  "value": "any"
+                }
+              }
+            },
             "definition": [
               "any",
               "bigint",

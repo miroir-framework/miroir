@@ -852,6 +852,7 @@ export const RootComponent = (props: RootComponentProps) => {
                   actionName="commit library app"
                 />
               </span>
+              {/* TODO: enclose the outlet in a PageContainer? (see ReportPage, Tools page) */}
               <Outlet></Outlet>
             </ThemedMain>
           </ThemedGrid>

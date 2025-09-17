@@ -279,13 +279,11 @@ export function getDefaultValueForJzodSchemaWithResolution<T extends MiroirModel
       const resolvedObjectType = resolveObjectExtendClauseAndDefinition(
         effectiveSchema,
         miroirEnvironment,
-        // miroirFundamentalJzodSchema,
-        // currentModel,
-        // miroirMetaModel,
         relativeReferenceJzodContext
       );
       let result: Record<string, any> = {};
 
+      // TODO: do not call this when the object has a initializeTo tag!
       Object.entries(resolvedObjectType.definition)
         .filter((a) => !a[1].optional)
         .forEach((a) => {

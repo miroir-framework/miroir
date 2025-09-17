@@ -130,9 +130,9 @@ const handleDiscriminatorChange = (
         const discriminatorElement = a.definition[parentKeyMap.discriminator as string];
         if (!discriminatorElement) return false;
         
-        if (discriminatorType === "literal" && discriminatorElement.type === "literal") {
+        if (discriminatorElement.type === "literal") {
           return (discriminatorElement as JzodLiteral).definition === selectedValue;
-        } else if (discriminatorType === "enum" && discriminatorElement.type === "enum") {
+        } else if (discriminatorElement.type === "enum") {
           return (discriminatorElement as JzodEnum).definition.includes(selectedValue);
         } else if (discriminatorType === "schemaReference" && discriminatorElement.type === "schemaReference") {
           return (
@@ -165,7 +165,9 @@ const handleDiscriminatorChange = (
 
   log.info(`handleDiscriminatorChange (${discriminatorType})`, "newJzodSchema", JSON.stringify(newJzodSchema, null, 2));
   const defaultValue = modelEnvironment
-    ? getDefaultValueForJzodSchemaWithResolutionNonHook(
+    ? {
+      ...getDefaultValueForJzodSchemaWithResolutionNonHook(
+        "build",
         newJzodSchemaWithOptional,
         formik.values,
         rootLessListKey,
@@ -175,7 +177,9 @@ const handleDiscriminatorChange = (
         true,
         currentDeploymentUuid,
         modelEnvironment
-      )
+      ),
+      [Array.isArray(parentKeyMap.discriminator) ? parentKeyMap.discriminator[0] : parentKeyMap.discriminator]: selectedValue,
+    }
     : undefined;
 
   const targetRootLessListKey = rootLessListKeyArray.slice(0, rootLessListKeyArray.length - 1).join(".")??"";

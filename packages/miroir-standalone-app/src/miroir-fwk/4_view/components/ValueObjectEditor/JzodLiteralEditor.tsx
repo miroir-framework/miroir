@@ -14,6 +14,7 @@ import {
   miroirFundamentalJzodSchema,
   MiroirLoggerFactory,
   resolvePathOnObject,
+  type JzodObject,
   type JzodSchema,
   type KeyMapEntry,
   type MiroirModelEnvironment
@@ -83,24 +84,19 @@ const handleDiscriminatorChange = (
         "handleDiscriminatorChange called but current object is not of type object, cannot proceed!"
       );
     }
-    // if (parentKeyMap.discriminator.length !== 1) {
-    //   throw new Error(
-    //     "handleDiscriminatorChange called but current object has multiple discriminators, which is not supported yet!"
-    //   );
-    // }
-    // // for now we only support one discriminator per union
-    // if (parentKeyMap.discriminatorValues.length !== 1) {
-    //   throw new Error(
-    //     "handleDiscriminatorChange called but current object has multiple discriminatorValues sets, which is not supported yet!"
-    //   );
-    // }
-    // if (parentKeyMap.discriminatorValues[0].length === 0) {
-    //   throw new Error(
-    //     "handleDiscriminatorChange called but current object has no discriminatorValues, cannot proceed!"
-    //   );
-    // }
     const discriminator = parentKeyMap.discriminator[0];
-    const discriminatorTypeLocal = parentKeyMap.resolvedSchema.definition[discriminator]?.type;
+    // const discriminatorTypeLocal = parentKeyMap.resolvedSchema.definition[discriminator]?.type;
+    const parentNewUnionBranch:JzodObject | undefined = parentKeyMap.recursivelyUnfoldedUnionSchema.result.find((a: JzodElement) => {
+      if (a.type !== "object") return false;
+      const discriminatorElement = a.definition[discriminator as string];
+      if (!discriminatorElement) return false;
+      return true;
+    }) as JzodObject | undefined;
+
+    log.info("handleDiscriminatorChange found parentNewUnionBranch", parentNewUnionBranch);
+
+    const discriminatorTypeLocal: string | undefined = parentNewUnionBranch?.definition[discriminator as string].type;
+
     if (!discriminatorTypeLocal) {
       throw new Error(
         `handleDiscriminatorChange could not find discriminator type for discriminator ${discriminator} in ${JSON.stringify(parentKeyMap.resolvedSchema)}`
@@ -112,7 +108,9 @@ const handleDiscriminatorChange = (
       (discriminatorType === "schemaReference" && discriminatorTypeLocal !== "schemaReference")
     ) {
       throw new Error(
-        `handleDiscriminatorChange discriminator type mismatch: expected ${discriminatorType} but found ${discriminatorTypeLocal} for discriminator ${discriminator} in ${JSON.stringify(parentKeyMap.resolvedSchema)}`
+        `handleDiscriminatorChange discriminator type mismatch: expected ${discriminatorType} but found ${discriminatorTypeLocal} for discriminator ${discriminator} in ${JSON.stringify(
+          parentKeyMap.resolvedSchema
+        )}`
       );
     }
     const newParentValue = {
@@ -178,9 +176,17 @@ const handleDiscriminatorChange = (
         const discriminatorElement = a.definition[parentKeyMap.discriminator as string];
         if (!discriminatorElement) return false;
         
-        if (discriminatorType === "literal" && discriminatorElement.type === "literal") {
+        // if (discriminatorType === "literal" && discriminatorElement.type === "literal") {
+        if (discriminatorElement.type === "literal") {
           return (discriminatorElement as JzodLiteral).definition === selectedValue;
-        } else if (discriminatorType === "enum" && discriminatorElement.type === "enum") {
+        // } else if (discriminatorType === "enum" && discriminatorElement.type === "enum") {
+        } else if (discriminatorElement.type === "enum") {
+          log.info(
+            "handleDiscriminatorChange checking enum",
+            (discriminatorElement as JzodEnum).definition,
+            "for value",
+            selectedValue
+          );
           return (discriminatorElement as JzodEnum).definition.includes(selectedValue);
         } else if (discriminatorType === "schemaReference" && discriminatorElement.type === "schemaReference") {
           return (
@@ -214,7 +220,8 @@ const handleDiscriminatorChange = (
 
   log.info(`handleDiscriminatorChange (${discriminatorType})`, "newJzodSchema", JSON.stringify(newJzodSchema, null, 2));
   const defaultValue = modelEnvironment
-    ? getDefaultValueForJzodSchemaWithResolutionNonHook(
+    ? {
+      ...getDefaultValueForJzodSchemaWithResolutionNonHook(
         "build",
         newJzodSchemaWithOptional,
         formik.values,
@@ -225,7 +232,9 @@ const handleDiscriminatorChange = (
         true,
         currentDeploymentUuid,
         modelEnvironment
-      )
+      ),
+      [Array.isArray(parentKeyMap.discriminator) ? parentKeyMap.discriminator[0] : parentKeyMap.discriminator]: selectedValue,
+    }
     : undefined;
 
   const targetRootLessListKey = rootLessListKeyArray.slice(0, rootLessListKeyArray.length - 1).join(".")??"";
@@ -348,7 +357,7 @@ export const JzodLiteralEditor: FC<JzodLiteralEditorProps> =  (
       log.info("event.type:", event.type);
       log.info("isDiscriminator:", isDiscriminator);
       log.info("parentKeyMap:", parentKeyMap);
-      log.info("Stack trace:", new Error().stack);
+      // log.info("Stack trace:", new Error().stack);
       
       if (!isDiscriminator) {
         throw new Error(

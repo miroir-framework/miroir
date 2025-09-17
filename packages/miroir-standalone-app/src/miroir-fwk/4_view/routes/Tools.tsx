@@ -66,6 +66,7 @@ import { usePageConfiguration } from "../services/index.js";
 
 import { RunTransformerTestSuiteButton } from "../components/Buttons/RunTransformerTestSuiteButton";
 import { TransformerEditor } from "../components/TransformerEditor/TransformerEditor";
+import { ReportPageContextProvider } from "../components/Reports/ReportPageContext";
 
 // ################################################################################################
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -419,13 +420,6 @@ export const ToolsPage: React.FC<any> = (
     []
   ); // end onSubmit()
 
-  // // ##############################################################################################
-  // const onCodeEditorChange = useCallback((values:any, viewUpdate:any) => {
-  //   log.info('edit code received value:', values);
-  //   setRawSchema(JSON.parse(values))
-  //   log.info('edit code done');
-  // }, []);
-
   // ##############################################################################################
 
   log.info(
@@ -444,91 +438,93 @@ export const ToolsPage: React.FC<any> = (
   const testSuiteKey = "resolveConditionalSchema";
 
   return (
-    <PageContainer>
-      {/* Tools page! */}
-      <div>
-        {/* Transformer Editor */}
-        <div style={{ margin: "20px 0" }}>
-          <TransformerEditor
-            // deploymentUuid={context.deploymentUuid}
-            deploymentUuid={selfApplicationDeploymentLibrary.uuid}
-            // entityUuid="e8ba151b-d68e-4cc3-9a83-3459d309ccf5" // Book entity UUID
-            // entityUuid={entityDefinitionTransformerDefinition.entityUuid}
-            entityUuid={entityBook.uuid}
-          />
-        </div>
-
-        <EndpointActionCaller
-          key={"aaaa"}
-          // currentDeploymentUuid={displayedDeploymentUuid}
-          // currentApplicationSection={displayedApplicationSection}
-          // currentReportUuid={displayedReportUuid}
-        />
-
-        <div>Hello World!</div>
-
-        {/* resolveConditionalSchema Test Button */}
-        <div style={{ margin: "20px 0" }}>
-          <RunTransformerTestSuiteButton
-            transformerTestSuite={transformerTestSuite_resolveConditionalSchema}
-            testSuiteKey={testSuiteKey}
-            useSnackBar={true}
-            onTestComplete={(testSuiteKey, structuredResults) => {
-              setResolveConditionalSchemaResultsData(structuredResults);
-            }}
-          />
-        </div>
-
-        {/* Test Results Display */}
-        {resolveConditionalSchemaResultsData && resolveConditionalSchemaResultsData.length > 0 && (
+    <ReportPageContextProvider>
+      <PageContainer>
+        {/* Tools page! */}
+        <div>
+          {/* Transformer Editor */}
           <div style={{ margin: "20px 0" }}>
-            <h3>resolveConditionalSchema Test Results:</h3>
-            <ValueObjectGrid
-              valueObjects={resolveConditionalSchemaResultsData}
-              jzodSchema={{
-                type: "object",
-                definition: {
-                  testName: { type: "string" },
-                  testResult: { type: "string" },
-                  status: { type: "string" },
-                  assertionCount: { type: "number" },
-                  assertions: { type: "string" },
-                },
-              }}
-              styles={{
-                height: "400px",
-                width: "100%",
-              }}
-              maxRows={20}
-              sortByAttribute="testName"
-              displayTools={false}
-              gridType="ag-grid"
+            <TransformerEditor
+              // deploymentUuid={context.deploymentUuid}
+              deploymentUuid={selfApplicationDeploymentLibrary.uuid}
+              // entityUuid="e8ba151b-d68e-4cc3-9a83-3459d309ccf5" // Book entity UUID
+              // entityUuid={entityDefinitionTransformerDefinition.entityUuid}
+              entityUuid={entityBook.uuid}
             />
           </div>
-        )}
-          <Formik
-            enableReinitialize={true}
-            initialValues={formState}
-            onSubmit={onSubmit}
-            handleChange={async (e: ChangeEvent<any>): Promise<void> => {
-              log.info("onChange formik", e);
-            }}
-          >
-            {(formik) => (
-              <>
-                <form id={"form." + pageLabel} onSubmit={formik.handleSubmit}>
-                  <>
-                    <button type="submit" name={pageLabel} form={"form." + pageLabel}>
-                      submit form.{pageLabel}
-                    </button>
-                  </>
-                  {/* )} */}
-                </form>
-              </>
-            )}
-          </Formik>
-        {/* </div> */}
-      </div>
-    </PageContainer>
+
+          <EndpointActionCaller
+            key={"aaaa"}
+            // currentDeploymentUuid={displayedDeploymentUuid}
+            // currentApplicationSection={displayedApplicationSection}
+            // currentReportUuid={displayedReportUuid}
+          />
+
+          <div>Hello World!</div>
+
+          {/* resolveConditionalSchema Test Button */}
+          <div style={{ margin: "20px 0" }}>
+            <RunTransformerTestSuiteButton
+              transformerTestSuite={transformerTestSuite_resolveConditionalSchema}
+              testSuiteKey={testSuiteKey}
+              useSnackBar={true}
+              onTestComplete={(testSuiteKey, structuredResults) => {
+                setResolveConditionalSchemaResultsData(structuredResults);
+              }}
+            />
+          </div>
+
+          {/* Test Results Display */}
+          {resolveConditionalSchemaResultsData && resolveConditionalSchemaResultsData.length > 0 && (
+            <div style={{ margin: "20px 0" }}>
+              <h3>resolveConditionalSchema Test Results:</h3>
+              <ValueObjectGrid
+                valueObjects={resolveConditionalSchemaResultsData}
+                jzodSchema={{
+                  type: "object",
+                  definition: {
+                    testName: { type: "string" },
+                    testResult: { type: "string" },
+                    status: { type: "string" },
+                    assertionCount: { type: "number" },
+                    assertions: { type: "string" },
+                  },
+                }}
+                styles={{
+                  height: "400px",
+                  width: "100%",
+                }}
+                maxRows={20}
+                sortByAttribute="testName"
+                displayTools={false}
+                gridType="ag-grid"
+              />
+            </div>
+          )}
+            <Formik
+              enableReinitialize={true}
+              initialValues={formState}
+              onSubmit={onSubmit}
+              handleChange={async (e: ChangeEvent<any>): Promise<void> => {
+                log.info("onChange formik", e);
+              }}
+            >
+              {(formik) => (
+                <>
+                  <form id={"form." + pageLabel} onSubmit={formik.handleSubmit}>
+                    <>
+                      <button type="submit" name={pageLabel} form={"form." + pageLabel}>
+                        submit form.{pageLabel}
+                      </button>
+                    </>
+                    {/* )} */}
+                  </form>
+                </>
+              )}
+            </Formik>
+          {/* </div> */}
+        </div>
+      </PageContainer>
+    </ReportPageContextProvider>
   );
 }

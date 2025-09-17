@@ -472,9 +472,29 @@ export const miroirFundamentalJzodSchema = {
           },
           "context": {}
         },
+        "tag": {
+          "value": {
+            "description": "A plain attribute (not object, not array) with no validation.",
+            "editable": true,
+            "initializeTo": {
+              "initializeToType": "value",
+              "value": null
+            }
+          }
+        },
         "definition": {
           "type": {
             "type": "enum",
+            "tag": {
+              "value": {
+                "description": "The type of a plain attribute (not object, not array) with no validation.",
+                "editable": true,
+                "initializeTo": {
+                  "initializeToType": "value",
+                  "value": "any"
+                }
+              }
+            },
             "definition": [
               "any",
               "bigint",
@@ -21266,12 +21286,44 @@ export const miroirFundamentalJzodSchema = {
             }
           }
         ],
+        "tag": {
+          "value": {
+            "description": "A plain attribute (not object, not array) with no validation.",
+            "editable": true,
+            "initializeTo": {
+              "initializeToType": "value",
+              "value": null
+            },
+            "isTemplate": true
+          }
+        },
         "definition": {
           "type": {
             "type": "union",
+            "tag": {
+              "value": {
+                "description": "The type of a plain attribute (not object, not array) with no validation.",
+                "editable": true,
+                "initializeTo": {
+                  "initializeToType": "value",
+                  "value": "any"
+                },
+                "isTemplate": true
+              }
+            },
             "definition": [
               {
                 "type": "enum",
+                "tag": {
+                  "value": {
+                    "description": "The type of a plain attribute (not object, not array) with no validation.",
+                    "editable": true,
+                    "initializeTo": {
+                      "initializeToType": "value",
+                      "value": "any"
+                    }
+                  }
+                },
                 "definition": [
                   "any",
                   "bigint",
@@ -35738,6 +35790,17 @@ export const miroirFundamentalJzodSchema = {
         ]
       },
       "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodPlainAttribute": {
+        "tag": {
+          "value": {
+            "description": "A plain attribute (not object, not array) with no validation.",
+            "editable": true,
+            "initializeTo": {
+              "initializeToType": "value",
+              "value": null
+            },
+            "isTemplate": true
+          }
+        },
         "type": "union",
         "definition": [
           {
@@ -35758,12 +35821,44 @@ export const miroirFundamentalJzodSchema = {
                 }
               }
             ],
+            "tag": {
+              "value": {
+                "description": "A plain attribute (not object, not array) with no validation.",
+                "editable": true,
+                "initializeTo": {
+                  "initializeToType": "value",
+                  "value": null
+                },
+                "isTemplate": true
+              }
+            },
             "definition": {
               "type": {
                 "type": "union",
+                "tag": {
+                  "value": {
+                    "description": "The type of a plain attribute (not object, not array) with no validation.",
+                    "editable": true,
+                    "initializeTo": {
+                      "initializeToType": "value",
+                      "value": "any"
+                    },
+                    "isTemplate": true
+                  }
+                },
                 "definition": [
                   {
                     "type": "enum",
+                    "tag": {
+                      "value": {
+                        "description": "The type of a plain attribute (not object, not array) with no validation.",
+                        "editable": true,
+                        "initializeTo": {
+                          "initializeToType": "value",
+                          "value": "any"
+                        }
+                      }
+                    },
                     "definition": [
                       "any",
                       "bigint",
@@ -50539,9 +50634,30 @@ export const miroirFundamentalJzodSchema = {
             }
           }
         ],
+        "tag": {
+          "value": {
+            "description": "A plain attribute (not object, not array) with no validation.",
+            "editable": true,
+            "initializeTo": {
+              "initializeToType": "value",
+              "value": null
+            },
+            "isTemplate": true
+          }
+        },
         "definition": {
           "type": {
             "type": "enum",
+            "tag": {
+              "value": {
+                "description": "The type of a plain attribute (not object, not array) with no validation.",
+                "editable": true,
+                "initializeTo": {
+                  "initializeToType": "value",
+                  "value": "any"
+                }
+              }
+            },
             "definition": [
               "any",
               "bigint",
@@ -58869,9 +58985,30 @@ export const miroirFundamentalJzodSchema = {
             }
           }
         ],
+        "tag": {
+          "value": {
+            "description": "A plain attribute (not object, not array) with no validation.",
+            "editable": true,
+            "initializeTo": {
+              "initializeToType": "value",
+              "value": null
+            },
+            "isTemplate": true
+          }
+        },
         "definition": {
           "type": {
             "type": "enum",
+            "tag": {
+              "value": {
+                "description": "The type of a plain attribute (not object, not array) with no validation.",
+                "editable": true,
+                "initializeTo": {
+                  "initializeToType": "value",
+                  "value": "any"
+                }
+              }
+            },
             "definition": [
               "any",
               "bigint",
@@ -67153,9 +67290,30 @@ export const miroirFundamentalJzodSchema = {
             }
           }
         ],
+        "tag": {
+          "value": {
+            "description": "A plain attribute (not object, not array) with no validation.",
+            "editable": true,
+            "initializeTo": {
+              "initializeToType": "value",
+              "value": null
+            },
+            "isTemplate": true
+          }
+        },
         "definition": {
           "type": {
             "type": "enum",
+            "tag": {
+              "value": {
+                "description": "The type of a plain attribute (not object, not array) with no validation.",
+                "editable": true,
+                "initializeTo": {
+                  "initializeToType": "value",
+                  "value": "any"
+                }
+              }
+            },
             "definition": [
               "any",
               "bigint",
