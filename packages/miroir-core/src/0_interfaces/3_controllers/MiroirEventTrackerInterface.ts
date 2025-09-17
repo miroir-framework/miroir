@@ -9,8 +9,8 @@ import type { Domain2QueryReturnType } from "../2_domain/DomainElement";
 // Import other interface elements only
 
 // Base interface for common tracking fields
-interface MiroirEventTrackingDataRoot {
-  id: string;
+interface MiroirActivity_Root {
+  activityId: string;
   parentId?: string;
   actionType: string;
   actionLabel?: string;
@@ -24,12 +24,12 @@ interface MiroirEventTrackingDataRoot {
 }
 
 // Discriminated union for event tracking data
-export type MiroirEventActionTrackingData = MiroirEventTrackingDataRoot & {
-  trackingType: "action";
+export type MiroirActivity_Action = MiroirActivity_Root & {
+  activityType: "action";
 };
 
-export type MiroirEventTestTrackingData = MiroirEventTrackingDataRoot & {
-  trackingType: "testSuite" | "test" | "testAssertion";
+export type MiroirActivity_Test = MiroirActivity_Root & {
+  activityType: "testSuite" | "test" | "testAssertion";
   testSuite?: string;
   test?: string;
   testAssertion?: string;
@@ -37,8 +37,8 @@ export type MiroirEventTestTrackingData = MiroirEventTrackingDataRoot & {
   testAssertionsResults?: TestAssertionsResults;
 };
 
-export type MiroirEventTransformerTrackingData = MiroirEventTrackingDataRoot & {
-  trackingType: 'transformer';
+export type MiroirActivity_Transformer = MiroirActivity_Root & {
+  activityType: 'transformer';
   transformerName?: string;
   transformerType?: string;
   transformerStep?: 'build' | 'runtime';
@@ -48,13 +48,13 @@ export type MiroirEventTransformerTrackingData = MiroirEventTrackingDataRoot & {
 };
 
 export type MiroirEventTrackingData =
-  | MiroirEventActionTrackingData
-  | MiroirEventTestTrackingData
-  | MiroirEventTransformerTrackingData;
+  | MiroirActivity_Action
+  | MiroirActivity_Test
+  | MiroirActivity_Transformer;
 
 export type TestAssertionPath = {testSuite?: string, test?: string, testAssertion?: string}[];
 
-export interface MiroirEventTrackerInterface {
+export interface MiroirActivityTrackerInterface {
 
   /**
    * 
@@ -69,33 +69,33 @@ export interface MiroirEventTrackerInterface {
    * @param parentId Optional parent action ID for nested calls
    * @returns Unique tracking ID for this action
    */
-  startAction(actionType: string, actionLabel?: string, parentId?: string): string;
+  startActivity_Action(actionType: string, actionLabel?: string, parentId?: string): string;
   
   /**
    * End tracking an action
    * @param trackingId The tracking ID returned from startEvent
    * @param error Optional error information if the action failed
    */
-  endEvent(trackingId: string, error?: string): void;
+  endActivity(trackingId: string, error?: string): void;
   
   /**
    * Get all currently tracked actions
    * @returns Array of action tracking data
    */
-  getAllEvents(): MiroirEventTrackingData[];
+  getAllActivities(): MiroirEventTrackingData[];
   
   /**
    * Get all currently tracked actions as a Map of ID to data
    * @returns Map of action ID to action tracking data
    */
-  getAllEventIndex(): Map<string, MiroirEventTrackingData>;
+  getActivityIndex(): Map<string, MiroirEventTrackingData>;
 
   /**
    * Get actions filtered by criteria
    * @param filter Filter criteria
    * @returns Filtered array of action tracking data
    */
-  getFilteredEvents(filter: {
+  getFilteredActivities(filter: {
     actionType?: string;
     trackingType?: 'action' | 'testSuite' | 'test' | 'testAssertion' | 'transformer'; // New field for test and transformer filtering
     status?: 'running' | 'completed' | 'error';
@@ -108,13 +108,6 @@ export interface MiroirEventTrackerInterface {
    * Clear all tracking data
    */
   clear(): void;
-  
-  // /**
-  //  * Subscribe to tracking data changes
-  //  * @param callback Function to call when tracking data changes
-  //  * @returns Unsubscribe function
-  //  */
-  // subscribe(callback: (actions: MiroirEventTrackingData[]) => void): () => void;
   
   /**
    * Get the current active action ID (for parent-child relationships)
@@ -176,20 +169,6 @@ export interface MiroirEventTrackerInterface {
    */
   startTestAssertion(testAssertion: string, parentId?: string): string;
 
-  // /**
-  //  * Set test assertion result for a specific tracking ID or using current context
-  //  * @param trackingId The tracking ID of the test assertion (new signature)
-  //  * @param result The test assertion result (new signature)
-  //  */
-  // setTestAssertionResult(trackingId: string, result: TestAssertionResult): void;
-  
-  // /**
-  //  * Set test assertion result for a specific tracking ID or using current context
-  //  * @param trackingId The tracking ID of the test assertion (new signature)
-  //  * @param result The test assertion result (new signature)
-  //  */
-  // setTestAssertionResult(testSuiteName: string, result: TestAssertionResult): void;
-  
   /**
    * Set test assertion result using current context (TestTracker compatibility)
    * @param testAssertionResult The test assertion result
@@ -202,16 +181,7 @@ export interface MiroirEventTrackerInterface {
    * @param test The test name
    * @returns The test result
    */
-  // getTestResult(testSuite: string, test: string): TestResult;
   getTestResult(testPath: TestAssertionPath): TestResult;
-
-  // /**
-  //  * Get test result for a specific test suite and test
-  //  * @param testSuite The test suite name
-  //  * @param test The test name
-  //  * @returns The test result
-  //  */
-  // getTestResultFromPath(testSuitePath: string[], test: string): TestResult;
 
   /**
    * Get test suite result for a specific test suite
@@ -219,13 +189,6 @@ export interface MiroirEventTrackerInterface {
    * @returns The test suite result
    */
   getTestSuiteResult(testSuitePath: TestAssertionPath): TestSuiteResult;
-
-  // /**
-  //  * Get test suite result for a specific test suite
-  //  * @param testSuite The test suite name
-  //  * @returns The test suite result
-  //  */
-  // getTestSuiteResultFromPath(testSuitePath: string[]): TestSuiteResult;
 
   /**
    * Get all test assertions results

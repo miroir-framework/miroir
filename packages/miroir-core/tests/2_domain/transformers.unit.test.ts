@@ -1,6 +1,6 @@
 import * as vitest from 'vitest';
 import { defaultMetaModelEnvironment } from '../../src/1_core/Model';
-import { MiroirEventTracker } from '../../src/3_controllers/MiroirEventTracker';
+import { MiroirActivityTracker } from '../../src/3_controllers/MiroirActivityTracker';
 import {
   runTransformerTestInMemory,
   runTransformerTestSuite,
@@ -23,7 +23,7 @@ const testSuiteName = "transformers.unit.test";
 const shouldSkip = filePattern.includes('resolveConditionalSchema');
 
 // ##################################################################################################
-const miroirEventTracker = new MiroirEventTracker();
+const miroirEventTracker = new MiroirActivityTracker();
 
 afterAll(() => {
   if (!shouldSkip) {

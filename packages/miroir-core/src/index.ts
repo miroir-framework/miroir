@@ -633,7 +633,7 @@ export {
 } from "./0_interfaces/3_controllers/ErrorLogServiceInterface.js";
 export { MiroirContextInterface } from "./0_interfaces/3_controllers/MiroirContextInterface.js";
 export { 
-  MiroirEventTrackerInterface,
+  MiroirActivityTrackerInterface as MiroirEventTrackerInterface,
   MiroirEventTrackingData,
 } from "./0_interfaces/3_controllers/MiroirEventTrackerInterface.js";
 // export {
@@ -915,7 +915,7 @@ export { ErrorAdminStore } from "./3_controllers/ErrorHandling/ErrorAdminStore.j
 export { ErrorDataStore } from "./3_controllers/ErrorHandling/ErrorDataStore.js";
 export { ErrorModelStore } from "./3_controllers/ErrorHandling/ErrorModelStore.js";
 export { MiroirContext } from "./3_controllers/MiroirContext.js";
-export { MiroirEventTracker } from "./3_controllers/MiroirEventTracker.js";
+export { MiroirActivityTracker } from "./3_controllers/MiroirActivityTracker.js";
 // export { TransformerEventService } from "./3_controllers/TransformerEventService.js";
 export { ConsoleInterceptor } from "./4_services/ConsoleInterceptor.js";
 export { modelInitialize } from "./3_controllers/ModelInitializer.js";

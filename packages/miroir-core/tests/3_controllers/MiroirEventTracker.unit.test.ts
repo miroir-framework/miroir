@@ -1,14 +1,14 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { MiroirEventTracker } from '../../src/3_controllers/MiroirEventTracker';
-import { MiroirEventTrackerInterface, TestAssertionPath } from '../../src/0_interfaces/3_controllers/MiroirEventTrackerInterface';
+import { MiroirActivityTracker } from '../../src/3_controllers/MiroirActivityTracker';
+import { MiroirActivityTrackerInterface, TestAssertionPath } from '../../src/0_interfaces/3_controllers/MiroirEventTrackerInterface';
 import { TestAssertionResult, TestResult, TestSuiteResult } from '../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType';
 import { transformerTestsDisplayResults } from '../../src/4_services/TestTools';
 
-describe('MiroirEventTracker - Test Results Management', () => {
-  let tracker: MiroirEventTrackerInterface;
+describe('MiroirActivityTracker - Test Results Management', () => {
+  let tracker: MiroirActivityTrackerInterface;
 
   beforeEach(() => {
-    tracker = new MiroirEventTracker();
+    tracker = new MiroirActivityTracker();
   });
 
   afterEach(() => {

@@ -3,7 +3,7 @@ import * as vitest from 'vitest';
 
 import type { TransformerTestSuite } from '../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType';
 import { defaultMetaModelEnvironment } from '../../src/1_core/Model';
-import { MiroirEventTracker } from '../../src/3_controllers/MiroirEventTracker';
+import { MiroirActivityTracker } from '../../src/3_controllers/MiroirActivityTracker';
 import {
   runTransformerTestInMemory,
   runTransformerTestSuite
@@ -181,7 +181,7 @@ if (shouldSkip) {
 } else {
   console.log("transformer_menu_addItem START")
   
-  const miroirEventTracker = new MiroirEventTracker();
+  const miroirEventTracker = new MiroirActivityTracker();
   
   // console.log("################################ result", JSON.stringify(result,null,2))
   // console.log("################################ expectedResult", JSON.stringify(expectedResult,null,2))

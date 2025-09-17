@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import type { MiroirEventTrackerInterface } from '../../src/0_interfaces/3_controllers/MiroirEventTrackerInterface';
-import { MiroirEventTracker } from '../../src/3_controllers/MiroirEventTracker';
+import type { MiroirActivityTrackerInterface } from '../../src/0_interfaces/3_controllers/MiroirEventTrackerInterface';
+import { MiroirActivityTracker } from '../../src/3_controllers/MiroirActivityTracker';
 import type { TestAssertionResult } from '../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType';
 import { assert } from 'console';
 // import { TestTracker } from '../../src/3_controllers/';
@@ -8,10 +8,10 @@ import { assert } from 'console';
 // import { TestAssertionResult } from '../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType';
 
 describe('TestTracker', () => {
-  let tracker: MiroirEventTrackerInterface;
+  let tracker: MiroirActivityTrackerInterface;
 
   beforeEach(() => {
-    tracker = new MiroirEventTracker();
+    tracker = new MiroirActivityTracker();
   });
 
   describe('TestSuite context tracking', () => {

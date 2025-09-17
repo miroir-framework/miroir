@@ -54,7 +54,7 @@ export interface ToolsPageState {
 
 export interface MiroirReactContext {
   // miroirContext: MiroirContextInterface, // events, client/server config
-  miroirContext: MiroirContext, // events, client/server config
+  miroirContext: MiroirContextInterface, // events, client/server config
   // level 4 access: perform side effects, via domain controller action calls
   domainController: DomainControllerInterface,
   // ###################################################################################################
@@ -130,8 +130,8 @@ const miroirReactContext = createContext<MiroirReactContext | undefined>(undefin
 // #############################################################################################
 // export function MiroirContextReactProvider(props:any extends {miroirContext:MiroirContextInterface}) {
 export function MiroirContextReactProvider(props: {
-  // miroirContext: MiroirContextInterface;
-  miroirContext: MiroirContext;
+  miroirContext: MiroirContextInterface;
+  // miroirContext: MiroirContext;
   domainController: DomainControllerInterface;
   testingDeploymentUuid?: Uuid; // for tests only! Yuck!
   children: ReactNode;

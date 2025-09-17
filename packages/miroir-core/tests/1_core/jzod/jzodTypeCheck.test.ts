@@ -20,7 +20,7 @@ import {
 
 import transformerTestSuite_jzodTypeCheck from "../../../src/assets/miroir_data/681be9ca-c593-45f5-b45a-5f1d4969e91e/f8e3c7a1-2b9d-4e6f-8c2a-5d7b9e4f1a8c.json";
 import { defaultMiroirMetaModel } from "../../../src/1_core/Model";
-import { MiroirEventTracker } from '../../../src/3_controllers/MiroirEventTracker';
+import { MiroirActivityTracker } from '../../../src/3_controllers/MiroirActivityTracker';
 
 // Access the test file pattern from Vitest's process arguments
 const vitestArgs = process.argv.slice(2);
@@ -30,7 +30,7 @@ console.log("@@@@@@@@@@@@@@@@@@ File Pattern:", filePattern);
 const selectedTestName: string[] = [];
 const testSuiteName = transformerTestSuite_jzodTypeCheck.definition.transformerTestLabel;
 
-const eventTracker = new MiroirEventTracker();
+const eventTracker = new MiroirActivityTracker();
 
 // ################################################################################################
 // Skip this test when running resolveConditionalSchema pattern

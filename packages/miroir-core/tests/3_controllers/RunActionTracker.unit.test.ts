@@ -1,12 +1,12 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { MiroirEventTracker } from '../../src/3_controllers/MiroirEventTracker';
-import { MiroirEventTrackerInterface } from '../../src/0_interfaces/3_controllers/MiroirEventTrackerInterface';
+import { MiroirActivityTracker } from '../../src/3_controllers/MiroirActivityTracker';
+import { MiroirActivityTrackerInterface } from '../../src/0_interfaces/3_controllers/MiroirEventTrackerInterface';
 
-describe('MiroirEventTracker', () => {
-  let tracker: MiroirEventTrackerInterface;
+describe('MiroirActivityTracker', () => {
+  let tracker: MiroirActivityTrackerInterface;
 
   beforeEach(() => {
-    tracker = new MiroirEventTracker();
+    tracker = new MiroirActivityTracker();
   });
 
   describe('Action and CompositeAction context tracking', () => {
@@ -69,7 +69,7 @@ describe('MiroirEventTracker', () => {
   describe('Integration with existing action tracking', () => {
     it('should maintain action context alongside action tracking', () => {
       // Start tracking an action
-      const eventId = tracker.startAction('testActionType', 'testActionLabel');
+      const eventId = tracker.startActivity_Action('testActionType', 'testActionLabel');
       
       // Set action context
       tracker.setAction('contextAction');
@@ -81,7 +81,7 @@ describe('MiroirEventTracker', () => {
       expect(tracker.getCompositeAction()).toBe('contextCompositeAction');
       
       // End action tracking
-      tracker.endEvent(eventId);
+      tracker.endActivity(eventId);
       
       // Action context should still be available
       expect(tracker.getAction()).toBe('contextAction');

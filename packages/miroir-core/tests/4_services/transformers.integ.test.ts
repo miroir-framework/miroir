@@ -51,14 +51,14 @@ import {
 import {
   currentTestSuite,
 } from "../2_domain/transformersTests_miroir.data";
-import { MiroirEventTracker } from '../../src/3_controllers/MiroirEventTracker';
+import { MiroirActivityTracker } from '../../src/3_controllers/MiroirActivityTracker';
 
 // Access the test file pattern from Vitest's process arguments
 const vitestArgs = process.argv.slice(2);
 const filePattern = vitestArgs.find(arg => !arg.startsWith('-')) || '';
 console.log("@@@@@@@@@@@@@@@@@@ File Pattern:", filePattern);
 
-const miroirEventTracker = new MiroirEventTracker();
+const miroirEventTracker = new MiroirActivityTracker();
 // console.log("@@@@@@@@@@@@@@@@@@ miroirConfig", miroirConfig);
 
 // describe.sequential("templatesDEFUNCT.unit.test", () => {

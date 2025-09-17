@@ -6,14 +6,14 @@ import {
   type TestSuiteResult
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import {
-  MiroirEventTrackerInterface,
+  MiroirActivityTrackerInterface,
   MiroirEventTrackingData,
   type TestAssertionPath,
 } from "../0_interfaces/3_controllers/MiroirEventTrackerInterface";
 import type { MiroirEventServiceInterface } from './MiroirEventService';
 
 
-export class MiroirEventTracker implements MiroirEventTrackerInterface {
+export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
   private readonly CLEANUP_INTERVAL_MS = 60000; // 1 minute
   private readonly MAX_AGE_MS = 20 * 60 * 1000; // 20 minutes
 
@@ -55,7 +55,7 @@ export class MiroirEventTracker implements MiroirEventTrackerInterface {
   // EVENTS
   // ###############################################################################################
   // ###############################################################################################
-  endEvent(trackingId: string, error?: string): void {
+  endActivity(trackingId: string, error?: string): void {
     const event = this.eventTrackingData.get(trackingId);
     if (!event) {
       return;
@@ -75,21 +75,21 @@ export class MiroirEventTracker implements MiroirEventTrackerInterface {
       this.currentEvenStack.splice(index, 1);
     }
 
-    if (["testSuite", "test", "testAssertion" ].includes(event.trackingType)) {
+    if (["testSuite", "test", "testAssertion" ].includes(event.activityType)) {
       this.currentTestPath.pop();
     }
     this.miroirEventService?.pushEventFromLogTrackingData(event);
   }
 
-  getAllEventIndex(): Map<string, MiroirEventTrackingData> {
+  getActivityIndex(): Map<string, MiroirEventTrackingData> {
     return this.eventTrackingData;
   }
 
-  getAllEvents(): MiroirEventTrackingData[] {
+  getAllActivities(): MiroirEventTrackingData[] {
     return Array.from(this.eventTrackingData.values()).sort((a, b) => a.startTime - b.startTime);
   }
 
-  getFilteredEvents(filter: {
+  getFilteredActivities(filter: {
     actionType?: string;
     trackingType?: "action" | "testSuite" | "test" | "testAssertion" | "transformer"; // New field for test and transformer filtering
     status?: "running" | "completed" | "error";
@@ -97,11 +97,11 @@ export class MiroirEventTracker implements MiroirEventTrackerInterface {
     maxDuration?: number;
     since?: number;
   }, events?: MiroirEventTrackingData[]): MiroirEventTrackingData[] {
-    return events??this.getAllEvents().filter((action) => {
+    return events??this.getAllActivities().filter((action) => {
       if (filter.actionType && action.actionType !== filter.actionType) {
         return false;
       }
-      if (filter.trackingType && action.trackingType !== filter.trackingType) {
+      if (filter.trackingType && action.activityType !== filter.trackingType) {
         return false;
       }
       if (filter.status && action.status !== filter.status) {
@@ -158,18 +158,18 @@ export class MiroirEventTracker implements MiroirEventTrackerInterface {
     actionLabel: string | undefined,
     actionFn: () => Promise<T>
   ): Promise<T> {
-    const trackingId = this.startAction(actionType, actionLabel);
+    const trackingId = this.startActivity_Action(actionType, actionLabel);
     try {
       const result = await actionFn();
-      this.endEvent(trackingId);
+      this.endActivity(trackingId);
       return result;
     } catch (error) {
-      this.endEvent(trackingId, error instanceof Error ? error.message : String(error));
+      this.endActivity(trackingId, error instanceof Error ? error.message : String(error));
       throw error;
     }
   }
 
-  startAction(actionType: string, actionLabel?: string, parentId?: string): string {
+  startActivity_Action(actionType: string, actionLabel?: string, parentId?: string): string {
     const id = this.generateId();
     const now = Date.now();
 
@@ -181,9 +181,9 @@ export class MiroirEventTracker implements MiroirEventTrackerInterface {
       : 0;
 
     const eventTrackingData: MiroirEventTrackingData = {
-      id,
+      activityId: id,
       parentId: effectiveParentId,
-      trackingType: "action",
+      activityType: "action",
       actionType,
       actionLabel,
       startTime: now,
@@ -238,10 +238,10 @@ export class MiroirEventTracker implements MiroirEventTrackerInterface {
     const trackingId = this.startTestSuite(testSuite, parentId);
     try {
       const result = await actionFn();
-      this.endEvent(trackingId);
+      this.endActivity(trackingId);
       return result;
     } catch (error) {
-      this.endEvent(trackingId, error instanceof Error ? error.message : String(error));
+      this.endActivity(trackingId, error instanceof Error ? error.message : String(error));
       throw error;
     } finally {
       this.currentTestPath.pop();
@@ -259,9 +259,9 @@ export class MiroirEventTracker implements MiroirEventTrackerInterface {
       : 0;
 
     const eventTrackingData: MiroirEventTrackingData = {
-      id,
+      activityId: id,
       parentId: effectiveParentId,
-      trackingType: "testSuite",
+      activityType: "testSuite",
       actionType: "testSuite",
       actionLabel: testSuite,
       testSuite,
@@ -346,10 +346,10 @@ export class MiroirEventTracker implements MiroirEventTrackerInterface {
     const trackingId = this.startTestAssertion(testAssertion, parentId);
     try {
       const result = await actionFn();
-      this.endEvent(trackingId);
+      this.endActivity(trackingId);
       return result;
     } catch (error) {
-      this.endEvent(trackingId, error instanceof Error ? error.message : String(error));
+      this.endActivity(trackingId, error instanceof Error ? error.message : String(error));
       throw error;
     } finally {
       this.currentTestPath.pop();
@@ -366,9 +366,9 @@ export class MiroirEventTracker implements MiroirEventTrackerInterface {
       : 0;
 
     const event: MiroirEventTrackingData = {
-      id,
+      activityId: id,
       parentId: effectiveParentId,
-      trackingType: "testAssertion",
+      activityType: "testAssertion",
       actionType: "testAssertion",
       actionLabel: testAssertion,
       testSuite: this.currentTestSuite,
@@ -422,7 +422,7 @@ export class MiroirEventTracker implements MiroirEventTrackerInterface {
     testAssertionResult?: TestAssertionResult
   ): void {
     console.log(
-      "MiroirEventTracker.setTestAssertionResult called for testAssertionPath",
+      "MiroirActivityTracker.setTestAssertionResult called for testAssertionPath",
       testAssertionPath,
       "testAssertionResult",
       // "old this.testAssertionsResults",
@@ -520,7 +520,7 @@ export class MiroirEventTracker implements MiroirEventTrackerInterface {
     }
 
     // console.log(
-    //   "MiroirEventTracker.setTestAssertionResult new this.testAssertionsResults",
+    //   "MiroirActivityTracker.setTestAssertionResult new this.testAssertionsResults",
     //   JSON.stringify(this.testAssertionsResults, null, 2)
     // );
   }
@@ -559,7 +559,7 @@ export class MiroirEventTracker implements MiroirEventTrackerInterface {
   // getTestAssertionsResults(): { [testSuite: string]: { [test: string]: TestAssertionsResults } } {
   getTestAssertionsResults(testAssertionsPath: TestAssertionPath): TestSuiteResult {
     // console.log(
-    //   "MiroirEventTracker.getTestAssertionsResults called for testAssertionsPath",
+    //   "MiroirActivityTracker.getTestAssertionsResults called for testAssertionsPath",
     //   testAssertionsPath,
     //   "this.testAssertionsResults",
     //   JSON.stringify(this.testAssertionsResults, null, 2)
@@ -604,10 +604,10 @@ export class MiroirEventTracker implements MiroirEventTrackerInterface {
     const trackingId = this.startTest(test, parentId);
     try {
       const result = await actionFn();
-      this.endEvent(trackingId);
+      this.endActivity(trackingId);
       return result;
     } catch (error) {
-      this.endEvent(trackingId, error instanceof Error ? error.message : String(error));
+      this.endActivity(trackingId, error instanceof Error ? error.message : String(error));
       throw error;
     } finally {
       this.currentTestPath.pop();
@@ -625,9 +625,9 @@ export class MiroirEventTracker implements MiroirEventTrackerInterface {
       : 0;
 
     const event: MiroirEventTrackingData = {
-      id,
+      activityId: id,
       parentId: effectiveParentId,
-      trackingType: "test",
+      activityType: "test",
       actionType: "test",
       actionLabel: test,
       testSuite: this.currentTestSuite,
@@ -714,7 +714,7 @@ export class MiroirEventTracker implements MiroirEventTrackerInterface {
       return ""; // Return empty string if tracking is disabled
     }
 
-    const id = this.generateId();
+    const activityId = this.generateId();
     const now = Date.now();
 
     const effectiveParentId = parentId || this.getCurrentEventId();
@@ -723,9 +723,9 @@ export class MiroirEventTracker implements MiroirEventTrackerInterface {
       : 0;
 
     const transformerData: MiroirEventTrackingData = {
-      id,
+      activityId: activityId,
       parentId: effectiveParentId,
-      trackingType: "transformer",
+      activityType: "transformer",
       actionType: "transformer",
       actionLabel: transformerName,
       transformerName,
@@ -738,18 +738,18 @@ export class MiroirEventTracker implements MiroirEventTrackerInterface {
       children: [],
     };
 
-    this.eventTrackingData.set(id, transformerData);
+    this.eventTrackingData.set(activityId, transformerData);
 
     if (effectiveParentId) {
       const parent = this.eventTrackingData.get(effectiveParentId);
-      if (parent && !parent.children.includes(id)) {
-        parent.children.push(id);
+      if (parent && !parent.children.includes(activityId)) {
+        parent.children.push(activityId);
       }
     }
 
-    this.currentEvenStack.push(id);
+    this.currentEvenStack.push(activityId);
     this.currentTransformerPath.push(transformerName);
-    return id;
+    return activityId;
   }
 
   // ###############################################################################################
@@ -769,7 +769,7 @@ export class MiroirEventTracker implements MiroirEventTrackerInterface {
     transformer.status = error ? "error" : "completed";
 
     // Type guard for transformer events
-    if (transformer.trackingType === "transformer") {
+    if (transformer.activityType === "transformer") {
       transformer.transformerResult = result;
       if (error) {
         transformer.transformerError = error;

@@ -509,7 +509,7 @@ export class DomainController implements DomainControllerInterface {
     // let entityDomainAction:DomainAction | undefined = undefined;
     try {
       LoggerGlobalContext.setAction(runBoxedExtractorOrQueryAction.actionName);
-      // Also set in MiroirEventTracker for MiroirEventService
+      // Also set in MiroirActivityTracker for MiroirEventService
       this.miroirContext.miroirEventTracker.setAction(runBoxedExtractorOrQueryAction.actionName);
       log.info(
         "handleBoxedExtractorOrQueryAction",
@@ -633,7 +633,7 @@ export class DomainController implements DomainControllerInterface {
       );
     } finally {
       LoggerGlobalContext.setAction(undefined);
-      // Also clear in MiroirEventTracker for MiroirEventService
+      // Also clear in MiroirActivityTracker for MiroirEventService
       this.miroirContext.miroirEventTracker.setAction(undefined);
     }
 
@@ -1296,7 +1296,7 @@ export class DomainController implements DomainControllerInterface {
     // }
     try {
       LoggerGlobalContext.setAction(domainAction.actionType);
-      // Also set in MiroirEventTracker for MiroirEventService
+      // Also set in MiroirActivityTracker for MiroirEventService
       this.miroirContext.miroirEventTracker.setAction(domainAction.actionType);
       switch (domainAction.actionType) {
         case "compositeAction": {
@@ -1471,7 +1471,7 @@ export class DomainController implements DomainControllerInterface {
       );
     } finally {
       LoggerGlobalContext.setAction(undefined);
-      // Also clear in MiroirEventTracker for MiroirEventService
+      // Also clear in MiroirActivityTracker for MiroirEventService
       this.miroirContext.miroirEventTracker.setAction(undefined);
     }
   }
@@ -1513,7 +1513,7 @@ export class DomainController implements DomainControllerInterface {
       let actionResult: Action2ReturnType | undefined = undefined;
       try {
         LoggerGlobalContext.setAction(currentAction.actionLabel);
-        // Also set in MiroirEventTracker for MiroirEventService
+        // Also set in MiroirActivityTracker for MiroirEventService
         this.miroirContext.miroirEventTracker.setAction(currentAction.actionLabel);
         // log.info(
         //   "handleCompositeAction compositeInstanceAction handling sub currentAction",
@@ -1683,7 +1683,7 @@ export class DomainController implements DomainControllerInterface {
         );
       } finally {
         LoggerGlobalContext.setCompositeAction(undefined);
-        // Also clear in MiroirEventTracker for MiroirEventService
+        // Also clear in MiroirActivityTracker for MiroirEventService
         this.miroirContext.miroirEventTracker.setCompositeAction(undefined);
       }
     }
@@ -1714,7 +1714,7 @@ export class DomainController implements DomainControllerInterface {
       let actionResult: Action2ReturnType | undefined = undefined;
       try {
         LoggerGlobalContext.setAction(currentAction.actionLabel);
-        // Also set in MiroirEventTracker for MiroirEventService
+        // Also set in MiroirActivityTracker for MiroirEventService
         this.miroirContext.miroirEventTracker.setAction(currentAction.actionLabel);
         // log.info(
         //   "handleRuntimeCompositeAction compositeInstanceAction handling sub currentAction",
@@ -2000,7 +2000,7 @@ export class DomainController implements DomainControllerInterface {
         );
       } finally {
         LoggerGlobalContext.setCompositeAction(undefined);
-        // Also clear in MiroirEventTracker for MiroirEventService
+        // Also clear in MiroirActivityTracker for MiroirEventService
         this.miroirContext.miroirEventTracker.setCompositeAction(undefined);
       }
     }
@@ -2169,7 +2169,7 @@ export class DomainController implements DomainControllerInterface {
     let valueToTest: any = undefined;
     try {
       // TestSuiteContext.setTestAssertion(currentAction.testAssertion.testLabel);
-      // Set test assertion in MiroirEventTracker for TestLogService
+      // Set test assertion in MiroirActivityTracker for TestLogService
       this.miroirContext.miroirEventTracker.setTestAssertion(currentAction.testAssertion.testLabel);
 
       // TODO: shall there be an interpretation at all?
@@ -2241,7 +2241,7 @@ export class DomainController implements DomainControllerInterface {
         //   // assertionExpectedValue: compositeRunTestAssertion.testAssertion.definition.expectedValue,
         //   // assertionActualValue: valueToTest,
         // });
-        // Set test result in MiroirEventTracker for TestLogService
+        // Set test result in MiroirActivityTracker for TestLogService
         this.miroirContext.miroirEventTracker.setTestAssertionResult(
           this.miroirContext.miroirEventTracker.getCurrentTestAssertionPath(),
           {
@@ -2256,7 +2256,7 @@ export class DomainController implements DomainControllerInterface {
         //   assertionExpectedValue: currentAction.testAssertion.definition.expectedValue,
         //   assertionActualValue: valueToTest,
         // });
-        // Set test result in MiroirEventTracker for TestLogService
+        // Set test result in MiroirActivityTracker for TestLogService
         this.miroirContext.miroirEventTracker.setTestAssertionResult(
           this.miroirContext.miroirEventTracker.getCurrentTestAssertionPath(),
           {
@@ -2279,7 +2279,7 @@ export class DomainController implements DomainControllerInterface {
       //   // assertionExpectedValue: compositeRunTestAssertion.testAssertion.definition.expectedValue,
       //   // assertionActualValue: valueToTest,
       // });
-      // Set test result in MiroirEventTracker for TestLogService
+      // Set test result in MiroirActivityTracker for TestLogService
       this.miroirContext.miroirEventTracker.setTestAssertionResult(
                   this.miroirContext.miroirEventTracker.getCurrentTestAssertionPath(),
 {
@@ -2291,7 +2291,7 @@ export class DomainController implements DomainControllerInterface {
       );
     } finally {
       // TestSuiteContext.setTestAssertion(undefined);
-      // Clear test assertion in MiroirEventTracker for TestLogService
+      // Clear test assertion in MiroirActivityTracker for TestLogService
       this.miroirContext.miroirEventTracker.setTestAssertion(undefined);
     }
     return actionResult;

@@ -1,6 +1,6 @@
 import { MiroirEventServiceInterface } from "../3_controllers/MiroirEventService";
 // import { TestLogServiceInterface } from "../3_controllers/TestLogService";
-import { MiroirEventTrackerInterface } from "../0_interfaces/3_controllers/MiroirEventTrackerInterface";
+import { MiroirActivityTrackerInterface } from "../0_interfaces/3_controllers/MiroirEventTrackerInterface";
 
 /**
  * Configuration for ConsoleInterceptor
@@ -8,7 +8,7 @@ import { MiroirEventTrackerInterface } from "../0_interfaces/3_controllers/Miroi
 export interface LogInterceptorConfig {
   eventHandlers?: {
     actionOrTestLogService: MiroirEventServiceInterface;
-    actionOrTestTracker: MiroirEventTrackerInterface;
+    actionOrTestTracker: MiroirActivityTrackerInterface;
   };
 }
 

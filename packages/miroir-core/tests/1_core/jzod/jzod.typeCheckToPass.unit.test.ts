@@ -16,7 +16,7 @@ import { jzodTypeCheck } from "../../../src/1_core/jzod/jzodTypeCheck";
 
 import { KeyMapEntry } from '../../../dist';
 import { defaultMiroirModelEnvironment } from '../../../src/1_core/Model';
-import { MiroirEventTracker } from '../../../src/3_controllers/MiroirEventTracker';
+import { MiroirActivityTracker } from '../../../src/3_controllers/MiroirActivityTracker';
 import { runTransformerTestInMemory, runTransformerTestSuite, transformerTestsDisplayResults } from '../../../src/4_services/TestTools';
 
 
@@ -63,7 +63,7 @@ const shouldSkip = filePattern.includes('resolveConditionalSchema');
 //   },
 // };
 
-// const miroirEventTracker = new MiroirEventTracker();
+// const miroirEventTracker = new MiroirActivityTracker();
 
 // afterAll(() => {
 //   if (!shouldSkip) {

@@ -48,7 +48,7 @@ import {
 } from '@mui/icons-material';
 import { useNavigate, Link, useSearchParams, useLocation } from 'react-router-dom';
 import { useMiroirContextService, useMiroirEvents, type MiroirReactContext } from '../MiroirContextReactProvider';
-import { LoggerInterface, MiroirLoggerFactory, type MiroirContext, type MiroirEvent, type MiroirEventLog, type MiroirEventService } from 'miroir-core';
+import { LoggerInterface, MiroirLoggerFactory, type MiroirContext, type MiroirContextInterface, type MiroirEvent, type MiroirEventLog, type MiroirEventService } from 'miroir-core';
 import { packageName } from '../../../constants.js';
 import { cleanLevel } from '../constants.js';
 import { usePageConfiguration } from '../services';
@@ -201,7 +201,7 @@ export const MiroirEventsPage: React.FC = () => {
   const eventId = searchParams.get('eventId');
   const navigate = useNavigate();
   const location = useLocation();
-  const { miroirContext }:{ miroirContext: MiroirContext} = useMiroirContextService();
+  const { miroirContext }:{ miroirContext: MiroirContextInterface} = useMiroirContextService();
   
   // UI-specific state only
   const [expandedLogIds, setExpandedLogIds] = useState<Set<string>>(new Set());

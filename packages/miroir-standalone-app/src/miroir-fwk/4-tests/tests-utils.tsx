@@ -748,7 +748,7 @@ export async function runTestOrTestSuite(
           ": queryResult=",
           JSON.stringify(queryResult, null, 2),
           "TestContextResults",
-          JSON.stringify(miroirEventTracker.getTestAssertionsResults(), null, 2)
+          JSON.stringify(miroirEventTracker.getTestAssertionsResults([{testSuite: testAction.testActionLabel}]), null, 2)
         );
         // log.info(
         //   "received results for test testCompositeActionSuite",
@@ -790,7 +790,7 @@ export async function runTestOrTestSuite(
           ": queryResult=",
           JSON.stringify(queryResult, null, 2),
           "TestContextResults",
-          JSON.stringify(miroirEventTracker.getTestAssertionsResults(), null, 2)
+          JSON.stringify(miroirEventTracker.getTestAssertionsResults([{testSuite: testAction.testActionLabel}]), null, 2)
         );
         return queryResult;
       }

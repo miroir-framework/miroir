@@ -1,13 +1,13 @@
-import { MiroirEventTrackerInterface } from "../0_interfaces/3_controllers/MiroirEventTrackerInterface";
+import { MiroirActivityTrackerInterface } from "../0_interfaces/3_controllers/MiroirEventTrackerInterface";
 
 export class TransformerGlobalContext {
-  private static eventTracker: MiroirEventTrackerInterface | undefined = undefined;
+  private static eventTracker: MiroirActivityTrackerInterface | undefined = undefined;
 
-  public static setEventTracker(tracker: MiroirEventTrackerInterface | undefined): void {
+  public static setEventTracker(tracker: MiroirActivityTrackerInterface | undefined): void {
     TransformerGlobalContext.eventTracker = tracker;
   }
 
-  public static getEventTracker(): MiroirEventTrackerInterface | undefined {
+  public static getEventTracker(): MiroirActivityTrackerInterface | undefined {
     return TransformerGlobalContext.eventTracker;
   }
 

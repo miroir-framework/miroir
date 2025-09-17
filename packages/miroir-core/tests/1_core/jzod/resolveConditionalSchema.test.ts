@@ -27,7 +27,7 @@ import {
 
 
 // import { defaultMiroirModelEnvironment } from '../../../src/1_core/Model';
-import { MiroirEventTracker } from '../../../src/3_controllers/MiroirEventTracker';
+import { MiroirActivityTracker } from '../../../src/3_controllers/MiroirActivityTracker';
 import transformerTestSuite_resolveConditionalSchema from "../../../src/assets/miroir_data/681be9ca-c593-45f5-b45a-5f1d4969e91e/3f025c6c-982d-47ed-8061-50009788773a.json";
 import { defaultLibraryModelEnvironment } from '../../../src/1_core/Library';
 
@@ -47,7 +47,7 @@ console.log("@@@@@@@@@@@@@@@@@@ File Pattern:", filePattern);
 
 // const selectedTestName: string[] = ["error if reduxDeploymentsState is missing when parentUuid is present"];
 const selectedTestName: string[] = [];
-const eventTracker = new MiroirEventTracker();
+const eventTracker = new MiroirActivityTracker();
 const testSuite: TransformerTestSuite = transformerTestSuite_resolveConditionalSchema.definition as TransformerTestSuite;
 
 const selectedTests = selectedTestName.length > 0? Object.fromEntries(Object.entries((testSuite as any).transformerTests).filter(

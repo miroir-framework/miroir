@@ -1,12 +1,17 @@
-import { MiroirEventTrackerInterface, type MiroirEventActionTrackingData, type MiroirEventTestTrackingData, type MiroirEventTrackingData, type MiroirEventTransformerTrackingData } from "../0_interfaces/3_controllers/MiroirEventTrackerInterface";
-import{ LoggerGlobalContext } from "../4_services/LoggerContext";
+import {
+  MiroirActivityTrackerInterface,
+  type MiroirActivity_Action,
+  type MiroirActivity_Test,
+  type MiroirEventTrackingData,
+  type MiroirActivity_Transformer,
+} from "../0_interfaces/3_controllers/MiroirEventTrackerInterface";
+import { LoggerGlobalContext } from "../4_services/LoggerContext";
 
 // Base interface for common log entry fields
 interface MiroirEventLogBase {
-  id: string;
-  eventId: string;
+  logId: string;
   timestamp: number;
-  level: 'trace' | 'debug' | 'info' | 'warn' | 'error';
+  level: "trace" | "debug" | "info" | "warn" | "error";
   loggerName: string;
   message: string;
   args: any[];
@@ -15,27 +20,13 @@ interface MiroirEventLogBase {
 // Discriminated union for log entries
 export type MiroirEventLog =
   | (MiroirEventLogBase & {
-      trackingType: 'action';
-      context?: {
-        compositeAction?: string;
-        action?: string;
-      };
+      event: ActionEvent
     })
   | (MiroirEventLogBase & {
-      trackingType: 'testSuite' | 'test' | 'testAssertion';
-      context?: {
-        testSuite?: string;
-        test?: string;
-        testAssertion?: string;
-      };
+      event: TestEvent
     })
   | (MiroirEventLogBase & {
-      trackingType: 'transformer';
-      context?: {
-        transformerName?: string;
-        transformerType?: string;
-        transformerStep?: 'build' | 'runtime';
-      };
+      event: TransformerEvent
     });
 
 // Common log counts interface
@@ -55,26 +46,24 @@ interface MiroirEventBase {
 }
 
 export type ActionEvent = MiroirEventBase & {
-  trackingData: MiroirEventActionTrackingData;
+  activity: MiroirActivity_Action;
 };
 
-export type TestEvent = MiroirEventBase & { trackingData: MiroirEventTestTrackingData};
+export type TestEvent = MiroirEventBase & { activity: MiroirActivity_Test };
 
-export type TransformerEvent = MiroirEventBase & { trackingData: MiroirEventTransformerTrackingData}
+export type TransformerEvent = MiroirEventBase & {
+  activity: MiroirActivity_Transformer;
+};
 
 // Discriminated union for aggregated events
-export type MiroirEvent =
-  | ActionEvent
-  | TestEvent
-  | TransformerEvent
-;
+export type MiroirEvent = ActionEvent | TestEvent | TransformerEvent;
 
 // Filter criteria for action and test logs
 export interface EventFilter {
   eventId?: string;
   actionType?: string;
-  trackingType?: 'action' | 'testSuite' | 'test' | 'testAssertion' | 'transformer'; // Added for test and transformer filtering
-  level?: 'trace' | 'debug' | 'info' | 'warn' | 'error';
+  trackingType?: "action" | "testSuite" | "test" | "testAssertion" | "transformer"; // Added for test and transformer filtering
+  level?: "trace" | "debug" | "info" | "warn" | "error";
   since?: number;
   searchText?: string;
   loggerName?: string;
@@ -88,19 +77,17 @@ export interface MiroirEventServiceInterface {
    * Log a message for the currently executing action
    */
   pushEventFromLog(
-    level: 'trace' | 'debug' | 'info' | 'warn' | 'error',
+    level: "trace" | "debug" | "info" | "warn" | "error",
     loggerName: string,
     message: string,
     ...args: any[]
   ): void;
 
   /**
-   * 
+   *
    * @param trackingData The MiroirEventTrackingData object representing the action or test to log
    */
-  pushEventFromLogTrackingData(
-    trackingData:MiroirEventTrackingData
-  ): void;
+  pushEventFromLogTrackingData(trackingData: MiroirEventTrackingData): void;
 
   /**
    * Get logs for a specific action
@@ -116,11 +103,6 @@ export interface MiroirEventServiceInterface {
    * Get filtered action logs
    */
   getFilteredEvents(filter: EventFilter, events?: MiroirEvent[]): MiroirEvent[];
-
-  // /**
-  //  * Subscribe to action log updates
-  //  */
-  // subscribe(callback: (actionLogs: MiroirEvent[]) => void): () => void;
 
   /**
    * Clear all logs
@@ -142,19 +124,18 @@ export interface MiroirEventServiceInterface {
 /**
  * Service for capturing and managing logs associated with specific action executions
  */
-// export class MiroirEventService implements MiroirEventServiceInterface {
 export class MiroirEventService implements MiroirEventServiceInterface {
   public events: Map<string, MiroirEvent> = new Map(); // TODO: make private! should be accessed only via selectors / hooks
   public eventEntries: Map<string, MiroirEventLog> = new Map();
   private eventSubscribers: Set<(actionLogs: MiroirEvent[]) => void> = new Set();
   private cleanupInterval: NodeJS.Timeout;
-  
+
   // Configuration
   private readonly MAX_AGE_MS = 10 * 60 * 1000; // 10 minutes
   private readonly CLEANUP_INTERVAL_MS = 2 * 60 * 1000; // 2 minutes
   private readonly MAX_ENTRIES_PER_ACTION_OR_TEST = 1000; // Prevent memory bloat
 
-  constructor(private eventTracker: MiroirEventTrackerInterface) {
+  constructor(private eventTracker: MiroirActivityTrackerInterface) {
     // Start cleanup timer
     this.cleanupInterval = setInterval(() => {
       this.cleanup();
@@ -163,10 +144,9 @@ export class MiroirEventService implements MiroirEventServiceInterface {
     this.eventTracker.setMiroirEventService(this);
   }
 
-
   // ##############################################################################################
   pushEventFromLog(
-    level: 'trace' | 'debug' | 'info' | 'warn' | 'error',
+    level: "trace" | "debug" | "info" | "warn" | "error",
     loggerName: string,
     message: string,
     ...args: any[]
@@ -177,134 +157,129 @@ export class MiroirEventService implements MiroirEventServiceInterface {
       return;
     }
 
-    // const currentActionData = this.eventTracker.getAllEvents().find(a => a.id === currentActionId);
-    const currentActionData = this.eventTracker.getAllEventIndex().get(currentActionId);
-    if (!currentActionData) {
+    // const currentActionData = this.eventTracker.getAllEvents().find(a => a.logId === currentActionId);
+    const currentActivityData = this.eventTracker.getActivityIndex().get(currentActionId);
+    if (!currentActivityData) {
       return;
     }
 
     // Create log entry based on tracking type
     let logEntry: MiroirEventLog;
-    
-    switch (currentActionData.trackingType) {
-      case 'action':
+
+    const currentEvent = this.events.get(currentActionId);
+
+    switch (currentActivityData.activityType) {
+      case "action": {
+        if (
+          !currentEvent ||
+          currentEvent.activity.activityType !== "action"
+        ) {
+          throw new Error(
+            "Inconsistent state: action event not found or mismatched, log type action, event type " +
+              (currentEvent ? currentEvent.activity.activityType : "undefined")
+          );
+        }
         logEntry = {
-          trackingType: 'action',
-          id: this.generateEventId(),
-          eventId: currentActionId,
+          logId: this.generateEventId(),
+          event: currentEvent as ActionEvent,
           timestamp: Date.now(),
           level,
           loggerName,
           message,
           args,
-          context: {
-            compositeAction: this.eventTracker.getCompositeAction(),
-            action: this.eventTracker.getAction(),
-          }
         };
         break;
-        
-      case 'testSuite':
-      case 'test':
-      case 'testAssertion':
+      }
+      case "testSuite":
+      case "test":
+      case "testAssertion": {
+        if (
+          !currentEvent ||
+          ["test", "testSuite", "testAssertion"].includes(currentEvent.activity.activityType)
+        ) {
+          throw new Error(
+            "Inconsistent state: action event not found or mismatched, log type action, event type " +
+              (currentEvent ? currentEvent.activity.activityType : "undefined")
+          );
+        }
+
         logEntry = {
-          trackingType: currentActionData.trackingType,
-          id: this.generateEventId(),
-          eventId: currentActionId,
+          event: currentEvent as TestEvent,
+          logId: this.generateEventId(),
           timestamp: Date.now(),
           level,
           loggerName,
           message,
           args,
-          context: {
-            testSuite: currentActionData.testSuite || LoggerGlobalContext.getTestSuite(),
-            test: currentActionData.test || LoggerGlobalContext.getTest(),
-            testAssertion: currentActionData.testAssertion || LoggerGlobalContext.getTestAssertion(),
-          }
         };
         break;
-        
-      case 'transformer':
+      }
+      case "transformer": {
+        if (!currentEvent || currentEvent.activity.activityType !== "transformer") {
+          throw new Error(
+            "Inconsistent state: action event not found or mismatched, log type transformer, event type " +
+              (currentEvent ? currentEvent.activity.activityType : "undefined")
+          );
+        }
         logEntry = {
-          trackingType: 'transformer',
-          id: this.generateEventId(),
-          eventId: currentActionId,
+          event: currentEvent as TransformerEvent,
+          logId: this.generateEventId(),
           timestamp: Date.now(),
           level,
           loggerName,
           message,
           args,
-          context: {
-            transformerName: currentActionData.transformerName,
-            transformerType: currentActionData.transformerType,
-            transformerStep: currentActionData.transformerStep,
-          }
         };
         break;
-        
+      }
+
       default:
-        // Fallback to action type
-        logEntry = {
-          trackingType: 'action',
-          id: this.generateEventId(),
-          eventId: currentActionId,
-          timestamp: Date.now(),
-          level,
-          loggerName,
-          message,
-          args,
-          context: {
-            compositeAction: this.eventTracker.getCompositeAction(),
-            action: this.eventTracker.getAction(),
-          }
-        };
+        throw new Error("Unknown tracking type for action: " + currentActivityData);
     }
 
     // Store the log entry
-    this.eventEntries.set(logEntry.id, logEntry);
+    this.eventEntries.set(logEntry.logId, logEntry);
 
     // Add to action logs
-    const currentActionEvent = this.events.get(currentActionId);
-    if (currentActionEvent) {
-      currentActionEvent.eventLogs.push(logEntry);
-      currentActionEvent.logCounts[level]++;
-      currentActionEvent.logCounts.total++;
+    if (currentEvent) {
+      currentEvent.eventLogs.push(logEntry);
+      currentEvent.logCounts[level]++;
+      currentEvent.logCounts.total++;
 
       // Prevent memory bloat - remove oldest logs if too many
-      if (currentActionEvent.eventLogs.length > this.MAX_ENTRIES_PER_ACTION_OR_TEST) {
-        const removedLog = currentActionEvent.eventLogs.shift();
+      if (currentEvent.eventLogs.length > this.MAX_ENTRIES_PER_ACTION_OR_TEST) {
+        const removedLog = currentEvent.eventLogs.shift();
         if (removedLog) {
-          this.eventEntries.delete(removedLog.id);
-          currentActionEvent.logCounts[removedLog.level]--;
-          currentActionEvent.logCounts.total--;
+          this.eventEntries.delete(removedLog.logId);
+          currentEvent.logCounts[removedLog.level]--;
+          currentEvent.logCounts.total--;
         }
       }
-
-      // this.notifyEventSubscribers();
     }
   }
-
 
   getEvent(eventId: string): MiroirEvent | undefined {
     return this.events.get(eventId);
   }
 
   getAllEvents(): MiroirEvent[] {
-    return Array.from(this.events.values()).sort((a, b) => b.trackingData.startTime - a.trackingData.startTime);
+    return Array.from(this.events.values()).sort(
+      (a, b) => b.activity.startTime - a.activity.startTime
+    );
   }
 
   getFilteredEvents(filter: EventFilter, events?: MiroirEvent[]): MiroirEvent[] {
-    return this.getAllEvents().filter(actionLogs => {
-      if (filter.eventId && actionLogs.trackingData.id !== filter.eventId) {
+    return this.getAllEvents().filter((actionLogs) => {
+      if (filter.eventId && actionLogs.activity.activityId !== filter.eventId) {
         return false;
       }
-      if (filter.actionType && actionLogs.trackingData.actionType !== filter.actionType) {
+      if (filter.actionType && actionLogs.activity.actionType !== filter.actionType) {
         return false;
       }
-      if (filter.trackingType && actionLogs.trackingData.trackingType !== filter.trackingType) {
+      if (filter.trackingType && actionLogs.activity.activityType !== filter.trackingType) {
         return false;
       }
-      if (filter.since && actionLogs.trackingData.startTime < filter.since) {
+      if (filter.since && actionLogs.activity.startTime < filter.since) {
         return false;
       }
       if (filter.level) {
@@ -314,9 +289,11 @@ export class MiroirEventService implements MiroirEventServiceInterface {
         }
       }
       if (filter.testSuite) {
-        const hasMatchingTestSuite = actionLogs.eventLogs.some(log => 
-          log.trackingType === 'testSuite' || log.trackingType === 'test' || log.trackingType === 'testAssertion'
-            ? log.context?.testSuite === filter.testSuite
+        const hasMatchingTestSuite = actionLogs.eventLogs.some((log) =>
+          log.event.activity.activityType === "testSuite" ||
+          log.event.activity.activityType === "test" ||
+          log.event.activity.activityType === "testAssertion"
+            ? log.event.activity.testSuite === filter.testSuite
             : false
         );
         if (!hasMatchingTestSuite) {
@@ -324,9 +301,11 @@ export class MiroirEventService implements MiroirEventServiceInterface {
         }
       }
       if (filter.test) {
-        const hasMatchingTest = actionLogs.eventLogs.some(log => 
-          log.trackingType === 'testSuite' || log.trackingType === 'test' || log.trackingType === 'testAssertion'
-            ? log.context?.test === filter.test
+        const hasMatchingTest = actionLogs.eventLogs.some((log) =>
+          log.event.activity.activityType === "testSuite" ||
+          log.event.activity.activityType === "test" ||
+          log.event.activity.activityType === "testAssertion"
+            ? log.event.activity.test === filter.test
             : false
         );
         if (!hasMatchingTest) {
@@ -335,18 +314,19 @@ export class MiroirEventService implements MiroirEventServiceInterface {
       }
       if (filter.searchText) {
         const searchLower = filter.searchText.toLowerCase();
-        const hasMatchingLog = actionLogs.eventLogs.some(log => 
-          log.message.toLowerCase().includes(searchLower) ||
-          log.args.some(arg => 
-            typeof arg === 'string' && arg.toLowerCase().includes(searchLower)
-          )
+        const hasMatchingLog = actionLogs.eventLogs.some(
+          (log) =>
+            log.message.toLowerCase().includes(searchLower) ||
+            log.args.some(
+              (arg) => typeof arg === "string" && arg.toLowerCase().includes(searchLower)
+            )
         );
         if (!hasMatchingLog) {
           return false;
         }
       }
       if (filter.loggerName) {
-        const hasMatchingLogger = actionLogs.eventLogs.some(log => 
+        const hasMatchingLogger = actionLogs.eventLogs.some((log) =>
           log.loggerName.includes(filter.loggerName!)
         );
         if (!hasMatchingLogger) {
@@ -360,19 +340,18 @@ export class MiroirEventService implements MiroirEventServiceInterface {
   clear(): void {
     this.events.clear();
     this.eventEntries.clear();
-    // this.notifyEventSubscribers();
   }
 
   exportEvents(): string {
     const exportData = {
       timestamp: new Date().toISOString(),
-      actionLogs: this.getAllEvents().map(actionLogs => ({
+      actionLogs: this.getAllEvents().map((actionLogs) => ({
         ...actionLogs,
-        logs: actionLogs.eventLogs.map(log => ({
+        logs: actionLogs.eventLogs.map((log) => ({
           ...log,
-          timestampISO: new Date(log.timestamp).toISOString()
-        }))
-      }))
+          timestampISO: new Date(log.timestamp).toISOString(),
+        })),
+      })),
     };
     return JSON.stringify(exportData, null, 2);
   }
@@ -385,14 +364,13 @@ export class MiroirEventService implements MiroirEventServiceInterface {
     this.eventSubscribers.clear();
   }
 
-  pushEventFromLogTrackingData(
-    trackingData:MiroirEventTrackingData
-  ) {
-    if (!this.events.has(trackingData.id)) {
+  // ##############################################################################################
+  pushEventFromLogTrackingData(trackingData: MiroirEventTrackingData) {
+    if (!this.events.has(trackingData.activityId)) {
       // copies MiroirEventTrackingData to MiroirEvent
       // Create event based on tracking type
       let event: MiroirEvent = {
-        trackingData,
+        activity: trackingData,
         eventLogs: [],
         logCounts: {
           trace: 0,
@@ -400,102 +378,56 @@ export class MiroirEventService implements MiroirEventServiceInterface {
           info: 0,
           warn: 0,
           error: 0,
-          total: 0
-        }
+          total: 0,
+        },
       } as MiroirEvent;
 
-      this.events.set(trackingData.id, event);
+      this.events.set(trackingData.activityId, event);
     } else {
       // Update existing action status/timing and transformer results
-      const existing = this.events.get(trackingData.id)!;
-      existing.trackingData.endTime = trackingData.endTime;
-      existing.trackingData.status = trackingData.status;
+      const existing = this.events.get(trackingData.activityId)!;
+      existing.activity.endTime = trackingData.endTime;
+      existing.activity.status = trackingData.status;
       // Update transformer-specific fields if they exist
-      if (trackingData.trackingType === "transformer" && existing.trackingData.trackingType === "transformer") {
-        existing.trackingData.transformerResult = trackingData.transformerResult;
-        existing.trackingData.transformerError = trackingData.transformerError;
+      if (
+        trackingData.activityType === "transformer" &&
+        existing.activity.activityType === "transformer"
+      ) {
+        existing.activity.transformerResult = trackingData.transformerResult;
+        existing.activity.transformerError = trackingData.transformerError;
       }
     }
-
   }
 
-  private updateEventContainers(events: MiroirEventTrackingData[]): void {
-    // Create action log containers for new actions and tests
-    events.forEach(action => {
-      this.pushEventFromLogTrackingData(action);
-    });
-  }
-
+  // ##############################################################################################
   private generateEventId(): string {
     return `log_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   }
 
-  private getCurrentEventContext() {
-    // Get action and compositeAction from MiroirEventTracker instead of LoggerGlobalContext
-    // Still get test-related context from LoggerGlobalContext to avoid breaking test functionality
-    try {
-      const currentAction = this.eventTracker.getCurrentEventId();
-      const currentActionData = currentAction ? this.eventTracker.getAllEvents().find(a => a.id === currentAction) : undefined;
-      
-      if (!currentActionData) {
-        return undefined;
-      }
-      
-      // Return context based on tracking type
-      switch (currentActionData.trackingType) {
-        case 'action':
-          return {
-            trackingType: currentActionData.trackingType,
-            compositeAction: this.eventTracker.getCompositeAction(),
-            action: this.eventTracker.getAction(),
-          };
-          
-        case 'testSuite':
-        case 'test':
-        case 'testAssertion':
-          return {
-            trackingType: currentActionData.trackingType,
-            testSuite: currentActionData.testSuite || LoggerGlobalContext.getTestSuite(),
-            test: currentActionData.test || LoggerGlobalContext.getTest(),
-            testAssertion: currentActionData.testAssertion || LoggerGlobalContext.getTestAssertion(),
-          };
-          
-        case 'transformer':
-          return {
-            trackingType: currentActionData.trackingType,
-            transformerName: currentActionData.transformerName,
-            transformerType: currentActionData.transformerType,
-            transformerStep: currentActionData.transformerStep
-          };
-          
-        default:
-          return undefined;
-      }
-    } catch (error) {
-      return undefined;
-    }
-  }
-
+  // ##############################################################################################
   private cleanup(): void {
     const now = Date.now();
     const cutoff = now - this.MAX_AGE_MS;
-    
+
     // Find actions to remove (older than MAX_AGE_MS and completed)
     const actionsToRemove: string[] = [];
-    
+
     for (const [eventId, actionLogs] of Array.from(this.events.entries())) {
-      if (actionLogs.trackingData.status !== 'running' && actionLogs.trackingData.startTime < cutoff) {
+      if (
+        actionLogs.activity.status !== "running" &&
+        actionLogs.activity.startTime < cutoff
+      ) {
         actionsToRemove.push(eventId);
       }
     }
 
     // Remove old actions and their log entries
-    actionsToRemove.forEach(eventId => {
+    actionsToRemove.forEach((eventId) => {
       const actionLogs = this.events.get(eventId);
       if (actionLogs) {
         // Remove all log entries for this action
-        actionLogs.eventLogs.forEach(log => {
-          this.eventEntries.delete(log.id);
+        actionLogs.eventLogs.forEach((log) => {
+          this.eventEntries.delete(log.logId);
         });
         this.events.delete(eventId);
       }

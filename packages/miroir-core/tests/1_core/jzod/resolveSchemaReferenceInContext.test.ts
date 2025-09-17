@@ -23,7 +23,7 @@ import {
   transformerTestsDisplayResults,
 } from "../../../src/4_services/TestTools";
 
-import { MiroirEventTracker } from "../../../src/3_controllers/MiroirEventTracker";
+import { MiroirActivityTracker } from "../../../src/3_controllers/MiroirActivityTracker";
 import { defaultMetaModelEnvironment } from "../../../src/1_core/Model";
 
 import transformerTestSuite_resolveSchemaReferenceInContext from "../../../src/assets/miroir_data/681be9ca-c593-45f5-b45a-5f1d4969e91e/b9e7f4d5-6543-4a1b-9c8d-987654321fed.json";
@@ -58,7 +58,7 @@ if (shouldSkip) {
     transformerTests: selectedTests as any
   } as any;
   
-  const miroirEventTracker = new MiroirEventTracker();
+  const miroirEventTracker = new MiroirActivityTracker();
   
   await runTransformerTestSuite(
     // { describe, expect} as any,//vitest,
