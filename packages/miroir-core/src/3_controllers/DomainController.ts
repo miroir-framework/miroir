@@ -2047,6 +2047,7 @@ export class DomainController implements DomainControllerInterface {
         //   newLocalParameters
         // );
         const resolvedTemplate = transformer_extended_apply_wrapper(
+          undefined, // activityTracker
           "build",
           [],
           // "runtime",
@@ -2090,6 +2091,7 @@ export class DomainController implements DomainControllerInterface {
 
     const resolvedActionDefinition: TransformerReturnType<any> =
       transformer_extended_apply_wrapper(
+        undefined, // activityTracker
         "build",
         [],
         buildPlusRuntimeCompositeAction.actionLabel,

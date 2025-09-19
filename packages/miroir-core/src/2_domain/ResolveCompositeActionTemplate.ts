@@ -66,6 +66,7 @@ export function resolveCompositeActionTemplate(
       //   newLocalParameters
       // );
       const resolvedTemplate = transformer_extended_apply_wrapper(
+        undefined, // activityTracker
         // "build",
         "runtime",
         [],
@@ -90,6 +91,7 @@ export function resolveCompositeActionTemplate(
 
   const actionParamsAndTemplates = { ...localActionParams, ...resolvedCompositeActionTemplates };
   const resolvedCompositeActionDefinition: CompositeAction = transformer_extended_apply_wrapper(
+    undefined, // activityTracker
     "build",
     [],
     compositeActionLabel,

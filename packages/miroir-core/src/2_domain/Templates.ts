@@ -48,14 +48,15 @@ export function resolveExtractorTemplate(
     case "extractorTemplateForObjectListByEntity": {
       if (extractorOrCombinerTemplate.filter) {
         const filterValue = transformer_extended_apply_wrapper(
-                "build", // TODO: resolve for runtime transformer. Does it make sense?
-                [], // transformerPath
-                undefined,
-                extractorOrCombinerTemplate.filter.value,
-                queryParams,
-                contextResults ?? {},
-                "value"
-              )
+          undefined, // activityTracker
+          "build", // TODO: resolve for runtime transformer. Does it make sense?
+          [], // transformerPath
+          undefined,
+          extractorOrCombinerTemplate.filter.value,
+          queryParams,
+          contextResults ?? {},
+          "value"
+        )
         // TODO: check for failure!
         return {
           extractorOrCombinerType: "extractorByEntityReturningObjectList",

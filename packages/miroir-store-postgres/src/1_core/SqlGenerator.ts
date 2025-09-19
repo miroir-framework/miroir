@@ -1073,6 +1073,7 @@ function sqlStringForMapperListToListTransformer(
             transformerType: "constant",
             interpolation: "runtime",
             value: transformer_extended_apply_wrapper(
+              undefined, // activityTracker
               "build", // TODO: resolve for runtime transformer. Does it make sense?
               [], // tranformerPath
               undefined,

@@ -111,6 +111,7 @@ import {
   type ResolveBuildTransformersTo,
   type Step,
 } from "./Transformers";
+import type { MiroirActivityTrackerInterface } from '../0_interfaces/3_controllers/MiroirEventTrackerInterface';
 
 // Re-export types needed by other modules
 export type { ResolveBuildTransformersTo, Step } from "./Transformers";
@@ -237,7 +238,8 @@ export function getDefaultValueForJzodSchemaWithResolution<T extends MiroirModel
     //   "jzodSchema.tag.value.initializeTo.transformer",
     //   effectiveSchema.tag.value.initializeTo.transformer
     // );
-    const result = transformer_extended_apply_wrapper(
+    const result = transformer_extended_apply_wrapper( // TODO: transformer_extended_apply instead
+      undefined, // activityTracker
       "build",
       [...currentValuePath, 'initializeTo'],
       undefined, // label
@@ -359,7 +361,8 @@ export function getDefaultValueForJzodSchemaWithResolution<T extends MiroirModel
         //   "jzodSchema.tag.value.initializeTo.transformer",
         //   effectiveSchema.tag.value.initializeTo.transformer
         // );
-        const result = transformer_extended_apply_wrapper(
+        const result = transformer_extended_apply_wrapper( //TODO: transformer_extended_apply instead
+          undefined, // activityTracker
           "build",
           [...currentValuePath, 'initializeTo'],
           undefined,
@@ -3042,6 +3045,7 @@ export function transformer_extended_apply<T extends MiroirModelEnvironment>(
 
 // ################################################################################################
 export function transformer_extended_apply_wrapper<T extends MiroirModelEnvironment>(
+  activityTracker: MiroirActivityTrackerInterface | undefined,
   step: Step,
   transformerPath: string[] = [],
   label: string | undefined,
@@ -3051,19 +3055,22 @@ export function transformer_extended_apply_wrapper<T extends MiroirModelEnvironm
   resolveBuildTransformersTo: ResolveBuildTransformersTo = "constantTransformer",
 ): TransformerReturnType<any> {
   // Start transformer tracking
-  const eventTracker = TransformerGlobalContext.getEventTracker();
+  // const eventTracker = TransformerGlobalContext.getEventTracker();
   let trackingId: string = "";
   log.info(
     "transformer_extended_apply_wrapper called for",
     label,
     "step",
     step,
-    "eventTracker?.isTransformerTrackingEnabled()",
-    eventTracker?.isTransformerTrackingEnabled()
+    activityTracker ? "with activityTracker" : "without activityTracker",
+    "isTransformerTrackingEnabled():",
+    activityTracker?.isTransformerTrackingEnabled()
+    // "eventTracker?.isTransformerTrackingEnabled()",
+    // eventTracker?.isTransformerTrackingEnabled()
   );
-  if (eventTracker?.isTransformerTrackingEnabled()) {
+  if (activityTracker?.isTransformerTrackingEnabled()) {
     const transformerType = (transformer as any)?.transformerType || "unknown";
-    trackingId = eventTracker.startTransformer(
+    trackingId = activityTracker.startTransformer(
       label || transformerType,
       transformerType,
       step,
@@ -3106,9 +3113,9 @@ export function transformer_extended_apply_wrapper<T extends MiroirModelEnvironm
         "result",
         JSON.stringify(result, null, 2)
       );
-      if (eventTracker?.isTransformerTrackingEnabled() && trackingId) {
+      if (activityTracker?.isTransformerTrackingEnabled() && trackingId) {
         // eventTracker.endTransformer(trackingId, undefined, result.queryFailure || "Transformer failed");
-        eventTracker.endTransformer(trackingId, result, result.queryFailure || "Transformer failed");
+        activityTracker.endTransformer(trackingId, result, result.queryFailure || "Transformer failed");
       }
       return new TransformerFailure({
         queryFailure: "FailedTransformer",
@@ -3120,8 +3127,8 @@ export function transformer_extended_apply_wrapper<T extends MiroirModelEnvironm
       });
     } else {
       // End transformer tracking with success
-      if (eventTracker?.isTransformerTrackingEnabled() && trackingId) {
-        eventTracker.endTransformer(trackingId, result);
+      if (activityTracker?.isTransformerTrackingEnabled() && trackingId) {
+        activityTracker.endTransformer(trackingId, result);
       }
       
       // log.info(
@@ -3145,8 +3152,8 @@ export function transformer_extended_apply_wrapper<T extends MiroirModelEnvironm
       "error",
       e
     );
-    if (eventTracker?.isTransformerTrackingEnabled() && trackingId) {
-      eventTracker.endTransformer(trackingId, undefined, e instanceof Error ? e.message : String(e));
+    if (activityTracker?.isTransformerTrackingEnabled() && trackingId) {
+      activityTracker.endTransformer(trackingId, undefined, e instanceof Error ? e.message : String(e));
     }
     return new TransformerFailure({
       queryFailure: "FailedTransformer",

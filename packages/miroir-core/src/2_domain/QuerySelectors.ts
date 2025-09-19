@@ -526,6 +526,7 @@ export const applyExtractorTransformerInMemory = <T extends MiroirModelEnvironme
 ): Domain2QueryReturnType<any> => {
   log.info("applyExtractorTransformerInMemory  query", JSON.stringify(actionRuntimeTransformer, null, 2));
   return transformer_extended_apply_wrapper(
+    undefined, // activityTracker
     "runtime",
     [],
     "ROOT" /**WHAT?? */,

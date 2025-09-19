@@ -204,6 +204,7 @@ export async function runTransformerTestInMemory(
   let rawResult: TransformerReturnType<any>;
 
   const convertedTransformer = transformer_extended_apply_wrapper(
+    undefined, // activityTracker
     "build",
     [], // transformerPath
     undefined,
@@ -221,6 +222,7 @@ export async function runTransformerTestInMemory(
 
   if (interpolation == "runtime" && !convertedTransformer["elementType"]) {
     rawResult = transformer_extended_apply_wrapper(
+      undefined, // activityTracker
       "runtime",
       [], // transformerPath
       undefined,
@@ -632,6 +634,7 @@ export function runTransformerIntegrationTest(sqlDbDataStore: any) {
     // resolve the transformer to be used in the test
     const resolvedTransformer: TransformerReturnType<TransformerForRuntime> =
       transformer_extended_apply_wrapper(
+        undefined, // activityTracker
         "build",
         [], // transformerPath
         (transformerTest.transformer as any)?.label,

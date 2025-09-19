@@ -705,6 +705,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
         });
 
         const result: TransformerReturnType<any> = transformer_extended_apply_wrapper(
+          undefined, // activityTracker
           "runtime", // step
           [], // transformerPath
           "TransformerEditor", // label
