@@ -166,11 +166,11 @@ const LogEntryComponent: React.FC<{ logEntry: MiroirEventLog; isExpanded: boolea
             </Box>
           )}
           
-          {logEntry.context && (
+          {logEntry.event && (
             <Box sx={{ mt: 1 }}>
               <Typography variant="caption" color="text.secondary">Context:</Typography>
               <Box sx={{ pl: 1, mt: 0.5 }}>
-                {Object.entries(logEntry.context).map(([key, value]) => (
+                {Object.entries(logEntry.event).map(([key, value]) => (
                   value && (
                     <Typography key={key} variant="caption" display="block">
                       {key}: {String(value)}
@@ -231,8 +231,9 @@ export const MiroirEventsPage: React.FC = () => {
   // Get current action logs when viewing a specific event
   const currentActionLogs = useMemo(() => {
     if (!eventId || !allEvents.length) return null;
-    const found = allEvents.find((event: MiroirEvent) => event.eventId === eventId) || null;
-    log.debug('MiroirEventsPage: computed currentActionLogs', { eventId, found: !!found, actionType: found?.actionType });
+    // const found = allEvents.find((event: MiroirEvent) => event.eventId === eventId) || null;
+    const found = allEvents.find((event: MiroirEvent) => event.activity.activityId === eventId) || null;
+    log.debug('MiroirEventsPage: computed currentActionLogs', { eventId, found: !!found, actionType: found?.activity.actionType });
     return found;
   }, [eventId, allEvents]);
 
@@ -244,7 +245,7 @@ export const MiroirEventsPage: React.FC = () => {
       log.info(`MiroirEventsPage: checking if action ${eventId} exists:`, exists);
       if (!exists) {
         log.warn(`Action log ${eventId} was requested but not found. Available actions:`, 
-          allEvents.map(event => event.eventId).join(', '));
+          allEvents.map(event => event.activity.activityId).join(', '));
       }
     }
     return exists;
@@ -372,17 +373,17 @@ export const MiroirEventsPage: React.FC = () => {
               <List sx={{ bgcolor: '#f5f5f5', borderRadius: 1 }}>
                 {allEvents.slice(0, 5).map((event) => (
                   <ListItem 
-                    key={event.eventId} 
+                    key={event.activity.activityId} 
                     button
-                    onClick={() => navigate(`/events?eventId=${event.eventId}`)}
+                    onClick={() => navigate(`/events?eventId=${event.activity.activityId}`)}
                     sx={{ borderBottom: '1px solid #e0e0e0' }}
                   >
                     <ListItemIcon>
-                      {getActionStatusIcon(event.status)}
+                      {getActionStatusIcon(event.activity.status)}
                     </ListItemIcon>
                     <ListItemText 
-                      primary={event.actionType || 'Unknown Action'} 
-                      secondary={`ID: ${event.eventId} • ${new Date(event.startTime).toLocaleString()}`}
+                      primary={event.activity.actionType || 'Unknown Action'} 
+                      secondary={`ID: ${event.activity.activityId} • ${new Date(event.activity.startTime).toLocaleString()}`}
                     />
                   </ListItem>
                 ))}
@@ -443,7 +444,7 @@ export const MiroirEventsPage: React.FC = () => {
       {/* Header */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Typography variant="h4" component="h1">
-          {eventId ? `Logs for Action: ${currentActionLogs?.actionType || eventId}` : 'Miroir Events'}
+          {eventId ? `Logs for Action: ${currentActionLogs?.activity.actionType || eventId}` : 'Miroir Events'}
         </Typography>
         <Box sx={{ display: 'flex', gap: 1 }}>
           <Tooltip title="Export logs">
@@ -473,25 +474,25 @@ export const MiroirEventsPage: React.FC = () => {
                 <Card>
                   <CardContent>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-                      {getActionStatusIcon(currentActionLogs.status)}
+                      {getActionStatusIcon(currentActionLogs.activity.status)}
                       <Typography variant="h6">
-                        {currentActionLogs.actionType}
+                        {currentActionLogs.activity.actionType}
                       </Typography>
-                      {currentActionLogs.actionLabel && (
-                        <Chip label={currentActionLogs.actionLabel} size="small" />
+                      {currentActionLogs.activity.actionLabel && (
+                        <Chip label={currentActionLogs.activity.actionLabel} size="small" />
                       )}
                     </Box>
                     <Typography variant="body2" color="text.secondary">
-                      Started: {new Date(currentActionLogs.startTime).toLocaleString()}
+                      Started: {new Date(currentActionLogs.activity.startTime).toLocaleString()}
                     </Typography>
-                    {currentActionLogs.endTime && (
+                    {currentActionLogs.activity.endTime && (
                       <Typography variant="body2" color="text.secondary">
-                        Ended: {new Date(currentActionLogs.endTime).toLocaleString()}
+                        Ended: {new Date(currentActionLogs.activity.endTime).toLocaleString()}
                       </Typography>
                     )}
-                    {currentActionLogs.endTime && (
+                    {currentActionLogs.activity.endTime && (
                       <Typography variant="body2" color="text.secondary">
-                        Duration: {currentActionLogs.endTime - currentActionLogs.startTime}ms
+                        Duration: {currentActionLogs.activity.endTime - currentActionLogs.activity.startTime}ms
                       </Typography>
                     )}
                   </CardContent>
@@ -606,10 +607,10 @@ export const MiroirEventsPage: React.FC = () => {
               <List sx={{ maxHeight: 600, overflow: 'auto' }}>
                 {filteredLogs.map((log: MiroirEventLog) => (
                   <LogEntryComponent
-                    key={log.id}
+                    key={log.logId}
                     logEntry={log}
-                    isExpanded={expandedLogIds.has(log.id)}
-                    onToggle={() => handleToggleLogExpansion(log.id)}
+                    isExpanded={expandedLogIds.has(log.logId)}
+                    onToggle={() => handleToggleLogExpansion(log.logId)}
                   />
                 ))}
               </List>
@@ -638,29 +639,29 @@ export const MiroirEventsPage: React.FC = () => {
               <List>
                 {allEvents.map((actionLog: MiroirEvent) => (
                   <ListItem 
-                    key={actionLog.eventId}
+                    key={actionLog.activity.activityId}
                     divider
                     sx={{ cursor: 'pointer' }}
-                    onClick={() => navigate(`/events?eventId=${actionLog.eventId}`)}
+                    onClick={() => navigate(`/events?eventId=${actionLog.activity.activityId}`)}
                   >
                     <ListItemIcon>
-                      {getActionStatusIcon(actionLog.status)}
+                      {getActionStatusIcon(actionLog.activity.status)}
                     </ListItemIcon>
                     <ListItemText
                       primary={
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                           <Typography variant="subtitle1">
-                            {actionLog.actionType}
+                            {actionLog.activity.actionType}
                           </Typography>
-                          {actionLog.actionLabel && (
-                            <Chip label={actionLog.actionLabel} size="small" />
+                          {actionLog.activity.actionLabel && (
+                            <Chip label={actionLog.activity.actionLabel} size="small" />
                           )}
                         </Box>
                       }
                       secondary={
                         <Box>
                           <Typography variant="body2" color="text.secondary">
-                            Started: {new Date(actionLog.startTime).toLocaleString()}
+                            Started: {new Date(actionLog.activity.startTime).toLocaleString()}
                           </Typography>
                           <Box sx={{ display: 'flex', gap: 1, mt: 0.5 }}>
                             <Chip 

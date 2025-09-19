@@ -3053,7 +3053,14 @@ export function transformer_extended_apply_wrapper<T extends MiroirModelEnvironm
   // Start transformer tracking
   const eventTracker = TransformerGlobalContext.getEventTracker();
   let trackingId: string = "";
-  
+  log.info(
+    "transformer_extended_apply_wrapper called for",
+    label,
+    "step",
+    step,
+    "eventTracker?.isTransformerTrackingEnabled()",
+    eventTracker?.isTransformerTrackingEnabled()
+  );
   if (eventTracker?.isTransformerTrackingEnabled()) {
     const transformerType = (transformer as any)?.transformerType || "unknown";
     trackingId = eventTracker.startTransformer(
@@ -3088,10 +3095,6 @@ export function transformer_extended_apply_wrapper<T extends MiroirModelEnvironm
     // if (result instanceof TransformerFailure) {
     if (result instanceof TransformerFailure) {
       // End transformer tracking with error
-      if (eventTracker?.isTransformerTrackingEnabled() && trackingId) {
-        // eventTracker.endTransformer(trackingId, undefined, result.queryFailure || "Transformer failed");
-        eventTracker.endTransformer(trackingId, result, result.queryFailure || "Transformer failed");
-      }
       
       log.error(
         "transformer_extended_apply_wrapper failed for",
@@ -3103,6 +3106,10 @@ export function transformer_extended_apply_wrapper<T extends MiroirModelEnvironm
         "result",
         JSON.stringify(result, null, 2)
       );
+      if (eventTracker?.isTransformerTrackingEnabled() && trackingId) {
+        // eventTracker.endTransformer(trackingId, undefined, result.queryFailure || "Transformer failed");
+        eventTracker.endTransformer(trackingId, result, result.queryFailure || "Transformer failed");
+      }
       return new TransformerFailure({
         queryFailure: "FailedTransformer",
         transformerPath: [...transformerPath, (transformer as any).transformerType],
@@ -3127,9 +3134,6 @@ export function transformer_extended_apply_wrapper<T extends MiroirModelEnvironm
     }
   } catch (e) {
     // End transformer tracking with error
-    if (eventTracker?.isTransformerTrackingEnabled() && trackingId) {
-      eventTracker.endTransformer(trackingId, undefined, e instanceof Error ? e.message : String(e));
-    }
     
     log.error(
       "transformer_extended_apply_wrapper failed for",
@@ -3141,6 +3145,9 @@ export function transformer_extended_apply_wrapper<T extends MiroirModelEnvironm
       "error",
       e
     );
+    if (eventTracker?.isTransformerTrackingEnabled() && trackingId) {
+      eventTracker.endTransformer(trackingId, undefined, e instanceof Error ? e.message : String(e));
+    }
     return new TransformerFailure({
       queryFailure: "FailedTransformer",
       transformerPath: transformerPath,

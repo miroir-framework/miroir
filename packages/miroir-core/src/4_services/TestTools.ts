@@ -134,10 +134,10 @@ export async function runTransformerTestInMemory(
   if (miroirEventTracker) {
     try {
       // Get the current active test suite ID as parent
-      const testParentId = miroirEventTracker.getCurrentEventId();
+      const testParentId = miroirEventTracker.getCurrentActivityId();
       testTrackingId = miroirEventTracker.startTest(testName, testParentId);
       log.info(`🧪 Started tracking test ${testName} with ID: ${testTrackingId}, parent: ${testParentId}`);
-      const testAssertionParentId = miroirEventTracker.getCurrentEventId();
+      const testAssertionParentId = miroirEventTracker.getCurrentActivityId();
       testAssertionTrackingId = miroirEventTracker.startTestAssertion(assertionName, testTrackingId);
       log.info(`🧪 Started tracking test assertion ${assertionName} with ID: ${testAssertionTrackingId}, parent: ${testAssertionParentId}`);
     } catch (error) {
@@ -417,7 +417,7 @@ export async function runTransformerTestSuite(
   if (miroirEventTracker && typeof miroirEventTracker.startTestSuite === 'function') {
     try {
       // Get current action ID as parent (for nested test suites)
-      const parentId = miroirEventTracker.getCurrentEventId();
+      const parentId = miroirEventTracker.getCurrentActivityId();
       testSuiteTrackingId = miroirEventTracker.startTestSuite(testSuiteName, parentId);
       log.info(
         "🧪🧪 Started tracking test suite",

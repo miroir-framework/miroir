@@ -108,7 +108,7 @@ export class ConsoleInterceptor {
 
       // Check for active action and log if action logging is configured
       if (this.config.eventHandlers) {
-        const currentActionId = this.config.eventHandlers.actionOrTestTracker.getCurrentEventId();
+        const currentActionId = this.config.eventHandlers.actionOrTestTracker.getCurrentActivityId();
         if (currentActionId) {
           this.config.eventHandlers.actionOrTestLogService.pushEventFromLog(level, loggerName, message, ...restArgs);
         }

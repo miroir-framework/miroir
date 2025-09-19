@@ -667,6 +667,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
     setCurrentTransformerDefinition(newTransformerDefinition);
     // Persist to context
     context.updateTransformerEditorState({ currentTransformerDefinition: newTransformerDefinition });
+    applyTransformerToInstance();
   }, [context]);
 
   // Memoized context results to avoid recreating on every execution
@@ -738,16 +739,16 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
   }, [currentTransformerDefinition, selectedEntityInstance, currentMiroirModelEnvironment, contextResults]);
 
   // Apply transformer whenever definition or instance changes
-  useEffect(() => {
-    applyTransformerToInstance();
+  // useEffect(() => {
+  //   applyTransformerToInstance();
     
-    // Cleanup timeout on unmount
-    return () => {
-      if (transformerTimeoutRef.current) {
-        clearTimeout(transformerTimeoutRef.current);
-      }
-    };
-  }, [applyTransformerToInstance, selectedEntityInstance]);
+  //   // Cleanup timeout on unmount
+  //   return () => {
+  //     if (transformerTimeoutRef.current) {
+  //       clearTimeout(transformerTimeoutRef.current);
+  //     }
+  //   };
+  // }, [applyTransformerToInstance, selectedEntityInstance]);
 
   // Memoized transformer entity UUID to avoid recalculation
   const transformerEntityUuid = useMemo(() => entityDefinitionTransformerDefinition.entityUuid, []);

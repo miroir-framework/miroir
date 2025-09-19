@@ -112,7 +112,7 @@ export interface MiroirActivityTrackerInterface {
   /**
    * Get the current active action ID (for parent-child relationships)
    */
-  getCurrentEventId(): string | undefined;
+  getCurrentActivityId(): string | undefined;
 
   /**
    * Set the current composite action name (similar to LoggerGlobalContext)

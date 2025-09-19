@@ -144,7 +144,7 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
   //   };
   // }
 
-  getCurrentEventId(): string | undefined {
+  getCurrentActivityId(): string | undefined {
     return this.currentEvenStack[this.currentEvenStack.length - 1];
   }
 
@@ -174,7 +174,7 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
     const now = Date.now();
 
     // If no parentId is provided, use the current active action as parent
-    const effectiveParentId = parentId || this.getCurrentEventId();
+    const effectiveParentId = parentId || this.getCurrentActivityId();
 
     const depth = effectiveParentId
       ? (this.eventTrackingData.get(effectiveParentId)?.depth ?? 0) + 1
@@ -253,7 +253,7 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
     const id = this.generateId();
     const now = Date.now();
 
-    const effectiveParentId = parentId || this.getCurrentEventId();
+    const effectiveParentId = parentId || this.getCurrentActivityId();
     const depth = effectiveParentId
       ? (this.eventTrackingData.get(effectiveParentId)?.depth ?? 0) + 1
       : 0;
@@ -360,7 +360,7 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
     const id = this.generateId();
     const now = Date.now();
 
-    const effectiveParentId = parentId || this.getCurrentEventId();
+    const effectiveParentId = parentId || this.getCurrentActivityId();
     const depth = effectiveParentId
       ? (this.eventTrackingData.get(effectiveParentId)?.depth ?? 0) + 1
       : 0;
@@ -619,7 +619,7 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
     const id = this.generateId();
     const now = Date.now();
 
-    const effectiveParentId = parentId || this.getCurrentEventId();
+    const effectiveParentId = parentId || this.getCurrentActivityId();
     const depth = effectiveParentId
       ? (this.eventTrackingData.get(effectiveParentId)?.depth ?? 0) + 1
       : 0;
@@ -717,7 +717,7 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
     const activityId = this.generateId();
     const now = Date.now();
 
-    const effectiveParentId = parentId || this.getCurrentEventId();
+    const effectiveParentId = parentId || this.getCurrentActivityId();
     const depth = effectiveParentId
       ? (this.eventTrackingData.get(effectiveParentId)?.depth ?? 0) + 1
       : 0;

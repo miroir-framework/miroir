@@ -135,13 +135,13 @@ export class MiroirEventService implements MiroirEventServiceInterface {
   private readonly CLEANUP_INTERVAL_MS = 2 * 60 * 1000; // 2 minutes
   private readonly MAX_ENTRIES_PER_ACTION_OR_TEST = 1000; // Prevent memory bloat
 
-  constructor(private eventTracker: MiroirActivityTrackerInterface) {
+  constructor(private activityTracker: MiroirActivityTrackerInterface) {
     // Start cleanup timer
     this.cleanupInterval = setInterval(() => {
       this.cleanup();
     }, this.CLEANUP_INTERVAL_MS);
 
-    this.eventTracker.setMiroirEventService(this);
+    this.activityTracker.setMiroirEventService(this);
   }
 
   // ##############################################################################################
@@ -151,14 +151,14 @@ export class MiroirEventService implements MiroirEventServiceInterface {
     message: string,
     ...args: any[]
   ): void {
-    const currentActionId = this.eventTracker.getCurrentEventId();
+    const currentActionId = this.activityTracker.getCurrentActivityId();
     if (!currentActionId) {
       // No active action, skip logging
       return;
     }
 
     // const currentActionData = this.eventTracker.getAllEvents().find(a => a.logId === currentActionId);
-    const currentActivityData = this.eventTracker.getActivityIndex().get(currentActionId);
+    const currentActivityData = this.activityTracker.getActivityIndex().get(currentActionId);
     if (!currentActivityData) {
       return;
     }
@@ -198,7 +198,7 @@ export class MiroirEventService implements MiroirEventServiceInterface {
           ["test", "testSuite", "testAssertion"].includes(currentEvent.activity.activityType)
         ) {
           throw new Error(
-            "Inconsistent state: action event not found or mismatched, log type action, event type " +
+            "Inconsistent state: test event not found or mismatched, log type action, event type " +
               (currentEvent ? currentEvent.activity.activityType : "undefined")
           );
         }
@@ -217,7 +217,7 @@ export class MiroirEventService implements MiroirEventServiceInterface {
       case "transformer": {
         if (!currentEvent || currentEvent.activity.activityType !== "transformer") {
           throw new Error(
-            "Inconsistent state: action event not found or mismatched, log type transformer, event type " +
+            "Inconsistent state: transformer event not found or mismatched, log type transformer, event activity type " +
               (currentEvent ? currentEvent.activity.activityType : "undefined")
           );
         }

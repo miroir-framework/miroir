@@ -1085,6 +1085,7 @@ export const miroirFundamentalJzodSchema = {
         "definition": {
           "extend": {
             "type": "union",
+            "discriminator": "type",
             "optional": true,
             "definition": [
               {
@@ -22352,6 +22353,7 @@ export const miroirFundamentalJzodSchema = {
         "definition": {
           "extend": {
             "type": "union",
+            "discriminator": "type",
             "optional": true,
             "definition": [
               {
@@ -36695,6 +36697,7 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "extend": {
                 "type": "union",
+                "discriminator": "type",
                 "optional": true,
                 "definition": [
                   {
@@ -51231,6 +51234,7 @@ export const miroirFundamentalJzodSchema = {
         "definition": {
           "extend": {
             "type": "union",
+            "discriminator": "type",
             "optional": true,
             "definition": [
               {
@@ -59582,6 +59586,7 @@ export const miroirFundamentalJzodSchema = {
         "definition": {
           "extend": {
             "type": "union",
+            "discriminator": "type",
             "optional": true,
             "definition": [
               {
@@ -67887,6 +67892,7 @@ export const miroirFundamentalJzodSchema = {
         "definition": {
           "extend": {
             "type": "union",
+            "discriminator": "type",
             "optional": true,
             "definition": [
               {
