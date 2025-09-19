@@ -5,7 +5,7 @@ import { MiroirActivityTrackerInterface } from "./MiroirEventTrackerInterface";
 import { TransformerEventServiceInterface } from "./TransformerEventInterface";
 
 export interface MiroirContextInterface {
-  miroirEventTracker: MiroirActivityTrackerInterface,
+  miroirActivityTracker: MiroirActivityTrackerInterface,
   miroirEventService: MiroirEventService,
   logInterceptor: ConsoleInterceptor,
   // transformerEventService: TransformerEventServiceInterface,

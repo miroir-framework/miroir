@@ -38,7 +38,7 @@ if (shouldSkip) {
   console.log("################################ File pattern:", filePattern);
   describe.skip(testSuiteName, () => {});
 } else {
-  const miroirEventTracker = new MiroirActivityTracker();
+  const miroirActivityTracker = new MiroirActivityTracker();
   
   const testSuite: TransformerTestSuite = transformerTestSuite_unfoldSchemaOnce.definition as TransformerTestSuite;
   if (!Object.hasOwn(testSuite, "transformerTestType") || testSuite.transformerTestType !== "transformerTestSuite" ) {
@@ -58,12 +58,12 @@ if (shouldSkip) {
     undefined, // filter
     runTransformerTestInMemory,
     defaultMetaModelEnvironment,
-    miroirEventTracker
+    miroirActivityTracker
   );
   transformerTestsDisplayResults(
     effectiveTests,
     filePattern || "",
     transformerTestSuite_unfoldSchemaOnce.definition.transformerTestLabel,
-    miroirEventTracker
+    miroirActivityTracker
   );
 }

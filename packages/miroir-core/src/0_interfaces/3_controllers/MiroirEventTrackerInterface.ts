@@ -47,7 +47,7 @@ export type MiroirActivity_Transformer = MiroirActivity_Root & {
   transformerError?: string;
 };
 
-export type MiroirEventTrackingData =
+export type MiroirActivity =
   | MiroirActivity_Action
   | MiroirActivity_Test
   | MiroirActivity_Transformer;
@@ -82,13 +82,13 @@ export interface MiroirActivityTrackerInterface {
    * Get all currently tracked actions
    * @returns Array of action tracking data
    */
-  getAllActivities(): MiroirEventTrackingData[];
+  getAllActivities(): MiroirActivity[];
   
   /**
    * Get all currently tracked actions as a Map of ID to data
    * @returns Map of action ID to action tracking data
    */
-  getActivityIndex(): Map<string, MiroirEventTrackingData>;
+  getActivityIndex(): Map<string, MiroirActivity>;
 
   /**
    * Get actions filtered by criteria
@@ -102,7 +102,7 @@ export interface MiroirActivityTrackerInterface {
     minDuration?: number;
     maxDuration?: number;
     since?: number; // timestamp
-  }, events?: MiroirEventTrackingData[]): MiroirEventTrackingData[];
+  }, events?: MiroirActivity[]): MiroirActivity[];
   
   /**
    * Clear all tracking data

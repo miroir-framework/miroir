@@ -388,7 +388,7 @@ export const ToolsPage: React.FC<any> = (
         // );
     
         const testSuitePath = [{ testSuite: Object.keys(testSuitesForBuildPlusRuntimeCompositeAction)[0]}]
-        const globalTestSuiteResults = context.miroirContext.miroirEventTracker.getTestSuiteResult(
+        const globalTestSuiteResults = context.miroirContext.miroirActivityTracker.getTestSuiteResult(
           testSuitePath
         );
         setTestResults(globalTestSuiteResults);
@@ -399,7 +399,7 @@ export const ToolsPage: React.FC<any> = (
           // TestFramework,
           Object.keys(testSuitesForBuildPlusRuntimeCompositeAction)[0],
           testSuitePath,
-          context.miroirContext.miroirEventTracker
+          context.miroirContext.miroirActivityTracker
         );
 
 

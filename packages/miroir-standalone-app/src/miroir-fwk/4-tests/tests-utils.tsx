@@ -718,7 +718,7 @@ export async function runTestOrTestSuite(
   // localCache: LocalCacheInterface,
   domainController: DomainControllerInterface,
   testAction: TestCompositeActionParams,
-  miroirEventTracker: MiroirEventTrackerInterface, // Optional unified tracker for test execution tracking
+  miroirActivityTracker: MiroirEventTrackerInterface, // Optional unified tracker for test execution tracking
   testActionParamValues?: {[k:string]: any},
 ) {
   const fullTestName = testAction.testActionLabel??testAction.testActionType;
@@ -748,7 +748,7 @@ export async function runTestOrTestSuite(
           ": queryResult=",
           JSON.stringify(queryResult, null, 2),
           "TestContextResults",
-          JSON.stringify(miroirEventTracker.getTestAssertionsResults([{testSuite: testAction.testActionLabel}]), null, 2)
+          JSON.stringify(miroirActivityTracker.getTestAssertionsResults([{testSuite: testAction.testActionLabel}]), null, 2)
         );
         // log.info(
         //   "received results for test testCompositeActionSuite",
@@ -790,7 +790,7 @@ export async function runTestOrTestSuite(
           ": queryResult=",
           JSON.stringify(queryResult, null, 2),
           "TestContextResults",
-          JSON.stringify(miroirEventTracker.getTestAssertionsResults([{testSuite: testAction.testActionLabel}]), null, 2)
+          JSON.stringify(miroirActivityTracker.getTestAssertionsResults([{testSuite: testAction.testActionLabel}]), null, 2)
         );
         return queryResult;
       }

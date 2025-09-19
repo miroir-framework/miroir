@@ -181,7 +181,7 @@ if (shouldSkip) {
 } else {
   console.log("transformer_menu_addItem START")
   
-  const miroirEventTracker = new MiroirActivityTracker();
+  const miroirActivityTracker = new MiroirActivityTracker();
   
   // console.log("################################ result", JSON.stringify(result,null,2))
   // console.log("################################ expectedResult", JSON.stringify(expectedResult,null,2))
@@ -192,7 +192,7 @@ if (shouldSkip) {
     undefined, // filter
     runTransformerTestInMemory,
     defaultMetaModelEnvironment,
-    miroirEventTracker
+    miroirActivityTracker
   );
   
   // expect(result).toEqual(expectedResult);

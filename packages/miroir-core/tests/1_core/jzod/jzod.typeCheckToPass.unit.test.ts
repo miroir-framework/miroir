@@ -63,7 +63,7 @@ const shouldSkip = filePattern.includes('resolveConditionalSchema');
 //   },
 // };
 
-// const miroirEventTracker = new MiroirActivityTracker();
+// const miroirActivityTracker = new MiroirActivityTracker();
 
 // afterAll(() => {
 //   if (!shouldSkip) {
@@ -71,7 +71,7 @@ const shouldSkip = filePattern.includes('resolveConditionalSchema');
 //       transformerTestSuite_jzodTypeCheck,
 //       filePattern || "",
 //       testSuiteName,
-//       miroirEventTracker
+//       miroirActivityTracker
 //     );
 //   }
 // });
@@ -88,7 +88,7 @@ const shouldSkip = filePattern.includes('resolveConditionalSchema');
 //     undefined, // filter
 //     runTransformerTestInMemory,
 //     defaultMiroirModelEnvironment,
-//     miroirEventTracker
+//     miroirActivityTracker
 //   );
   
 // }

@@ -555,7 +555,10 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
   const [transformationError, setTransformationError] = useState<TransformerFailure | null>(null);
   
   // Extract error path for highlighting problematic elements
-  const innermostError = useMemo(() => transformationError?getInnermostTransformerError(transformationError):undefined, [transformationError]);
+  const innermostError = useMemo(
+    () => (transformationError ? getInnermostTransformerError(transformationError) : undefined),
+    [transformationError]
+  );
   const errorPath = innermostError?.transformerPath || [];
   
   log.info("TransformerEditor Transformation error path:", errorPath);
@@ -623,6 +626,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
   // Debouncing for transformer execution
   const transformerTimeoutRef = useRef<NodeJS.Timeout>();
   
+  // ################################################################################################
   // Wrapper functions for folded state setters with persistence
   const setFoldedObjectAttributeOrArrayItemsWithPersistence = useCallback(
     // (updates: React.SetStateAction<{ [k: string]: boolean }>) => {
@@ -636,6 +640,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
     [context, reportContext]
   );
 
+  // ################################################################################################
   const setFoldedEntityInstanceItemsWithPersistence = useCallback((updates: React.SetStateAction<{ [k: string]: boolean }>) => {
     setFoldedEntityInstanceItems(prev => {
       const newState = typeof updates === 'function' ? updates(prev) : updates;
@@ -644,6 +649,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
     });
   }, [context]);
 
+  // ################################################################################################
   const setFoldedTransformationResultItemsWithPersistence = useCallback((updates: React.SetStateAction<{ [k: string]: boolean }>) => {
     setFoldedTransformationResultItems(prev => {
       const newState = typeof updates === 'function' ? updates(prev) : updates;
@@ -705,9 +711,9 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
         });
 
         const result: TransformerReturnType<any> = transformer_extended_apply_wrapper(
-          undefined, // activityTracker
+          context.miroirContext.miroirActivityTracker, // activityTracker
           "runtime", // step
-          [], // transformerPath
+          ["rootTransformer"], // transformerPath
           "TransformerEditor", // label
           currentTransformerDefinition, // transformer
           {...currentMiroirModelEnvironment, ...contextResults}, // transformerParams

@@ -251,7 +251,7 @@ export const RunTransformerTestSuiteButton: React.FC<RunTransformerTestSuiteButt
 
   const onAction = async () => {
     // Reset previous results
-    miroirContextService.miroirContext.miroirEventTracker.resetResults();
+    miroirContextService.miroirContext.miroirActivityTracker.resetResults();
 
     if (!transformerTestSuite) {
       throw new Error(`No transformer test suite found for ${testSuiteKey}`);
@@ -268,11 +268,11 @@ export const RunTransformerTestSuiteButton: React.FC<RunTransformerTestSuiteButt
       // {testList: {"resolveConditionalSchema": ["error if no value found at given parentUuid path"]}}, // filter
       runTransformerTestInMemory,
       defaultLibraryModelEnvironment,
-      miroirContextService.miroirContext.miroirEventTracker // Pass the unified tracker
+      miroirContextService.miroirContext.miroirActivityTracker // Pass the unified tracker
     );
 
     // Get all results using the new format
-    const allResults = miroirContextService.miroirContext.miroirEventTracker.getTestAssertionsResults([]);
+    const allResults = miroirContextService.miroirContext.miroirActivityTracker.getTestAssertionsResults([]);
     log.info("All test results:", allResults);
 
     // Format results for display using the new structure

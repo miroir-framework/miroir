@@ -634,7 +634,7 @@ export {
 export { MiroirContextInterface } from "./0_interfaces/3_controllers/MiroirContextInterface.js";
 export { 
   MiroirActivityTrackerInterface as MiroirEventTrackerInterface,
-  MiroirEventTrackingData,
+  MiroirActivity as MiroirEventTrackingData,
 } from "./0_interfaces/3_controllers/MiroirEventTrackerInterface.js";
 // export {
 //   TransformerEventServiceInterface,

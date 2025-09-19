@@ -2,7 +2,7 @@ import {
   MiroirActivityTrackerInterface,
   type MiroirActivity_Action,
   type MiroirActivity_Test,
-  type MiroirEventTrackingData,
+  type MiroirActivity,
   type MiroirActivity_Transformer,
 } from "../0_interfaces/3_controllers/MiroirEventTrackerInterface";
 import { LoggerGlobalContext } from "../4_services/LoggerContext";
@@ -87,7 +87,7 @@ export interface MiroirEventServiceInterface {
    *
    * @param trackingData The MiroirEventTrackingData object representing the action or test to log
    */
-  pushEventFromLogTrackingData(trackingData: MiroirEventTrackingData): void;
+  pushEventFromActivity(trackingData: MiroirActivity): void;
 
   /**
    * Get logs for a specific action
@@ -216,9 +216,15 @@ export class MiroirEventService implements MiroirEventServiceInterface {
       }
       case "transformer": {
         if (!currentEvent || currentEvent.activity.activityType !== "transformer") {
+          // console.log(
+          //   "MiroirEventService.pushEventFromLog currentActivityData:",
+          //   currentActivityData,
+          //   "currentEvent:",
+          //   currentEvent
+          // );
           throw new Error(
-            "Inconsistent state: transformer event not found or mismatched, log type transformer, event activity type " +
-              (currentEvent ? currentEvent.activity.activityType : "undefined")
+            "Inconsistent state: transformer event not found or mismatched, log type transformer, currentEvent " +
+              JSON.stringify(currentEvent, null, 2) + " currentActivityData " + JSON.stringify(currentActivityData, null, 2)
           );
         }
         logEntry = {
@@ -365,7 +371,7 @@ export class MiroirEventService implements MiroirEventServiceInterface {
   }
 
   // ##############################################################################################
-  pushEventFromLogTrackingData(trackingData: MiroirEventTrackingData) {
+  pushEventFromActivity(trackingData: MiroirActivity) {
     if (!this.events.has(trackingData.activityId)) {
       // copies MiroirEventTrackingData to MiroirEvent
       // Create event based on tracking type

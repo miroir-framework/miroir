@@ -21,7 +21,7 @@ import {
 import {
   PlayArrow,
   CheckCircle,
-  Error,
+  Error as MuiError,
   ExpandLess,
   ExpandMore,
   Refresh,
@@ -101,12 +101,12 @@ export const MiroirEventTimeLine: React.FC<RunActionTimelineProps> = React.memo(
         since: filters.since ? new Date(filters.since).getTime() : undefined,
       };
       // log.info(`MiroirEventTimeLine [${componentId}] - Using tracker filtering with criteria:`, filterCriteria);
-      result = context.miroirContext.miroirEventTracker.getFilteredEvents(filterCriteria, trackedEvents);
+      result = context.miroirContext.miroirActivityTracker.getFilteredActivities(filterCriteria, trackedEvents);
     }
     
     // log.info(`MiroirEventTimeLine [${componentId}] - Filtered:`, result.length, 'actions from', actions.length, 'total');
     return result;
-  }, [trackedEvents, filters, context.miroirContext.miroirEventTracker, componentId]);
+  }, [trackedEvents, filters, context.miroirContext.miroirActivityTracker, componentId]);
 
   // ##############################################################################################
   // Get unique action types for filter dropdown
@@ -123,7 +123,7 @@ export const MiroirEventTimeLine: React.FC<RunActionTimelineProps> = React.memo(
     // log.debug(`MiroirEventTimeLine [${componentId}] - Found ${result.length} unique action types:`, result);
     
     return result;
-  }, [trackedEvents.length, trackedEvents.map(a => a.id).join(','), componentId]);
+  }, [trackedEvents.length, componentId]);
 
   // ##############################################################################################
   // Get unique tracking types for filter dropdown
@@ -131,7 +131,7 @@ export const MiroirEventTimeLine: React.FC<RunActionTimelineProps> = React.memo(
     // log.debug(`MiroirEventTimeLine [${componentId}] - Computing trackingTypes from ${actions.length} actions`);
     
     const allTrackingTypes = trackedEvents
-      .map(action => action.trackingType)
+      .map(action => action.activityType)
       .filter(trackingType => trackingType && trackingType.trim() !== '');
     
     const types = new Set(allTrackingTypes);
@@ -140,7 +140,7 @@ export const MiroirEventTimeLine: React.FC<RunActionTimelineProps> = React.memo(
     // log.debug(`MiroirEventTimeLine [${componentId}] - Found ${result.length} unique tracking types:`, result);
     
     return result;
-  }, [trackedEvents.length, trackedEvents.map(a => a.id).join(','), componentId]);
+  }, [trackedEvents.length, componentId]);
 
   // ##############################################################################################
   // Build tree structure for nested display (TreeNode uses nested children)
@@ -154,7 +154,7 @@ export const MiroirEventTimeLine: React.FC<RunActionTimelineProps> = React.memo(
 
     const buildTree = (action: MiroirEventTrackingData): TreeNode => {
       const children: TreeNode[] = filteredEvents
-        .filter((child: MiroirEventTrackingData) => child.parentId === action.id)
+        .filter((child: MiroirEventTrackingData) => child.parentId === action.activityType)
         .sort((a, b) => (b.startTime || 0) - (a.startTime || 0)) // Sort children newest first too
         .map((c) => buildTree(c));
 
@@ -168,6 +168,17 @@ export const MiroirEventTimeLine: React.FC<RunActionTimelineProps> = React.memo(
     return tree;
   }, [filteredEvents, componentId]);
 
+  log.info(
+    `MiroirEventTimeLine [${componentId}] - Render with`,
+    trackedEvents.length,
+    "total actions,",
+    filteredEvents.length,
+    "filtered,",
+    eventTree.length,
+    "top-level in tree",
+    eventTree
+  );
+  // ##############################################################################################
   const handleToggleExpanded = useCallback((eventId: string) => {
     setExpanded(prev => ({
       ...prev,
@@ -180,12 +191,12 @@ export const MiroirEventTimeLine: React.FC<RunActionTimelineProps> = React.memo(
   }, [navigate]);
 
   const handleClearActions = useCallback(() => {
-    context.miroirContext.miroirEventTracker.clear();
-  }, [context.miroirContext.miroirEventTracker]);
+    context.miroirContext.miroirActivityTracker.clear();
+  }, [context.miroirContext.miroirActivityTracker]);
 
   // const handleRefresh = useCallback(() => {
-  //   setTrackedActionsOrTests(context.miroirContext.miroirEventTracker.getAllEvents());
-  // }, [context.miroirContext.miroirEventTracker]);
+  //   setTrackedActionsOrTests(context.miroirContext.miroirActivityTracker.getAllEvents());
+  // }, [context.miroirContext.miroirActivityTracker]);
 
   const handleFilterChange = useCallback((field: keyof FilterState, value: string) => {
     // log.info(`MiroirEventTimeLine [${componentId}] - Filter change:`, { field, value, oldFilters: filters });
@@ -198,19 +209,19 @@ export const MiroirEventTimeLine: React.FC<RunActionTimelineProps> = React.memo(
 
   const getStatusIcon = (action: MiroirEventTrackingData) => {
     // Test-specific icons
-    if (action.trackingType === 'testSuite') {
+    if (action.activityType === 'testSuite') {
       return action.status === 'completed' ? <AssignmentTurnedIn color="success" /> : 
              action.status === 'error' ? <Assignment color="error" /> : 
              <Assignment color="primary" />;
     }
-    if (action.trackingType === 'test') {
+    if (action.activityType === 'test') {
       return action.status === 'completed' && action.testResult === 'ok' ? <Science color="success" /> :
              action.status === 'error' || action.testResult === 'error' ? <BugReport color="error" /> :
              <Science color="primary" />;
     }
-    if (action.trackingType === 'testAssertion') {
+    if (action.activityType === 'testAssertion') {
       return action.status === 'completed' && action.testResult === 'ok' ? <CheckCircle color="success" /> :
-             action.status === 'error' || action.testResult === 'error' ? <Error color="error" /> :
+             action.status === 'error' || action.testResult === 'error' ? <MuiError color="error" /> :
              <PlayArrow color="primary" />;
     }
     
@@ -221,7 +232,7 @@ export const MiroirEventTimeLine: React.FC<RunActionTimelineProps> = React.memo(
       case 'completed':
         return <CheckCircle color="success" />;
       case 'error':
-        return <Error color="error" />;
+        return <MuiError color="error" />;
       default:
         return null;
     }
@@ -230,7 +241,8 @@ export const MiroirEventTimeLine: React.FC<RunActionTimelineProps> = React.memo(
 
   const getStatusColor = (action: MiroirEventTrackingData) => {
     // For tests, consider both status and testResult
-    if (action.trackingType === 'test' || action.trackingType === 'testAssertion') {
+    // if (action.activityType === 'test' || action.activityType === 'testAssertion') {
+    if (action.activityType === 'test' || action.activityType === 'testAssertion') {
       if (action.status === 'completed' && action.testResult === 'ok') return 'success';
       if (action.status === 'error' || action.testResult === 'error') return 'error';
       if (action.status === 'running') return 'primary';
@@ -262,12 +274,25 @@ export const MiroirEventTimeLine: React.FC<RunActionTimelineProps> = React.memo(
 
   const getDisplayLabel = (action: MiroirEventTrackingData) => {
     // For tests, show the test-specific name
-    if (action.trackingType === 'testSuite') return action.testSuite || action.actionLabel || 'Test Suite';
-    if (action.trackingType === 'test') return action.test || action.actionLabel || 'Test';
-    if (action.trackingType === 'testAssertion') return action.testAssertion || action.actionLabel || 'Test Assertion';
+    switch (action.activityType) {
+      case "testSuite":
+        return action.testSuite || action.actionLabel || "Test Suite";
+      case "test":
+        return action.test || action.actionLabel || "Test";
+      case "testAssertion":
+        return action.testAssertion || action.actionLabel || "Test Assertion";
+      case "action":
+        return action.actionLabel || action.actionType || "Action";
+      case "transformer":
+        return action.actionLabel || "Transformer";
+      default: {
+        throw new Error(`Unknown activityType in action: ${action}`);
+        break;
+      }
+    }
     
     // For actions, use the standard label
-    return action.actionLabel || action.actionType;
+    // return action.actionLabel || action.actionType;
   };
 
   const getTrackingTypeLabel = (trackingType: string) => {
@@ -280,44 +305,45 @@ export const MiroirEventTimeLine: React.FC<RunActionTimelineProps> = React.memo(
     }
   };
 
-  const renderAction = (action: TreeNode, depth = 0) => {
-    const isExpanded = expanded[action.id];
+  const renderActivity = (action: TreeNode, depth = 0) => {
+    const isExpanded = expanded[action.activityId];
     const hasChildren = action.children && action.children.length > 0;
     const indentLevel = depth * 24;
 
     return (
-      <div key={action.id}>
+      <div key={action.activityId}>
+        AAAA
         <ListItem
           sx={{
             pl: `${16 + indentLevel}px`,
-            borderLeft: depth > 0 ? '1px solid #e0e0e0' : 'none',
-            ml: depth > 0 ? '12px' : 0,
-            bgcolor: action.trackingType !== 'action' ? '#f8f9ff' : 'inherit', // Light blue tint for tests
+            borderLeft: depth > 0 ? "1px solid #e0e0e0" : "none",
+            ml: depth > 0 ? "12px" : 0,
+            bgcolor: action.activityType !== "action" ? "#f8f9ff" : "inherit", // Light blue tint for tests
           }}
         >
-          <ListItemIcon sx={{ minWidth: '32px' }}>
-            {getStatusIcon(action)}
-          </ListItemIcon>
-          
+          <ListItemIcon sx={{ minWidth: "32px" }}>{getStatusIcon(action)}</ListItemIcon>
+
           <ListItemText
             primaryTypographyProps={{ component: "div" }}
             secondaryTypographyProps={{ component: "div" }}
             primary={
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                 <Typography variant="body2" fontWeight="medium" component="span">
-                  {getDisplayLabel(action)}
+                  {"A " + getDisplayLabel(action) + " A"}
                 </Typography>
                 <Chip
-                  label={getTrackingTypeLabel(action.trackingType)}
+                  label={getTrackingTypeLabel(action.activityType)}
                   size="small"
-                  color={action.trackingType !== 'action' ? 'secondary' : 'default'}
+                  color={action.activityType !== "action" ? "secondary" : "default"}
                   variant="outlined"
-                  sx={{ fontSize: '0.7rem', height: '20px' }}
+                  sx={{ fontSize: "0.7rem", height: "20px" }}
                 />
                 <Chip
-                  label={action.trackingType === 'test' || action.trackingType === 'testAssertion' 
-                    ? (action.testResult || action.status) 
-                    : action.status}
+                  label={
+                    action.activityType === "test" || action.activityType === "testAssertion"
+                      ? action.testResult || action.status
+                      : action.status
+                  }
                   size="small"
                   color={getStatusColor(action) as any}
                   variant="outlined"
@@ -328,7 +354,7 @@ export const MiroirEventTimeLine: React.FC<RunActionTimelineProps> = React.memo(
               </Box>
             }
             secondary={
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
                 <Typography variant="caption" component="span">
                   Started: {formatTime(action.startTime)}
                 </Typography>
@@ -345,33 +371,32 @@ export const MiroirEventTimeLine: React.FC<RunActionTimelineProps> = React.memo(
               </Box>
             }
           />
-          
+
           <Tooltip title="View Miroir Events">
             <IconButton
               size="small"
               onClick={(e) => {
                 e.stopPropagation();
-                handleViewActionLogs(action.id);
+                handleViewActionLogs(action.activityId);
               }}
               sx={{ mr: 1 }}
             >
               <Visibility />
             </IconButton>
           </Tooltip>
-          
+
           {hasChildren && (
-            <IconButton
-              size="small"
-              onClick={() => handleToggleExpanded(action.id)}
-            >
+            <IconButton size="small" onClick={() => handleToggleExpanded(action.activityId)}>
               {isExpanded ? <ExpandLess /> : <ExpandMore />}
             </IconButton>
           )}
         </ListItem>
-        
+        AAAA
         {hasChildren && (
           <Collapse in={isExpanded}>
-            {action.children?.map((child: MiroirEventTrackingData & { children?: any[] }) => renderAction(child, depth + 1))}
+            {action.children?.map((child: MiroirEventTrackingData & { children?: any[] }) =>
+              renderActivity(child, depth + 1)
+            )}
           </Collapse>
         )}
       </div>
@@ -408,8 +433,8 @@ export const MiroirEventTimeLine: React.FC<RunActionTimelineProps> = React.memo(
         
         <Typography variant="body2" color="text.secondary">
           {filteredEvents.length} items ({trackedEvents.filter(a => a.status === 'running').length} running) - 
-          Actions: {trackedEvents.filter(a => a.trackingType === 'action').length}, 
-          Tests: {trackedEvents.filter(a => a.trackingType !== 'action').length}
+          Actions: {trackedEvents.filter(a => a.activityId === 'action').length}, 
+          Tests: {trackedEvents.filter(a => a.activityId !== 'action').length}
         </Typography>
       </Box>
 
@@ -513,7 +538,7 @@ export const MiroirEventTimeLine: React.FC<RunActionTimelineProps> = React.memo(
           </Box>
         ) : (
           <List dense>
-            {eventTree.map((action: MiroirEventTrackingData & { children?: any[] }) => renderAction(action))}
+            {eventTree.map((activity: MiroirEventTrackingData & { children?: any[] }) => renderActivity(activity))}
           </List>
         )}
       </Box>

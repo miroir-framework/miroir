@@ -58,7 +58,7 @@ if (shouldSkip) {
     transformerTests: selectedTests as any
   } as any;
   
-  const miroirEventTracker = new MiroirActivityTracker();
+  const miroirActivityTracker = new MiroirActivityTracker();
   
   await runTransformerTestSuite(
     // { describe, expect} as any,//vitest,
@@ -69,13 +69,13 @@ if (shouldSkip) {
     undefined, // filter
     runTransformerTestInMemory,
     defaultMetaModelEnvironment,
-    miroirEventTracker
+    miroirActivityTracker
   );
   transformerTestsDisplayResults(
     // transformerTestSuite_resolveSchemaReferenceInContext.definition as TransformerTestSuite,
     effectiveTests,
     filePattern || "",
     transformerTestSuite_resolveSchemaReferenceInContext.definition.transformerTestLabel,
-    miroirEventTracker
+    miroirActivityTracker
   );
 }

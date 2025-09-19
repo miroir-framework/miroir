@@ -23,7 +23,7 @@ const testSuiteName = "transformers.unit.test";
 const shouldSkip = filePattern.includes('resolveConditionalSchema');
 
 // ##################################################################################################
-const miroirEventTracker = new MiroirActivityTracker();
+const miroirActivityTracker = new MiroirActivityTracker();
 
 afterAll(() => {
   if (!shouldSkip) {
@@ -31,7 +31,7 @@ afterAll(() => {
       currentTestSuite,
       filePattern || "",
       testSuiteName,
-      miroirEventTracker
+      miroirActivityTracker
     );
   }
 });
@@ -48,7 +48,7 @@ if (shouldSkip) {
     undefined, // filter
     runTransformerTestInMemory,
     defaultMetaModelEnvironment,
-    miroirEventTracker
+    miroirActivityTracker
   );
   
 }

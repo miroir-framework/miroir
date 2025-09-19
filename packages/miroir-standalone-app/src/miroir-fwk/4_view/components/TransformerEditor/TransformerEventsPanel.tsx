@@ -48,11 +48,15 @@ const TransformerEventEntry: React.FC<{
   depth: number;
 }> = React.memo(({ event, depth }) => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const activity = event.activity;
+  const hasDetails =
+    activity.transformerParams ||
+    activity.transformerResult ||
+    activity.transformerError ||
+    event.eventLogs?.length > 0;
   
-  const hasDetails = event.transformerParams || event.transformerResult || event.transformerError || event.eventLogs?.length > 0;
-  
-  const statusColor = event.status === 'error' ? '#ff6b6b' : 
-                     event.status === 'completed' ? '#51cf66' : '#ffd43b';
+  const statusColor = activity.status === 'error' ? '#ff6b6b' : 
+                     activity.status === 'completed' ? '#51cf66' : '#ffd43b';
   
   const indentStyle = {
     marginLeft: `${depth * 20}px`,
@@ -64,10 +68,10 @@ const TransformerEventEntry: React.FC<{
   
   // const preciseError: Domain2ElementFailed | undefined = useMemo(() => {
   const preciseError: TransformerFailure | undefined = useMemo(() => {
-    if (event.transformerError) {
-      return getInnermostTransformerError(event.transformerError as any);
+    if (activity.transformerError) {
+      return getInnermostTransformerError(activity.transformerError as any);
     }
-  }, [event.transformerError]);
+  }, [activity.transformerError]);
 
   return (
     <div style={{ ...indentStyle, marginBottom: '8px' }}>
@@ -86,11 +90,11 @@ const TransformerEventEntry: React.FC<{
       >
         <div style={{ flex: 1 }}>
           <div style={{ fontWeight: 'bold', fontSize: '14px' }}>
-            {event.transformerName} ({event.transformerType})
+            {activity.transformerName} ({activity.transformerType})
           </div>
           <div style={{ fontSize: '12px', color: '#666', marginTop: '2px' }}>
-            {event.transformerStep} • {formatDuration(event.endTime? event.endTime - event.startTime:undefined)} • {event.status}
-            {event.transformerError && <span style={{ color: '#ff6b6b', marginLeft: '8px' }}>Error</span>}
+            {activity.transformerStep} • {formatDuration(activity.endTime? activity.endTime - activity.startTime:undefined)} • {event.activity.status}
+            {activity.transformerError && <span style={{ color: '#ff6b6b', marginLeft: '8px' }}>Error</span>}
           </div>
         </div>
         
@@ -104,12 +108,12 @@ const TransformerEventEntry: React.FC<{
       {/* ERROR */}
       {isExpanded && hasDetails && (
         <div style={{ marginTop: '8px', padding: '12px', backgroundColor: '#fff', border: '1px solid #dee2e6', borderRadius: '4px' }}>
-          {event.transformerError && (
+          {activity.transformerError && (
             <div style={{ marginBottom: '12px' }}>
               <div style={{ fontWeight: 'bold', marginBottom: '4px', color: '#ff6b6b' }}>Error:</div>
               <ThemedCodeBlock style={{ backgroundColor: '#fff5f5', border: '1px solid #ff6b6b' }}>
                 {/* {event.transformerError} */}
-                {preciseError ? JSON.stringify(preciseError, null, 2) : event.transformerError}
+                {preciseError ? JSON.stringify(preciseError, null, 2) : activity.transformerError}
               </ThemedCodeBlock>
             </div>
           )}
@@ -137,20 +141,20 @@ const TransformerEventEntry: React.FC<{
             </div>
           )}
 
-          {event.transformerParams && (
+          {activity.transformerParams && (
             <div style={{ marginBottom: '12px' }}>
               <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>Parameters:</div>
               <ThemedCodeBlock>
-                {JSON.stringify(event.transformerParams, null, 2)}
+                {JSON.stringify(activity.transformerParams, null, 2)}
               </ThemedCodeBlock>
             </div>
           )}
           
-          {event.transformerResult && (
+          {activity.transformerResult && (
             <div style={{ marginBottom: '12px' }}>
               <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>Result:</div>
               <ThemedCodeBlock>
-                {JSON.stringify(event.transformerResult, null, 2)}
+                {JSON.stringify(activity.transformerResult, null, 2)}
               </ThemedCodeBlock>
             </div>
           )}
@@ -190,7 +194,7 @@ export const TransformerEventsPanel: React.FC<TransformerEventsPanelProps> = ({
 
     // Sort by start time, newest first
     return miroirContext.miroirEventService.getFilteredEvents(filterCriteria, allEvents)
-      .sort((a, b) => (b.startTime || 0) - (a.startTime || 0));
+      .sort((a, b) => (b.activity.startTime || 0) - (a.activity.startTime || 0));
   }, [allEvents]);
 
   if (!miroirContext.miroirEventService) {

@@ -58,7 +58,7 @@ const vitestArgs = process.argv.slice(2);
 const filePattern = vitestArgs.find(arg => !arg.startsWith('-')) || '';
 console.log("@@@@@@@@@@@@@@@@@@ File Pattern:", filePattern);
 
-const miroirEventTracker = new MiroirActivityTracker();
+const miroirActivityTracker = new MiroirActivityTracker();
 // console.log("@@@@@@@@@@@@@@@@@@ miroirConfig", miroirConfig);
 
 // describe.sequential("templatesDEFUNCT.unit.test", () => {
@@ -219,7 +219,7 @@ afterAll(async () => {
     // await persistenceStoreController.deleteStore(testStoreConfig.model);
     // await persistenceStoreController.deleteStore(testStoreConfig.admin);
     // await persistenceStoreController.close();
-    transformerTestsDisplayResults(currentTestSuite, testSuiteName, testSuiteName, miroirEventTracker);
+    transformerTestsDisplayResults(currentTestSuite, testSuiteName, testSuiteName, miroirActivityTracker);
   }
   console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ afterAll DONE");
 });
@@ -251,8 +251,8 @@ if (shouldSkip) {
     undefined, // filter
     runTransformerIntegrationTest(sqlDbDataStore),
     defaultMetaModelEnvironment,
-    miroirEventTracker
+    miroirActivityTracker
   );
   
-  // await transformerTestsDisplayResults(currentTestSuite, filePattern || "", testSuiteName, miroirEventTracker);
+  // await transformerTestsDisplayResults(currentTestSuite, filePattern || "", testSuiteName, miroirActivityTracker);
 }

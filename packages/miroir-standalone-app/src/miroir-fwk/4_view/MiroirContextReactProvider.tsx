@@ -1,4 +1,14 @@
-import { ReactNode, createContext, useContext, useMemo, useState, startTransition, useEffect, type Dispatch, type SetStateAction } from "react";
+import {
+  ReactNode,
+  createContext,
+  useContext,
+  useMemo,
+  useState,
+  startTransition,
+  useEffect,
+  type Dispatch,
+  type SetStateAction,
+} from "react";
 import { FoldedStateTree } from "./components/Reports/FoldedStateTreeUtils";
 
 import { useSelector } from "react-redux";
@@ -21,21 +31,26 @@ import {
   ViewParams,
   GridType,
   type MiroirEvent,
-  type KeyMapEntry
+  type KeyMapEntry,
 } from "miroir-core";
-import {
-  ReduxStateChanges,
-  selectCurrentTransaction
-} from "miroir-localcache-redux";
+import { ReduxStateChanges, selectCurrentTransaction } from "miroir-localcache-redux";
 
 import { packageName } from "../../constants.js";
 import { cleanLevel } from "./constants.js";
-import { errorLogService, ErrorLogEntry, logStartupError, logServerError, logClientError } from "./services/ErrorLogService.js";
+import {
+  errorLogService,
+  ErrorLogEntry,
+  logStartupError,
+  logServerError,
+  logClientError,
+} from "./services/ErrorLogService.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "MiroirContextReactProvider")
-).then((logger: LoggerInterface) => {log = logger});
+).then((logger: LoggerInterface) => {
+  log = logger;
+});
 
 // ToolsPage state interface for persistence
 export interface ToolsPageState {
@@ -49,75 +64,76 @@ export interface ToolsPageState {
   };
 }
 
-
-
-
 export interface MiroirReactContext {
   // miroirContext: MiroirContextInterface, // events, client/server config
-  miroirContext: MiroirContextInterface, // events, client/server config
+  miroirContext: MiroirContextInterface; // events, client/server config
   // level 4 access: perform side effects, via domain controller action calls
-  domainController: DomainControllerInterface,
+  domainController: DomainControllerInterface;
   // ###################################################################################################
   // page parameters
-  deploymentUuid: string,
-  setDeploymentUuid: React.Dispatch<React.SetStateAction<string>>,
-  reportUuid: Uuid | undefined,
-  setReportUuid: React.Dispatch<React.SetStateAction<Uuid>>,
-  applicationSection: ApplicationSection | undefined,
-  setApplicationSection: React.Dispatch<React.SetStateAction<ApplicationSection>>,
+  deploymentUuid: string;
+  setDeploymentUuid: React.Dispatch<React.SetStateAction<string>>;
+  reportUuid: Uuid | undefined;
+  setReportUuid: React.Dispatch<React.SetStateAction<Uuid>>;
+  applicationSection: ApplicationSection | undefined;
+  setApplicationSection: React.Dispatch<React.SetStateAction<ApplicationSection>>;
   // ###################################################################################################
   // session information
-  viewParams: ViewParams,
+  viewParams: ViewParams;
   // ###################################################################################################
   // Miroir meta-model
-  miroirFundamentalJzodSchema: JzodSchema | undefined,
-  setMiroirFundamentalJzodSchema: React.Dispatch<React.SetStateAction<JzodElement>>,
+  miroirFundamentalJzodSchema: JzodSchema | undefined;
+  setMiroirFundamentalJzodSchema: React.Dispatch<React.SetStateAction<JzodElement>>;
   // ###################################################################################################
   // Form state management
-  innerFormOutput: any,
-  setInnerFormOutput: React.Dispatch<React.SetStateAction<any>>,
-  formHelperState: any,
-  setformHelperState: React.Dispatch<React.SetStateAction<any>>,
-  deploymentUuidToReportsEntitiesDefinitionsMapping: DeploymentUuidToReportsEntitiesDefinitionsMapping, // ??
-  setDeploymentUuidToReportsEntitiesDefinitionsMapping: React.Dispatch<React.SetStateAction<DeploymentUuidToReportsEntitiesDefinitionsMapping>>,
-  updateTransformerEditorState: (updates: Partial<ToolsPageState['transformerEditor']>) => void,
+  innerFormOutput: any;
+  setInnerFormOutput: React.Dispatch<React.SetStateAction<any>>;
+  formHelperState: any;
+  setformHelperState: React.Dispatch<React.SetStateAction<any>>;
+  deploymentUuidToReportsEntitiesDefinitionsMapping: DeploymentUuidToReportsEntitiesDefinitionsMapping; // ??
+  setDeploymentUuidToReportsEntitiesDefinitionsMapping: React.Dispatch<
+    React.SetStateAction<DeploymentUuidToReportsEntitiesDefinitionsMapping>
+  >;
+  updateTransformerEditorState: (updates: Partial<ToolsPageState["transformerEditor"]>) => void;
   // ###################################################################################################
   // outline <-> instance editor
   // typeCheckKeyMap: Record<string, KeyMapEntry>,
   // setTypeCheckKeyMap: React.Dispatch<React.SetStateAction<Record<string, KeyMapEntry>>>,
-  setTypeCheckKeyMap: React.Dispatch<React.SetStateAction<Record<string, KeyMapEntry>>> | undefined,
+  setTypeCheckKeyMap: React.Dispatch<React.SetStateAction<Record<string, KeyMapEntry>>> | undefined;
   setSetTypeCheckKeyMap: (
     setTypeCheckKeyMap: React.Dispatch<React.SetStateAction<Record<string, KeyMapEntry>>>
   ) => void;
-  setFoldedObjectAttributeOrArrayItems: React.Dispatch<
-      React.SetStateAction<FoldedStateTree>
-    > | undefined,
+  setFoldedObjectAttributeOrArrayItems:
+    | React.Dispatch<React.SetStateAction<FoldedStateTree>>
+    | undefined;
   setSetFoldedObjectAttributeOrArrayItems: (
-    setFoldedObjectAttributeOrArrayItems: React.Dispatch<
-      React.SetStateAction<FoldedStateTree>
-    >
-  ) => void,
+    setFoldedObjectAttributeOrArrayItems: React.Dispatch<React.SetStateAction<FoldedStateTree>>
+  ) => void;
 
   // ###################################################################################################
   // ToolsPage state management
-  toolsPageState: ToolsPageState,
-  updateToolsPageState: (updates: Partial<ToolsPageState>) => void,
+  toolsPageState: ToolsPageState;
+  updateToolsPageState: (updates: Partial<ToolsPageState>) => void;
   // ###################################################################################################
   // Modal windows for monitoring
-  showPerformanceDisplay: boolean,
-  setShowPerformanceDisplay: (value: boolean | ((prev: boolean) => boolean)) => void,
-  showActionTimeline: boolean,
-  setShowActionTimeline: (value: boolean | ((prev: boolean) => boolean)) => void,
+  showPerformanceDisplay: boolean;
+  setShowPerformanceDisplay: (value: boolean | ((prev: boolean) => boolean)) => void;
+  showActionTimeline: boolean;
+  setShowActionTimeline: (value: boolean | ((prev: boolean) => boolean)) => void;
   // ##################################################################################################
   // Snackbar functionality
-  snackbarOpen: boolean,
-  snackbarMessage: string,
-  snackbarSeverity: "success" | "error" | "info",
-  showSnackbar: (message: string, severity?: "success" | "error" | "info") => void,
-  handleSnackbarClose: () => void,
-  handleAsyncAction: (action: () => Promise<any>, successMessage: string, actionName: string) => Promise<void>,
+  snackbarOpen: boolean;
+  snackbarMessage: string;
+  snackbarSeverity: "success" | "error" | "info";
+  showSnackbar: (message: string, severity?: "success" | "error" | "info") => void;
+  handleSnackbarClose: () => void;
+  handleAsyncAction: (
+    action: () => Promise<any>,
+    successMessage: string,
+    actionName: string
+  ) => Promise<void>;
   // Error logging service access
-  errorLogService: typeof errorLogService,
+  errorLogService: typeof errorLogService;
 }
 
 // #############################################################################################
@@ -149,12 +165,11 @@ export function MiroirContextReactProvider(props: {
   const [setFoldedObjectAttributeOrArrayItems, setSetFoldedObjectAttributeOrArrayItems] =
     useState<Dispatch<SetStateAction<FoldedStateTree>>>();
 
-    //     setTypeCheckKeyMap: React.Dispatch<React.SetStateAction<Record<string, KeyMapEntry>>>,
-    // setSetTypeCheckKeyMap: (
-    //   setTypeCheckKeyMap: React.Dispatch<React.SetStateAction<Record<string, KeyMapEntry>>>
-    // ) => void;
+  //     setTypeCheckKeyMap: React.Dispatch<React.SetStateAction<Record<string, KeyMapEntry>>>,
+  // setSetTypeCheckKeyMap: (
+  //   setTypeCheckKeyMap: React.Dispatch<React.SetStateAction<Record<string, KeyMapEntry>>>
+  // ) => void;
 
-  
   const [
     deploymentUuidToReportsEntitiesDefinitionsMapping,
     setDeploymentUuidToReportsEntitiesDefinitionsMapping,
@@ -167,7 +182,7 @@ export function MiroirContextReactProvider(props: {
   // Create ViewParams instance to track UI state with reactive state
   const [sidebarIsopen, setSidebarIsOpen] = useState(true);
   const [sidebarWidth, setSidebarWidth] = useState(250);
-  const [gridType, setGridType] = useState<GridType>('ag-grid');
+  const [gridType, setGridType] = useState<GridType>("ag-grid");
   const [toolsPageState, setToolsPageState] = useState<ToolsPageState>(() => {
     // Persist ToolsPage state across navigation per deployment
     const saved = sessionStorage.getItem(`toolsPageState_${deploymentUuid}`);
@@ -175,135 +190,169 @@ export function MiroirContextReactProvider(props: {
   });
   const [showPerformanceDisplay, setShowPerformanceDisplay] = useState(() => {
     // Persist showPerformanceDisplay state across navigation
-    const saved = sessionStorage.getItem('showPerformanceDisplay');
+    const saved = sessionStorage.getItem("showPerformanceDisplay");
     return saved ? JSON.parse(saved) : false;
   });
-  
+
   const [showActionTimeline, setShowActionTimeline] = useState(() => {
     // Persist showActionTimeline state across navigation
-    const saved = sessionStorage.getItem('showActionTimeline');
+    const saved = sessionStorage.getItem("showActionTimeline");
     return saved ? JSON.parse(saved) : false;
   });
-  
+
   // Snackbar state
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error" | "info">("info");
-  
+
   const viewParams = useMemo(() => {
     const params = new ViewParams(sidebarIsopen, sidebarWidth, gridType);
     // Override setters to use React state
-    params.updateSidebarIsOpen = ( sidebarIsopen: boolean) => setSidebarIsOpen(sidebarIsopen);
+    params.updateSidebarIsOpen = (sidebarIsopen: boolean) => setSidebarIsOpen(sidebarIsopen);
     params.updateSidebarWidth = (width: number) => setSidebarWidth(width);
     params.setGridType = (type: GridType) => setGridType(type);
     return params;
   }, [sidebarWidth, gridType]);
 
   // Update functions for ToolsPage state with persistence
-  const updateToolsPageState = useMemo(() => (updates: Partial<ToolsPageState>) => {
-    const newState = { ...toolsPageState, ...updates };
-    setToolsPageState(newState);
-    // Persist to sessionStorage per deployment
-    sessionStorage.setItem(`toolsPageState_${deploymentUuid}`, JSON.stringify(newState));
-  }, [toolsPageState, deploymentUuid]);
+  const updateToolsPageState = useMemo(
+    () => (updates: Partial<ToolsPageState>) => {
+      const newState = { ...toolsPageState, ...updates };
+      setToolsPageState(newState);
+      // Persist to sessionStorage per deployment
+      sessionStorage.setItem(`toolsPageState_${deploymentUuid}`, JSON.stringify(newState));
+    },
+    [toolsPageState, deploymentUuid]
+  );
 
-  const updateTransformerEditorState = useMemo(() => (updates: Partial<ToolsPageState['transformerEditor']>) => {
-    const newState = {
-      ...toolsPageState,
-      transformerEditor: { ...toolsPageState.transformerEditor, ...updates }
-    };
-    setToolsPageState(newState);
-    // Persist to sessionStorage per deployment
-    sessionStorage.setItem(`toolsPageState_${deploymentUuid}`, JSON.stringify(newState));
-  }, [toolsPageState, deploymentUuid]);
+  const updateTransformerEditorState = useMemo(
+    () => (updates: Partial<ToolsPageState["transformerEditor"]>) => {
+      const newState = {
+        ...toolsPageState,
+        transformerEditor: { ...toolsPageState.transformerEditor, ...updates },
+      };
+      setToolsPageState(newState);
+      // Persist to sessionStorage per deployment
+      sessionStorage.setItem(`toolsPageState_${deploymentUuid}`, JSON.stringify(newState));
+    },
+    [toolsPageState, deploymentUuid]
+  );
 
   // Snackbar handlers
-  const showSnackbar = useMemo(() => (message: string, severity: "success" | "error" | "info" = "info") => {
-    setSnackbarMessage(message);
-    setSnackbarSeverity(severity);
-    setSnackbarOpen(true);
-  }, []);
+  const showSnackbar = useMemo(
+    () =>
+      (message: string, severity: "success" | "error" | "info" = "info") => {
+        setSnackbarMessage(message);
+        setSnackbarSeverity(severity);
+        setSnackbarOpen(true);
+      },
+    []
+  );
 
-  const handleSnackbarClose = useMemo(() => () => {
-    setSnackbarOpen(false);
-  }, []);
+  const handleSnackbarClose = useMemo(
+    () => () => {
+      setSnackbarOpen(false);
+    },
+    []
+  );
 
-  const handleAsyncAction = useMemo(() => async (action: () => Promise<any>, successMessage: string, actionName: string) => {
-    try {
-      const result = await action();
-      
-      // Check if the result is an Action2Error (server error)
-      if (result && typeof result === 'object' && result.status === 'error') {
-        // Log server errors to global error service
-        const errorEntry = logServerError(
-          result.errorMessage || result.errorType || 'Unknown server error',
+  const handleAsyncAction = useMemo(
+    () => async (action: () => Promise<any>, successMessage: string, actionName: string) => {
+      try {
+        const result = await action();
+
+        // Check if the result is an Action2Error (server error)
+        if (result && typeof result === "object" && result.status === "error") {
+          // Log server errors to global error service
+          const errorEntry = logServerError(
+            result.errorMessage || result.errorType || "Unknown server error",
+            {
+              actionName,
+              errorDetails: result,
+              timestamp: new Date().toISOString(),
+            }
+          );
+
+          log.error(`Server error in ${actionName}:`, result);
+          startTransition(() => {
+            if (result.isServerError && result.errorMessage) {
+              showSnackbar(`Server error: ${result.errorMessage}`, "error");
+            } else {
+              showSnackbar(
+                `Error in ${actionName}: ${
+                  result.errorMessage || result.errorType || "Unknown error"
+                }`,
+                "error"
+              );
+            }
+          });
+          return;
+        }
+
+        // Use startTransition for non-urgent UI updates to allow React 18 batching
+        startTransition(() => {
+          showSnackbar(successMessage, "success");
+        });
+      } catch (error) {
+        log.error(`Error in ${actionName}:`, error);
+
+        // Determine error category based on error type and action name
+        let errorCategory: "startup" | "server" | "client" | "network" | "validation" | "unknown" =
+          "client";
+        if (
+          actionName.toLowerCase().includes("config") ||
+          actionName.toLowerCase().includes("startup")
+        ) {
+          errorCategory = "startup";
+        } else if (error && typeof error === "object" && (error as any).isServerError) {
+          errorCategory = "server";
+        } else if (error instanceof TypeError && error.message.includes("fetch")) {
+          errorCategory = "network";
+        }
+
+        // Log error to global error service
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        const errorEntry = errorLogService.logError(
+          error instanceof Error ? error : new Error(String(error)),
           {
-            actionName,
-            errorDetails: result,
-            timestamp: new Date().toISOString()
+            category: errorCategory,
+            severity: errorCategory === "startup" ? "critical" : "error",
+            context: {
+              actionName,
+              timestamp: new Date().toISOString(),
+              userAgent: navigator.userAgent,
+              url: window.location.href,
+            },
+            showSnackbar: true,
+            userMessage:
+              errorCategory === "startup"
+                ? "Application startup failed. Please check your configuration and try again."
+                : undefined,
           }
         );
 
-        log.error(`Server error in ${actionName}:`, result);
-        startTransition(() => {
-          if (result.isServerError && result.errorMessage) {
-            showSnackbar(`Server error: ${result.errorMessage}`, "error");
-          } else {
-            showSnackbar(`Error in ${actionName}: ${result.errorMessage || result.errorType || 'Unknown error'}`, "error");
-          }
-        });
-        return;
+        // Check if the error has structured server error data
+        if (error && typeof error === "object" && (error as any).isServerError) {
+          startTransition(() => {
+            showSnackbar(
+              `Server error: ${
+                (error as any).errorMessage || (error as any).message || "Unknown server error"
+              }`,
+              "error"
+            );
+          });
+        } else {
+          startTransition(() => {
+            showSnackbar(
+              errorEntry.userMessage || `Error in ${actionName}: ${errorMessage}`,
+              errorCategory === "startup" ? "error" : "error" // Use "error" instead of "warning"
+            );
+          });
+        }
       }
-      
-      // Use startTransition for non-urgent UI updates to allow React 18 batching
-      startTransition(() => {
-        showSnackbar(successMessage, "success");
-      });
-    } catch (error) {
-      log.error(`Error in ${actionName}:`, error);
-      
-      // Determine error category based on error type and action name
-      let errorCategory: 'startup' | 'server' | 'client' | 'network' | 'validation' | 'unknown' = 'client';
-      if (actionName.toLowerCase().includes('config') || actionName.toLowerCase().includes('startup')) {
-        errorCategory = 'startup';
-      } else if (error && typeof error === 'object' && (error as any).isServerError) {
-        errorCategory = 'server';
-      } else if (error instanceof TypeError && error.message.includes('fetch')) {
-        errorCategory = 'network';
-      }
-
-      // Log error to global error service
-      const errorMessage = error instanceof Error ? error.message : String(error);
-      const errorEntry = errorLogService.logError(error instanceof Error ? error : new Error(String(error)), {
-        category: errorCategory,
-        severity: errorCategory === 'startup' ? 'critical' : 'error',
-        context: {
-          actionName,
-          timestamp: new Date().toISOString(),
-          userAgent: navigator.userAgent,
-          url: window.location.href
-        },
-        showSnackbar: true,
-        userMessage: errorCategory === 'startup' 
-          ? 'Application startup failed. Please check your configuration and try again.'
-          : undefined
-      });
-      
-      // Check if the error has structured server error data
-      if (error && typeof error === 'object' && (error as any).isServerError) {
-        startTransition(() => {
-          showSnackbar(`Server error: ${(error as any).errorMessage || (error as any).message || 'Unknown server error'}`, "error");
-        });
-      } else {
-        startTransition(() => {
-          showSnackbar(
-            errorEntry.userMessage || `Error in ${actionName}: ${errorMessage}`, 
-            errorCategory === 'startup' ? "error" : "error"  // Use "error" instead of "warning"
-          );
-        });
-      }
-    }
-  }, [showSnackbar]);
+    },
+    [showSnackbar]
+  );
 
   // const value = useMemo<MiroirReactContext>(()=>({
   const value = useMemo<MiroirReactContext>(
@@ -336,25 +385,23 @@ export function MiroirContextReactProvider(props: {
       updateTransformerEditorState,
       showPerformanceDisplay,
       setShowPerformanceDisplay: (value: boolean | ((prev: boolean) => boolean)) => {
-        const newValue = typeof value === 'function' ? value(showPerformanceDisplay) : value;
+        const newValue = typeof value === "function" ? value(showPerformanceDisplay) : value;
         setShowPerformanceDisplay(newValue);
-        sessionStorage.setItem('showPerformanceDisplay', JSON.stringify(newValue));
+        sessionStorage.setItem("showPerformanceDisplay", JSON.stringify(newValue));
       },
       showActionTimeline,
       setShowActionTimeline: (value: boolean | ((prev: boolean) => boolean)) => {
-        const newValue = typeof value === 'function' ? value(showActionTimeline) : value;
-        console.log('setShowActionTimeline called:', { 
-          oldValue: showActionTimeline, 
-          newValue: newValue, 
-          type: typeof value 
+        const newValue = typeof value === "function" ? value(showActionTimeline) : value;
+        console.log("setShowActionTimeline called:", {
+          oldValue: showActionTimeline,
+          newValue: newValue,
+          type: typeof value,
         });
         setShowActionTimeline(newValue);
-        sessionStorage.setItem('showActionTimeline', JSON.stringify(newValue));
+        sessionStorage.setItem("showActionTimeline", JSON.stringify(newValue));
       },
       // // ###################################################################################################
       // // Outline for Instance Editor
-      // typeCheckKeyMap,
-      // setTypeCheckKeyMap,
       setFoldedObjectAttributeOrArrayItems,
       setSetFoldedObjectAttributeOrArrayItems,
       setSetTypeCheckKeyMap,
@@ -406,7 +453,7 @@ export function MiroirContextReactProvider(props: {
   //     if (errorEntry.userMessage || errorEntry.severity === 'critical' || errorEntry.severity === 'error') {
   //       startTransition(() => {
   //         const message = errorEntry.userMessage || errorEntry.errorMessage;
-  //         const severity = errorEntry.severity === 'critical' ? 'error' : 
+  //         const severity = errorEntry.severity === 'critical' ? 'error' :
   //                         errorEntry.severity === 'warning' ? 'error' : 'error';  // Map to valid types
   //         showSnackbar(message, severity);
   //       });
@@ -424,13 +471,13 @@ export function MiroirContextReactProvider(props: {
         open={snackbarOpen}
         autoHideDuration={6000}
         onClose={handleSnackbarClose}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
       >
-        <Alert 
-          onClose={handleSnackbarClose} 
+        <Alert
+          onClose={handleSnackbarClose}
           severity={snackbarSeverity}
           variant="filled"
-          sx={{ width: '100%' }}
+          sx={{ width: "100%" }}
         >
           {snackbarMessage}
         </Alert>
@@ -441,19 +488,25 @@ export function MiroirContextReactProvider(props: {
 
 // #############################################################################################
 export function useMiroirContextformHelperState() {
-  return [useContext(miroirReactContext)?.formHelperState, useContext(miroirReactContext)?.setformHelperState];
+  return [
+    useContext(miroirReactContext)?.formHelperState,
+    useContext(miroirReactContext)?.setformHelperState,
+  ];
 }
 
 // #############################################################################################
 export function useMiroirContextInnerFormOutput() {
-  return [useContext(miroirReactContext)?.innerFormOutput, useContext(miroirReactContext)?.setInnerFormOutput];
+  return [
+    useContext(miroirReactContext)?.innerFormOutput,
+    useContext(miroirReactContext)?.setInnerFormOutput,
+  ];
 }
 
 // #############################################################################################
 export function useMiroirContextService(): MiroirReactContext {
   const context = useContext(miroirReactContext);
   if (!context) {
-    throw new Error('useMiroirContextService must be used within a MiroirContextReactProvider');
+    throw new Error("useMiroirContextService must be used within a MiroirContextReactProvider");
   }
   return context;
 }
@@ -462,7 +515,7 @@ export function useMiroirContextService(): MiroirReactContext {
 export function useMiroirContext() {
   const context = useContext(miroirReactContext);
   if (!context) {
-    throw new Error('useMiroirContext must be used within a MiroirContextReactProvider');
+    throw new Error("useMiroirContext must be used within a MiroirContextReactProvider");
   }
   return context.miroirContext;
 }
@@ -471,7 +524,7 @@ export function useMiroirContext() {
 export function useViewParams() {
   const context = useContext(miroirReactContext);
   if (!context) {
-    throw new Error('useViewParams must be used within a MiroirContextReactProvider');
+    throw new Error("useViewParams must be used within a MiroirContextReactProvider");
   }
   return context.viewParams;
 }
@@ -480,7 +533,7 @@ export function useViewParams() {
 export const useErrorLogService = () => {
   const context = useContext(miroirReactContext);
   if (!context) {
-    throw new Error('useErrorLogService must be used within a MiroirContextReactProvider');
+    throw new Error("useErrorLogService must be used within a MiroirContextReactProvider");
   }
   return context.errorLogService;
 };
@@ -489,7 +542,7 @@ export const useErrorLogService = () => {
 export const useDomainControllerService = () => {
   const context = useContext(miroirReactContext);
   if (!context) {
-    throw new Error('useDomainControllerService must be used within a MiroirContextReactProvider');
+    throw new Error("useDomainControllerService must be used within a MiroirContextReactProvider");
   }
   return context.domainController;
 };
@@ -505,7 +558,7 @@ export function useLocalCacheTransactions(): ReduxStateChanges[] {
 export function useMiroirEvents(): MiroirEvent[] {
   const context = useContext(miroirReactContext);
   if (!context) {
-    throw new Error('useMiroirEvents must be used within a MiroirContextReactProvider');
+    throw new Error("useMiroirEvents must be used within a MiroirContextReactProvider");
   }
   return context.miroirContext.miroirEventService.getAllEvents();
 }
@@ -514,16 +567,16 @@ export function useMiroirEvents(): MiroirEvent[] {
 export function useMiroirEventTrackingData() {
   const context = useContext(miroirReactContext);
   if (!context) {
-    throw new Error('useMiroirEventTrackingData must be used within a MiroirContextReactProvider');
+    throw new Error("useMiroirEventTrackingData must be used within a MiroirContextReactProvider");
   }
-  return context.miroirContext.miroirEventTracker.getAllEvents();
+  return context.miroirContext.miroirActivityTracker.getAllActivities();
 }
 
 // #############################################################################################
 export function useSnackbar() {
   const context = useContext(miroirReactContext);
   if (!context) {
-    throw new Error('useSnackbar must be used within a MiroirContextReactProvider');
+    throw new Error("useSnackbar must be used within a MiroirContextReactProvider");
   }
   return {
     snackbarOpen: context.snackbarOpen,
@@ -534,4 +587,3 @@ export function useSnackbar() {
     handleAsyncAction: context.handleAsyncAction,
   };
 }
-

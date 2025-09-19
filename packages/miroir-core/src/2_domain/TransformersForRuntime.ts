@@ -2806,7 +2806,7 @@ export function transformer_extended_apply<T extends MiroirModelEnvironment>(
                 preResult = new TransformerFailure({
                   // queryFailure: "FailedTransformer",
                   queryFailure: "TransformerNotFound",
-      transformerPath, //: [...transformerPath, transformer.transformerType],
+                  transformerPath, //: [...transformerPath, transformer.transformerType],
                   failureOrigin: ["transformer_extended_apply"],
                   queryContext:
                     "transformerImplementation " +
