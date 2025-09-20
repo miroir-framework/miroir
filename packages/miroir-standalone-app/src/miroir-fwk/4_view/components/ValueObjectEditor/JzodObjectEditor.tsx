@@ -374,16 +374,15 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
   //   count,
   //   "rootLessListKey",
   //   rootLessListKey,
-  //   "rawJzodSchema",
-  //   JSON.stringify(rawJzodSchema, null, 2),
-  //   "rootLessListKeyMapDEFUNCT",
-  //   JSON.stringify(localRootLessListKeyMap, null, 2),
+  //   // "rawJzodSchema",
+  //   // JSON.stringify(rawJzodSchema, null, 2),
+  //   // "rootLessListKeyMapDEFUNCT",
+  //   // JSON.stringify(localRootLessListKeyMap, null, 2),
   // );
   const {
     // general use
     context,
     currentModel,
-    // deploymentEntityStateSelectorMap,
     formik,
     localResolvedElementJzodSchemaBasedOnValue,
     miroirMetaModel,
@@ -405,14 +404,16 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
 
   const reportContext = useReportPageContext();
 
-  // log.info("JzodObjectEditor",
-  //   count,
-  //   "Rendering JzodObjectEditor for props.rootLessListKeyArray",
-  //   props.rootLessListKeyArray,
-  //   reportContext.isNodeFolded(props.rootLessListKeyArray),
-  //   "reportContext.foldedObjectAttributeOrArrayItems",
-  //   reportContext.foldedObjectAttributeOrArrayItems,
-  // );
+  log.info("JzodObjectEditor",
+    count,
+    "Rendering JzodObjectEditor for props.rootLessListKeyArray",
+    props.rootLessListKeyArray,
+    "typeCheckKeyMap[props.rootLessListKey]",
+    typeCheckKeyMap ? typeCheckKeyMap[props.rootLessListKey] : undefined,
+    // reportContext.isNodeFolded(props.rootLessListKeyArray),
+    // "reportContext.foldedObjectAttributeOrArrayItems",
+    // reportContext.foldedObjectAttributeOrArrayItems,
+  );
 
   const currentTypeCheckKeyMap = typeCheckKeyMap ? typeCheckKeyMap[rootLessListKey] : undefined;
 

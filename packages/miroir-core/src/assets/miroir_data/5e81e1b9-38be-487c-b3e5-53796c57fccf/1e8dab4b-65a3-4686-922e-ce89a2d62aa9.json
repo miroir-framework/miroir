@@ -55,6 +55,38 @@
                   "type": "string",
                   "optional": true
                 },
+                "editorButton": {
+                  "type": "object",
+                  "optional": true,
+                  "definition": {
+                    "icon": {
+                      "type": "string",
+                      "optional": true
+                    },
+                    "label": {
+                      "type": "string",
+                      "optional": true
+                    },
+                    "tooltip": {
+                      "type": "string",
+                      "optional": true
+                    },
+                    "transformer": {
+                      "type": "any",
+                      "tag": {
+                        "value": {
+                          "conditionalMMLS": {
+                            "mmlsReference": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "transformerForBuild"
+                            }
+                          }
+                        }
+                      },
+                      "optional": true
+                    }
+                  }
+                },
                 "initializeTo": {
                   "type": "union",
                   "discriminator": "initializeToType",
@@ -247,6 +279,38 @@
                   "description": {
                     "type": "string",
                     "optional": true
+                  },
+                  "editorButton": {
+                    "type": "object",
+                    "optional": true,
+                    "definition": {
+                      "icon": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "label": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "tooltip": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "transformer": {
+                        "type": "any",
+                        "tag": {
+                          "value": {
+                            "conditionalMMLS": {
+                              "mmlsReference": {
+                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                "relativePath": "transformerForBuild"
+                              }
+                            }
+                          }
+                        },
+                        "optional": true
+                      }
+                    }
                   },
                   "initializeTo": {
                     "type": "union",

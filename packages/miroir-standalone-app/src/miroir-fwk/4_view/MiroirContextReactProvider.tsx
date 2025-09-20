@@ -94,7 +94,6 @@ export interface MiroirReactContext {
   setDeploymentUuidToReportsEntitiesDefinitionsMapping: React.Dispatch<
     React.SetStateAction<DeploymentUuidToReportsEntitiesDefinitionsMapping>
   >;
-  updateTransformerEditorState: (updates: Partial<ToolsPageState["transformerEditor"]>) => void;
   // ###################################################################################################
   // outline <-> instance editor
   // typeCheckKeyMap: Record<string, KeyMapEntry>,
@@ -114,6 +113,7 @@ export interface MiroirReactContext {
   // ToolsPage state management
   toolsPageState: ToolsPageState;
   updateToolsPageState: (updates: Partial<ToolsPageState>) => void;
+  updateTransformerEditorState: (updates: Partial<ToolsPageState["transformerEditor"]>) => void;
   // ###################################################################################################
   // Modal windows for monitoring
   showPerformanceDisplay: boolean;

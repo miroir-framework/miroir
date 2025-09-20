@@ -55,6 +55,38 @@ export const miroirFundamentalJzodSchema = {
                   "type": "string",
                   "optional": true
                 },
+                "editorButton": {
+                  "type": "object",
+                  "optional": true,
+                  "definition": {
+                    "icon": {
+                      "type": "string",
+                      "optional": true
+                    },
+                    "label": {
+                      "type": "string",
+                      "optional": true
+                    },
+                    "tooltip": {
+                      "type": "string",
+                      "optional": true
+                    },
+                    "transformer": {
+                      "type": "any",
+                      "tag": {
+                        "value": {
+                          "conditionalMMLS": {
+                            "mmlsReference": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "transformerForBuild"
+                            }
+                          }
+                        }
+                      },
+                      "optional": true
+                    }
+                  }
+                },
                 "initializeTo": {
                   "type": "union",
                   "discriminator": "initializeToType",
@@ -257,6 +289,38 @@ export const miroirFundamentalJzodSchema = {
                   "description": {
                     "type": "string",
                     "optional": true
+                  },
+                  "editorButton": {
+                    "type": "object",
+                    "optional": true,
+                    "definition": {
+                      "icon": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "label": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "tooltip": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "transformer": {
+                        "type": "any",
+                        "tag": {
+                          "value": {
+                            "conditionalMMLS": {
+                              "mmlsReference": {
+                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                "relativePath": "transformerForBuild"
+                              }
+                            }
+                          }
+                        },
+                        "optional": true
+                      }
+                    }
                   },
                   "initializeTo": {
                     "type": "union",
@@ -1544,6 +1608,24 @@ export const miroirFundamentalJzodSchema = {
             "relativePath": "transformer_inner_label"
           },
           "context": {}
+        },
+        "tag": {
+          "value": {
+            "editable": true,
+            "editorButton": {
+              "label": "applyToListElement",
+              "transformer": {
+                "transformerType": "freeObjectTemplate",
+                "definition": {
+                  "transformerType": "mapperListToList",
+                  "elementTransformer": {
+                    "transformerType": "contextReference",
+                    "referenceName": "originTransformer"
+                  }
+                }
+              }
+            }
+          }
         },
         "definition": {
           "interpolation": {
@@ -20125,6 +20207,108 @@ export const miroirFundamentalJzodSchema = {
                     }
                   ]
                 },
+                "editorButton": {
+                  "optional": true,
+                  "type": "union",
+                  "definition": [
+                    {
+                      "type": "schemaReference",
+                      "definition": {
+                        "relativePath": "transformerForBuildCarryOnObject"
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "definition": {
+                        "icon": {
+                          "type": "union",
+                          "optional": true,
+                          "definition": [
+                            {
+                              "type": "string",
+                              "optional": true
+                            },
+                            {
+                              "type": "schemaReference",
+                              "definition": {
+                                "relativePath": "transformerForBuildCarryOnObject"
+                              }
+                            }
+                          ]
+                        },
+                        "label": {
+                          "type": "union",
+                          "optional": true,
+                          "definition": [
+                            {
+                              "type": "string",
+                              "optional": true
+                            },
+                            {
+                              "type": "schemaReference",
+                              "definition": {
+                                "relativePath": "transformerForBuildCarryOnObject"
+                              }
+                            }
+                          ]
+                        },
+                        "tooltip": {
+                          "type": "union",
+                          "optional": true,
+                          "definition": [
+                            {
+                              "type": "string",
+                              "optional": true
+                            },
+                            {
+                              "type": "schemaReference",
+                              "definition": {
+                                "relativePath": "transformerForBuildCarryOnObject"
+                              }
+                            }
+                          ]
+                        },
+                        "transformer": {
+                          "type": "union",
+                          "tag": {
+                            "value": {
+                              "conditionalMMLS": {
+                                "mmlsReference": {
+                                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                  "relativePath": "transformerForBuild"
+                                }
+                              },
+                              "isTemplate": true
+                            }
+                          },
+                          "optional": true,
+                          "definition": [
+                            {
+                              "type": "any",
+                              "tag": {
+                                "value": {
+                                  "conditionalMMLS": {
+                                    "mmlsReference": {
+                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                      "relativePath": "transformerForBuild"
+                                    }
+                                  }
+                                }
+                              },
+                              "optional": true
+                            },
+                            {
+                              "type": "schemaReference",
+                              "definition": {
+                                "relativePath": "transformerForBuildCarryOnObject"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                },
                 "initializeTo": {
                   "type": "union",
                   "discriminator": "initializeToType",
@@ -20721,6 +20905,108 @@ export const miroirFundamentalJzodSchema = {
                                 "type": "schemaReference",
                                 "definition": {
                                   "relativePath": "transformerForBuildCarryOnObject"
+                                }
+                              }
+                            ]
+                          },
+                          "editorButton": {
+                            "optional": true,
+                            "type": "union",
+                            "definition": [
+                              {
+                                "type": "schemaReference",
+                                "definition": {
+                                  "relativePath": "transformerForBuildCarryOnObject"
+                                }
+                              },
+                              {
+                                "type": "object",
+                                "definition": {
+                                  "icon": {
+                                    "type": "union",
+                                    "optional": true,
+                                    "definition": [
+                                      {
+                                        "type": "string",
+                                        "optional": true
+                                      },
+                                      {
+                                        "type": "schemaReference",
+                                        "definition": {
+                                          "relativePath": "transformerForBuildCarryOnObject"
+                                        }
+                                      }
+                                    ]
+                                  },
+                                  "label": {
+                                    "type": "union",
+                                    "optional": true,
+                                    "definition": [
+                                      {
+                                        "type": "string",
+                                        "optional": true
+                                      },
+                                      {
+                                        "type": "schemaReference",
+                                        "definition": {
+                                          "relativePath": "transformerForBuildCarryOnObject"
+                                        }
+                                      }
+                                    ]
+                                  },
+                                  "tooltip": {
+                                    "type": "union",
+                                    "optional": true,
+                                    "definition": [
+                                      {
+                                        "type": "string",
+                                        "optional": true
+                                      },
+                                      {
+                                        "type": "schemaReference",
+                                        "definition": {
+                                          "relativePath": "transformerForBuildCarryOnObject"
+                                        }
+                                      }
+                                    ]
+                                  },
+                                  "transformer": {
+                                    "type": "union",
+                                    "tag": {
+                                      "value": {
+                                        "conditionalMMLS": {
+                                          "mmlsReference": {
+                                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                            "relativePath": "transformerForBuild"
+                                          }
+                                        },
+                                        "isTemplate": true
+                                      }
+                                    },
+                                    "optional": true,
+                                    "definition": [
+                                      {
+                                        "type": "any",
+                                        "tag": {
+                                          "value": {
+                                            "conditionalMMLS": {
+                                              "mmlsReference": {
+                                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                "relativePath": "transformerForBuild"
+                                              }
+                                            }
+                                          }
+                                        },
+                                        "optional": true
+                                      },
+                                      {
+                                        "type": "schemaReference",
+                                        "definition": {
+                                          "relativePath": "transformerForBuildCarryOnObject"
+                                        }
+                                      }
+                                    ]
+                                  }
                                 }
                               }
                             ]
@@ -23640,6 +23926,25 @@ export const miroirFundamentalJzodSchema = {
             }
           }
         ],
+        "tag": {
+          "value": {
+            "editable": true,
+            "editorButton": {
+              "label": "applyToListElement",
+              "transformer": {
+                "transformerType": "freeObjectTemplate",
+                "definition": {
+                  "transformerType": "mapperListToList",
+                  "elementTransformer": {
+                    "transformerType": "contextReference",
+                    "referenceName": "originTransformer"
+                  }
+                }
+              }
+            },
+            "isTemplate": true
+          }
+        },
         "definition": {
           "interpolation": {
             "type": "union",
@@ -43732,6 +44037,108 @@ export const miroirFundamentalJzodSchema = {
                     }
                   ]
                 },
+                "editorButton": {
+                  "optional": true,
+                  "type": "union",
+                  "definition": [
+                    {
+                      "type": "schemaReference",
+                      "definition": {
+                        "relativePath": "transformerForBuildCarryOnObject"
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "definition": {
+                        "icon": {
+                          "type": "union",
+                          "optional": true,
+                          "definition": [
+                            {
+                              "type": "string",
+                              "optional": true
+                            },
+                            {
+                              "type": "schemaReference",
+                              "definition": {
+                                "relativePath": "transformerForBuildCarryOnObject"
+                              }
+                            }
+                          ]
+                        },
+                        "label": {
+                          "type": "union",
+                          "optional": true,
+                          "definition": [
+                            {
+                              "type": "string",
+                              "optional": true
+                            },
+                            {
+                              "type": "schemaReference",
+                              "definition": {
+                                "relativePath": "transformerForBuildCarryOnObject"
+                              }
+                            }
+                          ]
+                        },
+                        "tooltip": {
+                          "type": "union",
+                          "optional": true,
+                          "definition": [
+                            {
+                              "type": "string",
+                              "optional": true
+                            },
+                            {
+                              "type": "schemaReference",
+                              "definition": {
+                                "relativePath": "transformerForBuildCarryOnObject"
+                              }
+                            }
+                          ]
+                        },
+                        "transformer": {
+                          "type": "union",
+                          "tag": {
+                            "value": {
+                              "conditionalMMLS": {
+                                "mmlsReference": {
+                                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                  "relativePath": "transformerForBuild"
+                                }
+                              },
+                              "isTemplate": true
+                            }
+                          },
+                          "optional": true,
+                          "definition": [
+                            {
+                              "type": "any",
+                              "tag": {
+                                "value": {
+                                  "conditionalMMLS": {
+                                    "mmlsReference": {
+                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                      "relativePath": "transformerForBuild"
+                                    }
+                                  }
+                                }
+                              },
+                              "optional": true
+                            },
+                            {
+                              "type": "schemaReference",
+                              "definition": {
+                                "relativePath": "transformerForBuildCarryOnObject"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                },
                 "initializeTo": {
                   "type": "union",
                   "discriminator": "initializeToType",
@@ -44297,6 +44704,108 @@ export const miroirFundamentalJzodSchema = {
                           "type": "schemaReference",
                           "definition": {
                             "relativePath": "transformerForBuildCarryOnObject"
+                          }
+                        }
+                      ]
+                    },
+                    "editorButton": {
+                      "optional": true,
+                      "type": "union",
+                      "definition": [
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "relativePath": "transformerForBuildCarryOnObject"
+                          }
+                        },
+                        {
+                          "type": "object",
+                          "definition": {
+                            "icon": {
+                              "type": "union",
+                              "optional": true,
+                              "definition": [
+                                {
+                                  "type": "string",
+                                  "optional": true
+                                },
+                                {
+                                  "type": "schemaReference",
+                                  "definition": {
+                                    "relativePath": "transformerForBuildCarryOnObject"
+                                  }
+                                }
+                              ]
+                            },
+                            "label": {
+                              "type": "union",
+                              "optional": true,
+                              "definition": [
+                                {
+                                  "type": "string",
+                                  "optional": true
+                                },
+                                {
+                                  "type": "schemaReference",
+                                  "definition": {
+                                    "relativePath": "transformerForBuildCarryOnObject"
+                                  }
+                                }
+                              ]
+                            },
+                            "tooltip": {
+                              "type": "union",
+                              "optional": true,
+                              "definition": [
+                                {
+                                  "type": "string",
+                                  "optional": true
+                                },
+                                {
+                                  "type": "schemaReference",
+                                  "definition": {
+                                    "relativePath": "transformerForBuildCarryOnObject"
+                                  }
+                                }
+                              ]
+                            },
+                            "transformer": {
+                              "type": "union",
+                              "tag": {
+                                "value": {
+                                  "conditionalMMLS": {
+                                    "mmlsReference": {
+                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                      "relativePath": "transformerForBuild"
+                                    }
+                                  },
+                                  "isTemplate": true
+                                }
+                              },
+                              "optional": true,
+                              "definition": [
+                                {
+                                  "type": "any",
+                                  "tag": {
+                                    "value": {
+                                      "conditionalMMLS": {
+                                        "mmlsReference": {
+                                          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                          "relativePath": "transformerForBuild"
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "optional": true
+                                },
+                                {
+                                  "type": "schemaReference",
+                                  "definition": {
+                                    "relativePath": "transformerForBuildCarryOnObject"
+                                  }
+                                }
+                              ]
+                            }
                           }
                         }
                       ]
@@ -44897,6 +45406,108 @@ export const miroirFundamentalJzodSchema = {
                                     "type": "schemaReference",
                                     "definition": {
                                       "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  }
+                                ]
+                              },
+                              "editorButton": {
+                                "optional": true,
+                                "type": "union",
+                                "definition": [
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  },
+                                  {
+                                    "type": "object",
+                                    "definition": {
+                                      "icon": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "definition": [
+                                          {
+                                            "type": "string",
+                                            "optional": true
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "label": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "definition": [
+                                          {
+                                            "type": "string",
+                                            "optional": true
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "tooltip": {
+                                        "type": "union",
+                                        "optional": true,
+                                        "definition": [
+                                          {
+                                            "type": "string",
+                                            "optional": true
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "transformer": {
+                                        "type": "union",
+                                        "tag": {
+                                          "value": {
+                                            "conditionalMMLS": {
+                                              "mmlsReference": {
+                                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                "relativePath": "transformerForBuild"
+                                              }
+                                            },
+                                            "isTemplate": true
+                                          }
+                                        },
+                                        "optional": true,
+                                        "definition": [
+                                          {
+                                            "type": "any",
+                                            "tag": {
+                                              "value": {
+                                                "conditionalMMLS": {
+                                                  "mmlsReference": {
+                                                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                                    "relativePath": "transformerForBuild"
+                                                  }
+                                                }
+                                              }
+                                            },
+                                            "optional": true
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      }
                                     }
                                   }
                                 ]
@@ -45804,6 +46415,25 @@ export const miroirFundamentalJzodSchema = {
         ]
       },
       "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_optional_Abstract": {
+        "tag": {
+          "value": {
+            "editable": true,
+            "editorButton": {
+              "label": "applyToListElement",
+              "transformer": {
+                "transformerType": "freeObjectTemplate",
+                "definition": {
+                  "transformerType": "mapperListToList",
+                  "elementTransformer": {
+                    "transformerType": "contextReference",
+                    "referenceName": "originTransformer"
+                  }
+                }
+              }
+            },
+            "isTemplate": true
+          }
+        },
         "type": "union",
         "definition": [
           {
@@ -45824,6 +46454,25 @@ export const miroirFundamentalJzodSchema = {
                 }
               }
             ],
+            "tag": {
+              "value": {
+                "editable": true,
+                "editorButton": {
+                  "label": "applyToListElement",
+                  "transformer": {
+                    "transformerType": "freeObjectTemplate",
+                    "definition": {
+                      "transformerType": "mapperListToList",
+                      "elementTransformer": {
+                        "transformerType": "contextReference",
+                        "referenceName": "originTransformer"
+                      }
+                    }
+                  }
+                },
+                "isTemplate": true
+              }
+            },
             "definition": {
               "interpolation": {
                 "type": "union",
@@ -50219,6 +50868,38 @@ export const miroirFundamentalJzodSchema = {
                   "type": "string",
                   "optional": true
                 },
+                "editorButton": {
+                  "type": "object",
+                  "optional": true,
+                  "definition": {
+                    "icon": {
+                      "type": "string",
+                      "optional": true
+                    },
+                    "label": {
+                      "type": "string",
+                      "optional": true
+                    },
+                    "tooltip": {
+                      "type": "string",
+                      "optional": true
+                    },
+                    "transformer": {
+                      "type": "any",
+                      "tag": {
+                        "value": {
+                          "conditionalMMLS": {
+                            "mmlsReference": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "transformerForBuild"
+                            }
+                          }
+                        }
+                      },
+                      "optional": true
+                    }
+                  }
+                },
                 "initializeTo": {
                   "type": "union",
                   "discriminator": "initializeToType",
@@ -50421,6 +51102,38 @@ export const miroirFundamentalJzodSchema = {
                   "description": {
                     "type": "string",
                     "optional": true
+                  },
+                  "editorButton": {
+                    "type": "object",
+                    "optional": true,
+                    "definition": {
+                      "icon": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "label": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "tooltip": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "transformer": {
+                        "type": "any",
+                        "tag": {
+                          "value": {
+                            "conditionalMMLS": {
+                              "mmlsReference": {
+                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                "relativePath": "transformerForBuild"
+                              }
+                            }
+                          }
+                        },
+                        "optional": true
+                      }
+                    }
                   },
                   "initializeTo": {
                     "type": "union",
@@ -51916,6 +52629,25 @@ export const miroirFundamentalJzodSchema = {
             }
           }
         ],
+        "tag": {
+          "value": {
+            "editable": true,
+            "editorButton": {
+              "label": "applyToListElement",
+              "transformer": {
+                "transformerType": "freeObjectTemplate",
+                "definition": {
+                  "transformerType": "mapperListToList",
+                  "elementTransformer": {
+                    "transformerType": "contextReference",
+                    "referenceName": "originTransformer"
+                  }
+                }
+              }
+            },
+            "isTemplate": true
+          }
+        },
         "definition": {
           "interpolation": {
             "type": "enum",
@@ -58571,6 +59303,38 @@ export const miroirFundamentalJzodSchema = {
                   "type": "string",
                   "optional": true
                 },
+                "editorButton": {
+                  "type": "object",
+                  "optional": true,
+                  "definition": {
+                    "icon": {
+                      "type": "string",
+                      "optional": true
+                    },
+                    "label": {
+                      "type": "string",
+                      "optional": true
+                    },
+                    "tooltip": {
+                      "type": "string",
+                      "optional": true
+                    },
+                    "transformer": {
+                      "type": "any",
+                      "tag": {
+                        "value": {
+                          "conditionalMMLS": {
+                            "mmlsReference": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "transformerForBuild"
+                            }
+                          }
+                        }
+                      },
+                      "optional": true
+                    }
+                  }
+                },
                 "initializeTo": {
                   "type": "union",
                   "discriminator": "initializeToType",
@@ -58773,6 +59537,38 @@ export const miroirFundamentalJzodSchema = {
                   "description": {
                     "type": "string",
                     "optional": true
+                  },
+                  "editorButton": {
+                    "type": "object",
+                    "optional": true,
+                    "definition": {
+                      "icon": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "label": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "tooltip": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "transformer": {
+                        "type": "any",
+                        "tag": {
+                          "value": {
+                            "conditionalMMLS": {
+                              "mmlsReference": {
+                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                "relativePath": "transformerForBuild"
+                              }
+                            }
+                          }
+                        },
+                        "optional": true
+                      }
+                    }
                   },
                   "initializeTo": {
                     "type": "union",
@@ -60265,6 +61061,25 @@ export const miroirFundamentalJzodSchema = {
             }
           }
         ],
+        "tag": {
+          "value": {
+            "editable": true,
+            "editorButton": {
+              "label": "applyToListElement",
+              "transformer": {
+                "transformerType": "freeObjectTemplate",
+                "definition": {
+                  "transformerType": "mapperListToList",
+                  "elementTransformer": {
+                    "transformerType": "contextReference",
+                    "referenceName": "originTransformer"
+                  }
+                }
+              }
+            },
+            "isTemplate": true
+          }
+        },
         "definition": {
           "interpolation": {
             "type": "enum",
@@ -66877,6 +67692,38 @@ export const miroirFundamentalJzodSchema = {
                   "type": "string",
                   "optional": true
                 },
+                "editorButton": {
+                  "type": "object",
+                  "optional": true,
+                  "definition": {
+                    "icon": {
+                      "type": "string",
+                      "optional": true
+                    },
+                    "label": {
+                      "type": "string",
+                      "optional": true
+                    },
+                    "tooltip": {
+                      "type": "string",
+                      "optional": true
+                    },
+                    "transformer": {
+                      "type": "any",
+                      "tag": {
+                        "value": {
+                          "conditionalMMLS": {
+                            "mmlsReference": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "transformerForBuild"
+                            }
+                          }
+                        }
+                      },
+                      "optional": true
+                    }
+                  }
+                },
                 "initializeTo": {
                   "type": "union",
                   "discriminator": "initializeToType",
@@ -67079,6 +67926,38 @@ export const miroirFundamentalJzodSchema = {
                   "description": {
                     "type": "string",
                     "optional": true
+                  },
+                  "editorButton": {
+                    "type": "object",
+                    "optional": true,
+                    "definition": {
+                      "icon": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "label": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "tooltip": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "transformer": {
+                        "type": "any",
+                        "tag": {
+                          "value": {
+                            "conditionalMMLS": {
+                              "mmlsReference": {
+                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                "relativePath": "transformerForBuild"
+                              }
+                            }
+                          }
+                        },
+                        "optional": true
+                      }
+                    }
                   },
                   "initializeTo": {
                     "type": "union",
@@ -68574,6 +69453,25 @@ export const miroirFundamentalJzodSchema = {
             }
           }
         ],
+        "tag": {
+          "value": {
+            "editable": true,
+            "editorButton": {
+              "label": "applyToListElement",
+              "transformer": {
+                "transformerType": "freeObjectTemplate",
+                "definition": {
+                  "transformerType": "mapperListToList",
+                  "elementTransformer": {
+                    "transformerType": "contextReference",
+                    "referenceName": "originTransformer"
+                  }
+                }
+              }
+            },
+            "isTemplate": true
+          }
+        },
         "definition": {
           "interpolation": {
             "type": "enum",

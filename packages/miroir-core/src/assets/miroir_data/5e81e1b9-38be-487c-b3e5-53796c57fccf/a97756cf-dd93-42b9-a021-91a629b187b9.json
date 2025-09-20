@@ -138,6 +138,24 @@
             "relativePath": "transformer_inner_label"
           }
         },
+        "tag": {
+          "value": {
+            "editable": true,
+            "editorButton": {
+              "label": "applyToListElement",
+              "transformer": {
+                "transformerType": "freeObjectTemplate",
+                "definition": {
+                  "transformerType": "mapperListToList",
+                  "elementTransformer": {
+                    "transformerType": "contextReference",
+                    "referenceName": "originTransformer"
+                  }
+                }
+              }
+            }
+          }
+        },
         "definition": {
           "interpolation": {
             "type": "enum",
