@@ -21,7 +21,10 @@ import {
   getApplicationSection,
   getQueryRunnerParamsForReduxDeploymentsState,
   resolvePathOnObject,
-  type Uuid
+  type Uuid,
+  type MiroirModelEnvironment,
+  miroirFundamentalJzodSchema,
+  type JzodSchema
 } from "miroir-core";
 import { JzodObject } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { getMemoizedReduxDeploymentsStateSelectorMap } from "miroir-localcache-redux";
@@ -44,6 +47,7 @@ export interface JzodElementEditorHooks {
   context: MiroirReactContext;
   currentModel: MetaModel;
   miroirMetaModel: MetaModel;
+  currentMiroirModelEnvironment: MiroirModelEnvironment;
   // ??
   deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState>;
   // state
@@ -135,6 +139,18 @@ export function useJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
       return formik.values; // fallback to formik.values if the path resolution fails
     }
   }, [formik.values, rootLessListKeyArray]);
+
+  const currentMiroirModelEnvironment: MiroirModelEnvironment = useMemo(() => {
+    return {
+      miroirFundamentalJzodSchema: context.miroirFundamentalJzodSchema?? miroirFundamentalJzodSchema as JzodSchema,
+      miroirMetaModel: miroirMetaModel,
+      currentModel: currentModel,
+    };
+  }, [
+    miroirMetaModel,
+    currentModel,
+    context.miroirFundamentalJzodSchema,
+  ]);
 
   const currentTypecheckKeyMap: KeyMapEntry | undefined =
     typeCheckKeyMap && typeCheckKeyMap[rootLessListKey]
@@ -298,6 +314,7 @@ export function useJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
     currentModel,
     miroirMetaModel,
     currentValue,
+    currentMiroirModelEnvironment,
     formik,
     displayAsStructuredElement,
     setDisplayAsStructuredElement,

@@ -19,7 +19,9 @@ import {
   resolvePathOnObject,
   SyncBoxedExtractorOrQueryRunnerMap,
   Uuid,
-  defaultMetaModelEnvironment
+  defaultMetaModelEnvironment,
+  transformer_extended_apply_wrapper,
+  type TransformerReturnType
 } from "miroir-core";
 
 import { getMemoizedReduxDeploymentsStateSelectorMap, ReduxStateWithUndoRedo } from "miroir-localcache-redux";
@@ -381,11 +383,13 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
   // );
   const {
     // general use
+    currentValue,
     context,
     currentModel,
     formik,
     localResolvedElementJzodSchemaBasedOnValue,
     miroirMetaModel,
+    currentMiroirModelEnvironment,
     // Array / Object fold / unfold state
     itemsOrder,
     // object
@@ -417,6 +421,25 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
 
   const currentTypeCheckKeyMap = typeCheckKeyMap ? typeCheckKeyMap[rootLessListKey] : undefined;
 
+  // Debug the schema structure for editorButton
+  // if (currentTypeCheckKeyMap) {
+  //   log.info("JzodObjectEditor DEBUG schema structure for", rootLessListKey, 
+  //     "has resolvedSchema?", !!currentTypeCheckKeyMap.resolvedSchema,
+  //     "has tag?", !!currentTypeCheckKeyMap.resolvedSchema?.tag,
+  //     "has tag.value?", !!currentTypeCheckKeyMap.resolvedSchema?.tag?.value,
+  //     "has editorButton?", !!currentTypeCheckKeyMap.resolvedSchema?.tag?.value?.editorButton,
+  //     "tag structure:", JSON.stringify(currentTypeCheckKeyMap.resolvedSchema?.tag, null, 2)
+  //   );
+  //   console.log("JzodObjectEditor DEBUG schema structure", {
+  //     rootLessListKey,
+  //     hasResolvedSchema: !!currentTypeCheckKeyMap.resolvedSchema,
+  //     hasTag: !!currentTypeCheckKeyMap.resolvedSchema?.tag,
+  //     hasTagValue: !!currentTypeCheckKeyMap.resolvedSchema?.tag?.value,
+  //     hasEditorButton: !!currentTypeCheckKeyMap.resolvedSchema?.tag?.value?.editorButton,
+  //     tagStructure: currentTypeCheckKeyMap.resolvedSchema?.tag
+  //   });
+  // }
+
   const currentMiroirFundamentalJzodSchema = context.miroirFundamentalJzodSchema;
   const usedIndentLevel: number = indentLevel ? indentLevel : 0;
 
@@ -431,10 +454,10 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
     return true;
   }, [localResolvedElementJzodSchemaBasedOnValue]);
 
-  const currentValue = useMemo(
-    () => resolvePathOnObject(formik.values, rootLessListKeyArray),
-    [formik.values, rootLessListKeyArray]
-  );
+  // const currentValue = useMemo(
+  //   () => resolvePathOnObject(formik.values, rootLessListKeyArray),
+  //   [formik.values, rootLessListKeyArray]
+  // );
 
   const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> =
       getMemoizedReduxDeploymentsStateSelectorMap();
@@ -845,14 +868,9 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
       {/* <span>JzodObjectEditor: {count}</span> */}
       <div>
         {/* Performance statistics */}
-        <ThemedFlexRow
-          justify="start"
-          align="center"
-        >
+        <ThemedFlexRow justify="start" align="center">
           <span>
-            <ThemedFlexRow
-              align="center"
-            >
+            <ThemedFlexRow align="center">
               {labelElement}
               {/* Show folded display value when object is folded and a value is available */}
               {reportContext.isNodeFolded(rootLessListKeyArray) &&
@@ -895,7 +913,8 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
           </span>
           <span>
             {/* add record attribute button for records */}
-            {!readOnly && currentTypeCheckKeyMap?.rawSchema.type == "record" &&
+            {!readOnly &&
+            currentTypeCheckKeyMap?.rawSchema.type == "record" &&
             !reportContext.isNodeFolded(rootLessListKeyArray) ? (
               <ThemedSizedButton
                 id={rootLessListKey + ".addRecordAttribute"}
@@ -911,29 +930,84 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
           </span>
           <span>
             {/* add optional attributes buttons */}
-            {!readOnly && currentTypeCheckKeyMap?.rawSchema.type != "record" &&
+            {!readOnly &&
+            currentTypeCheckKeyMap?.rawSchema.type != "record" &&
             undefinedOptionalAttributes.length > 0 &&
             !reportContext.isNodeFolded(rootLessListKeyArray) ? (
-              <ThemedOptionalAttributeContainer>
-                {undefinedOptionalAttributes.map((attributeName) => (
-                  <ThemedOptionalAttributeItem key={attributeName}>
-                    <ThemedSizedButton
-                      aria-label={rootLessListKey + ".addObjectOptionalAttribute." + attributeName}
-                      onClick={() => addObjectOptionalAttribute(attributeName)}
-                      title={`Add optional attribute: ${attributeName}`}
-                    >
-                      <ThemedAddIcon />
-                    </ThemedSizedButton>
-                    <ThemedAttributeName>
-                      {attributeName}
-                    </ThemedAttributeName>
-                  </ThemedOptionalAttributeItem>
-                ))}
-              </ThemedOptionalAttributeContainer>
+              <>
+                <ThemedOptionalAttributeContainer>
+                  {undefinedOptionalAttributes.map((attributeName) => (
+                    <ThemedOptionalAttributeItem key={attributeName}>
+                      <ThemedSizedButton
+                        aria-label={
+                          rootLessListKey + ".addObjectOptionalAttribute." + attributeName
+                        }
+                        onClick={() => addObjectOptionalAttribute(attributeName)}
+                        title={`Add optional attribute: ${attributeName}`}
+                      >
+                        <ThemedAddIcon />
+                      </ThemedSizedButton>
+                      <ThemedAttributeName>{attributeName}</ThemedAttributeName>
+                    </ThemedOptionalAttributeItem>
+                  ))}
+                </ThemedOptionalAttributeContainer>
+              </>
             ) : (
               <></>
             )}
           </span>
+          {currentTypeCheckKeyMap?.resolvedSchema &&
+            currentTypeCheckKeyMap?.resolvedSchema.tag &&
+            currentTypeCheckKeyMap.resolvedSchema.tag.value &&
+            currentTypeCheckKeyMap.resolvedSchema.tag.value.editorButton && (
+              <span>
+                {(() => {
+                  log.info("JzodObjectEditor rendering editorButton", 
+                    "rootLessListKey", rootLessListKey,
+                    "editorButton", currentTypeCheckKeyMap.resolvedSchema.tag.value.editorButton,
+                    "tag.value", JSON.stringify(currentTypeCheckKeyMap.resolvedSchema.tag.value)
+                  );
+                  console.log("JzodObjectEditor rendering editorButton", {
+                    rootLessListKey,
+                    editorButton: currentTypeCheckKeyMap.resolvedSchema.tag.value.editorButton,
+                    tagValue: currentTypeCheckKeyMap.resolvedSchema.tag.value
+                  });
+                  return null;
+                })()}
+                {/* {JSON.stringify((currentTypeCheckKeyMap?.resolvedSchema.tag as any)?.value) ??
+                  "tag undefined!"} */}
+                <button
+                  type="button"
+                  onClick={(e:any) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    log.info("editorButton transformer button clicked", e);
+                    console.log("editorButton transformer button clicked", e);
+                    const result: TransformerReturnType<any> = transformer_extended_apply_wrapper(
+                      context.miroirContext.miroirActivityTracker, // activityTracker
+                      "runtime", // step
+                      [], // transformerPath
+                      currentTypeCheckKeyMap.resolvedSchema.tag?.value?.editorButton?.label, // label
+                      currentTypeCheckKeyMap.resolvedSchema.tag?.value?.editorButton?.transformer, // transformer
+                      currentMiroirModelEnvironment, // transformerParams
+                      { originTransformer: currentValue }, // contextResults - pass the instance to transform
+                      "value" // resolveBuildTransformersTo
+                    );
+                    if (result.status === "error") {
+                      log.error("editorButton transformer error:", result.message);
+                      console.error("editorButton transformer error:", result.message);
+                    } else {
+                      formik.setValues(result);
+                    }
+                    log.info("editorButton transformer button clicked, result:", result);
+                  }}
+                  // name={currentTypeCheckKeyMap.resolvedSchema.tag.value.editorButton.label}
+                  // role="button"
+                >
+                  {(currentTypeCheckKeyMap?.resolvedSchema.tag as any)?.value.editorButton.label}
+                </button>
+              </span>
+            )}
           <ThemedDeleteButtonContainer>
             {deleteButtonElement ?? <></>}
             {displayAsStructuredElementSwitch ?? <></>}
@@ -943,9 +1017,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
         <ThemedIndentedContainer
           id={listKey + ".inner"}
           marginLeft={`calc(${indentShift})`}
-          isVisible={
-            !reportContext.isNodeFolded(rootLessListKeyArray)
-          }
+          isVisible={!reportContext.isNodeFolded(rootLessListKeyArray)}
           key={`${rootLessListKey}|body`}
         >
           <div>{attributeElements}</div>

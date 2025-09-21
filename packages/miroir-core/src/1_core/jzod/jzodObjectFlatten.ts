@@ -4,6 +4,7 @@ import {
   JzodReference,
   JzodSchema,
   MetaModel,
+  type JzodBaseObject,
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import type { MiroirModelEnvironment } from "../../0_interfaces/1_core/Transformer";
 import { resolveJzodSchemaReferenceInContext } from "./jzodResolveSchemaReferenceInContext";
@@ -15,17 +16,23 @@ const getAllProperties = <T extends MiroirModelEnvironment>(
   referenceChain: JzodReference[] = [],
   modelEnvironment: T,
   relativeReferenceJzodContext?: { [k: string]: JzodElement }
-): Record<string, JzodElement> => {
+): {properties: Record<string, JzodElement>, tag?: JzodBaseObject["tag"]} => {
   // Handle array of extends
+  let resultTag: JzodBaseObject["tag"] | undefined = undefined;
   if (Array.isArray(parent)) {
     const allProps: Record<string, JzodElement> = {};
     for (const p of parent) {
       if (p) {
         const props = getAllProperties(p, referenceChain, modelEnvironment, relativeReferenceJzodContext);
-        Object.assign(allProps, props);
+        Object.assign(allProps, props.properties);
+        if (!resultTag && p && (p as JzodBaseObject).tag ) {
+          resultTag = (p as JzodBaseObject).tag;
+        } else if (!resultTag && props.tag) {
+          resultTag = props.tag;
+        }
       }
     }
-    return allProps;
+    return resultTag?{properties: allProps, tag: resultTag}:{properties: allProps};
   }
 
   // Handle JzodReference - resolve it using the provided context
@@ -59,7 +66,12 @@ const getAllProperties = <T extends MiroirModelEnvironment>(
 
     // If resolved element is still a reference, continue resolving recursively
     if (resolvedElement.type === "schemaReference") {
-      return getAllProperties(resolvedElement as JzodReference, newReferenceChain, modelEnvironment, relativeReferenceJzodContext);
+      return getAllProperties(
+        resolvedElement as JzodReference,
+        newReferenceChain,
+        modelEnvironment,
+        relativeReferenceJzodContext
+      );
     }
 
     if (resolvedElement.type !== "object") {
@@ -70,7 +82,12 @@ const getAllProperties = <T extends MiroirModelEnvironment>(
     }
 
     // Recursively get properties from the resolved object
-    return getAllProperties(resolvedElement as JzodObject, newReferenceChain, modelEnvironment, relativeReferenceJzodContext);
+    return getAllProperties(
+      resolvedElement as JzodObject,
+      newReferenceChain,
+      modelEnvironment,
+      relativeReferenceJzodContext
+    );
   }
 
   // Handle JzodObject
@@ -80,14 +97,23 @@ const getAllProperties = <T extends MiroirModelEnvironment>(
 
     // If the parent has an extend property, merge its properties as well (parents first)
     if (parent.extend) {
-      const parentProps = getAllProperties(parent.extend, referenceChain, modelEnvironment, relativeReferenceJzodContext);
-      return { ...parentProps, ...properties };
+      const parentProps = getAllProperties(
+        parent.extend,
+        referenceChain,
+        modelEnvironment,
+        relativeReferenceJzodContext
+      );
+      return parent.tag
+        ? { properties: { ...parentProps.properties, ...properties }, tag: parent.tag }
+        : parentProps.tag
+        ? { properties: { ...parentProps.properties, ...properties }, tag: parentProps.tag }
+        : { properties: { ...parentProps.properties, ...properties } };
     }
 
-    return properties;
+    return parent.tag ? { properties, tag: parent.tag } : { properties };
   }
 
-  return {};
+  return {properties: {}};
 };
 
 /**
@@ -120,7 +146,7 @@ export function jzodObjectFlatten<T extends MiroirModelEnvironment>(
   const flattened: JzodObject = {
     type: "object",
     definition: {
-      ...parentProperties,
+      ...parentProperties.properties,
       ...obj.definition, // Current object properties override parent properties
     },
   };
@@ -134,6 +160,8 @@ export function jzodObjectFlatten<T extends MiroirModelEnvironment>(
   }
   if (obj.tag !== undefined) {
     flattened.tag = obj.tag;
+  } else if (parentProperties.tag !== undefined) {
+    flattened.tag = parentProperties.tag;
   }
 
   return flattened;

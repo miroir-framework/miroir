@@ -1613,11 +1613,19 @@ export const miroirFundamentalJzodSchema = {
           "value": {
             "editable": true,
             "editorButton": {
-              "label": "applyToListElement",
+              "label": "Apply Transformer to a List",
               "transformer": {
                 "transformerType": "freeObjectTemplate",
                 "definition": {
                   "transformerType": "mapperListToList",
+                  "applyTo": {
+                    "transformerType": "constant",
+                    "value": {
+                      "transformerType": "contextReference",
+                      "referenceName": "target"
+                    }
+                  },
+                  "referenceToOuterObject": "target",
                   "elementTransformer": {
                     "transformerType": "contextReference",
                     "referenceName": "originTransformer"
@@ -23930,11 +23938,19 @@ export const miroirFundamentalJzodSchema = {
           "value": {
             "editable": true,
             "editorButton": {
-              "label": "applyToListElement",
+              "label": "Apply Transformer to a List",
               "transformer": {
                 "transformerType": "freeObjectTemplate",
                 "definition": {
                   "transformerType": "mapperListToList",
+                  "applyTo": {
+                    "transformerType": "constant",
+                    "value": {
+                      "transformerType": "contextReference",
+                      "referenceName": "target"
+                    }
+                  },
+                  "referenceToOuterObject": "target",
                   "elementTransformer": {
                     "transformerType": "contextReference",
                     "referenceName": "originTransformer"
@@ -46419,11 +46435,19 @@ export const miroirFundamentalJzodSchema = {
           "value": {
             "editable": true,
             "editorButton": {
-              "label": "applyToListElement",
+              "label": "Apply Transformer to a List",
               "transformer": {
                 "transformerType": "freeObjectTemplate",
                 "definition": {
                   "transformerType": "mapperListToList",
+                  "applyTo": {
+                    "transformerType": "constant",
+                    "value": {
+                      "transformerType": "contextReference",
+                      "referenceName": "target"
+                    }
+                  },
+                  "referenceToOuterObject": "target",
                   "elementTransformer": {
                     "transformerType": "contextReference",
                     "referenceName": "originTransformer"
@@ -46458,11 +46482,19 @@ export const miroirFundamentalJzodSchema = {
               "value": {
                 "editable": true,
                 "editorButton": {
-                  "label": "applyToListElement",
+                  "label": "Apply Transformer to a List",
                   "transformer": {
                     "transformerType": "freeObjectTemplate",
                     "definition": {
                       "transformerType": "mapperListToList",
+                      "applyTo": {
+                        "transformerType": "constant",
+                        "value": {
+                          "transformerType": "contextReference",
+                          "referenceName": "target"
+                        }
+                      },
+                      "referenceToOuterObject": "target",
                       "elementTransformer": {
                         "transformerType": "contextReference",
                         "referenceName": "originTransformer"
@@ -52633,11 +52665,19 @@ export const miroirFundamentalJzodSchema = {
           "value": {
             "editable": true,
             "editorButton": {
-              "label": "applyToListElement",
+              "label": "Apply Transformer to a List",
               "transformer": {
                 "transformerType": "freeObjectTemplate",
                 "definition": {
                   "transformerType": "mapperListToList",
+                  "applyTo": {
+                    "transformerType": "constant",
+                    "value": {
+                      "transformerType": "contextReference",
+                      "referenceName": "target"
+                    }
+                  },
+                  "referenceToOuterObject": "target",
                   "elementTransformer": {
                     "transformerType": "contextReference",
                     "referenceName": "originTransformer"
@@ -61065,11 +61105,19 @@ export const miroirFundamentalJzodSchema = {
           "value": {
             "editable": true,
             "editorButton": {
-              "label": "applyToListElement",
+              "label": "Apply Transformer to a List",
               "transformer": {
                 "transformerType": "freeObjectTemplate",
                 "definition": {
                   "transformerType": "mapperListToList",
+                  "applyTo": {
+                    "transformerType": "constant",
+                    "value": {
+                      "transformerType": "contextReference",
+                      "referenceName": "target"
+                    }
+                  },
+                  "referenceToOuterObject": "target",
                   "elementTransformer": {
                     "transformerType": "contextReference",
                     "referenceName": "originTransformer"
@@ -69457,11 +69505,19 @@ export const miroirFundamentalJzodSchema = {
           "value": {
             "editable": true,
             "editorButton": {
-              "label": "applyToListElement",
+              "label": "Apply Transformer to a List",
               "transformer": {
                 "transformerType": "freeObjectTemplate",
                 "definition": {
                   "transformerType": "mapperListToList",
+                  "applyTo": {
+                    "transformerType": "constant",
+                    "value": {
+                      "transformerType": "contextReference",
+                      "referenceName": "target"
+                    }
+                  },
+                  "referenceToOuterObject": "target",
                   "elementTransformer": {
                     "transformerType": "contextReference",
                     "referenceName": "originTransformer"
