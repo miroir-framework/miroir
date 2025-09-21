@@ -560,7 +560,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
     }
   }, [context, persistedState?.foldedObjectAttributeOrArrayItems]);
   // State for transformation result
-  const [transformationResult, setTransformationResult] = useState<any>(null);
+  // const [transformationResult, setTransformationResult] = useState<any>(null);
   const [transformationError, setTransformationError] = useState<TransformerFailure | null>(null);
   
   // Extract error path for highlighting problematic elements
@@ -628,7 +628,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
     // setCurrentTransformerDefinition(defaultConstantTransformer);
     context.updateTransformerEditorState({ currentTransformerDefinition: defaultConstantTransformer });
     // Clear previous transformation outputs
-    setTransformationResult(null);
+    // setTransformationResult(null);
     setTransformationError(null);
   }, [context]);
   
@@ -667,14 +667,6 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
   //   });
   // }, [context]);
   
-  // ################################################################################################
-  const transformationResultSchema: JzodElement = useMemo(() => {
-    if (!currentTransformerDefinition) {
-      return { type: "any" } as JzodElement;
-    }
-    return (valueToJzod(transformationResult)??{ type: "any" }) as JzodElement;
-  }, [transformationResult]);
-  
 
   // Memoized context results to avoid recreating on every execution
   const contextResults = useMemo(() => {
@@ -692,9 +684,9 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
   // Apply transformer to selected entity instance with debouncing
   const applyTransformerToInstance = useCallback(async () => {
     if (!currentTransformerDefinition || !selectedEntityInstance) {
-      setTransformationResult(null);
+      // setTransformationResult(null);
       setTransformationError(null);
-      return;
+      return null;
     }
 
     // Clear existing timeout
@@ -707,7 +699,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
       try {
         log.info("Applying transformer to instance", {
           transformer: currentTransformerDefinition,
-          instance: selectedEntityInstance
+          instance: selectedEntityInstance,
         });
 
         const result: TransformerReturnType<any> = transformer_extended_apply_wrapper(
@@ -716,19 +708,21 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
           ["rootTransformer"], // transformerPath
           "TransformerEditor", // label
           currentTransformerDefinition, // transformer
-          {...currentMiroirModelEnvironment, ...contextResults}, // transformerParams
+          { ...currentMiroirModelEnvironment, ...contextResults }, // transformerParams
           contextResults, // contextResults - pass the instance to transform
           "value" // resolveBuildTransformersTo
         );
 
         // Check for Domain2ElementFailed pattern
-        if (result && typeof result === 'object' && 'queryFailure' in result) {
+        if (result && typeof result === "object" && "queryFailure" in result) {
           // setTransformationError(`Transformation failed: ${safeStringify(result)}`);
           setTransformationError(result);
-          setTransformationResult(null);
+          // setTransformationResult(null);
+          return null;
         } else {
-          setTransformationResult(result);
+          // setTransformationResult(result);
           setTransformationError(null);
+          return result;
           log.info("Transformation successful", { result });
         }
       } catch (error) {
@@ -740,12 +734,70 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
           transformerPath: [],
           failureMessage: errorMessage,
         });
-        setTransformationResult(null);
+        // setTransformationResult(null);
+        return null;
       }
     }, 300); // 300ms debounce
-  }, [currentTransformerDefinition, selectedEntityInstance, currentMiroirModelEnvironment, contextResults]);
+  }, [
+    currentTransformerDefinition,
+    selectedEntityInstance,
+    currentMiroirModelEnvironment,
+    contextResults,
+  ]);
 
-    // ################################################################################################
+  const transformationResult: any = useMemo(() => {
+    if (!currentTransformerDefinition || !selectedEntityInstance) {
+      return null;
+    }
+
+    try {
+      const result: TransformerReturnType<any> = transformer_extended_apply_wrapper(
+        context.miroirContext.miroirActivityTracker, // activityTracker
+        "runtime", // step
+        ["rootTransformer"], // transformerPath
+        "TransformerEditor", // label
+        currentTransformerDefinition, // transformer
+        { ...currentMiroirModelEnvironment, ...contextResults }, // transformerParams
+        contextResults, // contextResults - pass the instance to transform
+        "value" // resolveBuildTransformersTo
+      );
+
+      // Check for Domain2ElementFailed pattern
+      if (result && typeof result === "object" && "queryFailure" in result) {
+        setTransformationError(result);
+        return null;
+      } else {
+        setTransformationError(null);
+        return result;
+      }
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      log.error("Error applying transformer:", error);
+      setTransformationError({
+        queryFailure: "FailedTransformer",
+        elementType: "Transformer",
+        transformerPath: [],
+        failureMessage: errorMessage,
+      });
+      return null;
+    }
+  }, [
+    currentTransformerDefinition,
+    selectedEntityInstance,
+    currentMiroirModelEnvironment,
+    contextResults,
+    context.miroirContext.miroirActivityTracker,
+  ]);
+
+  // ################################################################################################
+  const transformationResultSchema: JzodElement = useMemo(() => {
+    if (!currentTransformerDefinition) {
+      return { type: "any" } as JzodElement;
+    }
+    return (valueToJzod(transformationResult)??{ type: "any" }) as JzodElement;
+  }, [transformationResult]);
+  
+  // ################################################################################################
   // Handle transformer definition changes with debouncing (with persistence)
   const handleTransformerDefinitionChange = useCallback(async (newTransformerDefinition: any) => {
     log.info("handleTransformerDefinitionChange", newTransformerDefinition);
