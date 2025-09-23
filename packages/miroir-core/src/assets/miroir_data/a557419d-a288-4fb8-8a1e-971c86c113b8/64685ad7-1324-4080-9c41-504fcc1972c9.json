@@ -31,10 +31,9 @@
         ],
         "definition": {
           "applyTo": {
-            "type": "array",
-            "definition": {
-              "type": "any"
-            }
+            "type": "any",
+            "optional": true,
+            "description": "The input list. The actual type is set by the platform depending on interpolation for the transformer."
           },
           "index": {
             "type": "number"

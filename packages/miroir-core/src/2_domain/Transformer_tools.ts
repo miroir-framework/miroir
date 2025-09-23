@@ -85,6 +85,7 @@ export function transformerInterfaceFromDefinition(
       .transformerDefinition.definition as any
   ).applyTo?{
     type: "schemaReference",
+    optional: true,
     definition: {
       relativePath: innerReferenceRelativePath,
       absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",

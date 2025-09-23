@@ -31,13 +31,14 @@
         ],
         "definition": {
           "applyTo": {
-            "type": "record",
-            "definition": {
-              "type": "any"
-            }
+            "type": "any",
+            "optional": true,
+            "description": "The input to transform. The actual type is set by the platform depending on interpolation for the transformer."
           },
           "referenceToOuterObject": {
-            "type": "string"
+            "type": "string",
+            "optional": true,
+            "description": "If set, each attribute value transformer will have access to the outer object through this attribute name."
           },
           "definition": {
             "type": "array",

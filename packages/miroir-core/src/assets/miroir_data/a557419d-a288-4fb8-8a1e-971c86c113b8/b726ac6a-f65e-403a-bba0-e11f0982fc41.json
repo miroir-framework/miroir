@@ -29,10 +29,9 @@
         },
         "definition": {
           "applyTo": {
-            "type": "record",
-            "definition": {
-              "type": "any"
-            }
+            "type": "any",
+            "optional": true,
+            "description": "The input object. The actual type is set by the platform depending on interpolation for the transformer."
           }
         }
       }

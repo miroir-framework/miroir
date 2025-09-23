@@ -59,7 +59,7 @@ import {
   TransformerForRuntime_objectValues,
   TransformerForRuntime_unique
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import type { ITransformerHandler, MiroirModelEnvironment } from '../0_interfaces/1_core/Transformer';
+import { defaultTransformerInput, type ITransformerHandler, type MiroirModelEnvironment } from '../0_interfaces/1_core/Transformer';
 import {
   Action2Error,
   TransformerFailure,
@@ -125,7 +125,6 @@ MiroirLoggerFactory.registerLoggerToStart(
 (BigInt.prototype as any).toJSON = function () {
   return Number(this);
 };
-
 
 
 // ################################################################################################
@@ -716,6 +715,20 @@ function resolveApplyTo<T extends MiroirModelEnvironment>(
   queryParams: T,
   contextResults?: Record<string, any>
 ) {
+  if (!transformer.applyTo) {
+    return defaultTransformers.transformer_extended_apply(
+      step,
+      [...transformerPath, "applyTo"],
+      label,
+      {
+        transformerType: step == "build" ? "parameterReference" : "contextReference",
+        referenceName: defaultTransformerInput,
+      },
+      resolveBuildTransformersTo,
+      queryParams,
+      contextResults
+    );
+  }
   switch (typeof transformer.applyTo) {
     case 'string':
     case 'number':
@@ -849,6 +862,20 @@ export function resolveApplyTo_legacy<T extends MiroirModelEnvironment>(
   //   "resolveBuildTransformersTo",
   //   resolveBuildTransformersTo
   // );
+  if (!transformer.applyTo) {
+    return defaultTransformers.transformer_extended_apply(
+      step,
+      [...transformerPath, "applyTo"],
+      label,
+      {
+        transformerType: step == "build" ? "parameterReference" : "contextReference",
+        referenceName: defaultTransformerInput,
+      },
+      resolveBuildTransformersTo,
+      queryParams,
+      contextResults
+    );
+  }
   switch (typeof transformer.applyTo) {
     case 'string':
     case 'number':
@@ -924,7 +951,15 @@ function transformerForBuild_list_listMapperToList_apply<T extends MiroirModelEn
   queryParams: T,
   contextResults?: Record<string, any>,
 ): TransformerReturnType<any[]> {
-  const resolvedApplyTo = resolveApplyTo_legacy(transformer, step, transformerPath, resolveBuildTransformersTo, queryParams, contextResults, label);
+  const resolvedApplyTo = resolveApplyTo_legacy(
+    transformer,
+    step,
+    transformerPath,
+    resolveBuildTransformersTo,
+    queryParams,
+    contextResults,
+    label
+  );
   if (resolvedApplyTo instanceof TransformerFailure) {
     log.error(
       "transformerForBuild_list_listMapperToList_apply extractorTransformer can not apply to failed resolvedReference",
@@ -960,7 +995,7 @@ function transformerForBuild_list_listMapperToList_apply<T extends MiroirModelEn
           queryParams,
           {
             ...contextResults,
-            [transformer.referenceToOuterObject]: element,
+            [transformer.referenceToOuterObject??defaultTransformerInput]: element,
           } // inefficient!
         )
       ); // TODO: constrain type of transformer
@@ -978,7 +1013,7 @@ function transformerForBuild_list_listMapperToList_apply<T extends MiroirModelEn
             queryParams,
             {
               ...contextResults,
-              [transformer.referenceToOuterObject]: element[1],
+              [transformer.referenceToOuterObject??defaultTransformerInput]: element[1],
             }
           )
         ); // TODO: constrain type of transformer
@@ -1196,7 +1231,7 @@ function handleTransformer_object_fullTemplate<T extends MiroirModelEnvironment>
   );
   const newContextResults = {
     ...contextResults,
-    [transformer.referenceToOuterObject]: resolvedApplyTo,
+    [transformer.referenceToOuterObject??defaultTransformerInput]: resolvedApplyTo,
   }
   const attributeEntries = transformer.definition.map(
     (innerEntry: {
@@ -1328,7 +1363,7 @@ function handleTransformer_objectAlter<T extends MiroirModelEnvironment>(
     queryParams,
     {
       ...contextResults,
-      [transformer.referenceToOuterObject]: resolvedApplyTo,
+      [transformer.referenceToOuterObject??defaultTransformerInput]: resolvedApplyTo,
     }
   );
 

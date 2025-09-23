@@ -21,13 +21,9 @@
         "type": "object",
         "definition": {
           "applyTo": {
-            "type": "array",
-            "definition": {
-              "type": "record",
-              "definition": {
-                "type": "any"
-              }
-            }
+            "type": "any",
+            "optional": true,
+            "description": "The list to transform. The actual type is set by the platform depending on interpolation for the transformer."
           }
         }
       }

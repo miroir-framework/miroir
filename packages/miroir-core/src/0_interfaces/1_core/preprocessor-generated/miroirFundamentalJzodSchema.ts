@@ -3388,6 +3388,7 @@ export const miroirFundamentalJzodSchema = {
           },
           "applyTo": {
             "type": "schemaReference",
+            "optional": true,
             "definition": {
               "relativePath": "transformerForBuild",
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
@@ -3465,6 +3466,7 @@ export const miroirFundamentalJzodSchema = {
           },
           "applyTo": {
             "type": "schemaReference",
+            "optional": true,
             "definition": {
               "relativePath": "transformerForBuild",
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
@@ -3472,7 +3474,9 @@ export const miroirFundamentalJzodSchema = {
             "context": {}
           },
           "referenceToOuterObject": {
-            "type": "string"
+            "type": "string",
+            "optional": true,
+            "description": "If set, each element of the list will have access to the outer object through this attribute name."
           },
           "elementTransformer": {
             "type": "schemaReference",
@@ -3607,6 +3611,7 @@ export const miroirFundamentalJzodSchema = {
           },
           "applyTo": {
             "type": "schemaReference",
+            "optional": true,
             "definition": {
               "relativePath": "transformerForBuild",
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
@@ -3614,7 +3619,9 @@ export const miroirFundamentalJzodSchema = {
             "context": {}
           },
           "referenceToOuterObject": {
-            "type": "string"
+            "type": "string",
+            "optional": true,
+            "description": "If set, each attribute value transformer will have access to the outer object through this attribute name."
           },
           "definition": {
             "type": "schemaReference",
@@ -3706,6 +3713,7 @@ export const miroirFundamentalJzodSchema = {
           },
           "applyTo": {
             "type": "schemaReference",
+            "optional": true,
             "definition": {
               "relativePath": "transformerForBuild",
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
@@ -3742,6 +3750,7 @@ export const miroirFundamentalJzodSchema = {
           },
           "applyTo": {
             "type": "schemaReference",
+            "optional": true,
             "definition": {
               "relativePath": "transformerForBuild",
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
@@ -3778,6 +3787,7 @@ export const miroirFundamentalJzodSchema = {
           },
           "applyTo": {
             "type": "schemaReference",
+            "optional": true,
             "definition": {
               "relativePath": "transformerForBuild",
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
@@ -3817,6 +3827,7 @@ export const miroirFundamentalJzodSchema = {
           },
           "applyTo": {
             "type": "schemaReference",
+            "optional": true,
             "definition": {
               "relativePath": "transformerForBuild",
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
@@ -3848,6 +3859,7 @@ export const miroirFundamentalJzodSchema = {
           },
           "applyTo": {
             "type": "schemaReference",
+            "optional": true,
             "definition": {
               "relativePath": "transformerForBuild",
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
@@ -3884,6 +3896,7 @@ export const miroirFundamentalJzodSchema = {
           },
           "applyTo": {
             "type": "schemaReference",
+            "optional": true,
             "definition": {
               "relativePath": "transformerForBuild",
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
@@ -3891,7 +3904,9 @@ export const miroirFundamentalJzodSchema = {
             "context": {}
           },
           "referenceToOuterObject": {
-            "type": "string"
+            "type": "string",
+            "optional": true,
+            "description": "If set, each attribute value transformer will have access to the outer object through this attribute name."
           },
           "definition": {
             "type": "array",
@@ -3985,6 +4000,7 @@ export const miroirFundamentalJzodSchema = {
           },
           "applyTo": {
             "type": "schemaReference",
+            "optional": true,
             "definition": {
               "relativePath": "transformerForBuild",
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
@@ -4925,6 +4941,7 @@ export const miroirFundamentalJzodSchema = {
           },
           "applyTo": {
             "type": "schemaReference",
+            "optional": true,
             "definition": {
               "relativePath": "transformerForRuntime",
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
@@ -5063,6 +5080,7 @@ export const miroirFundamentalJzodSchema = {
           },
           "applyTo": {
             "type": "schemaReference",
+            "optional": true,
             "definition": {
               "relativePath": "transformerForRuntime",
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
@@ -5070,7 +5088,9 @@ export const miroirFundamentalJzodSchema = {
             "context": {}
           },
           "referenceToOuterObject": {
-            "type": "string"
+            "type": "string",
+            "optional": true,
+            "description": "If set, each element of the list will have access to the outer object through this attribute name."
           },
           "elementTransformer": {
             "type": "schemaReference",
@@ -5109,6 +5129,7 @@ export const miroirFundamentalJzodSchema = {
           },
           "applyTo": {
             "type": "schemaReference",
+            "optional": true,
             "definition": {
               "relativePath": "transformerForRuntime",
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
@@ -5191,6 +5212,7 @@ export const miroirFundamentalJzodSchema = {
           },
           "applyTo": {
             "type": "schemaReference",
+            "optional": true,
             "definition": {
               "relativePath": "transformerForRuntime",
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
@@ -5222,6 +5244,7 @@ export const miroirFundamentalJzodSchema = {
           },
           "applyTo": {
             "type": "schemaReference",
+            "optional": true,
             "definition": {
               "relativePath": "transformerForRuntime",
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
@@ -5250,6 +5273,7 @@ export const miroirFundamentalJzodSchema = {
           },
           "applyTo": {
             "type": "schemaReference",
+            "optional": true,
             "definition": {
               "relativePath": "transformerForRuntime",
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
@@ -5257,7 +5281,9 @@ export const miroirFundamentalJzodSchema = {
             "context": {}
           },
           "referenceToOuterObject": {
-            "type": "string"
+            "type": "string",
+            "optional": true,
+            "description": "If set, each attribute value transformer will have access to the outer object through this attribute name."
           },
           "definition": {
             "type": "schemaReference",
@@ -5349,6 +5375,7 @@ export const miroirFundamentalJzodSchema = {
           },
           "applyTo": {
             "type": "schemaReference",
+            "optional": true,
             "definition": {
               "relativePath": "transformerForRuntime",
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
@@ -5385,6 +5412,7 @@ export const miroirFundamentalJzodSchema = {
           },
           "applyTo": {
             "type": "schemaReference",
+            "optional": true,
             "definition": {
               "relativePath": "transformerForRuntime",
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
@@ -5421,6 +5449,7 @@ export const miroirFundamentalJzodSchema = {
           },
           "applyTo": {
             "type": "schemaReference",
+            "optional": true,
             "definition": {
               "relativePath": "transformerForRuntime",
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
@@ -5428,7 +5457,9 @@ export const miroirFundamentalJzodSchema = {
             "context": {}
           },
           "referenceToOuterObject": {
-            "type": "string"
+            "type": "string",
+            "optional": true,
+            "description": "If set, each attribute value transformer will have access to the outer object through this attribute name."
           },
           "definition": {
             "type": "array",
@@ -5491,6 +5522,7 @@ export const miroirFundamentalJzodSchema = {
           },
           "applyTo": {
             "type": "schemaReference",
+            "optional": true,
             "definition": {
               "relativePath": "transformerForRuntime",
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
@@ -6448,6 +6480,7 @@ export const miroirFundamentalJzodSchema = {
           },
           "applyTo": {
             "type": "schemaReference",
+            "optional": true,
             "definition": {
               "relativePath": "transformerForBuildPlusRuntime",
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
@@ -6586,6 +6619,7 @@ export const miroirFundamentalJzodSchema = {
           },
           "applyTo": {
             "type": "schemaReference",
+            "optional": true,
             "definition": {
               "relativePath": "transformerForBuildPlusRuntime",
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
@@ -6593,7 +6627,9 @@ export const miroirFundamentalJzodSchema = {
             "context": {}
           },
           "referenceToOuterObject": {
-            "type": "string"
+            "type": "string",
+            "optional": true,
+            "description": "If set, each element of the list will have access to the outer object through this attribute name."
           },
           "elementTransformer": {
             "type": "schemaReference",
@@ -6663,6 +6699,7 @@ export const miroirFundamentalJzodSchema = {
           },
           "applyTo": {
             "type": "schemaReference",
+            "optional": true,
             "definition": {
               "relativePath": "transformerForBuildPlusRuntime",
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
@@ -6745,6 +6782,7 @@ export const miroirFundamentalJzodSchema = {
           },
           "applyTo": {
             "type": "schemaReference",
+            "optional": true,
             "definition": {
               "relativePath": "transformerForBuildPlusRuntime",
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
@@ -6776,6 +6814,7 @@ export const miroirFundamentalJzodSchema = {
           },
           "applyTo": {
             "type": "schemaReference",
+            "optional": true,
             "definition": {
               "relativePath": "transformerForBuildPlusRuntime",
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
@@ -6804,6 +6843,7 @@ export const miroirFundamentalJzodSchema = {
           },
           "applyTo": {
             "type": "schemaReference",
+            "optional": true,
             "definition": {
               "relativePath": "transformerForBuildPlusRuntime",
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
@@ -6811,7 +6851,9 @@ export const miroirFundamentalJzodSchema = {
             "context": {}
           },
           "referenceToOuterObject": {
-            "type": "string"
+            "type": "string",
+            "optional": true,
+            "description": "If set, each attribute value transformer will have access to the outer object through this attribute name."
           },
           "definition": {
             "type": "schemaReference",
@@ -6903,6 +6945,7 @@ export const miroirFundamentalJzodSchema = {
           },
           "applyTo": {
             "type": "schemaReference",
+            "optional": true,
             "definition": {
               "relativePath": "transformerForBuildPlusRuntime",
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
@@ -6939,6 +6982,7 @@ export const miroirFundamentalJzodSchema = {
           },
           "applyTo": {
             "type": "schemaReference",
+            "optional": true,
             "definition": {
               "relativePath": "transformerForBuildPlusRuntime",
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
@@ -6975,6 +7019,7 @@ export const miroirFundamentalJzodSchema = {
           },
           "applyTo": {
             "type": "schemaReference",
+            "optional": true,
             "definition": {
               "relativePath": "transformerForBuildPlusRuntime",
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
@@ -6982,7 +7027,9 @@ export const miroirFundamentalJzodSchema = {
             "context": {}
           },
           "referenceToOuterObject": {
-            "type": "string"
+            "type": "string",
+            "optional": true,
+            "description": "If set, each attribute value transformer will have access to the outer object through this attribute name."
           },
           "definition": {
             "type": "array",
@@ -7045,6 +7092,7 @@ export const miroirFundamentalJzodSchema = {
           },
           "applyTo": {
             "type": "schemaReference",
+            "optional": true,
             "definition": {
               "relativePath": "transformerForBuildPlusRuntime",
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
@@ -38607,6 +38655,7 @@ export const miroirFundamentalJzodSchema = {
               },
               "applyTo": {
                 "type": "schemaReference",
+                "optional": true,
                 "definition": {
                   "relativePath": "transformerForBuildPlusRuntime",
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
@@ -38874,6 +38923,7 @@ export const miroirFundamentalJzodSchema = {
               },
               "applyTo": {
                 "type": "schemaReference",
+                "optional": true,
                 "definition": {
                   "relativePath": "transformerForBuildPlusRuntime",
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
@@ -38945,6 +38995,7 @@ export const miroirFundamentalJzodSchema = {
               },
               "applyTo": {
                 "type": "schemaReference",
+                "optional": true,
                 "definition": {
                   "relativePath": "transformerForBuildPlusRuntime",
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
@@ -39008,6 +39059,7 @@ export const miroirFundamentalJzodSchema = {
               },
               "applyTo": {
                 "type": "schemaReference",
+                "optional": true,
                 "definition": {
                   "relativePath": "transformerForBuildPlusRuntime",
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
@@ -39065,6 +39117,7 @@ export const miroirFundamentalJzodSchema = {
               },
               "applyTo": {
                 "type": "schemaReference",
+                "optional": true,
                 "definition": {
                   "relativePath": "transformerForBuildPlusRuntime",
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
@@ -39073,9 +39126,13 @@ export const miroirFundamentalJzodSchema = {
               },
               "referenceToOuterObject": {
                 "type": "union",
+                "optional": true,
+                "description": "If set, each element of the list will have access to the outer object through this attribute name.",
                 "definition": [
                   {
-                    "type": "string"
+                    "type": "string",
+                    "optional": true,
+                    "description": "If set, each element of the list will have access to the outer object through this attribute name."
                   },
                   {
                     "type": "schemaReference",
@@ -39232,6 +39289,7 @@ export const miroirFundamentalJzodSchema = {
               },
               "applyTo": {
                 "type": "schemaReference",
+                "optional": true,
                 "definition": {
                   "relativePath": "transformerForBuildPlusRuntime",
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
@@ -39240,9 +39298,13 @@ export const miroirFundamentalJzodSchema = {
               },
               "referenceToOuterObject": {
                 "type": "union",
+                "optional": true,
+                "description": "If set, each attribute value transformer will have access to the outer object through this attribute name.",
                 "definition": [
                   {
-                    "type": "string"
+                    "type": "string",
+                    "optional": true,
+                    "description": "If set, each attribute value transformer will have access to the outer object through this attribute name."
                   },
                   {
                     "type": "schemaReference",
@@ -39413,6 +39475,7 @@ export const miroirFundamentalJzodSchema = {
               },
               "applyTo": {
                 "type": "schemaReference",
+                "optional": true,
                 "definition": {
                   "relativePath": "transformerForBuildPlusRuntime",
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
@@ -39470,6 +39533,7 @@ export const miroirFundamentalJzodSchema = {
               },
               "applyTo": {
                 "type": "schemaReference",
+                "optional": true,
                 "definition": {
                   "relativePath": "transformerForBuildPlusRuntime",
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
@@ -39527,6 +39591,7 @@ export const miroirFundamentalJzodSchema = {
               },
               "applyTo": {
                 "type": "schemaReference",
+                "optional": true,
                 "definition": {
                   "relativePath": "transformerForBuildPlusRuntime",
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
@@ -39535,9 +39600,13 @@ export const miroirFundamentalJzodSchema = {
               },
               "referenceToOuterObject": {
                 "type": "union",
+                "optional": true,
+                "description": "If set, each attribute value transformer will have access to the outer object through this attribute name.",
                 "definition": [
                   {
-                    "type": "string"
+                    "type": "string",
+                    "optional": true,
+                    "description": "If set, each attribute value transformer will have access to the outer object through this attribute name."
                   },
                   {
                     "type": "schemaReference",
@@ -39745,6 +39814,7 @@ export const miroirFundamentalJzodSchema = {
               },
               "applyTo": {
                 "type": "schemaReference",
+                "optional": true,
                 "definition": {
                   "relativePath": "transformerForBuildPlusRuntime",
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
@@ -41519,6 +41589,7 @@ export const miroirFundamentalJzodSchema = {
               },
               "applyTo": {
                 "type": "schemaReference",
+                "optional": true,
                 "definition": {
                   "relativePath": "transformerForRuntime",
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
@@ -41786,6 +41857,7 @@ export const miroirFundamentalJzodSchema = {
               },
               "applyTo": {
                 "type": "schemaReference",
+                "optional": true,
                 "definition": {
                   "relativePath": "transformerForRuntime",
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
@@ -41857,6 +41929,7 @@ export const miroirFundamentalJzodSchema = {
               },
               "applyTo": {
                 "type": "schemaReference",
+                "optional": true,
                 "definition": {
                   "relativePath": "transformerForRuntime",
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
@@ -41920,6 +41993,7 @@ export const miroirFundamentalJzodSchema = {
               },
               "applyTo": {
                 "type": "schemaReference",
+                "optional": true,
                 "definition": {
                   "relativePath": "transformerForRuntime",
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
@@ -41977,6 +42051,7 @@ export const miroirFundamentalJzodSchema = {
               },
               "applyTo": {
                 "type": "schemaReference",
+                "optional": true,
                 "definition": {
                   "relativePath": "transformerForRuntime",
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
@@ -41985,9 +42060,13 @@ export const miroirFundamentalJzodSchema = {
               },
               "referenceToOuterObject": {
                 "type": "union",
+                "optional": true,
+                "description": "If set, each element of the list will have access to the outer object through this attribute name.",
                 "definition": [
                   {
-                    "type": "string"
+                    "type": "string",
+                    "optional": true,
+                    "description": "If set, each element of the list will have access to the outer object through this attribute name."
                   },
                   {
                     "type": "schemaReference",
@@ -42144,6 +42223,7 @@ export const miroirFundamentalJzodSchema = {
               },
               "applyTo": {
                 "type": "schemaReference",
+                "optional": true,
                 "definition": {
                   "relativePath": "transformerForRuntime",
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
@@ -42152,9 +42232,13 @@ export const miroirFundamentalJzodSchema = {
               },
               "referenceToOuterObject": {
                 "type": "union",
+                "optional": true,
+                "description": "If set, each attribute value transformer will have access to the outer object through this attribute name.",
                 "definition": [
                   {
-                    "type": "string"
+                    "type": "string",
+                    "optional": true,
+                    "description": "If set, each attribute value transformer will have access to the outer object through this attribute name."
                   },
                   {
                     "type": "schemaReference",
@@ -42325,6 +42409,7 @@ export const miroirFundamentalJzodSchema = {
               },
               "applyTo": {
                 "type": "schemaReference",
+                "optional": true,
                 "definition": {
                   "relativePath": "transformerForRuntime",
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
@@ -42382,6 +42467,7 @@ export const miroirFundamentalJzodSchema = {
               },
               "applyTo": {
                 "type": "schemaReference",
+                "optional": true,
                 "definition": {
                   "relativePath": "transformerForRuntime",
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
@@ -42439,6 +42525,7 @@ export const miroirFundamentalJzodSchema = {
               },
               "applyTo": {
                 "type": "schemaReference",
+                "optional": true,
                 "definition": {
                   "relativePath": "transformerForRuntime",
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
@@ -42447,9 +42534,13 @@ export const miroirFundamentalJzodSchema = {
               },
               "referenceToOuterObject": {
                 "type": "union",
+                "optional": true,
+                "description": "If set, each attribute value transformer will have access to the outer object through this attribute name.",
                 "definition": [
                   {
-                    "type": "string"
+                    "type": "string",
+                    "optional": true,
+                    "description": "If set, each attribute value transformer will have access to the outer object through this attribute name."
                   },
                   {
                     "type": "schemaReference",
@@ -42570,6 +42661,7 @@ export const miroirFundamentalJzodSchema = {
               },
               "applyTo": {
                 "type": "schemaReference",
+                "optional": true,
                 "definition": {
                   "relativePath": "transformerForRuntime",
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"

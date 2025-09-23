@@ -27,3 +27,7 @@ export type ITransformerHandler<
   // queryParams: Record<string, any>,
   contextResults?: Record<string, any>
 ) => Domain2QueryReturnType<any>;
+
+// ################################################################################################
+// export const defaultTransformerInput: string = "__defaultInput__";
+export const defaultTransformerInput: string = "defaultInput";

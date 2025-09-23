@@ -28,6 +28,7 @@ import {
   type TransformerReturnType,
   type TransformerFailure,
   getInnermostTransformerError,
+  defaultTransformerInput,
 } from 'miroir-core';
 import { valueToJzod } from '@miroir-framework/jzod';
 
@@ -377,7 +378,8 @@ const TransformationResultPanel = React.memo<{
             {JSON.stringify(
               {
                 transformerType: "contextReference",
-                referenceName: showAllInstances ? "target" : "applyTo",
+                // referenceName: showAllInstances ? "target" : "applyTo",
+                referenceName: defaultTransformerInput,
               },
               null,
               2
@@ -766,7 +768,8 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
       return {
         entityInstance: entityInstances,
         instance: entityInstances,
-        target: entityInstances,
+        // target: entityInstances,
+        [defaultTransformerInput]: selectedEntityInstance,
         applyTo: entityInstances,
         // Also provide individual properties from the first instance for compatibility
         // (in case transformers expect single instance properties)
@@ -779,7 +782,8 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
       return {
         entityInstance: selectedEntityInstance,
         instance: selectedEntityInstance,
-        target: selectedEntityInstance,
+        // target: selectedEntityInstance,
+        [defaultTransformerInput]: selectedEntityInstance,
         applyTo: selectedEntityInstance,
         ...selectedEntityInstance
       };
