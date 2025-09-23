@@ -99,6 +99,14 @@ function createGenericObjectSchema(): JzodElement {
 }
 
 // ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
 // Memoized sub-components for better performance
 // ################################################################################################
 const EntityInstancePanel = React.memo<{
@@ -109,10 +117,12 @@ const EntityInstancePanel = React.memo<{
   deploymentUuid: Uuid;
   availableEntities: Entity[];
   selectedEntityUuid: Uuid;
+  showAllInstances: boolean;
   onEntityChange: (entityUuid: Uuid) => void;
   onNavigateNext: () => void;
   onNavigatePrevious: () => void;
   onNavigateRandom: () => void;
+  onToggleShowAll: () => void;
 }>(
   ({
     entityInstances,
@@ -122,40 +132,59 @@ const EntityInstancePanel = React.memo<{
     deploymentUuid,
     availableEntities,
     selectedEntityUuid,
+    showAllInstances,
     onEntityChange,
     onNavigateNext,
     onNavigatePrevious,
     onNavigateRandom,
+    onToggleShowAll,
   }) => (
     <ThemedContainer style={{ flex: 1 }}>
-      <ThemedHeaderSection style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <ThemedHeaderSection style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <ThemedTitle>
-            Entity Instance ({entityInstances.length} instances available)
-            {entityInstances.length > 0 && (
-              <span style={{ fontSize: '0.8em', marginLeft: '10px', color: '#666' }}>
+            {showAllInstances ? "All Entity Instances" : "Entity Instance"} (
+            {entityInstances.length} instances available)
+            {!showAllInstances && entityInstances.length > 0 && (
+              <span style={{ fontSize: "0.8em", marginLeft: "10px", color: "#666" }}>
                 (#{currentInstanceIndex + 1} of {entityInstances.length})
               </span>
             )}
           </ThemedTitle>
+          {/* Toggle button for Single/All mode */}
+          {entityInstances.length > 1 && (
+            <button
+              onClick={onToggleShowAll}
+              style={{
+              padding: "6px 12px",
+              fontSize: "13px",
+              backgroundColor: showAllInstances ? "#e6f3ff" : "#f0f0f0",
+              border: "1px solid #ccc",
+              borderRadius: "4px",
+              cursor: "pointer",
+              fontWeight: showAllInstances ? "bold" : "normal",
+              }}
+              title={showAllInstances ? "Switch to single instance view" : "Show all instances"}
+            >
+              {showAllInstances ? "👤 Show Single" : "👥 Show All"}
+            </button>
+          )}
         </div>
-        
+
         {/* Entity Selector */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <label style={{ fontSize: '14px', fontWeight: 'bold', minWidth: '60px' }}>
-            Entity:
-          </label>
+        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          <label style={{ fontSize: "14px", fontWeight: "bold", minWidth: "60px" }}>Entity:</label>
           <select
             value={selectedEntityUuid}
             onChange={(e) => onEntityChange(e.target.value as Uuid)}
             style={{
-              padding: '6px 12px',
-              fontSize: '14px',
-              border: '1px solid #ccc',
-              borderRadius: '4px',
-              backgroundColor: 'white',
-              cursor: 'pointer',
-              minWidth: '200px'
+              padding: "6px 12px",
+              fontSize: "14px",
+              border: "1px solid #ccc",
+              borderRadius: "4px",
+              backgroundColor: "white",
+              cursor: "pointer",
+              minWidth: "200px",
             }}
           >
             {availableEntities.map((entity) => (
@@ -164,20 +193,21 @@ const EntityInstancePanel = React.memo<{
               </option>
             ))}
           </select>
-                    {entityInstances.length > 1 && (
-            <div style={{ display: 'flex', gap: '8px' }}>
+          {/* Navigation buttons - only show when in single instance mode */}
+          {!showAllInstances && entityInstances.length > 1 && (
+            <div style={{ display: "flex", gap: "8px" }}>
               <button
                 onClick={onNavigatePrevious}
                 style={{
-                  padding: '4px 8px',
-                  fontSize: '14px',
-                  backgroundColor: '#f0f0f0',
-                  border: '1px solid #ccc',
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '4px'
+                  padding: "4px 8px",
+                  fontSize: "14px",
+                  backgroundColor: "#f0f0f0",
+                  border: "1px solid #ccc",
+                  borderRadius: "4px",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "4px",
                 }}
                 title="Previous instance"
               >
@@ -186,15 +216,15 @@ const EntityInstancePanel = React.memo<{
               <button
                 onClick={onNavigateNext}
                 style={{
-                  padding: '4px 8px',
-                  fontSize: '14px',
-                  backgroundColor: '#f0f0f0',
-                  border: '1px solid #ccc',
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '4px'
+                  padding: "4px 8px",
+                  fontSize: "14px",
+                  backgroundColor: "#f0f0f0",
+                  border: "1px solid #ccc",
+                  borderRadius: "4px",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "4px",
                 }}
                 title="Next instance"
               >
@@ -203,15 +233,15 @@ const EntityInstancePanel = React.memo<{
               <button
                 onClick={onNavigateRandom}
                 style={{
-                  padding: '4px 8px',
-                  fontSize: '14px',
-                  backgroundColor: '#f0f0f0',
-                  border: '1px solid #ccc',
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '4px'
+                  padding: "4px 8px",
+                  fontSize: "14px",
+                  backgroundColor: "#f0f0f0",
+                  border: "1px solid #ccc",
+                  borderRadius: "4px",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "4px",
                 }}
                 title="Next instance"
               >
@@ -221,7 +251,31 @@ const EntityInstancePanel = React.memo<{
           )}
         </div>
       </ThemedHeaderSection>
-      {selectedEntityInstance ? (
+      {showAllInstances ? (
+        /* Show all instances */
+        entityInstances.length > 0 ? (
+          <TypedValueObjectEditor
+            labelElement={<></>}
+            valueObject={entityInstances}
+            valueObjectMMLSchema={{
+              type: "array",
+              definition:
+                selectedEntityInstanceDefinition?.jzodSchema ?? createGenericObjectSchema(),
+            }}
+            deploymentUuid={deploymentUuid}
+            applicationSection={"data"}
+            formLabel={"All Entity Instances Viewer"}
+            onSubmit={async () => {}} // No-op for readonly
+            maxRenderDepth={3}
+            readonly={true}
+          />
+        ) : (
+          <div style={{ padding: "12px", background: "#f5f5f5", borderRadius: "4px" }}>
+            No entity instances found
+          </div>
+        )
+      ) : /* Show single instance */
+      selectedEntityInstance ? (
         <TypedValueObjectEditor
           labelElement={<></>}
           valueObject={selectedEntityInstance}
@@ -246,12 +300,20 @@ const EntityInstancePanel = React.memo<{
 );
 
 // ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
 const TransformationResultPanel = React.memo<{
   transformationResult: any;
   transformationResultSchema?: JzodElement;
   // transformationError: string | null;
   transformationError: TransformerFailure | null;
   selectedEntityInstance: EntityInstance | undefined;
+  showAllInstances: boolean;
+  entityInstances: EntityInstance[];
   deploymentUuid: Uuid;
 }>(
   ({
@@ -259,6 +321,8 @@ const TransformationResultPanel = React.memo<{
     transformationResultSchema,
     transformationError,
     selectedEntityInstance,
+    showAllInstances,
+    entityInstances,
     deploymentUuid,
   }) => (
     <ThemedContainer style={{ flex: 1, maxWidth: '50%' }}>
@@ -289,7 +353,7 @@ const TransformationResultPanel = React.memo<{
           maxRenderDepth={3}
           readonly={true}
         />
-      ) : selectedEntityInstance ? (
+      ) : (showAllInstances ? entityInstances.length > 0 : selectedEntityInstance) ? (
         <div>
           <div
             style={{
@@ -305,7 +369,7 @@ const TransformationResultPanel = React.memo<{
             <div style={{ marginBottom: "8px" }}>Create a transformer to see the result here.</div>
             <div style={{ fontSize: "0.9em", color: "#666" }}>
               <div style={{ marginBottom: "4px" }}>
-                Tip: Use contextReference to access the entity instance:
+                Tip: Use contextReference to access the entity instance{showAllInstances ? 's' : ''}:
               </div>
             </div>
           </div>
@@ -313,7 +377,7 @@ const TransformationResultPanel = React.memo<{
             {JSON.stringify(
               {
                 transformerType: "contextReference",
-                referenceName: "applyTo",
+                referenceName: showAllInstances ? "target" : "applyTo",
               },
               null,
               2
@@ -322,7 +386,7 @@ const TransformationResultPanel = React.memo<{
         </div>
       ) : (
         <div style={{ padding: "12px", background: "#f5f5f5", borderRadius: "4px" }}>
-          No entity instance available for transformation.
+          No entity instance{showAllInstances ? 's' : ''} available for transformation.
         </div>
       )}
     </ThemedContainer>
@@ -344,24 +408,26 @@ const TransformationResultPanel = React.memo<{
 /**
  * TransformerEditor allows users to create and test transformers on entity instances.
  * 
- * To reference the entity instance in your transformer, use contextReference with one of these names:
- * - "applyTo" - the standard reference name
+ * To reference the entity instance(s) in your transformer, use contextReference with one of these names:
+ * - "applyTo" - the standard reference name (single instance or array when showing all)
+ * - "target" - the target to transform (single instance or array when showing all)
  * - "entityInstance" - explicit entity instance reference
  * - "instance" - short reference name
- * - "target" - alternative reference name
  * - Or use any property name from the entity instance directly (e.g., "uuid", "name", etc.)
  * 
- * Example transformer that copies the name field:
+ * Example transformer that copies the target:
  * {
  *   "transformerType": "contextReference",
- *   "referenceName": "applyTo"
+ *   "referenceName": "target"
  * }
  * 
- * Example transformer that gets the name field specifically:
+ * Example transformer that gets the name field from a single instance:
  * {
  *   "transformerType": "contextReference",
  *   "referenceName": "name"
  * }
+ * 
+ * When "Show All" mode is active, the target becomes an array of all entity instances.
  */
 export interface TransformerEditorProps {
   deploymentUuid: Uuid;
@@ -372,6 +438,13 @@ export interface TransformerEditorProps {
 
 
 // ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
 export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((props) => {
   const { deploymentUuid, entityUuid: initialEntityUuid } = props;
   const context = useMiroirContextService();
@@ -381,6 +454,17 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
 
   // Get persisted state from context
   const persistedState = context.toolsPageState.transformerEditor;
+  const showAllInstances = persistedState?.showAllInstances || false;
+  // State to track the current instance index (with persistence)
+  const [currentInstanceIndex, setCurrentInstanceIndex] = useState<number>(
+    persistedState?.currentInstanceIndex || 0
+  );
+
+  // // State to track whether to show all instances or single instance (with persistence)
+  // const [showAllInstances, setShowAllInstances] = useState<boolean>(
+  //   persistedState?.showAllInstances || false
+  // );
+
 
   // const [persistedState, setPersistedState] = useState<ToolsPageState["transformerEditor"] | undefined>(
 
@@ -459,10 +543,6 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
     }
   }, [deploymentEntityState, currentMiroirModelEnvironment, deploymentUuid, selectedEntityUuid]);
 
-  // State to track the current instance index (with persistence)
-  const [currentInstanceIndex, setCurrentInstanceIndex] = useState<number>(
-    persistedState?.currentInstanceIndex || 0
-  );
 
   // Select instance based on current index with stable reference
   const selectedEntityInstance: EntityInstance | undefined = useMemo(() => {
@@ -480,7 +560,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
       // Persist to context
       context.updateTransformerEditorState({ currentInstanceIndex: newIndex });
     }
-  }, [entityInstances.length, currentInstanceIndex, context]);
+  }, [entityInstances.length, currentInstanceIndex]); // Remove context from dependencies
 
   const navigateToPreviousInstance = useCallback(() => {
     if (entityInstances.length > 0) {
@@ -489,7 +569,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
       // Persist to context
       context.updateTransformerEditorState({ currentInstanceIndex: newIndex });
     }
-  }, [entityInstances.length, currentInstanceIndex, context]);
+  }, [entityInstances.length, currentInstanceIndex]); // Remove context from dependencies
 
   const navigateToRandomInstance = useCallback(() => {
     if (entityInstances.length > 0) {
@@ -499,24 +579,32 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
       // Persist to context
       context.updateTransformerEditorState({ currentInstanceIndex: newIndex });
     }
-  }, [entityInstances.length, currentInstanceIndex, context]);
-
-  // Reset index when entity instances change
-  useEffect(() => {
-    setCurrentInstanceIndex(0);
-  }, [entityInstances.length]);
+  }, [entityInstances.length, currentInstanceIndex]); // Remove context from dependencies
 
   // Reset index when entity changes
   useEffect(() => {
     setCurrentInstanceIndex(0);
-  }, [selectedEntityUuid]);
+    // Also reset to single instance mode when entity changes, but only if it's currently showing all
+    // if (showAllInstances) {
+      // setShowAllInstances(false);
+      // context.updateTransformerEditorState({ showAllInstances: false });
+    // }
+  }, [selectedEntityUuid, entityInstances.length]); // Remove context from dependencies to prevent infinite refresh
 
   // Handler for entity change (with persistence)
   const handleEntityChange = useCallback((newEntityUuid: Uuid) => {
     setSelectedEntityUuid(newEntityUuid);
     // Persist to context
     context.updateTransformerEditorState({ selectedEntityUuid: newEntityUuid });
-  }, [context]);
+  }, []); // Remove context from dependencies
+
+  // Handler for toggling show all instances mode (with persistence)
+  const handleToggleShowAll = useCallback(() => {
+    const newShowAllInstances = !context.toolsPageState.transformerEditor?.showAllInstances;
+    // setShowAllInstances(newShowAllInstances);
+    // Persist to context
+    context.updateTransformerEditorState({ showAllInstances: newShowAllInstances });
+  }, [context.toolsPageState.transformerEditor?.showAllInstances]); // Remove context from dependencies
 
   // TransformerDefinition schema - memoized to avoid recalculation
   const transformerDefinitionSchema: JzodElement = useMemo(() => ({
@@ -548,7 +636,8 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
   //     {} // relativeReferenceJzodContext
   //   );
   // });
-  const currentTransformerDefinition: TransformerForBuildOrRuntime = context.toolsPageState.transformerEditor?.currentTransformerDefinition;
+  const currentTransformerDefinition: TransformerForBuildOrRuntime =
+    context.toolsPageState.transformerEditor?.currentTransformerDefinition;
 
   log.info("TransformerEditor currentTransformerDefinition:", currentTransformerDefinition);
   log.info("TransformerEditor transformerDefinitionSchema:", transformerDefinitionSchema);
@@ -670,83 +759,107 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
 
   // Memoized context results to avoid recreating on every execution
   const contextResults = useMemo(() => {
-    if (!selectedEntityInstance) return {};
-    
-    return {
-      entityInstance: selectedEntityInstance,
-      instance: selectedEntityInstance,
-      target: selectedEntityInstance,
-      ...selectedEntityInstance
-    };
-  }, [selectedEntityInstance]);
+    if (showAllInstances) {
+      // When showing all instances, target becomes an array of all instances
+      if (entityInstances.length === 0) return {};
+      
+      return {
+        entityInstance: entityInstances,
+        instance: entityInstances,
+        target: entityInstances,
+        applyTo: entityInstances,
+        // Also provide individual properties from the first instance for compatibility
+        // (in case transformers expect single instance properties)
+        ...(entityInstances[0] || {})
+      };
+    } else {
+      // When showing single instance, target is the selected instance
+      if (!selectedEntityInstance) return {};
+      
+      return {
+        entityInstance: selectedEntityInstance,
+        instance: selectedEntityInstance,
+        target: selectedEntityInstance,
+        applyTo: selectedEntityInstance,
+        ...selectedEntityInstance
+      };
+    }
+  }, [showAllInstances, entityInstances, selectedEntityInstance]);
 
   // ################################################################################################
   // Apply transformer to selected entity instance with debouncing
-  const applyTransformerToInstance = useCallback(async () => {
-    if (!currentTransformerDefinition || !selectedEntityInstance) {
-      // setTransformationResult(null);
-      setTransformationError(null);
-      return null;
-    }
+  // const applyTransformerToInstance = useCallback(async () => {
+  //   if (!currentTransformerDefinition || (showAllInstances ? entityInstances.length === 0 : !selectedEntityInstance)) {
+  //     // setTransformationResult(null);
+  //     setTransformationError(null);
+  //     return null;
+  //   }
 
-    // Clear existing timeout
-    if (transformerTimeoutRef.current) {
-      clearTimeout(transformerTimeoutRef.current);
-    }
+  //   // Clear existing timeout
+  //   if (transformerTimeoutRef.current) {
+  //     clearTimeout(transformerTimeoutRef.current);
+  //   }
 
-    // Debounce transformer execution
-    transformerTimeoutRef.current = setTimeout(async () => {
-      try {
-        log.info("Applying transformer to instance", {
-          transformer: currentTransformerDefinition,
-          instance: selectedEntityInstance,
-        });
+  //   // Debounce transformer execution
+  //   transformerTimeoutRef.current = setTimeout(async () => {
+  //     try {
+  //       log.info("Applying transformer to instance(s)", {
+  //         transformer: currentTransformerDefinition,
+  //         showAllInstances,
+  //         instanceCount: showAllInstances ? entityInstances.length : 1,
+  //         target: showAllInstances ? entityInstances : selectedEntityInstance,
+  //       });
 
-        const result: TransformerReturnType<any> = transformer_extended_apply_wrapper(
-          context.miroirContext.miroirActivityTracker, // activityTracker
-          "runtime", // step
-          ["rootTransformer"], // transformerPath
-          "TransformerEditor", // label
-          currentTransformerDefinition, // transformer
-          { ...currentMiroirModelEnvironment, ...contextResults }, // transformerParams
-          contextResults, // contextResults - pass the instance to transform
-          "value" // resolveBuildTransformersTo
-        );
+  //       const result: TransformerReturnType<any> = transformer_extended_apply_wrapper(
+  //         context.miroirContext.miroirActivityTracker, // activityTracker
+  //         "runtime", // step
+  //         ["rootTransformer"], // transformerPath
+  //         "TransformerEditor", // label
+  //         currentTransformerDefinition, // transformer
+  //         { ...currentMiroirModelEnvironment, ...contextResults }, // transformerParams
+  //         contextResults, // contextResults - pass the instance to transform
+  //         "value" // resolveBuildTransformersTo
+  //       );
 
-        // Check for Domain2ElementFailed pattern
-        if (result && typeof result === "object" && "queryFailure" in result) {
-          // setTransformationError(`Transformation failed: ${safeStringify(result)}`);
-          setTransformationError(result);
-          // setTransformationResult(null);
-          return null;
-        } else {
-          // setTransformationResult(result);
-          setTransformationError(null);
-          return result;
-          log.info("Transformation successful", { result });
-        }
-      } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : String(error);
-        log.error("Error applying transformer:", error);
-        setTransformationError({
-          queryFailure: "FailedTransformer",
-          elementType: "Transformer",
-          transformerPath: [],
-          failureMessage: errorMessage,
-        });
-        // setTransformationResult(null);
-        return null;
-      }
-    }, 300); // 300ms debounce
-  }, [
-    currentTransformerDefinition,
-    selectedEntityInstance,
-    currentMiroirModelEnvironment,
-    contextResults,
-  ]);
+  //       // Check for Domain2ElementFailed pattern
+  //       if (result && typeof result === "object" && "queryFailure" in result) {
+  //         // setTransformationError(`Transformation failed: ${safeStringify(result)}`);
+  //         setTransformationError(result);
+  //         // setTransformationResult(null);
+  //         return null;
+  //       } else {
+  //         // setTransformationResult(result);
+  //         setTransformationError(null);
+  //         return result;
+  //         log.info("Transformation successful", { result });
+  //       }
+  //     } catch (error) {
+  //       const errorMessage = error instanceof Error ? error.message : String(error);
+  //       log.error("Error applying transformer:", error);
+  //       setTransformationError({
+  //         queryFailure: "FailedTransformer",
+  //         elementType: "Transformer",
+  //         transformerPath: [],
+  //         failureMessage: errorMessage,
+  //       });
+  //       // setTransformationResult(null);
+  //       return null;
+  //     }
+  //   }, 300); // 300ms debounce
+  // }, [
+  //   currentTransformerDefinition,
+  //   showAllInstances,
+  //   entityInstances,
+  //   selectedEntityInstance,
+  //   currentMiroirModelEnvironment,
+  //   contextResults,
+  // ]);
 
   const transformationResult: any = useMemo(() => {
-    if (!currentTransformerDefinition || !selectedEntityInstance) {
+    if (
+      !currentTransformerDefinition ||
+      (showAllInstances ? entityInstances.length === 0 : !selectedEntityInstance)
+    ) {
       return null;
     }
 
@@ -783,6 +896,8 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
     }
   }, [
     currentTransformerDefinition,
+    showAllInstances,
+    entityInstances,
     selectedEntityInstance,
     currentMiroirModelEnvironment,
     contextResults,
@@ -804,8 +919,9 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
     // setCurrentTransformerDefinition(newTransformerDefinition);
     // Persist to context
     context.updateTransformerEditorState({ currentTransformerDefinition: newTransformerDefinition });
-    applyTransformerToInstance();
-  }, [context, applyTransformerToInstance]);
+    // applyTransformerToInstance();
+  // }, [applyTransformerToInstance]); // Remove context from dependencies
+  }, [context.updateTransformerEditorState]); // Remove context from dependencies
 
   // Apply transformer whenever definition or instance changes
   // useEffect(() => {
@@ -820,7 +936,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
   // }, [applyTransformerToInstance, selectedEntityInstance]);
 
   // Memoized transformer entity UUID to avoid recalculation
-  const transformerEntityUuid = useMemo(() => entityDefinitionTransformerDefinition.entityUuid, []);
+  // const transformerEntityUuid = useMemo(() => entityDefinitionTransformerDefinition.entityUuid, []);
 
   return (
     <ThemedContainer>
@@ -888,16 +1004,20 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
             deploymentUuid={deploymentUuid}
             availableEntities={currentReportDeploymentSectionEntities || []}
             selectedEntityUuid={selectedEntityUuid}
+            showAllInstances={showAllInstances}
             onEntityChange={handleEntityChange}
             onNavigateNext={navigateToNextInstance}
             onNavigatePrevious={navigateToPreviousInstance}
             onNavigateRandom={navigateToRandomInstance}
+            onToggleShowAll={handleToggleShowAll}
           />
           <TransformationResultPanel
             transformationResult={transformationResult}
             transformationResultSchema={transformationResultSchema}
             transformationError={transformationError}
             selectedEntityInstance={selectedEntityInstance}
+            showAllInstances={showAllInstances}
+            entityInstances={entityInstances}
             deploymentUuid={deploymentUuid}
           />
         </div>

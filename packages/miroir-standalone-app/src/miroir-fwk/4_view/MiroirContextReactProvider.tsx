@@ -57,6 +57,7 @@ export interface ToolsPageState {
   transformerEditor?: {
     selectedEntityUuid?: string;
     currentInstanceIndex?: number;
+    showAllInstances?: boolean;
     currentTransformerDefinition?: any;
     foldedObjectAttributeOrArrayItems?: FoldedStateTree;
     foldedEntityInstanceItems?: { [k: string]: boolean };
@@ -185,7 +186,7 @@ export function MiroirContextReactProvider(props: {
   const [gridType, setGridType] = useState<GridType>("ag-grid");
   const [toolsPageState, setToolsPageState] = useState<ToolsPageState>(() => {
     // Persist ToolsPage state across navigation per deployment
-    const saved = sessionStorage.getItem(`toolsPageState_${deploymentUuid}`);
+    const saved = sessionStorage.getItem("toolsPageState");
     return saved ? JSON.parse(saved) : {};
   });
   const [showPerformanceDisplay, setShowPerformanceDisplay] = useState(() => {
@@ -220,9 +221,9 @@ export function MiroirContextReactProvider(props: {
       const newState = { ...toolsPageState, ...updates };
       setToolsPageState(newState);
       // Persist to sessionStorage per deployment
-      sessionStorage.setItem(`toolsPageState_${deploymentUuid}`, JSON.stringify(newState));
+      sessionStorage.setItem("toolsPageState", JSON.stringify(newState));
     },
-    [toolsPageState, deploymentUuid]
+    [toolsPageState]
   );
 
   const updateTransformerEditorState = useMemo(
@@ -233,9 +234,9 @@ export function MiroirContextReactProvider(props: {
       };
       setToolsPageState(newState);
       // Persist to sessionStorage per deployment
-      sessionStorage.setItem(`toolsPageState_${deploymentUuid}`, JSON.stringify(newState));
+      sessionStorage.setItem("toolsPageState", JSON.stringify(newState));
     },
-    [toolsPageState, deploymentUuid]
+    [toolsPageState]
   );
 
   // Snackbar handlers
@@ -462,7 +463,7 @@ export function MiroirContextReactProvider(props: {
 
   //   return unsubscribe;
   // }, [showSnackbar]);
-
+  log.info("MiroirContextReactProvider rendered with toolsPageState:", toolsPageState);
   return (
     <miroirReactContext.Provider value={value}>
       {props.children}
