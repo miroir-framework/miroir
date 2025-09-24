@@ -44,7 +44,8 @@ import {
 } from "./DomainStateQuerySelectors";
 import { handleBoxedExtractorAction, handleBoxedQueryAction } from "./QuerySelectors";
 import {  type MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
-import { transformer_InnerReference_resolve } from "./TransformersForRuntime";
+import { transformer_extended_apply } from "./TransformersForRuntime";
+// import { transformer_InnerReference_resolve } from "./TransformersForRuntime";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -130,9 +131,11 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
     switch (querySelectorParams?.extractorOrCombinerType) {
       case "combinerForObjectByRelation": {
         // TODO: we assume this ia a constant, get rid of resolution altogether (push it up)
-        const referenceObject = transformer_InnerReference_resolve(
+        // const referenceObject = transformer_InnerReference_resolve(
+        const referenceObject = transformer_extended_apply(
           "runtime",
           [], // transformerPath
+          querySelectorParams.label??querySelectorParams.extractorOrCombinerType,
           {
             transformerType: "contextReference",
             interpolation: "runtime",

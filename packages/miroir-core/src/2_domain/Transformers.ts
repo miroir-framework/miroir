@@ -138,7 +138,7 @@ export const transformerForBuildPlusRuntimeNames = Object.keys(miroirTransformer
 
 const runtimeReferenceMap: Record<string, string> = {
   transformer: "transformerForRuntime",
-  transformer_InnerReference: "transformerForRuntime_InnerReference",
+  // transformer_InnerReference: "transformerForRuntime_InnerReference",
   transformer_freeObjectTemplate: "transformerForRuntime_freeObjectTemplate",
   transformer_contextReference: "transformerForRuntime_contextReference",
   transformer_objectDynamicAccess: "transformerForRuntime_objectDynamicAccess",
@@ -147,7 +147,7 @@ const runtimeReferenceMap: Record<string, string> = {
 
 const buildReferenceMap: Record<string, string> = {
   transformer: "transformerForBuild",
-  transformer_InnerReference: "transformerForBuild_InnerReference",
+  // transformer_InnerReference: "transformerForBuild_InnerReference",
   transformer_freeObjectTemplate: "transformerForBuild_freeObjectTemplate",
   transformer_contextReference: "transformerForBuild_parameterReference",
   transformer_objectDynamicAccess: "transformerForBuild_objectDynamicAccess",
@@ -160,7 +160,7 @@ const buildReferenceMap: Record<string, string> = {
 
 const buildPlusRuntimeReferenceMap: Record<string, string> = {
   transformer: "transformerForBuildPlusRuntime",
-  transformer_InnerReference: "transformerForBuildPlusRuntime_InnerReference", // TODO: ensure that all transfrormer definitions use a reference for inner references: mapperListToList, transformer_objectAlter
+  // transformer_InnerReference: "transformerForBuildPlusRuntime_InnerReference", // TODO: ensure that all transfrormer definitions use a reference for inner references: mapperListToList, transformer_objectAlter
   transformer_freeObjectTemplate: "transformerForBuildPlusRuntime_freeObjectTemplate",
   transformer_contextReference: "transformerForBuildPlusRuntime_contextReference",
   transformer_objectDynamicAccess: "transformerForBuildPlusRuntime_objectDynamicAccess",

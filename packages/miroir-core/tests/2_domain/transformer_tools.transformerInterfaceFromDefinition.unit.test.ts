@@ -4,7 +4,7 @@ import { transformerInterfaceFromDefinition } from "../../src/2_domain/Transform
 
 const runtimeReferenceMap: Record<string, string> = {
   transformer: "transformerForRuntime",
-  transformer_InnerReference: "transformerForRuntime_InnerReference",
+  // transformer_InnerReference: "transformerForRuntime_InnerReference",
   transformer_freeObjectTemplate: "transformerForRuntime_freeObjectTemplate",
   transformer_contextReference: "transformerForRuntime_contextReference",
   transformer_objectDynamicAccess: "transformerForRuntime_objectDynamicAccess",
@@ -13,7 +13,7 @@ const runtimeReferenceMap: Record<string, string> = {
 
 const buildReferenceMap: Record<string, string> = {
   transformer: "transformerForBuild",
-  transformer_InnerReference: "transformerForBuild_InnerReference",
+  // transformer_InnerReference: "transformerForBuild_InnerReference",
   transformer_freeObjectTemplate: "transformerForBuild_freeObjectTemplate",
   transformer_contextReference: "transformerForRuntime_contextReference",
   transformer_objectDynamicAccess: "transformerForBuild_objectDynamicAccess",
@@ -65,7 +65,7 @@ describe("transformerInterfaceFromDefinition", () => {
                   attributeKey: {
                     type: "schemaReference",
                     definition: {
-                      relativePath: "transformer_InnerReference",
+                      relativePath: "transformer",
                     },
                   },
                   attributeValue: {

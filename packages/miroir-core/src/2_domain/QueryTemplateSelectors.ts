@@ -42,7 +42,8 @@ import {
   resolveQueryTemplateWithExtractorCombinerTransformer
 } from "./Templates";
 import { type MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
-import { transformer_InnerReference_resolve} from "./TransformersForRuntime";
+import { transformer_extended_apply } from "./TransformersForRuntime";
+// import { transformer_InnerReference_resolve} from "./TransformersForRuntime";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -300,9 +301,11 @@ export const extractzodSchemaForSingleSelectQueryTemplate = <StateType>(
   const entityUuidDomainElement =
     typeof selectorParams.query.select.parentUuid == "string"
       ? selectorParams.query.select.parentUuid
-      : transformer_InnerReference_resolve(
+      // : transformer_InnerReference_resolve(
+      : transformer_extended_apply(
           "build",
           [], // transformerPath
+          selectorParams.query.select.label??selectorParams.query.select.extractorTemplateType,
           selectorParams.query.select.parentUuid,
           "value",
           {...modelEnvironment, ...selectorParams.query.queryParams},

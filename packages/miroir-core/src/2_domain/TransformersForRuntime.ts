@@ -20,7 +20,7 @@ import {
   TransformerForBuild_count,
   TransformerForBuild_dataflowObject,
   TransformerForBuild_freeObjectTemplate,
-  TransformerForBuild_InnerReference,
+  // TransformerForBuild_InnerReference,
   TransformerForBuild_listPickElement,
   TransformerForBuild_listReducerToIndexObject,
   TransformerForBuild_listReducerToSpreadObject,
@@ -44,8 +44,6 @@ import {
   TransformerForRuntime_dataflowObject,
   TransformerForRuntime_defaultValueForMLSchema,
   TransformerForRuntime_freeObjectTemplate,
-  // TransformerForRuntime_innerFullObjectTemplate,
-  TransformerForRuntime_InnerReference,
   TransformerForRuntime_listPickElement,
   TransformerForRuntime_listReducerToIndexObject,
   TransformerForRuntime_listReducerToSpreadObject,
@@ -57,7 +55,9 @@ import {
   TransformerForRuntime_objectDynamicAccess,
   TransformerForRuntime_objectEntries,
   TransformerForRuntime_objectValues,
-  TransformerForRuntime_unique
+  TransformerForRuntime_unique,
+  type TransformerForBuild_InnerReference,
+  type TransformerForRuntime_InnerReference
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { defaultTransformerInput, type ITransformerHandler, type MiroirModelEnvironment } from '../0_interfaces/1_core/Transformer';
 import {
@@ -132,6 +132,7 @@ export const defaultTransformers = {
   transformer_extended_apply,
   transformer_mustacheStringTemplate_apply,
   transformer_InnerReference_resolve,
+  transformer_resolveReference,
   handleTransformer_objectAlter,
   handleTransformer_object_fullTemplate,
   transformer_object_listReducerToIndexObject_apply,
@@ -1515,13 +1516,13 @@ export function transformer_resolveReference(
 }
 
 
-// ################################################################################################
-// almost duplicate from QuerySelectors.ts
-// type defined in function of the types of queryParams and contextResults
-// contextReference<A> -> A
-// parameterReference<A> -> A
-// constantUuid -> Uuid
-// constantString -> string
+// // ################################################################################################
+// // almost duplicate from QuerySelectors.ts
+// // type defined in function of the types of queryParams and contextResults
+// // contextReference<A> -> A
+// // parameterReference<A> -> A
+// // constantUuid -> Uuid
+// // constantString -> string
 export function transformer_InnerReference_resolve<T extends MiroirModelEnvironment>(
   step: Step,
   transformerPath: string[],

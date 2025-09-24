@@ -21,7 +21,7 @@ import { MiroirLoggerFactory } from "../4_services/LoggerFactory";
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
 import { type MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
-import { transformer_extended_apply_wrapper, transformer_InnerReference_resolve } from "./TransformersForRuntime";
+import { transformer_extended_apply, transformer_extended_apply_wrapper } from "./TransformersForRuntime";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -64,9 +64,11 @@ export function resolveExtractorTemplate(
           parentUuid:
             typeof extractorOrCombinerTemplate.parentUuid == "string"
               ? extractorOrCombinerTemplate.parentUuid
-              : transformer_InnerReference_resolve(
+              // : transformer_InnerReference_resolve(
+              : transformer_extended_apply(
                   "build", // TODO: should this be "build" or "runtime"? "value" is not consistent with "build"
                   [], // transformerPath
+                  extractorOrCombinerTemplate.label??extractorOrCombinerTemplate.extractorTemplateType,
                   extractorOrCombinerTemplate.parentUuid,
                   "value",
                   queryParams,
@@ -84,9 +86,11 @@ export function resolveExtractorTemplate(
           parentUuid:
             typeof extractorOrCombinerTemplate.parentUuid == "string"
               ? extractorOrCombinerTemplate.parentUuid
-              : transformer_InnerReference_resolve(
+              // : transformer_InnerReference_resolve(
+              : transformer_extended_apply(
                   "build",
                   [], // transformerPath
+                  extractorOrCombinerTemplate.label??extractorOrCombinerTemplate.extractorTemplateType,
                   extractorOrCombinerTemplate.parentUuid,
                   "value",
                   queryParams,
@@ -103,17 +107,21 @@ export function resolveExtractorTemplate(
         parentUuid:
           typeof extractorOrCombinerTemplate.parentUuid == "string"
             ? extractorOrCombinerTemplate.parentUuid
-            : transformer_InnerReference_resolve(
+            // : transformer_InnerReference_resolve(
+            : transformer_extended_apply(
                 "build",
                 [], // transformerPath
+                extractorOrCombinerTemplate.label??extractorOrCombinerTemplate.extractorTemplateType,
                 extractorOrCombinerTemplate.parentUuid,
                 "value",
                 queryParams,
                 contextResults
               ), // TODO: check for failure!
-        instanceUuid: transformer_InnerReference_resolve(
+        // instanceUuid: transformer_InnerReference_resolve(
+        instanceUuid: transformer_extended_apply(
           "build",
           [], // transformerPath
+          extractorOrCombinerTemplate.label??extractorOrCombinerTemplate.extractorTemplateType,
           extractorOrCombinerTemplate.instanceUuid,
           "value",
           queryParams,
@@ -161,9 +169,11 @@ export function resolveExtractorTemplate(
         parentUuid:
           typeof extractorOrCombinerTemplate.parentUuid == "string"
             ? extractorOrCombinerTemplate.parentUuid
-            : transformer_InnerReference_resolve(
+            // : transformer_InnerReference_resolve(
+            : transformer_extended_apply(
                 "build",
                 [], // transformerPath
+                extractorOrCombinerTemplate.label??extractorOrCombinerTemplate.extractorTemplateType,
                 extractorOrCombinerTemplate.parentUuid,
                 "value",
                 queryParams,
@@ -184,9 +194,11 @@ export function resolveExtractorTemplate(
         parentUuid:
           typeof extractorOrCombinerTemplate.parentUuid == "string"
             ? extractorOrCombinerTemplate.parentUuid
-            : transformer_InnerReference_resolve(
+            // : transformer_InnerReference_resolve(
+            : transformer_extended_apply(
                 "build",
                 [], // transformerPath
+                extractorOrCombinerTemplate.label??extractorOrCombinerTemplate.extractorTemplateType,
                 extractorOrCombinerTemplate.parentUuid,
                 "value",
                 queryParams,
@@ -207,9 +219,11 @@ export function resolveExtractorTemplate(
         parentUuid:
           typeof extractorOrCombinerTemplate.parentUuid == "string"
             ? extractorOrCombinerTemplate.parentUuid
-            : transformer_InnerReference_resolve(
+            // : transformer_InnerReference_resolve(
+            : transformer_extended_apply(
                 "build",
                 [], // transformerPath
+                extractorOrCombinerTemplate.label??extractorOrCombinerTemplate.extractorTemplateType,
                 extractorOrCombinerTemplate.parentUuid,
                 "value",
                 queryParams,

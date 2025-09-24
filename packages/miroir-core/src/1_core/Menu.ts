@@ -53,9 +53,12 @@ export function handleTransformer_menu_AddItem(
   );
   const menu =
     typeof transformer.menuReference == "string"
-      ? (defaultTransformers.transformer_InnerReference_resolve(
+      // ? (defaultTransformers.transformer_InnerReference_resolve(
+      ? (defaultTransformers.transformer_extended_apply(
           step,
           transformerPath,
+          transformer.label??transformer.transformerType,
+          // transformer.menuReference,
           {
             transformerType: "contextReference",
             interpolation: "runtime",
@@ -65,9 +68,11 @@ export function handleTransformer_menu_AddItem(
           queryParams,
           contextResults
         ) as Menu)
-      : (defaultTransformers.transformer_InnerReference_resolve(
+        // : (defaultTransformers.transformer_InnerReference_resolve(
+        : (defaultTransformers.transformer_extended_apply(
           step,
           transformerPath,
+          transformer.label??transformer.transformerType,
           transformer.menuReference,
           "value",
           queryParams,
@@ -79,9 +84,11 @@ export function handleTransformer_menu_AddItem(
 
   const menuItem =
     typeof transformer.menuItemReference == "string"
-      ? (defaultTransformers.transformer_InnerReference_resolve(
+      // ? (defaultTransformers.transformer_InnerReference_resolve(
+      ? (defaultTransformers.transformer_extended_apply(
           step,
           transformerPath,
+          transformer.label??transformer.transformerType,
           {
             transformerType: "contextReference",
             interpolation: "runtime",
@@ -91,9 +98,11 @@ export function handleTransformer_menu_AddItem(
           queryParams,
           contextResults
         ) as MiroirMenuItem)
-      : (defaultTransformers.transformer_InnerReference_resolve(
+      // : (defaultTransformers.transformer_InnerReference_resolve(
+      : (defaultTransformers.transformer_extended_apply(
           step,
           transformerPath,
+          transformer.label??transformer.transformerType,
           transformer.menuItemReference,
           "value",
           queryParams,
