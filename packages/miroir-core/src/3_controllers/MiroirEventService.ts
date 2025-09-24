@@ -151,14 +151,14 @@ export class MiroirEventService implements MiroirEventServiceInterface {
     message: string,
     ...args: any[]
   ): void {
-    const currentActionId = this.activityTracker.getCurrentActivityId();
-    if (!currentActionId) {
+    const currentActivityId = this.activityTracker.getCurrentActivityId();
+    if (!currentActivityId) {
       // No active action, skip logging
       return;
     }
 
     // const currentActionData = this.eventTracker.getAllEvents().find(a => a.logId === currentActionId);
-    const currentActivityData = this.activityTracker.getActivityIndex().get(currentActionId);
+    const currentActivityData = this.activityTracker.getActivityIndex().get(currentActivityId);
     if (!currentActivityData) {
       return;
     }
@@ -166,7 +166,7 @@ export class MiroirEventService implements MiroirEventServiceInterface {
     // Create log entry based on tracking type
     let logEntry: MiroirEventLog;
 
-    const currentEvent = this.events.get(currentActionId);
+    const currentEvent = this.events.get(currentActivityId);
 
     switch (currentActivityData.activityType) {
       case "action": {
@@ -195,11 +195,15 @@ export class MiroirEventService implements MiroirEventServiceInterface {
       case "testAssertion": {
         if (
           !currentEvent ||
-          ["test", "testSuite", "testAssertion"].includes(currentEvent.activity.activityType)
+          !["test", "testSuite", "testAssertion"].includes(currentEvent.activity.activityType)
         ) {
           throw new Error(
-            "Inconsistent state: test event not found or mismatched, log type action, event type " +
-              (currentEvent ? currentEvent.activity.activityType : "undefined")
+            "Inconsistent state: test event not found or mismatched, event type " +
+              (currentEvent ? currentEvent.activity.activityType : "undefined") +
+              " log type " +
+              currentActivityData.activityType +
+              " currentActionId " +
+              currentActivityId
           );
         }
 

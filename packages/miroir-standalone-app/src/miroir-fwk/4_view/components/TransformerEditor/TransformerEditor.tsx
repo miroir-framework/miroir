@@ -307,46 +307,62 @@ const EntityInstancePanel = React.memo<{
 // ################################################################################################
 // ################################################################################################
 // ################################################################################################
-const TransformationResultPanel = React.memo<{
-  transformationResult: any;
+const TransformationResultPanel: React.FC<{
+  transformationResult: TransformerReturnType<any>;
   transformationResultSchema?: JzodElement;
   // transformationError: string | null;
-  transformationError: TransformerFailure | null;
+  // transformationError: TransformerFailure | null;
   selectedEntityInstance: EntityInstance | undefined;
   showAllInstances: boolean;
   entityInstances: EntityInstance[];
   deploymentUuid: Uuid;
-}>(
+}> =
+  // React.memo<{
+  //   transformationResult: any;
+  //   transformationResultSchema?: JzodElement;
+  //   // transformationError: string | null;
+  //   transformationError: TransformerFailure | null;
+  //   selectedEntityInstance: EntityInstance | undefined;
+  //   showAllInstances: boolean;
+  //   entityInstances: EntityInstance[];
+  //   deploymentUuid: Uuid;
+  // }>(
   ({
     transformationResult,
     transformationResultSchema,
-    transformationError,
+    // transformationError,
     selectedEntityInstance,
     showAllInstances,
     entityInstances,
     deploymentUuid,
-  }) => (
-    <ThemedContainer style={{ flex: 1, maxWidth: '50%' }}>
+  }) => {
+    log.info("Rendering TransformationResultPanel with result:", transformationResult);
+    return (
+    <ThemedContainer style={{ flex: 1, maxWidth: "50%" }}>
       <ThemedHeaderSection>
         <ThemedTitle>
           Transformation Result
-          {transformationError && (
-            <span style={{ color: "red", marginLeft: "10px", fontSize: "0.9em" }}>⚠️ Error</span>
-          )}
+          {transformationResult &&
+            typeof transformationResult === "object" &&
+            "queryFailure" in transformationResult && (
+              <span style={{ color: "red", marginLeft: "10px", fontSize: "0.9em" }}>⚠️ Error</span>
+            )}
         </ThemedTitle>
       </ThemedHeaderSection>
 
-      {transformationError ? (
+      {transformationResult &&
+      typeof transformationResult === "object" &&
+      "queryFailure" in transformationResult ? (
         <ThemedCodeBlock>
-          {typeof transformationError === "string"
-            ? transformationError
-            : safeStringify(transformationError)}
+          {typeof transformationResult === "string"
+            ? transformationResult
+            : safeStringify(transformationResult)}
         </ThemedCodeBlock>
       ) : transformationResult !== null ? (
         <TypedValueObjectEditor
           labelElement={<div>target:</div>}
           valueObject={transformationResult}
-          valueObjectMMLSchema={transformationResultSchema??createGenericObjectSchema()}
+          valueObjectMMLSchema={transformationResultSchema ?? createGenericObjectSchema()}
           deploymentUuid={deploymentUuid}
           applicationSection={"data"}
           formLabel={"Transformation Result Viewer"}
@@ -370,7 +386,8 @@ const TransformationResultPanel = React.memo<{
             <div style={{ marginBottom: "8px" }}>Create a transformer to see the result here.</div>
             <div style={{ fontSize: "0.9em", color: "#666" }}>
               <div style={{ marginBottom: "4px" }}>
-                Tip: Use contextReference to access the entity instance{showAllInstances ? 's' : ''}:
+                Tip: Use contextReference to access the entity instance{showAllInstances ? "s" : ""}
+                :
               </div>
             </div>
           </div>
@@ -388,12 +405,13 @@ const TransformationResultPanel = React.memo<{
         </div>
       ) : (
         <div style={{ padding: "12px", background: "#f5f5f5", borderRadius: "4px" }}>
-          No entity instance{showAllInstances ? 's' : ''} available for transformation.
+          No entity instance{showAllInstances ? "s" : ""} available for transformation.
         </div>
       )}
     </ThemedContainer>
-  )
-);
+  );}
+// )
+;
 
 // const DebugPanel = React.memo<{
 //   currentTransformerDefinition: any;
@@ -507,6 +525,16 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
     }
   }, [currentReportDeploymentSectionEntities, selectedEntityUuid]);
 
+    // Reset index when entity changes
+  useEffect(() => {
+    setCurrentInstanceIndex(0);
+    // Also reset to single instance mode when entity changes, but only if it's currently showing all
+    // if (showAllInstances) {
+      // setShowAllInstances(false);
+      // context.updateTransformerEditorState({ showAllInstances: false });
+    // }
+  }, [selectedEntityUuid]); // Remove context from dependencies to prevent infinite refresh
+
   const currentReportTargetEntity: Entity | undefined =
     currentReportDeploymentSectionEntities?.find((e) => e?.uuid === selectedEntityUuid);
 
@@ -546,13 +574,6 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
   }, [deploymentEntityState, currentMiroirModelEnvironment, deploymentUuid, selectedEntityUuid]);
 
 
-  // Select instance based on current index with stable reference
-  const selectedEntityInstance: EntityInstance | undefined = useMemo(() => {
-    if (entityInstances.length === 0) return undefined;
-    // Ensure index is within bounds (round-robin)
-    const validIndex = ((currentInstanceIndex % entityInstances.length) + entityInstances.length) % entityInstances.length;
-    return entityInstances[validIndex];
-  }, [entityInstances, currentInstanceIndex]);
 
   // Navigation functions for round-robin instance selection
   const navigateToNextInstance = useCallback(() => {
@@ -583,15 +604,6 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
     }
   }, [entityInstances.length, currentInstanceIndex]); // Remove context from dependencies
 
-  // Reset index when entity changes
-  useEffect(() => {
-    setCurrentInstanceIndex(0);
-    // Also reset to single instance mode when entity changes, but only if it's currently showing all
-    // if (showAllInstances) {
-      // setShowAllInstances(false);
-      // context.updateTransformerEditorState({ showAllInstances: false });
-    // }
-  }, [selectedEntityUuid, entityInstances.length]); // Remove context from dependencies to prevent infinite refresh
 
   // Handler for entity change (with persistence)
   const handleEntityChange = useCallback((newEntityUuid: Uuid) => {
@@ -603,10 +615,16 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
   // Handler for toggling show all instances mode (with persistence)
   const handleToggleShowAll = useCallback(() => {
     const newShowAllInstances = !context.toolsPageState.transformerEditor?.showAllInstances;
-    // setShowAllInstances(newShowAllInstances);
-    // Persist to context
     context.updateTransformerEditorState({ showAllInstances: newShowAllInstances });
   }, [context.toolsPageState.transformerEditor?.showAllInstances]); // Remove context from dependencies
+
+    // Select instance based on current index with stable reference
+  const selectedEntityInstance: EntityInstance | undefined = useMemo(() => {
+    if (entityInstances.length === 0) return undefined;
+    // Ensure index is within bounds (round-robin)
+    const validIndex = ((currentInstanceIndex % entityInstances.length) + entityInstances.length) % entityInstances.length;
+    return entityInstances[validIndex];
+  }, [entityInstances, context.toolsPageState.transformerEditor?.showAllInstances, currentInstanceIndex]);
 
   // TransformerDefinition schema - memoized to avoid recalculation
   const transformerDefinitionSchema: JzodElement = useMemo(() => ({
@@ -652,23 +670,17 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
   }, [context, persistedState?.foldedObjectAttributeOrArrayItems]);
   // State for transformation result
   // const [transformationResult, setTransformationResult] = useState<any>(null);
-  const [transformationError, setTransformationError] = useState<TransformerFailure | null>(null);
+  // const [transformationError, setTransformationError] = useState<TransformerFailure | null>(null);
   
   // Extract error path for highlighting problematic elements
-  const innermostError = useMemo(
-    () => (transformationError ? getInnermostTransformerError(transformationError) : undefined),
-    [transformationError]
-  );
-  const errorPath = innermostError?.transformerPath || [];
   
-  log.info("TransformerEditor Transformation error path:", errorPath);
   // Separate fold state management for each panel (with persistence)
-  const [foldedEntityInstanceItems, setFoldedEntityInstanceItems] = useState<{ [k: string]: boolean }>(
-    persistedState?.foldedEntityInstanceItems || {}
-  );
-  const [foldedTransformationResultItems, setFoldedTransformationResultItems] = useState<{ [k: string]: boolean }>(
-    persistedState?.foldedTransformationResultItems || {}
-  );
+  // const [foldedEntityInstanceItems, setFoldedEntityInstanceItems] = useState<{ [k: string]: boolean }>(
+  //   persistedState?.foldedEntityInstanceItems || {}
+  // );
+  // const [foldedTransformationResultItems, setFoldedTransformationResultItems] = useState<{ [k: string]: boolean }>(
+  //   persistedState?.foldedTransformationResultItems || {}
+  // );
 
   // Copy-to-clipboard state for transformer definition
   const [copiedToClipboard, setCopiedToClipboard] = useState<boolean>(false);
@@ -707,58 +719,19 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
   }, [currentTransformerDefinition]);
 
   const clearTransformerDefinition = useCallback(() => {
-    // Reasonable default: a constant transformer that returns an empty object.
     // Assumption: a 'constant' transformer has shape { transformerType: 'constant', value: ... }
     const defaultConstantTransformer: any = {
       transformerType: 'constant',
-      // interpolation: "build",
       interpolation: 'runtime',
       value: "enter the wanted value here...", // Default to undefined value
     };
 
-    // setCurrentTransformerDefinition(defaultConstantTransformer);
     context.updateTransformerEditorState({ currentTransformerDefinition: defaultConstantTransformer });
     // Clear previous transformation outputs
     // setTransformationResult(null);
-    setTransformationError(null);
+    // setTransformationError(null);
   }, [context]);
   
-  // Debouncing for transformer execution
-  const transformerTimeoutRef = useRef<NodeJS.Timeout>();
-  
-  // // ################################################################################################
-  // // Wrapper functions for folded state setters with persistence
-  // const setFoldedObjectAttributeOrArrayItemsWithPersistence = useCallback(
-  //   // (updates: React.SetStateAction<{ [k: string]: boolean }>) => {
-  //   (updates: React.SetStateAction<FoldedStateTree>) => {
-  //     reportContext.setFoldedObjectAttributeOrArrayItems((prev) => {
-  //       const newState = typeof updates === "function" ? updates(prev) : updates;
-  //       context.updateTransformerEditorState({ foldedObjectAttributeOrArrayItems: newState });
-  //       return newState;
-  //     });
-  //   },
-  //   [context, reportContext]
-  // );
-
-  // // ################################################################################################
-  // const setFoldedEntityInstanceItemsWithPersistence = useCallback((updates: React.SetStateAction<{ [k: string]: boolean }>) => {
-  //   setFoldedEntityInstanceItems(prev => {
-  //     const newState = typeof updates === 'function' ? updates(prev) : updates;
-  //     context.updateTransformerEditorState({ foldedEntityInstanceItems: newState });
-  //     return newState;
-  //   });
-  // }, [context]);
-
-  // // ################################################################################################
-  // const setFoldedTransformationResultItemsWithPersistence = useCallback((updates: React.SetStateAction<{ [k: string]: boolean }>) => {
-  //   setFoldedTransformationResultItems(prev => {
-  //     const newState = typeof updates === 'function' ? updates(prev) : updates;
-  //     context.updateTransformerEditorState({ foldedTransformationResultItems: newState });
-  //     return newState;
-  //   });
-  // }, [context]);
-  
-
   // Memoized context results to avoid recreating on every execution
   const contextResults = useMemo(() => {
     if (showAllInstances) {
@@ -769,7 +742,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
         entityInstance: entityInstances,
         instance: entityInstances,
         // target: entityInstances,
-        [defaultTransformerInput]: selectedEntityInstance,
+        [defaultTransformerInput]: entityInstances,
         applyTo: entityInstances,
         // Also provide individual properties from the first instance for compatibility
         // (in case transformers expect single instance properties)
@@ -859,7 +832,8 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
   //   contextResults,
   // ]);
 
-  const transformationResult: any = useMemo(() => {
+  log.info("TransformerEditor contextResults:", contextResults);
+  const transformationResult: TransformerReturnType<any> = useMemo(() => {
     if (
       !currentTransformerDefinition ||
       (showAllInstances ? entityInstances.length === 0 : !selectedEntityInstance)
@@ -879,24 +853,31 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
         "value" // resolveBuildTransformersTo
       );
 
-      // Check for Domain2ElementFailed pattern
-      if (result && typeof result === "object" && "queryFailure" in result) {
-        setTransformationError(result);
-        return null;
-      } else {
-        setTransformationError(null);
-        return result;
-      }
+      // // Check for Domain2ElementFailed pattern
+      // if (result && typeof result === "object" && "queryFailure" in result) {
+      //   setTransformationError(result);
+      //   return null;
+      // } else {
+      //   setTransformationError(null);
+      //   return result;
+      // }
+      return result;
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error);
       log.error("Error applying transformer:", error);
-      setTransformationError({
+      // setTransformationError({
+      //   queryFailure: "FailedTransformer",
+      //   elementType: "Transformer",
+      //   transformerPath: [],
+      //   failureMessage: errorMessage,
+      // });
+      return ({
         queryFailure: "FailedTransformer",
         elementType: "Transformer",
         transformerPath: [],
         failureMessage: errorMessage,
       });
-      return null;
+      // return null;
     }
   }, [
     currentTransformerDefinition,
@@ -907,6 +888,16 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
     contextResults,
     context.miroirContext.miroirActivityTracker,
   ]);
+
+  const innermostError = useMemo(
+    () =>
+      transformationResult && typeof transformationResult == "object" && "queryFailure" in transformationResult
+        ? getInnermostTransformerError(transformationResult)
+        : undefined,
+    [transformationResult]
+  );
+  const errorPath = innermostError?.transformerPath || [];
+  log.info("TransformerEditor Transformation error path:", errorPath);
 
   // ################################################################################################
   const transformationResultSchema: JzodElement = useMemo(() => {
@@ -920,59 +911,43 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
   // Handle transformer definition changes with debouncing (with persistence)
   const handleTransformerDefinitionChange = useCallback(async (newTransformerDefinition: any) => {
     log.info("handleTransformerDefinitionChange", newTransformerDefinition);
-    // setCurrentTransformerDefinition(newTransformerDefinition);
-    // Persist to context
     context.updateTransformerEditorState({ currentTransformerDefinition: newTransformerDefinition });
-    // applyTransformerToInstance();
-  // }, [applyTransformerToInstance]); // Remove context from dependencies
   }, [context.updateTransformerEditorState]); // Remove context from dependencies
-
-  // Apply transformer whenever definition or instance changes
-  // useEffect(() => {
-  //   applyTransformerToInstance();
-    
-  //   // Cleanup timeout on unmount
-  //   return () => {
-  //     if (transformerTimeoutRef.current) {
-  //       clearTimeout(transformerTimeoutRef.current);
-  //     }
-  //   };
-  // }, [applyTransformerToInstance, selectedEntityInstance]);
-
-  // Memoized transformer entity UUID to avoid recalculation
-  // const transformerEntityUuid = useMemo(() => entityDefinitionTransformerDefinition.entityUuid, []);
 
   return (
     <ThemedContainer>
-      <ThemedHeaderSection style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <ThemedHeaderSection
+        style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}
+      >
         <ThemedTitle>
-          Transformer Editor for Entity "{currentReportTargetEntity?.name || selectedEntityUuid}" of deployment {deploymentUuid}
+          Transformer Editor for Entity "{currentReportTargetEntity?.name || selectedEntityUuid}" of
+          deployment {deploymentUuid}
         </ThemedTitle>
-        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+        <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
           <button
             onClick={copyTransformerDefinitionToClipboard}
-            title={copiedToClipboard ? 'Copied' : 'Copy transformer definition to clipboard'}
+            title={copiedToClipboard ? "Copied" : "Copy transformer definition to clipboard"}
             style={{
-              padding: '6px 10px',
-              fontSize: '13px',
-              borderRadius: '6px',
-              border: '1px solid #ccc',
-              background: copiedToClipboard ? '#e6ffe6' : '#f8f8f8',
-              cursor: 'pointer'
+              padding: "6px 10px",
+              fontSize: "13px",
+              borderRadius: "6px",
+              border: "1px solid #ccc",
+              background: copiedToClipboard ? "#e6ffe6" : "#f8f8f8",
+              cursor: "pointer",
             }}
           >
-            {copiedToClipboard ? 'Copied' : 'Copy'}
+            {copiedToClipboard ? "Copied" : "Copy"}
           </button>
           <button
             onClick={clearTransformerDefinition}
-            title={'Reset transformer to default constant transformer'}
+            title={"Reset transformer to default constant transformer"}
             style={{
-              padding: '6px 10px',
-              fontSize: '13px',
-              borderRadius: '6px',
-              border: '1px solid #ccc',
-              background: '#fff4e6',
-              cursor: 'pointer'
+              padding: "6px 10px",
+              fontSize: "13px",
+              borderRadius: "6px",
+              border: "1px solid #ccc",
+              background: "#fff4e6",
+              cursor: "pointer",
             }}
           >
             Clear
@@ -992,10 +967,10 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
           formLabel={"Transformer Definition Editor"}
           onSubmit={handleTransformerDefinitionChange}
           maxRenderDepth={Infinity} // Always render fully for editor
-          displayError={errorPath && errorPath.length > 0 ? {
-            errorPath: errorPath,
-            errorMessage: `${innermostError?.queryFailure}: ${innermostError?.failureMessage}` // TODO: provide more specific error message
-          } : undefined}
+          // displayError={errorPath && errorPath.length > 0 ? {
+          //   errorPath: errorPath,
+          //   errorMessage: `${innermostError?.queryFailure}: ${innermostError?.failureMessage}` // TODO: provide more specific error message
+          // } : undefined}
         />
 
         {/* Bottom Panes: Side by side */}
@@ -1018,7 +993,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
           <TransformationResultPanel
             transformationResult={transformationResult}
             transformationResultSchema={transformationResultSchema}
-            transformationError={transformationError}
+            // transformationError={transformationError}
             selectedEntityInstance={selectedEntityInstance}
             showAllInstances={showAllInstances}
             entityInstances={entityInstances}

@@ -283,6 +283,9 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
     this.currentEvenStack.push(id);
     this.currentTestSuite = testSuite;
     this.currentTestPath.push({ testSuite });
+    if (!this.miroirEventService) {
+      throw new Error("MiroirActivityTracker.startTestSuite miroirEventService is not set");
+    }
     this.miroirEventService?.pushEventFromActivity(activity);
     return id;
   }

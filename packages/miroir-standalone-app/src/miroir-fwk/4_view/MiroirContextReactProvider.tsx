@@ -219,6 +219,7 @@ export function MiroirContextReactProvider(props: {
   const updateToolsPageState = useMemo(
     () => (updates: Partial<ToolsPageState>) => {
       const newState = { ...toolsPageState, ...updates };
+      // log.info("updateTransformerEditorState updateToolsPageState", { updates, newState });
       setToolsPageState(newState);
       // Persist to sessionStorage per deployment
       sessionStorage.setItem("toolsPageState", JSON.stringify(newState));
@@ -230,8 +231,9 @@ export function MiroirContextReactProvider(props: {
     () => (updates: Partial<ToolsPageState["transformerEditor"]>) => {
       const newState = {
         ...toolsPageState,
-        transformerEditor: { ...toolsPageState.transformerEditor, ...updates },
+        transformerEditor: { ...(toolsPageState.transformerEditor || {}), ...updates },
       };
+      // log.info("updateTransformerEditorState", { updates, newState });
       setToolsPageState(newState);
       // Persist to sessionStorage per deployment
       sessionStorage.setItem("toolsPageState", JSON.stringify(newState));

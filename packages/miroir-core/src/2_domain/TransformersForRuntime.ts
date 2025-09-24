@@ -960,6 +960,13 @@ function transformerForBuild_list_listMapperToList_apply<T extends MiroirModelEn
     contextResults,
     label
   );
+  // log.info(
+  //   "transformerForBuild_list_listMapperToList_apply",
+  //   "step",
+  //   step,
+  //   "extractorTransformer resolvedReference",
+  //   resolvedApplyTo
+  // );
   if (resolvedApplyTo instanceof TransformerFailure) {
     log.error(
       "transformerForBuild_list_listMapperToList_apply extractorTransformer can not apply to failed resolvedReference",
@@ -974,13 +981,6 @@ function transformerForBuild_list_listMapperToList_apply<T extends MiroirModelEn
       innerError: resolvedApplyTo,
     });
   }
-  // log.info(
-  //   "transformerForBuild_list_listMapperToList_apply",
-  //   "step",
-  //   step,
-  //   "extractorTransformer resolvedReference",
-  //   resolvedApplyTo
-  // );
   const resultArray:any[] = [];
 
   if (Array.isArray(resolvedApplyTo)) {

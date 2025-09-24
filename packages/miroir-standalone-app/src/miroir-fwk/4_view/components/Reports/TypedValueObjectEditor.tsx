@@ -17,13 +17,16 @@ import {
   jzodTypeCheck,
   LoggerInterface,
   MetaModel,
+  miroirFundamentalJzodSchema,
   MiroirLoggerFactory,
   ReduxDeploymentsState,
   ResolvedJzodSchemaReturnType,
   SyncBoxedExtractorOrQueryRunnerMap,
   SyncQueryRunner,
   SyncQueryRunnerParams,
-  Uuid
+  Uuid,
+  type JzodSchema,
+  type MiroirModelEnvironment
 } from "miroir-core";
 import {
   getMemoizedReduxDeploymentsStateSelectorMap,
@@ -245,6 +248,18 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
       deploymentEntityStateSelectorMap.extractState(state.presentModelSnapshot.current, () => ({}), defaultMetaModelEnvironment)
   );
 
+  const currentMiroirModelEnvironment: MiroirModelEnvironment = useMemo(() => {
+      return {
+        miroirFundamentalJzodSchema: context.miroirFundamentalJzodSchema?? miroirFundamentalJzodSchema as JzodSchema,
+        miroirMetaModel: currentMiroirModel,
+        currentModel: currentModel,
+      };
+    }, [
+      currentMiroirModel,
+      currentModel,
+      context.miroirFundamentalJzodSchema,
+    ]);
+  
 
   // log.info(
   //   "TypedValueObjectEditor render",
@@ -295,20 +310,13 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
           let result: ResolvedJzodSchemaReturnType | undefined = undefined;
           try {
             result =
-              // useMemo(
-              //   () =>
               context.miroirFundamentalJzodSchema && displaySchema && formik.values && currentModel
                 ? jzodTypeCheck(
                     displaySchema,
                     formik.values,
                     [],
                     [],
-                    // defaultMetaModelEnvironment,
-                    {
-                      miroirFundamentalJzodSchema: context.miroirFundamentalJzodSchema,
-                      currentModel,
-                      miroirMetaModel: currentMiroirModel,
-                    },
+                    currentMiroirModelEnvironment,
                     {}, // relativeReferenceJzodContext
                     formik.values, // currentDefaultValue
                     reduxDeploymentsState,
@@ -316,19 +324,6 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
                     hasZoomPath ? valueObject : formik.values // rootObject - use full object for context, but validate the subset
                   )
                 : undefined;
-            // ,
-            //   [
-            //     displaySchema,
-            //     formik.values,
-            //     context.miroirFundamentalJzodSchema,
-            //     currentModel,
-            //     currentMiroirModel,
-            //     reduxDeploymentsState,
-            //     deploymentUuid,
-            //     hasZoomPath,
-            //     valueObject,
-            //   ]
-            // );
           } catch (e) {
             log.error("TypedValueObjectEditor useMemo error", e, context);
             result = {
@@ -339,7 +334,19 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
             };
           }
           return result;
-        }, [displaySchema, displayValueObject, formik.values, context, hasZoomPath, valueObject]);
+        }, [
+          currentModel,
+          currentMiroirModelEnvironment,
+          context,
+          context.miroirFundamentalJzodSchema,
+          deploymentUuid,
+          displaySchema,
+          displayValueObject,
+          formik.values,
+          hasZoomPath,
+          reduxDeploymentsState,
+          valueObject,
+        ]);
         // log.info(
         //   "TypedValueObjectEditor jzodTypeCheck done for render",
         //   navigationCount,

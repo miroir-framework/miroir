@@ -81,15 +81,6 @@ const handleDiscriminatorChange = (
         `handleDiscriminatorChange could not find discriminator type for discriminator ${discriminator} in ${JSON.stringify(parentKeyMap.resolvedSchema)}`
       );
     }
-    if (
-      (discriminatorType === "literal" && discriminatorTypeLocal !== "literal") ||
-      (discriminatorType === "enum" && discriminatorTypeLocal !== "enum") ||
-      (discriminatorType === "schemaReference" && discriminatorTypeLocal !== "schemaReference")
-    ) {
-      throw new Error(
-        `handleDiscriminatorChange discriminator type mismatch: expected ${discriminatorType} but found ${discriminatorTypeLocal} for discriminator ${discriminator} in ${JSON.stringify(parentKeyMap.resolvedSchema)}`
-      );
-    }
     const newParentValue = {
       ...resolvePathOnObject(formik.values, parentKeyMap.valuePath),
       [rootLessListKeyArray[rootLessListKeyArray.length - 1]]: selectedValue,
