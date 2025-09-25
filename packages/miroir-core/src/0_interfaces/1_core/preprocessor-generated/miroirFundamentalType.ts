@@ -3008,13 +3008,6 @@ export type Transformer = {
     transformerType: "objectTransformer";
     attributeName: string;
 } | RecordOfTransformers;
-export type Transformer_binaryConditionalExpression = {
-    transformerType: "==" | "!=" | "<" | "<=" | ">" | ">=";
-    left: Transformer;
-    right: Transformer;
-    then: Transformer;
-    else?: Transformer | undefined;
-};
 export type JzodUnion_RecursivelyUnfold_ReturnTypeOK = {
     status: "ok";
     result: JzodElement[];
@@ -14739,7 +14732,6 @@ export const transformerForBuildPlusRuntime_dataflowSequence: z.ZodType<Transfor
 export const transformerForBuildOrRuntime: z.ZodType<TransformerForBuildOrRuntime> = z.union([z.lazy(() =>transformerForBuild), z.lazy(() =>transformerForRuntime)]);
 export const recordOfTransformers: z.ZodType<RecordOfTransformers> = z.object({transformerType:z.literal("recordOfTransformers"), definition:z.record(z.string(),z.lazy(() =>transformer))}).strict();
 export const transformer: z.ZodType<Transformer> = z.union([z.object({transformerType:z.literal("objectTransformer"), attributeName:z.string()}).strict(), z.lazy(() =>recordOfTransformers)]);
-export const transformer_binaryConditionalExpression: z.ZodType<Transformer_binaryConditionalExpression> = z.object({transformerType:z.enum(["==","!=","<","<=",">",">="]), left:z.lazy(() =>transformer), right:z.lazy(() =>transformer), then:z.lazy(() =>transformer), else:z.lazy(() =>transformer).optional()}).strict();
 export const jzodUnion_RecursivelyUnfold_ReturnTypeOK: z.ZodType<JzodUnion_RecursivelyUnfold_ReturnTypeOK> = z.object({status:z.literal("ok"), result:z.array(z.lazy(() =>jzodElement)), expandedReferences:z.set(z.string()), discriminator:z.union([z.string(), z.array(z.string())]).optional()}).strict();
 export const jzodUnion_RecursivelyUnfold_ReturnTypeError: z.ZodType<JzodUnion_RecursivelyUnfold_ReturnTypeError> = z.object({status:z.literal("error"), error:z.string(), innerError:z.lazy(() =>jzodUnion_RecursivelyUnfold_ReturnTypeError).optional()}).strict();
 export const jzodUnion_RecursivelyUnfold_ReturnType: z.ZodType<JzodUnion_RecursivelyUnfold_ReturnType> = z.union([z.lazy(() =>jzodUnion_RecursivelyUnfold_ReturnTypeOK), z.lazy(() =>jzodUnion_RecursivelyUnfold_ReturnTypeError)]);

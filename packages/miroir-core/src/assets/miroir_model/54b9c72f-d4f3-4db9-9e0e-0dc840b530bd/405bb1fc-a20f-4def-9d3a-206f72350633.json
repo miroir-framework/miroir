@@ -98,7 +98,7 @@
             "editable": true,
             "description": "If true, this test will be skipped when running tests",
             "initializeTo": {
-              "type": "value",
+              "initializeToType": "value",
               "definition": true
             }
           }
@@ -166,7 +166,7 @@
                     "editable": true,
                     "description": "If true, this test will be skipped when running tests",
                     "initializeTo": {
-                      "type": "value",
+                      "initializeToType": "value",
                       "definition": true
                     }
                   }
@@ -255,7 +255,7 @@
                     "editable": true,
                     "description": "If true, this test suite will be skipped when running tests",
                     "initializeTo": {
-                      "type": "value",
+                      "initializeToType": "value",
                       "definition": true
                     }
                   }

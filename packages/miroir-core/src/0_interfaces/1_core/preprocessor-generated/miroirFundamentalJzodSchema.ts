@@ -2277,55 +2277,6 @@ export const miroirFundamentalJzodSchema = {
           }
         ]
       },
-      "transformer_binaryConditionalExpression": {
-        "type": "object",
-        "definition": {
-          "transformerType": {
-            "type": "enum",
-            "definition": [
-              "==",
-              "!=",
-              "<",
-              "<=",
-              ">",
-              ">="
-            ]
-          },
-          "left": {
-            "type": "schemaReference",
-            "definition": {
-              "relativePath": "transformer",
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
-            },
-            "context": {}
-          },
-          "right": {
-            "type": "schemaReference",
-            "definition": {
-              "relativePath": "transformer",
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
-            },
-            "context": {}
-          },
-          "then": {
-            "type": "schemaReference",
-            "definition": {
-              "relativePath": "transformer",
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
-            },
-            "context": {}
-          },
-          "else": {
-            "type": "schemaReference",
-            "optional": true,
-            "definition": {
-              "relativePath": "transformer",
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
-            },
-            "context": {}
-          }
-        }
-      },
       "jzodUnion_RecursivelyUnfold_ReturnTypeOK": {
         "type": "object",
         "definition": {
@@ -3169,7 +3120,17 @@ export const miroirFundamentalJzodSchema = {
               "<=",
               ">",
               ">="
-            ]
+            ],
+            "tag": {
+              "value": {
+                "defaultLabel": "Operator",
+                "editable": true,
+                "initializeTo": {
+                  "initializeToType": "value",
+                  "value": "=="
+                }
+              }
+            }
           },
           "left": {
             "type": "schemaReference",
@@ -4785,7 +4746,17 @@ export const miroirFundamentalJzodSchema = {
               "<=",
               ">",
               ">="
-            ]
+            ],
+            "tag": {
+              "value": {
+                "defaultLabel": "Operator",
+                "editable": true,
+                "initializeTo": {
+                  "initializeToType": "value",
+                  "value": "=="
+                }
+              }
+            }
           },
           "left": {
             "type": "schemaReference",
@@ -6387,7 +6358,17 @@ export const miroirFundamentalJzodSchema = {
               "<=",
               ">",
               ">="
-            ]
+            ],
+            "tag": {
+              "value": {
+                "defaultLabel": "Operator",
+                "editable": true,
+                "initializeTo": {
+                  "initializeToType": "value",
+                  "value": "=="
+                }
+              }
+            }
           },
           "left": {
             "type": "schemaReference",
@@ -8817,7 +8798,7 @@ export const miroirFundamentalJzodSchema = {
                 "editable": true,
                 "description": "If true, this test will be skipped when running tests",
                 "initializeTo": {
-                  "type": "value",
+                  "initializeToType": "value",
                   "definition": true
                 }
               }
@@ -8907,7 +8888,7 @@ export const miroirFundamentalJzodSchema = {
                 "editable": true,
                 "description": "If true, this test suite will be skipped when running tests",
                 "initializeTo": {
-                  "type": "value",
+                  "initializeToType": "value",
                   "definition": true
                 }
               }
@@ -9027,7 +9008,7 @@ export const miroirFundamentalJzodSchema = {
                 "editable": true,
                 "description": "If true, this test will be skipped when running tests",
                 "initializeTo": {
-                  "type": "value",
+                  "initializeToType": "value",
                   "definition": true
                 }
               }
@@ -9095,7 +9076,7 @@ export const miroirFundamentalJzodSchema = {
                         "editable": true,
                         "description": "If true, this test will be skipped when running tests",
                         "initializeTo": {
-                          "type": "value",
+                          "initializeToType": "value",
                           "definition": true
                         }
                       }
@@ -9184,7 +9165,7 @@ export const miroirFundamentalJzodSchema = {
                         "editable": true,
                         "description": "If true, this test suite will be skipped when running tests",
                         "initializeTo": {
-                          "type": "value",
+                          "initializeToType": "value",
                           "definition": true
                         }
                       }
@@ -38305,7 +38286,17 @@ export const miroirFundamentalJzodSchema = {
                       "<=",
                       ">",
                       ">="
-                    ]
+                    ],
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Operator",
+                        "editable": true,
+                        "initializeTo": {
+                          "initializeToType": "value",
+                          "value": "=="
+                        }
+                      }
+                    }
                   },
                   {
                     "type": "schemaReference",
@@ -38313,7 +38304,18 @@ export const miroirFundamentalJzodSchema = {
                       "relativePath": "transformerForBuildCarryOnObject"
                     }
                   }
-                ]
+                ],
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Operator",
+                    "editable": true,
+                    "initializeTo": {
+                      "initializeToType": "value",
+                      "value": "=="
+                    },
+                    "isTemplate": true
+                  }
+                }
               },
               "left": {
                 "type": "schemaReference",
@@ -41321,7 +41323,17 @@ export const miroirFundamentalJzodSchema = {
                       "<=",
                       ">",
                       ">="
-                    ]
+                    ],
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Operator",
+                        "editable": true,
+                        "initializeTo": {
+                          "initializeToType": "value",
+                          "value": "=="
+                        }
+                      }
+                    }
                   },
                   {
                     "type": "schemaReference",
@@ -41329,7 +41341,18 @@ export const miroirFundamentalJzodSchema = {
                       "relativePath": "transformerForBuildCarryOnObject"
                     }
                   }
-                ]
+                ],
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Operator",
+                    "editable": true,
+                    "initializeTo": {
+                      "initializeToType": "value",
+                      "value": "=="
+                    },
+                    "isTemplate": true
+                  }
+                }
               },
               "left": {
                 "type": "schemaReference",

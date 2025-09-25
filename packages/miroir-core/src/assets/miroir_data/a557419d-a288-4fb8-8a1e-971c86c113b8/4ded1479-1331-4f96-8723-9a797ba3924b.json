@@ -15,7 +15,17 @@
     "transformerParameterSchema": {
       "transformerType": {
         "type": "enum",
-        "definition": ["==", "!=", "<", "<=", ">", ">="]
+        "definition": ["==", "!=", "<", "<=", ">", ">="],
+        "tag": {
+          "value": {
+            "defaultLabel": "Operator",
+            "editable": true,
+            "initializeTo": {
+              "initializeToType": "value",
+              "value": "=="
+            }
+          }
+        }
       },
       "transformerDefinition": {
         "type": "object",

@@ -688,40 +688,6 @@
             }
           }
         ]
-      },
-      "transformer_binaryConditionalExpression": {
-        "type": "object",
-        "definition": {
-          "transformerType": {
-            "type": "enum",
-            "definition": ["==", "!=", "<", "<=", ">", ">="]
-          },
-          "left": {
-            "type": "schemaReference",
-            "definition": {
-              "relativePath": "transformer"
-            }
-          },
-          "right": {
-            "type": "schemaReference",
-            "definition": {
-              "relativePath": "transformer"
-            }
-          },
-          "then": {
-            "type": "schemaReference",
-            "definition": {
-              "relativePath": "transformer"
-            }
-          },
-          "else": {
-            "type": "schemaReference",
-            "optional": true,
-            "definition": {
-              "relativePath": "transformer"
-            }
-          }
-        }
       }
     },
     "definition": {
