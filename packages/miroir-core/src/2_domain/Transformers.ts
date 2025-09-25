@@ -3,6 +3,8 @@ import { transformerInterfaceFromDefinition } from "./Transformer_tools";
 
 
 import transformer_menu_addItem_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/685440be-7f3f-4774-b90d-bafa82d6832b.json';
+// 
+import transformer_conditional_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/4ded1479-1331-4f96-8723-9a797ba3924b.json';
 import transformer_constant_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/2b4c25e0-6b0f-4f7d-aa68-1fdc079aead3.json';
 import transformer_constantArray_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/97d772e5-b8df-4b1f-99ca-307bcdb4f79b.json';
 import transformer_constantBoolean_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/8a2a482e-4897-42c1-90d2-3e4fce9355f4.json';
@@ -44,6 +46,7 @@ export type ResolveBuildTransformersTo = "value" | "constantTransformer";
 
 export const transformer_menu_addItem: TransformerDefinition = transformer_menu_addItem_json as TransformerDefinition;
 // 
+export const transformer_conditional: TransformerDefinition = transformer_conditional_json as TransformerDefinition;
 export const transformer_constant: TransformerDefinition = transformer_constant_json as TransformerDefinition;
 export const transformer_constantArray: TransformerDefinition = transformer_constantArray_json as TransformerDefinition;
 export const transformer_constantBoolean: TransformerDefinition = transformer_constantBoolean_json as TransformerDefinition;
@@ -86,6 +89,7 @@ export const mlsTransformers: Record<string,TransformerDefinition> = {
 };
 
 export const miroirCoreTransformers: Record<string,TransformerDefinition> = {
+  transformer_conditional,
   transformer_constant,
   transformer_constantArray,
   transformer_constantBoolean,

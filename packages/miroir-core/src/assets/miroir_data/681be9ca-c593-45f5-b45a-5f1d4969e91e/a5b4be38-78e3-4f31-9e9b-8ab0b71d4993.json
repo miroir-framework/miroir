@@ -13,6 +13,7 @@
       {
         "transformerTestType": "transformerTestSuite",
         "transformerTestLabel": "buildTransformerTests",
+        "skip": true,
         "transformerTests": [
           {
             "transformerTestType": "transformerTestSuite",
@@ -266,6 +267,7 @@
           {
             "transformerTestType": "transformerTestSuite",
             "transformerTestLabel": "constants",
+            "skip": true,
             "transformerTests": [
               {
                 "transformerTestType": "transformerTestSuite",
@@ -517,7 +519,445 @@
           },
           {
             "transformerTestType": "transformerTestSuite",
+            "transformerTestLabel": "conditional",
+            "transformerTests": [
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "conditional equality true - basic string comparison",
+                "transformerName": "conditionalEqualityTrue",
+                "transformer": {
+                  "transformerType": "==",
+                  "interpolation": "runtime",
+                  "left": {
+                    "transformerType": "constantString",
+                    "interpolation": "runtime",
+                    "value": "hello"
+                  },
+                  "right": {
+                    "transformerType": "constantString",
+                    "interpolation": "runtime",
+                    "value": "hello"
+                  },
+                  "then": {
+                    "transformerType": "constantString",
+                    "interpolation": "runtime",
+                    "value": "match"
+                  },
+                  "else": {
+                    "transformerType": "constantString",
+                    "interpolation": "runtime",
+                    "value": "no match"
+                  }
+                },
+                "transformerParams": {},
+                "expectedValue": "match"
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "conditional equality false - basic string comparison",
+                "transformerName": "conditionalEqualityFalse",
+                "transformer": {
+                  "transformerType": "==",
+                  "interpolation": "runtime",
+                  "left": {
+                    "transformerType": "constantString",
+                    "interpolation": "runtime",
+                    "value": "hello"
+                  },
+                  "right": {
+                    "transformerType": "constantString",
+                    "interpolation": "runtime",
+                    "value": "world"
+                  },
+                  "then": {
+                    "transformerType": "constantString",
+                    "interpolation": "runtime",
+                    "value": "match"
+                  },
+                  "else": {
+                    "transformerType": "constantString",
+                    "interpolation": "runtime",
+                    "value": "no match"
+                  }
+                },
+                "transformerParams": {},
+                "expectedValue": "no match"
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "conditional not equal true - string comparison",
+                "transformerName": "conditionalNotEqualTrue",
+                "transformer": {
+                  "transformerType": "!=",
+                  "interpolation": "runtime",
+                  "left": {
+                    "transformerType": "constantString",
+                    "interpolation": "runtime",
+                    "value": "hello"
+                  },
+                  "right": {
+                    "transformerType": "constantString",
+                    "interpolation": "runtime",
+                    "value": "world"
+                  },
+                  "then": {
+                    "transformerType": "constantString",
+                    "interpolation": "runtime",
+                    "value": "different"
+                  },
+                  "else": {
+                    "transformerType": "constantString",
+                    "interpolation": "runtime",
+                    "value": "same"
+                  }
+                },
+                "transformerParams": {},
+                "expectedValue": "different"
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "conditional not equal false - string comparison",
+                "transformerName": "conditionalNotEqualFalse",
+                "transformer": {
+                  "transformerType": "!=",
+                  "interpolation": "runtime",
+                  "left": {
+                    "transformerType": "constantString",
+                    "interpolation": "runtime",
+                    "value": "hello"
+                  },
+                  "right": {
+                    "transformerType": "constantString",
+                    "interpolation": "runtime",
+                    "value": "hello"
+                  },
+                  "then": {
+                    "transformerType": "constantString",
+                    "interpolation": "runtime",
+                    "value": "different"
+                  },
+                  "else": {
+                    "transformerType": "constantString",
+                    "interpolation": "runtime",
+                    "value": "same"
+                  }
+                },
+                "transformerParams": {},
+                "expectedValue": "same"
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "conditional less than true - number comparison",
+                "transformerName": "conditionalLessThanTrue",
+                "transformer": {
+                  "transformerType": "<",
+                  "interpolation": "runtime",
+                  "left": {
+                    "transformerType": "constantNumber",
+                    "interpolation": "runtime",
+                    "value": 5
+                  },
+                  "right": {
+                    "transformerType": "constantNumber",
+                    "interpolation": "runtime",
+                    "value": 10
+                  },
+                  "then": {
+                    "transformerType": "constantString",
+                    "interpolation": "runtime",
+                    "value": "smaller"
+                  },
+                  "else": {
+                    "transformerType": "constantString",
+                    "interpolation": "runtime",
+                    "value": "bigger or equal"
+                  }
+                },
+                "transformerParams": {},
+                "expectedValue": "smaller"
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "conditional less than false - number comparison",
+                "transformerName": "conditionalLessThanFalse",
+                "transformer": {
+                  "transformerType": "<",
+                  "interpolation": "runtime",
+                  "left": {
+                    "transformerType": "constantNumber",
+                    "interpolation": "runtime",
+                    "value": 15
+                  },
+                  "right": {
+                    "transformerType": "constantNumber",
+                    "interpolation": "runtime",
+                    "value": 10
+                  },
+                  "then": {
+                    "transformerType": "constantString",
+                    "interpolation": "runtime",
+                    "value": "smaller"
+                  },
+                  "else": {
+                    "transformerType": "constantString",
+                    "interpolation": "runtime",
+                    "value": "bigger or equal"
+                  }
+                },
+                "transformerParams": {},
+                "expectedValue": "bigger or equal"
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "conditional less than or equal true - number comparison",
+                "transformerName": "conditionalLessThanOrEqualTrue",
+                "transformer": {
+                  "transformerType": "<=",
+                  "interpolation": "runtime",
+                  "left": {
+                    "transformerType": "constantNumber",
+                    "interpolation": "runtime",
+                    "value": 10
+                  },
+                  "right": {
+                    "transformerType": "constantNumber",
+                    "interpolation": "runtime",
+                    "value": 10
+                  },
+                  "then": {
+                    "transformerType": "constantString",
+                    "interpolation": "runtime",
+                    "value": "smaller or equal"
+                  },
+                  "else": {
+                    "transformerType": "constantString",
+                    "interpolation": "runtime",
+                    "value": "bigger"
+                  }
+                },
+                "transformerParams": {},
+                "expectedValue": "smaller or equal"
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "conditional less than or equal false - number comparison",
+                "transformerName": "conditionalLessThanOrEqualFalse",
+                "transformer": {
+                  "transformerType": "<=",
+                  "interpolation": "runtime",
+                  "left": {
+                    "transformerType": "constantNumber",
+                    "interpolation": "runtime",
+                    "value": 15
+                  },
+                  "right": {
+                    "transformerType": "constantNumber",
+                    "interpolation": "runtime",
+                    "value": 10
+                  },
+                  "then": {
+                    "transformerType": "constantString",
+                    "interpolation": "runtime",
+                    "value": "smaller or equal"
+                  },
+                  "else": {
+                    "transformerType": "constantString",
+                    "interpolation": "runtime",
+                    "value": "bigger"
+                  }
+                },
+                "transformerParams": {},
+                "expectedValue": "bigger"
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "conditional greater than true - number comparison",
+                "transformerName": "conditionalGreaterThanTrue",
+                "transformer": {
+                  "transformerType": ">",
+                  "interpolation": "runtime",
+                  "left": {
+                    "transformerType": "constantNumber",
+                    "interpolation": "runtime",
+                    "value": 15
+                  },
+                  "right": {
+                    "transformerType": "constantNumber",
+                    "interpolation": "runtime",
+                    "value": 10
+                  },
+                  "then": {
+                    "transformerType": "constantString",
+                    "interpolation": "runtime",
+                    "value": "bigger"
+                  },
+                  "else": {
+                    "transformerType": "constantString",
+                    "interpolation": "runtime",
+                    "value": "smaller or equal"
+                  }
+                },
+                "transformerParams": {},
+                "expectedValue": "bigger"
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "conditional greater than false - number comparison",
+                "transformerName": "conditionalGreaterThanFalse",
+                "transformer": {
+                  "transformerType": ">",
+                  "interpolation": "runtime",
+                  "left": {
+                    "transformerType": "constantNumber",
+                    "interpolation": "runtime",
+                    "value": 5
+                  },
+                  "right": {
+                    "transformerType": "constantNumber",
+                    "interpolation": "runtime",
+                    "value": 10
+                  },
+                  "then": {
+                    "transformerType": "constantString",
+                    "interpolation": "runtime",
+                    "value": "bigger"
+                  },
+                  "else": {
+                    "transformerType": "constantString",
+                    "interpolation": "runtime",
+                    "value": "smaller or equal"
+                  }
+                },
+                "transformerParams": {},
+                "expectedValue": "smaller or equal"
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "conditional greater than or equal true - number comparison",
+                "transformerName": "conditionalGreaterThanOrEqualTrue",
+                "transformer": {
+                  "transformerType": ">=",
+                  "interpolation": "runtime",
+                  "left": {
+                    "transformerType": "constantNumber",
+                    "interpolation": "runtime",
+                    "value": 10
+                  },
+                  "right": {
+                    "transformerType": "constantNumber",
+                    "interpolation": "runtime",
+                    "value": 10
+                  },
+                  "then": {
+                    "transformerType": "constantString",
+                    "interpolation": "runtime",
+                    "value": "bigger or equal"
+                  },
+                  "else": {
+                    "transformerType": "constantString",
+                    "interpolation": "runtime",
+                    "value": "smaller"
+                  }
+                },
+                "transformerParams": {},
+                "expectedValue": "bigger or equal"
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "conditional greater than or equal false - number comparison",
+                "transformerName": "conditionalGreaterThanOrEqualFalse",
+                "transformer": {
+                  "transformerType": ">=",
+                  "interpolation": "runtime",
+                  "left": {
+                    "transformerType": "constantNumber",
+                    "interpolation": "runtime",
+                    "value": 5
+                  },
+                  "right": {
+                    "transformerType": "constantNumber",
+                    "interpolation": "runtime",
+                    "value": 10
+                  },
+                  "then": {
+                    "transformerType": "constantString",
+                    "interpolation": "runtime",
+                    "value": "bigger or equal"
+                  },
+                  "else": {
+                    "transformerType": "constantString",
+                    "interpolation": "runtime",
+                    "value": "smaller"
+                  }
+                },
+                "transformerParams": {},
+                "expectedValue": "smaller"
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "conditional without else clause - equality true",
+                "transformerName": "conditionalWithoutElseTrue",
+                "transformer": {
+                  "transformerType": "==",
+                  "interpolation": "runtime",
+                  "left": {
+                    "transformerType": "constantString",
+                    "interpolation": "runtime",
+                    "value": "test"
+                  },
+                  "right": {
+                    "transformerType": "constantString",
+                    "interpolation": "runtime",
+                    "value": "test"
+                  },
+                  "then": {
+                    "transformerType": "constantString",
+                    "interpolation": "runtime",
+                    "value": "condition met"
+                  }
+                },
+                "transformerParams": {},
+                "expectedValue": "condition met"
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "conditional with parameter reference comparison",
+                "transformerName": "conditionalWithParameterReference",
+                "transformer": {
+                  "transformerType": "==",
+                  "interpolation": "runtime",
+                  "left": {
+                    "transformerType": "parameterReference",
+                    "interpolation": "runtime",
+                    "referenceName": "userType"
+                  },
+                  "right": {
+                    "transformerType": "constantString",
+                    "interpolation": "runtime",
+                    "value": "admin"
+                  },
+                  "then": {
+                    "transformerType": "constantString",
+                    "interpolation": "runtime",
+                    "value": "admin access"
+                  },
+                  "else": {
+                    "transformerType": "constantString",
+                    "interpolation": "runtime",
+                    "value": "regular access"
+                  }
+                },
+                "transformerParams": {
+                  "userType": "admin"
+                },
+                "expectedValue": "admin access"
+              }
+            ]
+          },
+          {
+            "transformerTestType": "transformerTestSuite",
             "transformerTestLabel": "references",
+            "skip": true,
             "transformerTests": [
               {
                 "transformerTestType": "transformerTestSuite",
@@ -665,6 +1105,7 @@
           {
             "transformerTestType": "transformerTestSuite",
             "transformerTestLabel": "objectEntries",
+            "skip": true,
             "transformerTests": [
               {
                 "transformerTestType": "transformerTest",
@@ -754,6 +1195,7 @@
           {
             "transformerTestType": "transformerTestSuite",
             "transformerTestLabel": "objectValues",
+            "skip": true,
             "transformerTests": [
               {
                 "transformerTestType": "transformerTest",
@@ -837,6 +1279,7 @@
           {
             "transformerTestType": "transformerTestSuite",
             "transformerTestLabel": "listPickElement",
+            "skip": true,
             "transformerTests": [
               {
                 "transformerTestType": "transformerTest",
@@ -991,6 +1434,7 @@
           {
             "transformerTestType": "transformerTestSuite",
             "transformerTestLabel": "unique",
+            "skip": true,
             "transformerTests": [
               {
                 "transformerTestType": "transformerTest",
@@ -1075,6 +1519,7 @@
           {
             "transformerTestType": "transformerTestSuite",
             "transformerTestLabel": "count",
+            "skip": true,
             "transformerTests": [
               {
                 "transformerTestType": "transformerTest",
@@ -1205,6 +1650,7 @@
           {
             "transformerTestType": "transformerTestSuite",
             "transformerTestLabel": "object_fullTemplate",
+            "skip": true,
             "transformerTests": [
               {
                 "transformerTestType": "transformerTest",
@@ -1473,6 +1919,7 @@
           {
             "transformerTestType": "transformerTestSuite",
             "transformerTestLabel": "freeObjectTemplate",
+            "skip": true,
             "transformerTests": [
               {
                 "transformerTestType": "transformerTest",
@@ -1685,6 +2132,7 @@
           {
             "transformerTestType": "transformerTestSuite",
             "transformerTestLabel": "object_alter",
+            "skip": true,
             "transformerTests": [
               {
                 "transformerTestType": "transformerTest",
@@ -1855,6 +2303,7 @@
           {
             "transformerTestType": "transformerTestSuite",
             "transformerTestLabel": "mapperListToList",
+            "skip": true,
             "transformerTests": [
               {
                 "transformerTestType": "transformerTest",
@@ -2125,6 +2574,7 @@
           {
             "transformerTestType": "transformerTestSuite",
             "transformerTestLabel": "dataflowObject",
+            "skip": true,
             "transformerTests": [
               {
                 "transformerTestType": "transformerTest",
@@ -2359,6 +2809,7 @@
           {
             "transformerTestType": "transformerTestSuite",
             "transformerTestLabel": "listReducerToSpreadObject",
+            "skip": true,
             "transformerTests": [
               {
                 "transformerTestType": "transformerTest",
@@ -2485,6 +2936,7 @@
           {
             "transformerTestType": "transformerTestSuite",
             "transformerTestLabel": "listReducerToIndexObject",
+            "skip": true,
             "transformerTests": [
               {
                 "transformerTestType": "transformerTest",

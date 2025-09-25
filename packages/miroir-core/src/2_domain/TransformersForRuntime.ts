@@ -57,6 +57,7 @@ import {
   TransformerForRuntime_objectValues,
   TransformerForRuntime_unique,
   type TransformerForBuild_InnerReference,
+  type TransformerForRuntime_conditional,
   type TransformerForRuntime_InnerReference
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { defaultTransformerInput, type ITransformerHandler, type MiroirModelEnvironment } from '../0_interfaces/1_core/Transformer';
@@ -81,6 +82,7 @@ import { getEntityInstancesUuidIndexNonHook } from './ReduxDeploymentsStateQuery
 import { transformer_spreadSheetToJzodSchema } from "./Transformer_Spreadsheet";
 import {
   mlsTransformers,
+  transformer_conditional,
   transformer_constant,
   transformer_constantArray,
   transformer_constantAsExtractor,
@@ -635,6 +637,7 @@ const inMemoryTransformerImplementations: Record<string, ITransformerHandler<any
   handleCountTransformer,
   handleListPickElementTransformer,
   handleUniqueTransformer,
+  handleTransformer_conditional,
   handleTransformer_constant,
   handleTransformer_constantArray,
   handleTransformer_constantAsExtractor,
@@ -668,6 +671,9 @@ export const applicationTransformerDefinitions: Record<string, TransformerDefini
   //
   spreadSheetToJzodSchema: transformer_spreadSheetToJzodSchema,
   count: transformer_count,
+  ...Object.fromEntries((transformer_conditional.transformerInterface.transformerParameterSchema.transformerType.definition as string[]).map(
+    (t: string) => ([t, transformer_conditional])
+  )),
   constant: transformer_constant,
   constantBoolean: transformer_constantBoolean,
   constantBigint: transformer_constantBigint,
@@ -1819,7 +1825,7 @@ export function transformer_dynamicObjectAccess_apply<T extends MiroirModelEnvir
         }
       }
     }) as (acc: any, current: any) => any,
-    undefined
+    undefined // !?! this can not work, it must be the object to be accessed
   );
   return result;
 
@@ -2311,6 +2317,218 @@ export function handleTransformer_dataflowObject<T extends MiroirModelEnvironmen
 }
 
 // ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+export function handleTransformer_conditional<T extends MiroirModelEnvironment>(
+  step: Step,
+  transformerPath: string[],
+  label: string | undefined,
+  transformer: TransformerForRuntime_conditional,
+  resolveBuildTransformersTo: ResolveBuildTransformersTo,
+  transformerParams: T,
+  contextResults?: Record<string, any>
+): TransformerReturnType<any> {
+  
+  // const results = transformer.conditions.map(condition => {
+  const leftValue = defaultTransformers.transformer_extended_apply(
+      step,
+      [...transformerPath, "left"],
+      transformer.label? transformer.label + "_left" : "left",
+      transformer.left,
+      resolveBuildTransformersTo,
+      transformerParams,
+      contextResults,
+    );
+  const rightValue = defaultTransformers.transformer_extended_apply(
+      step,
+      [...transformerPath, "right"],
+      transformer.label? transformer.label + "_right" : "right",
+      transformer.right,
+      resolveBuildTransformersTo,
+      transformerParams,
+      contextResults,
+    );
+  switch (transformer.transformerType) {
+    case "==": {
+      if (leftValue == rightValue) {
+        return defaultTransformers.transformer_extended_apply(
+          step,
+          [...transformerPath, "then"],
+          transformer.label ? transformer.label + "_then" : "then",
+          transformer.then,
+          resolveBuildTransformersTo,
+          transformerParams,
+          contextResults
+        );
+      } else {
+        return defaultTransformers.transformer_extended_apply(
+          step,
+          [...transformerPath, "else"],
+          transformer.label ? transformer.label + "_else" : "else",
+          transformer.else,
+          resolveBuildTransformersTo,
+          transformerParams,
+          contextResults
+        );
+      }
+      break;
+    }
+    case '!=': {
+      if (leftValue != rightValue) {
+        return defaultTransformers.transformer_extended_apply(
+          step,
+          [...transformerPath, "then"],
+          transformer.label ? transformer.label + "_then" : "then",
+          transformer.then,
+          resolveBuildTransformersTo,
+          transformerParams,
+          contextResults
+        );
+      } else {
+        return defaultTransformers.transformer_extended_apply(
+          step,
+          [...transformerPath, "else"],
+          transformer.label ? transformer.label + "_else" : "else",
+          transformer.else,
+          resolveBuildTransformersTo,
+          transformerParams,
+          contextResults
+        );
+      }
+    }
+    case '<': {
+      if (leftValue < rightValue) {
+        return defaultTransformers.transformer_extended_apply(
+          step,
+          [...transformerPath, "then"],
+          transformer.label ? transformer.label + "_then" : "then",
+          transformer.then,
+          resolveBuildTransformersTo,
+          transformerParams,
+          contextResults
+        );
+      } else {
+        return defaultTransformers.transformer_extended_apply(
+          step,
+          [...transformerPath, "else"],
+          transformer.label ? transformer.label + "_else" : "else",
+          transformer.else,
+          resolveBuildTransformersTo,
+          transformerParams,
+          contextResults
+        );
+      }
+    }
+    case '<=': {
+      if (leftValue <= rightValue) {
+        return defaultTransformers.transformer_extended_apply(
+          step,
+          [...transformerPath, "then"],
+          transformer.label ? transformer.label + "_then" : "then",
+          transformer.then,
+          resolveBuildTransformersTo,
+          transformerParams,
+          contextResults
+        );
+      } else {
+        return defaultTransformers.transformer_extended_apply(
+          step,
+          [...transformerPath, "else"],
+          transformer.label ? transformer.label + "_else" : "else",
+          transformer.else,
+          resolveBuildTransformersTo,
+          transformerParams,
+          contextResults
+        );
+      }
+    }
+    case '>': {
+      if (leftValue > rightValue) {
+        return defaultTransformers.transformer_extended_apply(
+          step,
+          [...transformerPath, "then"],
+          transformer.label ? transformer.label + "_then" : "then",
+          transformer.then,
+          resolveBuildTransformersTo,
+          transformerParams,
+          contextResults
+        );
+      } else {
+        return defaultTransformers.transformer_extended_apply(
+          step,
+          [...transformerPath, "else"],
+          transformer.label ? transformer.label + "_else" : "else",
+          transformer.else,
+          resolveBuildTransformersTo,
+          transformerParams,
+          contextResults
+        );
+      }
+    }
+    case '>=': {
+      if (leftValue >= rightValue) {
+        return defaultTransformers.transformer_extended_apply(
+          step,
+          [...transformerPath, "then"],
+          transformer.label ? transformer.label + "_then" : "then",
+          transformer.then,
+          resolveBuildTransformersTo,
+          transformerParams,
+          contextResults
+        );
+      } else {
+        return defaultTransformers.transformer_extended_apply(
+          step,
+          [...transformerPath, "else"],
+          transformer.label ? transformer.label + "_else" : "else",
+          transformer.else,
+          resolveBuildTransformersTo,
+          transformerParams,
+          contextResults
+        );
+      }
+    }
+  }
+  // const leftValue = resolveOperand(transformer.left, transformerParams, contextResults);
+  // const rightValue = resolveOperand(transformer.right, transformerParams, contextResults);
+    
+    // return evaluateCondition(leftValue, condition.operator, rightValue);
+  // });
+  
+  // const finalResult = transformer.logic === "and" 
+  //   ? results.every(r => r)
+  //   : results.some(r => r);
+    
+  // return { transformerReturnType: "success", returnedValue: finalResult };
+}
+
+// function resolveOperand(
+//   operand: any,
+//   transformerParams: any,
+//   contextResults?: Record<string, any>
+// ): any {
+//   switch (operand.type) {
+//     case "contextReference":
+//       return contextResults ? safeResolvePathOnObject(contextResults, operand.path || []) : undefined;
+//     case "parameterReference":
+//       return safeResolvePathOnObject(transformerParams, operand.path || []);
+//     case "constant":
+//       return operand.value;
+//     default:
+//       return undefined;
+//   }
+// }
+
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
 export function handleTransformer_constantArray(
   step: Step,
   transformerPath: string[],
@@ -2749,7 +2967,7 @@ export function transformer_extended_apply<T extends MiroirModelEnvironment>(
             );
             preResult = new TransformerFailure({
               queryFailure: "TransformerNotFound",
-      transformerPath, //: [...transformerPath, transformer.transformerType],
+              transformerPath, //: [...transformerPath, transformer.transformerType],
               failureOrigin: ["transformer_extended_apply"],
               queryContext: "transformer " + (transformer as any).transformerType + " not found",
               queryParameters: JSON.stringify(transformer),

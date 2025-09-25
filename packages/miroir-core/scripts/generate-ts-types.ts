@@ -135,6 +135,7 @@ export type TransformerForBuild =
       }
     )
   | TransformerForBuild_menu_addItem
+  | TransformerForBuild_conditional
   | TransformerForBuild_constant
   | TransformerForBuild_constantArray
   | TransformerForBuild_constantBoolean
@@ -192,6 +193,7 @@ export const transformerForBuild: z.ZodType<TransformerForBuild> = z.lazy(() => 
     z.array(transformerForBuild),
     recordWithoutTransformerType,
     transformerForBuild_menu_addItem,
+    transformerForBuild_conditional,
     transformerForBuild_constant,
     transformerForBuild_constantArray,
     transformerForBuild_constantBoolean,
@@ -312,6 +314,7 @@ export type TransformerForBuildPlusRuntime =
     )
   // | TransformerForBuild
   | TransformerForBuildPlusRuntime_menu_addItem
+  | TransformerForBuildPlusRuntime_conditional
   | TransformerForBuildPlusRuntime_constant
   | TransformerForBuildPlusRuntime_constantArray
   | TransformerForBuildPlusRuntime_constantBoolean
@@ -371,6 +374,7 @@ export const transformerForBuildPlusRuntime: z.ZodType<TransformerForBuildPlusRu
     recordWithoutTransformerType,
     // transformerForBuild,
     transformerForBuildPlusRuntime_menu_addItem,
+    transformerForBuildPlusRuntime_conditional,
     transformerForBuildPlusRuntime_constant,
     transformerForBuildPlusRuntime_constantArray,
     transformerForBuildPlusRuntime_constantBoolean,

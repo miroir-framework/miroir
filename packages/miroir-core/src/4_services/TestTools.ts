@@ -115,6 +115,7 @@ export async function runTransformerTestInMemory(
   // localVitest: any,
   localVitest: typeof vitest,
   testNamePath: string[],
+  filter: { testList?: TestSuiteListFilter, match?: RegExp } | undefined,
   transformerTest: TransformerTest,
   modelEnvironment: MiroirModelEnvironment,
   miroirActivityTracker: MiroirActivityTrackerInterface, // Optional unified tracker for test execution tracking
@@ -154,21 +155,39 @@ export async function runTransformerTestInMemory(
   // as there is only 1 assertion per test, we use the test name as the assertion name
   miroirActivityTracker.setTestAssertion(transformerTest.transformerTestLabel);
 
+  if (
+    filter?.testList &&
+    (typeof filter.testList != "object" || (!Array.isArray(filter.testList) && Object.keys(filter.testList).length > 0))
+  ) {
+    throw new Error(
+      "runTransformerTestInMemory called with non-array filter.testList, this is not supported: " +
+        JSON.stringify(filter)
+    );
+  }
   // Check if test should be skipped
-  if (transformerTest.skip) {
+  if (
+    transformerTest.skip ||
+    (filter?.testList &&
+      !(filter.testList as any).includes(
+        transformerTest.transformerTestLabel ?? transformerTest.transformerName
+      ))
+  ) {
     log.info(`⏭️  Skipping test: ${assertionName}`);
-    
+
     // Use the explicitly passed testAssertionPath or fall back to current tracker path
-    const currentTestAssertionPath = testAssertionPath || miroirActivityTracker.getCurrentTestAssertionPath();
+    const currentTestAssertionPath =
+      testAssertionPath || miroirActivityTracker.getCurrentTestAssertionPath();
     if (!currentTestAssertionPath) {
-      throw new Error("runTransformerTestInMemory called without testAssertionPath and no currentTestAssertionPath available, cannot set test assertion result");
+      throw new Error(
+        "runTransformerTestInMemory called without testAssertionPath and no currentTestAssertionPath available, cannot set test assertion result"
+      );
     }
 
     const testAssertionResult: TestAssertionResult = {
       assertionName,
       assertionResult: "skipped",
     };
-    
+
     miroirActivityTracker.setTestAssertionResult(currentTestAssertionPath, testAssertionResult);
 
     // End tracking individual test execution if tracker was used
@@ -176,7 +195,9 @@ export async function runTransformerTestInMemory(
       try {
         miroirActivityTracker.endActivity(testTrackingId, undefined);
         miroirActivityTracker.endActivity(testAssertionTrackingId, undefined);
-        log.info(`🧪 Ended tracking test ${assertionName} with ID: ${testTrackingId}, result: skipped`);
+        log.info(
+          `🧪 Ended tracking test ${assertionName} with ID: ${testTrackingId}, result: skipped`
+        );
       } catch (error) {
         console.warn(`Failed to end tracking test ${testName}:`, error);
         console.warn(`Failed to end tracking test assertion ${assertionName}:`, error);
@@ -376,6 +397,7 @@ export async function runTransformerTestSuite(
   runTransformerTest: (
     vitest: any,
     testSuitePath: string[],
+    filter: { testList?: TestSuiteListFilter, match?: RegExp } | undefined,
     transformerTest: TransformerTest,
     modelEnvironment: MiroirModelEnvironment,
     runActionTracker?: any,
@@ -394,23 +416,31 @@ export async function runTransformerTestSuite(
   const shouldSkipSuite = transformerTestSuite.skip || parentSkip;
     
   log.info(
-    `@@@@@@@@@@@@@@@@@@@@ runTransformerTestSuite running transformer test suite called "${testSuiteName}" transformerTestType=${transformerTestSuite.transformerTestType} skip=${shouldSkipSuite} filter=${JSON.stringify(filter)}`
+    '@@@@@@@@@@@@@@@@@@@@ runTransformerTestSuite running transformer test suite called ',
+    testSuiteName,
+    'transformerTestType=',
+    transformerTestSuite.transformerTestType,
+    'skip=',
+    shouldSkipSuite,
+    'filter=',
+    JSON.stringify(filter)
   );
   if (!localVitest.expect) {
     throw new Error(
       "runTransformerTestSuite called without vitest.expect, this is not a test environment"
     );
-  } else {
-    log.info(
-      `runTransformerTestSuite called for "${testSuiteName}" path "${testSuitePathAsString}" with transformerTestType=${
-        transformerTestSuite.transformerTestType
-      }, filter=${JSON.stringify(filter)}, transformerTests: ${
-        Object.values((transformerTestSuite as any)?.transformerTests).length
-      }`
-      // "vitest",
-      // localVitest
-    );
   }
+  // else {
+  //   log.info(
+  //     `runTransformerTestSuite called for "${testSuiteName}" path "${testSuitePathAsString}" with transformerTestType=${
+  //       transformerTestSuite.transformerTestType
+  //     }, filter=${JSON.stringify(filter)}, transformerTests: ${
+  //       Object.values((transformerTestSuite as any)?.transformerTests).length
+  //     }`
+  //     // "vitest",
+  //     // localVitest
+  //   );
+  // }
   
   miroirActivityTracker.setTestSuite(testSuitePathAsString);
   
@@ -463,13 +493,13 @@ export async function runTransformerTestSuite(
     //   )} tests`
     // );
     // replace the describe.each(...) call body with this:
-    const innerFilter: TestSuiteListFilter | undefined = filter?.testList
+    const innerFilter: { testList: TestSuiteListFilter | undefined} = filter?.testList
       ? typeof filter.testList === "object" &&
         !Array.isArray(filter.testList) &&
         Object.hasOwn(filter.testList, transformerTestSuite.transformerTestLabel)
-        ? filter.testList[transformerTestSuite.transformerTestLabel]
-        : { testList: {} }
-      : undefined;
+        ? {testList: filter.testList[transformerTestSuite.transformerTestLabel]}
+        : { testList: [] }
+      : {testList: undefined};
 
     const allTests = transformerTestSuite.transformerTests
     // const allTests = Array.isArray(transformerTestSuite.transformerTests)
@@ -477,26 +507,28 @@ export async function runTransformerTestSuite(
     //   : Object.values(transformerTestSuite.transformerTests);
     const selectedTests = allTests.filter(
       (e) =>
-        !innerFilter ||
-        (Array.isArray(innerFilter) && innerFilter.includes(e.transformerTestLabel)) ||
-        (!Array.isArray(innerFilter) &&
-          typeof innerFilter === "object" &&
-          Object.hasOwn(innerFilter, e.transformerTestLabel))
+        !filter?.testList ||
+        (Array.isArray(filter?.testList) && filter?.testList.includes(e.transformerTestLabel)) ||
+        (!Array.isArray(filter?.testList) &&
+          typeof filter?.testList === "object" &&
+          Object.hasOwn(filter?.testList, e.transformerTestLabel))
     );
     log.info(
       "runTransformerTestSuite for suite",
       testSuitePathAsString,
       "with",
-      selectedTests.length,
-      "selected tests out of",
-      Object.values(transformerTestSuite.transformerTests).length,
-      "total tests,",
+      // selectedTests.length,
+      // "selected tests out of",
+      // Object.values(transformerTestSuite.transformerTests).length,
+      // "total tests,",
       "filter",
       JSON.stringify(filter),
       "innerFilter=",
       JSON.stringify(innerFilter),
-      "selectedTests=",
-      selectedTests
+      "allTests=",
+      allTests.map(t => t.transformerTestLabel),
+      // "selectedTests=",
+      // selectedTests
     );
     // localVitest.describe.each(selectedTests)(
     // Sequentially run each selected test/suite instead of describe.each (which is parallel)
@@ -505,7 +537,8 @@ export async function runTransformerTestSuite(
       if (transformerTestParam.transformerTestType === "transformerTest") {
         // Inherit skip flag from parent suite to child test
         const effectiveTransformerTest: TransformerTest =
-          { ...transformerTestParam, skip: !selectedTests.includes(transformerTestParam) };
+          // { ...transformerTestParam, skip: !selectedTests.includes(transformerTestParam) };
+          { ...transformerTestParam, skip: !allTests.includes(transformerTestParam) };
           
         log.info(
           "runTransformerTestSuite calling further test",
@@ -529,6 +562,7 @@ export async function runTransformerTestSuite(
             await runTransformerTest(
               localVitest,
               [...testSuitePath, transformerTestParam.transformerTestLabel],
+              innerFilter,
               effectiveTransformerTest,
               modelEnvironment,
               miroirActivityTracker,
@@ -543,7 +577,8 @@ export async function runTransformerTestSuite(
           localVitest,
           [...testSuitePath, transformerTestParam.transformerTestLabel],
           transformerTestParam,
-          { testList: innerFilter }, // filter
+          // { testList: innerFilter }, // filter
+          innerFilter,
           runTransformerTest,
           modelEnvironment,
           miroirActivityTracker,

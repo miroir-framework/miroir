@@ -251,3 +251,133 @@ export function cleanupObject(obj: any): any {
   }
   return result;
 }
+
+// ################################################################################################
+export function alterObjectAtPath(
+  object: any,
+  path: (string | number)[],
+  value: any,
+):any { // terminal recursion, returns a new object!!
+  if (path.length == 0) {
+    return value
+  }
+  const head = path[0]
+  if (!object) {
+    throw new Error("alterObjectAtPath could not access attribute " + head + " for undefined object");
+  }
+  // if (object[head]) {
+    return {
+      ...object,
+      [head]: alterObjectAtPath(object[head], path.slice(1),value)
+    }
+  // } else {
+  //   throw new Error("alterObjectAtPath could not access attribute " + head + " for object " + JSON.stringify(object, null, 2));
+  // }
+}
+
+// ################################################################################################
+export function alterObjectAtPathWithCreate(
+  object: any,
+  path: (string | number)[],
+  value: any,
+):void { // DOES SIDE EFFECTS, modifies the object in place
+  let current = object;
+  for (let i = 0; i < path.length; i++) {
+    const segment = path[i];
+    if (typeof segment === "string") {
+      if (typeof current == "object") {
+        if (!Object.hasOwn(current, segment)) {
+          current[segment] = i === path.length - 1?value:typeof path[i+1] == "string"?{}:[];
+          current = current[segment];
+          continue;
+        } else {
+          current = current[segment];
+          continue;
+        }
+      } else {
+        throw new Error("alterObjectAtPathWithCreate could not access attribute " + segment + " for non-object " + JSON.stringify(current, null, 2));
+      }
+    }
+    if (typeof segment === "number") {
+      if (Array.isArray(current)) {
+        if (current.length > segment) {
+          current = current[segment];
+          continue;
+        }
+        if (current.length == segment) {
+          current.push(i == path.length?value:typeof path[i+1] == "string"?{}:[]);
+          current = current[segment];
+          continue;
+        }
+        // if (current.length < segment) {
+        throw new Error("alterObjectAtPathWithCreate could not access index " + segment + " for array " + JSON.stringify(current, null, 2) + " (out of bounds)");
+        // }
+      } else {
+        // if (segment == 0) {
+        //   current[segment] = i == path.length?value:typeof path[i+1] == "string"?{}:[];
+        //   current = current[segment];
+        //   continue;
+        // }
+        throw new Error("alterObjectAtPathWithCreate could not access item " + segment + " for non-array " + JSON.stringify(current, null, 2));
+      }
+    }
+    // if (current[segment] === undefined) {
+    //   // Create an object or array based on the next path segment
+    //   if (typeof path[i + 1] === "number") {
+    //     current[segment] = [];
+    //   } else {
+    //     current[segment] = {};
+    //   }
+    // }
+    // current = current[segment];
+  }
+  // if (Array.isArray(current)) {
+  //   current.push(value);
+  // }
+  // if (typeof current === "object") {
+
+  // if (path.length == 0) {
+  //   return value
+  // }
+  // const head = path[0]
+
+  // return {
+  //   ...object,
+  //   [head]: alterObjectAtPathWithCreate(object[head], path.slice(1),value)
+  // }
+
+  // if (!object) {
+  //   throw new Error("alterObjectAtPath could not access attribute " + head + " for undefined object");
+  // }
+  // if (object[head]) {
+  // } else {
+  //   throw new Error("alterObjectAtPath could not access attribute " + head + " for object " + JSON.stringify(object, null, 2));
+  // }
+}
+
+// ################################################################################################
+/**
+ * 
+ * @param object 
+ * @param path 
+ * @param value 
+ * @returns 
+ * 
+ */
+export function deleteObjectAtPath(
+  object: any,
+  path: (string | number)[],
+):any { // terminal recursion
+  if (path.length == 0) {
+    return object;
+  }
+  if (path.length == 1) {
+    return Object.fromEntries(
+      Object.entries(object).filter(a => a[0] != path[0])
+    )
+  }
+  return {
+    ...object,
+    [path[0]]:deleteObjectAtPath(object[path[0]], path.slice(1))
+  };
+}

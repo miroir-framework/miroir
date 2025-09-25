@@ -12,8 +12,12 @@ import {
   MiroirLoggerFactory,
   Uuid,
   adminConfigurationDeploymentMiroir,
+  alterObjectAtPath,
+  alterObjectAtPathWithCreate,
   entityTransformerTest,
   miroirFundamentalJzodSchema,
+  resolvePathOnObject,
+  safeResolvePathOnObject,
   type JzodElement,
   type TestSuiteListFilter
 } from "miroir-core";
@@ -165,17 +169,21 @@ const handleBuildTestFilter = (
   // Build simple hierarchical filter: suite name -> array of test names
   const testList: { [key: string]: string[] } = {};
 
-  selectedTestData.forEach((test) => {
-    if (test.testPath && test.testPath.length >= 2) {
-      const suiteName = test.testPath[0]; // First element is the suite name
-      const testName = test.testPath[test.testPath.length - 1]; // Last element is the actual test name (not the display name)
+  selectedTestData.forEach((resultTestData) => {
+    // if (resultTestData.testPath && resultTestData.testPath.length >= 2) {
+    if (resultTestData.testPath) {
+      // const suiteName = resultTestData.testPath[0]; // First element is the suite name
+      const testSuitePath = resultTestData.testPath.slice(0, -1); // All but last element is the suite path
+      const testName = resultTestData.testPath[resultTestData.testPath.length - 1]; // Last element is the actual test name (not the display name)
 
-      if (!testList[suiteName]) {
-        testList[suiteName] = [];
-      }
-
-      if (!testList[suiteName].includes(testName)) {
-        testList[suiteName].push(testName);
+      const currentTestList = safeResolvePathOnObject(testList, testSuitePath);
+      if (!currentTestList) {
+        // testList[suiteName] = [];
+        alterObjectAtPathWithCreate(testList, testSuitePath, [ testName ]);
+      } else {
+        if (!currentTestList.includes(testName)) {
+          currentTestList.push(testName);
+        }
       }
     }
   });
