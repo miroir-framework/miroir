@@ -715,7 +715,71 @@ export function getMiroirFundamentalJzodSchema(
             true
           ) as any
         ).context,
-        miroirIcon: entityDefinitionEntityDefinitionV1.jzodSchema.definition.icon,
+        // miroirIcon: entityDefinitionEntityDefinitionV1.jzodSchema.definition.icon,
+        miroirIcon: {
+          type: "union",
+          discriminator: "iconType",
+          tag: {
+            value: {
+              id: 11,
+              defaultLabel: "Icon used to represent instances of this Entity",
+              editable: true,
+            },
+          },
+          definition: [
+            {
+              type: "string",
+            },
+            {
+              type: "object",
+              definition: {
+                iconType: {
+                  type: "literal",
+                  definition: "emoji",
+                  tag: {
+                    value: {
+                      defaultLabel: "Icon Type",
+                      editable: false,
+                    },
+                  },
+                },
+                name: {
+                  type: "string",
+                  tag: {
+                    value: {
+                      defaultLabel: "Icon Name",
+                      editable: true,
+                    },
+                  },
+                },
+              },
+            },
+            {
+              type: "object",
+              definition: {
+                iconType: {
+                  type: "literal",
+                  definition: "mui",
+                  tag: {
+                    value: {
+                      defaultLabel: "Icon Type",
+                      editable: false,
+                    },
+                  },
+                },
+                name: {
+                  type: "string",
+                  tag: {
+                    value: {
+                      defaultLabel: "Icon Name",
+                      editable: true,
+                    },
+                  },
+                },
+              },
+            },
+          ],
+        },
         // ########################################################################################
         // ########################################################################################
         // ########################################################################################
@@ -770,7 +834,8 @@ export function getMiroirFundamentalJzodSchema(
         transformerForBuild_constantArray: miroirTransformersForBuild.transformer_constantArray,
         transformerForBuild_constantAsExtractor:
           miroirTransformersForBuild.transformer_constantAsExtractor,
-        transformerForBuild_contextReference: miroirTransformersForBuild.transformer_contextReference,
+        transformerForBuild_contextReference:
+          miroirTransformersForBuild.transformer_contextReference,
         transformerForBuild_count: miroirTransformersForBuild.transformer_count,
         transformerForBuild_dataflowObject: miroirTransformersForBuild.transformer_dataflowObject,
         transformerForBuild_mapperListToList:
@@ -796,10 +861,13 @@ export function getMiroirFundamentalJzodSchema(
           miroirTransformersForBuild.transformer_parameterReference,
         transformerForBuild_unique: miroirTransformersForBuild.transformer_unique,
         // MLS
-        ...Object.fromEntries(Object.entries(mlsTransformers).map(([key, value]) => [
-          key.replace("transformer_", "transformerForBuild_"),
-          miroirTransformersForBuild[key as keyof typeof miroirTransformersForBuild]])),
-        // 
+        ...Object.fromEntries(
+          Object.entries(mlsTransformers).map(([key, value]) => [
+            key.replace("transformer_", "transformerForBuild_"),
+            miroirTransformersForBuild[key as keyof typeof miroirTransformersForBuild],
+          ])
+        ),
+        //
         transformerForBuild: {
           type: "union",
           discriminator: ["transformerType", "interpolation"],
@@ -876,9 +944,12 @@ export function getMiroirFundamentalJzodSchema(
           miroirTransformersForRuntime.transformer_object_fullTemplate,
         transformerForRuntime_unique: miroirTransformersForRuntime.transformer_unique,
         // MLS
-        ...Object.fromEntries(Object.entries(mlsTransformers).map(([key, value]) => [
-          key.replace("transformer_", "transformerForRuntime_"),
-          miroirTransformersForBuild[key as keyof typeof miroirTransformersForRuntime]])),
+        ...Object.fromEntries(
+          Object.entries(mlsTransformers).map(([key, value]) => [
+            key.replace("transformer_", "transformerForRuntime_"),
+            miroirTransformersForBuild[key as keyof typeof miroirTransformersForRuntime],
+          ])
+        ),
         // extendedTransformerForRuntime: {
         //   type: "schemaReference",
         //   definition: {
@@ -995,9 +1066,14 @@ export function getMiroirFundamentalJzodSchema(
         transformerForBuildPlusRuntime_unique:
           miroirTransformersForBuildPlusRuntime.transformer_unique,
         // MLS
-        ...Object.fromEntries(Object.entries(mlsTransformers).map(([key, value]) => [
-          key.replace("transformer_", "transformerForBuildPlusRuntime_"),
-          miroirTransformersForBuildPlusRuntime[key as keyof typeof miroirTransformersForBuildPlusRuntime]])),
+        ...Object.fromEntries(
+          Object.entries(mlsTransformers).map(([key, value]) => [
+            key.replace("transformer_", "transformerForBuildPlusRuntime_"),
+            miroirTransformersForBuildPlusRuntime[
+              key as keyof typeof miroirTransformersForBuildPlusRuntime
+            ],
+          ])
+        ),
         transformerForBuildPlusRuntime: {
           type: "union",
           optInDiscriminator: true,
@@ -1040,7 +1116,8 @@ export function getMiroirFundamentalJzodSchema(
             },
           ],
         },
-        ...entityDefinitionTransformerDefinition.jzodSchema.definition.transformerInterface.definition.inputOutput.context,
+        ...entityDefinitionTransformerDefinition.jzodSchema.definition.transformerInterface
+          .definition.inputOutput.context,
         // inputOutputObject: entityDefinitionTransformerDefinition.jzodSchema.definition.transformerInterface.definition.inputOutput as any,
         transformerDefinition: entityDefinitionTransformerDefinition.jzodSchema as any,
         ______________________________________________miroirMetaModel_____________________________________________:
@@ -1184,19 +1261,23 @@ export function getMiroirFundamentalJzodSchema(
         },
         applicationSection: {
           type: "enum",
-          tag: { value: { defaultLabel: "Application Section", initializeTo: {"initializeToType": "value", "value": "data"} } },
-          definition: [
-            "model",
-            "data",
-          ],
+          tag: {
+            value: {
+              defaultLabel: "Application Section",
+              initializeTo: { initializeToType: "value", value: "data" },
+            },
+          },
+          definition: ["model", "data"],
         },
         dataStoreApplicationType: {
           type: "enum",
-          tag: { value: { defaultLabel: "DataStore Appication Type", initializeTo: {"initializeToType": "value", "value": "app"} } },
-          definition: [
-            "miroir",
-            "app",
-          ],
+          tag: {
+            value: {
+              defaultLabel: "DataStore Appication Type",
+              initializeTo: { initializeToType: "value", value: "app" },
+            },
+          },
+          definition: ["miroir", "app"],
         },
         storeBasedConfiguration: {
           type: "object",
@@ -1252,17 +1333,28 @@ export function getMiroirFundamentalJzodSchema(
             parentName: {
               type: "string",
               optional: true,
-              tag: { value: { id: 2, defaultLabel: "Entity Name", editable: false, canBeTemplate: true } },
+              tag: {
+                value: { id: 2, defaultLabel: "Entity Name", editable: false, canBeTemplate: true },
+              },
             },
             parentUuid: {
               type: "uuid",
-              tag: { value: { id: 3, defaultLabel: "Entity Uuid", editable: false, canBeTemplate: true } },
+              tag: {
+                value: { id: 3, defaultLabel: "Entity Uuid", editable: false, canBeTemplate: true },
+              },
             },
             conceptLevel: {
               type: "enum",
               definition: ["MetaModel", "Model", "Data"],
               optional: true,
-              tag: { value: { id: 4, defaultLabel: "Concept Level", editable: false, canBeTemplate: true } },
+              tag: {
+                value: {
+                  id: 4,
+                  defaultLabel: "Concept Level",
+                  editable: false,
+                  canBeTemplate: true,
+                },
+              },
             },
           },
         },
@@ -1346,8 +1438,7 @@ export function getMiroirFundamentalJzodSchema(
           {
             type: "never",
           },
-        ...makeReferencesAbsolute(testSuitesResults, miroirFundamentalJzodSchemaUuid, true)
-          .context,
+        ...makeReferencesAbsolute(testSuitesResults, miroirFundamentalJzodSchemaUuid, true).context,
         testSuitesResults: {
           type: "schemaReference",
           definition: {
@@ -1355,8 +1446,11 @@ export function getMiroirFundamentalJzodSchema(
             relativePath: testSuitesResults.definition.relativePath,
           },
         },
-        ...makeReferencesAbsolute(entityDefinitionTransformerTest.jzodSchema.definition.definition, miroirFundamentalJzodSchemaUuid, true)
-          .context,
+        ...makeReferencesAbsolute(
+          entityDefinitionTransformerTest.jzodSchema.definition.definition,
+          miroirFundamentalJzodSchemaUuid,
+          true
+        ).context,
         transformerTestDefinition: entityDefinitionTransformerTest.jzodSchema as any,
         // ########################################################################################
         // ########################################################################################
@@ -3134,21 +3228,23 @@ export function getMiroirFundamentalJzodSchema(
                 e.actionParameters.actionType.definition
               )
             )
-            .map((e: any) => ({type: "object", definition: e.actionParameters})),
+            .map((e: any) => ({ type: "object", definition: e.actionParameters })),
         },
         instanceAction: {
           type: "union",
           discriminator: "actionType",
-          definition: instanceEndpointVersionV1.definition.actions.map(
-            (e: any) => ({ type: "object", definition: e.actionParameters})
-          ),
+          definition: instanceEndpointVersionV1.definition.actions.map((e: any) => ({
+            type: "object",
+            definition: e.actionParameters,
+          })),
         },
         undoRedoAction: {
           type: "union",
           discriminator: "actionType",
-          definition: undoRedoEndpointVersionV1.definition.actions.map(
-            (e: any) => ({ type: "object", definition: e.actionParameters})
-          ),
+          definition: undoRedoEndpointVersionV1.definition.actions.map((e: any) => ({
+            type: "object",
+            definition: e.actionParameters,
+          })),
         },
         transactionalInstanceAction: domainEndpointVersionV1.definition.actions.find(
           (a: any) =>
