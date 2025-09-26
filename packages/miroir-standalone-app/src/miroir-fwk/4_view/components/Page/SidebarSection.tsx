@@ -157,7 +157,7 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
                 <ThemedListItemButton sx={{padding: 0}} component={Link} to={`/report/${i.selfApplication}/${i.section}/${i.reportUuid}/xxxxxx`}>
                   <ThemedListMiroirIcon>
                     {/* {index % 2 === 0 ? <InboxIcon /> : <MailIcon />} */}
-                    <ThemedIcon>{i.icon}</ThemedIcon>
+                    <ThemedIcon icon={i.icon}/>
                   </ThemedListMiroirIcon>
                   <ThemedListItemText primary={i.label} />
                 </ThemedListItemButton>
@@ -175,7 +175,7 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
                       <ThemedListItemButton component={Link} to={`/report/${curr.selfApplication}/${curr.section}/${curr.reportUuid}/xxxxxx`}>
                         <ThemedListMiroirIcon>
                           {/* {index % 2 === 0 ? <InboxIcon /> : <MailIcon />} */}
-                          <ThemedIcon>{curr.icon}</ThemedIcon>
+                          <ThemedIcon icon={curr.icon}/>
                         </ThemedListMiroirIcon>
                         <ThemedListItemText primary={curr.label} />
                       </ThemedListItemButton>
