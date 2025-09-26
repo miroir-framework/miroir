@@ -52,6 +52,8 @@ import {
   currentTestSuite,
 } from "../2_domain/transformersTests_miroir.data";
 import { MiroirActivityTracker } from '../../src/3_controllers/MiroirActivityTracker';
+import { MiroirEventService } from '../../src/3_controllers/MiroirEventService';
+import { ConsoleInterceptor } from '../../src/4_services/ConsoleInterceptor';
 
 // Access the test file pattern from Vitest's process arguments
 const vitestArgs = process.argv.slice(2);
@@ -59,6 +61,14 @@ const filePattern = vitestArgs.find(arg => !arg.startsWith('-')) || '';
 console.log("@@@@@@@@@@@@@@@@@@ File Pattern:", filePattern);
 
 const miroirActivityTracker = new MiroirActivityTracker();
+const miroirEventService = new MiroirEventService(miroirActivityTracker);
+const logInterceptor = new ConsoleInterceptor({
+  eventHandlers: {
+    actionOrTestLogService: miroirEventService,
+    actionOrTestTracker: miroirActivityTracker
+  }
+});
+
 // console.log("@@@@@@@@@@@@@@@@@@ miroirConfig", miroirConfig);
 
 // describe.sequential("templatesDEFUNCT.unit.test", () => {
@@ -224,8 +234,6 @@ afterAll(async () => {
   console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ afterAll DONE");
 });
 
-
-
 // const extractors: ExtractorOrCombinerRecord = {
 //   books: {
 //     extractorOrCombinerType: "extractorByEntityReturningObjectList",
@@ -249,6 +257,29 @@ if (shouldSkip) {
     [],
     currentTestSuite,
     undefined, // filter
+    // {
+    //   testList: {
+    //     miroirCoreTransformers: {
+    //       runtimeTransformerTests: {
+    //         conditional: [
+    //           "conditional equality true - basic string comparison",
+    //           "conditional equality false - basic string comparison",
+    //           "conditional not equal true - string comparison",
+    //           "conditional not equal false - string comparison",
+    //           "conditional less than true - number comparison",
+    //           "conditional less than false - number comparison",
+    //           "conditional less than or equal true - number comparison",
+    //           "conditional less than or equal false - number comparison",
+    //           "conditional greater than true - number comparison",
+    //           "conditional greater than false - number comparison",
+    //           "conditional greater than or equal true - number comparison",
+    //           "conditional greater than or equal false - number comparison",
+    //           "conditional with parameter reference comparison",
+    //         ]
+    //       },
+    //     },
+    //   },
+    // },
     runTransformerIntegrationTest(sqlDbDataStore),
     defaultMetaModelEnvironment,
     miroirActivityTracker

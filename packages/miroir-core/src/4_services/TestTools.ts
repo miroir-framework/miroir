@@ -469,29 +469,6 @@ export async function runTransformerTestSuite(
   // log.info(`transformer test suite ${testSuiteName} suite Tests: ${JSON.stringify(transformerTestSuite, null, 2)}`);
 
   try {
-    // if (transformerTestSuite.transformerTestType == "transformerTest") {
-    //   miroirActivityTracker.setTest(transformerTestSuite.transformerTestLabel);
-
-    //   // Build the TestAssertionPath from the current testSuitePath (all test suites)
-    //   const testAssertionPath: TestAssertionPath = MiroirActivityTracker.stringArrayToTestAssertionPath(testSuitePath);
-    //   // Add the test to the path
-    //   testAssertionPath.push({ test: transformerTestSuite.transformerTestLabel });
-    //   // Add the test assertion to the path
-    //   testAssertionPath.push({ testAssertion: transformerTestSuite.transformerTestLabel });
-
-    //   await runTransformerTest(localVitest, testSuitePath, transformerTestSuite, modelEnvironment, miroirActivityTracker, testAssertionPath);
-    //   miroirActivityTracker.setTest(undefined);
-    // } else { // transformerTestSuite.transformerTestType == "transformerTestSuite"
-    // log.info(`running transformer test suite ${testSuiteName} with ${JSON.stringify(Object.keys(transformerTestSuite.transformerTests))} tests`);
-
-    // log.info(`transformer test suite ${testSuiteName} suite Tests: ${Object.values(transformerTestSuite.transformerTests).map(t => t.transformerTestLabel).join(", ")}`);
-    // log.info(
-    //   `handling transformer test suite ${testSuiteName} with transformerTests=${JSON.stringify(
-    //     Object.values(transformerTestSuite.transformerTests),
-    //     null,
-    //     2
-    //   )} tests`
-    // );
     // replace the describe.each(...) call body with this:
     const innerFilter: { testList: TestSuiteListFilter | undefined} = filter?.testList
       ? typeof filter.testList === "object" &&
@@ -502,9 +479,6 @@ export async function runTransformerTestSuite(
       : {testList: undefined};
 
     const allTests = transformerTestSuite.transformerTests
-    // const allTests = Array.isArray(transformerTestSuite.transformerTests)
-    //   ? transformerTestSuite.transformerTests
-    //   : Object.values(transformerTestSuite.transformerTests);
     const selectedTests = allTests.filter(
       (e) =>
         !filter?.testList ||
@@ -629,11 +603,14 @@ export function runTransformerIntegrationTest(sqlDbDataStore: any) {
   return async (
     vitest: any,
     testPath: string[],
+    filter: { testList?: TestSuiteListFilter, match?: RegExp } | undefined,
     transformerTest: TransformerTest,
     modelEnvironment: MiroirModelEnvironment,
     miroirActivityTracker: MiroirActivityTrackerInterface, // Optional unified tracker for test execution tracking
     testAssertionPath?: TestAssertionPath, // Explicit test path passed down from the suite
   ) => {
+    const testName = transformerTest.transformerTestLabel ?? transformerTest.transformerName;
+    const assertionName = transformerTest.transformerTestLabel ?? transformerTest.transformerName;
     const testPathName = MiroirActivityTracker.testPathName(testPath);
     const testRunStep = transformerTest.runTestStep ?? "runtime";
     // const runAsSql = false;
@@ -645,6 +622,23 @@ export function runTransformerIntegrationTest(sqlDbDataStore: any) {
       throw new Error(
         "runTransformerIntegrationTest called without vitest.expect, this is not a test environment"
       );
+    }
+
+    let testTrackingId: string | undefined;
+    let testAssertionTrackingId: string | undefined;
+    if (miroirActivityTracker) {
+      try {
+        // Get the current active test suite ID as parent
+        const testParentId = miroirActivityTracker.getCurrentActivityId();
+        testTrackingId = miroirActivityTracker.startTest(testName, testParentId);
+        log.info(`🧪 Started tracking test ${testName} with ID: ${testTrackingId}, parent: ${testParentId}`);
+        const testAssertionParentId = miroirActivityTracker.getCurrentActivityId();
+        testAssertionTrackingId = miroirActivityTracker.startTestAssertion(assertionName, testTrackingId);
+        log.info(`🧪 Started tracking test assertion ${assertionName} with ID: ${testAssertionTrackingId}, parent: ${testAssertionParentId}`);
+      } catch (error) {
+        console.warn(`Failed to start tracking test ${testName}:`, error);
+        console.warn(`Failed to start tracking test assertion ${assertionName}:`, error);
+      }
     }
 
     miroirActivityTracker.setTest(transformerTest.transformerTestLabel);
@@ -665,6 +659,55 @@ export function runTransformerIntegrationTest(sqlDbDataStore: any) {
       "running runtime on sql transformerTest",
       transformerTest
     );
+
+      // Check if test should be skipped
+  if (
+    transformerTest.skip ||
+    (filter?.testList &&
+      !(filter.testList as any).includes(
+        transformerTest.transformerTestLabel ?? transformerTest.transformerName
+      ))
+  ) {
+    log.info(`⏭️  Skipping test: ${assertionName}`);
+
+    // Use the explicitly passed testAssertionPath or fall back to current tracker path
+    const currentTestAssertionPath =
+      testAssertionPath || miroirActivityTracker.getCurrentTestAssertionPath();
+    if (!currentTestAssertionPath) {
+      throw new Error(
+        "runTransformerTestInMemory called without testAssertionPath and no currentTestAssertionPath available, cannot set test assertion result"
+      );
+    }
+
+    const testAssertionResult: TestAssertionResult = {
+      assertionName,
+      assertionResult: "skipped",
+    };
+
+    miroirActivityTracker.setTestAssertionResult(currentTestAssertionPath, testAssertionResult);
+
+    // End tracking individual test execution if tracker was used
+    if (miroirActivityTracker && testTrackingId && testAssertionTrackingId) {
+      try {
+        miroirActivityTracker.endActivity(testTrackingId, undefined);
+        miroirActivityTracker.endActivity(testAssertionTrackingId, undefined);
+        log.info(
+          `🧪 Ended tracking test ${assertionName} with ID: ${testTrackingId}, result: skipped`
+        );
+      } catch (error) {
+        console.warn(`Failed to end tracking test ${testName}:`, error);
+        console.warn(`Failed to end tracking test assertion ${assertionName}:`, error);
+      } finally {
+        miroirActivityTracker.setTest(undefined);
+        miroirActivityTracker.setTestAssertion(undefined);
+      }
+    }
+
+    miroirActivityTracker.setTestAssertion(undefined);
+    log.info("############################ test", assertionName, "SKIPPED");
+    miroirActivityTracker.setTest(undefined);
+    return Promise.resolve();
+  }
 
     // resolve the transformer to be used in the test
     const resolvedTransformer: TransformerReturnType<TransformerForRuntime> =
@@ -720,6 +763,7 @@ export function runTransformerIntegrationTest(sqlDbDataStore: any) {
           assertionResult: "ok",
         });
       } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : String(error) || 'Test assertion failed: ' + error;
         log.error(
           "runTransformerIntegrationTest",
           testPathName,
@@ -732,6 +776,12 @@ export function runTransformerIntegrationTest(sqlDbDataStore: any) {
           assertionExpectedValue: expectedValue,
           assertionActualValue: resultWithRetain,
         });
+        miroirActivityTracker.endActivity(testTrackingId as any, errorMessage);
+        miroirActivityTracker.endActivity(testAssertionTrackingId as any, errorMessage);
+        log.info(`🧪 Ended tracking test ${assertionName} with ID: ${testTrackingId}, result: "error"`);
+        miroirActivityTracker.setTest(undefined);
+        // as there is only 1 assertion per test, we use the test name as the assertion name
+        miroirActivityTracker.setTestAssertion(undefined);
       }
       return;
     }
@@ -794,6 +844,7 @@ export function runTransformerIntegrationTest(sqlDbDataStore: any) {
     // log.info(testSuitePathName, "WWWWWWWWWWWWWWWWWW queryResult cannot use 'instanceof' to determine error", queryResult instanceof Action2Error, Object.hasOwn(queryResult,"errorType"));
     let resultWithIgnored: any;
     let resultWithRetain: any;
+    let testAssertionResult: TestAssertionResult;
     try {
       // if (queryResult instanceof Action2Error) { // DOES NOT WORK, because we use the local version of the class, not the version of the class that is available in the miroir-core package
       if (queryResult["status"] == "error") {
@@ -843,20 +894,48 @@ export function runTransformerIntegrationTest(sqlDbDataStore: any) {
         log.info(testPathName, "expectedValue", expectedValue);
         vitest.expect(resultWithRetain, testPathName).toEqual(expectedValue);
       }
-      miroirActivityTracker.setTestAssertionResult(currentTestAssertionPath,{
+      testAssertionResult = {
         assertionName: testPathName,
         assertionResult: "ok",
-      });
+      };
+      // miroirActivityTracker.setTestAssertionResult(currentTestAssertionPath,{
+      //   assertionName: testPathName,
+      //   assertionResult: "ok",
+      // });
     } catch (error) {
-      miroirActivityTracker.setTestAssertionResult(currentTestAssertionPath,{
+      testAssertionResult = {
         assertionName: testPathName,
         assertionResult: "error",
         assertionExpectedValue: expectedValue,
         assertionActualValue: resultWithRetain,
-      });
-    } finally {
-      miroirActivityTracker.setTestAssertion(undefined);
-      miroirActivityTracker.setTest(undefined);
+      };
+    }
+    miroirActivityTracker.setTestAssertionResult(currentTestAssertionPath,testAssertionResult);
+    // finally {
+    //   miroirActivityTracker.setTestAssertion(undefined);
+    //   miroirActivityTracker.setTest(undefined);
+    // }
+
+    // End tracking individual test execution if tracker was used
+    if (miroirActivityTracker && testTrackingId && testAssertionTrackingId) {
+      try {
+        // Determine test result based on the last assertion set
+        const testSuite = miroirActivityTracker.getTestSuite();
+        const test = miroirActivityTracker.getTest();
+        const hasError = testSuite && test && testAssertionResult.assertionResult === "error";
+        const errorMessage = hasError ? "Test assertion failed" : undefined;
+        miroirActivityTracker.endActivity(testTrackingId, errorMessage);
+        miroirActivityTracker.endActivity(testAssertionTrackingId, errorMessage);
+        log.info(`🧪 Ended tracking test ${assertionName} with ID: ${testTrackingId}, result: ${hasError ? "error" : "ok"}`);
+      } catch (error) {
+        console.warn(`Failed to end tracking test ${testName}:`, error);
+        console.warn(`Failed to end tracking test assertion ${assertionName}:`, error);
+      }
+      // finally {
+      //   miroirActivityTracker.setTest(undefined);
+      //   // as there is only 1 assertion per test, we use the test name as the assertion name
+      //   miroirActivityTracker.setTestAssertion(undefined);
+      // }
     }
 
     miroirActivityTracker.setTest(undefined);

@@ -62,38 +62,31 @@ if (shouldSkip) {
     vitest,
     [],
     currentTestSuite,
-    // undefined, // filter
+    undefined, // filter
     // {
-    //   testList: {"miroirCoreTransformers": ["runtimeTransformerTests"]}
-    // 'runtimeTransformerTests', 'conditional'
+    //   testList: {
+    //     miroirCoreTransformers: {
+    //       runtimeTransformerTests: {
+    //         conditional: [
+    //           "conditional equality true - basic string comparison",
+    //           "conditional equality false - basic string comparison",
+    //           "conditional not equal true - string comparison",
+    //           "conditional not equal false - string comparison",
+    //           "conditional less than true - number comparison",
+    //           "conditional less than false - number comparison",
+    //           "conditional less than or equal true - number comparison",
+    //           "conditional less than or equal false - number comparison",
+    //           "conditional greater than true - number comparison",
+    //           "conditional greater than false - number comparison",
+    //           "conditional greater than or equal true - number comparison",
+    //           "conditional greater than or equal false - number comparison",
+    //           "conditional without else clause - equality true",
+    //           "conditional with parameter reference comparison",
+    //         ]
+    //       },
+    //     },
+    //   },
     // },
-    {
-      testList: {
-        miroirCoreTransformers: {
-          // runtimeTransformerTests: [
-          //   "conditional"
-          // ]
-          runtimeTransformerTests: {
-            conditional: [
-              "conditional equality true - basic string comparison",
-              "conditional equality false - basic string comparison",
-              "conditional not equal true - string comparison",
-              "conditional not equal false - string comparison",
-              "conditional less than true - number comparison",
-              "conditional less than false - number comparison",
-              "conditional less than or equal true - number comparison",
-              "conditional less than or equal false - number comparison",
-              "conditional greater than true - number comparison",
-              "conditional greater than false - number comparison",
-              "conditional greater than or equal true - number comparison",
-              "conditional greater than or equal false - number comparison",
-              "conditional without else clause - equality true",
-              "conditional with parameter reference comparison",
-            ]
-          },
-        },
-      },
-    },
     runTransformerTestInMemory,
     defaultMetaModelEnvironment,
     miroirActivityTracker

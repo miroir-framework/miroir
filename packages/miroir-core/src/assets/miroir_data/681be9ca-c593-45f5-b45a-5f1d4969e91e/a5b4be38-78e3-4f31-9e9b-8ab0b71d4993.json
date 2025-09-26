@@ -895,32 +895,6 @@
               },
               {
                 "transformerTestType": "transformerTest",
-                "transformerTestLabel": "conditional without else clause - equality true",
-                "transformerName": "conditionalWithoutElseTrue",
-                "transformer": {
-                  "transformerType": "==",
-                  "interpolation": "runtime",
-                  "left": {
-                    "transformerType": "constantString",
-                    "interpolation": "runtime",
-                    "value": "test"
-                  },
-                  "right": {
-                    "transformerType": "constantString",
-                    "interpolation": "runtime",
-                    "value": "test"
-                  },
-                  "then": {
-                    "transformerType": "constantString",
-                    "interpolation": "runtime",
-                    "value": "condition met"
-                  }
-                },
-                "transformerParams": {},
-                "expectedValue": "condition met"
-              },
-              {
-                "transformerTestType": "transformerTest",
                 "transformerTestLabel": "conditional with parameter reference comparison",
                 "transformerName": "conditionalWithParameterReference",
                 "transformer": {
