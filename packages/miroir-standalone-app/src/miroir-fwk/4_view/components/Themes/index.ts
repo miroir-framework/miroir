@@ -76,7 +76,7 @@ export {
   ThemedList,
   ThemedListItem,
   ThemedListItemButton,
-  ThemedListItemIcon,
+  ThemedListMiroirIcon,
   ThemedListItemText,
 } from './ListComponents';
 

@@ -462,6 +462,8 @@ export {
   resolvedJzodSchemaReturnTypeError,
   ResolvedJzodSchemaReturnTypeOK,
   resolvedJzodSchemaReturnTypeOK,
+  MiroirIcon,
+  miroirIcon,
   // those are zod schemas, not imported. Importing MLS with the same name.
   // jzodUnion_RecursivelyUnfold_ReturnType,
   // jzodUnion_RecursivelyUnfold_ReturnTypeError,

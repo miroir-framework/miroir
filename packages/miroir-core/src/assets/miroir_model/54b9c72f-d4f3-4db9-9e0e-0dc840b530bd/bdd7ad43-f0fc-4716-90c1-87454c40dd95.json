@@ -131,7 +131,8 @@
         }
       },
       "icon": {
-        "type": "string",
+        "type": "union",
+        "discriminator": "iconType",
         "optional": true,
         "tag": {
           "value": {
@@ -139,7 +140,60 @@
             "defaultLabel": "Icon used to represent instances of this Entity",
             "editable": true
           }
-        }
+        },
+        "definition": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "object",
+            "definition": {
+              "iconType": {
+                "type": "literal",
+                "definition": "emoji",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Icon Type",
+                    "editable": false
+                  }
+                }
+              },
+              "name": {
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Icon Name",
+                    "editable": true
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "iconType": {
+                "type": "literal",
+                "definition": "mui",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Icon Type",
+                    "editable": false
+                  }
+                }
+              },
+              "name": {
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Icon Name",
+                    "editable": true
+                  }
+                }
+              }
+            }
+          }
+        ]
       },
       "display": {
         "type": "object",

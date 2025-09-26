@@ -5,7 +5,7 @@ import {
   ThemedList,
   ThemedListItem,
   ThemedListItemButton,
-  ThemedListItemIcon,
+  ThemedListMiroirIcon,
   ThemedListItemText,
   ThemedIcon
 } from "../Themes/index"
@@ -136,10 +136,10 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
         <ThemedList disablePadding dense>
           <ThemedListItem key={"failed"} disablePadding>
             <ThemedListItemButton>
-              <ThemedListItemIcon>
+              <ThemedListMiroirIcon>
                 {/* {index % 2 === 0 ? <InboxIcon /> : <MailIcon />} */}
                 <ThemedIcon>error</ThemedIcon>
-              </ThemedListItemIcon>
+              </ThemedListMiroirIcon>
               <ThemedListItemText primary="Failed to load menu" />
             </ThemedListItemButton>
           </ThemedListItem>
@@ -155,10 +155,10 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
               ).map((i: any, index: number) => (
               <ThemedListItem key={i.label} disablePadding>
                 <ThemedListItemButton sx={{padding: 0}} component={Link} to={`/report/${i.selfApplication}/${i.section}/${i.reportUuid}/xxxxxx`}>
-                  <ThemedListItemIcon>
+                  <ThemedListMiroirIcon>
                     {/* {index % 2 === 0 ? <InboxIcon /> : <MailIcon />} */}
                     <ThemedIcon>{i.icon}</ThemedIcon>
-                  </ThemedListItemIcon>
+                  </ThemedListMiroirIcon>
                   <ThemedListItemText primary={i.label} />
                 </ThemedListItemButton>
               </ThemedListItem>
@@ -173,10 +173,10 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
                   (curr:any, index: number) => (
                     <ThemedListItem key={curr.label + index} disablePadding>
                       <ThemedListItemButton component={Link} to={`/report/${curr.selfApplication}/${curr.section}/${curr.reportUuid}/xxxxxx`}>
-                        <ThemedListItemIcon>
+                        <ThemedListMiroirIcon>
                           {/* {index % 2 === 0 ? <InboxIcon /> : <MailIcon />} */}
                           <ThemedIcon>{curr.icon}</ThemedIcon>
-                        </ThemedListItemIcon>
+                        </ThemedListMiroirIcon>
                         <ThemedListItemText primary={curr.label} />
                       </ThemedListItemButton>
                     </ThemedListItem>

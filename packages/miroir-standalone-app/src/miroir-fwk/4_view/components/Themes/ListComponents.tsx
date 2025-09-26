@@ -114,7 +114,7 @@ export const ThemedListItemButton: React.FC<ThemedComponentProps & {
   );
 };
 
-export const ThemedListItemIcon: React.FC<ThemedComponentProps> = ({ 
+export const ThemedListMiroirIcon: React.FC<ThemedComponentProps> = ({ 
   children, 
   className, 
   style

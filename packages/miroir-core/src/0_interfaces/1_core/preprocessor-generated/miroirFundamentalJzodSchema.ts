@@ -1462,6 +1462,71 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
+      "miroirIcon": {
+        "type": "union",
+        "discriminator": "iconType",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 11,
+            "defaultLabel": "Icon used to represent instances of this Entity",
+            "editable": true
+          }
+        },
+        "definition": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "object",
+            "definition": {
+              "iconType": {
+                "type": "literal",
+                "definition": "emoji",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Icon Type",
+                    "editable": false
+                  }
+                }
+              },
+              "name": {
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Icon Name",
+                    "editable": true
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "iconType": {
+                "type": "literal",
+                "definition": "mui",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Icon Type",
+                    "editable": false
+                  }
+                }
+              },
+              "name": {
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Icon Name",
+                    "editable": true
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
       "______________________________________________transformers_____________________________________________": {
         "type": "never"
       },
@@ -10027,7 +10092,8 @@ export const miroirFundamentalJzodSchema = {
             }
           },
           "icon": {
-            "type": "string",
+            "type": "union",
+            "discriminator": "iconType",
             "optional": true,
             "tag": {
               "value": {
@@ -10035,7 +10101,60 @@ export const miroirFundamentalJzodSchema = {
                 "defaultLabel": "Icon used to represent instances of this Entity",
                 "editable": true
               }
-            }
+            },
+            "definition": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "object",
+                "definition": {
+                  "iconType": {
+                    "type": "literal",
+                    "definition": "emoji",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Icon Type",
+                        "editable": false
+                      }
+                    }
+                  },
+                  "name": {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Icon Name",
+                        "editable": true
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "definition": {
+                  "iconType": {
+                    "type": "literal",
+                    "definition": "mui",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Icon Type",
+                        "editable": false
+                      }
+                    }
+                  },
+                  "name": {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Icon Name",
+                        "editable": true
+                      }
+                    }
+                  }
+                }
+              }
+            ]
           },
           "display": {
             "type": "object",
@@ -32674,6 +32793,7 @@ export const miroirFundamentalJzodSchema = {
               },
               "icon": {
                 "type": "union",
+                "discriminator": "iconType",
                 "optional": true,
                 "tag": {
                   "value": {
@@ -32685,13 +32805,125 @@ export const miroirFundamentalJzodSchema = {
                 },
                 "definition": [
                   {
-                    "type": "string",
-                    "optional": true,
-                    "tag": {
-                      "value": {
-                        "id": 11,
-                        "defaultLabel": "Icon used to represent instances of this Entity",
-                        "editable": true
+                    "type": "string"
+                  },
+                  {
+                    "type": "object",
+                    "definition": {
+                      "iconType": {
+                        "type": "union",
+                        "definition": [
+                          {
+                            "type": "literal",
+                            "definition": "emoji",
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Icon Type",
+                                "editable": false
+                              }
+                            }
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "transformerForBuildCarryOnObject"
+                            }
+                          }
+                        ],
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Icon Type",
+                            "editable": false,
+                            "isTemplate": true
+                          }
+                        }
+                      },
+                      "name": {
+                        "type": "union",
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Icon Name",
+                            "editable": true,
+                            "isTemplate": true
+                          }
+                        },
+                        "definition": [
+                          {
+                            "type": "string",
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Icon Name",
+                                "editable": true
+                              }
+                            }
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "transformerForBuildCarryOnObject"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "definition": {
+                      "iconType": {
+                        "type": "union",
+                        "definition": [
+                          {
+                            "type": "literal",
+                            "definition": "mui",
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Icon Type",
+                                "editable": false
+                              }
+                            }
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "transformerForBuildCarryOnObject"
+                            }
+                          }
+                        ],
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Icon Type",
+                            "editable": false,
+                            "isTemplate": true
+                          }
+                        }
+                      },
+                      "name": {
+                        "type": "union",
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Icon Name",
+                            "editable": true,
+                            "isTemplate": true
+                          }
+                        },
+                        "definition": [
+                          {
+                            "type": "string",
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Icon Name",
+                                "editable": true
+                              }
+                            }
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "transformerForBuildCarryOnObject"
+                            }
+                          }
+                        ]
                       }
                     }
                   },
