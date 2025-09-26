@@ -1,25 +1,21 @@
+import { useTheme } from '@mui/material/styles';
 import { FC, useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import { cleanLevel } from "../../constants.js";
-import { 
+import {
   ThemedDivider,
+  ThemedIcon,
   ThemedList,
   ThemedListItem,
   ThemedListItemButton,
-  ThemedListMiroirIcon,
   ThemedListItemText,
-  ThemedIcon
-} from "../Themes/index"
-import { useMiroirTheme } from '../../contexts/MiroirThemeContext.js';
-import AutoStories from '@mui/icons-material/AutoStories';
-import { CSSObject, styled, Theme, useTheme } from '@mui/material/styles';
-import MuiDrawer from '@mui/material/Drawer';
-import { Link } from 'react-router-dom';
+  ThemedListMiroirIcon
+} from "../Themes/index";
 
 
 import {
   adminConfigurationDeploymentAdmin,
   adminConfigurationDeploymentMiroir,
-  ReduxDeploymentsState,
   Domain2QueryReturnType,
   dummyDomainManyQueryWithDeploymentUuid,
   entityMenu,
@@ -28,6 +24,7 @@ import {
   LoggerInterface,
   MetaModel,
   MiroirLoggerFactory,
+  ReduxDeploymentsState,
   SyncBoxedExtractorOrQueryRunnerMap,
   SyncQueryRunnerParams,
   Uuid
@@ -138,7 +135,7 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
             <ThemedListItemButton>
               <ThemedListMiroirIcon>
                 {/* {index % 2 === 0 ? <InboxIcon /> : <MailIcon />} */}
-                <ThemedIcon>error</ThemedIcon>
+                <ThemedIcon icon="error"/>
               </ThemedListMiroirIcon>
               <ThemedListItemText primary="Failed to load menu" />
             </ThemedListItemButton>

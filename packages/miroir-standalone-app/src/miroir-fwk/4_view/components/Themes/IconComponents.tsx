@@ -45,11 +45,6 @@ MiroirLoggerFactory.registerLoggerToStart(
 ).then((logger: LoggerInterface) => {log = logger});
 
 // ################################################################################################
-// Icon and Button Components
-// 
-// Various button and icon components with different styles and sizes
-// ################################################################################################
-
 export const ThemedLineIconButton: React.FC<ThemedComponentProps> = ({ 
   children, 
   className, 
@@ -363,6 +358,58 @@ const codePointToEmoji = (codePoint: string): string => {
   }
 };
 
+  // Map icon names to MUI icon components
+const muiIconComponentMap: Record<string, React.ComponentType<any>> = {
+  account_balance: AccountBalance,
+  help_outline: HelpOutlineIcon,
+  menu: MenuIcon,
+  home: HomeIcon,
+  book: BookIcon,
+  menu_book: MenuBookIcon,
+  auto_stories: AutoStoriesIcon,
+  saved_search: SavedSearchIcon,
+  category: CategoryIcon,
+  list: ListIcon,
+  location_on: LocationOnIcon,
+  error: ErrorIcon,
+  south: SouthIcon,
+  interests: InterestsIcon,
+  settings: SettingsIcon,
+  search: SearchIcon,
+  add: AddIcon,
+  remove: RemoveIcon,
+  edit: EditIcon,
+  delete: DeleteIcon,
+  flag: Flag,
+  save: SaveIcon,
+  person: Person,
+  science: Science,
+  star: StarIcon,
+  space_dashboard: SpaceDashboard,
+  folder: Folder,
+};
+
+  // Map common MUI icon name variations to component keys
+const muiIconNameMap: Record<string, string> = {
+  savedSearch: "saved_search",
+  SavedSearch: "saved_search",
+  autoStories: "auto_stories",
+  AutoStories: "auto_stories",
+  Interests: "interests",
+  Book: "book",
+  Books: "menu_book",
+  books: "menu_book",
+  south: "south",
+  error: "error",
+  category: "category",
+  list: "list",
+  location_on: "location_on",
+  // Common fallback icons
+  default: "menu",
+  fallback: "menu",
+};
+
+
 export const ThemedIcon: React.FC<ThemedIconProps> = ({ 
   icon,
   children, 
@@ -375,58 +422,6 @@ export const ThemedIcon: React.FC<ThemedIconProps> = ({
 }) => {
   const { currentTheme } = useMiroirTheme();
   
-  // Map icon names to MUI icon components
-  const muiIconComponentMap: Record<string, React.ComponentType<any>> = {
-    "account_balance": AccountBalance,
-    'help_outline': HelpOutlineIcon,
-    'menu': MenuIcon,
-    'home': HomeIcon,
-    'book': BookIcon,
-    'menu_book': MenuBookIcon,
-    'auto_stories': AutoStoriesIcon,
-    'saved_search': SavedSearchIcon,
-    'category': CategoryIcon,
-    'list': ListIcon,
-    'location_on': LocationOnIcon,
-    'error': ErrorIcon,
-    'south': SouthIcon,
-    'interests': InterestsIcon,
-    'settings': SettingsIcon,
-    'search': SearchIcon,
-    'add': AddIcon,
-    'remove': RemoveIcon,
-    'edit': EditIcon,
-    'delete': DeleteIcon,
-    "flag": Flag,
-    'save': SaveIcon,
-    "person": Person,
-    "science": Science,
-    "star": StarIcon,
-    "space_dashboard": SpaceDashboard,
-    "folder": Folder,
-
-  };
-
-  // Map common MUI icon name variations to component keys
-  const muiIconNameMap: Record<string, string> = {
-    'savedSearch': 'saved_search',
-    'SavedSearch': 'saved_search',
-    'autoStories': 'auto_stories',
-    'AutoStories': 'auto_stories',
-    'Interests': 'interests',
-    'Book': 'book',
-    'Books': 'menu_book',
-    'books': 'menu_book',
-    'south': 'south',
-    'error': 'error',
-    'category': 'category',
-    'list': 'list',
-    'location_on': 'location_on',
-    // Common fallback icons
-    'default': 'menu',
-    'fallback': 'menu',
-  };
-
   // Memoized icon resolution logic
   const resolvedIcon = useMemo(() => {
     try {
