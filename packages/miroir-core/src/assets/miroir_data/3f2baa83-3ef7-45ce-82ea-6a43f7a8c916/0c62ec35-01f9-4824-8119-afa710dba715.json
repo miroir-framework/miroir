@@ -12,13 +12,11 @@
         "extractorTemplateType": "extractorForObjectByDirectReference",
         "parentName": "Endpoint",
         "parentUuid": {
-          "transformerType": "constantString",
-          "interpolation": "build",
+          "transformerType": "constant",
           "value": "3d8da4d4-8f76-4bb4-9212-14869d81c00c"
         },
         "instanceUuid": {
           "transformerType": "parameterReference",
-          "interpolation": "build",
           "referenceName": "instanceUuid"
         }
       }

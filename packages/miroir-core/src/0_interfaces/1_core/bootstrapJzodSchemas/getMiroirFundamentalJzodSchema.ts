@@ -424,8 +424,12 @@ function createLocalizedInnerResolutionStoreForExtendedSchemas(
         );
       }
       if (localizedResolutionStore.context[e] === undefined) {
+        log.error(
+          "createLocalizedInnerResolutionStoreForExtendedSchemas: localizedResolutionStore.context",
+          JSON.stringify(Object.keys(localizedResolutionStore.context), null, 2)
+        );
         throw new Error(
-          `createLocalizedInnerResolutionStoreForExtendedSchemas: localizedResolutionStore.context["${e}"] is undefined in`
+          `createLocalizedInnerResolutionStoreForExtendedSchemas: localizedResolutionStore.context["${e}"] is undefined`
         );
       }
 
@@ -3876,6 +3880,11 @@ export function getMiroirFundamentalJzodSchema(
     JSON.stringify(Object.keys(miroirFundamentalJzodSchema.definition.context), null, 2)
   );
 
+  log.info(
+    "getMiroirFundamentalJzodSchema miroirFundamentalJzodSchema transformerForBuild_objectDynamicAccess:",
+    JSON.stringify((miroirFundamentalJzodSchema as any).definition.context["transformerForBuild_objectDynamicAccess"], null, 2)
+  );
+
   // ##############################################################################################
   // ##############################################################################################
   // ##############################################################################################
@@ -3904,6 +3913,46 @@ export function getMiroirFundamentalJzodSchema(
 
   // TODO: HACK!! forcing jzod schema definition into compositeActionDependencySet
   Object.keys((jzodSchemajzodMiroirBootstrapSchema as any).definition.context).forEach((key) => {
+    oldCompositeActionDependencySet.add(key);
+  });
+
+  // TODO: HACK!! forcing build transformer into compositeActionDependencySet, although the compositeAction does not directly reference it, it is used in the extendedSchemas
+  [
+    "transformerForBuild_Abstract", 
+    "transformerForBuild_optional_Abstract",
+    "transformerForBuild_objectDynamicAccess",
+    "transformerForBuild_parameterReference",
+    "transformerForBuild_mustacheStringTemplate",
+    // "transformerForBuild",
+    "transformerForBuild_conditional",
+    "transformerForBuild_constant",
+    "transformerForBuild_constantBoolean",
+    "transformerForBuild_constantBigint",
+    "transformerForBuild_constantUuid",
+    "transformerForBuild_constantObject",
+    "transformerForBuild_constantNumber",
+    "transformerForBuild_constantString",
+    "transformerForBuild_constantArray",
+    "transformerForBuild_constantAsExtractor",
+    "transformerForBuild_contextReference",
+    "transformerForBuild_count",
+    "transformerForBuild_dataflowObject",
+    "transformerForBuild_mapperListToList",
+    "transformerForBuild_freeObjectTemplate",
+    "transformerForBuild_newUuid",
+    "transformerForBuild_mustacheStringTemplate",
+    "transformerForBuild_objectAlter",
+    "transformerForBuild_objectDynamicAccess",
+    "transformerForBuild_objectEntries",
+    "transformerForBuild_objectValues",
+    "transformerForBuild_listPickElement",
+    "transformerForBuild_listReducerToIndexObject",
+    "transformerForBuild_listReducerToSpreadObject",
+    "transformerForBuild_object_fullTemplate",
+    "transformerForBuild_parameterReference",
+    "transformerForBuild_unique",
+    // "transformerForBuild_InnerReference"
+  ].forEach((key) => {
     oldCompositeActionDependencySet.add(key);
   });
 
@@ -4006,6 +4055,7 @@ export function getMiroirFundamentalJzodSchema(
   );
 
   // ##############################################################################################
+  log.info("getMiroirFundamentalJzodSchema domainAction ##############################################################################################");
   const domainAction = (miroirFundamentalJzodSchema as any).definition.context["domainAction"]
   const runtimeDomainActionReferencePrefix = "runtimeDomainAction_";
 
@@ -4029,6 +4079,45 @@ export function getMiroirFundamentalJzodSchema(
     domainActionDependencySet.add(key);
   });
   
+    [
+    "transformerForBuild_Abstract", 
+    "transformerForBuild_optional_Abstract",
+    "transformerForBuild_objectDynamicAccess",
+    "transformerForBuild_parameterReference",
+    "transformerForBuild_mustacheStringTemplate",
+    // "transformerForBuild",
+    "transformerForBuild_conditional",
+    "transformerForBuild_constant",
+    "transformerForBuild_constantBoolean",
+    "transformerForBuild_constantBigint",
+    "transformerForBuild_constantUuid",
+    "transformerForBuild_constantObject",
+    "transformerForBuild_constantNumber",
+    "transformerForBuild_constantString",
+    "transformerForBuild_constantArray",
+    "transformerForBuild_constantAsExtractor",
+    "transformerForBuild_contextReference",
+    "transformerForBuild_count",
+    "transformerForBuild_dataflowObject",
+    "transformerForBuild_mapperListToList",
+    "transformerForBuild_freeObjectTemplate",
+    "transformerForBuild_newUuid",
+    "transformerForBuild_mustacheStringTemplate",
+    "transformerForBuild_objectAlter",
+    "transformerForBuild_objectDynamicAccess",
+    "transformerForBuild_objectEntries",
+    "transformerForBuild_objectValues",
+    "transformerForBuild_listPickElement",
+    "transformerForBuild_listReducerToIndexObject",
+    "transformerForBuild_listReducerToSpreadObject",
+    "transformerForBuild_object_fullTemplate",
+    "transformerForBuild_parameterReference",
+    "transformerForBuild_unique",
+    // "transformerForBuild_InnerReference"
+  ].forEach((key) => {
+    domainActionDependencySet.add(key);
+  });
+
   log.info(
     "domainActionDependencySet",
     Array.from(domainActionDependencySet.keys()).length,

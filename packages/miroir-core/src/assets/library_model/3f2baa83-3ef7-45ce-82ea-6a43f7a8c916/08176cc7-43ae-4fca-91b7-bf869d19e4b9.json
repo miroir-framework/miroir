@@ -13,8 +13,7 @@
         "extractorTemplateType": "extractorTemplateForObjectListByEntity",
         "parentName": "Country",
         "parentUuid": {
-          "transformerType": "constantUuid",
-          "interpolation": "build",
+          "transformerType": "constant",
           "value": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4"
         }
       }

@@ -230,7 +230,7 @@
                     "type":"schemaReference",
                     "definition": {
                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "transformerForBuild_InnerReference"
+                      "relativePath": "transformerForBuildPlusRuntime"
                     }
                   }
                 ]
@@ -281,7 +281,7 @@
                 "type": "schemaReference",
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "transformerForBuild_InnerReference"
+                  "relativePath": "transformerForBuildPlusRuntime"
                 }
               }
             }
@@ -385,7 +385,7 @@
                 "type": "schemaReference",
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "transformerForRuntime_InnerReference"
+                  "relativePath": "transformerForBuildPlusRuntime"
                 }
               },
               "objectReferenceAttribute": {
@@ -429,7 +429,7 @@
                 "type": "schemaReference",
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "transformerForRuntime_contextReference"
+                  "relativePath": "transformerForBuildPlusRuntime_contextReference"
                 }
               },
               "objectListReferenceAttribute": {

@@ -169,19 +169,22 @@ export function resolveExtractorTemplate(
         parentUuid:
           typeof extractorOrCombinerTemplate.parentUuid == "string"
             ? extractorOrCombinerTemplate.parentUuid
-            // : transformer_InnerReference_resolve(
-            : transformer_extended_apply(
+            : // : transformer_InnerReference_resolve(
+              transformer_extended_apply(
                 "build",
                 [], // transformerPath
-                extractorOrCombinerTemplate.label??extractorOrCombinerTemplate.extractorTemplateType,
+                extractorOrCombinerTemplate.label ??
+                  extractorOrCombinerTemplate.extractorTemplateType,
                 extractorOrCombinerTemplate.parentUuid,
                 "value",
                 queryParams,
                 contextResults
               ), // TODO: check for failure!
         objectReference:
-          extractorOrCombinerTemplate.objectReference.transformerType == "contextReference"
-            ? extractorOrCombinerTemplate.objectReference.referenceName ??
+          typeof extractorOrCombinerTemplate.objectReference === "object" &&
+          (extractorOrCombinerTemplate.objectReference as any)["transformerType"] ===
+            "contextReference"
+            ? (extractorOrCombinerTemplate.objectReference as any)?.referenceName ??
               "ERROR CONVERTING OBJECT REFERENCE FOR combinerByRelationReturningObjectList extractor template: no referenceName"
             : "ERROR CONVERTING OBJECT REFERENCE FOR combinerByRelationReturningObjectList extractor template: objectReference is not a contextReference",
       };
