@@ -46,7 +46,9 @@ import { PersistenceStoreController } from '../../src/4_services/PersistenceStor
 import {
   runTransformerIntegrationTest,
   runTransformerTestSuite,
-  transformerTestsDisplayResults
+  runUnitTransformerTests,
+  transformerTestsDisplayResults,
+  type RunTransformerTests
 } from "../../src/4_services/TestTools";
 import {
   currentTestSuite,
@@ -252,6 +254,12 @@ if (shouldSkip) {
   if (!sqlDbDataStore) {
     throw new Error("sqlDbDataStore is not defined!");
   }
+  const runIntegTransformerTests: RunTransformerTests = {
+    _runTransformerTestSuiteWithTracking: runUnitTransformerTests._runTransformerTestSuiteWithTracking,
+    _runTransformerTestWithTracking: runUnitTransformerTests._runTransformerTestWithTracking,
+    _runTransformerTestSuite: runUnitTransformerTests._runTransformerTestSuite,
+    _runTransformerTest: runTransformerIntegrationTest(sqlDbDataStore),
+  }
   await runTransformerTestSuite(
     vitest,
     [],
@@ -280,9 +288,11 @@ if (shouldSkip) {
     //     },
     //   },
     // },
-    runTransformerIntegrationTest(sqlDbDataStore),
     defaultMetaModelEnvironment,
-    miroirActivityTracker
+    miroirActivityTracker,
+    undefined, // parentTrackingId,
+    true, // trackActionsBelow
+    runIntegTransformerTests,
   );
   
   // await transformerTestsDisplayResults(currentTestSuite, filePattern || "", testSuiteName, miroirActivityTracker);

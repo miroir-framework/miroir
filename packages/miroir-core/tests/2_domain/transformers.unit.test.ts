@@ -1,16 +1,15 @@
 import * as vitest from 'vitest';
 import { defaultMetaModelEnvironment } from '../../src/1_core/Model';
 import { MiroirActivityTracker } from '../../src/3_controllers/MiroirActivityTracker';
+import { MiroirEventService } from '../../src/3_controllers/MiroirEventService';
+import { ConsoleInterceptor } from '../../src/4_services/ConsoleInterceptor';
 import {
-  runTransformerTestInMemory,
-  runTransformerTestSuite,
+  runUnitTransformerTests,
   transformerTestsDisplayResults
 } from "../../src/4_services/TestTools";
 import {
   currentTestSuite,
 } from "./transformersTests_miroir.data";
-import { MiroirEventService } from '../../src/3_controllers/MiroirEventService';
-import { ConsoleInterceptor } from '../../src/4_services/ConsoleInterceptor';
 
 type VitestNamespace = typeof vitest;
 
@@ -58,7 +57,9 @@ if (shouldSkip) {
   console.log("################################ skipping test suite:", testSuiteName);
   // console.log("################################ File pattern:", filePattern);
 } else {
-  await runTransformerTestSuite(
+  // await runTransformerTestSuite(
+  // await runTransformerTestsWithTracking._runTransformerTestSuite(
+  await runUnitTransformerTests._runTransformerTestSuite(
     vitest,
     [],
     currentTestSuite,
@@ -87,9 +88,11 @@ if (shouldSkip) {
     //     },
     //   },
     // },
-    runTransformerTestInMemory,
     defaultMetaModelEnvironment,
-    miroirActivityTracker
+    miroirActivityTracker,
+    undefined, // parentTrackingId,
+    true, // trackActionsBelow
+    runUnitTransformerTests,
   );
   
 }

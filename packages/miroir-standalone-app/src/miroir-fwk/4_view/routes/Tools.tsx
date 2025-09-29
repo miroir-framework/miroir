@@ -445,25 +445,19 @@ export const ToolsPage: React.FC<any> = (
           {/* Transformer Editor */}
           <div style={{ margin: "20px 0" }}>
             <TransformerEditor
-              // deploymentUuid={context.deploymentUuid}
               deploymentUuid={selfApplicationDeploymentLibrary.uuid}
-              // entityUuid="e8ba151b-d68e-4cc3-9a83-3459d309ccf5" // Book entity UUID
-              // entityUuid={entityDefinitionTransformerDefinition.entityUuid}
               entityUuid={entityBook.uuid}
             />
           </div>
 
           <EndpointActionCaller
             key={"aaaa"}
-            // currentDeploymentUuid={displayedDeploymentUuid}
-            // currentApplicationSection={displayedApplicationSection}
-            // currentReportUuid={displayedReportUuid}
           />
 
           <div>Hello World!</div>
 
           {/* resolveConditionalSchema Test Button */}
-          <div style={{ margin: "20px 0" }}>
+          {/* <div style={{ margin: "20px 0" }}>
             <RunTransformerTestSuiteButton
               transformerTestSuite={transformerTestSuite_resolveConditionalSchema}
               testSuiteKey={testSuiteKey}
@@ -472,10 +466,10 @@ export const ToolsPage: React.FC<any> = (
                 setResolveConditionalSchemaResultsData(structuredResults);
               }}
             />
-          </div>
+          </div> */}
 
           {/* Test Results Display */}
-          {resolveConditionalSchemaResultsData && resolveConditionalSchemaResultsData.length > 0 && (
+          {/* {resolveConditionalSchemaResultsData && resolveConditionalSchemaResultsData.length > 0 && (
             <div style={{ margin: "20px 0" }}>
               <h3>resolveConditionalSchema Test Results:</h3>
               <ValueObjectGrid
@@ -500,7 +494,7 @@ export const ToolsPage: React.FC<any> = (
                 gridType="ag-grid"
               />
             </div>
-          )}
+          )} */}
             <Formik
               enableReinitialize={true}
               initialValues={formState}

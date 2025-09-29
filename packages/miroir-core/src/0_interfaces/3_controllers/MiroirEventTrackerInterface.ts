@@ -62,6 +62,13 @@ export interface MiroirActivityTrackerInterface {
    */
   setMiroirEventService(service: MiroirEventServiceInterface): void;
   
+  // ##############################################################################################
+  // ##############################################################################################
+  // ##############################################################################################
+  // ##############################################################################################
+  // ##############################################################################################
+  // ##############################################################################################
+  // ##############################################################################################
   /**
    * Start tracking an action
    * @param actionType The type of action being tracked
@@ -143,6 +150,30 @@ export interface MiroirActivityTrackerInterface {
     actionLabel: string | undefined,
     actionFn: () => Promise<T>
   ): Promise<T>;
+
+  // ##############################################################################################
+  // ##############################################################################################
+  // ##############################################################################################
+  // ##############################################################################################
+  trackTestSuite<T>(
+    testSuiteName: string,
+    testSuitePathAsString: string,
+    parentId: string | undefined,
+    actionFn: (parentId: string | undefined) => Promise<T>
+  ): Promise<T>;
+
+  trackTest<T>(
+    test: string,
+    // parentId: string | undefined,
+    actionFn: (parentId: string | undefined) => Promise<T>
+  ): Promise<T>;
+
+  trackTestAssertion<T>(
+    testAssertion: string,
+    // parentId: string | undefined,
+    actionFn: (parentId: string | undefined) => Promise<T>
+  ): Promise<T>;
+
 
   // Test-specific methods for backwards compatibility with TestTracker
   /**

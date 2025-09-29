@@ -227,19 +227,43 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
 
   // ###############################################################################################
   // ###############################################################################################
+  // ###############################################################################################
+  // ###############################################################################################
+  // ###############################################################################################
+  // ###############################################################################################
+  // ###############################################################################################
+  // ###############################################################################################
+  // ###############################################################################################
   // TEST SUITES
   // ###############################################################################################
   // ##############################################################################################
   async trackTestSuite<T>(
-    testSuite: string,
+    testSuiteName: string,
+    testSuitePathAsString: string,
     parentId: string | undefined,
-    actionFn: () => Promise<T>
+    actionFn: (parentId: string | undefined) => Promise<T>
   ): Promise<T> {
-    const trackingId = this.startTestSuite(testSuite, parentId);
+    const trackingId = this.startTestSuite(testSuiteName, parentId);
+    console.log(
+      "🧪🧪 Started tracking test suite",
+      testSuitePathAsString,
+      "with ID:",
+      trackingId,
+      "parent:",
+      parentId
+    );
     try {
-      const result = await actionFn();
+      const result = await actionFn(parentId);
       this.endActivity(trackingId);
-      return result;
+      console.log(
+      "🧪🧪 ended tracking test suite",
+      testSuitePathAsString,
+      "with ID:",
+      trackingId,
+      "parent:",
+      parentId
+    );
+      return Promise.resolve(result);
     } catch (error) {
       this.endActivity(trackingId, error instanceof Error ? error.message : String(error));
       throw error;
@@ -247,6 +271,56 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
       this.currentTestPath.pop();
     }
   }
+
+  // ##############################################################################################
+  async trackTest<T>(
+    testName: string,
+    // parentTrackingId: string | undefined,
+    actionFn: (parentId: string | undefined) => Promise<T>
+  ): Promise<T> {
+    const testParentId = this.getCurrentActivityId();
+    const trackingId = this.startTest(testName, testParentId);
+    try {
+      this.setTest(testName);
+      console.log(`🧪 Started tracking test ${testName} with ID: ${trackingId}, parent: ${testParentId}`);
+      const result = await actionFn(testParentId);
+      console.log(`🧪 Ended tracking test ${testName} with ID: ${trackingId}, parent: ${testParentId}`);
+      this.endActivity(trackingId);
+      this.setTest(undefined);
+      return Promise.resolve(result);
+    } catch (error) {
+      this.endActivity(trackingId, error instanceof Error ? error.message : String(error));
+      throw error;
+    } finally {
+      this.currentTestPath.pop();
+    }
+  }
+
+  // ##############################################################################################
+  async trackTestAssertion<T>(
+    testAssertionName: string,
+    // parentId: string | undefined,
+    actionFn: (parentId: string | undefined) => Promise<T>
+  ): Promise<T> {
+    const testAssertionParentId = this.getCurrentActivityId();
+    const trackingId = this.startTestAssertion(testAssertionName, testAssertionParentId);
+    try {
+      this.setTestAssertion(testAssertionName);
+      console.log(`🧪 Started tracking test assertion ${testAssertionName} with ID: ${trackingId}, parent: ${testAssertionParentId}`);
+      const result = await actionFn(testAssertionParentId);
+      // this.setTestAssertionResult(currentTestAssertionPath, testAssertionResult);
+      console.log(`🧪 Ended tracking test assertion ${testAssertionName} with ID: ${trackingId}, parent: ${testAssertionParentId}`);
+      this.endActivity(trackingId);
+      this.setTestAssertion(undefined);
+      return Promise.resolve(result);
+    } catch (error) {
+      this.endActivity(trackingId, error instanceof Error ? error.message : String(error));
+      throw error;
+    } finally {
+      this.currentTestPath.pop();
+    }
+  }
+
 
   // Test-specific methods for backwards compatibility with TestTracker
   startTestSuite(testSuite: string, parentId?: string): string {
@@ -341,24 +415,6 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
   // TEST ASSERTIONS
   // ##############################################################################################
   // ##############################################################################################
-  async trackTestAssertion<T>(
-    testAssertion: string,
-    parentId: string | undefined,
-    actionFn: () => Promise<T>
-  ): Promise<T> {
-    const trackingId = this.startTestAssertion(testAssertion, parentId);
-    try {
-      const result = await actionFn();
-      this.endActivity(trackingId);
-      return result;
-    } catch (error) {
-      this.endActivity(trackingId, error instanceof Error ? error.message : String(error));
-      throw error;
-    } finally {
-      this.currentTestPath.pop();
-    }
-  }
-
   startTestAssertion(testAssertion: string, parentId?: string): string {
     const id = this.generateId();
     const now = Date.now();
@@ -598,25 +654,6 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
   // ##############################################################################################
   // TEST
   // ##############################################################################################
-  // ##############################################################################################
-  async trackTest<T>(
-    test: string,
-    parentId: string | undefined,
-    actionFn: () => Promise<T>
-  ): Promise<T> {
-    const trackingId = this.startTest(test, parentId);
-    try {
-      const result = await actionFn();
-      this.endActivity(trackingId);
-      return result;
-    } catch (error) {
-      this.endActivity(trackingId, error instanceof Error ? error.message : String(error));
-      throw error;
-    } finally {
-      this.currentTestPath.pop();
-    }
-  }
-
   // ###############################################################################################
   startTest(test: string, parentId?: string): string {
     const id = this.generateId();
@@ -702,6 +739,44 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
 
   // ##############################################################################################
   // ##############################################################################################
+  // ##############################################################################################
+  // ##############################################################################################
+  // ##############################################################################################
+  // ##############################################################################################
+  // ##############################################################################################
+  // ##############################################################################################
+  // ##############################################################################################
+  // ##############################################################################################
+  // TRANSFORMERS
+  // ##############################################################################################
+  async trackTransformerRun<T>(
+    transformerName: string,
+    transformerType: string,
+    step: "build" | "runtime",
+    transformerParams: any,
+    parentId: string | undefined,
+    actionFn: () => Promise<T>
+  ): Promise<T> {
+    const trackingId = this.startTransformer(
+      transformerName,
+      transformerType,
+      step,
+      transformerParams,
+      parentId
+    );
+    try {
+      const result = await actionFn();
+      this.endTransformer(trackingId);
+      return result;
+    } catch (error) {
+      this.endTransformer(trackingId, error instanceof Error ? error.message : String(error));
+      throw error;
+    } finally {
+      // this.currentT.pop();
+    }
+  }
+  // ##############################################################################################
+  // ##############################################################################################
   // TRANSFORMERS
   // ##############################################################################################
   // ##############################################################################################
@@ -752,7 +827,6 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
 
     this.currentEvenStack.push(activityId);
     this.miroirEventService?.pushEventFromActivity(activity);
-    // this.currentTransformerPath.push(transformerName);
     console.log("MiroirActivityTracker.startTransformer transformerName:", transformerName);
     return activityId;
   }

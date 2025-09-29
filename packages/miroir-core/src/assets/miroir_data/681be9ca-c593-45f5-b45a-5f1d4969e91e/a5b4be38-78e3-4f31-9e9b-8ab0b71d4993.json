@@ -159,7 +159,6 @@
                 "runTestStep": "build",
                 "transformer": {
                   "transformerType": "parameterReference",
-                  "interpolation": "build",
                   "referenceName": "fileData"
                 },
                 "transformerParams": {
@@ -228,7 +227,6 @@
                   "interpolation": "build",
                   "applyTo": {
                     "transformerType": "parameterReference",
-                    "interpolation": "build",
                     "referenceName": "fileData"
                   }
                 },
@@ -245,7 +243,6 @@
                   "interpolation": "build",
                   "applyTo": {
                     "transformerType": "parameterReference",
-                    "interpolation": "build",
                     "referenceName": "smallStringArray"
                   }
                 },
@@ -957,7 +954,6 @@
                     "transformerName": "parameterReferenceForReferencePath",
                     "transformer": {
                       "transformerType": "parameterReference",
-                      "interpolation": "build",
                       "referencePath": ["a", "b", "c"]
                     },
                     "transformerParams": {
@@ -971,7 +967,6 @@
                     "transformerName": "parameterReference",
                     "transformer": {
                       "transformerType": "parameterReference",
-                      "interpolation": "build",
                       "referenceName": "nonExistentReference"
                     },
                     "transformerParams": {},
@@ -986,7 +981,6 @@
                     "transformerName": "parameterReference",
                     "transformer": {
                       "transformerType": "parameterReference",
-                      "interpolation": "build",
                       "referencePath": ["invalidPath"]
                     },
                     "transformerParams": {
