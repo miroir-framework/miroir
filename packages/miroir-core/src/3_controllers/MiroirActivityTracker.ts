@@ -9,15 +9,16 @@ import {
   MiroirActivityTrackerInterface,
   MiroirActivity,
   type TestAssertionPath,
-} from "../0_interfaces/3_controllers/MiroirEventTrackerInterface";
-import type { MiroirEventServiceInterface } from './MiroirEventService';
+} from "../0_interfaces/3_controllers/MiroirActivityTrackerInterface";
+import type { MiroirEventService, MiroirEventServiceInterface } from './MiroirEventService';
 
 
 export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
   private readonly CLEANUP_INTERVAL_MS = 60000; // 1 minute
   private readonly MAX_AGE_MS = 20 * 60 * 1000; // 20 minutes
 
-  private miroirEventService: MiroirEventServiceInterface | undefined;
+  // private miroirEventService: MiroirEventServiceInterface | undefined;
+  private miroirEventService: MiroirEventService | undefined;
   private activities: Map<string, MiroirActivity> = new Map();
   private currentEvenStack: string[] = []; // Stack to track nested actions
 
@@ -47,7 +48,8 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
   }
 
   // ##############################################################################################
-  setMiroirEventService(service: MiroirEventServiceInterface): void {
+  // setMiroirEventService(service: MiroirEventServiceInterface): void {
+  setMiroirEventService(service: MiroirEventService): void {
     this.miroirEventService = service;
   }
   // ###############################################################################################
@@ -766,13 +768,13 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
     );
     try {
       const result = await actionFn();
-      this.endTransformer(trackingId);
-      return result;
+      this.endActivity(trackingId);
+      // this.endTransformer(trackingId);
+      return Promise.resolve(result);
     } catch (error) {
-      this.endTransformer(trackingId, error instanceof Error ? error.message : String(error));
+      this.endActivity(trackingId, error instanceof Error ? error.message : String(error));
+      // this.endTransformer(trackingId, error instanceof Error ? error.message : String(error));
       throw error;
-    } finally {
-      // this.currentT.pop();
     }
   }
   // ##############################################################################################
@@ -826,47 +828,56 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
     }
 
     this.currentEvenStack.push(activityId);
+    const eventsBefore = this.miroirEventService?.events.size ?? 0;
     this.miroirEventService?.pushEventFromActivity(activity);
-    console.log("MiroirActivityTracker.startTransformer transformerName:", transformerName);
+    console.log(
+      "MiroirActivityTracker.startTransformer transformerName:",
+      transformerName,
+      "eventsBefore:",
+      eventsBefore,
+      "eventsAfter:",
+      this.miroirEventService?.events.size ?? 0
+    );
     return activityId;
   }
 
   // ###############################################################################################
   endTransformer(trackingId: string, result?: any, error?: string): void {
-    if (!this.transformerTrackingEnabled || !trackingId) {
-      return;
-    }
+    throw new Error("MiroirActivityTracker.endTransformer is not implemented yet");
+    // if (!this.transformerTrackingEnabled || !trackingId) {
+    //   return;
+    // }
 
-    const transformer = this.activities.get(trackingId);
-    if (!transformer) {
-      return;
-    }
+    // const transformer = this.activities.get(trackingId);
+    // if (!transformer) {
+    //   return;
+    // }
 
-    const now = Date.now();
-    transformer.endTime = now;
-    transformer.duration = now - transformer.startTime;
-    transformer.status = error ? "error" : "completed";
+    // const now = Date.now();
+    // transformer.endTime = now;
+    // transformer.duration = now - transformer.startTime;
+    // transformer.status = error ? "error" : "completed";
 
-    // Type guard for transformer events
-    if (transformer.activityType === "transformer") {
-      transformer.transformerResult = result;
-      if (error) {
-        transformer.transformerError = error;
-      }
-    }
+    // // Type guard for transformer events
+    // if (transformer.activityType === "transformer") {
+    //   transformer.transformerResult = result;
+    //   if (error) {
+    //     transformer.transformerError = error;
+    //   }
+    // }
 
-    // Common error property for all event types
-    if (error) {
-      transformer.error = error;
-    }
+    // // Common error property for all event types
+    // if (error) {
+    //   transformer.error = error;
+    // }
 
-    // Remove from action stack
-    const index = this.currentEvenStack.indexOf(trackingId);
-    if (index !== -1) {
-      this.currentEvenStack.splice(index, 1);
-    }
+    // // Remove from action stack
+    // const index = this.currentEvenStack.indexOf(trackingId);
+    // if (index !== -1) {
+    //   this.currentEvenStack.splice(index, 1);
+    // }
 
-    // this.currentTransformerPath.pop();
+    // // this.currentTransformerPath.pop();
   }
 
   isTransformerTrackingEnabled(): boolean {

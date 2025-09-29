@@ -159,21 +159,14 @@ export const ToolsPage: React.FC<any> = (
     }
   }, [context.miroirFundamentalJzodSchema, testResults]);
 
-  log.info(
-    "called jzodTypeCheck: resolvedTestResultsJzodSchema",
-    resolvedTestResultsJzodSchema,
-    context.miroirFundamentalJzodSchema,
-    // "rawSchema",
-    // rawSchema
-  );
-
-  // const currentEnumJzodSchemaResolver: JzodEnumSchemaToJzodElementResolver | undefined = useMemo(
-  //   () =>
-  //     context.miroirFundamentalJzodSchema
-  //       ? getCurrentEnumJzodSchemaResolver(currentMiroirModel, context.miroirFundamentalJzodSchema)
-  //       : undefined,
-  //   [context.miroirFundamentalJzodSchema, currentMiroirModel]
+  // log.info(
+  //   "called jzodTypeCheck: resolvedTestResultsJzodSchema",
+  //   resolvedTestResultsJzodSchema,
+  //   context.miroirFundamentalJzodSchema,
+  //   // "rawSchema",
+  //   // rawSchema
   // );
+
   const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> =
       getMemoizedReduxDeploymentsStateSelectorMap();
 
@@ -183,15 +176,15 @@ export const ToolsPage: React.FC<any> = (
   );
   
   const entityTransformerTestKey = adminConfigurationDeploymentMiroir.uuid + "_data_" + entityTransformerTest.uuid
-  log.info(
-    "Tools.tsx deploymentEntityStateSelectorMap",
-    deploymentEntityStateSelectorMap,
-    "entityTransformerTestKey",
-    entityTransformerTestKey,
-    Object.keys(deploymentEntityState).includes(entityTransformerTestKey),
-    "deploymentEntityState",
-    deploymentEntityState,
-  );
+  // log.info(
+  //   "Tools.tsx deploymentEntityStateSelectorMap",
+  //   deploymentEntityStateSelectorMap,
+  //   "entityTransformerTestKey",
+  //   entityTransformerTestKey,
+  //   Object.keys(deploymentEntityState).includes(entityTransformerTestKey),
+  //   "deploymentEntityState",
+  //   deploymentEntityState,
+  // );
   const transformerTestSuite_resolveConditionalSchema: Domain2QueryReturnType<any> | undefined =
     Object.keys(deploymentEntityState).includes(entityTransformerTestKey)
       ? (deploymentEntityStateSelectorMap.extractEntityInstance(
@@ -214,10 +207,10 @@ export const ToolsPage: React.FC<any> = (
           defaultMetaModelEnvironment
         ) as Domain2QueryReturnType<TransformerTestSuite>)
       : undefined;
-  log.info(
-    "Tools.tsx transformerTestSuite_resolveConditionalSchema",
-    transformerTestSuite_resolveConditionalSchema
-  );
+  // log.info(
+  //   "Tools.tsx transformerTestSuite_resolveConditionalSchema",
+  //   transformerTestSuite_resolveConditionalSchema
+  // );
   if (transformerTestSuite_resolveConditionalSchema && transformerTestSuite_resolveConditionalSchema instanceof Domain2ElementFailed) {
     throw new Error(
       `transformerTestSuite_resolveConditionalSchema not found in deploymentEntityState: ${JSON.stringify(
@@ -422,19 +415,19 @@ export const ToolsPage: React.FC<any> = (
 
   // ##############################################################################################
 
-  log.info(
-    "Tools.tsx render",
-    // currentEnumJzodSchemaResolver,
-    "testResults",
-    testResults,
-    "testSuitesResults",
-    testSuitesResults,
-    "testSuitesResults.context",
-    testSuitesResults.context,
-    // "resolvedTestResultsJzodSchema",
-    // resolvedTestResultsJzodSchema,
-    // (resolvedTestResultsJzodSchema as any)?.element,
-  );
+  // log.info(
+  //   "Tools.tsx render",
+  //   // currentEnumJzodSchemaResolver,
+  //   "testResults",
+  //   testResults,
+  //   "testSuitesResults",
+  //   testSuitesResults,
+  //   "testSuitesResults.context",
+  //   testSuitesResults.context,
+  //   // "resolvedTestResultsJzodSchema",
+  //   // resolvedTestResultsJzodSchema,
+  //   // (resolvedTestResultsJzodSchema as any)?.element,
+  // );
   const testSuiteKey = "resolveConditionalSchema";
 
   return (

@@ -642,7 +642,7 @@ export { MiroirContextInterface } from "./0_interfaces/3_controllers/MiroirConte
 export { 
   MiroirActivityTrackerInterface as MiroirEventTrackerInterface,
   MiroirActivity as MiroirEventTrackingData,
-} from "./0_interfaces/3_controllers/MiroirEventTrackerInterface.js";
+} from "./0_interfaces/3_controllers/MiroirActivityTrackerInterface.js";
 // export {
 //   TransformerEventServiceInterface,
 //   TransformerEntry,
@@ -943,6 +943,9 @@ export { restServerDefaultHandlers } from "./4_services/RestServer.js";
 export { generateRestServiceResponse } from "./4_services/RestTools.js";
 export {
   // displayTestSuiteResults,
+  RunTransformerTest,
+  RunTransformerTests,
+  runUnitTransformerTests,
   displayTestSuiteResultsDetails,
   runTransformerTestInMemory,
   runTransformerTestSuite,

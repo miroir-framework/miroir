@@ -113,7 +113,7 @@ import {
   type ResolveBuildTransformersTo,
   type Step,
 } from "./Transformers";
-import type { MiroirActivityTrackerInterface } from '../0_interfaces/3_controllers/MiroirEventTrackerInterface';
+import type { MiroirActivityTrackerInterface } from '../0_interfaces/3_controllers/MiroirActivityTrackerInterface';
 
 // Re-export types needed by other modules
 export type { ResolveBuildTransformersTo, Step } from "./Transformers";
@@ -3310,7 +3310,7 @@ export function transformer_extended_apply_wrapper<T extends MiroirModelEnvironm
 ): TransformerReturnType<any> {
   // Start transformer tracking
   // const eventTracker = TransformerGlobalContext.getEventTracker();
-  let trackingId: string = "";
+  // let trackingId: string = "";
   log.info(
     "transformer_extended_apply_wrapper called for",
     label,
@@ -3322,19 +3322,19 @@ export function transformer_extended_apply_wrapper<T extends MiroirModelEnvironm
     // "eventTracker?.isTransformerTrackingEnabled()",
     // eventTracker?.isTransformerTrackingEnabled()
   );
-  if (activityTracker?.isTransformerTrackingEnabled()) {
-    const transformerType = (transformer as any)?.transformerType || "unknown";
-    trackingId = activityTracker.startTransformer(
-      label || transformerType,
-      transformerType,
-      step,
-      {
-        transformerParams: Object.keys(transformerParams ?? {}),
-        contextResults: Object.keys(contextResults ?? {}),
-        resolveBuildTransformersTo
-      }
-    );
-  }
+  // if (activityTracker?.isTransformerTrackingEnabled()) {
+  //   const transformerType = (transformer as any)?.transformerType || "unknown";
+  //   trackingId = activityTracker.startTransformer(
+  //     label || transformerType,
+  //     transformerType,
+  //     step,
+  //     {
+  //       transformerParams: Object.keys(transformerParams ?? {}),
+  //       contextResults: Object.keys(contextResults ?? {}),
+  //       resolveBuildTransformersTo
+  //     }
+  //   );
+  // }
 
   try {
     const result = transformer_extended_apply(
@@ -3367,10 +3367,10 @@ export function transformer_extended_apply_wrapper<T extends MiroirModelEnvironm
         "result",
         JSON.stringify(result, null, 2)
       );
-      if (activityTracker?.isTransformerTrackingEnabled() && trackingId) {
-        // eventTracker.endTransformer(trackingId, undefined, result.queryFailure || "Transformer failed");
-        activityTracker.endTransformer(trackingId, result, result.queryFailure || "Transformer failed");
-      }
+      // if (activityTracker?.isTransformerTrackingEnabled() && trackingId) {
+      //   // eventTracker.endTransformer(trackingId, undefined, result.queryFailure || "Transformer failed");
+      //   activityTracker.endTransformer(trackingId, result, result.queryFailure || "Transformer failed");
+      // }
       return new TransformerFailure({
         queryFailure: "FailedTransformer",
         transformerPath: [...transformerPath, (transformer as any).transformerType],
@@ -3381,9 +3381,9 @@ export function transformer_extended_apply_wrapper<T extends MiroirModelEnvironm
       });
     } else {
       // End transformer tracking with success
-      if (activityTracker?.isTransformerTrackingEnabled() && trackingId) {
-        activityTracker.endTransformer(trackingId, result);
-      }
+      // if (activityTracker?.isTransformerTrackingEnabled() && trackingId) {
+      //   activityTracker.endTransformer(trackingId, result);
+      // }
       
       // log.info(
       //   "transformer_extended_apply_wrapper called for",
@@ -3406,9 +3406,9 @@ export function transformer_extended_apply_wrapper<T extends MiroirModelEnvironm
       "error",
       e
     );
-    if (activityTracker?.isTransformerTrackingEnabled() && trackingId) {
-      activityTracker.endTransformer(trackingId, undefined, e instanceof Error ? e.message : String(e));
-    }
+    // if (activityTracker?.isTransformerTrackingEnabled() && trackingId) {
+    //   activityTracker.endTransformer(trackingId, undefined, e instanceof Error ? e.message : String(e));
+    // }
     return new TransformerFailure({
       queryFailure: "FailedTransformer",
       transformerPath: transformerPath,

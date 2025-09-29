@@ -281,7 +281,20 @@ export interface MiroirActivityTrackerInterface {
    */
   resetContext(): void;
 
+  // ##############################################################################################
+  // ##############################################################################################
+  // ##############################################################################################
+  // ##############################################################################################
   // Transformer-specific methods
+  trackTransformerRun<T>(
+    transformerName: string,
+    transformerType: string,
+    step: "build" | "runtime",
+    transformerParams: any,
+    parentId: string | undefined,
+    actionFn: () => Promise<T>
+  ): Promise<T>;
+  
   /**
    * Start tracking a transformer execution
    * @param transformerName The name/label of the transformer

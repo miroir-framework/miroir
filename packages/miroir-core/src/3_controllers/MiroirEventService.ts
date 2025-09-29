@@ -4,7 +4,7 @@ import {
   type MiroirActivity_Test,
   type MiroirActivity,
   type MiroirActivity_Transformer,
-} from "../0_interfaces/3_controllers/MiroirEventTrackerInterface";
+} from "../0_interfaces/3_controllers/MiroirActivityTrackerInterface";
 import { LoggerGlobalContext } from "../4_services/LoggerContext";
 
 // Base interface for common log entry fields
@@ -113,6 +113,11 @@ export interface MiroirEventServiceInterface {
    * Export action logs as JSON
    */
   exportEvents(): string;
+
+  /**
+   * Subscribe to changes in the event list
+   */
+  subscribe(callback: (events: MiroirEvent[]) => void): () => void;
 }
 
 // ################################################################################################
@@ -127,7 +132,7 @@ export interface MiroirEventServiceInterface {
 export class MiroirEventService implements MiroirEventServiceInterface {
   public events: Map<string, MiroirEvent> = new Map(); // TODO: make private! should be accessed only via selectors / hooks
   public eventEntries: Map<string, MiroirEventLog> = new Map();
-  private eventSubscribers: Set<(actionLogs: MiroirEvent[]) => void> = new Set();
+  private eventSubscribers: Set<(events: MiroirEvent[]) => void> = new Set();
   private cleanupInterval: NodeJS.Timeout;
 
   // Configuration
@@ -136,11 +141,7 @@ export class MiroirEventService implements MiroirEventServiceInterface {
   private readonly MAX_ENTRIES_PER_ACTION_OR_TEST = 1000; // Prevent memory bloat
 
   constructor(private activityTracker: MiroirActivityTrackerInterface) {
-    // Start cleanup timer
-    this.cleanupInterval = setInterval(() => {
-      this.cleanup();
-    }, this.CLEANUP_INTERVAL_MS);
-
+    this.cleanupInterval = setInterval(() => this.cleanup(), this.CLEANUP_INTERVAL_MS);
     this.activityTracker.setMiroirEventService(this);
   }
 
@@ -175,8 +176,12 @@ export class MiroirEventService implements MiroirEventServiceInterface {
           currentEvent.activity.activityType !== "action"
         ) {
           throw new Error(
-            "Inconsistent state: action event not found or mismatched, log type action, event type " +
-              (currentEvent ? currentEvent.activity.activityType : "undefined")
+            "Inconsistent state: action event not found or mismatched, log type action, activity type " +
+              (currentActivityData.activityType ? currentActivityData.activityType : "undefined") +
+              " currentActivityId " +
+              currentActivityId +
+              " currentEvent " +
+              JSON.stringify(currentEvent, null, 2)
           );
         }
         logEntry = {
@@ -255,17 +260,116 @@ export class MiroirEventService implements MiroirEventServiceInterface {
       currentEvent.eventLogs.push(logEntry);
       currentEvent.logCounts[level]++;
       currentEvent.logCounts.total++;
+      this.eventEntries.set(logEntry.logId, logEntry);
+      this.notifySubscribers();
+    }
+  }
 
-      // Prevent memory bloat - remove oldest logs if too many
-      if (currentEvent.eventLogs.length > this.MAX_ENTRIES_PER_ACTION_OR_TEST) {
-        const removedLog = currentEvent.eventLogs.shift();
-        if (removedLog) {
-          this.eventEntries.delete(removedLog.logId);
-          currentEvent.logCounts[removedLog.level]--;
-          currentEvent.logCounts.total--;
-        }
+    // ##############################################################################################
+  pushEventFromActivity(trackingData: MiroirActivity) {
+    if (!this.events.has(trackingData.activityId)) {
+      // copies MiroirEventTrackingData to MiroirEvent
+      // Create event based on tracking type
+      let event: MiroirEvent = {
+        activity: trackingData,
+        eventLogs: [],
+        logCounts: {
+          trace: 0,
+          debug: 0,
+          info: 0,
+          warn: 0,
+          error: 0,
+          total: 0,
+        },
+      } as MiroirEvent;
+
+      this.events.set(trackingData.activityId, event);
+    } else {
+      // Update existing action status/timing and transformer results
+      const existing = this.events.get(trackingData.activityId)!;
+      existing.activity.endTime = trackingData.endTime;
+      existing.activity.status = trackingData.status;
+      // Update transformer-specific fields if they exist
+      if (
+        trackingData.activityType === "transformer" &&
+        existing.activity.activityType === "transformer"
+      ) {
+        existing.activity.transformerResult = trackingData.transformerResult;
+        existing.activity.transformerError = trackingData.transformerError;
       }
     }
+    this.notifySubscribers();
+  }
+
+  // // ##############################################################################################
+  // pushEventFromActivity(trackingData: MiroirActivity): void {
+  //   const existing = this.events.get(trackingData.activityId);
+  //   if (!existing) {
+  //     // TODO: use trackingData.activityType to discriminate event type
+  //     if (trackingData.activityType == "action") {
+  //       const event: ActionEvent = {
+  //         activity: trackingData,
+  //         eventLogs: [],
+  //         logCounts: { trace: 0, debug: 0, info: 0, warn: 0, error: 0, total: 0 },
+  //       };
+  //       this.events.set(trackingData.activityId, event);
+  //     } else if (trackingData.activityType == "testSuite" || trackingData.activityType == "test" || trackingData.activityType == "testAssertion") {
+  //       const event: TestEvent = {
+  //         activity: trackingData,
+  //         eventLogs: [],
+  //         logCounts: { trace: 0, debug: 0, info: 0, warn: 0, error: 0, total: 0 },
+  //       };
+  //       this.events.set(trackingData.activityId, event);
+  //     } else if (trackingData.activityType == "transformer") {
+  //       const event: TransformerEvent = {
+  //         activity: trackingData,
+  //         eventLogs: [],
+  //         logCounts: { trace: 0, debug: 0, info: 0, warn: 0, error: 0, total: 0 },
+  //       };
+  //       this.events.set(trackingData.activityId, event);
+  //     }
+  //   } else {
+  //     // Update existing event with completion data
+  //     existing.activity.endTime = trackingData.endTime;
+  //     existing.activity.status = trackingData.status;
+  //     if (
+  //       trackingData.activityType === "action" &&
+  //       existing.activity.activityType === "action"
+  //     ) {
+  //       existing.activity.error = trackingData.error;
+  //     }
+  //     if (
+  //       (trackingData.activityType === "testSuite" || trackingData.activityType === "test" || trackingData.activityType === "testAssertion") &&
+  //       (existing.activity.activityType === "testSuite" || existing.activity.activityType === "test" || existing.activity.activityType === "testAssertion")
+  //     ) {
+  //       existing.activity.error = trackingData.error;
+  //     }
+  //     if (
+  //       trackingData.activityType === "transformer" &&
+  //       existing.activity.activityType === "transformer"
+  //     ) {
+  //       existing.activity.transformerResult = trackingData.transformerResult;
+  //       existing.activity.transformerError = trackingData.transformerError;
+  //     }
+  //   }
+  //   this.notifySubscribers();
+  // }
+
+  // ##############################################################################################
+  private notifySubscribers(): void {
+    const allEvents = this.getAllEvents();
+    this.eventSubscribers.forEach(callback => callback(allEvents));
+  }
+
+  // ##############################################################################################
+  subscribe(callback: (events: MiroirEvent[]) => void): () => void {
+    this.eventSubscribers.add(callback);
+    // Immediately send the current list of events to the new subscriber
+    callback(this.getAllEvents());
+    // Return an unsubscribe function
+    return () => {
+      this.eventSubscribers.delete(callback);
+    };
   }
 
   getEvent(eventId: string): MiroirEvent | undefined {
@@ -350,6 +454,7 @@ export class MiroirEventService implements MiroirEventServiceInterface {
   clear(): void {
     this.events.clear();
     this.eventEntries.clear();
+    this.notifySubscribers();
   }
 
   exportEvents(): string {
@@ -375,41 +480,6 @@ export class MiroirEventService implements MiroirEventServiceInterface {
   }
 
   // ##############################################################################################
-  pushEventFromActivity(trackingData: MiroirActivity) {
-    if (!this.events.has(trackingData.activityId)) {
-      // copies MiroirEventTrackingData to MiroirEvent
-      // Create event based on tracking type
-      let event: MiroirEvent = {
-        activity: trackingData,
-        eventLogs: [],
-        logCounts: {
-          trace: 0,
-          debug: 0,
-          info: 0,
-          warn: 0,
-          error: 0,
-          total: 0,
-        },
-      } as MiroirEvent;
-
-      this.events.set(trackingData.activityId, event);
-    } else {
-      // Update existing action status/timing and transformer results
-      const existing = this.events.get(trackingData.activityId)!;
-      existing.activity.endTime = trackingData.endTime;
-      existing.activity.status = trackingData.status;
-      // Update transformer-specific fields if they exist
-      if (
-        trackingData.activityType === "transformer" &&
-        existing.activity.activityType === "transformer"
-      ) {
-        existing.activity.transformerResult = trackingData.transformerResult;
-        existing.activity.transformerError = trackingData.transformerError;
-      }
-    }
-  }
-
-  // ##############################################################################################
   private generateEventId(): string {
     return `log_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   }
@@ -417,21 +487,15 @@ export class MiroirEventService implements MiroirEventServiceInterface {
   // ##############################################################################################
   private cleanup(): void {
     const now = Date.now();
-    const cutoff = now - this.MAX_AGE_MS;
-
-    // Find actions to remove (older than MAX_AGE_MS and completed)
     const actionsToRemove: string[] = [];
-
-    for (const [eventId, actionLogs] of Array.from(this.events.entries())) {
+    this.events.forEach((event, eventId) => {
       if (
-        actionLogs.activity.status !== "running" &&
-        actionLogs.activity.startTime < cutoff
+        event.activity.status !== "running" &&
+        event.activity.startTime < now - this.MAX_AGE_MS
       ) {
         actionsToRemove.push(eventId);
       }
-    }
-
-    // Remove old actions and their log entries
+    });
     actionsToRemove.forEach((eventId) => {
       const actionLogs = this.events.get(eventId);
       if (actionLogs) {
@@ -442,5 +506,8 @@ export class MiroirEventService implements MiroirEventServiceInterface {
         this.events.delete(eventId);
       }
     });
+    if (actionsToRemove.length > 0) {
+      this.notifySubscribers();
+    }
   }
 }

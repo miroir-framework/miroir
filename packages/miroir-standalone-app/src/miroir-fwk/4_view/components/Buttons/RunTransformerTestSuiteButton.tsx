@@ -9,7 +9,8 @@ import {
   type TestSuiteResult,
   type TestSuiteListFilter,
   type TransformerReturnType,
-  type TransformerTestDefinition
+  type TransformerTestDefinition,
+  runUnitTransformerTests
 } from "miroir-core";
 
 
@@ -266,9 +267,11 @@ export const RunTransformerTestSuiteButton: React.FC<RunTransformerTestSuiteButt
       (transformerTestSuite as TransformerTestDefinition).definition,
       testFilter, // Use the provided filter
       // {testList: {"resolveConditionalSchema": ["error if no value found at given parentUuid path"]}}, // filter
-      runTransformerTestInMemory,
       defaultLibraryModelEnvironment,
-      miroirContextService.miroirContext.miroirActivityTracker // Pass the unified tracker
+      miroirContextService.miroirContext.miroirActivityTracker, // Pass the unified tracker
+      undefined, // parentTrackingId
+      true, // trackActionsBelow
+      runUnitTransformerTests
     );
 
     // Get all results using the new format

@@ -53,6 +53,7 @@ import { TransformerEventsPanel } from './TransformerEventsPanel';
 import { useReportPageContext } from '../Reports/ReportPageContext';
 import type { FoldedStateTree } from '../Reports/FoldedStateTreeUtils';
 import type { TransformerForBuildOrRuntime } from 'miroir-core';
+import type { TransformerForBuildPlusRuntime } from 'miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType';
 
 // ################################################################################################
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -465,12 +466,14 @@ export interface TransformerEditorProps {
 // ################################################################################################
 // ################################################################################################
 // ################################################################################################
-export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((props) => {
+// export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((props) => {
+export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
   const { deploymentUuid, entityUuid: initialEntityUuid } = props;
   const context = useMiroirContextService();
   const currentModel = useCurrentModel(deploymentUuid);
   const reportContext = useReportPageContext();
   const miroirMetaModel: MetaModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
+  const miroirContextService = useMiroirContextService();
 
   // Get persisted state from context
   const persistedState = context.toolsPageState.transformerEditor;
@@ -485,25 +488,19 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
   //   persistedState?.showAllInstances || false
   // );
 
-
   // const [persistedState, setPersistedState] = useState<ToolsPageState["transformerEditor"] | undefined>(
 
   // State to track the currently selected entity (with persistence)
-  const [selectedEntityUuid, setSelectedEntityUuid] = useState<Uuid>(
-    initialEntityUuid
-  );
+  const [selectedEntityUuid, setSelectedEntityUuid] = useState<Uuid>(initialEntityUuid);
 
   const currentMiroirModelEnvironment: MiroirModelEnvironment = useMemo(() => {
     return {
-      miroirFundamentalJzodSchema: context.miroirFundamentalJzodSchema?? miroirFundamentalJzodSchema as JzodSchema,
+      miroirFundamentalJzodSchema:
+        context.miroirFundamentalJzodSchema ?? (miroirFundamentalJzodSchema as JzodSchema),
       miroirMetaModel: miroirMetaModel,
       currentModel: currentModel,
     };
-  }, [
-    miroirMetaModel,
-    currentModel,
-    context.miroirFundamentalJzodSchema,
-  ]);
+  }, [miroirMetaModel, currentModel, context.miroirFundamentalJzodSchema]);
 
   // Entities are always defined in the 'model' section, sorted by name
   const currentReportDeploymentSectionEntities: Entity[] = useMemo(() => {
@@ -518,20 +515,20 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
 
   // Ensure selected entity is valid when available entities change
   useEffect(() => {
-    const availableEntityUuids = currentReportDeploymentSectionEntities?.map(e => e.uuid) || [];
+    const availableEntityUuids = currentReportDeploymentSectionEntities?.map((e) => e.uuid) || [];
     if (availableEntityUuids.length > 0 && !availableEntityUuids.includes(selectedEntityUuid)) {
       // If current selection is not available, default to the first available entity
       setSelectedEntityUuid(availableEntityUuids[0]);
     }
   }, [currentReportDeploymentSectionEntities, selectedEntityUuid]);
 
-    // Reset index when entity changes
+  // Reset index when entity changes
   useEffect(() => {
     setCurrentInstanceIndex(0);
     // Also reset to single instance mode when entity changes, but only if it's currently showing all
     // if (showAllInstances) {
-      // setShowAllInstances(false);
-      // context.updateTransformerEditorState({ showAllInstances: false });
+    // setShowAllInstances(false);
+    // context.updateTransformerEditorState({ showAllInstances: false });
     // }
   }, [selectedEntityUuid]); // Remove context from dependencies to prevent infinite refresh
 
@@ -543,18 +540,19 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
       (e) => e?.entityUuid === currentReportTargetEntity?.uuid
     );
 
-  const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> = useMemo(
-    () => getMemoizedReduxDeploymentsStateSelectorMap(),
-    []
-  );
+  const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> =
+    useMemo(() => getMemoizedReduxDeploymentsStateSelectorMap(), []);
 
   const deploymentEntityState: ReduxDeploymentsState = useSelector(
-    useCallback((state: ReduxStateWithUndoRedo) =>
-      deploymentEntityStateSelectorMap.extractState(
-        state.presentModelSnapshot.current,
-        () => ({}),
-        currentMiroirModelEnvironment
-      ), [deploymentEntityStateSelectorMap, currentMiroirModelEnvironment])
+    useCallback(
+      (state: ReduxStateWithUndoRedo) =>
+        deploymentEntityStateSelectorMap.extractState(
+          state.presentModelSnapshot.current,
+          () => ({}),
+          currentMiroirModelEnvironment
+        ),
+      [deploymentEntityStateSelectorMap, currentMiroirModelEnvironment]
+    )
   );
 
   // Fetch all instances of the target entity with stable reference
@@ -573,8 +571,9 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
     }
   }, [deploymentEntityState, currentMiroirModelEnvironment, deploymentUuid, selectedEntityUuid]);
 
-
-
+  // ##############################################################################################
+  // ##############################################################################################
+  // ##############################################################################################
   // Navigation functions for round-robin instance selection
   const navigateToNextInstance = useCallback(() => {
     if (entityInstances.length > 0) {
@@ -604,7 +603,6 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
     }
   }, [entityInstances.length, currentInstanceIndex]); // Remove context from dependencies
 
-
   // Handler for entity change (with persistence)
   const handleEntityChange = useCallback((newEntityUuid: Uuid) => {
     setSelectedEntityUuid(newEntityUuid);
@@ -617,23 +615,35 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
     const newShowAllInstances = !context.toolsPageState.transformerEditor?.showAllInstances;
     context.updateTransformerEditorState({ showAllInstances: newShowAllInstances });
   }, [context.toolsPageState.transformerEditor?.showAllInstances]); // Remove context from dependencies
+  // ##############################################################################################
+  // ##############################################################################################
+  // ##############################################################################################
 
-    // Select instance based on current index with stable reference
+  // Select instance based on current index with stable reference
   const selectedEntityInstance: EntityInstance | undefined = useMemo(() => {
     if (entityInstances.length === 0) return undefined;
     // Ensure index is within bounds (round-robin)
-    const validIndex = ((currentInstanceIndex % entityInstances.length) + entityInstances.length) % entityInstances.length;
+    const validIndex =
+      ((currentInstanceIndex % entityInstances.length) + entityInstances.length) %
+      entityInstances.length;
     return entityInstances[validIndex];
-  }, [entityInstances, context.toolsPageState.transformerEditor?.showAllInstances, currentInstanceIndex]);
+  }, [
+    entityInstances,
+    context.toolsPageState.transformerEditor?.showAllInstances,
+    currentInstanceIndex,
+  ]);
 
   // TransformerDefinition schema - memoized to avoid recalculation
-  const transformerDefinitionSchema: JzodElement = useMemo(() => ({
-    type: "schemaReference",
-    definition: {
-      absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-      relativePath: "transformerForBuildPlusRuntime",
-    },
-  }), []);
+  const transformerDefinitionSchema: JzodElement = useMemo(
+    () => ({
+      type: "schemaReference",
+      definition: {
+        absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+        relativePath: "transformerForBuildPlusRuntime",
+      },
+    }),
+    []
+  );
 
   // Initialize transformer definition with persistence
   // const [currentTransformerDefinition, setCurrentTransformerDefinition] = useState<any>(() => {
@@ -656,7 +666,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
   //     {} // relativeReferenceJzodContext
   //   );
   // });
-  const currentTransformerDefinition: TransformerForBuildOrRuntime =
+  const currentTransformerDefinition: TransformerForBuildPlusRuntime =
     context.toolsPageState.transformerEditor?.currentTransformerDefinition;
 
   log.info("TransformerEditor currentTransformerDefinition:", currentTransformerDefinition);
@@ -671,9 +681,9 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
   // State for transformation result
   // const [transformationResult, setTransformationResult] = useState<any>(null);
   // const [transformationError, setTransformationError] = useState<TransformerFailure | null>(null);
-  
+
   // Extract error path for highlighting problematic elements
-  
+
   // Separate fold state management for each panel (with persistence)
   // const [foldedEntityInstanceItems, setFoldedEntityInstanceItems] = useState<{ [k: string]: boolean }>(
   //   persistedState?.foldedEntityInstanceItems || {}
@@ -690,12 +700,19 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
       // Try to stringify as nicely as possible; safeStringify accepts a large maxLength to avoid truncation
       const text = safeStringify(currentTransformerDefinition, 1000000);
 
-      if (typeof navigator !== 'undefined' && navigator.clipboard && navigator.clipboard.writeText) {
+      if (
+        typeof navigator !== "undefined" &&
+        navigator.clipboard &&
+        navigator.clipboard.writeText
+      ) {
         await navigator.clipboard.writeText(text);
-      } else if (typeof (window as any) !== 'undefined' && typeof (window as any).require === 'function') {
+      } else if (
+        typeof (window as any) !== "undefined" &&
+        typeof (window as any).require === "function"
+      ) {
         // Electron fallback
         try {
-          const { clipboard } = (window as any).require('electron');
+          const { clipboard } = (window as any).require("electron");
           clipboard.writeText(text);
         } catch (e) {
           // ignore and fall through to legacy copy
@@ -703,41 +720,43 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
         }
       } else {
         // Legacy fallback using execCommand
-        const el = document.createElement('textarea');
+        const el = document.createElement("textarea");
         el.value = text;
         document.body.appendChild(el);
         el.select();
-        document.execCommand('copy');
+        document.execCommand("copy");
         document.body.removeChild(el);
       }
 
       setCopiedToClipboard(true);
       setTimeout(() => setCopiedToClipboard(false), 2000);
     } catch (error) {
-      log.error('Failed to copy transformer definition to clipboard', error);
+      log.error("Failed to copy transformer definition to clipboard", error);
     }
   }, [currentTransformerDefinition]);
 
   const clearTransformerDefinition = useCallback(() => {
     // Assumption: a 'constant' transformer has shape { transformerType: 'constant', value: ... }
     const defaultConstantTransformer: any = {
-      transformerType: 'constant',
-      interpolation: 'runtime',
+      transformerType: "constant",
+      interpolation: "runtime",
       value: "enter the wanted value here...", // Default to undefined value
     };
 
-    context.updateTransformerEditorState({ currentTransformerDefinition: defaultConstantTransformer });
+    context.updateTransformerEditorState({
+      currentTransformerDefinition: defaultConstantTransformer,
+    });
     // Clear previous transformation outputs
     // setTransformationResult(null);
     // setTransformationError(null);
   }, [context]);
-  
+
   // Memoized context results to avoid recreating on every execution
   const contextResults = useMemo(() => {
     if (showAllInstances) {
       // When showing all instances, target becomes an array of all instances
       if (entityInstances.length === 0) return {};
-      
+
       return {
         entityInstance: entityInstances,
         instance: entityInstances,
@@ -746,19 +765,19 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
         applyTo: entityInstances,
         // Also provide individual properties from the first instance for compatibility
         // (in case transformers expect single instance properties)
-        ...(entityInstances[0] || {})
+        ...(entityInstances[0] || {}),
       };
     } else {
       // When showing single instance, target is the selected instance
       if (!selectedEntityInstance) return {};
-      
+
       return {
         entityInstance: selectedEntityInstance,
         instance: selectedEntityInstance,
         // target: selectedEntityInstance,
         [defaultTransformerInput]: selectedEntityInstance,
         applyTo: selectedEntityInstance,
-        ...selectedEntityInstance
+        ...selectedEntityInstance,
       };
     }
   }, [showAllInstances, entityInstances, selectedEntityInstance]);
@@ -832,53 +851,98 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
   //   contextResults,
   // ]);
 
+  // useEffect(() => {
+  //   miroirContextService.miroirContext.miroirActivityTracker.resetResults();
+  // }, [miroirContextService.miroirContext.miroirActivityTracker, currentTransformerDefinition]);
+
   log.info("TransformerEditor contextResults:", contextResults);
-  const transformationResult: TransformerReturnType<any> = useMemo(() => {
-    if (
-      !currentTransformerDefinition ||
-      (showAllInstances ? entityInstances.length === 0 : !selectedEntityInstance)
-    ) {
-      return null;
-    }
+  const [transformationResult, setTransformationResult] = useState<TransformerReturnType<any>>();
 
-    try {
-      const result: TransformerReturnType<any> = transformer_extended_apply_wrapper(
-        context.miroirContext.miroirActivityTracker, // activityTracker
-        "runtime", // step
-        ["rootTransformer"], // transformerPath
-        "TransformerEditor", // label
-        currentTransformerDefinition, // transformer
-        { ...currentMiroirModelEnvironment, ...contextResults }, // transformerParams
-        contextResults, // contextResults - pass the instance to transform
-        "value" // resolveBuildTransformersTo
-      );
+  // const transformationResult: TransformerReturnType<any> = useMemo(() => {
+  useEffect(() => {
+    let ignore = false;
 
-      // // Check for Domain2ElementFailed pattern
-      // if (result && typeof result === "object" && "queryFailure" in result) {
-      //   setTransformationError(result);
-      //   return null;
-      // } else {
-      //   setTransformationError(null);
-      //   return result;
-      // }
-      return result;
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
-      log.error("Error applying transformer:", error);
-      // setTransformationError({
-      //   queryFailure: "FailedTransformer",
-      //   elementType: "Transformer",
-      //   transformerPath: [],
-      //   failureMessage: errorMessage,
-      // });
-      return ({
-        queryFailure: "FailedTransformer",
-        elementType: "Transformer",
-        transformerPath: [],
-        failureMessage: errorMessage,
-      });
-      // return null;
-    }
+    const runTransformation = async () => {
+      if (
+        !currentTransformerDefinition ||
+        (showAllInstances ? entityInstances.length === 0 : !selectedEntityInstance)
+      ) {
+        if (!ignore) setTransformationResult(undefined);
+        return;
+        // return null;
+      }
+      if (!ignore) {
+        try {
+          log.info("Applying transformer to instance(s)", {
+            transformer: currentTransformerDefinition,
+            showAllInstances,
+            instanceCount: showAllInstances ? entityInstances.length : 1,
+            target: showAllInstances ? entityInstances : selectedEntityInstance,
+          });
+          const transformerParams = { ...currentMiroirModelEnvironment, ...contextResults };
+          const result: TransformerReturnType<any> =
+            await miroirContextService.miroirContext.miroirActivityTracker.trackTransformerRun(
+              (currentTransformerDefinition as any)?.label ??
+                (currentTransformerDefinition as any)?.transformerType ??
+                "UnnamedTransformer",
+              (currentTransformerDefinition as any)?.transformerType as any,
+              "runtime",
+              transformerParams,
+              undefined, // parentId
+              () =>
+                transformer_extended_apply_wrapper(
+                  context.miroirContext.miroirActivityTracker, // activityTracker
+                  "runtime", // step
+                  ["rootTransformer"], // transformerPath
+                  "TransformerEditor", // label
+                  currentTransformerDefinition, // transformer
+                  transformerParams,
+                  contextResults, // contextResults - pass the instance to transform
+                  "value" // resolveBuildTransformersTo
+                )
+            );
+          setTransformationResult(result);
+          log.info("Applied transformer to instance(s)", {
+            transformer: currentTransformerDefinition,
+            showAllInstances,
+            instanceCount: showAllInstances ? entityInstances.length : 1,
+            target: showAllInstances ? entityInstances : selectedEntityInstance,
+            result,
+          });
+
+          // // Check for Domain2ElementFailed pattern
+          // if (result && typeof result === "object" && "queryFailure" in result) {
+          //   setTransformationError(result);
+          //   return null;
+          // } else {
+          //   setTransformationError(null);
+          //   return result;
+          // }
+          // return result;
+        } catch (error) {
+          const errorMessage = error instanceof Error ? error.message : String(error);
+          log.error("Error applying transformer:", error);
+          if (!ignore)
+            setTransformationResult({
+              queryFailure: "FailedTransformer",
+              elementType: "Transformer",
+              transformerPath: [],
+              failureMessage: errorMessage,
+            });
+          // return ({
+          //   queryFailure: "FailedTransformer",
+          //   elementType: "Transformer",
+          //   transformerPath: [],
+          //   failureMessage: errorMessage,
+          // });
+          // return null;
+        }
+      }
+    };
+    runTransformation();
+    return () => {
+      ignore = true;
+    };
   }, [
     currentTransformerDefinition,
     showAllInstances,
@@ -887,11 +951,16 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
     currentMiroirModelEnvironment,
     contextResults,
     context.miroirContext.miroirActivityTracker,
+    context.miroirContext,
+    context.toolsPageState,
+    context.toolsPageState.transformerEditor?.currentTransformerDefinition,
   ]);
 
   const innermostError = useMemo(
     () =>
-      transformationResult && typeof transformationResult == "object" && "queryFailure" in transformationResult
+      transformationResult &&
+      typeof transformationResult == "object" &&
+      "queryFailure" in transformationResult
         ? getInnermostTransformerError(transformationResult)
         : undefined,
     [transformationResult]
@@ -904,15 +973,39 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
     if (!currentTransformerDefinition) {
       return { type: "any" } as JzodElement;
     }
-    return (valueToJzod(transformationResult)??{ type: "any" }) as JzodElement;
+    return (valueToJzod(transformationResult) ?? { type: "any" }) as JzodElement;
   }, [transformationResult]);
-  
+
   // ################################################################################################
   // Handle transformer definition changes with debouncing (with persistence)
-  const handleTransformerDefinitionChange = useCallback(async (newTransformerDefinition: any) => {
-    log.info("handleTransformerDefinitionChange", newTransformerDefinition);
-    context.updateTransformerEditorState({ currentTransformerDefinition: newTransformerDefinition });
-  }, [context.updateTransformerEditorState]); // Remove context from dependencies
+  const handleTransformerDefinitionChange = useCallback(
+    async (newTransformerDefinition: any) => {
+      log.info("handleTransformerDefinitionChange", newTransformerDefinition);
+      miroirContextService.miroirContext.miroirActivityTracker.resetResults();
+      miroirContextService.miroirContext.miroirEventService.clear();
+
+      context.updateTransformerEditorState({
+        currentTransformerDefinition: newTransformerDefinition,
+      });
+    },
+    [
+      context,
+      context.updateTransformerEditorState,
+      miroirContextService,
+      miroirContextService.miroirContext,
+    ]
+  ); // Remove context from dependencies
+
+  log.info("Rendering TransformerEditor context.miroirContext.miroirEventService.events.size", context.miroirContext.miroirEventService.events.size)
+  // // ################################################################################################
+  // const transformerEventsPanel: JSX.Element = useMemo(() => {
+  //   log.info("Rendering new transformerEventsPanel with events:", context.miroirContext.miroirEventService.events);
+  //   return (
+  //     <>
+  //       <TransformerEventsPanel />
+  //     </>
+  //   );
+  // }, [transformationResult, context.miroirContext.miroirEventService.events.size]);
 
   return (
     <ThemedContainer>
@@ -1002,9 +1095,10 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((p
         </div>
       </div>
 
+      {/* {transformerEventsPanel} */}
       <TransformerEventsPanel />
 
       {/* <DebugPanel currentTransformerDefinition={currentTransformerDefinition} /> */}
     </ThemedContainer>
   );
-});
+};

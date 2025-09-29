@@ -186,6 +186,7 @@ export const TransformerEventsPanel: React.FC<TransformerEventsPanelProps> = ({
   const [isCollapsed, setIsCollapsed] = useState(false);
   const allEvents: MiroirEvent[] = useMiroirEvents();
 
+  log.info("Rendering TransformerEventsPanel", { allEvents, transformerFilter, isCollapsed });
   // Filter and sort events for display
   const displayEvents = useMemo(() => {
     if (!allEvents.length) return [];

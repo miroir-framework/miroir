@@ -19,7 +19,7 @@ import {
   TransformerFailure,
   type TransformerReturnType
 } from "../0_interfaces/2_domain/DomainElement";
-import type { MiroirActivityTrackerInterface, TestAssertionPath } from "../0_interfaces/3_controllers/MiroirEventTrackerInterface";
+import type { MiroirActivityTrackerInterface, TestAssertionPath } from "../0_interfaces/3_controllers/MiroirActivityTrackerInterface";
 import type { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { jsonify } from "../1_core/test-expect";
 import { transformer_extended_apply_wrapper } from "../2_domain/TransformersForRuntime";

@@ -563,7 +563,23 @@ export function useMiroirEvents(): MiroirEvent[] {
   if (!context) {
     throw new Error("useMiroirEvents must be used within a MiroirContextReactProvider");
   }
-  return context.miroirContext.miroirEventService.getAllEvents();
+  const eventService = context.miroirContext.miroirEventService;
+
+  const [events, setEvents] = useState<MiroirEvent[]>(() => eventService.getAllEvents());
+
+  useEffect(() => {
+    const unsubscribe = eventService.subscribe((newEvents) => {
+      startTransition(() => {
+        setEvents(newEvents);
+      });
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, [eventService]);
+
+  return events;
 }
 
 // #############################################################################################

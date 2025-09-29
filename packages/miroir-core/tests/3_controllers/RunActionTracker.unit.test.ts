@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { MiroirActivityTracker } from '../../src/3_controllers/MiroirActivityTracker';
-import { MiroirActivityTrackerInterface } from '../../src/0_interfaces/3_controllers/MiroirEventTrackerInterface';
+import { MiroirActivityTrackerInterface } from '../../src/0_interfaces/3_controllers/MiroirActivityTrackerInterface';
 
 describe('MiroirActivityTracker', () => {
   let tracker: MiroirActivityTrackerInterface;

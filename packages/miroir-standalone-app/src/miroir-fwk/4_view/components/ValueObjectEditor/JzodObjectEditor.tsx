@@ -408,16 +408,16 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
 
   const reportContext = useReportPageContext();
 
-  log.info("JzodObjectEditor",
-    count,
-    "Rendering JzodObjectEditor for props.rootLessListKeyArray",
-    props.rootLessListKeyArray,
-    "typeCheckKeyMap[props.rootLessListKey]",
-    typeCheckKeyMap ? typeCheckKeyMap[props.rootLessListKey] : undefined,
-    // reportContext.isNodeFolded(props.rootLessListKeyArray),
-    // "reportContext.foldedObjectAttributeOrArrayItems",
-    // reportContext.foldedObjectAttributeOrArrayItems,
-  );
+  // log.info("JzodObjectEditor",
+  //   count,
+  //   "Rendering JzodObjectEditor for props.rootLessListKeyArray",
+  //   props.rootLessListKeyArray,
+  //   "typeCheckKeyMap[props.rootLessListKey]",
+  //   typeCheckKeyMap ? typeCheckKeyMap[props.rootLessListKey] : undefined,
+  //   // reportContext.isNodeFolded(props.rootLessListKeyArray),
+  //   // "reportContext.foldedObjectAttributeOrArrayItems",
+  //   // reportContext.foldedObjectAttributeOrArrayItems,
+  // );
 
   const currentTypeCheckKeyMap = typeCheckKeyMap ? typeCheckKeyMap[rootLessListKey] : undefined;
 
@@ -962,16 +962,11 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
             currentTypeCheckKeyMap.resolvedSchema.tag.value.editorButton && (
               <span>
                 {(() => {
-                  log.info("JzodObjectEditor rendering editorButton", 
-                    "rootLessListKey", rootLessListKey,
-                    "editorButton", currentTypeCheckKeyMap.resolvedSchema.tag.value.editorButton,
-                    "tag.value", JSON.stringify(currentTypeCheckKeyMap.resolvedSchema.tag.value)
-                  );
-                  console.log("JzodObjectEditor rendering editorButton", {
-                    rootLessListKey,
-                    editorButton: currentTypeCheckKeyMap.resolvedSchema.tag.value.editorButton,
-                    tagValue: currentTypeCheckKeyMap.resolvedSchema.tag.value
-                  });
+                  // log.info("JzodObjectEditor rendering editorButton", 
+                  //   "rootLessListKey", rootLessListKey,
+                  //   "editorButton", currentTypeCheckKeyMap.resolvedSchema.tag.value.editorButton,
+                  //   "tag.value", JSON.stringify(currentTypeCheckKeyMap.resolvedSchema.tag.value)
+                  // );
                   return null;
                 })()}
                 {/* {JSON.stringify((currentTypeCheckKeyMap?.resolvedSchema.tag as any)?.value) ??

@@ -1,4 +1,4 @@
-import { MiroirActivityTrackerInterface } from "../0_interfaces/3_controllers/MiroirEventTrackerInterface";
+import { MiroirActivityTrackerInterface } from "../0_interfaces/3_controllers/MiroirActivityTrackerInterface";
 
 export class TransformerGlobalContext {
   private static eventTracker: MiroirActivityTrackerInterface | undefined = undefined;
