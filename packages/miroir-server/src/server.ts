@@ -9,7 +9,6 @@ import log from 'loglevelnext'; // TODO: use this? or plain "console" log?
 
 import {
   ConfigurationService,
-  ConsoleInterceptor,
   LoggerFactoryInterface,
   LoggerInterface,
   LoggerOptions,

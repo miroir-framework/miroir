@@ -6,7 +6,6 @@ import { fetch as crossFetch } from "cross-fetch";
 import {
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
-  ConsoleInterceptor,
   displayTestSuiteResults,
   DomainControllerInterface,
   entityAuthor,

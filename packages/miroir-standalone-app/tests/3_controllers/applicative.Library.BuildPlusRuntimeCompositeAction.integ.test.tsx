@@ -8,7 +8,6 @@ import {
   AdminApplicationDeploymentConfiguration,
   adminConfigurationDeploymentMiroir,
   ConfigurationService,
-  ConsoleInterceptor,
   defaultMiroirMetaModel,
   displayTestSuiteResultsDetails,
   DomainControllerInterface,

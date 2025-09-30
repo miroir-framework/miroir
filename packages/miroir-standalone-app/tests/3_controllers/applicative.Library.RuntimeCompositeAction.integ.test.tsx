@@ -19,7 +19,6 @@ import {
   book6,
   CompositeAction,
   ConfigurationService,
-  ConsoleInterceptor,
   defaultMiroirMetaModel,
   displayTestSuiteResultsDetails,
   DomainAction,

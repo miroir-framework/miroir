@@ -55,7 +55,6 @@ import {
 } from "../2_domain/transformersTests_miroir.data";
 import { MiroirActivityTracker } from '../../src/3_controllers/MiroirActivityTracker';
 import { MiroirEventService } from '../../src/3_controllers/MiroirEventService';
-import { ConsoleInterceptor } from '../../src/4_services/ConsoleInterceptor';
 
 // Access the test file pattern from Vitest's process arguments
 const vitestArgs = process.argv.slice(2);

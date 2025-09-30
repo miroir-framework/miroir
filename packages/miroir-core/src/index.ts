@@ -923,7 +923,6 @@ export { ErrorModelStore } from "./3_controllers/ErrorHandling/ErrorModelStore.j
 export { MiroirContext } from "./3_controllers/MiroirContext.js";
 export { MiroirActivityTracker } from "./3_controllers/MiroirActivityTracker.js";
 // export { TransformerEventService } from "./3_controllers/TransformerEventService.js";
-export { ConsoleInterceptor } from "./4_services/ConsoleInterceptor.js";
 export { modelInitialize } from "./3_controllers/ModelInitializer.js";
 export { LoggerGlobalContext } from "./4_services/LoggerContext.js";
 export { TransformerGlobalContext } from "./4_services/TransformerContext.js";

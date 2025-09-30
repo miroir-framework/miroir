@@ -15,7 +15,6 @@ import {
   book4,
   book5,
   book6,
-  ConsoleInterceptor,
   DomainControllerInterface,
   entityAuthor,
   entityBook,

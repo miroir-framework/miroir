@@ -16,7 +16,6 @@ import {
   AdminApplicationDeploymentConfiguration,
   CompositeAction,
   ConfigurationService,
-  ConsoleInterceptor,
   DeploymentConfiguration,
   DomainAction,
   DomainControllerInterface,

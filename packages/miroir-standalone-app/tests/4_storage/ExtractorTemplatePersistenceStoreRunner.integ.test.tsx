@@ -16,7 +16,6 @@ import {
   book5,
   book6,
   ConfigurationService,
-  ConsoleInterceptor,
   defaultLevels,
   defaultMiroirMetaModel,
   DomainControllerInterface,

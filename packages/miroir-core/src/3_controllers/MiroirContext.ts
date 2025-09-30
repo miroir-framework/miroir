@@ -1,8 +1,6 @@
 import { MiroirConfigClient, MiroirConfigServer } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { MiroirContextInterface } from "../0_interfaces/3_controllers/MiroirContextInterface";
 import { MiroirActivityTrackerInterface } from "../0_interfaces/3_controllers/MiroirActivityTrackerInterface";
-import { ConsoleInterceptor } from "../4_services/ConsoleInterceptor";
-import { MiroirActivityTracker } from "./MiroirActivityTracker";
 import { MiroirEventService } from "./MiroirEventService";
 // import { TransformerEventService } from "./TransformerEventService";
 

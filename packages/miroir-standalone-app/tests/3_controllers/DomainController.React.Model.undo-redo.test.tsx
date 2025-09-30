@@ -4,7 +4,6 @@ import { describe, expect } from 'vitest';
 
 import {
   ConfigurationService,
-  ConsoleInterceptor,
   DomainAction,
   DomainControllerInterface,
   Entity,

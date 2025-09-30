@@ -12,7 +12,6 @@ import {
 
 import {
   ConfigurationService,
-  ConsoleInterceptor,
   expect,
   LoggerInterface,
   MiroirActivityTracker,

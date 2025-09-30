@@ -14,7 +14,6 @@ import {
   book4,
   book5,
   book6,
-  ConsoleInterceptor,
   displayTestSuiteResults,
   DomainControllerInterface,
   entityAuthor,

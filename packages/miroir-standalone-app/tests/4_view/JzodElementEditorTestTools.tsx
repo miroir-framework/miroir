@@ -11,7 +11,6 @@ import {
   Action2ReturnType,
   adminConfigurationDeploymentMiroir,
   ConfigurationService,
-  ConsoleInterceptor,
   defaultMiroirMetaModel,
   DomainControllerInterface,
   entityAuthor,

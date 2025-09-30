@@ -2,7 +2,6 @@ import * as vitest from 'vitest';
 import { defaultMetaModelEnvironment } from '../../src/1_core/Model';
 import { MiroirActivityTracker } from '../../src/3_controllers/MiroirActivityTracker';
 import { MiroirEventService } from '../../src/3_controllers/MiroirEventService';
-import { ConsoleInterceptor } from '../../src/4_services/ConsoleInterceptor';
 import {
   runUnitTransformerTests,
   transformerTestsDisplayResults

@@ -8,7 +8,6 @@ import {
   Action2VoidReturnType,
   ActionError,
   ConfigurationService,
-  ConsoleInterceptor,
   DomainControllerInterface,
   DomainElementType,
   EntityDefinition,
