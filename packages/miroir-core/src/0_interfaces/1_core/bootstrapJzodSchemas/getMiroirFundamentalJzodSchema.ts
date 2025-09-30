@@ -25,7 +25,7 @@ import {
   transformerForBuildPlusRuntimeNames,
   transformerForRuntimeNames
 } from "../../../2_domain/Transformers";
-import { MiroirLoggerFactory } from "../../../4_services/LoggerFactory";
+import { MiroirLoggerFactory } from "../../../4_services/MiroirLoggerFactory";
 import { packageName } from "../../../constants";
 import { LoggerInterface } from "../../4-services/LoggerInterface";
 import { testSuitesResults } from "../../4-services/TestInterface";

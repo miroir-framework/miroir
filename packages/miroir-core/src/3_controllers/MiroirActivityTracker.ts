@@ -277,16 +277,16 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
   // ##############################################################################################
   async trackTest<T>(
     testName: string,
-    // parentTrackingId: string | undefined,
+    parentTrackingId: string | undefined,
     actionFn: (parentId: string | undefined) => Promise<T>
   ): Promise<T> {
-    const testParentId = this.getCurrentActivityId();
-    const trackingId = this.startTest(testName, testParentId);
+    // const testParentId = this.getCurrentActivityId();
+    const trackingId = this.startTest(testName, parentTrackingId);
     try {
       this.setTest(testName);
-      console.log(`🧪 Started tracking test ${testName} with ID: ${trackingId}, parent: ${testParentId}`);
-      const result = await actionFn(testParentId);
-      console.log(`🧪 Ended tracking test ${testName} with ID: ${trackingId}, parent: ${testParentId}`);
+      console.log(`🧪 Started tracking test ${testName} with ID: ${trackingId}, parent: ${parentTrackingId}`);
+      const result = await actionFn(parentTrackingId);
+      console.log(`🧪 Ended tracking test ${testName} with ID: ${trackingId}, parent: ${parentTrackingId}`);
       this.endActivity(trackingId);
       this.setTest(undefined);
       return Promise.resolve(result);
@@ -301,17 +301,17 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
   // ##############################################################################################
   async trackTestAssertion<T>(
     testAssertionName: string,
-    // parentId: string | undefined,
+    parentTrackingId: string | undefined,
     actionFn: (parentId: string | undefined) => Promise<T>
   ): Promise<T> {
-    const testAssertionParentId = this.getCurrentActivityId();
-    const trackingId = this.startTestAssertion(testAssertionName, testAssertionParentId);
+    // const testAssertionParentId = this.getCurrentActivityId();
+    const trackingId = this.startTestAssertion(testAssertionName, parentTrackingId);
     try {
       this.setTestAssertion(testAssertionName);
-      console.log(`🧪 Started tracking test assertion ${testAssertionName} with ID: ${trackingId}, parent: ${testAssertionParentId}`);
-      const result = await actionFn(testAssertionParentId);
+      console.log(`🧪 Started tracking test assertion ${testAssertionName} with ID: ${trackingId}, parent: ${parentTrackingId}`);
+      const result = await actionFn(parentTrackingId);
       // this.setTestAssertionResult(currentTestAssertionPath, testAssertionResult);
-      console.log(`🧪 Ended tracking test assertion ${testAssertionName} with ID: ${trackingId}, parent: ${testAssertionParentId}`);
+      console.log(`🧪 Ended tracking test assertion ${testAssertionName} with ID: ${trackingId}, parent: ${parentTrackingId}`);
       this.endActivity(trackingId);
       this.setTestAssertion(undefined);
       return Promise.resolve(result);
@@ -844,40 +844,6 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
   // ###############################################################################################
   endTransformer(trackingId: string, result?: any, error?: string): void {
     throw new Error("MiroirActivityTracker.endTransformer is not implemented yet");
-    // if (!this.transformerTrackingEnabled || !trackingId) {
-    //   return;
-    // }
-
-    // const transformer = this.activities.get(trackingId);
-    // if (!transformer) {
-    //   return;
-    // }
-
-    // const now = Date.now();
-    // transformer.endTime = now;
-    // transformer.duration = now - transformer.startTime;
-    // transformer.status = error ? "error" : "completed";
-
-    // // Type guard for transformer events
-    // if (transformer.activityType === "transformer") {
-    //   transformer.transformerResult = result;
-    //   if (error) {
-    //     transformer.transformerError = error;
-    //   }
-    // }
-
-    // // Common error property for all event types
-    // if (error) {
-    //   transformer.error = error;
-    // }
-
-    // // Remove from action stack
-    // const index = this.currentEvenStack.indexOf(trackingId);
-    // if (index !== -1) {
-    //   this.currentEvenStack.splice(index, 1);
-    // }
-
-    // // this.currentTransformerPath.pop();
   }
 
   isTransformerTrackingEnabled(): boolean {

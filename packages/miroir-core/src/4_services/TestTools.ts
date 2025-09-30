@@ -27,7 +27,7 @@ import { MiroirActivityTracker } from "../3_controllers/MiroirActivityTracker";
 import { packageName } from "../constants";
 import { circularReplacer } from '../tools';
 import { cleanLevel } from "./constants";
-import { MiroirLoggerFactory } from "./LoggerFactory";
+import { MiroirLoggerFactory } from "./MiroirLoggerFactory";
 import { ignorePostgresExtraAttributes, isJson, isJsonArray, removeUndefinedProperties, unNullify } from "./otherTools";
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -183,9 +183,11 @@ export const runUnitTransformerTests: RunTransformerTests = {
   ): Promise<void> => {
     await miroirActivityTracker.trackTest(
       transformerTest.transformerTestLabel ?? transformerTest.transformerName,
+      parentTrackingId,
       async (parentTrackingId: string | undefined) => {
         await miroirActivityTracker.trackTestAssertion(
           transformerTest.transformerTestLabel ?? transformerTest.transformerName,
+          parentTrackingId,
           async (parentTrackingId: string | undefined) => {
             await runTransformerTests._runTransformerTest(
               localVitest,
@@ -722,7 +724,7 @@ export function runTransformerIntegrationTest(sqlDbDataStore: any) {
           "caught error from vitest.expect",
           error
         );
-        miroirActivityTracker.setTestAssertionResult(currentTestAssertionPath,{
+        miroirActivityTracker.setTestAssertionResult(currentTestAssertionPath, {
           assertionName: testPathName,
           assertionResult: "error",
           assertionExpectedValue: expectedValue,

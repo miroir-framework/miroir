@@ -30,16 +30,6 @@ const shouldSkip = RUN_TEST !== testSuiteName;
 // ##################################################################################################
 const miroirActivityTracker = new MiroirActivityTracker();
 const miroirEventService = new MiroirEventService(miroirActivityTracker);
-const logInterceptor = new ConsoleInterceptor({
-  eventHandlers: {
-    actionOrTestLogService: miroirEventService,
-    actionOrTestTracker: miroirActivityTracker
-  }
-});
-
-// Start intercepting logs
-logInterceptor.start();
-
 
 afterAll(() => {
   if (!shouldSkip) {

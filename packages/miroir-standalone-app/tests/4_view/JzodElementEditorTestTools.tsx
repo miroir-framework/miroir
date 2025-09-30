@@ -11,6 +11,7 @@ import {
   Action2ReturnType,
   adminConfigurationDeploymentMiroir,
   ConfigurationService,
+  ConsoleInterceptor,
   defaultMiroirMetaModel,
   DomainControllerInterface,
   entityAuthor,
@@ -31,7 +32,9 @@ import {
   LocalCacheInterface,
   menuDefaultLibrary,
   MetaModel,
+  MiroirActivityTracker,
   MiroirContext,
+  MiroirEventService,
   PersistenceStoreControllerManager,
   reportAuthorDetails,
   reportAuthorList,
@@ -560,8 +563,13 @@ export const getJzodElementEditorForTest: (pageLabel: string) => React.FC<JzodEl
 export function getWrapperForLocalJzodElementEditor(
   isPerformanceTest: boolean = false,
 ): React.FC<any> {
-  // const miroirContext: MiroirContext = new MiroirContext(currentMiroirConfig);
-  const miroirContext: MiroirContext = new MiroirContext(undefined as any);
+  const miroirActivityTracker = new MiroirActivityTracker();
+  const miroirEventService = new MiroirEventService(miroirActivityTracker);
+  const miroirContext: MiroirContext = new MiroirContext(
+    miroirActivityTracker,
+    miroirEventService,
+    undefined as any,
+  );
   const theme = createTheme(testThemeParams);
   
   ConfigurationService.registerTestImplementation({ expect: expect as any });

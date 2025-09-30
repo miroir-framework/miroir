@@ -62,7 +62,7 @@ import { defaultMiroirMetaModel, metaModelEntities, miroirModelEntities } from "
 import { resolveCompositeActionTemplate } from "../2_domain/ResolveCompositeActionTemplate";
 import { transformer_extended_apply, transformer_extended_apply_wrapper } from "../2_domain/TransformersForRuntime.js";
 import { LoggerGlobalContext } from '../4_services/LoggerContext.js';
-import { MiroirLoggerFactory } from "../4_services/LoggerFactory";
+import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory.js";
 import { packageName } from "../constants";
 
 const selfApplicationMiroir = require('../assets/miroir_data/a659d350-dd97-4da9-91de-524fa01745dc/21840247-b5b1-4344-baec-f818f4797d92.json');

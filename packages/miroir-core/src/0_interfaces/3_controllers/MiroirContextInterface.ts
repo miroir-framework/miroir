@@ -7,7 +7,6 @@ import { TransformerEventServiceInterface } from "./TransformerEventInterface";
 export interface MiroirContextInterface {
   miroirActivityTracker: MiroirActivityTrackerInterface,
   miroirEventService: MiroirEventService,
-  logInterceptor: ConsoleInterceptor,
   // transformerEventService: TransformerEventServiceInterface,
   getMiroirConfig(): MiroirConfigClient | MiroirConfigServer | undefined,
 }

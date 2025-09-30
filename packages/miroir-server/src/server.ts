@@ -9,11 +9,14 @@ import log from 'loglevelnext'; // TODO: use this? or plain "console" log?
 
 import {
   ConfigurationService,
+  ConsoleInterceptor,
   LoggerFactoryInterface,
   LoggerInterface,
   LoggerOptions,
+  MiroirActivityTracker,
   MiroirConfigServer,
   MiroirContext,
+  MiroirEventService,
   MiroirLoggerFactory,
   PersistenceStoreControllerManager,
   SpecificLoggerOptionsMap,
@@ -108,7 +111,12 @@ miroirFileSystemStoreSectionStartup();
 miroirIndexedDbStoreSectionStartup();
 miroirPostgresStoreSectionStartup();
 
+const miroirActivityTracker = new MiroirActivityTracker();
+const miroirEventService = new MiroirEventService(miroirActivityTracker);
+
 await MiroirLoggerFactory.startRegisteredLoggers(
+  miroirActivityTracker,
+  miroirEventService,
   loglevelnext,
   loggerOptions
   // (defaultLevels as any)[(miroirConfig as any).server.defaultLevel],
@@ -116,7 +124,12 @@ await MiroirLoggerFactory.startRegisteredLoggers(
   // (miroirConfig as any).server.specificLoggerOptions
 );
 
-const miroirContext = new MiroirContext(miroirConfig);
+
+const miroirContext = new MiroirContext(
+  miroirActivityTracker,
+  miroirEventService,
+  miroirConfig
+);
 
 const persistenceStoreControllerManager = new PersistenceStoreControllerManager(
   ConfigurationService.adminStoreFactoryRegister,

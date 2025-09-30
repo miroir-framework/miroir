@@ -6,7 +6,7 @@ import { TestImplementation } from "../0_interfaces/1_core/TestImplementation";
 import { ApplicationSection } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { AdminStoreFactoryRegister, PersistenceStoreAdminSectionFactory, PersistenceStoreSectionFactory, StoreSectionFactoryRegister } from "../0_interfaces/4-services/PersistenceStoreControllerInterface";
-import { MiroirLoggerFactory } from "../4_services/LoggerFactory";
+import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
 

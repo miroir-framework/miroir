@@ -64,12 +64,6 @@ console.log("@@@@@@@@@@@@@@@@@@ File Pattern:", filePattern);
 
 const miroirActivityTracker = new MiroirActivityTracker();
 const miroirEventService = new MiroirEventService(miroirActivityTracker);
-const logInterceptor = new ConsoleInterceptor({
-  eventHandlers: {
-    actionOrTestLogService: miroirEventService,
-    actionOrTestTracker: miroirActivityTracker
-  }
-});
 
 // console.log("@@@@@@@@@@@@@@@@@@ miroirConfig", miroirConfig);
 

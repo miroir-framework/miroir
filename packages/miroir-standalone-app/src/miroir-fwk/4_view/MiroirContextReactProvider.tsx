@@ -360,7 +360,7 @@ export function MiroirContextReactProvider(props: {
   // const value = useMemo<MiroirReactContext>(()=>({
   const value = useMemo<MiroirReactContext>(
     () => ({
-      miroirContext: props.miroirContext || new MiroirContext(undefined),
+      miroirContext: props.miroirContext,
       domainController: props.domainController,
       deploymentUuid,
       // setDeploymentUuid:(...args)=>{log.info('setDeploymentUuid',args); return setDeploymentUuid1(...args)},

@@ -858,6 +858,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
   log.info("TransformerEditor contextResults:", contextResults);
   const [transformationResult, setTransformationResult] = useState<TransformerReturnType<any>>();
 
+  // ##############################################################################################
   // const transformationResult: TransformerReturnType<any> = useMemo(() => {
   useEffect(() => {
     let ignore = false;

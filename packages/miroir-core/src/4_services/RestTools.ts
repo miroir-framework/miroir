@@ -3,7 +3,7 @@ import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { HttpResponseBodyFormat } from "../0_interfaces/4-services/PersistenceInterface";
 import { packageName } from "../constants";
 
-import { MiroirLoggerFactory } from "./LoggerFactory";
+import { MiroirLoggerFactory } from "./MiroirLoggerFactory";
 import { cleanLevel } from "./constants";
 
 let log: LoggerInterface = console as any as LoggerInterface;

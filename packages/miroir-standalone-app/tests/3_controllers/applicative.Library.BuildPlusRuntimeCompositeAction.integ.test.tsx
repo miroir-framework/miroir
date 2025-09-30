@@ -8,6 +8,7 @@ import {
   AdminApplicationDeploymentConfiguration,
   adminConfigurationDeploymentMiroir,
   ConfigurationService,
+  ConsoleInterceptor,
   defaultMiroirMetaModel,
   displayTestSuiteResultsDetails,
   DomainControllerInterface,
@@ -15,8 +16,10 @@ import {
   LoggerGlobalContext,
   LoggerInterface,
   LoggerOptions,
+  MiroirActivityTracker,
   MiroirContext,
   miroirCoreStartup,
+  MiroirEventService,
   MiroirLoggerFactory,
   PersistenceStoreControllerManagerInterface,
   resetAndInitApplicationDeployment,
@@ -63,6 +66,9 @@ const RUN_TEST= process.env.RUN_TEST
 const myConsoleLog = (...args: any[]) => console.log(testSuiteNameForBuildPlusRuntimeCompositeAction, ...args);
 myConsoleLog(testSuiteNameForBuildPlusRuntimeCompositeAction, "received env", JSON.stringify(env, null, 2));
 
+const miroirActivityTracker = new MiroirActivityTracker();
+const miroirEventService = new MiroirEventService(miroirActivityTracker);
+
 let miroirConfig:any;
 let loggerOptions:LoggerOptions;
 let log:LoggerInterface = console as any as LoggerInterface;
@@ -87,6 +93,8 @@ myConsoleLog(
 );
 myConsoleLog("received loggerOptions", JSON.stringify(loggerOptions, null, 2));
 MiroirLoggerFactory.startRegisteredLoggers(
+  miroirActivityTracker,
+  miroirEventService,
   loglevelnext,
   loggerOptions,
 );

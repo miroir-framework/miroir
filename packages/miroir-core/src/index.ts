@@ -927,7 +927,7 @@ export { ConsoleInterceptor } from "./4_services/ConsoleInterceptor.js";
 export { modelInitialize } from "./3_controllers/ModelInitializer.js";
 export { LoggerGlobalContext } from "./4_services/LoggerContext.js";
 export { TransformerGlobalContext } from "./4_services/TransformerContext.js";
-export { MiroirLoggerFactory, testLogger } from "./4_services/LoggerFactory.js";
+export { MiroirLoggerFactory, testLogger } from "./4_services/MiroirLoggerFactory.js";
 export {
   PersistenceStoreController,
   PersistenceStoreControllerFactoryReturnType,

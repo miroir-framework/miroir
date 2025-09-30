@@ -23,7 +23,7 @@ import {
 import { PersistenceStoreControllerManagerInterface } from "../0_interfaces/4-services/PersistenceStoreControllerManagerInterface";
 import { packageName } from "../constants";
 
-import { MiroirLoggerFactory } from "./LoggerFactory";
+import { MiroirLoggerFactory } from "./MiroirLoggerFactory";
 import { generateRestServiceResponse } from "./RestTools";
 import { cleanLevel } from "./constants";
 

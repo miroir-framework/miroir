@@ -164,14 +164,14 @@ export interface MiroirActivityTrackerInterface {
 
   trackTest<T>(
     test: string,
-    // parentId: string | undefined,
-    actionFn: (parentId: string | undefined) => Promise<T>
+    parentTrackingId: string | undefined,
+    actionFn: (parentTrackingId: string | undefined) => Promise<T>
   ): Promise<T>;
 
   trackTestAssertion<T>(
     testAssertion: string,
-    // parentId: string | undefined,
-    actionFn: (parentId: string | undefined) => Promise<T>
+    parentTrackingId: string | undefined,
+    actionFn: (parentTrackingId: string | undefined) => Promise<T>
   ): Promise<T>;
 
 

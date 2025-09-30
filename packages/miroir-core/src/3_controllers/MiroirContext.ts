@@ -8,30 +8,12 @@ import { MiroirEventService } from "./MiroirEventService";
 
 
 export class MiroirContext implements MiroirContextInterface {
-  public miroirActivityTracker: MiroirActivityTrackerInterface;
-  public miroirEventService: MiroirEventService;
-  // public transformerEventService: TransformerEventServiceInterface;
-  public logInterceptor: ConsoleInterceptor;
-
-  constructor(public miroirConfig?: MiroirConfigClient | MiroirConfigServer | undefined) {
-    // Create MiroirActivityTracker that supports unified action and test tracking
-    this.miroirActivityTracker = new MiroirActivityTracker();
-    
-    // Create MiroirEventService
-    this.miroirEventService = new MiroirEventService(this.miroirActivityTracker);
-
-    // this.miroirActivityTracker.setMiroirEventService(this.miroirEventService); // redundant as done in MiroirEventService constructor
-    
-    // Create unified log interceptor for action tracking only
-    this.logInterceptor = new ConsoleInterceptor({
-      eventHandlers: {
-        actionOrTestLogService: this.miroirEventService,
-        actionOrTestTracker: this.miroirActivityTracker
-      }
-    });
-    
-    // Start intercepting logs
-    this.logInterceptor.start();
+  
+  constructor(
+    public miroirActivityTracker: MiroirActivityTrackerInterface,
+    public miroirEventService: MiroirEventService,
+    public miroirConfig?: MiroirConfigClient | MiroirConfigServer | undefined
+  ) {
   }
 
   getMiroirConfig(): MiroirConfigClient | MiroirConfigServer | undefined {

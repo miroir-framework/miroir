@@ -6,7 +6,7 @@ import {
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { defaultMetaModelEnvironment } from "../1_core/Model";
-import { MiroirLoggerFactory } from "../4_services/LoggerFactory";
+import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
 import { transformer_extended_apply_wrapper } from "./TransformersForRuntime";

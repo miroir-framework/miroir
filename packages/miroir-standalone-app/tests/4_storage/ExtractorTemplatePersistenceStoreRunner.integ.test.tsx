@@ -16,6 +16,7 @@ import {
   book5,
   book6,
   ConfigurationService,
+  ConsoleInterceptor,
   defaultLevels,
   defaultMiroirMetaModel,
   DomainControllerInterface,
@@ -35,8 +36,10 @@ import {
   ignorePostgresExtraAttributesOnObject,
   LoggerInterface,
   MetaEntity,
+  MiroirActivityTracker,
   MiroirConfigClient,
   miroirCoreStartup,
+  MiroirEventService,
   MiroirLoggerFactory,
   PersistenceStoreControllerInterface,
   PersistenceStoreControllerManagerInterface,
@@ -106,7 +109,11 @@ myConsoleLog(
   JSON.stringify(miroirConfig.client, null, 2)
 );
 myConsoleLog("received loggerOptions", JSON.stringify(loggerOptions, null, 2));
+const miroirActivityTracker = new MiroirActivityTracker();
+const miroirEventService = new MiroirEventService(miroirActivityTracker);
 MiroirLoggerFactory.startRegisteredLoggers(
+  miroirActivityTracker,
+  miroirEventService,
   loglevelnext,
   (defaultLevels as any)[loggerOptions.defaultLevel],
 );

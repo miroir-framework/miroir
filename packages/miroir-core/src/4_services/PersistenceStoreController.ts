@@ -31,7 +31,7 @@ import {
 // import { applyModelEntityUpdate } from "../3_controllers/ActionRunner";
 import { modelInitialize } from "../3_controllers/ModelInitializer";
 import { packageName } from "../constants";
-import { MiroirLoggerFactory } from "./LoggerFactory";
+import { MiroirLoggerFactory } from "./MiroirLoggerFactory";
 import { cleanLevel } from "./constants";
 
 import { EntityInstanceWithName } from "../0_interfaces/1_core/Instance";

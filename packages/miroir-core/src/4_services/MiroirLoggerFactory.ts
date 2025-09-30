@@ -6,8 +6,10 @@ import {
   LoggerOptions,
   SpecificLoggerOptionsMap
 } from "../0_interfaces/4-services/LoggerInterface";
+import type { MiroirActivityTracker } from "../3_controllers/MiroirActivityTracker";
+import type { MiroirEventService } from "../3_controllers/MiroirEventService";
 import { defaultLoggerContextElement, LoggerGlobalContext } from "./LoggerContext";
-import { LoggerFilter } from "./LoggerFilter";
+import { MiroirLogger } from "./MiroirLogger";
 
 const testSeparator = "-";
 // ################################################################################################
@@ -54,7 +56,7 @@ export interface RegisteredLoggerToStart {
 // ################################################################################################
 // ################################################################################################
 export class MiroirLoggerFactory implements LoggerFactoryAsyncInterface {
-  static effectiveLoggerFactory: LoggerFactoryInterface | undefined = undefined;
+  static logLevelNextAsFactory: LoggerFactoryInterface | undefined = undefined;
   static loggerOptions?: LoggerOptions;
   static specificLoggerOptionsMap?: SpecificLoggerOptionsMap;
   static defaultLogLevel: string | number;
@@ -72,6 +74,7 @@ export class MiroirLoggerFactory implements LoggerFactoryAsyncInterface {
   }
 
   // ##############################################################################################
+  // TODO: there's a bug, in the case this is called after startRegisteredLoggers, the logger is never started
   static registerLoggerToStart(
     loggerName: string,
     logLevel?: string | number,
@@ -89,6 +92,7 @@ export class MiroirLoggerFactory implements LoggerFactoryAsyncInterface {
     return result;
   }
 
+  // ###################################
   constructor() {}
 
   // ###################################
@@ -116,11 +120,10 @@ export class MiroirLoggerFactory implements LoggerFactoryAsyncInterface {
 
   // ###################################
   static async startRegisteredLoggers(
-    effectiveLoggerFactory: LoggerFactoryInterface,
+    activityTracker: MiroirActivityTracker,
+    eventService: MiroirEventService,
+    logLevelNextAsFactory: LoggerFactoryInterface,
     loggerOptions: LoggerOptions,
-    // defaultLogLevel: string | number,
-    // defaultTemplate: string,
-    // specificLoggerOptionsMap?: SpecificLoggerOptionsMap
   ) {
     // console.log(
     //   "MiroirLoggerFactory.startRegisteredLoggers",
@@ -132,7 +135,7 @@ export class MiroirLoggerFactory implements LoggerFactoryAsyncInterface {
     //   "specificLoggerOptionsMap",
     //   specificLoggerOptionsMap
     // );
-    MiroirLoggerFactory.effectiveLoggerFactory = effectiveLoggerFactory;
+    MiroirLoggerFactory.logLevelNextAsFactory = logLevelNextAsFactory;
     MiroirLoggerFactory.defaultLogLevel = loggerOptions.defaultLevel;
     MiroirLoggerFactory.defaultTemplate = loggerOptions.defaultTemplate;
     MiroirLoggerFactory.specificLoggerOptionsMap = loggerOptions.specificLoggerOptions;
@@ -144,8 +147,10 @@ export class MiroirLoggerFactory implements LoggerFactoryAsyncInterface {
       // TODO: no await on a resolve, this is a try, rather nonsensical
       const logLevelOptions = MiroirLoggerFactory.getLogLevelOptionsFromMap(l[0], l[1].logLevel, l[1].template);
       await l[1].returnLoggerContinuation(
-        new LoggerFilter(
-          effectiveLoggerFactory.create(
+        new MiroirLogger(
+          activityTracker,
+          eventService,
+          MiroirLoggerFactory.logLevelNextAsFactory.create(
             logLevelOptions
           ),
           loggerOptions.contextFilter ?? defaultLoggerContextElement,
@@ -162,7 +167,7 @@ export class MiroirLoggerFactory implements LoggerFactoryAsyncInterface {
 
   // ###################################
   get loggers(): Record<string, LoggerInterface> {
-    return MiroirLoggerFactory.effectiveLoggerFactory?.loggers ?? {};
+    return MiroirLoggerFactory.logLevelNextAsFactory?.loggers ?? {};
   }
 }
 

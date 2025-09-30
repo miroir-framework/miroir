@@ -104,13 +104,13 @@ export class ConsoleInterceptor {
 
       const message = args.length > 0 ? String(args[0]) : '';
       const restArgs = args.slice(1);
-      const loggerName = this.extractLoggerName(message);
+      const loggerName = this.extractLoggerName(message); // TODO: remove this, intercept at LoggerInterface level
 
       // Check for active action and log if action logging is configured
       if (this.config.eventHandlers) {
         const currentActionId = this.config.eventHandlers.actionOrTestTracker.getCurrentActivityId();
         if (currentActionId) {
-          this.config.eventHandlers.actionOrTestLogService.pushEventFromLog(level, loggerName, message, ...restArgs);
+          this.config.eventHandlers.actionOrTestLogService.pushLogToEvent(level, loggerName, message, ...restArgs);
         }
       }
 

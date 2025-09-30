@@ -170,13 +170,16 @@ const LogEntryComponent: React.FC<{ logEntry: MiroirEventLog; isExpanded: boolea
             <Box sx={{ mt: 1 }}>
               <Typography variant="caption" color="text.secondary">Context:</Typography>
               <Box sx={{ pl: 1, mt: 0.5 }}>
-                {Object.entries(logEntry.event).map(([key, value]) => (
+                {/* {Object.entries(logEntry.event).map(([key, value]) => (
                   value && (
                     <Typography key={key} variant="caption" display="block">
                       {key}: {String(value)}
                     </Typography>
                   )
-                ))}
+                ))} */}
+                    <Typography variant="caption" display="block">
+                      activity: {String(logEntry.event.activity?.activityId || 'N/A')}
+                    </Typography>
               </Box>
             </Box>
           )}

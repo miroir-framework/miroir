@@ -1,31 +1,19 @@
-import { FactoryLevels, LoggerInterface, SomeLevel } from "../0_interfaces/4-services/LoggerInterface";
+import { FactoryLevels, LoggerInterface, SomeLevel, type LogLevel } from "../0_interfaces/4-services/LoggerInterface";
+import type { MiroirActivityTracker } from "../3_controllers/MiroirActivityTracker";
+import type { MiroirEventService } from "../3_controllers/MiroirEventService";
 import { LoggerContextElement, LoggerGlobalContext } from "./LoggerContext";
 
-export class LoggerFilter implements LoggerInterface {
+export class MiroirLogger implements LoggerInterface {
   constructor(
+    private activityTracker: MiroirActivityTracker,
+    private eventService: MiroirEventService,
     private readonly logger: LoggerInterface,
     private contextFilter: LoggerContextElement,
     public readonly name: string,
     public readonly level: FactoryLevels[keyof FactoryLevels],
     public readonly levels: FactoryLevels,
   ) {
-
   }
-
-
-  // get name(): string{
-  //   return "";
-  // }
-  // get level(): FactoryLevels[keyof FactoryLevels] {
-  //   return 0;
-  // }
-  // get levels(): FactoryLevels {
-  //   return {DEBUG: 0, ERROR: 0, INFO: 0, SILENT: 0, TRACE
-  //   : 0, WARN: 0};
-  // }
-  // set level(logLevel: SomeLevel) {
-
-  // }
 
   disable(): void {
 
@@ -34,15 +22,41 @@ export class LoggerFilter implements LoggerInterface {
 
   }
   
-  private filter(logger: (...msg: any[]) => void, ...msg: any[]): void {
+    /**
+   * Extract logger name from formatted log message
+   * Pattern: [timestamp] level (loggerName) - message
+   */
+  private extractLoggerName(message: string): string {
+    try {
+      const match = message.match(/\[.*?\]\s+\w+\s+\(([^)]+)\)\s+-/);
+      return match ? match[1] : 'console';
+    } catch (error) {
+      return 'console';
+    }
+  }
+
+  private filter(level: LogLevel, logger: (...msg: any[]) => void, ...args: any[]): void {
     // logger("FILTER", this.contextFilter?.testSuite, LoggerGlobalContext.getTestSuite());
     if (
       (!this.contextFilter?.testSuite || LoggerGlobalContext.getTestSuite() == this.contextFilter?.testSuite) &&
       (!this.contextFilter?.test || LoggerGlobalContext.getTest() == this.contextFilter?.test) &&
       (!this.contextFilter?.testAssertion || LoggerGlobalContext.getTestAssertion() == this.contextFilter?.testAssertion)
     ) {
-      logger(...msg);
+      logger(...args);
     }
+
+    const message = args.length > 0 ? String(args[0]) : '';
+    const restArgs = args.slice(1);
+    const loggerName = this.extractLoggerName(message); // TODO: remove this, intercept at LoggerInterface level
+
+      // Check for active action and log if action logging is configured
+      // if (this.config.eventHandlers) {
+    const currentActivityId = this.activityTracker.getCurrentActivityId();
+    if (currentActivityId) {
+      this.eventService.pushLogToEvent(level, loggerName, message, ...restArgs);
+    }
+      // }
+
     // else {
     //   logger("FILTERED OUT", this.contextFilter?.testSuite, LoggerGlobalContext.getTestSuite());
     // }
@@ -55,7 +69,7 @@ export class LoggerFilter implements LoggerInterface {
    */
   debug(...msg: any[]): void {
       // this.logger.debug(...msg);
-    this.filter(this.logger.debug, ...msg);
+    this.filter("debug", this.logger.debug, ...msg);
   }
 
   /**
@@ -64,7 +78,7 @@ export class LoggerFilter implements LoggerInterface {
    * @param msg any data to log to the console
    */
   log(...msg: any[]): void {
-    this.filter(this.logger.log, ...msg);
+    this.filter("info", this.logger.log, ...msg);
     // if (!this.contextFilter?.testSuite || LoggerGlobalContext.getTestSuite() == this.contextFilter?.testSuite) {
     //   this.logger.log(...msg);
     // }
@@ -76,7 +90,7 @@ export class LoggerFilter implements LoggerInterface {
    * @param msg any data to log to the console
    */
   info(...msg: any[]): void {
-    this.filter(this.logger.info, ...msg);
+    this.filter("info",this.logger.info, ...msg);
     // this.logger.info(...msg);
   }
 
@@ -87,7 +101,7 @@ export class LoggerFilter implements LoggerInterface {
  * @param msg any data to log to the console
  */
   trace(...msg: any[]): void {
-    this.filter(this.logger.trace, ...msg);
+    this.filter("trace", this.logger.trace, ...msg);
     // this.logger.trace(...msg);
   }
 
@@ -97,7 +111,7 @@ export class LoggerFilter implements LoggerInterface {
    * @param msg any data to log to the console
    */
   warn(...msg: any[]): void {
-    this.filter(this.logger.warn, ...msg);
+    this.filter("warn", this.logger.warn, ...msg);
     // this.logger.warn(...msg);
   }
 
@@ -107,7 +121,7 @@ export class LoggerFilter implements LoggerInterface {
    * @param msg any data to log to the console
    */
   error(...msg: any[]): void {
-    this.filter(this.logger.error, ...msg);
+    this.filter("error", this.logger.error, ...msg);
     // this.logger.error(...msg);
   }
   

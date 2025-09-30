@@ -5,13 +5,14 @@ import {
   type MiroirActivity,
   type MiroirActivity_Transformer,
 } from "../0_interfaces/3_controllers/MiroirActivityTrackerInterface";
+import type { LogLevel } from "../0_interfaces/4-services/LoggerInterface";
 import { LoggerGlobalContext } from "../4_services/LoggerContext";
 
 // Base interface for common log entry fields
 interface MiroirEventLogBase {
   logId: string;
   timestamp: number;
-  level: "trace" | "debug" | "info" | "warn" | "error";
+  level: LogLevel;
   loggerName: string;
   message: string;
   args: any[];
@@ -63,7 +64,7 @@ export interface EventFilter {
   eventId?: string;
   actionType?: string;
   trackingType?: "action" | "testSuite" | "test" | "testAssertion" | "transformer"; // Added for test and transformer filtering
-  level?: "trace" | "debug" | "info" | "warn" | "error";
+  level?: LogLevel;
   since?: number;
   searchText?: string;
   loggerName?: string;
@@ -76,8 +77,8 @@ export interface MiroirEventServiceInterface {
   /**
    * Log a message for the currently executing action
    */
-  pushEventFromLog(
-    level: "trace" | "debug" | "info" | "warn" | "error",
+  pushLogToEvent(
+    level: LogLevel,
     loggerName: string,
     message: string,
     ...args: any[]
@@ -146,8 +147,8 @@ export class MiroirEventService implements MiroirEventServiceInterface {
   }
 
   // ##############################################################################################
-  pushEventFromLog(
-    level: "trace" | "debug" | "info" | "warn" | "error",
+  pushLogToEvent(
+    level: LogLevel,
     loggerName: string,
     message: string,
     ...args: any[]
@@ -226,7 +227,7 @@ export class MiroirEventService implements MiroirEventServiceInterface {
       case "transformer": {
         if (!currentEvent || currentEvent.activity.activityType !== "transformer") {
           // console.log(
-          //   "MiroirEventService.pushEventFromLog currentActivityData:",
+          //   "MiroirEventService.pushLogToEvent currentActivityData:",
           //   currentActivityData,
           //   "currentEvent:",
           //   currentEvent
@@ -357,8 +358,11 @@ export class MiroirEventService implements MiroirEventServiceInterface {
 
   // ##############################################################################################
   private notifySubscribers(): void {
-    const allEvents = this.getAllEvents();
-    this.eventSubscribers.forEach(callback => callback(allEvents));
+    // Use setTimeout to defer notifications and avoid updating React state during render
+    setTimeout(() => {
+      const allEvents = this.getAllEvents();
+      this.eventSubscribers.forEach(callback => callback(allEvents));
+    }, 0);
   }
 
   // ##############################################################################################

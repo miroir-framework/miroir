@@ -12,11 +12,14 @@ import {
 
 import {
   ConfigurationService,
+  ConsoleInterceptor,
   expect,
   LoggerInterface,
+  MiroirActivityTracker,
   MiroirConfigClient,
   MiroirContext,
   miroirCoreStartup,
+  MiroirEventService,
   MiroirLoggerFactory,
   PersistenceStoreControllerManager,
   RestClient,
@@ -94,7 +97,12 @@ const currentMiroirConfig: MiroirConfigClient =
 
 log.info("currentMiroirConfigName:",currentMiroirConfigName, "currentMiroirConfig", currentMiroirConfig); 
 
+const miroirActivityTracker = new MiroirActivityTracker();
+const miroirEventService = new MiroirEventService(miroirActivityTracker);
+
 MiroirLoggerFactory.startRegisteredLoggers(
+  miroirActivityTracker,
+  miroirEventService,
   loglevelnext,
   {
     "defaultLevel": "INFO",
@@ -292,7 +300,11 @@ async function startWebApp(root:Root) {
     // ConfigurationService.registerTestImplementation({expect: vitest.expect as any});
     ConfigurationService.registerTestImplementation({expect: expect as any});
 
-    const miroirContext = new MiroirContext(currentMiroirConfig);
+    const miroirContext = new MiroirContext(
+      miroirActivityTracker,
+      miroirEventService,
+      currentMiroirConfig
+    );
 
     const client: RestClient = new RestClient(window.fetch.bind(window));
 

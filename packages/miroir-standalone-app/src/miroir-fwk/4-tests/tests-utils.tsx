@@ -16,6 +16,7 @@ import {
   AdminApplicationDeploymentConfiguration,
   CompositeAction,
   ConfigurationService,
+  ConsoleInterceptor,
   DeploymentConfiguration,
   DomainAction,
   DomainControllerInterface,
@@ -27,9 +28,11 @@ import {
   LocalCacheInterface,
   LoggerInterface,
   MetaEntity,
+  MiroirActivityTracker,
   MiroirConfigClient,
   MiroirContext,
   MiroirContextInterface,
+  MiroirEventService,
   MiroirLoggerFactory,
   PersistenceStoreControllerInterface,
   PersistenceStoreControllerManager,
@@ -485,7 +488,13 @@ export async function setupMiroirTest(
   miroirConfig: MiroirConfigClient,
   customfetch?: any,
 ) {
-  const miroirContext = new MiroirContext(miroirConfig);
+  const miroirActivityTracker = new MiroirActivityTracker();
+  const miroirEventService = new MiroirEventService(miroirActivityTracker);
+  const miroirContext = new MiroirContext(
+    miroirActivityTracker,
+    miroirEventService,
+    miroirConfig
+  );
   console.log("setupMiroirTest miroirConfig", JSON.stringify(miroirConfig, null, 2));
   let client: RestClientInterface | undefined = undefined;
   let remotePersistenceStoreRestClient: RestPersistenceClientAndRestClientInterface | undefined = undefined;

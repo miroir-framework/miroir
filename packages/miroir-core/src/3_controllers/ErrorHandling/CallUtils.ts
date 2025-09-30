@@ -7,7 +7,7 @@ import { Action2Error, Action2ReturnType } from "../../0_interfaces/2_domain/Dom
 import { ErrorLogServiceInterface, MError } from "../../0_interfaces/3_controllers/ErrorLogServiceInterface";
 import { LoggerInterface } from "../../0_interfaces/4-services/LoggerInterface";
 import { PersistenceStoreLocalOrRemoteInterface } from "../../0_interfaces/4-services/PersistenceInterface";
-import { MiroirLoggerFactory } from "../../4_services/LoggerFactory";
+import { MiroirLoggerFactory } from "../../4_services/MiroirLoggerFactory";
 import { packageName } from "../../constants";
 import { cleanLevel } from "../constants";
 

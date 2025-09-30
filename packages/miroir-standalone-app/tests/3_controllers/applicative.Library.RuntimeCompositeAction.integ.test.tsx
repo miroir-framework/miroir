@@ -19,6 +19,7 @@ import {
   book6,
   CompositeAction,
   ConfigurationService,
+  ConsoleInterceptor,
   defaultMiroirMetaModel,
   displayTestSuiteResultsDetails,
   DomainAction,
@@ -43,8 +44,10 @@ import {
   LoggerInterface,
   LoggerOptions,
   MetaEntity,
+  MiroirActivityTracker,
   MiroirContext,
   miroirCoreStartup,
+  MiroirEventService,
   MiroirLoggerFactory,
   PersistenceStoreControllerManagerInterface,
   publisher1,
@@ -124,8 +127,13 @@ myConsoleLog(
   "received miroirConfig.client",
   JSON.stringify(miroirConfig.client, null, 2)
 );
+const miroirActivityTracker = new MiroirActivityTracker();
+const miroirEventService = new MiroirEventService(miroirActivityTracker);
+
 myConsoleLog("received loggerOptions", JSON.stringify(loggerOptions, null, 2));
 MiroirLoggerFactory.startRegisteredLoggers(
+  miroirActivityTracker,
+  miroirEventService,
   loglevelnext,
   loggerOptions,
 );

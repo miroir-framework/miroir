@@ -4,12 +4,15 @@ import { describe, expect } from 'vitest';
 
 import {
   ConfigurationService,
+  ConsoleInterceptor,
   DomainAction,
   DomainControllerInterface,
   Entity,
   EntityDefinition,
   LoggerInterface,
+  MiroirActivityTracker,
   MiroirContextInterface,
+  MiroirEventService,
   MiroirLoggerFactory,
   PersistenceStoreControllerInterface,
   PersistenceStoreControllerManagerInterface,
@@ -83,8 +86,12 @@ myConsoleLog(
   "received miroirConfig.client",
   JSON.stringify(miroirConfig.client, null, 2)
 );
+const miroirActivityTracker = new MiroirActivityTracker();
+const miroirEventService = new MiroirEventService(miroirActivityTracker);
 myConsoleLog("received loggerOptions", JSON.stringify(loggerOptions, null, 2));
 MiroirLoggerFactory.startRegisteredLoggers(
+  miroirActivityTracker,
+  miroirEventService,
   loglevelnext,
   loggerOptions,
 );
@@ -240,24 +247,28 @@ describe.sequential(
             actionType: "createEntity",
             endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
             deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
-            entities: [
-              {
-                entity: entityAuthor as Entity,
-                entityDefinition: entityDefinitionAuthor as EntityDefinition,
-              }
-            ]
+            payload: {
+              entities: [
+                {
+                  entity: entityAuthor as Entity,
+                  entityDefinition: entityDefinitionAuthor as EntityDefinition,
+                }
+              ]
+            }
           };
           const createBookAction: DomainAction = {
             // actionType: "modelAction",
             actionType: "createEntity",
             endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
             deploymentUuid:adminConfigurationDeploymentLibrary.uuid,
-            entities: [
-              {
-                entity: entityBook as Entity,
-                entityDefinition: entityDefinitionBook as EntityDefinition,
-              }
-            ]
+            payload: {
+              entities: [
+                {
+                  entity: entityBook as Entity,
+                  entityDefinition: entityDefinitionBook as EntityDefinition,
+                }
+              ]
+            }
           };
   
           await act(

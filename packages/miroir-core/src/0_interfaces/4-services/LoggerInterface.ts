@@ -74,6 +74,8 @@ export interface LoggerFactoryAsyncInterface {
 }
 
 
+export type LogLevel = "trace" | "debug" | "info" | "warn" | "error";
+
 export interface LoggerInterface {
 
   get name(): string;

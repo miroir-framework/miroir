@@ -73,7 +73,7 @@ import { jzodTypeCheckTransformer, resolveObjectExtendClauseAndDefinition } from
 import { unfoldSchemaOnceTransformer } from '../1_core/jzod/JzodUnfoldSchemaOnce';
 import { resolveConditionalSchema, resolveConditionalSchemaTransformer } from '../1_core/jzod/resolveConditionalSchema';
 import { handleTransformer_menu_AddItem } from "../1_core/Menu";
-import { MiroirLoggerFactory } from "../4_services/LoggerFactory";
+import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
 import { TransformerGlobalContext } from '../4_services/TransformerContext';
 import { packageName } from "../constants";
 import { resolvePathOnObject } from "../tools";
