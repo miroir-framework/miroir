@@ -12,14 +12,10 @@ import {
   MiroirLoggerFactory,
   Uuid,
   adminConfigurationDeploymentMiroir,
-  alterObjectAtPath,
-  alterObjectAtPathWithCreate,
   entityTransformerTest,
   miroirFundamentalJzodSchema,
-  resolvePathOnObject,
-  safeResolvePathOnObject,
-  type JzodElement,
-  type TestSuiteListFilter
+  safeStringify,
+  type JzodElement
 } from "miroir-core";
 
 import {
@@ -36,7 +32,6 @@ import {
 } from "../../ReduxHooks.js";
 import { useRenderTracker } from '../../tools/renderCountTracker.js';
 import { RenderPerformanceMetrics } from '../../tools/renderPerformanceMeasure.js';
-import { RunTransformerTestSuiteButton } from '../Buttons/RunTransformerTestSuiteButton.js';
 import { ValueObjectGrid } from '../Grids/ValueObjectGrid.js';
 import {
   ThemedCodeBlock,
@@ -52,10 +47,7 @@ import {
   ThemedTitle,
   ThemedTooltip
 } from "../Themes/index"
-import { TestCellWithDetails } from './TestCellWithDetails.js';
-import { TestResultCellWithActualValue } from './TestResultCellWithActualValue.js';
-import { TransformerTestResultExecutionSummary } from './TransformerTestResultExecutionSummary.js';
-import { TransformerTestResults, type TestResultDataAndSelect } from './TransformerTestResults.js';
+import { TransformerTestDisplay } from './TransformerTestDisplay.js';
 import { TypedValueObjectEditor } from './TypedValueObjectEditor.js';
 import { useDocumentOutlineContext } from '../ValueObjectEditor/InstanceEditorOutlineContext.js';
 import { useReportPageContext } from './ReportPageContext.js';
@@ -65,22 +57,6 @@ let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ReportSectionEntityInstance"), "UI",
 ).then((logger: LoggerInterface) => {log = logger});
-
-// ################################################################################################
-// ################################################################################################
-// Safe stringify function that prevents "Invalid string length" errors
-// ################################################################################################
-function safeStringify(obj: any, maxLength: number = 2000): string {
-  try {
-    const str = JSON.stringify(obj, null, 2);
-    if (str && str.length > maxLength) {
-      return str.substring(0, maxLength) + "... [truncated]";
-    }
-    return str || "[unable to stringify]";
-  } catch (error) {
-    return `[stringify error: ${error instanceof Error ? error.message : 'unknown'}]`;
-  }
-}
 
 
 // // Performance metrics display component
@@ -133,75 +109,12 @@ export interface ReportSectionEntityInstanceProps {
   maxRenderDepth?: number; // Optional max depth for initial rendering, default 1
 }
 
-// Test Selection Types
-export type TestSelectionState = {
-  [testPath: string]: boolean; // Full test path -> selected state
-};
+// Test Selection Types are now in TransformerTestDisplay
 
 // ###############################################################################################################
 // ###############################################################################################################
 // ###############################################################################################################
 // ###############################################################################################################
-/**
- * 
- * @param testSelectionsState 
- * @param transformerTestResultsData 
- * @returns undefined if no selection happened (run all tests that are non-skipped), or { testList: { suiteName: [testName, ...], ... } }
- */
-const handleBuildTestFilter = (
-  testSelectionsState: TestSelectionState | undefined,
-  transformerTestResultsData: TestResultDataAndSelect[]
-): { testList?: TestSuiteListFilter } | undefined => {
-  // Get the list of selected test data (not just test names)
-  if (!testSelectionsState) {
-    return undefined;
-  }
-
-  const selectedTestData = transformerTestResultsData.filter(
-    (test) => testSelectionsState[test.testName] === true
-  );
-
-  if (selectedTestData.length === 0) {
-    // return undefined;
-    return { testList: {} }; 
-  }
-
-  // Build simple hierarchical filter: suite name -> array of test names
-  const testList: { [key: string]: string[] } = {};
-
-  selectedTestData.forEach((resultTestData) => {
-    // if (resultTestData.testPath && resultTestData.testPath.length >= 2) {
-    if (resultTestData.testPath) {
-      // const suiteName = resultTestData.testPath[0]; // First element is the suite name
-      const testSuitePath = resultTestData.testPath.slice(0, -1); // All but last element is the suite path
-      const testName = resultTestData.testPath[resultTestData.testPath.length - 1]; // Last element is the actual test name (not the display name)
-
-      const currentTestList = safeResolvePathOnObject(testList, testSuitePath);
-      if (!currentTestList) {
-        // testList[suiteName] = [];
-        alterObjectAtPathWithCreate(testList, testSuitePath, [ testName ]);
-      } else {
-        if (!currentTestList.includes(testName)) {
-          currentTestList.push(testName);
-        }
-      }
-    }
-  });
-
-  const filterResult = { testList: testList as TestSuiteListFilter };
-
-  log.info(
-    "handleBuildTestFilter: testSelectionsState=",
-    testSelectionsState,
-    ", selectedTestData=",
-    selectedTestData.map((t) => ({ name: t.testName, path: t.testPath })),
-    "filterResult=",
-    filterResult
-  );
-
-  return filterResult;
-};
-
 // ###############################################################################################################
 // ###############################################################################################################
 // ###############################################################################################################
@@ -238,17 +151,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   const [displayAsStructuredElement, setDisplayAsStructuredElement] = useState(true);
   const [displayEditor, setDisplayEditor] = useState(true);
   // const [maxRenderDepth, setMaxRenderDepth] = useState<number>(props.maxRenderDepth ?? 1);
-  const [transformerTestResultsData, setTransformerTestResultsData] = useState<
-    TestResultDataAndSelect[]
-  >([]); // TODO: use a precise type!
-  // const [currentTestFilter, setCurrentTestFilter] = useState<{ testList?: TestSuiteListFilter } | undefined>(undefined);
-  const [testSelectionState, setTestSelectionsState] = useState<TestSelectionState | undefined>(undefined);
 
-  const currentTestFilter = useMemo(() => {
-    return handleBuildTestFilter(testSelectionState, transformerTestResultsData);
-  }, [testSelectionState]);
-
-  log.info("ReportSectionEntityInstance: currentTestFilter:", currentTestFilter, "testSelectionState:", testSelectionState, "transformerTestResultsData:", transformerTestResultsData);
   // Use outline context for outline state management
   const outlineContext = useDocumentOutlineContext();
   const reportContext = useReportPageContext();
@@ -466,83 +369,14 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
 
           {/* Show test button if this is a TransformerTest entity */}
           {isTransformerTest && (
-            <div
-              style={{
-                marginBottom: "16px",
-                padding: "12px",
-                backgroundColor: "#e8f4fd",
-                borderRadius: "8px",
-                border: "1px solid #b3d9ff",
-                boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-                width: "100%",
-                boxSizing: "border-box",
+            <TransformerTestDisplay
+              instance={instance}
+              testLabel={testLabel}
+              useSnackBar={true}
+              onTestComplete={(testSuiteKey, structuredResults) => {
+                log.info(`Test completed for ${testSuiteKey}:`, structuredResults);
               }}
-            >
-              <div style={{ marginBottom: "8px", fontWeight: "bold", color: "#1976d2" }}>
-                🧪 Transformer Test Available
-              </div>
-              <RunTransformerTestSuiteButton
-                transformerTestSuite={instance}
-                testSuiteKey={testLabel}
-                useSnackBar={true}
-                testFilter={currentTestFilter}
-                onTestComplete={(testSuiteKey, structuredResults) => {
-                  setTransformerTestResultsData(structuredResults);
-                  log.info(`Test completed for ${testSuiteKey}:`, structuredResults);
-                }}
-                label={`▶️ Run All ${testLabel} Tests`}
-                style={{
-                  backgroundColor: "#1976d2",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "6px",
-                  padding: "8px 16px",
-                  fontWeight: "bold",
-                  marginRight: "8px",
-                }}
-              />
-              {/* {currentTestFilter && (
-                <RunTransformerTestSuiteButton
-                  transformerTestSuite={instance}
-                  testSuiteKey={testLabel}
-                  useSnackBar={true}
-                  testFilter={currentTestFilter}
-                  onTestComplete={(testSuiteKey, structuredResults) => {
-                    setTransformerTestResultsData(structuredResults);
-                    log.info(`Selected tests completed for ${testSuiteKey}:`, structuredResults);
-                  }}
-                  label={`▶️ Run Selected ${testLabel} Tests`}
-                  style={{
-                    backgroundColor: "#4caf50",
-                    color: "white",
-                    border: "none",
-                    borderRadius: "6px",
-                    padding: "8px 16px",
-                    fontWeight: "bold",
-                  }}
-                />
-              )} */}
-              {/* Test Results Display */}
-              {transformerTestResultsData &&
-                transformerTestResultsData.length > 0 && (
-                  <div style={{ margin: "20px 0", width: "100%" }}>
-                    {/* Test Execution Summary */}
-                    <TransformerTestResultExecutionSummary
-                      resolveConditionalSchemaResultsData={transformerTestResultsData}
-                      testLabel={testLabel}
-                    />
-
-                    <TransformerTestResults
-                      transformerTestSuite={instance.definition}
-                      transformerTestResultsData={transformerTestResultsData}
-                      testLabel={testLabel}
-                      // onTestFilterChange={setCurrentTestFilter}
-                      testSelectionsState={testSelectionState}
-                      setTestSelectionsState={setTestSelectionsState}
-                    />
-                  </div>
-                )}
-            </div>
+            />
           )}
 
           <div>
