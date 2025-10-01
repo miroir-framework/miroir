@@ -921,7 +921,7 @@ export { ErrorAdminStore } from "./3_controllers/ErrorHandling/ErrorAdminStore.j
 export { ErrorDataStore } from "./3_controllers/ErrorHandling/ErrorDataStore.js";
 export { ErrorModelStore } from "./3_controllers/ErrorHandling/ErrorModelStore.js";
 export { MiroirContext } from "./3_controllers/MiroirContext.js";
-export { MiroirActivityTracker } from "./3_controllers/MiroirActivityTracker.js";
+export { getActivityTopic, MiroirActivityTracker } from "./3_controllers/MiroirActivityTracker.js";
 // export { TransformerEventService } from "./3_controllers/TransformerEventService.js";
 export { modelInitialize } from "./3_controllers/ModelInitializer.js";
 export { LoggerGlobalContext } from "./4_services/LoggerContext.js";

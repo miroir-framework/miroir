@@ -2,6 +2,14 @@ import React from 'react';
 import { CustomCell, CustomRenderer, GridCellKind, getMiddleCenterBias } from '@glideapps/glide-data-grid';
 import { TableComponentRow } from './EntityInstanceGridInterface.js';
 import { renderMaterialIconToCanvas } from '../MaterialIconCanvasRenderer.js';
+import { LoggerInterface, MiroirLoggerFactory } from 'miroir-core';
+import { packageName } from '../../../../constants.js';
+import { cleanLevel } from '../../constants.js';
+
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "GlideToolsCellRenderer"), "UI",
+).then((logger: LoggerInterface) => {log = logger});
 
 export interface ToolsCellData {
   kind: 'tools-cell';

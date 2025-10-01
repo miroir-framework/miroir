@@ -47,7 +47,7 @@ import {
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "MiroirContextReactProvider")
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "MiroirContextReactProvider"), "UI",
 ).then((logger: LoggerInterface) => {
   log = logger;
 });

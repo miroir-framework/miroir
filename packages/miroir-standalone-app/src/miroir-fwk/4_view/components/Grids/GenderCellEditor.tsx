@@ -21,7 +21,7 @@ import { cleanLevel } from '../../constants.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "GendeCellEditor")
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "GendeCellEditor"), "UI",
 ).then((logger: LoggerInterface) => {log = logger});
 
 

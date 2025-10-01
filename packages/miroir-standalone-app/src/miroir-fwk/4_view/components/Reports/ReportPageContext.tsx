@@ -9,7 +9,7 @@ import { useMiroirContextService } from "../../MiroirContextReactProvider";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ReportPageContext")
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ReportPageContext"), "UI",
 ).then((logger: LoggerInterface) => {log = logger});
 
 

@@ -58,7 +58,7 @@ import type { TransformerForBuildPlusRuntime } from 'miroir-core/src/0_interface
 // ################################################################################################
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "TransformerEditor")
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "TransformerEditor"), "UI",
 ).then((logger: LoggerInterface) => {
   log = logger;
 });

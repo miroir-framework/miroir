@@ -21,7 +21,7 @@ import { useMiroirContextService, useSnackbar } from "../../MiroirContextReactPr
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "RunTransformerTestSuiteButton"),
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "RunTransformerTestSuiteButton"), "UI",
 ).then((logger: LoggerInterface) => {log = logger});
 
 // // Simple test function to match vitest interface

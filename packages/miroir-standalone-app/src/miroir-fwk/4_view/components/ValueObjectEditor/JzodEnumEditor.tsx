@@ -30,7 +30,7 @@ import { JzodEnumEditorProps } from "./JzodElementEditorInterface";
 // Common function to handle discriminator changes
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "JzodEnumEditor")
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "JzodEnumEditor"), "UI"
 ).then((logger: LoggerInterface) => {
   log = logger;
 });

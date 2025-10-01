@@ -42,7 +42,7 @@ import { usePageConfiguration } from '../services/usePageConfiguration.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "MiroirEventTimeLine")
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "MiroirEventTimeLine"), "UI",
 ).then((logger: LoggerInterface) => { log = logger });
 
 export interface RunActionTimelineProps {

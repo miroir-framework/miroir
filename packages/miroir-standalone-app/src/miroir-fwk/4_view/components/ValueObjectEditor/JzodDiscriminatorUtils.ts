@@ -77,6 +77,7 @@ export const handleDiscriminatorChange = (
 
   const defaultValue = currentMiroirFundamentalJzodSchema
     ? getDefaultValueForJzodSchemaWithResolutionNonHook(
+        "build",
         newJzodSchemaWithOptional,
         formik.values,
         rootLessListKey,

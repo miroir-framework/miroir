@@ -67,7 +67,7 @@ import { SidebarWidth } from "./SidebarSection.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "RootComponent")
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "RootComponent"), "UI",
 ).then((logger: LoggerInterface) => {log = logger});
 
 export const emptyDomainElementObject: Domain2QueryReturnType<Record<string,any>> = {}

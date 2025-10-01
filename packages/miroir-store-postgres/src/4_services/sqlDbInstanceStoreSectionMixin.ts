@@ -37,7 +37,9 @@ MiroirLoggerFactory.registerLoggerToStart(
 
 export const MixedSqlDbInstanceStoreSection = SqlDbInstanceStoreSectionMixin(SqlDbStoreSection);
 
-export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSection>(Base: TBase) {
+export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSection>(
+  Base: TBase
+) {
   return class MixedIndexedDbInstanceStoreSection
     extends Base
     implements PersistenceStoreInstanceSectionAbstractInterface
@@ -523,10 +525,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
         log.info("upsertInstance for instance:", JSON.stringify(instance, null, 2));
         const sequelizeModel = this.sqlSchemaTableAccess[instance.parentUuid].sequelizeModel;
         const tmp = await sequelizeModel.upsert(instance as any);
-        log.info(
-          "upsertInstance sequelizeModel.upsert done:",
-          JSON.stringify(instance, null, 2)
-        );
+        log.info("upsertInstance sequelizeModel.upsert done:", JSON.stringify(instance, null, 2));
       } catch (error: any) {
         const errorText: string = error.toString();
         // log.error(

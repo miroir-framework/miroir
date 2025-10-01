@@ -24,7 +24,7 @@ import {
 // ################################################################################################
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "TransformerEventsPanel")
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "TransformerEventsPanel"), "UI",
 ).then((logger: LoggerInterface) => {log = logger});
 
 // ################################################################################################

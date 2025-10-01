@@ -35,7 +35,7 @@ import { ReportPageContextProvider } from '../components/Reports/ReportPageConte
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ReportPage")
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ReportPage"), "UI",
 ).then((logger: LoggerInterface) => {log = logger});
 
 const miroirExpression: JzodElement = {

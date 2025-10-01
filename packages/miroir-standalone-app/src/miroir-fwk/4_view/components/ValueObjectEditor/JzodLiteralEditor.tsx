@@ -33,7 +33,7 @@ import { JzodLiteralEditorProps } from "./JzodElementEditorInterface";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "JzodLiteralEditor")
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "JzodLiteralEditor"), "UI"
 ).then((logger: LoggerInterface) => {
   log = logger;
 });

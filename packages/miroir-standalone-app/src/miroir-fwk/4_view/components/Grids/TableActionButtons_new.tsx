@@ -13,7 +13,7 @@ import {
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "TableActionButtons")
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "TableActionButtons_new"), "UI",
 ).then((logger: LoggerInterface) => {log = logger});
 
 const ActionButtonsContainer = styled('div')(({ theme }) => ({

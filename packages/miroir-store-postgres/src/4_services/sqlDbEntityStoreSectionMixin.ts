@@ -35,8 +35,15 @@ MiroirLoggerFactory.registerLoggerToStart(
 
 export const MixedSqlDbEntityAndInstanceStoreSection = SqlDbEntityStoreSectionMixin(SqlDbInstanceStoreSectionMixin(SqlDbStoreSection));
 
-export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInstanceStoreSection>(Base: TBase) {
-  return class MixedSqlDbEntityStoreSection extends Base implements PersistenceStoreEntitySectionAbstractInterface, PersistenceStoreInstanceSectionAbstractInterface {
+export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInstanceStoreSection>(
+  Base: TBase
+) {
+  return class MixedSqlDbEntityStoreSection
+    extends Base
+    implements
+      PersistenceStoreEntitySectionAbstractInterface,
+      PersistenceStoreInstanceSectionAbstractInterface
+  {
     public dataStore: PersistenceStoreDataSectionInterface;
 
     constructor(
@@ -55,7 +62,10 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
 
     // ##############################################################################################
     // TODO: does side effect => refactor!
-    getAccessToModelSectionEntity(entity: MetaEntity, entityDefinition: EntityDefinition): EntityUuidIndexedSequelizeModel {
+    getAccessToModelSectionEntity(
+      entity: MetaEntity,
+      entityDefinition: EntityDefinition
+    ): EntityUuidIndexedSequelizeModel {
       return {
         [entity.uuid]: {
           parentName: entity.parentName,
@@ -77,7 +87,10 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
     }
 
     // ##############################################################################################
-    async createEntity(entity: Entity, entityDefinition: EntityDefinition): Promise<Action2VoidReturnType> {
+    async createEntity(
+      entity: Entity,
+      entityDefinition: EntityDefinition
+    ): Promise<Action2VoidReturnType> {
       log.info(
         this.logHeader,
         "createEntity",
@@ -99,7 +112,7 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
         await this.dataStore.createStorageSpaceForInstancesOfEntity(entity, entityDefinition);
 
         if (!!this.sqlSchemaTableAccess && this.sqlSchemaTableAccess[entityEntity.uuid]) {
-          const sequelizeModel = this.sqlSchemaTableAccess[entityEntity.uuid].sequelizeModel
+          const sequelizeModel = this.sqlSchemaTableAccess[entityEntity.uuid].sequelizeModel;
           await sequelizeModel.upsert(entity as any);
         } else {
           log.error(
@@ -110,7 +123,8 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
           );
         }
         if (!!this.sqlSchemaTableAccess && this.sqlSchemaTableAccess[entityEntityDefinition.uuid]) {
-          const sequelizeModel = this.sqlSchemaTableAccess[entityEntityDefinition.uuid].sequelizeModel;
+          const sequelizeModel =
+            this.sqlSchemaTableAccess[entityEntityDefinition.uuid].sequelizeModel;
           await sequelizeModel.upsert(entityDefinition as any);
         } else {
           log.error(
@@ -129,8 +143,8 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
     // ##############################################################################################
     async createEntities(
       entities: {
-        entity:Entity,
-        entityDefinition: EntityDefinition,
+        entity: Entity;
+        entityDefinition: EntityDefinition;
       }[]
     ): Promise<Action2VoidReturnType> {
       for (const e of entities) {
@@ -156,14 +170,22 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
         if (this.dataStore.getEntityUuids().includes(entityUuid)) {
           await this.dataStore.dropStorageSpaceForInstancesOfEntity(entityUuid);
           //remove all entity definitions for the dropped entity
-          const entityDefinitions: Action2EntityInstanceCollectionOrFailure = await this.getInstances(entityEntityDefinition.uuid);
+          const entityDefinitions: Action2EntityInstanceCollectionOrFailure =
+            await this.getInstances(entityEntityDefinition.uuid);
 
-          log.trace("dropEntity entityUuid", entityUuid, "found Entity Definitions:", entityDefinitions);
+          log.trace(
+            "dropEntity entityUuid",
+            entityUuid,
+            "found Entity Definitions:",
+            entityDefinitions
+          );
           if (entityDefinitions instanceof Action2Error) {
-            return Promise.resolve(new Action2Error(
-              "FailedToDeleteStore",
-              `dropEntity failed for section: data, entityUuid ${entityUuid}, error: ${entityDefinitions.errorMessage}`
-            ));
+            return Promise.resolve(
+              new Action2Error(
+                "FailedToDeleteStore",
+                `dropEntity failed for section: data, entityUuid ${entityUuid}, error: ${entityDefinitions.errorMessage}`
+              )
+            );
           }
           if (entityDefinitions.returnedDomainElement instanceof Domain2ElementFailed) {
             return Promise.resolve(
@@ -173,7 +195,7 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
               )
             );
           }
-  
+
           for (const entityDefinition of entityDefinitions.returnedDomainElement.instances.filter(
             (i: EntityInstance) => (i as EntityDefinition).entityUuid == entityUuid
           )) {
@@ -205,13 +227,15 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
         update.payload.entityUuid
       );
       if (currentEntity instanceof Action2Error) {
-        return currentEntity
+        return currentEntity;
       }
       if (currentEntity.returnedDomainElement instanceof Domain2ElementFailed) {
-        return Promise.resolve(new Action2Error(
-          "FailedToDeployModule",
-          currentEntity.returnedDomainElement.failureMessage
-        ));
+        return Promise.resolve(
+          new Action2Error(
+            "FailedToDeployModule",
+            currentEntity.returnedDomainElement.failureMessage
+          )
+        );
       }
 
       const currentEntityDefinition: Action2EntityInstanceReturnType = await this.getInstance(
@@ -220,13 +244,15 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
       );
 
       if (currentEntityDefinition instanceof Action2Error) {
-        return currentEntityDefinition
+        return currentEntityDefinition;
       }
       if (currentEntityDefinition.returnedDomainElement instanceof Domain2ElementFailed) {
-        return Promise.resolve(new Action2Error(
-          "FailedToDeployModule",
-          currentEntityDefinition.returnedDomainElement.failureMessage
-        ));
+        return Promise.resolve(
+          new Action2Error(
+            "FailedToDeployModule",
+            currentEntityDefinition.returnedDomainElement.failureMessage
+          )
+        );
       }
       const modifiedEntity: EntityInstanceWithName = Object.assign(
         {},
@@ -250,9 +276,11 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
       );
       return Promise.resolve(ACTION_OK);
     }
-    
+
     // ############################################################################################
-    async alterEntityAttribute(update: ModelActionAlterEntityAttribute): Promise<Action2VoidReturnType> {
+    async alterEntityAttribute(
+      update: ModelActionAlterEntityAttribute
+    ): Promise<Action2VoidReturnType> {
       log.info(this.logHeader, "alterEntityAttribute", update);
       const currentEntity: Action2EntityInstanceReturnType = await this.getInstance(
         entityEntity.uuid,
@@ -263,10 +291,12 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
         return currentEntity;
       }
       if (currentEntity.returnedDomainElement instanceof Domain2ElementFailed) {
-        return Promise.resolve(new Action2Error(
-          "FailedToDeployModule",
-          currentEntity.returnedDomainElement.failureMessage
-        ));
+        return Promise.resolve(
+          new Action2Error(
+            "FailedToDeployModule",
+            currentEntity.returnedDomainElement.failureMessage
+          )
+        );
       }
       const currentEntityDefinition: Action2EntityInstanceReturnType = await this.getInstance(
         entityEntityDefinition.uuid,
@@ -277,12 +307,15 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
         return currentEntityDefinition;
       }
       if (currentEntityDefinition.returnedDomainElement instanceof Domain2ElementFailed) {
-        return Promise.resolve(new Action2Error(
-          "FailedToDeployModule",
-          currentEntityDefinition.returnedDomainElement.failureMessage
-        ));
+        return Promise.resolve(
+          new Action2Error(
+            "FailedToDeployModule",
+            currentEntityDefinition.returnedDomainElement.failureMessage
+          )
+        );
       }
-      const localEntityDefinition: EntityDefinition = currentEntityDefinition.returnedDomainElement as EntityDefinition;
+      const localEntityDefinition: EntityDefinition =
+        currentEntityDefinition.returnedDomainElement as EntityDefinition;
       const localEntityJzodSchemaDefinition =
         update.payload.removeColumns != undefined && Array.isArray(update.payload.removeColumns)
           ? Object.fromEntries(
@@ -296,12 +329,17 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
           type: "object",
           definition: {
             ...localEntityJzodSchemaDefinition,
-            ...(update.payload.addColumns ? Object.fromEntries(update.payload.addColumns.map((c) => [c.name, c.definition])) : {}),
+            ...(update.payload.addColumns
+              ? Object.fromEntries(update.payload.addColumns.map((c) => [c.name, c.definition]))
+              : {}),
           },
         },
       });
 
-      log.info("alterEntityAttribute modifiedEntityDefinition", JSON.stringify(modifiedEntityDefinition, undefined, 2));
+      log.info(
+        "alterEntityAttribute modifiedEntityDefinition",
+        JSON.stringify(modifiedEntityDefinition, undefined, 2)
+      );
 
       await this.upsertInstance(entityEntityDefinition.uuid, modifiedEntityDefinition);
 
@@ -320,14 +358,17 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
           modifiedEntityDefinition
         ),
       };
-      log.info("alterEntityAttribute added columns", update.payload.addColumns, this.sequelize.json);
+      log.info(
+        "alterEntityAttribute added columns",
+        update.payload.addColumns,
+        this.sequelize.json
+      );
 
-      await(this.dataStore as any as SqlDbStoreSection).sqlSchemaTableAccess[
+      await (this.dataStore as any as SqlDbStoreSection).sqlSchemaTableAccess[
         currentEntity.returnedDomainElement.uuid
       ].sequelizeModel.sync({ alter: true }); // TODO: replace sync!
 
       return Promise.resolve(ACTION_OK);
     }
-    
   };
 }

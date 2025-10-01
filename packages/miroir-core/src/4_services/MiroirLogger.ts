@@ -1,7 +1,8 @@
-import { FactoryLevels, LoggerInterface, SomeLevel, type LogLevel } from "../0_interfaces/4-services/LoggerInterface";
+import { FactoryLevels, LoggerInterface, SomeLevel, type LogLevel, type LogTopic } from "../0_interfaces/4-services/LoggerInterface";
 import type { MiroirActivityTracker } from "../3_controllers/MiroirActivityTracker";
 import type { MiroirEventService } from "../3_controllers/MiroirEventService";
 import { LoggerContextElement, LoggerGlobalContext } from "./LoggerContext";
+
 
 export class MiroirLogger implements LoggerInterface {
   constructor(
@@ -12,6 +13,7 @@ export class MiroirLogger implements LoggerInterface {
     public readonly name: string,
     public readonly level: FactoryLevels[keyof FactoryLevels],
     public readonly levels: FactoryLevels,
+    public readonly topic: LogTopic | undefined,
   ) {
   }
 
@@ -37,13 +39,13 @@ export class MiroirLogger implements LoggerInterface {
 
   private filter(level: LogLevel, logger: (...msg: any[]) => void, ...args: any[]): void {
     // logger("FILTER", this.contextFilter?.testSuite, LoggerGlobalContext.getTestSuite());
-    if (
-      (!this.contextFilter?.testSuite || LoggerGlobalContext.getTestSuite() == this.contextFilter?.testSuite) &&
-      (!this.contextFilter?.test || LoggerGlobalContext.getTest() == this.contextFilter?.test) &&
-      (!this.contextFilter?.testAssertion || LoggerGlobalContext.getTestAssertion() == this.contextFilter?.testAssertion)
-    ) {
-      logger(...args);
-    }
+    // if (
+    //   (!this.contextFilter?.testSuite || LoggerGlobalContext.getTestSuite() == this.contextFilter?.testSuite) &&
+    //   (!this.contextFilter?.test || LoggerGlobalContext.getTest() == this.contextFilter?.test) &&
+    //   (!this.contextFilter?.testAssertion || LoggerGlobalContext.getTestAssertion() == this.contextFilter?.testAssertion)
+    // ) {
+    //   logger(...args);
+    // }
 
     const message = args.length > 0 ? String(args[0]) : '';
     const restArgs = args.slice(1);
@@ -52,14 +54,29 @@ export class MiroirLogger implements LoggerInterface {
       // Check for active action and log if action logging is configured
       // if (this.config.eventHandlers) {
     const currentActivityId = this.activityTracker.getCurrentActivityId();
-    if (currentActivityId) {
+    const currentActivityTopic = this.activityTracker.getCurrentActivityTopic();
+    // logger("CURRENT ACTIVITY TOPIC", currentActivityTopic, this.topic, level, loggerName, message, ...restArgs);
+    if (currentActivityId && (!this.topic || this.topic === currentActivityTopic)) {
+    // if (currentActivityId) {
       this.eventService.pushLogToEvent(level, loggerName, message, ...restArgs);
+      logger(...args);
     }
-      // }
-
-    // else {
-    //   logger("FILTERED OUT", this.contextFilter?.testSuite, LoggerGlobalContext.getTestSuite());
-    // }
+    else {
+      logger(
+        "FILTERED OUT of activity",
+        currentActivityId,
+        "topic",
+        currentActivityTopic,
+        "loggerTopic",
+        this.topic,
+        "level",
+        level,
+        "loggerName",
+        loggerName,
+        message,
+        ...restArgs
+      );
+    }
   }
 
   /**

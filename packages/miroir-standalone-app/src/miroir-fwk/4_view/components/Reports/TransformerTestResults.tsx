@@ -10,7 +10,7 @@ import type { TestSelectionState } from './ReportSectionEntityInstance.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "TransformerTestResults")
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "TransformerTestResults"), "UI",
 ).then((logger: LoggerInterface) => {log = logger});
 
 

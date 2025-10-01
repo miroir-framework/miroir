@@ -14,7 +14,7 @@ import { useEntityInstanceUuidIndexFromLocalCache } from "../ReduxHooks.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "EntityInstanceLink")
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "EntityInstanceLink"), "UI",
 ).then((logger: LoggerInterface) => {log = logger});
 
 

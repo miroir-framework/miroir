@@ -37,7 +37,7 @@ import { report } from 'process';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "InstanceEditorOutline")
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "InstanceEditorOutline"), "UI",
 ).then((logger: LoggerInterface) => {
   log = logger;
 });

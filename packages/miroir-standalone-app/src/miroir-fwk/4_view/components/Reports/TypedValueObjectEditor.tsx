@@ -53,7 +53,7 @@ import { CodeBlock_ReadOnly } from './CodeBlock_ReadOnly.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "TypedValueObjectEditor"),
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "TypedValueObjectEditor"), "UI",
 ).then((logger: LoggerInterface) => {log = logger});
 
 const codeMirrorExtensions = [javascript()];

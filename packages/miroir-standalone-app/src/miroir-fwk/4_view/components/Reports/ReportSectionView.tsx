@@ -26,7 +26,7 @@ import { ThemedBox, ThemedText } from '../Themes/index.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ReportSectionView")
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ReportSectionView"), "UI",
 ).then((logger: LoggerInterface) => {log = logger});
 
 

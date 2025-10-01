@@ -4,7 +4,8 @@ import {
   LoggerFactoryInterface,
   LoggerInterface,
   LoggerOptions,
-  SpecificLoggerOptionsMap
+  SpecificLoggerOptionsMap,
+  type LogTopic
 } from "../0_interfaces/4-services/LoggerInterface";
 import type { MiroirActivityTracker } from "../3_controllers/MiroirActivityTracker";
 import type { MiroirEventService } from "../3_controllers/MiroirEventService";
@@ -45,9 +46,9 @@ export function templateLogLevelOptionsFactory(
 // ################################################################################################
 export interface RegisteredLoggerToStart {
   returnLoggerContinuation: (value: LoggerInterface | PromiseLike<LoggerInterface>) => void;
+  topic?: LogTopic,
   logLevel?: string | number,
   template?: string,
-
 }
 
 // ################################################################################################
@@ -77,6 +78,7 @@ export class MiroirLoggerFactory implements LoggerFactoryAsyncInterface {
   // TODO: there's a bug, in the case this is called after startRegisteredLoggers, the logger is never started
   static registerLoggerToStart(
     loggerName: string,
+    topic?: LogTopic,
     logLevel?: string | number,
     template?: string
   ): Promise<LoggerInterface> {
@@ -84,6 +86,7 @@ export class MiroirLoggerFactory implements LoggerFactoryAsyncInterface {
     const result = new Promise<LoggerInterface>((resolve) => {
       MiroirLoggerFactory.registeredLoggersToStart[loggerName] = {
         returnLoggerContinuation: resolve,
+        topic,
         logLevel,
         template,
       };
@@ -150,11 +153,12 @@ export class MiroirLoggerFactory implements LoggerFactoryAsyncInterface {
         new MiroirLogger(
           activityTracker,
           eventService,
-          MiroirLoggerFactory.logLevelNextAsFactory.create(
-            logLevelOptions
-          ),
+          MiroirLoggerFactory.logLevelNextAsFactory.create(logLevelOptions),
           loggerOptions.contextFilter ?? defaultLoggerContextElement,
-          l[0], l[1].logLevel as any, l[1].template as any
+          l[0],
+          l[1].logLevel as any,
+          l[1].template as any,
+          l[1].topic,
         )
       );
       console.log(

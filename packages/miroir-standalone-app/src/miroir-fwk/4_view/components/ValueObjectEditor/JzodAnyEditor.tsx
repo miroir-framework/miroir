@@ -26,7 +26,7 @@ import { useJzodElementEditorHooks } from "./JzodElementEditorHooks";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "JzodAnyEditor")
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "JzodAnyEditor"), "UI",
 ).then((logger: LoggerInterface) => {
   log = logger;
 });

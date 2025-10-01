@@ -48,7 +48,7 @@ import {
 } from '@mui/icons-material';
 import { useNavigate, Link, useSearchParams, useLocation } from 'react-router-dom';
 import { useMiroirContextService, useMiroirEvents, type MiroirReactContext } from '../MiroirContextReactProvider';
-import { LoggerInterface, MiroirLoggerFactory, type MiroirContext, type MiroirContextInterface, type MiroirEvent, type MiroirEventLog, type MiroirEventService } from 'miroir-core';
+import { getActivityTopic, LoggerInterface, MiroirLoggerFactory, type MiroirContext, type MiroirContextInterface, type MiroirEvent, type MiroirEventLog, type MiroirEventService } from 'miroir-core';
 import { packageName } from '../../../constants.js';
 import { cleanLevel } from '../constants.js';
 import { usePageConfiguration } from '../services';
@@ -56,7 +56,7 @@ import { usePageConfiguration } from '../services';
 // Set up logger
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "MiroirEventsPage")
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "MiroirEventsPage"), "UI",
 ).then((logger: LoggerInterface) => {log = logger});
 
 // Utility function to get appropriate icon for log level
@@ -110,25 +110,30 @@ const LogEntryComponent: React.FC<{ logEntry: MiroirEventLog; isExpanded: boolea
   const timestamp = new Date(logEntry.timestamp).toLocaleTimeString();
   
   return (
-    <ListItem 
-      divider 
-      sx={{ 
-        flexDirection: 'column', 
-        alignItems: 'stretch',
-        backgroundColor: logEntry.level === 'error' ? 'rgba(244, 67, 54, 0.05)' : 
-                       logEntry.level === 'warn' ? 'rgba(255, 152, 0, 0.05)' : 'inherit'
+    <ListItem
+      divider
+      sx={{
+        flexDirection: "column",
+        alignItems: "stretch",
+        backgroundColor:
+          logEntry.level === "error"
+            ? "rgba(244, 67, 54, 0.05)"
+            : logEntry.level === "warn"
+            ? "rgba(255, 152, 0, 0.05)"
+            : "inherit",
       }}
     >
-      <Box sx={{ display: 'flex', alignItems: 'center', width: '100%', cursor: 'pointer' }} onClick={onToggle}>
-        <ListItemIcon sx={{ minWidth: 36 }}>
-          {getLogLevelIcon(logEntry.level)}
-        </ListItemIcon>
+      <Box
+        sx={{ display: "flex", alignItems: "center", width: "100%", cursor: "pointer" }}
+        onClick={onToggle}
+      >
+        <ListItemIcon sx={{ minWidth: 36 }}>{getLogLevelIcon(logEntry.level)}</ListItemIcon>
         <ListItemText
           primary={
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <Chip 
-                label={logEntry.level.toUpperCase()} 
-                size="small" 
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+              <Chip
+                label={logEntry.level.toUpperCase()}
+                size="small"
                 color={getLogLevelColor(logEntry.level) as any}
                 variant="outlined"
               />
@@ -146,29 +151,41 @@ const LogEntryComponent: React.FC<{ logEntry: MiroirEventLog; isExpanded: boolea
             </Typography>
           }
         />
-        <IconButton size="small">
-          {isExpanded ? <ExpandLess /> : <ExpandMore />}
-        </IconButton>
+        <IconButton size="small">{isExpanded ? <ExpandLess /> : <ExpandMore />}</IconButton>
       </Box>
-      
+
       <Collapse in={isExpanded}>
         <Box sx={{ pl: 7, pb: 1 }}>
           {logEntry.args.length > 0 && (
             <Box sx={{ mt: 1 }}>
-              <Typography variant="caption" color="text.secondary">Arguments:</Typography>
-              <Box sx={{ pl: 1, fontFamily: 'monospace', fontSize: '0.8rem', backgroundColor: '#f5f5f5', p: 1, borderRadius: 1, mt: 0.5 }}>
+              <Typography variant="caption" color="text.secondary">
+                Arguments:
+              </Typography>
+              <Box
+                sx={{
+                  pl: 1,
+                  fontFamily: "monospace",
+                  fontSize: "0.8rem",
+                  backgroundColor: "#f5f5f5",
+                  p: 1,
+                  borderRadius: 1,
+                  mt: 0.5,
+                }}
+              >
                 {logEntry.args.map((arg: any, index: number) => (
                   <div key={index}>
-                    {typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)}
+                    {typeof arg === "object" ? JSON.stringify(arg, null, 2) : String(arg)}
                   </div>
                 ))}
               </Box>
             </Box>
           )}
-          
+
           {logEntry.event && (
             <Box sx={{ mt: 1 }}>
-              <Typography variant="caption" color="text.secondary">Context:</Typography>
+              <Typography variant="caption" color="text.secondary">
+                Context:
+              </Typography>
               <Box sx={{ pl: 1, mt: 0.5 }}>
                 {/* {Object.entries(logEntry.event).map(([key, value]) => (
                   value && (
@@ -177,9 +194,11 @@ const LogEntryComponent: React.FC<{ logEntry: MiroirEventLog; isExpanded: boolea
                     </Typography>
                   )
                 ))} */}
-                    <Typography variant="caption" display="block">
-                      activity: {String(logEntry.event.activity?.activityId || 'N/A')}
-                    </Typography>
+                <Typography variant="caption" display="block">
+                  activity: {String(logEntry.event.activity?.activityId || "N/A")}, type:{" "}
+                  {String(logEntry.event.activity?.activityType || "N/A")}, topic:{" "}
+                  {String(getActivityTopic(logEntry.event.activity) || "N/A")}
+                </Typography>
               </Box>
             </Box>
           )}

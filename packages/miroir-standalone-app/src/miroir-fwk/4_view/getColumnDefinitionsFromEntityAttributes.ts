@@ -21,7 +21,7 @@ import { TableComponentRow } from "./components/Grids/EntityInstanceGridInterfac
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "getColumnDefinitionsFromEntityDefinitionAttribute")
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "getColumnDefinitionsFromEntityDefinitionAttribute"), "UI",
 ).then((logger: LoggerInterface) => {log = logger});
 
 

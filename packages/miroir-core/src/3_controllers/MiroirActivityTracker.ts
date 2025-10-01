@@ -11,7 +11,19 @@ import {
   type TestAssertionPath,
 } from "../0_interfaces/3_controllers/MiroirActivityTrackerInterface";
 import type { MiroirEventService, MiroirEventServiceInterface } from './MiroirEventService';
+import type { LogTopic } from '../0_interfaces/4-services/LoggerInterface';
 
+const activityTypeToTopicMap: Record<MiroirActivity["activityType"], LogTopic> = {
+  action: "action",
+  testSuite: "action",
+  test: "action",
+  testAssertion: "action",
+  transformer: "transformer",
+}
+
+export function getActivityTopic(activity: MiroirActivity): LogTopic | undefined{
+  return activityTypeToTopicMap[activity.activityType];
+}
 
 export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
   private readonly CLEANUP_INTERVAL_MS = 60000; // 1 minute
@@ -20,7 +32,7 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
   // private miroirEventService: MiroirEventServiceInterface | undefined;
   private miroirEventService: MiroirEventService | undefined;
   private activities: Map<string, MiroirActivity> = new Map();
-  private currentEvenStack: string[] = []; // Stack to track nested actions
+  private currentActivityStack: MiroirActivity[] = []; // Stack to track nested actions
 
   private subscribers: Set<(actions: MiroirActivity[]) => void> = new Set();
   private cleanupInterval: NodeJS.Timeout;
@@ -57,32 +69,6 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
   // EVENTS
   // ###############################################################################################
   // ###############################################################################################
-  endActivity(trackingId: string, error?: string): void {
-    const event = this.activities.get(trackingId);
-    if (!event) {
-      return;
-    }
-
-    const now = Date.now();
-    event.endTime = now;
-    event.duration = now - event.startTime;
-    event.status = error ? "error" : "completed";
-    if (error) {
-      event.error = error;
-    }
-
-    // Remove from action stack
-    const index = this.currentEvenStack.indexOf(trackingId);
-    if (index !== -1) {
-      this.currentEvenStack.splice(index, 1);
-    }
-
-    if (["testSuite", "test", "testAssertion" ].includes(event.activityType)) {
-      this.currentTestPath.pop();
-    }
-    this.miroirEventService?.pushEventFromActivity(event);
-  }
-
   getActivityIndex(): Map<string, MiroirActivity> {
     return this.activities;
   }
@@ -91,46 +77,52 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
     return Array.from(this.activities.values()).sort((a, b) => a.startTime - b.startTime);
   }
 
-  getFilteredActivities(filter: {
-    actionType?: string;
-    trackingType?: "action" | "testSuite" | "test" | "testAssertion" | "transformer"; // New field for test and transformer filtering
-    status?: "running" | "completed" | "error";
-    minDuration?: number;
-    maxDuration?: number;
-    since?: number;
-  }, events?: MiroirActivity[]): MiroirActivity[] {
-    return events??this.getAllActivities().filter((action) => {
-      if (filter.actionType && action.actionType !== filter.actionType) {
-        return false;
-      }
-      if (filter.trackingType && action.activityType !== filter.trackingType) {
-        return false;
-      }
-      if (filter.status && action.status !== filter.status) {
-        return false;
-      }
-      if (
-        filter.minDuration &&
-        (action.duration === undefined || action.duration < filter.minDuration)
-      ) {
-        return false;
-      }
-      if (
-        filter.maxDuration &&
-        (action.duration === undefined || action.duration > filter.maxDuration)
-      ) {
-        return false;
-      }
-      if (filter.since && action.startTime < filter.since) {
-        return false;
-      }
-      return true;
-    });
+  getFilteredActivities(
+    filter: {
+      actionType?: string;
+      trackingType?: "action" | "testSuite" | "test" | "testAssertion" | "transformer"; // New field for test and transformer filtering
+      status?: "running" | "completed" | "error";
+      minDuration?: number;
+      maxDuration?: number;
+      since?: number;
+    },
+    events?: MiroirActivity[]
+  ): MiroirActivity[] {
+    return (
+      events ??
+      this.getAllActivities().filter((action) => {
+        if (filter.actionType && action.actionType !== filter.actionType) {
+          return false;
+        }
+        if (filter.trackingType && action.activityType !== filter.trackingType) {
+          return false;
+        }
+        if (filter.status && action.status !== filter.status) {
+          return false;
+        }
+        if (
+          filter.minDuration &&
+          (action.duration === undefined || action.duration < filter.minDuration)
+        ) {
+          return false;
+        }
+        if (
+          filter.maxDuration &&
+          (action.duration === undefined || action.duration > filter.maxDuration)
+        ) {
+          return false;
+        }
+        if (filter.since && action.startTime < filter.since) {
+          return false;
+        }
+        return true;
+      })
+    );
   }
 
   clear(): void {
     this.activities.clear();
-    this.currentEvenStack = [];
+    this.currentActivityStack = [];
     this.currentCompositeAction = undefined;
     this.currentAction = undefined;
     this.currentTestSuite = undefined;
@@ -147,8 +139,111 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
   // }
 
   getCurrentActivityId(): string | undefined {
-    return this.currentEvenStack[this.currentEvenStack.length - 1];
+    return this.currentActivityStack.length >0?this.currentActivityStack[this.currentActivityStack.length - 1].activityId: undefined;
   }
+
+  getCurrentActivityTopic(): LogTopic | undefined{
+    // return this.currentActivityStack.length >0?activityTypeToTopicMap[this.currentActivityStack[this.currentActivityStack.length - 1].activityType]: undefined;
+    return this.currentActivityStack.length >0?getActivityTopic(this.currentActivityStack[this.currentActivityStack.length - 1]): undefined;
+  }
+
+  // ##############################################################################################
+  // ##############################################################################################
+  // ##############################################################################################
+  async trackActivity<T>(
+    activityType: MiroirActivity["activityType"],
+    activityLabel: string | undefined,
+    parentActivity: MiroirActivity | undefined,
+    actionFn: () => Promise<T>,
+  ): Promise<T> {
+    const trackingId = this.startActivity(
+      activityType,
+      activityLabel,
+      parentActivity?.activityId
+    );
+    try {
+      const result = await actionFn();
+      this.endActivity(trackingId);
+      return result;
+    } catch (error) {
+      this.endActivity(trackingId, error instanceof Error ? error.message : String(error));
+      throw error;
+    }
+  }
+
+  // ##############################################################################################
+  startActivity(
+    activityType: MiroirActivity["activityType"],
+    activityLabel?: string,
+    parentActivityTrackingId?: string
+  ): string {
+    const id = this.generateId();
+    const now = Date.now();
+
+    // If no parentId is provided, use the current active action as parent
+    // const effectiveParentId = parentId;
+
+    const depth = parentActivityTrackingId
+      ? (this.activities.get(parentActivityTrackingId)?.depth ?? 0) + 1
+      : 0;
+
+    const activity: MiroirActivity = {
+      activityId: id,
+      parentId: parentActivityTrackingId,
+      activityType: "action",
+      actionType: activityType,
+      actionLabel: activityLabel,
+      startTime: now,
+      status: "running",
+      depth,
+      children: [],
+    };
+
+    this.activities.set(id, activity);
+
+    // Add to parent's children if there's a parent
+    if (parentActivityTrackingId) {
+      const parent = this.activities.get(parentActivityTrackingId);
+      if (parent && !parent.children.includes(id)) {
+        parent.children.push(id);
+      }
+    }
+
+    // Push to action stack
+    this.currentActivityStack.push(activity);
+
+    this.miroirEventService?.pushEventFromActivity(activity);
+    return id;
+  }
+
+  // ##############################################################################################
+  endActivity(trackingId: string, error?: string): void {
+    const event = this.activities.get(trackingId);
+    if (!event) {
+      return;
+    }
+
+    const now = Date.now();
+    event.endTime = now;
+    event.duration = now - event.startTime;
+    event.status = error ? "error" : "completed";
+    if (error) {
+      event.error = error;
+    }
+
+    // Remove from action stack
+    // const index = this.currentActivityStack.indexOf(trackingId);
+    const index = this.currentActivityStack.findIndex(a => a.activityId === trackingId);
+    if (index !== -1) {
+      this.currentActivityStack.splice(index, 1);
+    }
+
+    if (["testSuite", "test", "testAssertion"].includes(event.activityType)) {
+      this.currentTestPath.pop();
+    }
+    this.miroirEventService?.pushEventFromActivity(event);
+  }
+
 
   // ##############################################################################################
   // ##############################################################################################
@@ -171,6 +266,7 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
     }
   }
 
+  // ##############################################################################################
   startActivity_Action(actionType: string, actionLabel?: string, parentId?: string): string {
     const id = this.generateId();
     const now = Date.now();
@@ -178,9 +274,7 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
     // If no parentId is provided, use the current active action as parent
     const effectiveParentId = parentId || this.getCurrentActivityId();
 
-    const depth = effectiveParentId
-      ? (this.activities.get(effectiveParentId)?.depth ?? 0) + 1
-      : 0;
+    const depth = effectiveParentId ? (this.activities.get(effectiveParentId)?.depth ?? 0) + 1 : 0;
 
     const activity: MiroirActivity = {
       activityId: id,
@@ -205,7 +299,7 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
     }
 
     // Push to action stack
-    this.currentEvenStack.push(id);
+    this.currentActivityStack.push(activity);
 
     this.miroirEventService?.pushEventFromActivity(activity);
     return id;
@@ -258,13 +352,13 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
       const result = await actionFn(parentId);
       this.endActivity(trackingId);
       console.log(
-      "🧪🧪 ended tracking test suite",
-      testSuitePathAsString,
-      "with ID:",
-      trackingId,
-      "parent:",
-      parentId
-    );
+        "🧪🧪 ended tracking test suite",
+        testSuitePathAsString,
+        "with ID:",
+        trackingId,
+        "parent:",
+        parentId
+      );
       return Promise.resolve(result);
     } catch (error) {
       this.endActivity(trackingId, error instanceof Error ? error.message : String(error));
@@ -284,9 +378,13 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
     const trackingId = this.startTest(testName, parentTrackingId);
     try {
       this.setTest(testName);
-      console.log(`🧪 Started tracking test ${testName} with ID: ${trackingId}, parent: ${parentTrackingId}`);
+      console.log(
+        `🧪 Started tracking test ${testName} with ID: ${trackingId}, parent: ${parentTrackingId}`
+      );
       const result = await actionFn(parentTrackingId);
-      console.log(`🧪 Ended tracking test ${testName} with ID: ${trackingId}, parent: ${parentTrackingId}`);
+      console.log(
+        `🧪 Ended tracking test ${testName} with ID: ${trackingId}, parent: ${parentTrackingId}`
+      );
       this.endActivity(trackingId);
       this.setTest(undefined);
       return Promise.resolve(result);
@@ -308,10 +406,14 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
     const trackingId = this.startTestAssertion(testAssertionName, parentTrackingId);
     try {
       this.setTestAssertion(testAssertionName);
-      console.log(`🧪 Started tracking test assertion ${testAssertionName} with ID: ${trackingId}, parent: ${parentTrackingId}`);
+      console.log(
+        `🧪 Started tracking test assertion ${testAssertionName} with ID: ${trackingId}, parent: ${parentTrackingId}`
+      );
       const result = await actionFn(parentTrackingId);
       // this.setTestAssertionResult(currentTestAssertionPath, testAssertionResult);
-      console.log(`🧪 Ended tracking test assertion ${testAssertionName} with ID: ${trackingId}, parent: ${parentTrackingId}`);
+      console.log(
+        `🧪 Ended tracking test assertion ${testAssertionName} with ID: ${trackingId}, parent: ${parentTrackingId}`
+      );
       this.endActivity(trackingId);
       this.setTestAssertion(undefined);
       return Promise.resolve(result);
@@ -323,16 +425,13 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
     }
   }
 
-
   // Test-specific methods for backwards compatibility with TestTracker
   startTestSuite(testSuite: string, parentId?: string): string {
     const id = this.generateId();
     const now = Date.now();
 
     const effectiveParentId = parentId || this.getCurrentActivityId();
-    const depth = effectiveParentId
-      ? (this.activities.get(effectiveParentId)?.depth ?? 0) + 1
-      : 0;
+    const depth = effectiveParentId ? (this.activities.get(effectiveParentId)?.depth ?? 0) + 1 : 0;
 
     const activity: MiroirActivity = {
       activityId: id,
@@ -356,7 +455,7 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
       }
     }
 
-    this.currentEvenStack.push(id);
+    this.currentActivityStack.push(activity);
     this.currentTestSuite = testSuite;
     this.currentTestPath.push({ testSuite });
     if (!this.miroirEventService) {
@@ -373,13 +472,13 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
   // Convert string[] path to TestAssertionPath format
   public static stringArrayToTestAssertionPath(stringPath: string[]): TestAssertionPath {
     const result: TestAssertionPath = [];
-    
+
     for (let i = 0; i < stringPath.length; i++) {
       // Each level in the hierarchy can be a test suite name
       // We assume all levels are test suites for now, since that's what testSuites() returns
       result.push({ testSuite: stringPath[i] });
     }
-    
+
     return result;
   }
 
@@ -422,11 +521,9 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
     const now = Date.now();
 
     const effectiveParentId = parentId || this.getCurrentActivityId();
-    const depth = effectiveParentId
-      ? (this.activities.get(effectiveParentId)?.depth ?? 0) + 1
-      : 0;
+    const depth = effectiveParentId ? (this.activities.get(effectiveParentId)?.depth ?? 0) + 1 : 0;
 
-    const event: MiroirActivity = {
+    const activity: MiroirActivity = {
       activityId: id,
       parentId: effectiveParentId,
       activityType: "testAssertion",
@@ -441,7 +538,7 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
       children: [],
     };
 
-    this.activities.set(id, event);
+    this.activities.set(id, activity);
 
     if (effectiveParentId) {
       const parent = this.activities.get(effectiveParentId);
@@ -450,9 +547,9 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
       }
     }
 
-    this.currentEvenStack.push(id);
+    this.currentActivityStack.push(activity);
     this.currentTestAssertion = testAssertion;
-    
+
     // // Remove any previous testAssertion entries from currentTestPath
     // // to ensure each testAssertion gets its own clean entry
     // while (this.currentTestPath.length > 0) {
@@ -463,9 +560,9 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
     //     break;
     //   }
     // }
-    
+
     this.currentTestPath.push({ testAssertion });
-    this.miroirEventService?.pushEventFromActivity(event);
+    this.miroirEventService?.pushEventFromActivity(activity);
 
     return id;
   }
@@ -485,11 +582,11 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
     console.log(
       "MiroirActivityTracker.setTestAssertionResult called for testAssertionPath",
       testAssertionPath,
-      "testAssertionResult",
+      "testAssertionResult"
       // "old this.testAssertionsResults",
       // JSON.stringify(this.testAssertionsResults, null, 2)
     );
-    
+
     // Color output based on assertion result
     let coloredOutput;
     if (testAssertionResult?.assertionResult == "ok") {
@@ -501,7 +598,6 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
     }
     console.log(coloredOutput);
 
-
     if (testAssertionPath.length === 0) {
       throw new Error("testAssertionPath cannot be empty");
     }
@@ -512,7 +608,7 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
 
     // Navigate through the test path, creating missing nodes as needed
     let current: any = this.testAssertionsResults;
-    
+
     // Track the current test suite and test for creating the correct structure
     let currentTestSuiteName: string | undefined;
     let currentTestName: string | undefined;
@@ -520,7 +616,7 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
     for (const pathElement of testAssertionPath) {
       if (pathElement.testSuite) {
         currentTestSuiteName = pathElement.testSuite;
-        
+
         // Ensure the test suite results structure exists
         if (!current.testsSuiteResults) {
           current.testsSuiteResults = {};
@@ -529,10 +625,9 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
           current.testsSuiteResults[currentTestSuiteName] = {};
         }
         current = current.testsSuiteResults[currentTestSuiteName];
-        
       } else if (pathElement.test) {
         currentTestName = pathElement.test;
-        
+
         // Ensure the tests results structure exists
         if (!current.testsResults) {
           current.testsResults = {};
@@ -541,18 +636,17 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
           current.testsResults[currentTestName] = {
             testLabel: currentTestName,
             testResult: "ok", // Will be updated based on assertion results
-            testAssertionsResults: {}
+            testAssertionsResults: {},
           };
         }
         current = current.testsResults[currentTestName];
-        
       } else if (pathElement.testAssertion) {
         // We're at the assertion level, set the result
         if (!current.testAssertionsResults) {
           current.testAssertionsResults = {};
         }
         current.testAssertionsResults[testAssertionResult.assertionName] = testAssertionResult;
-        
+
         // Update the test result based on assertion results
         const assertionResults = Object.values(current.testAssertionsResults);
         const hasErrors = assertionResults.some(
@@ -564,7 +658,7 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
         const allSkipped = assertionResults.every(
           (result: any) => result.assertionResult === "skipped"
         );
-        
+
         // Priority: error > skipped > ok
         if (hasErrors) {
           current.testResult = "error";
@@ -589,7 +683,7 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
   // ##############################################################################################
   getTestResult(testPath: TestAssertionPath): TestResult {
     // First check if the path contains a test element
-    const hasTestElement = testPath.some(pathElement => pathElement.test);
+    const hasTestElement = testPath.some((pathElement) => pathElement.test);
     if (!hasTestElement) {
       throw new Error("getTestResult: Path does not contain a test element");
     }
@@ -662,9 +756,7 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
     const now = Date.now();
 
     const effectiveParentId = parentId || this.getCurrentActivityId();
-    const depth = effectiveParentId
-      ? (this.activities.get(effectiveParentId)?.depth ?? 0) + 1
-      : 0;
+    const depth = effectiveParentId ? (this.activities.get(effectiveParentId)?.depth ?? 0) + 1 : 0;
 
     const activity: MiroirActivity = {
       activityId: id,
@@ -689,9 +781,9 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
       }
     }
 
-    this.currentEvenStack.push(id);
+    this.currentActivityStack.push(activity);
     this.currentTest = test;
-    
+
     // // Remove any previous test or testAssertion entries from currentTestPath
     // // to ensure each test gets its own clean path within the current test suite context
     // while (this.currentTestPath.length > 0) {
@@ -702,8 +794,8 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
     //     break;
     //   }
     // }
-    
-    this.currentTestPath.push({test});
+
+    this.currentTestPath.push({ test });
     this.miroirEventService?.pushEventFromActivity(activity);
 
     return id;
@@ -798,9 +890,7 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
     const now = Date.now();
 
     const effectiveParentId = parentId || this.getCurrentActivityId();
-    const depth = effectiveParentId
-      ? (this.activities.get(effectiveParentId)?.depth ?? 0) + 1
-      : 0;
+    const depth = effectiveParentId ? (this.activities.get(effectiveParentId)?.depth ?? 0) + 1 : 0;
 
     const activity: MiroirActivity = {
       activityId: activityId,
@@ -827,7 +917,7 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
       }
     }
 
-    this.currentEvenStack.push(activityId);
+    this.currentActivityStack.push(activity);
     const eventsBefore = this.miroirEventService?.events.size ?? 0;
     this.miroirEventService?.pushEventFromActivity(activity);
     console.log(
@@ -889,7 +979,6 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
       }
       this.activities.delete(id);
     });
-
   }
 
   destroy(): void {

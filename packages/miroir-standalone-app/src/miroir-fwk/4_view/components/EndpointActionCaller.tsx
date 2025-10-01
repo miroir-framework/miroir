@@ -42,7 +42,7 @@ import { useReportPageContext } from './Reports/ReportPageContext.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "EndpointActionCaller")
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "EndpointActionCaller"), "UI",
 ).then((logger: LoggerInterface) => {log = logger});
 
 export interface EndpointActionCallerProps {}

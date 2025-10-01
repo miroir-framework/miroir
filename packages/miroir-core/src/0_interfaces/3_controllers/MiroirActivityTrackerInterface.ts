@@ -69,6 +69,23 @@ export interface MiroirActivityTrackerInterface {
   // ##############################################################################################
   // ##############################################################################################
   // ##############################################################################################
+
+  /**
+   * 
+   * @param activityType 
+   * @param activityLabel 
+   * @param parentActivity 
+   * @param actionFn 
+   * @param args 
+   */
+  trackActivity<T>(
+    activityType: string,
+    activityLabel: string | undefined,
+    parentActivity: MiroirActivity | undefined,
+    actionFn: (...args: any[]) => Promise<T>,
+    ...args: any[]
+  ): Promise<T>;
+
   /**
    * Start tracking an action
    * @param actionType The type of action being tracked

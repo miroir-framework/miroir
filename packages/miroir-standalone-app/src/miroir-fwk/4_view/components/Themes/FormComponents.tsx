@@ -11,7 +11,7 @@ import { cleanLevel } from '../../constants';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "FormComponents")
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "FormComponents"), "UI",
 ).then((logger: LoggerInterface) => {
   log = logger;
 });

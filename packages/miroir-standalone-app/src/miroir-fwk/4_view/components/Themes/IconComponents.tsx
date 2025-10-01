@@ -41,7 +41,7 @@ import { ThemedComponentProps } from './BaseTypes';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "IconComponents")
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "IconComponents"), "UI",
 ).then((logger: LoggerInterface) => {log = logger});
 
 // ################################################################################################

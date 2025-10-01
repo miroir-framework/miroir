@@ -5,7 +5,7 @@ import { cleanLevel } from "../constants";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ErrorFallbackComponent")
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ErrorFallbackComponent"), "UI",
 ).then((logger: LoggerInterface) => {
   log = logger;
 });

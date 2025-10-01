@@ -30,7 +30,7 @@ import { MiroirThemeSelector } from '../MiroirThemeSelector.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ResponsiveAppBar")
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ResponsiveAppBar"), "UI",
 ).then((logger: LoggerInterface) => {log = logger});
 
 const pages: MiroirMenuItem[] = [

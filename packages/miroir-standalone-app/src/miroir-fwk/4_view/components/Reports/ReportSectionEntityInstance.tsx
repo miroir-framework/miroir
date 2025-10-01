@@ -63,7 +63,7 @@ import type { FoldedStateTree } from './FoldedStateTreeUtils.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ReportSectionEntityInstance")
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ReportSectionEntityInstance"), "UI",
 ).then((logger: LoggerInterface) => {log = logger});
 
 // ################################################################################################

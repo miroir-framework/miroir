@@ -43,7 +43,7 @@ import { generateAgGridStyles, generateGlideTheme, getFilterToolbarStyles } from
 // ################################################################################################
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ValueObjectGrid")
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ValueObjectGrid"), "UI",
 ).then((logger: LoggerInterface) => {log = logger});
 
 // ################################################################################################

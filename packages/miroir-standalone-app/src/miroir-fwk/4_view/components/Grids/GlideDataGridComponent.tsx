@@ -47,7 +47,7 @@ import glideToolsCellRenderer, { ToolsCell, ToolsCellData } from './GlideToolsCe
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "GlideDataGridComponent")
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "GlideDataGridComponent"), "UI",
 ).then((logger: LoggerInterface) => {log = logger});
 
 // Sorting and filtering types

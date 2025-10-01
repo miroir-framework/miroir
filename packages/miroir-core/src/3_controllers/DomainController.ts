@@ -92,7 +92,7 @@ import { ConfigurationService } from './ConfigurationService.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "DomainController")
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "DomainController"), "action"
 ).then((logger: LoggerInterface) => {log = logger});
 
 // ################################################################################################
@@ -147,6 +147,7 @@ export async function resetAndInitApplicationDeployment(
   }
   return Promise.resolve(ACTION_OK);
 }
+
 // ################################################################################################
 // ################################################################################################
 // ################################################################################################
@@ -158,17 +159,17 @@ export async function resetAndInitApplicationDeployment(
  */
 export class DomainController implements DomainControllerInterface {
   private callUtil: CallUtils;
-
+  private log: LoggerInterface;
     // ##############################################################################################
   constructor(
     private persistenceStoreAccessMode: "local" | "remote",
-    // public persistenceStoreAccessMode: "local" | "remote",
     private miroirContext: MiroirContextInterface,
     private localCache: LocalCacheInterface,
     private persistenceStoreLocalOrRemote: PersistenceStoreLocalOrRemoteInterface, // instance of PersistenceReduxSaga
     private endpoint: Endpoint
   ) {
     // this.callUtil = new CallUtils(miroirContext.errorLogService, persistenceStoreLocalOrRemote);
+    this.log = log;
     this.callUtil = new CallUtils(persistenceStoreLocalOrRemote);
     const boundRemotePersistenceAction = this.callUtil.callPersistenceAction.bind(
       this.callUtil
@@ -3314,6 +3315,26 @@ export class DomainController implements DomainControllerInterface {
   }
 
 } // class DomainController
+
+// // ##############################################################################################
+// // ##############################################################################################
+// // ##############################################################################################
+// // ##############################################################################################
+// // ##############################################################################################
+// // const TrackedDomainController: typeof DomainController = MiroirLoggerFactory.createTrackedClass<DomainController>(
+// const TrackedDomainController: typeof DomainController = class extends DomainController {
+//   private activityId: string | undefined;
+
+//   constructor(...args: any[]) {
+//     super(...args);
+//     MiroirLoggerFactory.trackObject(this, "DomainController");
+//   }  
+// }
+
+// ##############################################################################################
+// ##############################################################################################
+// ##############################################################################################
+// ##############################################################################################
 
 type AsyncHandlerFunction = (...props: any[]) => Promise<Action2VoidReturnType>
 type AsyncHandlerClosure = () => Promise<Action2VoidReturnType>

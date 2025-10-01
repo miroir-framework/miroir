@@ -7,7 +7,7 @@ import { TableComponentRow } from "./EntityInstanceGridInterface.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "EntityInstanceCellRenderer")
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "EntityInstanceCellRenderer"), "UI",
 ).then((logger: LoggerInterface) => {log = logger});
 
 

@@ -39,7 +39,7 @@ import { useDocumentOutlineContext } from '../ValueObjectEditor/InstanceEditorOu
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ReportView")
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ReportView"), "UI",
 ).then((logger: LoggerInterface) => {log = logger});
 
 

@@ -100,7 +100,7 @@ import { generateAgGridStyles, generateGlideTheme, getFilterToolbarStyles } from
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "EntityInstanceGrid")
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "EntityInstanceGrid"), "UI",
 ).then((logger: LoggerInterface) => {log = logger});
 
 
