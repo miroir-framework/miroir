@@ -959,6 +959,11 @@ export {
   ignorePostgresExtraAttributesOnList,
   ignorePostgresExtraAttributesOnObject,
   ignorePostgresExtraAttributesOnRecord,
+  isJson,
+  isJsonArray,
+  removeUndefinedProperties,
+  safeStringify,
+  unNullify,
 } from "./4_services/otherTools.js";
 export {
   performanceMetrics,

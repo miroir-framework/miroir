@@ -702,7 +702,7 @@ export function jzodTypeCheck(
     const isOptional = jzodSchema.optional === true;
     const isNullable = jzodSchema.nullable === true;
     
-    if (!isOptional && !isNullable && jzodSchema.type !== "any") {
+    if (!isOptional && !isNullable && jzodSchema.type !== "any" && jzodSchema.type !== "undefined" && jzodSchema.type !== "null") {
       return {
         status: "error",
         error: `jzodTypeCheck expected a value but got ${valueObject === null ? 'null' : 'undefined'} for non-optional schema`,

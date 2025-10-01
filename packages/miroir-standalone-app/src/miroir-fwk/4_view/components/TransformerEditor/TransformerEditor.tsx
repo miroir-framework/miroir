@@ -1,59 +1,46 @@
-import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
-import { Formik, FormikProps } from 'formik';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
+import { valueToJzod } from '@miroir-framework/jzod';
 import {
+  EntityInstance,
   LoggerInterface,
   MiroirLoggerFactory,
-  EntityInstance,
-  type JzodElement,
-  TransformerForRuntime,
   Uuid,
-  jzodTypeCheck,
-  ResolvedJzodSchemaReturnType,
-  entityDefinitionTransformerDefinition,
-  getDefaultValueForJzodSchemaWithResolutionNonHook,
-  type ReduxDeploymentsState,
-  type SyncBoxedExtractorOrQueryRunnerMap,
   adminConfigurationDeploymentMiroir,
+  defaultTransformerInput,
+  getEntityInstancesUuidIndexNonHook,
+  getInnermostTransformerError,
   miroirFundamentalJzodSchema,
+  safeStringify,
+  transformer_extended_apply_wrapper,
+  type Entity,
+  type EntityDefinition,
+  type JzodElement,
   type JzodSchema,
   type MetaModel,
   type MiroirModelEnvironment,
-  getEntityInstancesUuidIndexNonHook,
-  transformer_extended_apply_wrapper,
-  type Domain2QueryReturnType,
-  type Entity,
-  type EntityDefinition,
-  type EntityDefinitionEntityDefinition,
-  type TransformerReturnType,
-  type TransformerFailure,
-  getInnermostTransformerError,
-  defaultTransformerInput,
+  type ReduxDeploymentsState,
+  type SyncBoxedExtractorOrQueryRunnerMap,
+  type TransformerReturnType
 } from 'miroir-core';
-import { valueToJzod } from '@miroir-framework/jzod';
 
 
-import { packageName } from '../../../../constants';
-import { cleanLevel } from '../../constants';
-import { JzodElementEditor } from '../ValueObjectEditor/JzodElementEditor';
-import { useMiroirContextService } from '../../MiroirContextReactProvider';
-import { useCurrentModel } from '../../ReduxHooks';
-import {
-  ThemedCodeBlock,
-  ThemedContainer,
-  ThemedHeaderSection,
-  ThemedText,
-  ThemedTitle,
-} from "../Themes/index"
-import { ReportSectionEntityInstance } from '../Reports/ReportSectionEntityInstance';
+import type { TransformerForBuildPlusRuntime } from 'miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType';
 import { getMemoizedReduxDeploymentsStateSelectorMap, type ReduxStateWithUndoRedo } from 'miroir-localcache-redux';
 import { useSelector } from 'react-redux';
-import { TypedValueObjectEditor } from '../Reports/TypedValueObjectEditor';
-import { TransformerEventsPanel } from './TransformerEventsPanel';
+import { packageName } from '../../../../constants';
+import { cleanLevel } from '../../constants';
+import { useMiroirContextService } from '../../MiroirContextReactProvider';
+import { useCurrentModel } from '../../ReduxHooks';
 import { useReportPageContext } from '../Reports/ReportPageContext';
-import type { FoldedStateTree } from '../Reports/FoldedStateTreeUtils';
-import type { TransformerForBuildOrRuntime } from 'miroir-core';
-import type { TransformerForBuildPlusRuntime } from 'miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType';
+import { TypedValueObjectEditor } from '../Reports/TypedValueObjectEditor';
+import {
+  ThemedContainer,
+  ThemedHeaderSection,
+  ThemedTitle
+} from "../Themes/index";
+import { TransformationResultPanel } from './TransformationResultPanel';
+import { TransformerEventsPanel } from './TransformerEventsPanel';
 
 // ################################################################################################
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -63,33 +50,6 @@ MiroirLoggerFactory.registerLoggerToStart(
   log = logger;
 });
 
-// ################################################################################################
-// Safe stringify function that prevents "Invalid string length" errors with memoization
-// ################################################################################################
-const stringifyCache = new WeakMap<object, string>();
-
-function safeStringify(obj: any, maxLength: number = 2000): string {
-  try {
-    // Use cache for objects to avoid re-stringifying the same object
-    if (obj && typeof obj === 'object' && stringifyCache.has(obj)) {
-      return stringifyCache.get(obj)!;
-    }
-    
-    const str = JSON.stringify(obj, null, 2);
-    const result = str && str.length > maxLength 
-      ? str.substring(0, maxLength) + "... [truncated]" 
-      : str || "[unable to stringify]";
-    
-    // Cache the result for objects
-    if (obj && typeof obj === 'object') {
-      stringifyCache.set(obj, result);
-    }
-    
-    return result;
-  } catch (error) {
-    return `[stringify error: ${error instanceof Error ? error.message : 'unknown'}]`;
-  }
-}
 
 // ################################################################################################
 // Helper function to create a generic "any" schema for displaying arbitrary objects
@@ -301,119 +261,6 @@ const EntityInstancePanel = React.memo<{
   )
 );
 
-// ################################################################################################
-// ################################################################################################
-// ################################################################################################
-// ################################################################################################
-// ################################################################################################
-// ################################################################################################
-// ################################################################################################
-const TransformationResultPanel: React.FC<{
-  transformationResult: TransformerReturnType<any>;
-  transformationResultSchema?: JzodElement;
-  // transformationError: string | null;
-  // transformationError: TransformerFailure | null;
-  selectedEntityInstance: EntityInstance | undefined;
-  showAllInstances: boolean;
-  entityInstances: EntityInstance[];
-  deploymentUuid: Uuid;
-}> =
-  // React.memo<{
-  //   transformationResult: any;
-  //   transformationResultSchema?: JzodElement;
-  //   // transformationError: string | null;
-  //   transformationError: TransformerFailure | null;
-  //   selectedEntityInstance: EntityInstance | undefined;
-  //   showAllInstances: boolean;
-  //   entityInstances: EntityInstance[];
-  //   deploymentUuid: Uuid;
-  // }>(
-  ({
-    transformationResult,
-    transformationResultSchema,
-    // transformationError,
-    selectedEntityInstance,
-    showAllInstances,
-    entityInstances,
-    deploymentUuid,
-  }) => {
-    log.info("Rendering TransformationResultPanel with result:", transformationResult);
-    return (
-    <ThemedContainer style={{ flex: 1, maxWidth: "50%" }}>
-      <ThemedHeaderSection>
-        <ThemedTitle>
-          Transformation Result
-          {transformationResult &&
-            typeof transformationResult === "object" &&
-            "queryFailure" in transformationResult && (
-              <span style={{ color: "red", marginLeft: "10px", fontSize: "0.9em" }}>⚠️ Error</span>
-            )}
-        </ThemedTitle>
-      </ThemedHeaderSection>
-
-      {transformationResult &&
-      typeof transformationResult === "object" &&
-      "queryFailure" in transformationResult ? (
-        <ThemedCodeBlock>
-          {typeof transformationResult === "string"
-            ? transformationResult
-            : safeStringify(transformationResult)}
-        </ThemedCodeBlock>
-      ) : transformationResult !== null ? (
-        <TypedValueObjectEditor
-          labelElement={<div>target:</div>}
-          valueObject={transformationResult}
-          valueObjectMMLSchema={transformationResultSchema ?? createGenericObjectSchema()}
-          deploymentUuid={deploymentUuid}
-          applicationSection={"data"}
-          formLabel={"Transformation Result Viewer"}
-          onSubmit={async () => {}} // No-op for readonly
-          maxRenderDepth={3}
-          readonly={true}
-        />
-      ) : (showAllInstances ? entityInstances.length > 0 : selectedEntityInstance) ? (
-        <div>
-          <div
-            style={{
-              marginBottom: "12px",
-              padding: "12px",
-              background: "#f5f5f5",
-              borderRadius: "4px",
-            }}
-          >
-            <div style={{ marginBottom: "8px", fontWeight: "bold" }}>
-              No transformation result yet.
-            </div>
-            <div style={{ marginBottom: "8px" }}>Create a transformer to see the result here.</div>
-            <div style={{ fontSize: "0.9em", color: "#666" }}>
-              <div style={{ marginBottom: "4px" }}>
-                Tip: Use contextReference to access the entity instance{showAllInstances ? "s" : ""}
-                :
-              </div>
-            </div>
-          </div>
-          <ThemedCodeBlock>
-            {JSON.stringify(
-              {
-                transformerType: "contextReference",
-                // referenceName: showAllInstances ? "target" : "applyTo",
-                referenceName: defaultTransformerInput,
-              },
-              null,
-              2
-            )}
-          </ThemedCodeBlock>
-        </div>
-      ) : (
-        <div style={{ padding: "12px", background: "#f5f5f5", borderRadius: "4px" }}>
-          No entity instance{showAllInstances ? "s" : ""} available for transformation.
-        </div>
-      )}
-    </ThemedContainer>
-  );}
-// )
-;
-
 // const DebugPanel = React.memo<{
 //   currentTransformerDefinition: any;
 // }>(({ currentTransformerDefinition }) => (
@@ -426,23 +273,34 @@ const TransformationResultPanel: React.FC<{
 // ));
 
 // ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
 /**
  * TransformerEditor allows users to create and test transformers on entity instances.
  * 
  * To reference the entity instance(s) in your transformer, use contextReference with one of these names:
- * - "applyTo" - the standard reference name (single instance or array when showing all)
- * - "target" - the target to transform (single instance or array when showing all)
- * - "entityInstance" - explicit entity instance reference
- * - "instance" - short reference name
+ * - "defaultInput" - the standard reference name (single instance or array when showing all)
  * - Or use any property name from the entity instance directly (e.g., "uuid", "name", etc.)
  * 
- * Example transformer that copies the target:
+ * Example transformer that copies the default input:
  * {
  *   "transformerType": "contextReference",
- *   "referenceName": "target"
+ *   "referenceName": "defaultInput"
  * }
  * 
- * Example transformer that gets the name field from a single instance:
+ * Example transformer that gets the name field from an instance input:
  * {
  *   "transformerType": "contextReference",
  *   "referenceName": "name"
@@ -455,18 +313,7 @@ export interface TransformerEditorProps {
   entityUuid: Uuid;
 }
 
-
-
-
 // ################################################################################################
-// ################################################################################################
-// ################################################################################################
-// ################################################################################################
-// ################################################################################################
-// ################################################################################################
-// ################################################################################################
-// ################################################################################################
-// export const TransformerEditor: React.FC<TransformerEditorProps> = React.memo((props) => {
 export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
   const { deploymentUuid, entityUuid: initialEntityUuid } = props;
   const context = useMiroirContextService();
@@ -758,11 +605,10 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
       if (entityInstances.length === 0) return {};
 
       return {
-        entityInstance: entityInstances,
-        instance: entityInstances,
-        // target: entityInstances,
+        // entityInstance: entityInstances,
+        // instance: entityInstances,
         [defaultTransformerInput]: entityInstances,
-        applyTo: entityInstances,
+        // applyTo: entityInstances,
         // Also provide individual properties from the first instance for compatibility
         // (in case transformers expect single instance properties)
         ...(entityInstances[0] || {}),
@@ -997,7 +843,10 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
     ]
   ); // Remove context from dependencies
 
-  log.info("Rendering TransformerEditor context.miroirContext.miroirEventService.events.size", context.miroirContext.miroirEventService.events.size)
+  log.info(
+    "Rendering TransformerEditor context.miroirContext.miroirEventService.events.size",
+    context.miroirContext.miroirEventService.events.size
+  );
   // // ################################################################################################
   // const transformerEventsPanel: JSX.Element = useMemo(() => {
   //   log.info("Rendering new transformerEventsPanel with events:", context.miroirContext.miroirEventService.events);

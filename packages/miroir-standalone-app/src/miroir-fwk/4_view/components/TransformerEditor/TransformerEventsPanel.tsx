@@ -3,6 +3,7 @@ import {
   LoggerInterface,
   MiroirLoggerFactory,
   type EventFilter,
+  type JzodElement,
   type MiroirEvent,
   type MiroirEventLog,
   type TransformerEvent,
@@ -20,6 +21,9 @@ import {
   ThemedText,
   ThemedTitle,
 } from "../Themes/index";
+import { EventLogComponent } from '../EventLogComponent';
+import { valueToJzod } from '@miroir-framework/jzod';
+import { TypedValueObjectEditor } from '../Reports/TypedValueObjectEditor';
 
 // ################################################################################################
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -43,10 +47,13 @@ const formatDuration = (duration?: number): string => {
 };
 
 // ################################################################################################
-const TransformerEventEntry: React.FC<{
+const DisplayTransformerEvent: React.FC<{
   event: TransformerEvent;
   depth: number;
 }> = React.memo(({ event, depth }) => {
+  const context = useMiroirContextService();
+  const deploymentUuid = context.deploymentUuid;
+  
   const [isExpanded, setIsExpanded] = useState(false);
   const activity = event.activity;
   const hasDetails =
@@ -65,13 +72,52 @@ const TransformerEventEntry: React.FC<{
   };
 
   log.info("Rendering TransformerEventEntry", event, depth, isExpanded, hasDetails );
-  
+
+  // Manage expanded log entries
+  const [expandedLogIds, setExpandedLogIds] = useState<Set<string>>(new Set());
+  const handleToggleLogExpansion = (logId: string) => {
+   const newExpanded = new Set(expandedLogIds);
+  if (newExpanded.has(logId)) {
+    newExpanded.delete(logId);
+  } else {
+    newExpanded.add(logId);
+  }
+  setExpandedLogIds(newExpanded);
+};
+
   // const preciseError: Domain2ElementFailed | undefined = useMemo(() => {
   const preciseError: TransformerFailure | undefined = useMemo(() => {
     if (activity.transformerError) {
       return getInnermostTransformerError(activity.transformerError as any);
     }
   }, [activity.transformerError]);
+
+  // ################################################################################################
+  const displayedParameters = useMemo(() => {
+    if (!activity.transformerParams ) {
+      return activity.transformerParams;
+    }
+    return Object.fromEntries(
+      Object.entries(activity.transformerParams).map(([key, value]) => {
+        // Filter out large objects/arrays for initial display
+        if (value && typeof value === 'object') {
+          if (["miroirFundamentalJzodSchema", "miroirMetaModel", "currentModel"].includes(key)) return [key, `{${key}...}`];
+          if (Array.isArray(value) && value.length > 10) return [key, `[Array with ${value.length} items]`];
+          if (!Array.isArray(value) && Object.keys(value).length > 10) return [key, `{Object with ${Object.keys(value).length} keys}`];
+        }
+        return [key, value];
+      }
+    ));
+  }
+  , [activity.transformerParams]);
+
+  console.log("Displayed parameters", displayedParameters);
+  const parametersSchema: JzodElement = useMemo(() => {
+    if (!displayedParameters || !isExpanded) {
+      return { type: "any" } as JzodElement;
+    }
+    return (valueToJzod(displayedParameters) ?? { type: "any" }) as JzodElement;
+  }, [displayedParameters, isExpanded]);
 
   return (
     <div style={{ ...indentStyle, marginBottom: '8px' }}>
@@ -122,34 +168,54 @@ const TransformerEventEntry: React.FC<{
           {event.eventLogs && event.eventLogs.length > 0 && (
             <div>
               <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>Logs ({event.eventLogs.length}):</div>
-              <div style={{ maxHeight: '200px', overflowY: 'auto' }}>
+              <div style={{ maxHeight: '800px', overflowY: 'auto' }}>
                 {/* {event.eventLogs.map((logEntry: TransformerEntry, index: number) => ( */}
-                {event.eventLogs.map((logEntry: MiroirEventLog, index: number) => (
-                  <div key={index} style={{ 
-                    padding: '4px 8px', 
-                    marginBottom: '2px',
-                    backgroundColor: '#f8f9fa',
-                    borderRadius: '2px',
-                    fontSize: '12px',
-                    fontFamily: 'monospace'
-                  }}>
-                    <span style={{ color: '#666' }}>[{logEntry.level}]</span>{' '}
-                    {logEntry.message}
-                  </div>
+                {event.eventLogs.map((log: MiroirEventLog, index: number) => (
+                  <EventLogComponent
+                    key={log.logId}
+                    eventLog={log}
+                    isExpanded={expandedLogIds.has(log.logId)}
+                    onToggle={() => handleToggleLogExpansion(log.logId)}
+                  />
+                  
+                  // <div key={index} style={{ 
+                  //   padding: '4px 8px', 
+                  //   marginBottom: '2px',
+                  //   backgroundColor: '#f8f9fa',
+                  //   borderRadius: '2px',
+                  //   fontSize: '12px',
+                  //   fontFamily: 'monospace'
+                  // }}>
+                  //   <span style={{ color: '#666' }}>[{logEntry.level}]</span>{' '}
+                  //   {logEntry.message}
+                  // </div>
                 ))}
               </div>
             </div>
           )}
 
-          {activity.transformerParams && (
+          {/* PARAMS */}
+          {displayedParameters && (
             <div style={{ marginBottom: '12px' }}>
               <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>Parameters:</div>
-              <ThemedCodeBlock>
-                {JSON.stringify(activity.transformerParams, null, 2)}
-              </ThemedCodeBlock>
+              {/* <ThemedCodeBlock>
+                {JSON.stringify(Object.keys(activity.transformerParams), null, 2)}
+              </ThemedCodeBlock> */}
+              <TypedValueObjectEditor
+                labelElement={<div>target:</div>}
+                valueObject={displayedParameters}
+                valueObjectMMLSchema={parametersSchema}
+                deploymentUuid={deploymentUuid}
+                applicationSection={"data"}
+                formLabel={"Transformation Result Viewer"}
+                onSubmit={async () => {}} // No-op for readonly
+                maxRenderDepth={3}
+                readonly={true}
+              />
             </div>
           )}
           
+          {/* RESULTS */}
           {activity.transformerResult && (
             <div style={{ marginBottom: '12px' }}>
               <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>Result:</div>
@@ -188,7 +254,7 @@ export const TransformerEventsPanel: React.FC<TransformerEventsPanelProps> = ({
 
   log.info("Rendering TransformerEventsPanel", { allEvents, transformerFilter, isCollapsed });
   // Filter and sort events for display
-  const displayEvents = useMemo(() => {
+  const displayedTransformerEvents = useMemo(() => {
     if (!allEvents.length) return [];
     
       const filterCriteria: EventFilter = { trackingType: "transformer" };
@@ -214,7 +280,7 @@ export const TransformerEventsPanel: React.FC<TransformerEventsPanelProps> = ({
       <ThemedHeaderSection>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <ThemedTitle>
-            Transformer Events {displayEvents.length > 0 && `(${displayEvents.length} / ${allEvents.length})`}
+            Transformer Events {displayedTransformerEvents.length > 0 && `(${displayedTransformerEvents.length} / ${allEvents.length})`}
           </ThemedTitle>
           <button
             onClick={() => setIsCollapsed(!isCollapsed)}
@@ -234,10 +300,10 @@ export const TransformerEventsPanel: React.FC<TransformerEventsPanelProps> = ({
       
       {!isCollapsed && (
         <div style={{ padding: '16px 0' }}>
-          {displayEvents.length > 0 ? (
+          {displayedTransformerEvents.length > 0 ? (
             <div>
-              {displayEvents.map((event: any) => (
-                <TransformerEventEntry
+              {displayedTransformerEvents.map((event: any) => (
+                <DisplayTransformerEvent
                   key={event.transformerId}
                   event={event}
                   depth={event.depth || 0}

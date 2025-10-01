@@ -1,8 +1,13 @@
-import { FactoryLevels, LoggerInterface, SomeLevel, type LogLevel, type LogTopic } from "../0_interfaces/4-services/LoggerInterface";
+import {
+  FactoryLevels,
+  LoggerInterface,
+  SomeLevel,
+  type LogLevel,
+  type LogTopic,
+} from "../0_interfaces/4-services/LoggerInterface";
 import type { MiroirActivityTracker } from "../3_controllers/MiroirActivityTracker";
 import type { MiroirEventService } from "../3_controllers/MiroirEventService";
 import { LoggerContextElement, LoggerGlobalContext } from "./LoggerContext";
-
 
 export class MiroirLogger implements LoggerInterface {
   constructor(
@@ -13,29 +18,11 @@ export class MiroirLogger implements LoggerInterface {
     public readonly name: string,
     public readonly level: FactoryLevels[keyof FactoryLevels],
     public readonly levels: FactoryLevels,
-    public readonly topic: LogTopic | undefined,
-  ) {
-  }
+    public readonly topic: LogTopic | undefined
+  ) {}
 
-  disable(): void {
-
-  }
-  enable(): void {
-
-  }
-  
-    /**
-   * Extract logger name from formatted log message
-   * Pattern: [timestamp] level (loggerName) - message
-   */
-  private extractLoggerName(message: string): string {
-    try {
-      const match = message.match(/\[.*?\]\s+\w+\s+\(([^)]+)\)\s+-/);
-      return match ? match[1] : 'console';
-    } catch (error) {
-      return 'console';
-    }
-  }
+  disable(): void {}
+  enable(): void {}
 
   private filter(level: LogLevel, logger: (...msg: any[]) => void, ...args: any[]): void {
     // logger("FILTER", this.contextFilter?.testSuite, LoggerGlobalContext.getTestSuite());
@@ -47,21 +34,17 @@ export class MiroirLogger implements LoggerInterface {
     //   logger(...args);
     // }
 
-    const message = args.length > 0 ? String(args[0]) : '';
+    const message = args.length > 0 ? String(args[0]) : "";
     const restArgs = args.slice(1);
-    const loggerName = this.extractLoggerName(message); // TODO: remove this, intercept at LoggerInterface level
+    const loggerName = this.name; // TODO: remove this, intercept at LoggerInterface level
 
-      // Check for active action and log if action logging is configured
-      // if (this.config.eventHandlers) {
     const currentActivityId = this.activityTracker.getCurrentActivityId();
     const currentActivityTopic = this.activityTracker.getCurrentActivityTopic();
     // logger("CURRENT ACTIVITY TOPIC", currentActivityTopic, this.topic, level, loggerName, message, ...restArgs);
     if (currentActivityId && (!this.topic || this.topic === currentActivityTopic)) {
-    // if (currentActivityId) {
-      this.eventService.pushLogToEvent(level, loggerName, message, ...restArgs);
       logger(...args);
-    }
-    else {
+      this.eventService.pushLogToEvent(level, loggerName, message, ...restArgs);
+    } else {
       logger(
         "FILTERED OUT of activity",
         currentActivityId,
@@ -85,7 +68,7 @@ export class MiroirLogger implements LoggerInterface {
    * @param msg any data to log to the console
    */
   debug(...msg: any[]): void {
-      // this.logger.debug(...msg);
+    // this.logger.debug(...msg);
     this.filter("debug", this.logger.debug, ...msg);
   }
 
@@ -107,16 +90,16 @@ export class MiroirLogger implements LoggerInterface {
    * @param msg any data to log to the console
    */
   info(...msg: any[]): void {
-    this.filter("info",this.logger.info, ...msg);
+    this.filter("info", this.logger.info, ...msg);
     // this.logger.info(...msg);
   }
 
   /**
- * Output trace message to console.
- * This will also include a full stack trace
- *
- * @param msg any data to log to the console
- */
+   * Output trace message to console.
+   * This will also include a full stack trace
+   *
+   * @param msg any data to log to the console
+   */
   trace(...msg: any[]): void {
     this.filter("trace", this.logger.trace, ...msg);
     // this.logger.trace(...msg);
@@ -141,5 +124,4 @@ export class MiroirLogger implements LoggerInterface {
     this.filter("error", this.logger.error, ...msg);
     // this.logger.error(...msg);
   }
-  
 }

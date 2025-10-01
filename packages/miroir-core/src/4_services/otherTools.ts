@@ -83,3 +83,31 @@ export function removeUndefinedProperties<T>(value: T): T {
   }
   return value;
 }
+
+// ################################################################################################
+// Safe stringify function that prevents "Invalid string length" errors with memoization
+// ################################################################################################
+const stringifyCache = new WeakMap<object, string>();
+
+export function safeStringify(obj: any, maxLength: number = 2000): string {
+  try {
+    // Use cache for objects to avoid re-stringifying the same object
+    if (obj && typeof obj === 'object' && stringifyCache.has(obj)) {
+      return stringifyCache.get(obj)!;
+    }
+    
+    const str = JSON.stringify(obj, null, 2);
+    const result = str && str.length > maxLength 
+      ? str.substring(0, maxLength) + "... [truncated]" 
+      : str || "[unable to stringify]";
+    
+    // Cache the result for objects
+    if (obj && typeof obj === 'object') {
+      stringifyCache.set(obj, result);
+    }
+    
+    return result;
+  } catch (error) {
+    return `[stringify error: ${error instanceof Error ? error.message : 'unknown'}]`;
+  }
+}
