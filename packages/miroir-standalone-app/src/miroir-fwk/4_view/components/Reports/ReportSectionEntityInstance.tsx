@@ -23,6 +23,7 @@ import {
   getQueryRunnerParamsForReduxDeploymentsState,
   getQueryTemplateRunnerParamsForReduxDeploymentsState,
   miroirFundamentalJzodSchema,
+  runQueryTemplateFromReduxDeploymentsState,
   safeStringify,
   type BoxedQueryTemplateWithExtractorCombinerTransformer,
   type JzodElement,
@@ -368,33 +369,36 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
     []
   );
 
-  const queryForExecution: BoxedQueryTemplateWithExtractorCombinerTransformer | undefined = useMemo(() => {
-    if (!isQueryEntity || isResultsCollapsed || !currentQuery?.definition) {
-      return undefined;
-    }
-
+  const queryForExecution: BoxedQueryTemplateWithExtractorCombinerTransformer = useMemo(() => {
     // Convert the instance query to the expected format
-    return {
-      queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
-      deploymentUuid: props.deploymentUuid,
-      pageParams: {
-        deploymentUuid: props.deploymentUuid,
-        // applicationSection: props.applicationSection,
-        applicationSection: "model",
-        instanceUuid: instance.uuid,
-      },
-      queryParams: {},
-      contextResults: {},
-      extractorTemplates: currentQuery?.definition || {},
-      // extractors: currentQuery?.definition || {},
-      // extractors: instance.query?.extractors || {},
-      // combiners: instance.query?.combiners || {},
-      // runtimeTransformers: instance.query?.runtimeTransformers || {},
-    };
+    return isQueryEntity &&
+      currentQuery?.definition &&
+      !isResultsCollapsed
+      ? {
+          queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
+          deploymentUuid: props.deploymentUuid,
+          pageParams: {
+            deploymentUuid: props.deploymentUuid,
+            // applicationSection: props.applicationSection,
+            applicationSection: "model",
+            instanceUuid: instance.uuid,
+          },
+          queryParams: {},
+          contextResults: {},
+          extractorTemplates: currentQuery?.definition || {},
+        }
+      : {
+          queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
+          deploymentUuid: props.deploymentUuid,
+          pageParams: {},
+          queryParams: {},
+          contextResults: {},
+          extractorTemplates: {},
+        };
   }, [
     isQueryEntity,
+    currentQuery,
     isResultsCollapsed,
-    instance,
     props.deploymentUuid,
     props.applicationSection,
     instance?.uuid,
@@ -402,9 +406,9 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
 
   log.info("ReportSectionEntityInstance: queryForExecution:", queryForExecution);
   // const deploymentEntityStateFetchQueryParams: SyncQueryRunnerParams<ReduxDeploymentsState> | undefined = useMemo(
-  const deploymentEntityStateFetchQueryParams: SyncQueryTemplateRunnerParams<ReduxDeploymentsState> | undefined = useMemo(
+  const deploymentEntityStateFetchQueryParams: SyncQueryTemplateRunnerParams<ReduxDeploymentsState> = useMemo(
     () => {
-      if (!queryForExecution) return undefined;
+      // if (!queryForExecution) return undefined;
       // return getQueryRunnerParamsForReduxDeploymentsState(
       return getQueryTemplateRunnerParamsForReduxDeploymentsState(
         queryForExecution,
@@ -415,11 +419,12 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   );
 
   const queryResults: Domain2QueryReturnType<Domain2QueryReturnType<Record<string, any>>> | undefined = 
-    // deploymentEntityStateFetchQueryParams ? useReduxDeploymentsStateQuerySelector(
-    deploymentEntityStateFetchQueryParams ? useReduxDeploymentsStateQueryTemplateSelector(
+    // Only execute query when results section is expanded
+     useReduxDeploymentsStateQueryTemplateSelector(
+    // (!isResultsCollapsed && deploymentEntityStateFetchQueryParams) ? runQueryTemplateFromReduxDeploymentsState(
       deploymentEntityStateSelectorMap.runQueryTemplateWithExtractorCombinerTransformer,
       deploymentEntityStateFetchQueryParams
-    ) : undefined;
+    );
 
   // ##############################################################################################
   const testLabel = instance.transformerTestLabel || instance.name || "TransformerTest";
@@ -540,9 +545,9 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                       color: '#666',
                       fontStyle: 'italic'
                     }}>
-                      {instance?.query ? 
+                      {queryForExecution ? 
                         "Executing query..." : 
-                        "No query defined for this instance"
+                        "No query definition found for this instance"
                       }
                     </div>
                   )}
