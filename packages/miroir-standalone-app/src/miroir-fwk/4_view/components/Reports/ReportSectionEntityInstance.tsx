@@ -2,6 +2,8 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import {
   ApplicationSection,
+  BoxedQueryWithExtractorCombinerTransformer,
+  Domain2QueryReturnType,
   DomainControllerInterface,
   Entity,
   EntityDefinition,
@@ -10,12 +12,23 @@ import {
   LoggerInterface,
   MetaModel,
   MiroirLoggerFactory,
+  ReduxDeploymentsState,
+  SyncBoxedExtractorOrQueryRunnerMap,
+  SyncQueryRunnerParams,
   Uuid,
   adminConfigurationDeploymentMiroir,
+  entityDefinitionQuery,
+  entityQueryVersion,
   entityTransformerTest,
+  getQueryRunnerParamsForReduxDeploymentsState,
+  getQueryTemplateRunnerParamsForReduxDeploymentsState,
   miroirFundamentalJzodSchema,
   safeStringify,
-  type JzodElement
+  type BoxedQueryTemplateWithExtractorCombinerTransformer,
+  type JzodElement,
+  type MiroirQuery,
+  type SyncBoxedExtractorTemplateRunner,
+  type SyncQueryTemplateRunnerParams
 } from "miroir-core";
 
 import {
@@ -28,8 +41,14 @@ import { Toc } from '@mui/icons-material';
 import { packageName } from '../../../../constants.js';
 import { cleanLevel } from '../../constants.js';
 import {
-  useCurrentModel
+  useCurrentModel,
+  useReduxDeploymentsStateQueryTemplateSelector
 } from "../../ReduxHooks.js";
+import { useReduxDeploymentsStateQuerySelector } from '../../ReduxHooks.js';
+import {
+  getMemoizedReduxDeploymentsStateSelectorForTemplateMap,
+  getMemoizedReduxDeploymentsStateSelectorMap,
+} from "miroir-localcache-redux";
 import { useRenderTracker } from '../../tools/renderCountTracker.js';
 import { RenderPerformanceMetrics } from '../../tools/renderPerformanceMeasure.js';
 import { ValueObjectGrid } from '../Grids/ValueObjectGrid.js';
@@ -52,6 +71,7 @@ import { TypedValueObjectEditor } from './TypedValueObjectEditor.js';
 import { useDocumentOutlineContext } from '../ValueObjectEditor/InstanceEditorOutlineContext.js';
 import { useReportPageContext } from './ReportPageContext.js';
 import type { FoldedStateTree } from './FoldedStateTreeUtils.js';
+import type { Query } from '@testing-library/dom';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -150,6 +170,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
 
   const [displayAsStructuredElement, setDisplayAsStructuredElement] = useState(true);
   const [displayEditor, setDisplayEditor] = useState(true);
+  const [isResultsCollapsed, setIsResultsCollapsed] = useState(true);
   // const [maxRenderDepth, setMaxRenderDepth] = useState<number>(props.maxRenderDepth ?? 1);
 
   // Use outline context for outline state management
@@ -183,12 +204,12 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
       (e) => e?.entityUuid === currentReportTargetEntity?.uuid
     );
 
-  log.info(
-    "ReportSectionEntityInstance: currentReportTargetEntityDefinition:",
-    currentReportTargetEntityDefinition,
-    "miroirFundamentalJzodSchema",
-    miroirFundamentalJzodSchema
-  );
+  // log.info(
+  //   "ReportSectionEntityInstance: currentReportTargetEntityDefinition:",
+  //   currentReportTargetEntityDefinition,
+  //   "miroirFundamentalJzodSchema",
+  //   miroirFundamentalJzodSchema
+  // );
 
   // ##############################################################################################
   // ################################################################################################
@@ -327,36 +348,82 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
     [domainController, props]
   );
 
-  // ##############################################################################################
   // Check if this is a TransformerTest entity instance
   const isTransformerTestEntity = currentReportTargetEntity?.uuid === entityTransformerTest.uuid;
   const isTransformerTest =
     isTransformerTestEntity && instance?.parentUuid === entityTransformerTest.uuid;
 
-  // Log for debugging
-  // log.info(
-  //   "ReportSectionEntityInstance - TransformerTest detection:",
-  //   "currentReportTargetEntity",
-  //   currentReportTargetEntity,
-  //   "entityUuid",
-  //   currentReportTargetEntity?.uuid,
-  //   "entityTransformerTest",
-  //   entityTransformerTest,
-  //   "instance",
-  //   instance,
-  //   "isTransformerTest",
-  //   isTransformerTest
-  //   //   {
-  //   //   transformerTestEntityUuid: entityTransformerTest.uuid,
-  //   //   isTransformerTestEntity,
-  //   //   instanceTransformerTestType: instance?.transformerTestType,
-  //   //   instanceName: instance?.name,
-  //   //   transformerTestLabel: instance?.transformerTestLabel
-  //   // }
-  // );
+  // Check if this is a Query entity instance
+  // const QUERY_ENTITY_UUID = "e4320b9e-ab45-4abe-85d8-359604b3c62f";
+  const isQueryEntity = instance?.parentUuid === entityQueryVersion.uuid;
 
-  const testLabel = instance.transformerTestLabel || instance.name || "TransformerTest"
+  const currentQuery: any | undefined = isQueryEntity ? instance : undefined;
+  log.info("ReportSectionEntityInstance: isQueryEntity", isQueryEntity, "currentQuery", currentQuery);
   // ##############################################################################################
+  // Query execution logic for Query entities
+  const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> = useMemo(
+    () => getMemoizedReduxDeploymentsStateSelectorForTemplateMap(),
+    // () => getMemoizedReduxDeploymentsStateSelectorMap(),
+    // () => getMemoizedReduxDeploymentsStateSelectorMap(),
+    []
+  );
+
+  const queryForExecution: BoxedQueryTemplateWithExtractorCombinerTransformer | undefined = useMemo(() => {
+    if (!isQueryEntity || isResultsCollapsed || !currentQuery?.definition) {
+      return undefined;
+    }
+
+    // Convert the instance query to the expected format
+    return {
+      queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
+      deploymentUuid: props.deploymentUuid,
+      pageParams: {
+        deploymentUuid: props.deploymentUuid,
+        // applicationSection: props.applicationSection,
+        applicationSection: "model",
+        instanceUuid: instance.uuid,
+      },
+      queryParams: {},
+      contextResults: {},
+      extractorTemplates: currentQuery?.definition || {},
+      // extractors: currentQuery?.definition || {},
+      // extractors: instance.query?.extractors || {},
+      // combiners: instance.query?.combiners || {},
+      // runtimeTransformers: instance.query?.runtimeTransformers || {},
+    };
+  }, [
+    isQueryEntity,
+    isResultsCollapsed,
+    instance,
+    props.deploymentUuid,
+    props.applicationSection,
+    instance?.uuid,
+  ]);
+
+  log.info("ReportSectionEntityInstance: queryForExecution:", queryForExecution);
+  // const deploymentEntityStateFetchQueryParams: SyncQueryRunnerParams<ReduxDeploymentsState> | undefined = useMemo(
+  const deploymentEntityStateFetchQueryParams: SyncQueryTemplateRunnerParams<ReduxDeploymentsState> | undefined = useMemo(
+    () => {
+      if (!queryForExecution) return undefined;
+      // return getQueryRunnerParamsForReduxDeploymentsState(
+      return getQueryTemplateRunnerParamsForReduxDeploymentsState(
+        queryForExecution,
+        deploymentEntityStateSelectorMap
+      );
+    },
+    [queryForExecution, deploymentEntityStateSelectorMap]
+  );
+
+  const queryResults: Domain2QueryReturnType<Domain2QueryReturnType<Record<string, any>>> | undefined = 
+    // deploymentEntityStateFetchQueryParams ? useReduxDeploymentsStateQuerySelector(
+    deploymentEntityStateFetchQueryParams ? useReduxDeploymentsStateQueryTemplateSelector(
+      deploymentEntityStateSelectorMap.runQueryTemplateWithExtractorCombinerTransformer,
+      deploymentEntityStateFetchQueryParams
+    ) : undefined;
+
+  // ##############################################################################################
+  const testLabel = instance.transformerTestLabel || instance.name || "TransformerTest";
+  
   if (instance) {
     return (
       // <ThemedContainer style={{ width: '100%' }}>
@@ -418,6 +485,72 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
               </ThemedTooltip>
             )}
           </ThemedHeaderSection>
+          
+          {/* Query Results Section - Collapsible */}
+          {isQueryEntity && (
+            <div style={{ 
+              marginBottom: '16px',
+              border: '1px solid #dee2e6',
+              borderRadius: '4px',
+              backgroundColor: '#f8f9fa'
+            }}>
+              <div 
+                style={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'space-between',
+                  padding: '12px 16px',
+                  cursor: 'pointer',
+                  borderBottom: isResultsCollapsed ? 'none' : '1px solid #dee2e6'
+                }}
+                onClick={() => setIsResultsCollapsed(!isResultsCollapsed)}
+              >
+                <ThemedTitle style={{ margin: 0, fontSize: '16px' }}>
+                  Query Results
+                </ThemedTitle>
+                <span style={{ color: '#666', fontSize: '14px' }}>
+                  {isResultsCollapsed ? '▶' : '▼'}
+                </span>
+              </div>
+              
+              {!isResultsCollapsed && (
+                <div style={{ padding: '16px' }}>
+                  {queryResults ? (
+                    queryResults.elementType === "failure" ? (
+                      <div style={{ color: '#dc3545', padding: '8px' }}>
+                        <strong>Query execution failed:</strong>
+                        <ThemedCodeBlock style={{ marginTop: '8px' }}>
+                          {JSON.stringify(queryResults, null, 2)}
+                        </ThemedCodeBlock>
+                      </div>
+                    ) : (
+                      <div>
+                        <div style={{ marginBottom: '8px', fontSize: '14px', color: '#666' }}>
+                          Query executed successfully. Results:
+                        </div>
+                        <ThemedCodeBlock>
+                          {safeStringify(queryResults)}
+                        </ThemedCodeBlock>
+                      </div>
+                    )
+                  ) : (
+                    <div style={{ 
+                      textAlign: 'center', 
+                      padding: '16px',
+                      color: '#666',
+                      fontStyle: 'italic'
+                    }}>
+                      {instance?.query ? 
+                        "Executing query..." : 
+                        "No query defined for this instance"
+                      }
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+
           {currentReportTargetEntityDefinition && context.applicationSection ? (
             displayEditor ? (
               <TypedValueObjectEditor

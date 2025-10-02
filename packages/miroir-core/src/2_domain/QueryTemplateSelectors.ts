@@ -266,6 +266,8 @@ export const runQueryTemplateWithExtractorCombinerTransformer = <StateType>(
   const resolvedExtractor: BoxedQueryWithExtractorCombinerTransformer =
     resolveQueryTemplateWithExtractorCombinerTransformer(selectorParams.extractorOrCombinerTemplate); 
 
+  // log.info("runQueryTemplateWithExtractorCombinerTransformer called", selectorParams, "resolvedExtractor", resolvedExtractor);
+
   return runQuery(
     state,
     {
