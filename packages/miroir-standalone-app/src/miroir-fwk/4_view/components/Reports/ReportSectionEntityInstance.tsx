@@ -370,7 +370,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
           {/* Show test button if this is a TransformerTest entity */}
           {isTransformerTest && (
             <TransformerTestDisplay
-              instance={instance}
+              transformerTest={instance}
               testLabel={testLabel}
               useSnackBar={true}
               onTestComplete={(testSuiteKey, structuredResults) => {

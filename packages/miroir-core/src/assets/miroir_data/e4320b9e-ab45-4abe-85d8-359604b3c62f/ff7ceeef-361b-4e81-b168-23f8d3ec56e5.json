@@ -1,0 +1,19 @@
+{
+  "uuid": "ff7ceeef-361b-4e81-b168-23f8d3ec56e5",
+  "parentName": "Query",
+  "parentUuid": "e4320b9e-ab45-4abe-85d8-359604b3c62f",
+  "name": "EntityList",
+  "defaultLabel": "Query listing Entities.",
+  "description": "This query produces a list of existing Entities.",
+  "definition": {
+    "entities": {
+      "extractorTemplateType": "extractorTemplateForObjectListByEntity",
+      "applicationSection": "model",
+      "parentName": "Entity",
+      "parentUuid": {
+        "transformerType": "constant",
+        "value": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad"
+      }
+    }
+  }
+}

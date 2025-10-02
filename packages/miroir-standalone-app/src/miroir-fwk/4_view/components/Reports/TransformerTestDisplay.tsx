@@ -5,7 +5,9 @@ import {
   type TestSuiteListFilter,
   safeResolvePathOnObject,
   alterObjectAtPathWithCreate,
-  type TransformerTestDefinition
+  type TransformerTestDefinition,
+  type TransformerTestSuite,
+  type TransformerReturnType
 } from "miroir-core";
 
 import { packageName } from '../../../../constants.js';
@@ -26,7 +28,8 @@ export type TestSelectionState = {
 
 export interface TransformerTestSectionProps {
   /** The transformer test suite instance */
-  instance: TransformerTestDefinition;
+  // transformerTest: TransformerReturnType<TransformerTestDefinition> | undefined;
+  transformerTest: TransformerTestDefinition;
   /** Label for the test suite (used in buttons and displays) */
   testLabel: string;
   /** Optional custom styling for the container */
@@ -97,7 +100,7 @@ const handleBuildTestFilter = (
  * Reusable component for transformer test execution and results display
  */
 export const TransformerTestDisplay = (props: TransformerTestSectionProps) => {
-  const { instance, testLabel, style, useSnackBar = true, onTestComplete } = props;
+  const { transformerTest: instance, testLabel, style, useSnackBar = true, onTestComplete } = props;
 
   const [transformerTestResultsData, setTransformerTestResultsData] = useState<
     TestResultDataAndSelect[]
@@ -137,7 +140,7 @@ export const TransformerTestDisplay = (props: TransformerTestSectionProps) => {
       <div style={{ marginBottom: "8px", fontWeight: "bold", color: "#1976d2" }}>
         🧪 Transformer Test Available
       </div>
-      
+
       <RunTransformerTestSuiteButton
         transformerTestSuite={instance}
         testSuiteKey={testLabel}
@@ -155,7 +158,7 @@ export const TransformerTestDisplay = (props: TransformerTestSectionProps) => {
           marginRight: "8px",
         }}
       />
-      
+
       {/* Test Results Display */}
       {transformerTestResultsData && transformerTestResultsData.length > 0 && (
         <div style={{ margin: "20px 0", width: "100%" }}>
@@ -165,13 +168,17 @@ export const TransformerTestDisplay = (props: TransformerTestSectionProps) => {
             testLabel={testLabel}
           />
 
-          <TransformerTestResults
-            transformerTestSuite={instance.definition}
-            transformerTestResultsData={transformerTestResultsData}
-            testLabel={testLabel}
-            testSelectionsState={testSelectionState}
-            setTestSelectionsState={setTestSelectionsState}
-          />
+          {instance ? (
+            <TransformerTestResults
+              transformerTestSuite={instance.definition}
+              transformerTestResultsData={transformerTestResultsData}
+              testLabel={testLabel}
+              testSelectionsState={testSelectionState}
+              setTestSelectionsState={setTestSelectionsState}
+            />
+          ) : (
+            <span>No test results to display</span>
+          )}
         </div>
       )}
     </div>

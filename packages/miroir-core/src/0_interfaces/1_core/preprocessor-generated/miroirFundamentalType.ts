@@ -4730,7 +4730,10 @@ export type ExtractorTemplateByManyToManyRelationReturningObjectList = {
     objectListReferenceAttribute?: string | undefined;
     AttributeOfRootListObjectToCompareToListReferenceUuid?: string | undefined;
 };
-export type ExtractorTemplateReturningObjectList = ExtractorTemplateForObjectListByEntity | ExtractorTemplateByRelationReturningObjectList | ExtractorTemplateByManyToManyRelationReturningObjectList;
+export type ExtractorTemplateReturningObjectList =
+  | ExtractorTemplateForObjectListByEntity
+  | ExtractorTemplateByRelationReturningObjectList
+  | ExtractorTemplateByManyToManyRelationReturningObjectList;
 export type ExtractorTemplateReturningObjectOrObjectList = ExtractorTemplateReturningObject | ExtractorTemplateReturningObjectList;
 export type ExtractorTemplateByExtractorCombiner = {
     extractorTemplateType: "extractorCombinerByHeteronomousManyToManyReturningListOfObjectList";
