@@ -1,6 +1,8 @@
 # Miroir
 
-**caveat: developments are still ongoing, only a fraction of the goals described below have been reached yet. First official release is not yet available (soon)**
+**caveat 1: developments are still ongoing, only a fraction of the goals described below have been reached yet. First official release is not yet available (soon)**
+
+**caveat 2: Miroir's current main weakness is that, trying to blend in many aspects of software engineering, it is difficult to give a clear outline of it. Time will tell...**
 
 ## Introduction
 
@@ -11,14 +13,12 @@
 - Miroir will be **agentic**, being available to any A.I. client implementing the **Model Context Protocol (MCP)**. Miroir thus allows one to use natural language to manipulate and define business-related behavior, freely combining "structured" and "loose" code.
 - Miroir is **data-centric** and **Language-oriented**, fostering the creation of **Domain-Specific Languages** for Model manipulation, using these languages in low-code or natural language code.
 
-## Use case: start small, grow seamlessly
+## Envisioned Use case: start small, grow seamlessly
 
 The foreseen first use case for the framework is the need for automation or data-management "in the small" that often takes the form of a spreadsheet and, as the developed "software" gains traction, needs to migrate to a more sturdy development environment. In speadsheets indeed, means to address ubiquitous software development issues such as non-regression, automated testing, or changing technical environment are scant, if any exist at all. The Miroir Frameworks integrates all activities taking place during of software creation, at any scale, providing opinionated solutions and tools while keeping the requirement to use them at a minimum. Along the way, it ensures the development and runtime environments to be as close as possible, guaranteeing instantaneous feedback that fosters an experimental to software creation. One can then concentrate on the problem to be solved, being rid of usual chores like compiling every time before getting feedback. 
 
 ## This Repository
 This is the monorepo for the Miroir Framework.
-
-
 
 Activities encompassed by the Miroir Framework are (tentatively):
 
