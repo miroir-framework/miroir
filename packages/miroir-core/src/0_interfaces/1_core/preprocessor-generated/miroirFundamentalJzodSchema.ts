@@ -12181,6 +12181,97 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
+      "graphReportSection": {
+        "type": "object",
+        "definition": {
+          "type": {
+            "type": "literal",
+            "definition": "graphReportSection"
+          },
+          "definition": {
+            "type": "object",
+            "definition": {
+              "label": {
+                "type": "string",
+                "optional": true
+              },
+              "fetchedDataReference": {
+                "type": "string"
+              },
+              "graphType": {
+                "type": "enum",
+                "definition": [
+                  "bar",
+                  "line",
+                  "pie"
+                ]
+              },
+              "dataMapping": {
+                "type": "object",
+                "definition": {
+                  "labelField": {
+                    "type": "string"
+                  },
+                  "valueField": {
+                    "type": "string"
+                  },
+                  "colorField": {
+                    "type": "string",
+                    "optional": true
+                  }
+                }
+              },
+              "config": {
+                "type": "object",
+                "optional": true,
+                "definition": {
+                  "width": {
+                    "type": "number",
+                    "optional": true
+                  },
+                  "height": {
+                    "type": "number",
+                    "optional": true
+                  },
+                  "margins": {
+                    "type": "object",
+                    "optional": true,
+                    "definition": {
+                      "top": {
+                        "type": "number"
+                      },
+                      "right": {
+                        "type": "number"
+                      },
+                      "bottom": {
+                        "type": "number"
+                      },
+                      "left": {
+                        "type": "number"
+                      }
+                    }
+                  },
+                  "colors": {
+                    "type": "array",
+                    "optional": true,
+                    "definition": {
+                      "type": "string"
+                    }
+                  },
+                  "showLegend": {
+                    "type": "boolean",
+                    "optional": true
+                  },
+                  "showTooltips": {
+                    "type": "boolean",
+                    "optional": true
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
       "gridReportSection": {
         "type": "object",
         "definition": {
@@ -12274,6 +12365,13 @@ export const miroirFundamentalJzodSchema = {
                   "type": "schemaReference",
                   "definition": {
                     "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "graphReportSection"
+                  }
+                },
+                {
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                     "relativePath": "objectInstanceReportSection"
                   }
                 },
@@ -12293,6 +12391,13 @@ export const miroirFundamentalJzodSchema = {
         "type": "union",
         "discriminator": "type",
         "definition": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "graphReportSection"
+            }
+          },
           {
             "type": "schemaReference",
             "definition": {
@@ -12823,6 +12928,97 @@ export const miroirFundamentalJzodSchema = {
                   }
                 }
               },
+              "graphReportSection": {
+                "type": "object",
+                "definition": {
+                  "type": {
+                    "type": "literal",
+                    "definition": "graphReportSection"
+                  },
+                  "definition": {
+                    "type": "object",
+                    "definition": {
+                      "label": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "fetchedDataReference": {
+                        "type": "string"
+                      },
+                      "graphType": {
+                        "type": "enum",
+                        "definition": [
+                          "bar",
+                          "line",
+                          "pie"
+                        ]
+                      },
+                      "dataMapping": {
+                        "type": "object",
+                        "definition": {
+                          "labelField": {
+                            "type": "string"
+                          },
+                          "valueField": {
+                            "type": "string"
+                          },
+                          "colorField": {
+                            "type": "string",
+                            "optional": true
+                          }
+                        }
+                      },
+                      "config": {
+                        "type": "object",
+                        "optional": true,
+                        "definition": {
+                          "width": {
+                            "type": "number",
+                            "optional": true
+                          },
+                          "height": {
+                            "type": "number",
+                            "optional": true
+                          },
+                          "margins": {
+                            "type": "object",
+                            "optional": true,
+                            "definition": {
+                              "top": {
+                                "type": "number"
+                              },
+                              "right": {
+                                "type": "number"
+                              },
+                              "bottom": {
+                                "type": "number"
+                              },
+                              "left": {
+                                "type": "number"
+                              }
+                            }
+                          },
+                          "colors": {
+                            "type": "array",
+                            "optional": true,
+                            "definition": {
+                              "type": "string"
+                            }
+                          },
+                          "showLegend": {
+                            "type": "boolean",
+                            "optional": true
+                          },
+                          "showTooltips": {
+                            "type": "boolean",
+                            "optional": true
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
               "gridReportSection": {
                 "type": "object",
                 "definition": {
@@ -12916,6 +13112,13 @@ export const miroirFundamentalJzodSchema = {
                           "type": "schemaReference",
                           "definition": {
                             "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "graphReportSection"
+                          }
+                        },
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                             "relativePath": "objectInstanceReportSection"
                           }
                         },
@@ -12935,6 +13138,13 @@ export const miroirFundamentalJzodSchema = {
                 "type": "union",
                 "discriminator": "type",
                 "definition": [
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "graphReportSection"
+                    }
+                  },
                   {
                     "type": "schemaReference",
                     "definition": {
@@ -36199,6 +36409,97 @@ export const miroirFundamentalJzodSchema = {
                           }
                         }
                       },
+                      "graphReportSection": {
+                        "type": "object",
+                        "definition": {
+                          "type": {
+                            "type": "literal",
+                            "definition": "graphReportSection"
+                          },
+                          "definition": {
+                            "type": "object",
+                            "definition": {
+                              "label": {
+                                "type": "string",
+                                "optional": true
+                              },
+                              "fetchedDataReference": {
+                                "type": "string"
+                              },
+                              "graphType": {
+                                "type": "enum",
+                                "definition": [
+                                  "bar",
+                                  "line",
+                                  "pie"
+                                ]
+                              },
+                              "dataMapping": {
+                                "type": "object",
+                                "definition": {
+                                  "labelField": {
+                                    "type": "string"
+                                  },
+                                  "valueField": {
+                                    "type": "string"
+                                  },
+                                  "colorField": {
+                                    "type": "string",
+                                    "optional": true
+                                  }
+                                }
+                              },
+                              "config": {
+                                "type": "object",
+                                "optional": true,
+                                "definition": {
+                                  "width": {
+                                    "type": "number",
+                                    "optional": true
+                                  },
+                                  "height": {
+                                    "type": "number",
+                                    "optional": true
+                                  },
+                                  "margins": {
+                                    "type": "object",
+                                    "optional": true,
+                                    "definition": {
+                                      "top": {
+                                        "type": "number"
+                                      },
+                                      "right": {
+                                        "type": "number"
+                                      },
+                                      "bottom": {
+                                        "type": "number"
+                                      },
+                                      "left": {
+                                        "type": "number"
+                                      }
+                                    }
+                                  },
+                                  "colors": {
+                                    "type": "array",
+                                    "optional": true,
+                                    "definition": {
+                                      "type": "string"
+                                    }
+                                  },
+                                  "showLegend": {
+                                    "type": "boolean",
+                                    "optional": true
+                                  },
+                                  "showTooltips": {
+                                    "type": "boolean",
+                                    "optional": true
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
                       "gridReportSection": {
                         "type": "object",
                         "definition": {
@@ -36299,6 +36600,14 @@ export const miroirFundamentalJzodSchema = {
                                   "type": "schemaReference",
                                   "definition": {
                                     "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                    "relativePath": "graphReportSection"
+                                  },
+                                  "context": {}
+                                },
+                                {
+                                  "type": "schemaReference",
+                                  "definition": {
+                                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                                     "relativePath": "objectInstanceReportSection"
                                   },
                                   "context": {}
@@ -36320,6 +36629,14 @@ export const miroirFundamentalJzodSchema = {
                         "type": "union",
                         "discriminator": "type",
                         "definition": [
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "graphReportSection"
+                            },
+                            "context": {}
+                          },
                           {
                             "type": "schemaReference",
                             "definition": {
@@ -48333,6 +48650,13 @@ export const miroirFundamentalJzodSchema = {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_graphReportSection"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_gridReportSection"
             }
           },
@@ -48929,6 +49253,346 @@ export const miroirFundamentalJzodSchema = {
           }
         ]
       },
+      "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_graphReportSection": {
+        "type": "union",
+        "definition": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "transformerForBuildCarryOnObject"
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "type": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "literal",
+                    "definition": "graphReportSection"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "transformerForBuildCarryOnObject"
+                    }
+                  }
+                ]
+              },
+              "definition": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "transformerForBuildCarryOnObject"
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "definition": {
+                      "label": {
+                        "type": "union",
+                        "optional": true,
+                        "definition": [
+                          {
+                            "type": "string",
+                            "optional": true
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "transformerForBuildCarryOnObject"
+                            }
+                          }
+                        ]
+                      },
+                      "fetchedDataReference": {
+                        "type": "union",
+                        "definition": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "transformerForBuildCarryOnObject"
+                            }
+                          }
+                        ]
+                      },
+                      "graphType": {
+                        "type": "union",
+                        "definition": [
+                          {
+                            "type": "enum",
+                            "definition": [
+                              "bar",
+                              "line",
+                              "pie"
+                            ]
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "transformerForBuildCarryOnObject"
+                            }
+                          }
+                        ]
+                      },
+                      "dataMapping": {
+                        "type": "union",
+                        "definition": [
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "transformerForBuildCarryOnObject"
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "definition": {
+                              "labelField": {
+                                "type": "union",
+                                "definition": [
+                                  {
+                                    "type": "string"
+                                  },
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  }
+                                ]
+                              },
+                              "valueField": {
+                                "type": "union",
+                                "definition": [
+                                  {
+                                    "type": "string"
+                                  },
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  }
+                                ]
+                              },
+                              "colorField": {
+                                "type": "union",
+                                "optional": true,
+                                "definition": [
+                                  {
+                                    "type": "string",
+                                    "optional": true
+                                  },
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "config": {
+                        "optional": true,
+                        "type": "union",
+                        "definition": [
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "transformerForBuildCarryOnObject"
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "definition": {
+                              "width": {
+                                "type": "union",
+                                "optional": true,
+                                "definition": [
+                                  {
+                                    "type": "number",
+                                    "optional": true
+                                  },
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  }
+                                ]
+                              },
+                              "height": {
+                                "type": "union",
+                                "optional": true,
+                                "definition": [
+                                  {
+                                    "type": "number",
+                                    "optional": true
+                                  },
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  }
+                                ]
+                              },
+                              "margins": {
+                                "optional": true,
+                                "type": "union",
+                                "definition": [
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  },
+                                  {
+                                    "type": "object",
+                                    "definition": {
+                                      "top": {
+                                        "type": "union",
+                                        "definition": [
+                                          {
+                                            "type": "number"
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "right": {
+                                        "type": "union",
+                                        "definition": [
+                                          {
+                                            "type": "number"
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "bottom": {
+                                        "type": "union",
+                                        "definition": [
+                                          {
+                                            "type": "number"
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      },
+                                      "left": {
+                                        "type": "union",
+                                        "definition": [
+                                          {
+                                            "type": "number"
+                                          },
+                                          {
+                                            "type": "schemaReference",
+                                            "definition": {
+                                              "relativePath": "transformerForBuildCarryOnObject"
+                                            }
+                                          }
+                                        ]
+                                      }
+                                    }
+                                  }
+                                ]
+                              },
+                              "colors": {
+                                "type": "union",
+                                "optional": true,
+                                "definition": [
+                                  {
+                                    "type": "array",
+                                    "optional": true,
+                                    "definition": {
+                                      "type": "union",
+                                      "definition": [
+                                        {
+                                          "type": "string"
+                                        },
+                                        {
+                                          "type": "schemaReference",
+                                          "definition": {
+                                            "relativePath": "transformerForBuildCarryOnObject"
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  },
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  }
+                                ]
+                              },
+                              "showLegend": {
+                                "type": "union",
+                                "optional": true,
+                                "definition": [
+                                  {
+                                    "type": "boolean",
+                                    "optional": true
+                                  },
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  }
+                                ]
+                              },
+                              "showTooltips": {
+                                "type": "union",
+                                "optional": true,
+                                "definition": [
+                                  {
+                                    "type": "boolean",
+                                    "optional": true
+                                  },
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
       "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_gridReportSection": {
         "type": "union",
         "definition": [
@@ -49171,6 +49835,13 @@ export const miroirFundamentalJzodSchema = {
                       "type": "union",
                       "discriminator": "type",
                       "definition": [
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_graphReportSection"
+                          }
+                        },
                         {
                           "type": "schemaReference",
                           "definition": {
@@ -58647,6 +59318,97 @@ export const miroirFundamentalJzodSchema = {
                   }
                 }
               },
+              "graphReportSection": {
+                "type": "object",
+                "definition": {
+                  "type": {
+                    "type": "literal",
+                    "definition": "graphReportSection"
+                  },
+                  "definition": {
+                    "type": "object",
+                    "definition": {
+                      "label": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "fetchedDataReference": {
+                        "type": "string"
+                      },
+                      "graphType": {
+                        "type": "enum",
+                        "definition": [
+                          "bar",
+                          "line",
+                          "pie"
+                        ]
+                      },
+                      "dataMapping": {
+                        "type": "object",
+                        "definition": {
+                          "labelField": {
+                            "type": "string"
+                          },
+                          "valueField": {
+                            "type": "string"
+                          },
+                          "colorField": {
+                            "type": "string",
+                            "optional": true
+                          }
+                        }
+                      },
+                      "config": {
+                        "type": "object",
+                        "optional": true,
+                        "definition": {
+                          "width": {
+                            "type": "number",
+                            "optional": true
+                          },
+                          "height": {
+                            "type": "number",
+                            "optional": true
+                          },
+                          "margins": {
+                            "type": "object",
+                            "optional": true,
+                            "definition": {
+                              "top": {
+                                "type": "number"
+                              },
+                              "right": {
+                                "type": "number"
+                              },
+                              "bottom": {
+                                "type": "number"
+                              },
+                              "left": {
+                                "type": "number"
+                              }
+                            }
+                          },
+                          "colors": {
+                            "type": "array",
+                            "optional": true,
+                            "definition": {
+                              "type": "string"
+                            }
+                          },
+                          "showLegend": {
+                            "type": "boolean",
+                            "optional": true
+                          },
+                          "showTooltips": {
+                            "type": "boolean",
+                            "optional": true
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
               "gridReportSection": {
                 "type": "object",
                 "definition": {
@@ -58742,6 +59504,13 @@ export const miroirFundamentalJzodSchema = {
                           "type": "schemaReference",
                           "definition": {
                             "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_graphReportSection"
+                          }
+                        },
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                             "relativePath": "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectInstanceReportSection"
                           }
                         },
@@ -58761,6 +59530,13 @@ export const miroirFundamentalJzodSchema = {
                 "type": "union",
                 "discriminator": "type",
                 "definition": [
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_graphReportSection"
+                    }
+                  },
                   {
                     "type": "schemaReference",
                     "definition": {
@@ -61058,6 +61834,13 @@ export const miroirFundamentalJzodSchema = {
         "definition": {
           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
           "relativePath": "extractorOrCombinerTemplate"
+        }
+      },
+      "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_graphReportSection": {
+        "type": "schemaReference",
+        "definition": {
+          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          "relativePath": "graphReportSection"
         }
       },
       "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_gridReportSection": {
@@ -67201,6 +67984,97 @@ export const miroirFundamentalJzodSchema = {
                   }
                 }
               },
+              "graphReportSection": {
+                "type": "object",
+                "definition": {
+                  "type": {
+                    "type": "literal",
+                    "definition": "graphReportSection"
+                  },
+                  "definition": {
+                    "type": "object",
+                    "definition": {
+                      "label": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "fetchedDataReference": {
+                        "type": "string"
+                      },
+                      "graphType": {
+                        "type": "enum",
+                        "definition": [
+                          "bar",
+                          "line",
+                          "pie"
+                        ]
+                      },
+                      "dataMapping": {
+                        "type": "object",
+                        "definition": {
+                          "labelField": {
+                            "type": "string"
+                          },
+                          "valueField": {
+                            "type": "string"
+                          },
+                          "colorField": {
+                            "type": "string",
+                            "optional": true
+                          }
+                        }
+                      },
+                      "config": {
+                        "type": "object",
+                        "optional": true,
+                        "definition": {
+                          "width": {
+                            "type": "number",
+                            "optional": true
+                          },
+                          "height": {
+                            "type": "number",
+                            "optional": true
+                          },
+                          "margins": {
+                            "type": "object",
+                            "optional": true,
+                            "definition": {
+                              "top": {
+                                "type": "number"
+                              },
+                              "right": {
+                                "type": "number"
+                              },
+                              "bottom": {
+                                "type": "number"
+                              },
+                              "left": {
+                                "type": "number"
+                              }
+                            }
+                          },
+                          "colors": {
+                            "type": "array",
+                            "optional": true,
+                            "definition": {
+                              "type": "string"
+                            }
+                          },
+                          "showLegend": {
+                            "type": "boolean",
+                            "optional": true
+                          },
+                          "showTooltips": {
+                            "type": "boolean",
+                            "optional": true
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
               "gridReportSection": {
                 "type": "object",
                 "definition": {
@@ -67296,6 +68170,13 @@ export const miroirFundamentalJzodSchema = {
                           "type": "schemaReference",
                           "definition": {
                             "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_graphReportSection"
+                          }
+                        },
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                             "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectInstanceReportSection"
                           }
                         },
@@ -67315,6 +68196,13 @@ export const miroirFundamentalJzodSchema = {
                 "type": "union",
                 "discriminator": "type",
                 "definition": [
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_graphReportSection"
+                    }
+                  },
                   {
                     "type": "schemaReference",
                     "definition": {
@@ -69611,6 +70499,13 @@ export const miroirFundamentalJzodSchema = {
         "definition": {
           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
           "relativePath": "extractorOrCombinerTemplate"
+        }
+      },
+      "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_graphReportSection": {
+        "type": "schemaReference",
+        "definition": {
+          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          "relativePath": "graphReportSection"
         }
       },
       "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_gridReportSection": {
@@ -75795,6 +76690,97 @@ export const miroirFundamentalJzodSchema = {
                   }
                 }
               },
+              "graphReportSection": {
+                "type": "object",
+                "definition": {
+                  "type": {
+                    "type": "literal",
+                    "definition": "graphReportSection"
+                  },
+                  "definition": {
+                    "type": "object",
+                    "definition": {
+                      "label": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "fetchedDataReference": {
+                        "type": "string"
+                      },
+                      "graphType": {
+                        "type": "enum",
+                        "definition": [
+                          "bar",
+                          "line",
+                          "pie"
+                        ]
+                      },
+                      "dataMapping": {
+                        "type": "object",
+                        "definition": {
+                          "labelField": {
+                            "type": "string"
+                          },
+                          "valueField": {
+                            "type": "string"
+                          },
+                          "colorField": {
+                            "type": "string",
+                            "optional": true
+                          }
+                        }
+                      },
+                      "config": {
+                        "type": "object",
+                        "optional": true,
+                        "definition": {
+                          "width": {
+                            "type": "number",
+                            "optional": true
+                          },
+                          "height": {
+                            "type": "number",
+                            "optional": true
+                          },
+                          "margins": {
+                            "type": "object",
+                            "optional": true,
+                            "definition": {
+                              "top": {
+                                "type": "number"
+                              },
+                              "right": {
+                                "type": "number"
+                              },
+                              "bottom": {
+                                "type": "number"
+                              },
+                              "left": {
+                                "type": "number"
+                              }
+                            }
+                          },
+                          "colors": {
+                            "type": "array",
+                            "optional": true,
+                            "definition": {
+                              "type": "string"
+                            }
+                          },
+                          "showLegend": {
+                            "type": "boolean",
+                            "optional": true
+                          },
+                          "showTooltips": {
+                            "type": "boolean",
+                            "optional": true
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
               "gridReportSection": {
                 "type": "object",
                 "definition": {
@@ -75890,6 +76876,13 @@ export const miroirFundamentalJzodSchema = {
                           "type": "schemaReference",
                           "definition": {
                             "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_graphReportSection"
+                          }
+                        },
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                             "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_objectInstanceReportSection"
                           }
                         },
@@ -75909,6 +76902,13 @@ export const miroirFundamentalJzodSchema = {
                 "type": "union",
                 "discriminator": "type",
                 "definition": [
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_graphReportSection"
+                    }
+                  },
                   {
                     "type": "schemaReference",
                     "definition": {
@@ -78206,6 +79206,13 @@ export const miroirFundamentalJzodSchema = {
         "definition": {
           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
           "relativePath": "extractorOrCombinerTemplate"
+        }
+      },
+      "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_graphReportSection": {
+        "type": "schemaReference",
+        "definition": {
+          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          "relativePath": "graphReportSection"
         }
       },
       "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_gridReportSection": {

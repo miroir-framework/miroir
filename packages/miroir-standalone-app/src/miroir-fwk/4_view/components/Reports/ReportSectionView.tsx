@@ -23,12 +23,16 @@ import { ReportSectionEntityInstance } from './ReportSectionEntityInstance.js';
 import { ReportSectionListDisplay } from './ReportSectionListDisplay.js';
 import { useRenderTracker } from '../../tools/renderCountTracker.js';
 import { ThemedBox, ThemedText } from '../Themes/index.js';
+import { GraphReportSectionView } from '../Graph/GraphReportSectionView.js';
+import { graphReportSectionSchema } from '../Graph/GraphInterfaces.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ReportSectionView"), "UI",
 ).then((logger: LoggerInterface) => {log = logger});
 
+
+log.info("graphReportSectionSchema:", JSON.stringify(graphReportSectionSchema, null, 2));
 
 
 export interface ReportSectionViewProps {
@@ -212,19 +216,20 @@ export const ReportSectionView = (props: ReportSectionViewProps) => {
           entityUuid={props.reportSection.definition.parentUuid}
         />
       )}
-      {/* {props.reportSection.type == "graphReportSection" ? (
+      {props.reportSection.type == "graphReportSection" ? (
         <div>
           <GraphReportSectionView
             applicationSection={props.applicationSection}
             deploymentUuid={props.deploymentUuid}
-            queryResults={props.queryResults}
+            // queryResults={props.queryResults}
+            queryResults={{}}
             reportSection={props.reportSection as any}
             showPerformanceDisplay={props.showPerformanceDisplay}
           />
         </div>
       ) : (
         <div></div>
-      )} */}
+      )}
     </>
   ) : (
     <div>Oops, ReportSectionView could not be displayed.</div>

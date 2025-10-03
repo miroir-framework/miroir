@@ -1550,6 +1550,7 @@ export function getMiroirFundamentalJzodSchema(
               "objectListReportSection",
               "gridReportSection",
               "listReportSection",
+              "graphReportSection",
               "reportSection",
               "rootReport",
             ].includes(e[0])

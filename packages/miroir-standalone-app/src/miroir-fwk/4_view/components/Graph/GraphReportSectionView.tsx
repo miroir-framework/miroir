@@ -11,13 +11,14 @@ import {
 import { packageName } from '../../../../constants.js';
 import { cleanLevel } from '../../constants.js';
 import { useRenderTracker } from '../../tools/renderCountTracker.js';
-import { ThemedBox, ThemedText } from '../Themes/ThemedComponents.js';
 import { GraphComponent } from './GraphComponent.js';
 import { 
   GraphData, 
   GraphDataPoint, 
   GraphReportSection
 } from './GraphInterfaces.js';
+import { ThemedBox } from '../Themes/LayoutComponents.js';
+import { ThemedText } from '../Themes/BasicComponents.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
