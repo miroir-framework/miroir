@@ -19,17 +19,26 @@ type Describe = {
   each: DescribeEachFunction;
 };
 
+type Test = {
+  (title: string, testFn: () => void | Promise<void>, timeout?: number): void | Promise<void>;
+};
+
 export function describe(title: string, testFn: () => void | Promise<void>): void | Promise<void> {
-  console.log(`Describe: ${title}`);
+  // console.log(`Describe: ${title}`);
+  return testFn();
+}
+
+export function test(title: string, testFn: () => void | Promise<void>, timeout?: number): void | Promise<void> {
+  // console.log(`Test: ${title}`);
   return testFn();
 }
 
 describe.each = function(data: any[]): (template: string, testFn: (item: any) => void | Promise<void>, timeout?: number) => Promise<void> {
   return async function(template: string, testFn: (item: any) => void | Promise<void>, timeout?: number): Promise<void> {
-    console.log(`Describe.each with template: ${template}`);
+    // console.log(`Describe.each with template: ${template}`);
     const promises = data.map(async (item, index) => {
       const testTitle = template.replace('$currentTestSuiteName', item.transformerTestLabel || `Item ${index}`);
-      console.log(`Running test: ${testTitle}`);
+      // console.log(`Running test: ${testTitle}`);
       try {
         await testFn(item);
       } catch (error) {
@@ -65,6 +74,13 @@ export function jsonify(value: any): any {
     return value;
   }
 }
+
+// Test framework namespace to avoid naming conflicts with generated types
+export const TestFramework = {
+  describe,
+  test,
+  expect,
+};
 
 function findFirstDiffPath(a: any, b: any, path: string[] = []): string[] | null {
   if (a === b) return null;

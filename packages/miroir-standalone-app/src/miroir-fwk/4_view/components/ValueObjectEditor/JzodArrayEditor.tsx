@@ -37,20 +37,24 @@ import {
 import { useCurrentModel } from "../../ReduxHooks";
 import { FoldUnfoldObjectOrArray, FoldUnfoldAllObjectAttributesOrArrayItems, JzodElementEditor } from "./JzodElementEditor";
 import { JzodArrayEditorProps } from "./JzodElementEditorInterface";
+import { getFoldedDisplayValue } from "./JzodElementEditorHooks";
 import { ErrorFallbackComponent } from "../ErrorFallbackComponent";
 import { 
   ThemedSizedButton, 
   ThemedAddIcon,
-  ThemedStyledButton 
+  ThemedStyledButton,
+  ThemedFoldedValueDisplay,
+  ThemedFlexRow
 } from "../Themes/index"
 import { useMiroirTheme } from '../../contexts/MiroirThemeContext';
 import { getMemoizedReduxDeploymentsStateSelectorMap, ReduxStateWithUndoRedo } from "miroir-localcache-redux";
 import { useSelector } from "react-redux";
+import { useReportPageContext } from "../Reports/ReportPageContext";
 // import { JzodUnion } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "JzodElementEditor")
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "JzodElementEditor"), "UI",
 ).then((logger: LoggerInterface) => {
   log = logger;
 });
@@ -66,9 +70,6 @@ interface JzodArrayMoveButtonProps {
   rootLessListKey: string;
   formik: FormikContextType<Record<string, any>>; // useFormikContext<Record<string, any>>()
   currentValue: any;
-  // setItemsOrder: React.Dispatch<React.SetStateAction<number[]>>;
-  // formHelperState: any;
-  // setformHelperState: (state: any) => void;
 }
 
 // ################################################################################################
@@ -126,7 +127,6 @@ interface ProgressiveArrayItemProps {
   listKey: string;
   rootLessListKey: string;
   rootLessListKeyArray: (string | number)[];
-  // currentArrayElementRawDefinition: UnfoldJzodSchemaOnceReturnTypeOK;
   currentArrayElementRawDefinition: JzodElement | undefined;
   resolvedElementJzodSchema: JzodElement | undefined;
   typeCheckKeyMap?: Record<string, KeyMapEntry>;
@@ -138,10 +138,12 @@ interface ProgressiveArrayItemProps {
   itemsOrder: number[];
   formik: FormikContextType<Record<string, any>>;
   currentValue: any;
-  foldedObjectAttributeOrArrayItems: { [k: string]: boolean };
-  setFoldedObjectAttributeOrArrayItems: React.Dispatch<React.SetStateAction<{ [k: string]: boolean }>>;
   maxRenderDepth?: number;
   readOnly?: boolean;
+  displayError?: {
+    errorPath: string[];
+    errorMessage: string;
+  };
 }
 
 const ProgressiveArrayItem: React.FC<ProgressiveArrayItemProps> = ({
@@ -155,41 +157,33 @@ const ProgressiveArrayItem: React.FC<ProgressiveArrayItemProps> = ({
   usedIndentLevel,
   currentDeploymentUuid,
   currentApplicationSection,
-  // localRootLessListKeyMap,
   foreignKeyObjects,
   insideAny,
-  // parentUnfoldedRawSchema,
   itemsOrder,
   formik,
   currentValue,
-  foldedObjectAttributeOrArrayItems: hiddenFormItems,
-  setFoldedObjectAttributeOrArrayItems: setHiddenFormItems,
   maxRenderDepth,
   readOnly,
+  displayError,
 }) => {
   const isTestMode = process.env.VITE_TEST_MODE === 'true';
-  // const [isRendered, setIsRendered] = useState(false);
   const [isRendered, setIsRendered] = useState(isTestMode);
 
 
-  useEffect(() => {
-    // Skip progressive rendering in test mode
-    if (isTestMode) {
-      // setIsRendered(true);
-      return;
-    }
+  if (!isTestMode) {
+    useEffect(() => {
+      // Use requestIdleCallback if available, otherwise setTimeout
+      const scheduleRender = () => {
+        if (typeof requestIdleCallback !== "undefined") {
+          requestIdleCallback(() => setIsRendered(true), { timeout: 1000 });
+        } else {
+          setTimeout(() => setIsRendered(true), 500);
+        }
+      };
 
-    // Use requestIdleCallback if available, otherwise setTimeout
-    const scheduleRender = () => {
-      if (typeof requestIdleCallback !== 'undefined') {
-        requestIdleCallback(() => setIsRendered(true), { timeout: 100 });
-      } else {
-        setTimeout(() => setIsRendered(true), 0);
-      }
-    };
-
-    scheduleRender();
-  }, []);
+      scheduleRender();
+    }, []);
+  }
 
   return (
     <div key={rootLessListKey + "." + index}>
@@ -257,22 +251,17 @@ const ProgressiveArrayItem: React.FC<ProgressiveArrayItemProps> = ({
                   rootLessListKey.length > 0 ? rootLessListKey + "." + index : "" + index
                 }
                 rootLessListKeyArray={[...rootLessListKeyArray, "" + index]}
-                // rawJzodSchema={currentArrayElementRawDefinition.element}
-                // rawJzodSchema={currentArrayElementRawDefinition}
                 resolvedElementJzodSchema={
                   resolvedElementJzodSchema?.type == "array"
                     ? ((resolvedElementJzodSchema as JzodArray)?.definition as any)
                     : ((resolvedElementJzodSchema as JzodTuple).definition[index] as JzodElement)
                 }
                 typeCheckKeyMap={ typeCheckKeyMap }
-                // localRootLessListKeyMap={localRootLessListKeyMap}
                 foreignKeyObjects={foreignKeyObjects}
-                foldedObjectAttributeOrArrayItems={hiddenFormItems}
-                setFoldedObjectAttributeOrArrayItems={setHiddenFormItems}
                 insideAny={insideAny}
                 maxRenderDepth={maxRenderDepth}
                 readOnly={readOnly}
-                // parentType={parentUnfoldedRawSchema.type}
+                displayError={displayError}
               />
             </ErrorBoundary>
           </>
@@ -303,14 +292,12 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
     currentApplicationSection,
     indentLevel,
     foreignKeyObjects,
-    foldedObjectAttributeOrArrayItems,
-    setFoldedObjectAttributeOrArrayItems,
     itemsOrder,
     insideAny,
     displayAsStructuredElementSwitch,
     maxRenderDepth,
     readOnly,
-    // setItemsOrder,
+    displayError,
   }
 ) => {
   // log.info("############################################### JzodArrayEditor array rootLessListKey", props.rootLessListKey, "values", props.formik.values);
@@ -340,6 +327,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
   // );
 
   const currentModel: MetaModel = useCurrentModel(currentDeploymentUuid);
+  const reportContext = useReportPageContext();
   const miroirMetaModel: MetaModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
   const currentMiroirModelEnvironment: MiroirModelEnvironment = useMemo(() => {
     return {
@@ -490,6 +478,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
       
 
       const newItem = getDefaultValueForJzodSchemaWithResolutionNonHook(
+        "build",
         newItemSchema, // TODO: not correct with runtimeTypes
         formik.values,
         rootLessListKey,
@@ -541,162 +530,165 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
       arrayValueObject,
     ]
   );
+  
   // ##############################################################################################
-  const arrayItems: JSX.Element = useMemo(()=>(
-  // const arrayItems: JSX.Element = (
-    <>
-      {(itemsOrder as number[])
-        .map((i: number): [number, JzodElement] => [i, arrayValueObject[i]])
-        .map((attributeParam: [number, JzodElement]) => {
-          const index: number = attributeParam[0];
-          const attributeRootLessListKey: string = rootLessListKey.length > 0? rootLessListKey + "." + index : "" + index;
-          // log.info(
-          //   "JzodArrayEditor arrayItems map",
-          //   "index",
-          //   index,
-          //   "attributeRootLessListKey",
-          //   attributeRootLessListKey,
-          //   "attributeValue",
-          //   attributeParam[1],
-          //   // JSON.stringify(attributeParam[1], null, 2),
-          //   "typeCheckKeyMap",
-          //   typeCheckKeyMap,
-          // );
-          const currentArrayElementRawDefinition: JzodElement | undefined =
-            typeCheckKeyMap &&
-            typeCheckKeyMap[rootLessListKey].rawSchema &&
-            typeCheckKeyMap[rootLessListKey].rawSchema.type !== "any" &&
-            typeCheckKeyMap[attributeRootLessListKey] &&
-            typeCheckKeyMap[attributeRootLessListKey].rawSchema
-              ? typeCheckKeyMap[attributeRootLessListKey].rawSchema
-              : { type: "any" };
-          // const attributeTypeCheckKeyMap = typeCheckKeyMap? typeCheckKeyMap[attributeRootLessListKey]: undefined;
-          if (!currentArrayElementRawDefinition) {
-            log.error(
-              "JzodArrayEditor could not find typeCheckKeyMap for attribute",
-              index,
-              "in rootLessListKey",
-              rootLessListKey,
-              "with typeCheckKeyMap",
-              typeCheckKeyMap,
-              // typeCheckKeyMap?.[rootLessListKey],
-              // JSON.stringify(typeCheckKeyMap, null, 2)
-            );
-            throw new Error(
-              "JzodArrayEditor could not find typeCheckKeyMap for attribute " +
-                index +
-                " in rootLessListKey " +
-                rootLessListKey
-                // " with typeCheckKeyMap " +
-                // JSON.stringify(typeCheckKeyMap, null, 2)
-            );
-          }
-          // const currentArrayElementRawDefinition: JzodElement | undefined = attributeTypeCheckKeyMap.rawSchema;
-          return (
-            <ProgressiveArrayItem
-              key={rootLessListKey + "." + index}
-              index={index}
-              listKey={listKey}
-              rootLessListKey={rootLessListKey}
-              rootLessListKeyArray={rootLessListKeyArray}
-              currentArrayElementRawDefinition={currentArrayElementRawDefinition}
-              resolvedElementJzodSchema={resolvedElementJzodSchema}
-              typeCheckKeyMap={typeCheckKeyMap}
-              usedIndentLevel={usedIndentLevel}
-              currentDeploymentUuid={currentDeploymentUuid}
-              currentApplicationSection={currentApplicationSection}
-              foreignKeyObjects={foreignKeyObjects}
-              insideAny={insideAny}
-              itemsOrder={itemsOrder}
-              formik={formik}
-              currentValue={currentValue}
-              foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
-              setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
-              maxRenderDepth={maxRenderDepth}
-              readOnly={readOnly}
-            />
-          );
-        })}
-    </>
-  )
-  // );
-  , [
-    rootLessListKey,
-    formik.values,
-    resolvedElementJzodSchema,
-    typeCheckKeyMap,
-    currentDeploymentUuid,
-    currentApplicationSection,
-    usedIndentLevel,
-    foreignKeyObjects,
-    foldedObjectAttributeOrArrayItems,
-    itemsOrder,
-    insideAny,
-    displayAsStructuredElementSwitch,
-  ])
+  // Get displayed value when array/tuple is folded using the shared utility function
+  const foldedDisplayValue = useMemo(() => {
+    return getFoldedDisplayValue(currentTypeCheckKeyMap?.resolvedSchema, currentValue);
+  }, [currentTypeCheckKeyMap?.resolvedSchema, currentValue]);
+
+  // ##############################################################################################
+  const arrayItems: JSX.Element = useMemo(
+    () => (
+      // const arrayItems: JSX.Element = (
+      <>
+        {!reportContext.isNodeFolded(rootLessListKeyArray) &&
+          (itemsOrder as number[])
+            .map((i: number): [number, JzodElement] => [i, arrayValueObject[i]])
+            .map((attributeParam: [number, JzodElement]) => {
+              const index: number = attributeParam[0];
+              const attributeRootLessListKey: string =
+                rootLessListKey.length > 0 ? rootLessListKey + "." + index : "" + index;
+              // log.info(
+              //   "JzodArrayEditor arrayItems map",
+              //   "index",
+              //   index,
+              //   "attributeRootLessListKey",
+              //   attributeRootLessListKey,
+              //   "attributeValue",
+              //   attributeParam[1],
+              //   // JSON.stringify(attributeParam[1], null, 2),
+              //   "typeCheckKeyMap",
+              //   typeCheckKeyMap,
+              // );
+              const currentArrayElementRawDefinition: JzodElement | undefined =
+                typeCheckKeyMap &&
+                typeCheckKeyMap[rootLessListKey].rawSchema &&
+                typeCheckKeyMap[rootLessListKey].rawSchema.type !== "any" &&
+                typeCheckKeyMap[attributeRootLessListKey] &&
+                typeCheckKeyMap[attributeRootLessListKey].rawSchema
+                  ? typeCheckKeyMap[attributeRootLessListKey].rawSchema
+                  : { type: "any" };
+              // const attributeTypeCheckKeyMap = typeCheckKeyMap? typeCheckKeyMap[attributeRootLessListKey]: undefined;
+              if (!currentArrayElementRawDefinition) {
+                log.error(
+                  "JzodArrayEditor could not find typeCheckKeyMap for attribute",
+                  index,
+                  "in rootLessListKey",
+                  rootLessListKey,
+                  "with typeCheckKeyMap",
+                  typeCheckKeyMap
+                  // typeCheckKeyMap?.[rootLessListKey],
+                  // JSON.stringify(typeCheckKeyMap, null, 2)
+                );
+                throw new Error(
+                  "JzodArrayEditor could not find typeCheckKeyMap for attribute " +
+                    index +
+                    " in rootLessListKey " +
+                    rootLessListKey
+                  // " with typeCheckKeyMap " +
+                  // JSON.stringify(typeCheckKeyMap, null, 2)
+                );
+              }
+              // const currentArrayElementRawDefinition: JzodElement | undefined = attributeTypeCheckKeyMap.rawSchema;
+              return (
+                <ProgressiveArrayItem
+                  key={rootLessListKey + "." + index}
+                  index={index}
+                  listKey={listKey}
+                  rootLessListKey={rootLessListKey}
+                  rootLessListKeyArray={rootLessListKeyArray}
+                  currentArrayElementRawDefinition={currentArrayElementRawDefinition}
+                  resolvedElementJzodSchema={resolvedElementJzodSchema}
+                  typeCheckKeyMap={typeCheckKeyMap}
+                  usedIndentLevel={usedIndentLevel}
+                  currentDeploymentUuid={currentDeploymentUuid}
+                  currentApplicationSection={currentApplicationSection}
+                  foreignKeyObjects={foreignKeyObjects}
+                  insideAny={insideAny}
+                  itemsOrder={itemsOrder}
+                  formik={formik}
+                  currentValue={currentValue}
+                  maxRenderDepth={maxRenderDepth}
+                  readOnly={readOnly}
+                  displayError={displayError}
+                />
+              );
+            })}
+      </>
+    ),
+    // );
+    [
+      rootLessListKey,
+      formik.values,
+      resolvedElementJzodSchema,
+      typeCheckKeyMap,
+      currentDeploymentUuid,
+      currentApplicationSection,
+      usedIndentLevel,
+      foreignKeyObjects,
+      reportContext.isNodeFolded,
+      itemsOrder,
+      insideAny,
+      displayAsStructuredElementSwitch,
+    ]
+  );
   ;
   // ##############################################################################################
   return (
     <div id={rootLessListKey} key={rootLessListKey}>
       <div>
-        <span
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "start",
-            alignItems: "center",
-          }}
-        >
+        <ThemedFlexRow justify="start" align="center">
           <span>
-            <span
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                alignContent: "start",
-                alignItems: "center",
-              }}
-            >
+            <ThemedFlexRow align="center">
               {label}
-            </span>
+              {/* Show folded display value when array is folded and a value is available */}
+              {reportContext.isNodeFolded(rootLessListKeyArray) &&
+                (() => {
+                  return foldedDisplayValue !== null ? (
+                    <ThemedFoldedValueDisplay
+                      value={String(foldedDisplayValue)}
+                      title={`Folded value: ${foldedDisplayValue}`}
+                      maxLength={100}
+                    />
+                  ) : null;
+                })()}
+            </ThemedFlexRow>
           </span>
           <span id={rootLessListKey + "head"} key={rootLessListKey + "head"}>
             {/* Only show controls in edit mode */}
             {!readOnly && (
               <>
                 <FoldUnfoldObjectOrArray
-                  foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
-                  setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
                   listKey={listKey}
+                  rootLessListKeyArray={rootLessListKeyArray}
                   currentValue={currentValue}
                   unfoldingDepth={unfoldingDepth}
                 ></FoldUnfoldObjectOrArray>
                 <FoldUnfoldObjectOrArray
-                  foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
-                  setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
                   listKey={listKey}
+                  rootLessListKeyArray={rootLessListKeyArray}
                   currentValue={currentValue}
                   unfoldingDepth={Infinity}
                 ></FoldUnfoldObjectOrArray>
-                {!foldedObjectAttributeOrArrayItems || !foldedObjectAttributeOrArrayItems[listKey]  ? 
-                (
+                {!reportContext.isNodeFolded(rootLessListKeyArray) ? (
                   <>
-                  {
-                    itemsOrder.length >= 2 && foldableItemsCount > 1?(
-                        <FoldUnfoldAllObjectAttributesOrArrayItems
-                          foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
-                          setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
-                          listKey={listKey}
-                          itemsOrder={itemsOrder.map(i => i.toString())}
-                          maxDepth={maxRenderDepth ?? 1}
-                        ></FoldUnfoldAllObjectAttributesOrArrayItems>
-                    ): <></>
-                  }
+                    {itemsOrder.length >= 2 && foldableItemsCount > 1 ? (
+                      <FoldUnfoldAllObjectAttributesOrArrayItems
+                        listKey={listKey}
+                        rootLessListKeyArray={rootLessListKeyArray}
+                        itemsOrder={itemsOrder.map((i) => i.toString())}
+                        maxDepth={maxRenderDepth ?? 1}
+                      ></FoldUnfoldAllObjectAttributesOrArrayItems>
+                    ) : (
+                      <></>
+                    )}
                     <ThemedSizedButton
                       aria-label={rootLessListKey + ".add"}
                       name={rootLessListKey + ".add"}
                       onClick={addNewArrayItem}
                       title="Add new array item"
-                      style={{ 
+                      style={{
                         flexShrink: 0,
                         marginLeft: "1em",
                       }}
@@ -724,12 +716,15 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
             {/* Only show switch in edit mode */}
             {!readOnly && (displayAsStructuredElementSwitch ?? <></>)}
           </span>
-        </span>
+        </ThemedFlexRow>
         <div
           id={listKey + ".inner"}
           style={{
             marginLeft: `calc(${indentShift})`,
-            display: foldedObjectAttributeOrArrayItems && foldedObjectAttributeOrArrayItems[listKey] ? "none" : "block",
+            display:
+              reportContext.isNodeFolded(rootLessListKeyArray)
+                ? "none"
+                : "block",
           }}
           key={`${rootLessListKey}|body`}
         >

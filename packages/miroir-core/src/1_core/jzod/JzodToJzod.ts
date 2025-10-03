@@ -5,7 +5,15 @@ import {
   JzodReference,
   JzodUnion,
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import { log } from "console";
+import type { LoggerInterface } from "../../0_interfaces/4-services/LoggerInterface";
+import { MiroirLoggerFactory } from "../../4_services/MiroirLoggerFactory";
+import { packageName } from "../../constants";
+import { cleanLevel } from "../constants";
+
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "JzodToJzod")
+).then((logger: LoggerInterface) => {log = logger});
 
 export type JzodReferenceResolutionFunction = (schema: JzodReference) => JzodElement | undefined;
 
@@ -116,7 +124,7 @@ export function applyLimitedCarryOnSchemaOnLevel(
    *
    *
    */
-  // console.log(
+  // log.info(
   //   "############# applyLimitedCarryOnSchemaOnLevel",
   //   "baseSchema",
   //   JSON.stringify(baseSchema),
@@ -126,28 +134,21 @@ export function applyLimitedCarryOnSchemaOnLevel(
   //   alwaysPropagate,
   // );
 
-  // console.log("############# applyLimitedCarryOnSchemaOnLevel", "suffixForReferences", suffixForReferences);
-  // const convertedExtra: JzodElement | undefined = baseSchema.extra
-  //   ? applyCarryOnSchema(
-  //       baseSchema.extra, // hard-coded type for jzodBaseSchema.extra is "any", it is replaced in any "concrete" jzodSchema definition
-  //       carryOnSchema,
-  //       localReferencePrefix,
-  //       resolveJzodReference,
-  //       convertedReferences
-  //     ).resultSchema // TODO: what about resolvedReferences for extra? They are ignored, is it about right?
-  //   : undefined;
-
   // const convertedTag = baseSchema.tag;
   const castTag = (baseSchema as any).tag as any;
 
   // if (!castTag || !Object.hasOwn(castTag, "canBeTemplate") || !castTag.canBeTemplate) {
-  //   console.log("############# applyCarryOnSchema nothing to do for", "baseSchema.tag", castTag)
+  //   log.info("############# applyCarryOnSchema nothing to do for", "baseSchema.tag", castTag)
   //   return {
   //     resultSchema: baseSchema,
   //     resolvedReferences: convertedReferences,
   //   }
   // }
-  let convertedTag:JzodElement = castTag;
+  // let convertedTag:JzodElement = castTag;
+  let convertedTag:JzodElement = castTag?.value?{
+    ...castTag,
+    value: {...castTag.value, isTemplate: true}
+  }: castTag;
   if (castTag && castTag.schema && castTag.schema.valueSchema) {    
     // Check if this tag references a transformer schema - if so, skip carryOn application
     // to prevent infinite recursion since transformers are already complete types
@@ -166,6 +167,7 @@ export function applyLimitedCarryOnSchemaOnLevel(
         ...castTag,
         schema: {
           ...castTag.schema,
+          // isTemplate: true,
           valueSchema: applyLimitedCarryOnSchemaOnLevel(
             castTag.schema.valueSchema, // hard-coded type for jzodBaseSchema.extra is "any", it is replaced in any "concrete" jzodSchema definition
             carryOnSchema,
@@ -184,7 +186,7 @@ export function applyLimitedCarryOnSchemaOnLevel(
   }
 
   // if (baseSchema.tag && baseSchema.tag.schema && baseSchema.tag.schema.valueSchema) {
-  //   console.log("############# applyCarryOnSchema", "convertedTag", convertedTag)
+  //   log.info("############# applyCarryOnSchema", "convertedTag", convertedTag)
   // }
 
   switch (baseSchema.type) {
@@ -229,7 +231,7 @@ export function applyLimitedCarryOnSchemaOnLevel(
         };
       }
       // if (equal(resultSchema, baseSchema) && identicalConvertedReferences) {
-      //   // console.log("############# applyLimitedCarryOnSchemaOnLevel", "baseSchema", JSON.stringify(baseSchema, null, 2), "resultSchema", JSON.stringify(resultSchema, null, 2), "identicalConvertedReferences", identicalConvertedReferences)
+      //   // log.info("############# applyLimitedCarryOnSchemaOnLevel", "baseSchema", JSON.stringify(baseSchema, null, 2), "resultSchema", JSON.stringify(resultSchema, null, 2), "identicalConvertedReferences", identicalConvertedReferences)
       //   identicalConvertedReferences.add();
       // }
       return resultSchema;
@@ -535,7 +537,7 @@ export function applyLimitedCarryOnSchemaOnLevel(
       const convertedSubSchemasHasBeenApplied: boolean[] = [];
       const convertedSubSchemasReferences: Record<string, JzodElement> = {};
       for (const subSchema of Object.entries(baseSchema.definition)) {
-        // console.log("SubSchema", subSchema[0], JSON.stringify(subSchema, null, 2));
+        // log.info("SubSchema", subSchema[0], JSON.stringify(subSchema, null, 2));
         const convertedSubSchema = applyLimitedCarryOnSchemaOnLevel(
           subSchema[1],
           carryOnSchema,
@@ -550,13 +552,13 @@ export function applyLimitedCarryOnSchemaOnLevel(
         );
         convertedSubSchemas[subSchema[0]] = convertedSubSchema.resultSchema;
         convertedSubSchemasHasBeenApplied.push(convertedSubSchema.hasBeenApplied);
-        // console.log("convertedSubSchema", subSchema[0], JSON.stringify(convertedSubSchema.resultSchema, null, 2));
+        // log.info("convertedSubSchema", subSchema[0], JSON.stringify(convertedSubSchema.resultSchema, null, 2));
         for (const c of Object.entries(convertedSubSchema.resolvedReferences ?? {})) {
           convertedSubSchemasReferences[c[0]] = c[1];
         }
       }
-      // console.log("convertedSubSchemasReferences", JSON.stringify(convertedSubSchemasReferences, null, 2));
-      // console.log("convertedSubSchemas", JSON.stringify(convertedSubSchemas, null, 2));`
+      // log.info("convertedSubSchemasReferences", JSON.stringify(convertedSubSchemasReferences, null, 2));
+      // log.info("convertedSubSchemas", JSON.stringify(convertedSubSchemas, null, 2));`
       const convertedExtendResults: ApplyCarryOnSchemaOnLevelReturnType[] | undefined =
         baseSchema.extend && typeof baseSchema.extend == "object"
           ? !Array.isArray(baseSchema.extend)
@@ -590,7 +592,7 @@ export function applyLimitedCarryOnSchemaOnLevel(
                   )
               )
           : undefined; // TODO: apply carryOn object
-      // console.log("convertedExtendResults", JSON.stringify(convertedExtendResults, null, 2));
+      // log.info("convertedExtendResults", JSON.stringify(convertedExtendResults, null, 2));
       const convertedExtendReferences = convertedExtendResults
         ? Object.fromEntries(
             convertedExtendResults.flatMap((e) => Object.entries(e.resolvedReferences ?? {}))

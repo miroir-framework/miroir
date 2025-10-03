@@ -5,7 +5,7 @@ import { cleanLevel } from "../constants";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ErrorFallbackComponent")
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ErrorFallbackComponent"), "UI",
 ).then((logger: LoggerInterface) => {
   log = logger;
 });
@@ -17,6 +17,7 @@ export interface ErrorFallbackComponentProps {
     origin?: string; // used to identify the origin of the error, e.g., "JzodElementEditor"
     objectType: string;
     rootLessListKey: string;
+    rootLessListKeyArray?: (string | number)[]; // Added this field to match the new path structure
     attributeRootLessListKeyArray?: (string | number)[];
     attributeName?: string;
     attributeListKey?: string;
@@ -37,6 +38,7 @@ export const ErrorFallbackComponent: React.FC<ErrorFallbackComponentProps> = ({
     origin,
     objectType,
     rootLessListKey,
+    rootLessListKeyArray,
     attributeRootLessListKeyArray,
     attributeName,
     attributeListKey,
@@ -61,7 +63,10 @@ export const ErrorFallbackComponent: React.FC<ErrorFallbackComponentProps> = ({
       <div style={{ color: "red" }}>
         <p>Something went wrong in {origin??"unspecified"}</p>
         <div key="1">{objectType} {rootLessListKey}</div>
-        {attributeRootLessListKeyArray && (
+        {rootLessListKeyArray && Array.isArray(rootLessListKeyArray) && (
+          <div key="1a">path {rootLessListKeyArray.join(".")}</div>
+        )}
+        {attributeRootLessListKeyArray && Array.isArray(attributeRootLessListKeyArray) && (
           <div key="2">attribute {attributeRootLessListKeyArray.join(".")}</div>
         )}
         {/* {attributeRootLessListKeyArray && formikValues && (

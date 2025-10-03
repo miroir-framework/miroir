@@ -7,14 +7,14 @@
   "description": "This Transformer adds an Item to an existing Menu.",
   "classification": "basic",
   "transformerInterface": {
+    "inputOutput": {
+      "input": "object",
+      "output": "object"
+    },
     "transformerParameterSchema": {
       "transformerType": {
         "type": "literal",
         "definition": "transformer_menu_addItem"
-      },
-      "interpolation": {
-        "type": "literal",
-        "definition": "runtime"
       },
       "transformerDefinition": {
         "type": "object",
@@ -30,7 +30,7 @@
                 "type": "schemaReference",
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "transformer_InnerReference"
+                  "relativePath": "transformer"
                 }
               }
             ]
@@ -46,7 +46,7 @@
                 "type": "schemaReference",
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "transformer_InnerReference"
+                  "relativePath": "transformer"
                 }
               }
             ]
@@ -63,7 +63,14 @@
       }
     },
     "transformerResultSchema": {
-      "type": "any"
+      "returns": "mlSchema",
+      "definition": {
+        "type": "schemaReference",
+        "definition": {
+          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          "relativePath": "menu"
+        }
+      }
     }
   },
   "transformerImplementation": {

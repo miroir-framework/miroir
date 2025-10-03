@@ -22,7 +22,7 @@ export function protectedSqlAccessForPath(
         : `${tokenStringQuote}${e}${tokenStringQuote}`
   );
 
-  console.log("pathParts", pathParts);
+  // console.log("pathParts", pathParts);
   // Build the CASE WHEN expression to check each step
   let bypass = pathParts[0];
   let checks: string[] = [];

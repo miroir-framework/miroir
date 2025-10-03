@@ -1,25 +1,21 @@
+import { useTheme } from '@mui/material/styles';
 import { FC, useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import { cleanLevel } from "../../constants.js";
-import { 
+import {
   ThemedDivider,
+  ThemedIcon,
   ThemedList,
   ThemedListItem,
   ThemedListItemButton,
-  ThemedListItemIcon,
   ThemedListItemText,
-  ThemedIcon
-} from "../Themes/index"
-import { useMiroirTheme } from '../../contexts/MiroirThemeContext.js';
-import AutoStories from '@mui/icons-material/AutoStories';
-import { CSSObject, styled, Theme, useTheme } from '@mui/material/styles';
-import MuiDrawer from '@mui/material/Drawer';
-import { Link } from 'react-router-dom';
+  ThemedListMiroirIcon
+} from "../Themes/index";
 
 
 import {
   adminConfigurationDeploymentAdmin,
   adminConfigurationDeploymentMiroir,
-  ReduxDeploymentsState,
   Domain2QueryReturnType,
   dummyDomainManyQueryWithDeploymentUuid,
   entityMenu,
@@ -28,6 +24,7 @@ import {
   LoggerInterface,
   MetaModel,
   MiroirLoggerFactory,
+  ReduxDeploymentsState,
   SyncBoxedExtractorOrQueryRunnerMap,
   SyncQueryRunnerParams,
   Uuid
@@ -38,55 +35,17 @@ import { useCurrentModel, useReduxDeploymentsStateQuerySelector } from '../../Re
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "Sidebar")
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "Sidebar"), "UI",
 ).then((logger: LoggerInterface) => {log = logger});
 
 
-
 export const SidebarWidth = 200;
-
-const openedMixin = (theme: Theme): CSSObject => ({
-  width: SidebarWidth,
-  transition: theme.transitions.create('width', {
-    easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.enteringScreen,
-  }),
-  display: 'flex',
-  overflowX: 'hidden',
-});
-
-const closedMixin = (theme: Theme): CSSObject => ({
-  transition: theme.transitions.create('width', {
-    easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.leavingScreen,
-  }),
-  display: "none"
-});
 
 export interface ResponsiveAppBarProps {
   handleDrawerOpen: ()=>void,
   open: boolean,
   children:any,
 }
-
-// const Sidebar = MuiDrawer;
-const StyledDrawer = styled(MuiDrawer as any, { shouldForwardProp: (prop) => prop !== 'open' })(
-  ({ theme, open }) => ({
-    width: SidebarWidth,
-    flexShrink: 0,
-    whiteSpace: 'nowrap',
-    boxSizing: 'border-box',
-    ...(open && {
-      ...openedMixin(theme),
-      '& .MuiDrawer-paper': openedMixin(theme),
-    }),
-    ...(!open && {
-      ...closedMixin(theme),
-      '& .MuiDrawer-paper': closedMixin(theme),
-    }),
-  }),
-);
-
 
 const sideBarDefaultItems = [
   {
@@ -99,18 +58,6 @@ const sideBarDefaultItems = [
 ];
 
 let count = 0;
-const muiIcons = {
-  "AutoStories": AutoStories
-}
-// interface IconProps {
-//   icon?: keyof typeof MUIcon;
-// }
-// const IconComp: React.FC<IconProps> = ({
-//  icon,
-// }) => {
-//    const Icon = icon && MUIcon[icon];
-//    return ({Icon && <Icon />})
-// }
 // ################################################################################################
 export interface SidebarSectionProps {deploymentUuid: Uuid, menuUuid: Uuid, open:boolean, setOpen: (v:boolean)=>void};
 export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProps) => {
@@ -186,10 +133,10 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
         <ThemedList disablePadding dense>
           <ThemedListItem key={"failed"} disablePadding>
             <ThemedListItemButton>
-              <ThemedListItemIcon>
+              <ThemedListMiroirIcon>
                 {/* {index % 2 === 0 ? <InboxIcon /> : <MailIcon />} */}
-                <ThemedIcon>error</ThemedIcon>
-              </ThemedListItemIcon>
+                <ThemedIcon icon="error"/>
+              </ThemedListMiroirIcon>
               <ThemedListItemText primary="Failed to load menu" />
             </ThemedListItemButton>
           </ThemedListItem>
@@ -205,10 +152,10 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
               ).map((i: any, index: number) => (
               <ThemedListItem key={i.label} disablePadding>
                 <ThemedListItemButton sx={{padding: 0}} component={Link} to={`/report/${i.selfApplication}/${i.section}/${i.reportUuid}/xxxxxx`}>
-                  <ThemedListItemIcon>
+                  <ThemedListMiroirIcon>
                     {/* {index % 2 === 0 ? <InboxIcon /> : <MailIcon />} */}
-                    <ThemedIcon>{i.icon}</ThemedIcon>
-                  </ThemedListItemIcon>
+                    <ThemedIcon icon={i.icon}/>
+                  </ThemedListMiroirIcon>
                   <ThemedListItemText primary={i.label} />
                 </ThemedListItemButton>
               </ThemedListItem>
@@ -223,10 +170,10 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
                   (curr:any, index: number) => (
                     <ThemedListItem key={curr.label + index} disablePadding>
                       <ThemedListItemButton component={Link} to={`/report/${curr.selfApplication}/${curr.section}/${curr.reportUuid}/xxxxxx`}>
-                        <ThemedListItemIcon>
+                        <ThemedListMiroirIcon>
                           {/* {index % 2 === 0 ? <InboxIcon /> : <MailIcon />} */}
-                          <ThemedIcon>{curr.icon}</ThemedIcon>
-                        </ThemedListItemIcon>
+                          <ThemedIcon icon={curr.icon}/>
+                        </ThemedListMiroirIcon>
                         <ThemedListItemText primary={curr.label} />
                       </ThemedListItemButton>
                     </ThemedListItem>

@@ -48,7 +48,7 @@ import { usePageConfiguration } from "../services/index.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ToolsPage")
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ToolsPage"), "UI",
 ).then((logger: LoggerInterface) => {log = logger});
 
 

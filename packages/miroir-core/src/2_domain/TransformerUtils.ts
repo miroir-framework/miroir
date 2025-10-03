@@ -3,6 +3,8 @@ import {
   Action2Error,
   Domain2ElementFailed,
   Domain2QueryReturnType,
+  TransformerFailure,
+  type TransformerReturnType,
 } from "../0_interfaces/2_domain/DomainElement";
 import {
   ExtendedTransformerForRuntime,
@@ -11,7 +13,7 @@ import {
   TransformerForRuntime
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
-import { MiroirLoggerFactory } from "../4_services/LoggerFactory";
+import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
 
@@ -37,16 +39,18 @@ async function getTransformerExtendedApply() {
 // ################################################################################################
 export async function transformer_extended_apply_wrapper(
   step: Step,
+  transformerPath: string[],
   label: string | undefined,
   transformer: TransformerForBuild | TransformerForRuntime | ExtendedTransformerForRuntime | TransformerForBuildPlusRuntime,
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>,
   resolveBuildTransformersTo: ResolveBuildTransformersTo = "constantTransformer",
-): Promise<Domain2QueryReturnType<any>> {
+): Promise<TransformerReturnType<any>> {
   try {
     const transformer_extended_apply = await getTransformerExtendedApply();
     const result = transformer_extended_apply(
       step,
+      transformerPath,
       label,
       transformer,
       resolveBuildTransformersTo,
@@ -60,7 +64,7 @@ export async function transformer_extended_apply_wrapper(
     //   JSON.stringify(result, null, 2),
     // );  
 
-    if (result instanceof Domain2ElementFailed) {
+    if (result instanceof TransformerFailure) {
       log.error(
         "transformer_extended_apply_wrapper failed for",
         label??(transformer as any)["transformerType"],
@@ -71,14 +75,12 @@ export async function transformer_extended_apply_wrapper(
         "result",
         JSON.stringify(result, null, 2)
       );
-      return new Domain2ElementFailed({
-        // queryFailure: "QueryNotExecutable",
+      return new TransformerFailure({
         queryFailure: "FailedTransformer",
-        // queryFailure: result.queryFailure,
+        // transformerPath,
         failureOrigin: ["transformer_extended_apply"],
         innerError: result,
         queryContext: "failed to transform object attribute",
-        // queryParameters: JSON.stringify(transformer),
         queryParameters: transformer as any,
       });
     } else {
@@ -102,10 +104,9 @@ export async function transformer_extended_apply_wrapper(
       e
     );
     return new Domain2ElementFailed({
-      // queryFailure: "QueryNotExecutable",
       queryFailure: "FailedTransformer",
+      // transformerPath,
       failureOrigin: ["transformer_extended_apply"],
-      // innerError: e as any,
       innerError: serializeError(e) as any,
       queryContext: "failed to transform object attribute",
     });

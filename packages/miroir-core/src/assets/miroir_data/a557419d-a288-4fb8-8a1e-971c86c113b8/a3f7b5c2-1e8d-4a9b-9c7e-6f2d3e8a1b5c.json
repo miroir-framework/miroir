@@ -9,6 +9,10 @@
   "classification": "MLS",
   "runnableAsSql": false,
   "transformerInterface": {
+    "inputOutput": {
+      "input": "object",
+      "output": "object"
+    },
     "transformerParameterSchema": {
       "transformerType": {
         "type": "literal",
@@ -88,10 +92,13 @@
       }
     },
     "transformerResultSchema": {
-      "type": "schemaReference",
+      "returns": "mlSchema",
       "definition": {
-        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-        "relativePath": "resolvedJzodSchemaReturnType"
+        "type": "schemaReference",
+        "definition": {
+          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          "relativePath": "resolvedJzodSchemaReturnType"
+        }
       }
     }
   },

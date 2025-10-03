@@ -11,19 +11,22 @@ import {
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { ReduxDeploymentsState } from "../../0_interfaces/2_domain/ReduxDeploymentsStateInterface";
 import { LoggerInterface } from "../../0_interfaces/4-services/LoggerInterface";
-import { MiroirLoggerFactory } from "../../4_services/LoggerFactory";
+import { MiroirLoggerFactory } from "../../4_services/MiroirLoggerFactory";
 import { packageName } from "../../constants";
 import { RelativePath, resolveRelativePath } from '../../tools';
 import { cleanLevel } from "../constants";
 import { getEntityInstancesUuidIndexNonHook } from "../../2_domain/ReduxDeploymentsStateQueryExecutor";
 import type { ResolveBuildTransformersTo, Step } from "../../2_domain/Transformers";
 import type { MiroirModelEnvironment } from "../../0_interfaces/1_core/Transformer";
+import { transformer_extended_apply_wrapper } from "../../2_domain/TransformersForRuntime";
+import { transformer } from "zod";
 
 // Error value types for resolveConditionalSchema
 export type ResolveConditionalSchemaError =
   | { error: 'NO_REDUX_DEPLOYMENTS_STATE' }
   | { error: 'NO_DEPLOYMENT_UUID' }
-  | { error: 'INVALID_PARENT_UUID_CONFIG', details: string };
+  | { error: 'INVALID_PARENT_UUID_CONFIG', details: string }
+  | { error: 'PARENT_NOT_FOUND', details: string };
 
 export type ResolveConditionalSchemaResult = JzodElement | ResolveConditionalSchemaError;
 
@@ -35,6 +38,7 @@ MiroirLoggerFactory.registerLoggerToStart(
 // ################################################################################################
 export function resolveConditionalSchemaTransformer(
   step: Step,
+  transformerPath: string[],
   label: string | undefined,
   transformer:
     | TransformerForBuild_resolveConditionalSchema
@@ -45,10 +49,13 @@ export function resolveConditionalSchemaTransformer(
   contextResults?: Record<string, any>
 ): ResolveConditionalSchemaResult {
   return resolveConditionalSchema(
+    step,
+    transformerPath,
     transformer.schema,
     transformer.valueObject, // Use rootObject from contextResults or an empty object
     transformer.valuePath || [], // Use currentValuePath from contextResults or an
-    queryParams, // modelEnvironment 
+    queryParams, // modelEnvironment
+    contextResults, 
     transformer?.reduxDeploymentsState, // Use reduxDeploymentsState from contextResults
     transformer?.deploymentUuid, // Use deploymentUuid from contextResults
     transformer.context
@@ -56,18 +63,13 @@ export function resolveConditionalSchemaTransformer(
 }
 // ################################################################################################
 export function resolveConditionalSchema(
-  // step: Step,
-  // label: string | undefined,
-  // transformer: T,
-  // resolveBuildTransformersTo: ResolveBuildTransformersTo,
-  // queryParams: Record<string, any>,
-  // contextResults?: Record<string, any>
-
-  // 
+  step: Step,
+  transformerPath: string[],
   jzodSchema: JzodElement,
   rootObject: any, // Changed from currentDefaultValue to rootObject
   currentValuePath: string[],
-  modelEnvironment: MiroirModelEnvironment,
+  modelEnvironment: MiroirModelEnvironment & Record<string, any>, // includes queryParams
+  contextResults?: Record<string, any>,
   reduxDeploymentsState: ReduxDeploymentsState | undefined = undefined,
   deploymentUuid: Uuid | undefined = undefined,
   context: 'defaultValue' | 'typeCheck' = 'typeCheck' // New parameter for context
@@ -75,7 +77,7 @@ export function resolveConditionalSchema(
   let effectiveSchema: JzodElement = jzodSchema;
   // log.info(
   //   "resolveConditionalSchema called with jzodSchema",
-  //   "jzodSchema",
+  //   jzodSchema,
   //  //   JSON.stringify(jzodSchema, null, 2),
   //   "rootObject",
   //   rootObject,
@@ -85,17 +87,25 @@ export function resolveConditionalSchema(
   //   reduxDeploymentsState,
   //   "deploymentUuid",
   //   deploymentUuid,
+  //   "contextResults",
+  //   contextResults,
+  //   "modelEnvironment",
+  //   Object.keys(modelEnvironment),
+  //   // JSON.stringify(modelEnvironment, null, 2),
+  //   // modelEnvironment.currentModel,
+  //   // modelEnvironment.currentModel?.entityDefinitions.length,
   //   "context",
   //   context
   // );
-  if (jzodSchema.tag && jzodSchema.tag.value && jzodSchema.tag.value.conditionalMMLS) {
+  if (jzodSchema?.tag && jzodSchema.tag.value && !jzodSchema.tag.value.isTemplate && jzodSchema.tag.value.conditionalMMLS) {
     // If the schema has a conditionalMMLS, we use it as the effective schema
     const conditionalConfig = jzodSchema.tag.value.conditionalMMLS;
     // the runtime path is given by the parentUuid, to be found in the reduxDeploymentsState
     if (conditionalConfig.parentUuid && typeof conditionalConfig.parentUuid === "object") {
-      if (!reduxDeploymentsState) {
+      if (!modelEnvironment.currentModel || modelEnvironment.currentModel.entityDefinitions.length === 0) {
         return { error: 'NO_REDUX_DEPLOYMENTS_STATE' };
       }
+
       if (!deploymentUuid) {
         return { error: 'NO_DEPLOYMENT_UUID' };
       }
@@ -131,11 +141,12 @@ export function resolveConditionalSchema(
         pathToUse.split(".") as RelativePath
       );
 
+      log.info("resolveConditionalSchema resolved parentUuid", parentUuid);
       // Check if parentUuid is invalid or an error
       if (
         parentUuid === undefined ||
         parentUuid === null ||
-        (typeof parentUuid === "object" && parentUuid.error)
+        (typeof parentUuid === "object" && "error" in parentUuid)
       ) {
         return {
           error: 'INVALID_PARENT_UUID_CONFIG',
@@ -143,26 +154,43 @@ export function resolveConditionalSchema(
         };
       }
 
-      log.info("resolveConditionalSchema resolved parentUuid", parentUuid);
-      const currentDeploymentEntityDefinitions: EntityDefinition[] =
-        getEntityInstancesUuidIndexNonHook(
-          reduxDeploymentsState,
+      let parentUuidStr: Uuid;
+      if (typeof parentUuid === "object" && "transformerType" in parentUuid) {
+        parentUuidStr = transformer_extended_apply_wrapper(
+          step,
+          transformerPath,
+          "resolveConditionalSchema - parentUuid",
+          parentUuid,
+          // currentValuePath,
           modelEnvironment,
-          deploymentUuid,
-          entityEntityDefinition.uuid,
-        ) as EntityDefinition[];
+          contextResults,
+          "value", // resolveBuildTransformersTo
+        ) as Uuid;
+      }
+      else {
+        parentUuidStr = parentUuid as Uuid;
+      }
+
+      log.info("resolveConditionalSchema found parentUuid", parentUuid, "parentUuidStr", parentUuidStr);
+      const currentDeploymentEntityDefinitions: EntityDefinition[] = modelEnvironment.currentModel?.entityDefinitions || [];
       log.info(
         "resolveConditionalSchema currentDeploymentEntityDefinitions",
         currentDeploymentEntityDefinitions
       );
       const parentEntityDefinition = (
-        currentDeploymentEntityDefinitions.find(e => e.entityUuid === parentUuid) as EntityDefinition
-      ).jzodSchema;
+        currentDeploymentEntityDefinitions.find(e => e.entityUuid === parentUuidStr) as EntityDefinition
+      );
       log.info(
         "resolveConditionalSchema parentEntityDefinition",
         parentEntityDefinition
       );
-      effectiveSchema = parentEntityDefinition;
+      if (!parentEntityDefinition) {
+        return {
+          error: 'PARENT_NOT_FOUND',
+          details: `No entity definition found for parentUuid ${parentUuidStr} in deployment ${deploymentUuid}`
+        };
+      }
+      effectiveSchema = parentEntityDefinition.jzodSchema;
     }
     log.info(
       "resolveConditionalSchema return effectiveSchema",

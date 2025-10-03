@@ -7,7 +7,7 @@ import { Action2Error, Action2ReturnType } from "../../0_interfaces/2_domain/Dom
 import { ErrorLogServiceInterface, MError } from "../../0_interfaces/3_controllers/ErrorLogServiceInterface";
 import { LoggerInterface } from "../../0_interfaces/4-services/LoggerInterface";
 import { PersistenceStoreLocalOrRemoteInterface } from "../../0_interfaces/4-services/PersistenceInterface";
-import { MiroirLoggerFactory } from "../../4_services/LoggerFactory";
+import { MiroirLoggerFactory } from "../../4_services/MiroirLoggerFactory";
 import { packageName } from "../../constants";
 import { cleanLevel } from "../constants";
 
@@ -18,7 +18,7 @@ MiroirLoggerFactory.registerLoggerToStart(
 
 export class CallUtils {
   constructor(
-    private errorLogService: ErrorLogServiceInterface,
+    // private errorLogService: ErrorLogServiceInterface,
     // private localCache: LocalCacheInterface,
     private persistenceStoreLocalOrRemote: PersistenceStoreLocalOrRemoteInterface
   ) {}
@@ -46,7 +46,7 @@ export class CallUtils {
       //ensure the proper persistence of errors in the local storage, for it to be accessible by view components.
       // Problem: what if the local storage is not accessible? => store it in a in-memory effect.
       const error: MError = { errorMessage: result.errorMessage };
-      this.errorLogService.pushError(error);
+      // this.errorLogService.pushError(error);
       throw error;
     } else {
       const transformedResult = continuation.resultTransformation
@@ -96,7 +96,7 @@ export class CallUtils {
       //ensure the proper persistence of errors in the local storage, for it to be accessible by view components.
       // Problem: what if the local storage is not accessible? => store it in a in-memory effect.
       const error: MError = { errorMessage: JSON.stringify(result) };
-      this.errorLogService.pushError(error);
+      // this.errorLogService.pushError(error);
       // throw error;
       return result;
     } else {

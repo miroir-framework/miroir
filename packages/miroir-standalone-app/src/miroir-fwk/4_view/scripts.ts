@@ -16,7 +16,7 @@ import { cleanLevel } from "./constants.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "Scripts")
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "Scripts"), "UI",
 ).then((logger: LoggerInterface) => {log = logger});
 
 export const splitEntity = async (p: {

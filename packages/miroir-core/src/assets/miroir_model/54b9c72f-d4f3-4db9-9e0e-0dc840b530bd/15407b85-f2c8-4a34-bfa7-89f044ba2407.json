@@ -104,6 +104,7 @@
         "context": {
           "jzodObjectOrReference": {
             "type": "union",
+            "discriminator": "type",
             "definition": [
               {
                 "type": "schemaReference",

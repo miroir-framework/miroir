@@ -50,7 +50,7 @@ import {
   getMiroirFundamentalJzodSchema,
   miroirFundamentalJzodSchemaUuid,
 } from "../src/0_interfaces/1_core/bootstrapJzodSchemas/getMiroirFundamentalJzodSchema.js";
-import { miroirTransformersForBuild, mmlsTransformers } from "../src/2_domain/Transformers";
+import { miroirTransformersForBuild, mlsTransformers } from "../src/2_domain/Transformers";
 import { entity } from "../src";
 
 async function build() {
@@ -135,6 +135,7 @@ export type TransformerForBuild =
       }
     )
   | TransformerForBuild_menu_addItem
+  | TransformerForBuild_conditional
   | TransformerForBuild_constant
   | TransformerForBuild_constantArray
   | TransformerForBuild_constantBoolean
@@ -163,7 +164,7 @@ export type TransformerForBuild =
   | TransformerForBuild_InnerReference
   | TransformerForBuild_dataflowSequence
   // MLS
-  | ${Object.keys(mmlsTransformers)
+  | ${Object.keys(mlsTransformers)
     .map((e) => `${e.replace("transformer_", "TransformerForBuild_")}`)
     .join("\n  | ")}
 ;
@@ -192,6 +193,7 @@ export const transformerForBuild: z.ZodType<TransformerForBuild> = z.lazy(() => 
     z.array(transformerForBuild),
     recordWithoutTransformerType,
     transformerForBuild_menu_addItem,
+    transformerForBuild_conditional,
     transformerForBuild_constant,
     transformerForBuild_constantArray,
     transformerForBuild_constantBoolean,
@@ -220,7 +222,7 @@ export const transformerForBuild: z.ZodType<TransformerForBuild> = z.lazy(() => 
     transformerForBuild_InnerReference,
     transformerForBuild_dataflowSequence,
     // MLS
-    ${Object.keys(mmlsTransformers)
+    ${Object.keys(mlsTransformers)
       .map((e) => `${e.replace("transformer_", "transformerForBuild_")}`)
       .join(",\n   ")}
   ]);
@@ -256,7 +258,7 @@ export type TransformerForRuntime =
   | TransformerForRuntime_InnerReference
   | TransformerForRuntime_dataflowSequence
   // MLS
-  | ${Object.keys(mmlsTransformers)
+  | ${Object.keys(mlsTransformers)
     .map((e) => `${e.replace("transformer_", "TransformerForRuntime_")}`)
     .join("\n  | ")}
 ;
@@ -292,13 +294,10 @@ export const transformerForRuntime: z.ZodType<TransformerForRuntime> = z.union([
   z.lazy(() => transformerForRuntime_InnerReference),
   z.lazy(() => transformerForRuntime_dataflowSequence),
   // MLS
-  ${Object.keys(mmlsTransformers)
+  ${Object.keys(mlsTransformers)
     .map((e) => `z.lazy(() => ${e.replace("transformer_", "transformerForRuntime_")})`)
     .join(",\n   ")}
 ]);
-
-// export type TransformerForBuildPlusRuntime = TransformerForBuild | TransformerForBuildPlusRuntime_menu_addItem | TransformerForBuildPlusRuntime_constant | TransformerForBuildPlusRuntime_constantArray | TransformerForBuildPlusRuntime_constantBoolean | TransformerForBuildPlusRuntime_constantNumber | TransformerForBuildPlusRuntime_constantObject | TransformerForBuildPlusRuntime_constantString | TransformerForBuildPlusRuntime_constantUuid | TransformerForBuildPlusRuntime_constantAsExtractor | TransformerForBuildPlusRuntime_contextReference | TransformerForBuildPlusRuntime_count | TransformerForBuildPlusRuntime_dataflowObject | TransformerForBuildPlusRuntime_freeObjectTemplate | TransformerForBuildPlusRuntime_listPickElement | TransformerForBuildPlusRuntime_listReducerToIndexObject | TransformerForBuildPlusRuntime_listReducerToSpreadObject | TransformerForBuildPlusRuntime_mapperListToList | TransformerForBuildPlusRuntime_mustacheStringTemplate | TransformerForBuildPlusRuntime_newUuid | TransformerForBuildPlusRuntime_objectAlter | TransformerForBuildPlusRuntime_objectDynamicAccess | TransformerForBuildPlusRuntime_objectEntries | TransformerForBuildPlusRuntime_objectValues | TransformerForBuildPlusRuntime_object_fullTemplate | TransformerForBuildPlusRuntime_unique | TransformerForBuildPlusRuntime_constantBigint | TransformerForBuildPlusRuntime_InnerReference | TransformerForBuildPlusRuntime_dataflowSequence;
-// export const transformerForBuildPlusRuntime: z.ZodType<TransformerForBuildPlusRuntime> = z.union([z.lazy(() =>transformerForBuild), z.lazy(() =>transformerForBuildPlusRuntime_menu_addItem), z.lazy(() =>transformerForBuildPlusRuntime_constant), z.lazy(() =>transformerForBuildPlusRuntime_constantArray), z.lazy(() =>transformerForBuildPlusRuntime_constantBoolean), z.lazy(() =>transformerForBuildPlusRuntime_constantNumber), z.lazy(() =>transformerForBuildPlusRuntime_constantObject), z.lazy(() =>transformerForBuildPlusRuntime_constantString), z.lazy(() =>transformerForBuildPlusRuntime_constantUuid), z.lazy(() =>transformerForBuildPlusRuntime_constantAsExtractor), z.lazy(() =>transformerForBuildPlusRuntime_contextReference), z.lazy(() =>transformerForBuildPlusRuntime_count), z.lazy(() =>transformerForBuildPlusRuntime_dataflowObject), z.lazy(() =>transformerForBuildPlusRuntime_freeObjectTemplate), z.lazy(() =>transformerForBuildPlusRuntime_listPickElement), z.lazy(() =>transformerForBuildPlusRuntime_listReducerToIndexObject), z.lazy(() =>transformerForBuildPlusRuntime_listReducerToSpreadObject), z.lazy(() =>transformerForBuildPlusRuntime_mapperListToList), z.lazy(() =>transformerForBuildPlusRuntime_mustacheStringTemplate), z.lazy(() =>transformerForBuildPlusRuntime_newUuid), z.lazy(() =>transformerForBuildPlusRuntime_objectAlter), z.lazy(() =>transformerForBuildPlusRuntime_objectDynamicAccess), z.lazy(() =>transformerForBuildPlusRuntime_objectEntries), z.lazy(() =>transformerForBuildPlusRuntime_objectValues), z.lazy(() =>transformerForBuildPlusRuntime_object_fullTemplate), z.lazy(() =>transformerForBuildPlusRuntime_unique), z.lazy(() =>transformerForBuildPlusRuntime_constantBigint), z.lazy(() =>transformerForBuildPlusRuntime_InnerReference), z.lazy(() =>transformerForBuildPlusRuntime_dataflowSequence)]);
 
 export type TransformerForBuildPlusRuntime =
     | string
@@ -313,8 +312,9 @@ export type TransformerForBuildPlusRuntime =
         [P in "transformerType" | "interpolation"]?: never;
       }
     )
-  | TransformerForBuild
+  // | TransformerForBuild
   | TransformerForBuildPlusRuntime_menu_addItem
+  | TransformerForBuildPlusRuntime_conditional
   | TransformerForBuildPlusRuntime_constant
   | TransformerForBuildPlusRuntime_constantArray
   | TransformerForBuildPlusRuntime_constantBoolean
@@ -337,14 +337,14 @@ export type TransformerForBuildPlusRuntime =
   | TransformerForBuildPlusRuntime_objectEntries
   | TransformerForBuildPlusRuntime_objectValues
   | TransformerForBuildPlusRuntime_object_fullTemplate
-  // | TransformerForBuildPlusRuntime_parameterReference
+  | TransformerForBuildPlusRuntime_parameterReference
   | TransformerForBuildPlusRuntime_contextReference
   | TransformerForBuildPlusRuntime_unique
   | TransformerForBuildPlusRuntime_constantBigint
   | TransformerForBuildPlusRuntime_InnerReference
   | TransformerForBuildPlusRuntime_dataflowSequence
   // MLS
-  | ${Object.keys(mmlsTransformers)
+  | ${Object.keys(mlsTransformers)
     .map((e) => `${e.replace("transformer_", "TransformerForBuildPlusRuntime_")}`)
     .join("\n  | ")}
 ;
@@ -374,6 +374,7 @@ export const transformerForBuildPlusRuntime: z.ZodType<TransformerForBuildPlusRu
     recordWithoutTransformerType,
     // transformerForBuild,
     transformerForBuildPlusRuntime_menu_addItem,
+    transformerForBuildPlusRuntime_conditional,
     transformerForBuildPlusRuntime_constant,
     transformerForBuildPlusRuntime_constantArray,
     transformerForBuildPlusRuntime_constantBoolean,
@@ -396,14 +397,14 @@ export const transformerForBuildPlusRuntime: z.ZodType<TransformerForBuildPlusRu
     transformerForBuildPlusRuntime_objectEntries,
     transformerForBuildPlusRuntime_objectValues,
     transformerForBuildPlusRuntime_object_fullTemplate,
-    // transformerForBuildPlusRuntime_parameterReference,
+    transformerForBuildPlusRuntime_parameterReference,
     transformerForBuildPlusRuntime_contextReference,
     transformerForBuildPlusRuntime_unique,
     transformerForBuildPlusRuntime_constantBigint,
     transformerForBuildPlusRuntime_InnerReference,
     transformerForBuildPlusRuntime_dataflowSequence,
     // MLS
-    ${Object.keys(mmlsTransformers)
+    ${Object.keys(mlsTransformers)
       .map((e) => `${e.replace("transformer_", "transformerForBuildPlusRuntime_")}`)
       .join(",\n   ")}
   ]);

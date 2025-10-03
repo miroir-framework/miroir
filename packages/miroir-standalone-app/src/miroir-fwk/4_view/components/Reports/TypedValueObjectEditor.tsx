@@ -1,11 +1,11 @@
 import { Formik, FormikProps } from 'formik';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
 import {
   adminConfigurationDeploymentMiroir,
   ApplicationSection,
-  defaultMiroirModelEnviroment,
+  defaultMetaModelEnvironment,
   Domain2QueryReturnType,
   DomainElementSuccess,
   dummyDomainManyQueryWithDeploymentUuid,
@@ -17,13 +17,16 @@ import {
   jzodTypeCheck,
   LoggerInterface,
   MetaModel,
+  miroirFundamentalJzodSchema,
   MiroirLoggerFactory,
   ReduxDeploymentsState,
   ResolvedJzodSchemaReturnType,
   SyncBoxedExtractorOrQueryRunnerMap,
   SyncQueryRunner,
   SyncQueryRunnerParams,
-  Uuid
+  Uuid,
+  type JzodSchema,
+  type MiroirModelEnvironment
 } from "miroir-core";
 import {
   getMemoizedReduxDeploymentsStateSelectorMap,
@@ -43,13 +46,14 @@ import {
   useReduxDeploymentsStateQuerySelectorForCleanedResult
 } from "../../ReduxHooks.js";
 import { useRenderTracker } from '../../tools/renderCountTracker.js';
+import { RenderPerformanceMetrics } from '../../tools/renderPerformanceMeasure.js';
 import { ErrorFallbackComponent } from '../ErrorFallbackComponent.js';
 import { JzodElementEditor } from '../ValueObjectEditor/JzodElementEditor.js';
 import { CodeBlock_ReadOnly } from './CodeBlock_ReadOnly.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "TypedValueObjectEditor"),
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "TypedValueObjectEditor"), "UI",
 ).then((logger: LoggerInterface) => {log = logger});
 
 const codeMirrorExtensions = [javascript()];
@@ -139,17 +143,23 @@ interface TypedValueObjectEditorProps {
   formLabel: string;
   onSubmit: (data: any) => Promise<void>;
   // fold / unfold element
-  foldedObjectAttributeOrArrayItems: { [k: string]: boolean };
-  setFoldedObjectAttributeOrArrayItems: React.Dispatch<React.SetStateAction<{ [k: string]: boolean }>>;
   // zoom functionality
   zoomInPath?: string; // Optional path like "x.y.z" to zoom into a subset of the instance
   // depth control
   maxRenderDepth?: number; // Optional max depth for initial rendering, default 1
   // readonly mode
   readonly?: boolean; // Whether the editor should be readonly (no submit button, no editing)
+  // error highlighting
+  displayError?: {
+    errorPath: string[]; // Path to element that should be highlighted with red border due to error
+    errorMessage: string; // Error message to display as tooltip or title
+  };
   // navigationCount: number;
 }
 
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
 export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
   labelElement,
   // 
@@ -160,18 +170,20 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
   applicationSection,
   // functions
   onSubmit,
-  foldedObjectAttributeOrArrayItems,
-  setFoldedObjectAttributeOrArrayItems,
   // zoom
   zoomInPath, // display only a subset of the valueObject, like "x.y.z"
   // depth control
   maxRenderDepth = 1,
   // readonly mode
   readonly = false,
+  // error highlighting
+  displayError,
   // 
   formLabel: pageLabel, // TODO: remove
 }) => {
+  const renderStartTime = performance.now();
   const context = useMiroirContextService();
+  const componentKey = `TypedValueObjectEditor-${deploymentUuid}-${applicationSection}`;
 
   const navigationKey = `${deploymentUuid}-${applicationSection}`;
   const { navigationCount, totalCount } = useRenderTracker("FreeFormEditor", navigationKey);
@@ -233,9 +245,21 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
   
   const reduxDeploymentsState: ReduxDeploymentsState = useSelector(
     (state: ReduxStateWithUndoRedo) =>
-      deploymentEntityStateSelectorMap.extractState(state.presentModelSnapshot.current, () => ({}), defaultMiroirModelEnviroment)
+      deploymentEntityStateSelectorMap.extractState(state.presentModelSnapshot.current, () => ({}), defaultMetaModelEnvironment)
   );
 
+  const currentMiroirModelEnvironment: MiroirModelEnvironment = useMemo(() => {
+      return {
+        miroirFundamentalJzodSchema: context.miroirFundamentalJzodSchema?? miroirFundamentalJzodSchema as JzodSchema,
+        miroirMetaModel: currentMiroirModel,
+        currentModel: currentModel,
+      };
+    }, [
+      currentMiroirModel,
+      currentModel,
+      context.miroirFundamentalJzodSchema,
+    ]);
+  
 
   // log.info(
   //   "TypedValueObjectEditor render",
@@ -252,7 +276,8 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
   //   "displaySchema",
   //   displaySchema
   // );
-  return (
+  
+  const result = (
     <Formik
       enableReinitialize={true}
       initialValues={displayValueObject}
@@ -281,7 +306,7 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
     >
       {(formik: FormikProps<Record<string, any>>) => {
         let typeError: JSX.Element | undefined = undefined;
-        const typeCheckKeyMap: ResolvedJzodSchemaReturnType | undefined = useMemo(() => {
+        const jzodTypeCheckResult: ResolvedJzodSchemaReturnType | undefined = useMemo(() => {
           let result: ResolvedJzodSchemaReturnType | undefined = undefined;
           try {
             result =
@@ -291,12 +316,7 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
                     formik.values,
                     [],
                     [],
-                    // defaultMiroirModelEnviroment,
-                    {
-                      miroirFundamentalJzodSchema: context.miroirFundamentalJzodSchema,
-                      currentModel,
-                      miroirMetaModel: currentMiroirModel,
-                    },
+                    currentMiroirModelEnvironment,
                     {}, // relativeReferenceJzodContext
                     formik.values, // currentDefaultValue
                     reduxDeploymentsState,
@@ -314,7 +334,19 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
             };
           }
           return result;
-        }, [displaySchema, displayValueObject, formik.values, context, hasZoomPath, valueObject]);
+        }, [
+          currentModel,
+          currentMiroirModelEnvironment,
+          context,
+          context.miroirFundamentalJzodSchema,
+          deploymentUuid,
+          displaySchema,
+          displayValueObject,
+          formik.values,
+          hasZoomPath,
+          reduxDeploymentsState,
+          valueObject,
+        ]);
         // log.info(
         //   "TypedValueObjectEditor jzodTypeCheck done for render",
         //   navigationCount,
@@ -323,14 +355,31 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
         //   "resolvedJzodSchema",
         //   typeCheckKeyMap
         // );
-        if (!typeCheckKeyMap || typeCheckKeyMap.status != "ok") {
+        // extruding typeCheckKeyMap to context for Outline usage
+        useEffect(() => {
+          if (
+            jzodTypeCheckResult &&
+            jzodTypeCheckResult.status == "ok" &&
+            jzodTypeCheckResult.keyMap
+            // context.typeCheckKeyMap !== jzodTypeCheckResult.keyMap
+          ) {
+            log.info("Outline: TypedValueObjectEditor updating context typeCheckKeyMap", jzodTypeCheckResult.keyMap);
+            if (context.setTypeCheckKeyMap) {
+              context.setTypeCheckKeyMap(jzodTypeCheckResult.keyMap);
+            } else {
+              log.warn("TypedValueObjectEditor context.setTypeCheckKeyMap is undefined, cannot set typeCheckKeyMap");
+            }
+          }
+        }, [jzodTypeCheckResult]);
+
+        if (!jzodTypeCheckResult || jzodTypeCheckResult.status != "ok") {
           log.error(
             "TypedValueObjectEditor could not resolve jzod schema",
-            typeCheckKeyMap
+            jzodTypeCheckResult
           );
           // const jsonString = JSON.stringify(typeCheckKeyMap, null, 2);
-          if (typeCheckKeyMap) {
-            const jsonString: string = JSON.stringify(getInnermostTypeCheckError(typeCheckKeyMap as any), null, 2);
+          if (jzodTypeCheckResult) {
+            const jsonString: string = JSON.stringify(getInnermostTypeCheckError(jzodTypeCheckResult as any), null, 2);
             typeError = <CodeBlock_ReadOnly value={jsonString} />;
           } else {
             typeError = <div>Could not resolve jzod schema</div>;
@@ -344,10 +393,10 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
             () =>
               getQueryRunnerParamsForReduxDeploymentsState(
                 deploymentUuid &&
-                  typeCheckKeyMap &&
-                  typeCheckKeyMap.status == "ok" &&
-                  typeCheckKeyMap.resolvedSchema.type == "uuid" &&
-                  typeCheckKeyMap.resolvedSchema.tag?.value?.selectorParams?.targetEntity
+                  jzodTypeCheckResult &&
+                  jzodTypeCheckResult.status == "ok" &&
+                  jzodTypeCheckResult.resolvedSchema.type == "uuid" &&
+                  jzodTypeCheckResult.resolvedSchema.tag?.value?.selectorParams?.targetEntity
                   ? {
                       queryType: "boxedQueryWithExtractorCombinerTransformer",
                       deploymentUuid: deploymentUuid,
@@ -355,21 +404,21 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
                       queryParams: {},
                       contextResults: {},
                       extractors: {
-                        [typeCheckKeyMap.resolvedSchema.tag?.value?.selectorParams?.targetEntity]: {
+                        [jzodTypeCheckResult.resolvedSchema.tag?.value?.selectorParams?.targetEntity]: {
                           extractorOrCombinerType: "extractorByEntityReturningObjectList",
                           applicationSection: getApplicationSection(
                             deploymentUuid,
-                            typeCheckKeyMap.resolvedSchema.tag?.value?.selectorParams?.targetEntity
+                            jzodTypeCheckResult.resolvedSchema.tag?.value?.selectorParams?.targetEntity
                           ),
                           parentName: "",
-                          parentUuid: typeCheckKeyMap.resolvedSchema.tag?.value?.selectorParams?.targetEntity,
+                          parentUuid: jzodTypeCheckResult.resolvedSchema.tag?.value?.selectorParams?.targetEntity,
                         },
                       },
                     }
                   : dummyDomainManyQueryWithDeploymentUuid,
                 deploymentEntityStateSelectorMap
               ),
-            [deploymentEntityStateSelectorMap, deploymentUuid, typeCheckKeyMap]
+            [deploymentEntityStateSelectorMap, deploymentUuid, jzodTypeCheckResult]
           );
 
         const foreignKeyObjects: Record<string, EntityInstancesUuidIndex> =
@@ -379,7 +428,7 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
               Domain2QueryReturnType<DomainElementSuccess>
             >,
             foreignKeyObjectsFetchQueryParams
-          );
+          ) || {};
 
         return (
           <>
@@ -402,8 +451,8 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
                         formikValues: undefined,
                         rawJzodSchema: displaySchema,
                         localResolvedElementJzodSchemaBasedOnValue:
-                          typeCheckKeyMap?.status == "ok"
-                            ? typeCheckKeyMap.resolvedSchema
+                          jzodTypeCheckResult?.status == "ok"
+                            ? jzodTypeCheckResult.resolvedSchema
                             : undefined,
                       }}
                     />
@@ -411,6 +460,7 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
                 >
                   <JzodElementEditor
                     name={"ROOT"}
+                    isTopLevel={true}
                     listKey={"ROOT"}
                     rootLessListKey=""
                     rootLessListKeyArray={[]}
@@ -419,21 +469,20 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
                     currentDeploymentUuid={deploymentUuid}
                     currentApplicationSection={applicationSection}
                     resolvedElementJzodSchema={
-                      typeCheckKeyMap?.status == "ok"
-                        ? typeCheckKeyMap.resolvedSchema
+                      jzodTypeCheckResult?.status == "ok"
+                        ? jzodTypeCheckResult.resolvedSchema
                         : undefined
                     }
                     hasTypeError={typeError != undefined}
                     typeCheckKeyMap={
-                      typeCheckKeyMap?.status == "ok"
-                        ? typeCheckKeyMap.keyMap
+                      jzodTypeCheckResult?.status == "ok"
+                        ? jzodTypeCheckResult.keyMap
                         : {}
                     }
                     foreignKeyObjects={foreignKeyObjects}
-                    foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
-                    setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
                     maxRenderDepth={maxRenderDepth}
                     readOnly={true}
+                    displayError={displayError}
                   />
                 </ErrorBoundary>
               </div>
@@ -450,12 +499,13 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
                           origin: "TypedValueObjectEditor",
                           objectType: "root_editor",
                           rootLessListKey: "ROOT",
+                          rootLessListKeyArray: [],
                           currentValue: displayValueObject,
                           formikValues: undefined,
                           rawJzodSchema: displaySchema,
                           localResolvedElementJzodSchemaBasedOnValue:
-                            typeCheckKeyMap?.status == "ok"
-                              ? typeCheckKeyMap.resolvedSchema
+                            jzodTypeCheckResult?.status == "ok"
+                              ? jzodTypeCheckResult.resolvedSchema
                               : undefined,
                         }}
                       />
@@ -463,6 +513,7 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
                   >
                     <JzodElementEditor
                       name={"ROOT"}
+                      isTopLevel={true}
                       listKey={"ROOT"}
                       rootLessListKey=""
                       rootLessListKeyArray={[]}
@@ -471,20 +522,19 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
                       currentDeploymentUuid={deploymentUuid}
                       currentApplicationSection={applicationSection}
                       resolvedElementJzodSchema={
-                        typeCheckKeyMap?.status == "ok"
-                          ? typeCheckKeyMap.resolvedSchema
+                        jzodTypeCheckResult?.status == "ok"
+                          ? jzodTypeCheckResult.resolvedSchema
                           : undefined
                       }
                       hasTypeError={typeError != undefined}
                       typeCheckKeyMap={
-                        typeCheckKeyMap?.status == "ok"
-                          ? typeCheckKeyMap.keyMap
+                        jzodTypeCheckResult?.status == "ok"
+                          ? jzodTypeCheckResult.keyMap
                           : {}
                       }
                       foreignKeyObjects={foreignKeyObjects}
-                      foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
-                      setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
                       maxRenderDepth={maxRenderDepth}
+                      displayError={displayError}
                       submitButton={
                         <button
                           type="submit"
@@ -505,4 +555,33 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
       }}
     </Formik>
   );
+  
+  // Track render performance at end of render (conditional)
+  // if (context.showPerformanceDisplay) {
+  //   const renderEndTime = performance.now();
+  //   const renderDuration = renderEndTime - renderStartTime;
+  //   RenderPerformanceMetrics.trackRenderPerformance(componentKey, renderDuration);
+  // }
+  useEffect(() => {
+      // Track render performance at the end of render
+    if (context.showPerformanceDisplay) {
+      const renderEndTime = performance.now();
+      const renderDuration = renderEndTime - renderStartTime;
+      const currentMetrics = RenderPerformanceMetrics.trackRenderPerformance(componentKey, renderDuration);
+
+      // Log performance every 50 renders or if render took longer than 10ms
+      if (currentMetrics.renderCount % 50 === 0 || renderDuration > 10) {
+        log.info(
+          `JzodElementEditor render performance - ${componentKey}: ` +
+          `#${currentMetrics.renderCount} renders, ` +
+          `Current: ${renderDuration.toFixed(2)}ms, ` +
+          `Total: ${currentMetrics.totalRenderTime.toFixed(2)}ms, ` +
+          `Avg: ${currentMetrics.averageRenderTime.toFixed(2)}ms, ` +
+          `Min/Max: ${currentMetrics.minRenderTime.toFixed(2)}ms/${currentMetrics.maxRenderTime.toFixed(2)}ms`
+        );
+      }
+    }
+  });
+  
+  return result;
 };

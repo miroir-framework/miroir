@@ -17,11 +17,11 @@ import {
   type JzodSchema
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
-import { MiroirLoggerFactory } from "../4_services/LoggerFactory";
+import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
 import { type MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
-import { transformer_extended_apply_wrapper, transformer_InnerReference_resolve } from "./TransformersForRuntime";
+import { transformer_extended_apply, transformer_extended_apply_wrapper } from "./TransformersForRuntime";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -48,13 +48,15 @@ export function resolveExtractorTemplate(
     case "extractorTemplateForObjectListByEntity": {
       if (extractorOrCombinerTemplate.filter) {
         const filterValue = transformer_extended_apply_wrapper(
-                "build", // TODO: resolve for runtime transformer. Does it make sense?
-                undefined,
-                extractorOrCombinerTemplate.filter.value,
-                queryParams,
-                contextResults ?? {},
-                "value"
-              )
+          undefined, // activityTracker
+          "build", // TODO: resolve for runtime transformer. Does it make sense?
+          [], // transformerPath
+          undefined,
+          extractorOrCombinerTemplate.filter.value,
+          queryParams,
+          contextResults ?? {},
+          "value"
+        )
         // TODO: check for failure!
         return {
           extractorOrCombinerType: "extractorByEntityReturningObjectList",
@@ -62,8 +64,11 @@ export function resolveExtractorTemplate(
           parentUuid:
             typeof extractorOrCombinerTemplate.parentUuid == "string"
               ? extractorOrCombinerTemplate.parentUuid
-              : transformer_InnerReference_resolve(
+              // : transformer_InnerReference_resolve(
+              : transformer_extended_apply(
                   "build", // TODO: should this be "build" or "runtime"? "value" is not consistent with "build"
+                  [], // transformerPath
+                  extractorOrCombinerTemplate.label??extractorOrCombinerTemplate.extractorTemplateType,
                   extractorOrCombinerTemplate.parentUuid,
                   "value",
                   queryParams,
@@ -81,8 +86,11 @@ export function resolveExtractorTemplate(
           parentUuid:
             typeof extractorOrCombinerTemplate.parentUuid == "string"
               ? extractorOrCombinerTemplate.parentUuid
-              : transformer_InnerReference_resolve(
+              // : transformer_InnerReference_resolve(
+              : transformer_extended_apply(
                   "build",
+                  [], // transformerPath
+                  extractorOrCombinerTemplate.label??extractorOrCombinerTemplate.extractorTemplateType,
                   extractorOrCombinerTemplate.parentUuid,
                   "value",
                   queryParams,
@@ -99,15 +107,21 @@ export function resolveExtractorTemplate(
         parentUuid:
           typeof extractorOrCombinerTemplate.parentUuid == "string"
             ? extractorOrCombinerTemplate.parentUuid
-            : transformer_InnerReference_resolve(
+            // : transformer_InnerReference_resolve(
+            : transformer_extended_apply(
                 "build",
+                [], // transformerPath
+                extractorOrCombinerTemplate.label??extractorOrCombinerTemplate.extractorTemplateType,
                 extractorOrCombinerTemplate.parentUuid,
                 "value",
                 queryParams,
                 contextResults
               ), // TODO: check for failure!
-        instanceUuid: transformer_InnerReference_resolve(
+        // instanceUuid: transformer_InnerReference_resolve(
+        instanceUuid: transformer_extended_apply(
           "build",
+          [], // transformerPath
+          extractorOrCombinerTemplate.label??extractorOrCombinerTemplate.extractorTemplateType,
           extractorOrCombinerTemplate.instanceUuid,
           "value",
           queryParams,
@@ -155,16 +169,22 @@ export function resolveExtractorTemplate(
         parentUuid:
           typeof extractorOrCombinerTemplate.parentUuid == "string"
             ? extractorOrCombinerTemplate.parentUuid
-            : transformer_InnerReference_resolve(
+            : // : transformer_InnerReference_resolve(
+              transformer_extended_apply(
                 "build",
+                [], // transformerPath
+                extractorOrCombinerTemplate.label ??
+                  extractorOrCombinerTemplate.extractorTemplateType,
                 extractorOrCombinerTemplate.parentUuid,
                 "value",
                 queryParams,
                 contextResults
               ), // TODO: check for failure!
         objectReference:
-          extractorOrCombinerTemplate.objectReference.transformerType == "contextReference"
-            ? extractorOrCombinerTemplate.objectReference.referenceName ??
+          typeof extractorOrCombinerTemplate.objectReference === "object" &&
+          (extractorOrCombinerTemplate.objectReference as any)["transformerType"] ===
+            "contextReference"
+            ? (extractorOrCombinerTemplate.objectReference as any)?.referenceName ??
               "ERROR CONVERTING OBJECT REFERENCE FOR combinerByRelationReturningObjectList extractor template: no referenceName"
             : "ERROR CONVERTING OBJECT REFERENCE FOR combinerByRelationReturningObjectList extractor template: objectReference is not a contextReference",
       };
@@ -177,8 +197,11 @@ export function resolveExtractorTemplate(
         parentUuid:
           typeof extractorOrCombinerTemplate.parentUuid == "string"
             ? extractorOrCombinerTemplate.parentUuid
-            : transformer_InnerReference_resolve(
+            // : transformer_InnerReference_resolve(
+            : transformer_extended_apply(
                 "build",
+                [], // transformerPath
+                extractorOrCombinerTemplate.label??extractorOrCombinerTemplate.extractorTemplateType,
                 extractorOrCombinerTemplate.parentUuid,
                 "value",
                 queryParams,
@@ -199,8 +222,11 @@ export function resolveExtractorTemplate(
         parentUuid:
           typeof extractorOrCombinerTemplate.parentUuid == "string"
             ? extractorOrCombinerTemplate.parentUuid
-            : transformer_InnerReference_resolve(
+            // : transformer_InnerReference_resolve(
+            : transformer_extended_apply(
                 "build",
+                [], // transformerPath
+                extractorOrCombinerTemplate.label??extractorOrCombinerTemplate.extractorTemplateType,
                 extractorOrCombinerTemplate.parentUuid,
                 "value",
                 queryParams,

@@ -19,6 +19,7 @@ export type ITransformerHandler<
     // | TransformerForRuntime_innerFullObjectTemplate
 > = (
   step: Step,
+  transformerPath: string[],
   label: string | undefined,
   transformer: T,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
@@ -26,3 +27,7 @@ export type ITransformerHandler<
   // queryParams: Record<string, any>,
   contextResults?: Record<string, any>
 ) => Domain2QueryReturnType<any>;
+
+// ################################################################################################
+// export const defaultTransformerInput: string = "__defaultInput__";
+export const defaultTransformerInput: string = "defaultInput";

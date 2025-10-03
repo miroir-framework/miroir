@@ -11,6 +11,7 @@ import type { MiroirModelEnvironment } from "../../0_interfaces/1_core/Transform
 // ################################################################################################
 export function resolveSchemaReferenceInContextTransformer<T extends MiroirModelEnvironment>(
   step: Step,
+  transformerPath: string[],
   label: string | undefined,
   transformer: any, // Use any for now until transformer types are generated
   resolveBuildTransformersTo: ResolveBuildTransformersTo,

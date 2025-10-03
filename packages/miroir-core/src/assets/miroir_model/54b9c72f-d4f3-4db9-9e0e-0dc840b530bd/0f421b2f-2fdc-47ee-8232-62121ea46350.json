@@ -13,6 +13,7 @@
     "description",
     "uuid"
   ],
+  "defaultInstanceDetailsReportUuid": "1a9155a0-7a3f-4ffe-863a-e5d2a7e3c2b5",
   "jzodSchema": {
     "type": "object",
     "definition": {
@@ -152,12 +153,11 @@
                 }
               },
               "icon": {
-                "type": "string",
-                "validations": [
-                  {
-                    "type": "uuid"
-                  }
-                ]
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "miroirIcon"
+                }
               }
             }
           },

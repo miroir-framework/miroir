@@ -32,7 +32,9 @@ import {
   ignorePostgresExtraAttributesOnObject,
   LoggerInterface,
   MetaEntity,
+  MiroirActivityTracker,
   MiroirConfigClient,
+  MiroirEventService,
   MiroirLoggerFactory,
   PersistenceStoreControllerInterface,
   publisher1,
@@ -121,7 +123,11 @@ myConsoleLog(
   JSON.stringify(miroirConfig.client, null, 2)
 );
 myConsoleLog("received loggerOptions", JSON.stringify(loggerOptions, null, 2));
+const miroirActivityTracker = new MiroirActivityTracker();
+const miroirEventService = new MiroirEventService(miroirActivityTracker);
 MiroirLoggerFactory.startRegisteredLoggers(
+  miroirActivityTracker,
+  miroirEventService,
   loglevelnext,
   loggerOptions,
 );

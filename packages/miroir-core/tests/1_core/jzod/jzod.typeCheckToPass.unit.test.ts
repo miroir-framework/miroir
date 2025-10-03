@@ -1,27 +1,101 @@
+import * as vitest from 'vitest';
 import { describe, expect, it } from 'vitest';
 
-import test_createEntityAndReportFromSpreadsheetAndUpdateMenu from "../../../src/assets/miroir_data/c37625c7-0b35-4d6a-811d-8181eb978301/ffe6ab3c-8296-4293-8aaf-ebbad1f0ac9a.json";
-import entityDefinitionTest from "../../../src/assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/d2842a84-3e66-43ee-ac58-7e13b95b01e8.json";
 
 import type {
   JzodElement,
-  JzodSchema
+  JzodSchema,
+  TransformerTestSuite
 } from "../../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
-import {
-  miroirFundamentalJzodSchemaUuid,
-} from "../../../src/0_interfaces/1_core/bootstrapJzodSchemas/getMiroirFundamentalJzodSchema";
 
+import type { ResolvedJzodSchemaReturnType } from '../../../src/0_interfaces/1_core/jzodTypeCheckInterface';
 import { miroirFundamentalJzodSchema } from "../../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalJzodSchema";
 import { jzodTypeCheck } from "../../../src/1_core/jzod/jzodTypeCheck";
-import type { ResolvedJzodSchemaReturnType } from '../../../src/0_interfaces/1_core/jzodTypeCheckInterface';
 
 
 import { KeyMapEntry } from '../../../dist';
-import { defaultMiroirMetaModel } from '../../test_assets/defaultMiroirMetaModel';
+import { defaultMiroirModelEnvironment } from '../../../src/1_core/Model';
+import { MiroirActivityTracker } from '../../../src/3_controllers/MiroirActivityTracker';
+import { runTransformerTestInMemory, runTransformerTestSuite, transformerTestsDisplayResults } from '../../../src/4_services/TestTools';
 
 
 const castMiroirFundamentalJzodSchema = miroirFundamentalJzodSchema as JzodSchema;
+
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// Access the test file pattern from Vitest's process arguments
+const vitestArgs = process.argv.slice(2);
+const filePattern = vitestArgs.find(arg => !arg.startsWith('-')) || '';
+console.log("@@@@@@@@@@@@@@@@@@ File Pattern:", filePattern);
+
+const testSuiteName = "transformers.unit.test";
+
+// Skip this test when running resolveConditionalSchema pattern
+const shouldSkip = filePattern.includes('resolveConditionalSchema');
+
+// // ##################################################################################################
+// export const transformerTestSuite_jzodTypeCheck: TransformerTestSuite = {
+//   transformerTestType: "transformerTestSuite",
+//   transformerTestLabel: "typeCheckToPass",
+//   transformerTests: {
+//     test010: {
+//       transformerTestType: "transformerTest",
+//       transformerTestLabel: "test010",
+//       transformerName: "jzodTypeCheck",
+//       runTestStep: "build",
+//       transformer: {
+//         transformerType: "jzodTypeCheck",
+//         interpolation: "build",
+//         jzodSchema: {
+//           type: "literal",
+//           definition: "myLiteral",
+//         },
+//         valueObject: "myLiteral"
+//       },
+//       transformerParams: {},
+//       expectedValue: ["testA", "testB"],
+//     },
+//   },
+// };
+
+// const miroirActivityTracker = new MiroirActivityTracker();
+
+// afterAll(() => {
+//   if (!shouldSkip) {
+//     transformerTestsDisplayResults(
+//       transformerTestSuite_jzodTypeCheck,
+//       filePattern || "",
+//       testSuiteName,
+//       miroirActivityTracker
+//     );
+//   }
+// });
+// // ################################################################################################
+
+// if (shouldSkip) {
+//   console.log("################################ skipping test suite:", testSuiteName);
+//   console.log("################################ File pattern:", filePattern);
+// } else {
+//   await runTransformerTestSuite(
+//     vitest,
+//     [],
+//     transformerTestSuite_jzodTypeCheck,
+//     undefined, // filter
+//     runTransformerTestInMemory,
+//     defaultMiroirModelEnvironment,
+//     miroirActivityTracker
+//   );
+  
+// }
+
+
+
+
 
 // ################################################################################################
 // ################################################################################################
@@ -59,13 +133,7 @@ function testResolve(
     testValueObject,
     [], // currentValuePath
     [], // currentTypePath
-    {
-      miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
-      currentModel: defaultMiroirMetaModel,
-      miroirMetaModel: defaultMiroirMetaModel,
-    },
-    // defaultMiroirMetaModel,
-    // defaultMiroirMetaModel,
+    defaultMiroirModelEnvironment,
     {}
   );
   if (expectedResult) {
@@ -104,9 +172,7 @@ interface testFormat {
     | undefined;
 }
 
-// ################################################################################################
-// ################################################################################################
-// ################################################################################################
+
 // ################################################################################################
 // ################################################################################################
   const tests: { [k: string]: testFormat } = {
@@ -282,6 +348,8 @@ interface testFormat {
             type: "string",
             optional: true,
           },
+          typePath: ["a"],
+          valuePath: ["a"],
         },
         c: {
           rawSchema: {
@@ -292,8 +360,12 @@ interface testFormat {
             type: "number",
             optional: true,
           },
+          typePath: ["c"],
+          valuePath: ["c"],
         },
         "": {
+          typePath: [],
+          valuePath: [],
           rawSchema: {
             type: "schemaReference",
             context: {
@@ -416,6 +488,8 @@ interface testFormat {
       },
       expectedKeyMap: {
         "a.a": {
+          typePath: ["a", "a"],
+          valuePath: ["a", "a"],
           rawSchema: {
             type: "union",
             discriminator: "type",
@@ -469,6 +543,8 @@ interface testFormat {
           },
         },
         a: {
+          typePath: ["a"],
+          valuePath: ["a"],
           rawSchema: {
             type: "union",
             discriminator: "type",
@@ -566,6 +642,8 @@ interface testFormat {
           discriminator: "type",
         },
         "": {
+          typePath: [],
+          valuePath: [],
           rawSchema: {
             type: "schemaReference",
             context: {
@@ -676,6 +754,8 @@ interface testFormat {
       },
       expectedKeyMap: {
         "a.a.a": {
+          typePath: ["a", "a"],
+          valuePath: ["a", "a"],
           rawSchema: {
             type: "union",
             definition: [
@@ -726,6 +806,8 @@ interface testFormat {
           },
         },
         "a.a": {
+          typePath: ["a", "a"],
+          valuePath: ["a", "a"],
           rawSchema: {
             type: "union",
             definition: [
@@ -817,6 +899,8 @@ interface testFormat {
           discriminatorValues: [],
         },
         a: {
+          typePath: ["a", "a"],
+          valuePath: ["a", "a"],
           rawSchema: {
             type: "union",
             definition: [
@@ -913,6 +997,8 @@ interface testFormat {
           discriminatorValues: [],
         },
         "": {
+          typePath: [],
+          valuePath: [],
           rawSchema: {
             type: "schemaReference",
             context: {
@@ -1041,6 +1127,8 @@ interface testFormat {
       testValueObject: { r1: { a: { a: "myString" } }, r2: { a: "myString" } },
       expectedKeyMap: {
         "r1.a.a": {
+          typePath: [],
+          valuePath: [],
           rawSchema: {
             type: "union",
             definition: [
@@ -1091,6 +1179,8 @@ interface testFormat {
           },
         },
         "r1.a": {
+          typePath: [],
+          valuePath: [],
           rawSchema: {
             type: "union",
             definition: [
@@ -1182,6 +1272,8 @@ interface testFormat {
           discriminatorValues: [],
         },
         r1: {
+          typePath: [],
+          valuePath: [],
           rawSchema: {
             type: "schemaReference",
             definition: {
@@ -1222,6 +1314,8 @@ interface testFormat {
           },
         },
         "r2.a": {
+          typePath: [],
+          valuePath: [],
           rawSchema: {
             type: "union",
             definition: [
@@ -1272,6 +1366,8 @@ interface testFormat {
           },
         },
         r2: {
+          typePath: [],
+          valuePath: [],
           rawSchema: {
             type: "schemaReference",
             definition: {
@@ -1307,6 +1403,8 @@ interface testFormat {
           },
         },
         "": {
+          typePath: [],
+          valuePath: [],
           rawSchema: {
             type: "schemaReference",
             context: {
@@ -1429,6 +1527,8 @@ interface testFormat {
       testValueObject: { r1: { a: { a: "myString" } }, r2: { a: "myString" } },
       expectedKeyMap: {
         "r1.a.a": {
+          typePath: [],
+          valuePath: [],
           rawSchema: {
             type: "union",
             definition: [
@@ -1479,6 +1579,8 @@ interface testFormat {
           },
         },
         "r1.a": {
+          typePath: [],
+          valuePath: [],
           rawSchema: {
             type: "union",
             definition: [
@@ -1570,6 +1672,8 @@ interface testFormat {
           discriminatorValues: [],
         },
         r1: {
+          typePath: [],
+          valuePath: [],
           rawSchema: {
             type: "schemaReference",
             context: {
@@ -1631,6 +1735,8 @@ interface testFormat {
           },
         },
         "r2.a": {
+          typePath: [],
+          valuePath: [],
           rawSchema: {
             type: "union",
             definition: [
@@ -1681,6 +1787,8 @@ interface testFormat {
           },
         },
         r2: {
+          typePath: [],
+          valuePath: [],
           rawSchema: {
             type: "schemaReference",
             context: {
@@ -1737,6 +1845,8 @@ interface testFormat {
           },
         },
         "": {
+          typePath: [],
+          valuePath: [],
           rawSchema: {
             type: "record",
             definition: {
@@ -1821,6 +1931,8 @@ interface testFormat {
       },
       expectedKeyMap: {
         "0": {
+          typePath: [],
+          valuePath: [],
           rawSchema: {
             type: "string",
           },
@@ -1829,6 +1941,8 @@ interface testFormat {
           },
         },
         "1": {
+          typePath: [],
+          valuePath: [],
           rawSchema: {
             type: "string",
           },
@@ -1837,6 +1951,8 @@ interface testFormat {
           },
         },
         "2": {
+          typePath: [],
+          valuePath: [],
           rawSchema: {
             type: "string",
           },
@@ -1845,6 +1961,8 @@ interface testFormat {
           },
         },
         "": {
+          typePath: [],
+          valuePath: [],
           rawSchema: {
             type: "array",
             definition: {
@@ -1912,6 +2030,8 @@ interface testFormat {
       },
       expectedKeyMap: {
         "0": {
+          typePath: [],
+          valuePath: [],
           rawSchema: {
             type: "schemaReference",
             context: {
@@ -1968,6 +2088,8 @@ interface testFormat {
           },
         },
         "0.a": {
+          typePath: [],
+          valuePath: [],
           rawSchema: {
             type: "union",
             definition: [
@@ -2018,6 +2140,8 @@ interface testFormat {
           },
         },
         "": {
+          typePath: [],
+          valuePath: [],
           rawSchema: {
             type: "array",
             definition: {
@@ -2110,6 +2234,8 @@ interface testFormat {
       testValueObject: { a: "myString", b: "anotherString" },
       expectedKeyMap: {
         a: {
+          typePath: [],
+          valuePath: [],
           rawSchema: {
             type: "string",
           },
@@ -2118,6 +2244,8 @@ interface testFormat {
           },
         },
         b: {
+          typePath: [],
+          valuePath: [],
           rawSchema: {
             type: "string",
             optional: true,
@@ -2128,6 +2256,8 @@ interface testFormat {
           },
         },
         "": {
+          typePath: [],
+          valuePath: [],
           rawSchema: {
             type: "schemaReference",
             context: {
@@ -2205,6 +2335,8 @@ interface testFormat {
       },
       expectedKeyMap: {
         "": {
+          typePath: [],
+          valuePath: [],
           rawSchema: {
             type: "union",
             definition: [
@@ -2266,6 +2398,8 @@ interface testFormat {
       },
       expectedKeyMap: {
         a: {
+          typePath: [],
+          valuePath: [],
           rawSchema: {
             type: "string",
           },
@@ -2274,6 +2408,8 @@ interface testFormat {
           },
         },
         "": {
+          typePath: [],
+          valuePath: [],
           rawSchema: {
             type: "union",
             definition: [
@@ -2362,6 +2498,8 @@ interface testFormat {
       },
       expectedKeyMap: {
         "": {
+          typePath: [],
+          valuePath: [],
           rawSchema: {
             type: "union",
             definition: [
@@ -2442,6 +2580,8 @@ interface testFormat {
       },
       expectedKeyMap: {
         a: {
+          typePath: [],
+          valuePath: [],
           rawSchema: {
             type: "string",
           },
@@ -2450,6 +2590,8 @@ interface testFormat {
           },
         },
         "": {
+          typePath: [],
+          valuePath: [],
           rawSchema: {
             type: "union",
             definition: [
@@ -2557,6 +2699,8 @@ interface testFormat {
       },
       expectedKeyMap: {
         b: {
+          typePath: [],
+          valuePath: [],
           rawSchema: {
             type: "string",
             optional: true,
@@ -2567,6 +2711,8 @@ interface testFormat {
           },
         },
         "": {
+          typePath: [],
+          valuePath: [],
           rawSchema: {
             type: "union",
             definition: [
@@ -2708,6 +2854,8 @@ interface testFormat {
       },
       expectedKeyMap: {
         objectType: {
+          typePath: [],
+          valuePath: [],
           rawSchema: {
             type: "literal",
             definition: "objectA",
@@ -2718,6 +2866,8 @@ interface testFormat {
           },
         },
         a: {
+          typePath: [],
+          valuePath: [],
           rawSchema: {
             type: "union",
             definition: [
@@ -2749,6 +2899,8 @@ interface testFormat {
           },
         },
         "": {
+          typePath: [],
+          valuePath: [],
           rawSchema: {
             type: "union",
             discriminator: "objectType",
@@ -2939,6 +3091,8 @@ interface testFormat {
       },
       expectedKeyMap: {
         "0": {
+          typePath: [],
+          valuePath: [],
           rawSchema: {
             type: "string",
           },
@@ -2947,6 +3101,8 @@ interface testFormat {
           },
         },
         "1": {
+          typePath: [],
+          valuePath: [],
           rawSchema: {
             type: "string",
           },
@@ -2955,6 +3111,8 @@ interface testFormat {
           },
         },
         "2": {
+          typePath: [],
+          valuePath: [],
           rawSchema: {
             type: "string",
           },
@@ -2963,6 +3121,8 @@ interface testFormat {
           },
         },
         "": {
+          typePath: [],
+          valuePath: [],
           rawSchema: {
             type: "array",
             definition: {
@@ -3024,6 +3184,8 @@ interface testFormat {
       },
       expectedKeyMap: {
         "0": {
+          typePath: [],
+          valuePath: [],
           rawSchema: {
             type: "array",
             definition: {
@@ -3043,6 +3205,8 @@ interface testFormat {
           },
         },
         "1": {
+          typePath: [],
+          valuePath: [],
           rawSchema: {
             type: "array",
             definition: {
@@ -3059,6 +3223,8 @@ interface testFormat {
           },
         },
         "0.0": {
+          typePath: [],
+          valuePath: [],
           rawSchema: {
             type: "string",
           },
@@ -3067,6 +3233,8 @@ interface testFormat {
           },
         },
         "0.1": {
+          typePath: [],
+          valuePath: [],
           rawSchema: {
             type: "string",
           },
@@ -3075,6 +3243,8 @@ interface testFormat {
           },
         },
         "1.0": {
+          typePath: [],
+          valuePath: [],
           rawSchema: {
             type: "string",
           },
@@ -3083,6 +3253,8 @@ interface testFormat {
           },
         },
         "": {
+          typePath: [],
+          valuePath: [],
           rawSchema: {
             type: "array",
             definition: {
@@ -3146,6 +3318,8 @@ interface testFormat {
       testValueObject: ["myString", 42],
       expectedKeyMap: {
         "0": {
+          typePath: [],
+          valuePath: [],
           rawSchema: {
             type: "string",
           },
@@ -3154,6 +3328,8 @@ interface testFormat {
           },
         },
         "1": {
+          typePath: [],
+          valuePath: [],
           rawSchema: {
             type: "number",
           },
@@ -3162,6 +3338,8 @@ interface testFormat {
           },
         },
         "": {
+          typePath: [],
+          valuePath: [],
           rawSchema: {
             type: "tuple",
             definition: [
@@ -3245,6 +3423,8 @@ interface testFormat {
       },
       expectedKeyMap: {
         "0": {
+          typePath: [],
+          valuePath: [],
           rawSchema: {
             type: "tuple",
             definition: [
@@ -3275,6 +3455,8 @@ interface testFormat {
           },
         },
         "1": {
+          typePath: [],
+          valuePath: [],
           rawSchema: {
             type: "tuple",
             definition: [
@@ -3305,6 +3487,8 @@ interface testFormat {
           },
         },
         "0.0": {
+          typePath: [],
+          valuePath: [],
           rawSchema: {
             type: "string",
           },
@@ -3313,6 +3497,8 @@ interface testFormat {
           },
         },
         "0.1": {
+          typePath: [],
+          valuePath: [],
           rawSchema: {
             type: "number",
           },
@@ -3321,6 +3507,8 @@ interface testFormat {
           },
         },
         "0.2": {
+          typePath: [],
+          valuePath: [],
           rawSchema: {
             type: "bigint",
           },
@@ -3329,6 +3517,8 @@ interface testFormat {
           },
         },
         "1.0": {
+          typePath: [],
+          valuePath: [],
           rawSchema: {
             type: "string",
           },
@@ -3337,6 +3527,8 @@ interface testFormat {
           },
         },
         "1.1": {
+          typePath: [],
+          valuePath: [],
           rawSchema: {
             type: "number",
           },
@@ -3345,6 +3537,8 @@ interface testFormat {
           },
         },
         "1.2": {
+          typePath: [],
+          valuePath: [],
           rawSchema: {
             type: "bigint",
           },
@@ -3353,6 +3547,8 @@ interface testFormat {
           },
         },
         "": {
+          typePath: [],
+          valuePath: [],
           rawSchema: {
             type: "array",
             definition: {
@@ -3476,6 +3672,8 @@ interface testFormat {
       },
       expectedKeyMap: {
         "0": {
+          typePath: [],
+          valuePath: [],
           rawSchema: {
             type: "union",
             discriminator: "objectType",
@@ -3577,6 +3775,8 @@ interface testFormat {
           discriminator: "objectType",
         },
         "1": {
+          typePath: [],
+          valuePath: [],
           rawSchema: {
             type: "union",
             discriminator: "objectType",
@@ -3678,6 +3878,8 @@ interface testFormat {
           discriminator: "objectType",
         },
         "0.objectType": {
+          typePath: [],
+          valuePath: [],
           rawSchema: {
             type: "literal",
             definition: "a",
@@ -3688,6 +3890,8 @@ interface testFormat {
           },
         },
         "0.value": {
+          typePath: [],
+          valuePath: [],
           rawSchema: {
             type: "string",
           },
@@ -3696,6 +3900,8 @@ interface testFormat {
           },
         },
         "1.objectType": {
+          typePath: [],
+          valuePath: [],
           rawSchema: {
             type: "literal",
             definition: "b",
@@ -3706,6 +3912,8 @@ interface testFormat {
           },
         },
         "1.value": {
+          typePath: [],
+          valuePath: [],
           rawSchema: {
             type: "number",
           },
@@ -3714,6 +3922,8 @@ interface testFormat {
           },
         },
         "": {
+          typePath: [],
+          valuePath: [],
           rawSchema: {
             type: "array",
             definition: {
@@ -86507,18 +86717,4 @@ describe("jzod.typeCheck", () => {
       testParams.expectedKeyMap,
     );
   });
-  // ###########################################################################################
-  // it("miroir entity definition object format", () => {
-  //   console.log(expect.getState().currentTestName, "called getMiroirFundamentalJzodSchema");
-
-  //   for (const test of Object.entries(tests)) {
-  //     testResolve(
-  //       test[0],
-  //       test[1].testSchema,
-  //       test[1].testValueObject,
-  //       test[1].expectedResolvedSchema,
-  //       test[1].expectedSubSchema,
-  //     );
-  //   }
 });
-// });

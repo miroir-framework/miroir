@@ -8,8 +8,8 @@
   "definition": {
     "transformerTestType": "transformerTestSuite",
     "transformerTestLabel": "jzodTypeCheck",
-    "transformerTests": {
-      "test010_literal": {
+    "transformerTests": [
+      {
         "transformerTestType": "transformerTest",
         "transformerTestLabel": "test010_literal",
         "transformerName": "jzodTypeCheck",
@@ -47,12 +47,14 @@
               "resolvedSchema": {
                 "type": "literal",
                 "definition": "myLiteral"
-              }
+              },
+              "valuePath": [],
+              "typePath": []
             }
           }
         }
       },
-      "test020_string": {
+      {
         "transformerTestType": "transformerTest",
         "transformerTestLabel": "test020_string",
         "transformerName": "jzodTypeCheck",
@@ -85,12 +87,14 @@
               },
               "resolvedSchema": {
                 "type": "string"
-              }
+              },
+              "valuePath": [],
+              "typePath": []
             }
           }
         }
       },
-      "test022_boolean_true": {
+      {
         "transformerTestType": "transformerTest",
         "transformerTestLabel": "test022_boolean_true",
         "transformerName": "jzodTypeCheck",
@@ -123,12 +127,14 @@
               },
               "resolvedSchema": {
                 "type": "boolean"
-              }
+              },
+              "valuePath": [],
+              "typePath": []
             }
           }
         }
       },
-      "test024_boolean_false": {
+      {
         "transformerTestType": "transformerTest",
         "transformerTestLabel": "test024_boolean_false",
         "transformerName": "jzodTypeCheck",
@@ -161,12 +167,14 @@
               },
               "resolvedSchema": {
                 "type": "boolean"
-              }
+              },
+              "valuePath": [],
+              "typePath": []
             }
           }
         }
       },
-      "test030_schemaReference": {
+      {
         "transformerTestType": "transformerTest",
         "transformerTestLabel": "test030_schemaReference",
         "transformerName": "jzodTypeCheck",
@@ -225,12 +233,14 @@
               },
               "resolvedSchema": {
                 "type": "string"
-              }
+              },
+              "valuePath": [],
+              "typePath": []
             }
           }
         }
       },
-      "test040": {
+      {
         "transformerTestType": "transformerTest",
         "transformerTestLabel": "test040",
         "transformerName": "jzodTypeCheck",
@@ -285,9 +295,7 @@
         "expectedValue": {
           "status": "ok",
           "valuePath": [],
-          "typePath": [
-            "ref:myObject"
-          ],
+          "typePath": ["ref:myObject"],
           "rawSchema": {
             "type": "schemaReference",
             "context": {
@@ -334,6 +342,126 @@
               "c": {
                 "type": "number",
                 "optional": true
+              }
+            }
+          },
+          "subSchemas": {
+            "a": {
+              "status": "ok",
+              "valuePath": ["a"],
+              "typePath": ["ref:myObject", "a"],
+              "rawSchema": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "string",
+                    "optional": true
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "myObject"
+                    }
+                  }
+                ]
+              },
+              "resolvedSchema": {
+                "type": "string",
+                "optional": true
+              },
+              "keyMap": {
+                "a": {
+                  "rawSchema": {
+                    "type": "union",
+                    "definition": [
+                      {
+                        "type": "string",
+                        "optional": true
+                      },
+                      {
+                        "type": "schemaReference",
+                        "definition": {
+                          "relativePath": "myObject"
+                        }
+                      }
+                    ]
+                  },
+                  "recursivelyUnfoldedUnionSchema": {
+                    "status": "ok",
+                    "result": [
+                      {
+                        "type": "string",
+                        "optional": true
+                      },
+                      {
+                        "type": "object",
+                        "definition": {
+                          "a": {
+                            "type": "union",
+                            "definition": [
+                              {
+                                "type": "string",
+                                "optional": true
+                              },
+                              {
+                                "type": "schemaReference",
+                                "definition": {
+                                  "relativePath": "myObject"
+                                }
+                              }
+                            ]
+                          },
+                          "b": {
+                            "type": "string",
+                            "optional": true
+                          },
+                          "c": {
+                            "type": "number",
+                            "optional": true
+                          }
+                        }
+                      }
+                    ],
+                    "expandedReferences": ["myObject"]
+                  },
+                  "resolvedSchema": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "chosenUnionBranchRawSchema": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "valuePath": ["a"],
+                  "typePath": ["ref:myObject", "a"]
+                }
+              }
+            },
+            "c": {
+              "status": "ok",
+              "valuePath": ["c"],
+              "typePath": ["ref:myObject", "c"],
+              "rawSchema": {
+                "type": "number",
+                "optional": true
+              },
+              "resolvedSchema": {
+                "type": "number",
+                "optional": true
+              },
+              "keyMap": {
+                "c": {
+                  "rawSchema": {
+                    "type": "number",
+                    "optional": true
+                  },
+                  "resolvedSchema": {
+                    "type": "number",
+                    "optional": true
+                  },
+                  "valuePath": ["c"],
+                  "typePath": ["ref:myObject", "c"]
+                }
               }
             }
           },
@@ -390,9 +518,7 @@
                     }
                   }
                 ],
-                "expandedReferences": [
-                  "myObject"
-                ]
+                "expandedReferences": ["myObject"]
               },
               "resolvedSchema": {
                 "type": "string",
@@ -401,7 +527,9 @@
               "chosenUnionBranchRawSchema": {
                 "type": "string",
                 "optional": true
-              }
+              },
+              "valuePath": ["a"],
+              "typePath": ["ref:myObject", "a"]
             },
             "c": {
               "rawSchema": {
@@ -411,7 +539,9 @@
               "resolvedSchema": {
                 "type": "number",
                 "optional": true
-              }
+              },
+              "valuePath": ["c"],
+              "typePath": ["ref:myObject", "c"]
             },
             "": {
               "rawSchema": {
@@ -490,140 +620,14 @@
                     "optional": true
                   }
                 }
-              }
-            }
-          },
-          "subSchemas": {
-            "a": {
-              "status": "ok",
-              "valuePath": [
-                "a"
-              ],
-              "typePath": [
-                "ref:myObject",
-                "a"
-              ],
-              "rawSchema": {
-                "type": "union",
-                "definition": [
-                  {
-                    "type": "string",
-                    "optional": true
-                  },
-                  {
-                    "type": "schemaReference",
-                    "definition": {
-                      "relativePath": "myObject"
-                    }
-                  }
-                ]
               },
-              "resolvedSchema": {
-                "type": "string",
-                "optional": true
-              },
-              "keyMap": {
-                "a": {
-                  "rawSchema": {
-                    "type": "union",
-                    "definition": [
-                      {
-                        "type": "string",
-                        "optional": true
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "relativePath": "myObject"
-                        }
-                      }
-                    ]
-                  },
-                  "recursivelyUnfoldedUnionSchema": {
-                    "status": "ok",
-                    "result": [
-                      {
-                        "type": "string",
-                        "optional": true
-                      },
-                      {
-                        "type": "object",
-                        "definition": {
-                          "a": {
-                            "type": "union",
-                            "definition": [
-                              {
-                                "type": "string",
-                                "optional": true
-                              },
-                              {
-                                "type": "schemaReference",
-                                "definition": {
-                                  "relativePath": "myObject"
-                                }
-                              }
-                            ]
-                          },
-                          "b": {
-                            "type": "string",
-                            "optional": true
-                          },
-                          "c": {
-                            "type": "number",
-                            "optional": true
-                          }
-                        }
-                      }
-                    ],
-                    "expandedReferences": [
-                      "myObject"
-                    ]
-                  },
-                  "resolvedSchema": {
-                    "type": "string",
-                    "optional": true
-                  },
-                  "chosenUnionBranchRawSchema": {
-                    "type": "string",
-                    "optional": true
-                  }
-                }
-              }
-            },
-            "c": {
-              "status": "ok",
-              "valuePath": [
-                "c"
-              ],
-              "typePath": [
-                "ref:myObject",
-                "c"
-              ],
-              "rawSchema": {
-                "type": "number",
-                "optional": true
-              },
-              "resolvedSchema": {
-                "type": "number",
-                "optional": true
-              },
-              "keyMap": {
-                "c": {
-                  "rawSchema": {
-                    "type": "number",
-                    "optional": true
-                  },
-                  "resolvedSchema": {
-                    "type": "number",
-                    "optional": true
-                  }
-                }
-              }
+              "valuePath": [],
+              "typePath": []
             }
           }
         }
       },
-      "test050": {
+      {
         "transformerTestType": "transformerTest",
         "transformerTestLabel": "test050",
         "transformerName": "jzodTypeCheck",
@@ -681,9 +685,7 @@
         "expectedValue": {
           "status": "ok",
           "valuePath": [],
-          "typePath": [
-            "ref:myObject"
-          ],
+          "typePath": ["ref:myObject"],
           "rawSchema": {
             "type": "schemaReference",
             "context": {
@@ -745,14 +747,8 @@
           "subSchemas": {
             "a": {
               "status": "ok",
-              "valuePath": [
-                "a"
-              ],
-              "typePath": [
-                "ref:myObject",
-                "a",
-                "union choice"
-              ],
+              "valuePath": ["a"],
+              "typePath": ["ref:myObject", "a", "union choice(undefined)"],
               "rawSchema": {
                 "type": "union",
                 "definition": [
@@ -784,16 +780,8 @@
               "subSchemas": {
                 "a": {
                   "status": "ok",
-                  "valuePath": [
-                    "a",
-                    "a"
-                  ],
-                  "typePath": [
-                    "ref:myObject",
-                    "a",
-                    "union choice",
-                    "a"
-                  ],
+                  "valuePath": ["a", "a"],
+                  "typePath": ["ref:myObject", "a", "union choice(undefined)", "a"],
                   "rawSchema": {
                     "type": "union",
                     "definition": [
@@ -866,9 +854,7 @@
                             }
                           }
                         ],
-                        "expandedReferences": [
-                          "myObject"
-                        ]
+                        "expandedReferences": ["myObject"]
                       },
                       "resolvedSchema": {
                         "type": "string",
@@ -877,22 +863,16 @@
                       "chosenUnionBranchRawSchema": {
                         "type": "string",
                         "optional": true
-                      }
+                      },
+                      "valuePath": ["a", "a"],
+                      "typePath": ["ref:myObject", "a", "union choice(undefined)", "a"]
                     }
                   }
                 },
                 "c": {
                   "status": "ok",
-                  "valuePath": [
-                    "a",
-                    "c"
-                  ],
-                  "typePath": [
-                    "ref:myObject",
-                    "a",
-                    "union choice",
-                    "c"
-                  ],
+                  "valuePath": ["a", "c"],
+                  "typePath": ["ref:myObject", "a", "union choice(undefined)", "c"],
                   "rawSchema": {
                     "type": "number",
                     "optional": true
@@ -910,7 +890,9 @@
                       "resolvedSchema": {
                         "type": "number",
                         "optional": true
-                      }
+                      },
+                      "valuePath": ["a", "c"],
+                      "typePath": ["ref:myObject", "a", "union choice(undefined)", "c"]
                     }
                   }
                 }
@@ -968,9 +950,7 @@
                         }
                       }
                     ],
-                    "expandedReferences": [
-                      "myObject"
-                    ]
+                    "expandedReferences": ["myObject"]
                   },
                   "resolvedSchema": {
                     "type": "string",
@@ -979,7 +959,9 @@
                   "chosenUnionBranchRawSchema": {
                     "type": "string",
                     "optional": true
-                  }
+                  },
+                  "valuePath": ["a", "a"],
+                  "typePath": ["ref:myObject", "a", "union choice(undefined)", "a"]
                 },
                 "a.c": {
                   "rawSchema": {
@@ -989,7 +971,9 @@
                   "resolvedSchema": {
                     "type": "number",
                     "optional": true
-                  }
+                  },
+                  "valuePath": ["a", "c"],
+                  "typePath": ["ref:myObject", "a", "union choice(undefined)", "c"]
                 },
                 "a": {
                   "rawSchema": {
@@ -1048,6 +1032,8 @@
                       }
                     }
                   },
+                  "valuePath": ["a"],
+                  "typePath": ["ref:myObject", "a", "union choice(undefined)"],
                   "recursivelyUnfoldedUnionSchema": {
                     "status": "ok",
                     "result": [
@@ -1084,9 +1070,7 @@
                         }
                       }
                     ],
-                    "expandedReferences": [
-                      "myObject"
-                    ]
+                    "expandedReferences": ["myObject"]
                   },
                   "chosenUnionBranchRawSchema": {
                     "type": "object",
@@ -1122,13 +1106,8 @@
             },
             "c": {
               "status": "ok",
-              "valuePath": [
-                "c"
-              ],
-              "typePath": [
-                "ref:myObject",
-                "c"
-              ],
+              "valuePath": ["c"],
+              "typePath": ["ref:myObject", "c"],
               "rawSchema": {
                 "type": "number",
                 "optional": true
@@ -1146,7 +1125,9 @@
                   "resolvedSchema": {
                     "type": "number",
                     "optional": true
-                  }
+                  },
+                  "valuePath": ["c"],
+                  "typePath": ["ref:myObject", "c"]
                 }
               }
             }
@@ -1204,9 +1185,7 @@
                     }
                   }
                 ],
-                "expandedReferences": [
-                  "myObject"
-                ]
+                "expandedReferences": ["myObject"]
               },
               "resolvedSchema": {
                 "type": "string",
@@ -1215,7 +1194,9 @@
               "chosenUnionBranchRawSchema": {
                 "type": "string",
                 "optional": true
-              }
+              },
+              "valuePath": ["a", "a"],
+              "typePath": ["ref:myObject", "a", "union choice(undefined)", "a"]
             },
             "a.c": {
               "rawSchema": {
@@ -1225,7 +1206,9 @@
               "resolvedSchema": {
                 "type": "number",
                 "optional": true
-              }
+              },
+              "valuePath": ["a", "c"],
+              "typePath": ["ref:myObject", "a", "union choice(undefined)", "c"]
             },
             "a": {
               "rawSchema": {
@@ -1284,6 +1267,8 @@
                   }
                 }
               },
+              "valuePath": ["a"],
+              "typePath": ["ref:myObject", "a", "union choice(undefined)"],
               "recursivelyUnfoldedUnionSchema": {
                 "status": "ok",
                 "result": [
@@ -1320,9 +1305,7 @@
                     }
                   }
                 ],
-                "expandedReferences": [
-                  "myObject"
-                ]
+                "expandedReferences": ["myObject"]
               },
               "chosenUnionBranchRawSchema": {
                 "type": "object",
@@ -1362,7 +1345,9 @@
               "resolvedSchema": {
                 "type": "number",
                 "optional": true
-              }
+              },
+              "valuePath": ["c"],
+              "typePath": ["ref:myObject", "c"]
             },
             "": {
               "rawSchema": {
@@ -1450,12 +1435,14 @@
                     "optional": true
                   }
                 }
-              }
+              },
+              "valuePath": [],
+              "typePath": []
             }
           }
         }
       },
-      "test060": {
+      {
         "transformerTestType": "transformerTest",
         "transformerTestLabel": "test060",
         "transformerName": "jzodTypeCheck",
@@ -1504,9 +1491,7 @@
         "expectedValue": {
           "status": "ok",
           "valuePath": [],
-          "typePath": [
-            "ref:myObject"
-          ],
+          "typePath": ["ref:myObject"],
           "rawSchema": {
             "type": "schemaReference",
             "context": {
@@ -1555,14 +1540,8 @@
           "subSchemas": {
             "a": {
               "status": "ok",
-              "valuePath": [
-                "a"
-              ],
-              "typePath": [
-                "ref:myObject",
-                "a",
-                "union choice"
-              ],
+              "valuePath": ["a"],
+              "typePath": ["ref:myObject", "a", "union choice(undefined)"],
               "rawSchema": {
                 "type": "union",
                 "definition": [
@@ -1593,16 +1572,13 @@
               "subSchemas": {
                 "a": {
                   "status": "ok",
-                  "valuePath": [
-                    "a",
-                    "a"
-                  ],
+                  "valuePath": ["a", "a"],
                   "typePath": [
                     "ref:myObject",
                     "a",
-                    "union choice",
+                    "union choice(undefined)",
                     "a",
-                    "union choice"
+                    "union choice(undefined)"
                   ],
                   "rawSchema": {
                     "type": "union",
@@ -1629,17 +1605,13 @@
                   "subSchemas": {
                     "a": {
                       "status": "ok",
-                      "valuePath": [
-                        "a",
-                        "a",
-                        "a"
-                      ],
+                      "valuePath": ["a", "a", "a"],
                       "typePath": [
                         "ref:myObject",
                         "a",
-                        "union choice",
+                        "union choice(undefined)",
                         "a",
-                        "union choice",
+                        "union choice(undefined)",
                         "a"
                       ],
                       "rawSchema": {
@@ -1701,16 +1673,23 @@
                                 }
                               }
                             ],
-                            "expandedReferences": [
-                              "myObject"
-                            ]
+                            "expandedReferences": ["myObject"]
                           },
                           "resolvedSchema": {
                             "type": "string"
                           },
                           "chosenUnionBranchRawSchema": {
                             "type": "string"
-                          }
+                          },
+                          "valuePath": ["a", "a", "a"],
+                          "typePath": [
+                            "ref:myObject",
+                            "a",
+                            "union choice(undefined)",
+                            "a",
+                            "union choice(undefined)",
+                            "a"
+                          ]
                         }
                       }
                     }
@@ -1757,16 +1736,23 @@
                             }
                           }
                         ],
-                        "expandedReferences": [
-                          "myObject"
-                        ]
+                        "expandedReferences": ["myObject"]
                       },
                       "resolvedSchema": {
                         "type": "string"
                       },
                       "chosenUnionBranchRawSchema": {
                         "type": "string"
-                      }
+                      },
+                      "valuePath": ["a", "a", "a"],
+                      "typePath": [
+                        "ref:myObject",
+                        "a",
+                        "union choice(undefined)",
+                        "a",
+                        "union choice(undefined)",
+                        "a"
+                      ]
                     },
                     "a.a": {
                       "rawSchema": {
@@ -1810,6 +1796,14 @@
                           }
                         }
                       },
+                      "valuePath": ["a", "a"],
+                      "typePath": [
+                        "ref:myObject",
+                        "a",
+                        "union choice(undefined)",
+                        "a",
+                        "union choice(undefined)"
+                      ],
                       "recursivelyUnfoldedUnionSchema": {
                         "status": "ok",
                         "result": [
@@ -1836,9 +1830,7 @@
                             }
                           }
                         ],
-                        "expandedReferences": [
-                          "myObject"
-                        ]
+                        "expandedReferences": ["myObject"]
                       },
                       "chosenUnionBranchRawSchema": {
                         "type": "object",
@@ -1906,16 +1898,23 @@
                         }
                       }
                     ],
-                    "expandedReferences": [
-                      "myObject"
-                    ]
+                    "expandedReferences": ["myObject"]
                   },
                   "resolvedSchema": {
                     "type": "string"
                   },
                   "chosenUnionBranchRawSchema": {
                     "type": "string"
-                  }
+                  },
+                  "valuePath": ["a", "a", "a"],
+                  "typePath": [
+                    "ref:myObject",
+                    "a",
+                    "union choice(undefined)",
+                    "a",
+                    "union choice(undefined)",
+                    "a"
+                  ]
                 },
                 "a.a": {
                   "rawSchema": {
@@ -1959,6 +1958,14 @@
                       }
                     }
                   },
+                  "valuePath": ["a", "a"],
+                  "typePath": [
+                    "ref:myObject",
+                    "a",
+                    "union choice(undefined)",
+                    "a",
+                    "union choice(undefined)"
+                  ],
                   "recursivelyUnfoldedUnionSchema": {
                     "status": "ok",
                     "result": [
@@ -1985,9 +1992,7 @@
                         }
                       }
                     ],
-                    "expandedReferences": [
-                      "myObject"
-                    ]
+                    "expandedReferences": ["myObject"]
                   },
                   "chosenUnionBranchRawSchema": {
                     "type": "object",
@@ -2057,6 +2062,8 @@
                       }
                     }
                   },
+                  "valuePath": ["a"],
+                  "typePath": ["ref:myObject", "a", "union choice(undefined)"],
                   "recursivelyUnfoldedUnionSchema": {
                     "status": "ok",
                     "result": [
@@ -2083,9 +2090,7 @@
                         }
                       }
                     ],
-                    "expandedReferences": [
-                      "myObject"
-                    ]
+                    "expandedReferences": ["myObject"]
                   },
                   "chosenUnionBranchRawSchema": {
                     "type": "object",
@@ -2153,16 +2158,23 @@
                     }
                   }
                 ],
-                "expandedReferences": [
-                  "myObject"
-                ]
+                "expandedReferences": ["myObject"]
               },
               "resolvedSchema": {
                 "type": "string"
               },
               "chosenUnionBranchRawSchema": {
                 "type": "string"
-              }
+              },
+              "valuePath": ["a", "a", "a"],
+              "typePath": [
+                "ref:myObject",
+                "a",
+                "union choice(undefined)",
+                "a",
+                "union choice(undefined)",
+                "a"
+              ]
             },
             "a.a": {
               "rawSchema": {
@@ -2206,6 +2218,14 @@
                   }
                 }
               },
+              "valuePath": ["a", "a"],
+              "typePath": [
+                "ref:myObject",
+                "a",
+                "union choice(undefined)",
+                "a",
+                "union choice(undefined)"
+              ],
               "recursivelyUnfoldedUnionSchema": {
                 "status": "ok",
                 "result": [
@@ -2232,9 +2252,7 @@
                     }
                   }
                 ],
-                "expandedReferences": [
-                  "myObject"
-                ]
+                "expandedReferences": ["myObject"]
               },
               "chosenUnionBranchRawSchema": {
                 "type": "object",
@@ -2304,6 +2322,8 @@
                   }
                 }
               },
+              "valuePath": ["a"],
+              "typePath": ["ref:myObject", "a", "union choice(undefined)"],
               "recursivelyUnfoldedUnionSchema": {
                 "status": "ok",
                 "result": [
@@ -2330,9 +2350,7 @@
                     }
                   }
                 ],
-                "expandedReferences": [
-                  "myObject"
-                ]
+                "expandedReferences": ["myObject"]
               },
               "chosenUnionBranchRawSchema": {
                 "type": "object",
@@ -2419,12 +2437,14 @@
                     ]
                   }
                 }
-              }
+              },
+              "valuePath": [],
+              "typePath": []
             }
           }
         }
       },
-      "test070": {
+      {
         "transformerTestType": "transformerTest",
         "transformerTestLabel": "test070",
         "transformerName": "jzodTypeCheck",
@@ -2576,7 +2596,13 @@
                 "a": {
                   "status": "ok",
                   "valuePath": ["r1", "a"],
-                  "typePath": ["ref:myRecord", "r1", "ref:myObject", "a", "union choice"],
+                  "typePath": [
+                    "ref:myRecord",
+                    "r1",
+                    "ref:myObject",
+                    "a",
+                    "union choice(undefined)"
+                  ],
                   "rawSchema": {
                     "type": "union",
                     "definition": [
@@ -2603,7 +2629,14 @@
                     "a": {
                       "status": "ok",
                       "valuePath": ["r1", "a", "a"],
-                      "typePath": ["ref:myRecord", "r1", "ref:myObject", "a", "union choice", "a"],
+                      "typePath": [
+                        "ref:myRecord",
+                        "r1",
+                        "ref:myObject",
+                        "a",
+                        "union choice(undefined)",
+                        "a"
+                      ],
                       "rawSchema": {
                         "type": "union",
                         "definition": [
@@ -2670,7 +2703,16 @@
                           },
                           "chosenUnionBranchRawSchema": {
                             "type": "string"
-                          }
+                          },
+                          "valuePath": ["r1", "a", "a"],
+                          "typePath": [
+                            "ref:myRecord",
+                            "r1",
+                            "ref:myObject",
+                            "a",
+                            "union choice(undefined)",
+                            "a"
+                          ]
                         }
                       }
                     }
@@ -2724,7 +2766,16 @@
                       },
                       "chosenUnionBranchRawSchema": {
                         "type": "string"
-                      }
+                      },
+                      "valuePath": ["r1", "a", "a"],
+                      "typePath": [
+                        "ref:myRecord",
+                        "r1",
+                        "ref:myObject",
+                        "a",
+                        "union choice(undefined)",
+                        "a"
+                      ]
                     },
                     "r1.a": {
                       "rawSchema": {
@@ -2768,6 +2819,14 @@
                           }
                         }
                       },
+                      "valuePath": ["r1", "a"],
+                      "typePath": [
+                        "ref:myRecord",
+                        "r1",
+                        "ref:myObject",
+                        "a",
+                        "union choice(undefined)"
+                      ],
                       "recursivelyUnfoldedUnionSchema": {
                         "status": "ok",
                         "result": [
@@ -2869,7 +2928,16 @@
                   },
                   "chosenUnionBranchRawSchema": {
                     "type": "string"
-                  }
+                  },
+                  "valuePath": ["r1", "a", "a"],
+                  "typePath": [
+                    "ref:myRecord",
+                    "r1",
+                    "ref:myObject",
+                    "a",
+                    "union choice(undefined)",
+                    "a"
+                  ]
                 },
                 "r1.a": {
                   "rawSchema": {
@@ -2913,6 +2981,14 @@
                       }
                     }
                   },
+                  "valuePath": ["r1", "a"],
+                  "typePath": [
+                    "ref:myRecord",
+                    "r1",
+                    "ref:myObject",
+                    "a",
+                    "union choice(undefined)"
+                  ],
                   "recursivelyUnfoldedUnionSchema": {
                     "status": "ok",
                     "result": [
@@ -3000,7 +3076,9 @@
                         ]
                       }
                     }
-                  }
+                  },
+                  "valuePath": ["r1"],
+                  "typePath": ["ref:myRecord", "r1"]
                 }
               }
             },
@@ -3093,7 +3171,9 @@
                       },
                       "chosenUnionBranchRawSchema": {
                         "type": "string"
-                      }
+                      },
+                      "valuePath": ["r2", "a"],
+                      "typePath": ["ref:myRecord", "r2", "ref:myObject", "a"]
                     }
                   }
                 }
@@ -3147,7 +3227,9 @@
                   },
                   "chosenUnionBranchRawSchema": {
                     "type": "string"
-                  }
+                  },
+                  "valuePath": ["r2", "a"],
+                  "typePath": ["ref:myRecord", "r2", "ref:myObject", "a"]
                 },
                 "r2": {
                   "rawSchema": {
@@ -3182,7 +3264,9 @@
                         ]
                       }
                     }
-                  }
+                  },
+                  "valuePath": ["r2"],
+                  "typePath": ["ref:myRecord", "r2"]
                 }
               }
             }
@@ -3236,7 +3320,16 @@
               },
               "chosenUnionBranchRawSchema": {
                 "type": "string"
-              }
+              },
+              "valuePath": ["r1", "a", "a"],
+              "typePath": [
+                "ref:myRecord",
+                "r1",
+                "ref:myObject",
+                "a",
+                "union choice(undefined)",
+                "a"
+              ]
             },
             "r1.a": {
               "rawSchema": {
@@ -3280,6 +3373,8 @@
                   }
                 }
               },
+              "valuePath": ["r1", "a"],
+              "typePath": ["ref:myRecord", "r1", "ref:myObject", "a", "union choice(undefined)"],
               "recursivelyUnfoldedUnionSchema": {
                 "status": "ok",
                 "result": [
@@ -3367,7 +3462,9 @@
                     ]
                   }
                 }
-              }
+              },
+              "valuePath": ["r1"],
+              "typePath": ["ref:myRecord", "r1"]
             },
             "r2.a": {
               "rawSchema": {
@@ -3417,7 +3514,9 @@
               },
               "chosenUnionBranchRawSchema": {
                 "type": "string"
-              }
+              },
+              "valuePath": ["r2", "a"],
+              "typePath": ["ref:myRecord", "r2", "ref:myObject", "a"]
             },
             "r2": {
               "rawSchema": {
@@ -3452,7 +3551,9 @@
                     ]
                   }
                 }
-              }
+              },
+              "valuePath": ["r2"],
+              "typePath": ["ref:myRecord", "r2"]
             },
             "": {
               "rawSchema": {
@@ -3516,12 +3617,14 @@
                     }
                   }
                 }
-              }
+              },
+              "valuePath": [],
+              "typePath": []
             }
           }
         }
       },
-      "test120_union": {
+      {
         "transformerTestType": "transformerTest",
         "transformerTestLabel": "test120_union",
         "transformerName": "jzodTypeCheck",
@@ -3593,11 +3696,13 @@
               },
               "chosenUnionBranchRawSchema": {
                 "type": "number"
-              }
+              },
+              "valuePath": [],
+              "typePath": []
             }
           }
         }
       }
-    }
+    ]
   }
 }

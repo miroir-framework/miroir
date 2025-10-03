@@ -25,16 +25,17 @@ import { ReportView } from '../components/Reports/ReportView.js';
 import { PerformanceDisplayContainer } from '../components/PerformanceDisplayContainer.js';
 import { cleanLevel } from '../constants.js';
 import { RenderPerformanceMetrics } from '../tools/renderPerformanceMeasure.js';
-import { useDocumentOutlineContext } from '../components/Page/RootComponent.js';
 import { useRenderTracker } from '../tools/renderCountTracker.js';
 import { PageContainer } from '../components/Page/PageContainer.js';
 import { ThemedBox, ThemedSpan } from '../components/Themes/index.js';
 import { useMiroirTheme } from '../contexts/MiroirThemeContext.js';
 import { usePageConfiguration } from '../services/index.js';
+import { useDocumentOutlineContext } from '../components/ValueObjectEditor/InstanceEditorOutlineContext.js';
+import { ReportPageContextProvider } from '../components/Reports/ReportPageContext.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ReportPage")
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ReportPage"), "UI",
 ).then((logger: LoggerInterface) => {log = logger});
 
 const miroirExpression: JzodElement = {
@@ -78,9 +79,9 @@ export const ReportPage = () => {
   const { navigationCount, totalCount } = useRenderTracker("ReportPage", currentNavigationKey);
 
   // Get outline context from RootComponent
-  const outlineContext = useDocumentOutlineContext();
+  // const outlineContext = useDocumentOutlineContext();
 
-  log.info("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& ReportPage rendering", "navigationCount", navigationCount, "totalCount", totalCount, "params", pageParams);
+  // log.info("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& ReportPage rendering", "navigationCount", navigationCount, "totalCount", totalCount, "params", pageParams);
   useEffect(() => context.setDeploymentUuid(pageParams.deploymentUuid ? pageParams.deploymentUuid : ""));
   useEffect(() => context.setApplicationSection((pageParams.applicationSection as ApplicationSection) ?? "data"));
 
@@ -127,7 +128,7 @@ export const ReportPage = () => {
     (d) => d.uuid == pageParams.deploymentUuid
   );
 
-  log.info("displayedDeploymentDefinition", displayedDeploymentDefinition);
+  // log.info("displayedDeploymentDefinition", displayedDeploymentDefinition);
 
   const deploymentUuidToReportsEntitiesDefinitionsMapping = useMemo(
     () => (
@@ -190,7 +191,7 @@ export const ReportPage = () => {
     pageParams.applicationSection,
   ]);
 
-  log.info("context.deploymentUuidToReportsEntitiesDefinitionsMapping", context.deploymentUuidToReportsEntitiesDefinitionsMapping);
+  // log.info("context.deploymentUuidToReportsEntitiesDefinitionsMapping", context.deploymentUuidToReportsEntitiesDefinitionsMapping);
 
   const { availableReports, entities, entityDefinitions } = useMemo(() => {
     return displayedDeploymentDefinition &&
@@ -212,45 +213,45 @@ export const ReportPage = () => {
   const currentMiroirReport: Report =
     availableReports?.find((r: Report) => r.uuid == pageParams.reportUuid) ?? defaultReport;
 
-  log.info("currentMiroirReport", currentMiroirReport);
+  // log.info("currentMiroirReport", currentMiroirReport);
 
   if (pageParams.applicationSection) {
-    log.info("ReportPage rendering", "navigationCount", navigationCount, "totalCount", totalCount, "params", pageParams);
+    // log.info("ReportPage rendering", "navigationCount", navigationCount, "totalCount", totalCount, "params", pageParams);
     // log.info("ReportPage current metrics:", RenderPerformanceMetrics.renderMetrics);
     return (
-      <PageContainer
-        withSidebar={true}
-        withDocumentOutline={true} // ReportPage has document outline
-        customSx={{
-          // ReportPage specific styling
-          '& .miroir-table-container': {
-            maxWidth: '100%',
-            overflow: 'hidden',
-          },
-        }}
-      >
-        {/* Page Header */}
-        <ThemedBox flexGrow={0} marginBottom="16px">
-          {context.showPerformanceDisplay && (
-            <span>ReportPage renders: {navigationCount} (total: {totalCount})</span>
-          )}
-          <div>
-            <h3>erreurs: {JSON.stringify(errorLog)}</h3>
-          </div>
-        </ThemedBox>
-        
-        {/* Main Report Content */}
-        <ThemedBox flexGrow={1}>
-          {
-            pageParams.deploymentUuid &&
+      <ReportPageContextProvider>
+        <PageContainer
+          withSidebar={true}
+          withDocumentOutline={true} // ReportPage has document outline
+          customSx={{
+            // ReportPage specific styling
+            "& .miroir-table-container": {
+              maxWidth: "100%",
+              overflow: "hidden",
+            },
+          }}
+        >
+          <ThemedBox>
+            {context.showPerformanceDisplay && (
+              <>
+                <ThemedBox>
+                  deploymentUuid={pageParams.deploymentUuid}, applicationSection=
+                  {pageParams.applicationSection}, reportUuid={pageParams.reportUuid}, instanceUuid=
+                  {pageParams.instanceUuid}
+                </ThemedBox>
+                <span>
+                  ReportPage renders: {navigationCount} (total: {totalCount})
+                </span>
+              </>
+            )}
+            {(errorLog as any)?.errorLogs.length !== 0 && <h3>erreurs: {JSON.stringify(errorLog)}</h3>}
+          </ThemedBox>
+          <ThemedBox style={{ flex: 1, overflow: 'auto', minHeight: 0 }}>
+            {pageParams.deploymentUuid &&
             pageParams.applicationSection &&
             pageParams.reportUuid &&
             pageParams.reportUuid != "undefined" ? (
               <>
-                <ThemedBox padding="16px">
-                  deploymentUuid={pageParams.deploymentUuid}, applicationSection={pageParams.applicationSection},
-                  reportUuid={pageParams.reportUuid}, instanceUuid={pageParams.instanceUuid}
-                </ThemedBox>
                 <ReportView
                   applicationSection={pageParams.applicationSection as ApplicationSection}
                   deploymentUuid={pageParams.deploymentUuid}
@@ -261,16 +262,17 @@ export const ReportPage = () => {
                 {context.showPerformanceDisplay && <PerformanceDisplayContainer />}
               </>
             ) : (
-              <ThemedSpan 
-                style={{ color: theme.currentTheme.colors.error, padding: "16px" }}
+              <ThemedSpan
+                style={{ color: theme.currentTheme.colors.error }}
               >
-                ReportDisplay: no report to display, deploymentUuid={pageParams.deploymentUuid}, applicationSection=
+                ReportDisplay: no report to display, deploymentUuid={pageParams.deploymentUuid},
+                applicationSection=
                 {pageParams.applicationSection}, reportUuid={pageParams.reportUuid}
               </ThemedSpan>
-            )
-          }
-        </ThemedBox>
-      </PageContainer>
+            )}
+          </ThemedBox>
+        </PageContainer>
+      </ReportPageContextProvider>
     );
   } else {
     return <>ReportPage Invalid parameters! {JSON.stringify(pageParams)}</>;

@@ -115,15 +115,67 @@
       "transformerInterface": {
         "type": "object",
         "definition": {
+          "inputOutput": {
+            "type": "schemaReference",
+            "optional": true,
+            "context": {
+              "inputOutputType": {
+                "type": "enum",
+                "definition": [
+                  "any",
+                  "undefined",
+                  "bigint",
+                  "number",
+                  "string",
+                  "boolean",
+                  "object",
+                  "array"
+                ]
+              },
+              "inputOutputObject": {
+                "type": "object",
+                "definition": {
+                  "input": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "inputOutputType"
+                    }
+                  },
+                  "output": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "inputOutputType"
+                    }
+                  }
+                }
+              }
+            },
+            "definition": {
+              "relativePath": "inputOutputObject"
+            }
+          },
           "transformerParameterSchema": {
             "type": "object",
             "definition": {
               "transformerType": {
-                "type": "schemaReference",
-                "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "jzodLiteral"
-                }
+                "type": "union",
+                "discriminator": "transformerType",
+                "definition": [
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "jzodLiteral"
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "jzodEnum"
+                    }
+                  }
+                ]
               },
               "transformerDefinition": {
                 "type": "schemaReference",
@@ -157,7 +209,7 @@
               {
                 "type": "object",
                 "definition": {
-                  "willReturn": {
+                  "returns": {
                     "type": "literal",
                     "definition": "mlSchemaTransformer"
                   },

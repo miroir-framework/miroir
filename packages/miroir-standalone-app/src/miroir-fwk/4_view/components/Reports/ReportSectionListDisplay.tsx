@@ -68,7 +68,7 @@ import { useSelector } from "react-redux";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ReportSectionListDisplay")
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ReportSectionListDisplay"), "UI",
 ).then((logger: LoggerInterface) => {log = logger});
 
 
@@ -645,6 +645,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
         currentReportTargetEntityDefinition?.jzodSchema &&
         context.miroirFundamentalJzodSchema
           ? getDefaultValueForJzodSchemaWithResolutionNonHook(
+              "build",
               currentReportTargetEntityDefinition?.jzodSchema,
               undefined, // rootObject
               "", // rootLessListKey,

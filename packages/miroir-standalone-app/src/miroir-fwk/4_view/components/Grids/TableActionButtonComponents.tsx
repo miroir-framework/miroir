@@ -1,20 +1,18 @@
-import React from 'react';
-import { IconButton } from '@mui/material';
-import { styled } from '@mui/material/styles';
-import CreateIcon from '@mui/icons-material/Create';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import CreateIcon from '@mui/icons-material/Create';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { LoggerInterface, MiroirLoggerFactory } from "miroir-core";
+import React from 'react';
 
 import { packageName } from '../../../../constants.js';
 import { cleanLevel } from '../../constants.js';
-import { TableComponentRow } from './EntityInstanceGridInterface.js';
 import { useMiroirTheme } from '../../contexts/MiroirThemeContext.js';
 import { ThemedSmallIconButton } from '../Themes/index.js';
+import { TableComponentRow } from './EntityInstanceGridInterface.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "TableActionButtonComponents")
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "TableActionButtonComponents"), "UI",
 ).then((logger: LoggerInterface) => {log = logger});
 
 export interface BaseActionButtonProps {

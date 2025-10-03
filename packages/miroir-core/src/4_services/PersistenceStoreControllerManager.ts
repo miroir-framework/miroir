@@ -20,7 +20,7 @@ import { PersistenceStoreLocalOrRemoteInterface } from "../0_interfaces/4-servic
 import { ACTION_OK } from "../1_core/constants";
 import { DomainController } from "../3_controllers/DomainController";
 import { packageName } from "../constants";
-import { MiroirLoggerFactory } from "./LoggerFactory";
+import { MiroirLoggerFactory } from "./MiroirLoggerFactory";
 import { cleanLevel } from "./constants";
 import { Action2Error, Action2VoidReturnType } from "../0_interfaces/2_domain/DomainElement";
 

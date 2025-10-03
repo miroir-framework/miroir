@@ -19,7 +19,8 @@ import {
   RunBoxedQueryTemplateAction,
   RunBoxedQueryTemplateOrBoxedExtractorTemplateAction,
   Action2EntityInstanceReturnType,
-  Action2Error
+  Action2Error,
+  defaultMetaModelEnvironment
 } from "miroir-core";
 
 import { packageName } from "../constants.js";
@@ -67,7 +68,7 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
     async handleBoxedExtractorAction(query: RunBoxedExtractorAction): Promise<Action2ReturnType> {
       log.info(this.logHeader,'handleBoxedExtractorAction', 'query',query);
       
-      const result: Action2ReturnType = await this.extractorRunner.handleBoxedExtractorAction(query);
+      const result: Action2ReturnType = await this.extractorRunner.handleBoxedExtractorAction(query,defaultMetaModelEnvironment);
 
       log.info(this.logHeader,'handleBoxedExtractorAction DONE','query',query, "result", result);
       return result;
@@ -77,7 +78,7 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
     async handleBoxedQueryAction(query: RunBoxedQueryAction): Promise<Action2ReturnType> {
       log.info(this.logHeader,'handleBoxedQueryAction', 'query',query);
       
-      const result: Action2ReturnType = await this.extractorRunner.handleBoxedQueryAction(query);
+      const result: Action2ReturnType = await this.extractorRunner.handleBoxedQueryAction(query, defaultMetaModelEnvironment);
 
       log.info(this.logHeader,'handleBoxedQueryAction DONE','query',query, "result", result);
       return result;
@@ -87,7 +88,7 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
     async handleQueryTemplateActionForServerONLY(query: RunBoxedQueryTemplateAction): Promise<Action2ReturnType> {
       log.info(this.logHeader,'handleQueryTemplateActionForServerONLY', 'query',query);
       
-      const result: Action2ReturnType = await this.extractorTemplateRunner.handleQueryTemplateActionForServerONLY(query);
+      const result: Action2ReturnType = await this.extractorTemplateRunner.handleQueryTemplateActionForServerONLY(query, defaultMetaModelEnvironment);
 
       log.info(this.logHeader,'handleQueryTemplateActionForServerONLY','query',query, "result", result);
       return result;
@@ -97,7 +98,7 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
     async handleBoxedExtractorTemplateActionForServerONLY(query: RunBoxedExtractorTemplateAction): Promise<Action2ReturnType> {
       log.info(this.logHeader,'handleBoxedExtractorTemplateActionForServerONLY', 'query',query);
       
-      const result: Action2ReturnType = await this.extractorTemplateRunner.handleBoxedExtractorTemplateActionForServerONLY(query);
+      const result: Action2ReturnType = await this.extractorTemplateRunner.handleBoxedExtractorTemplateActionForServerONLY(query, defaultMetaModelEnvironment);
 
       log.info(this.logHeader,'handleBoxedExtractorTemplateActionForServerONLY','query',query, "result", result);
       return result;
@@ -107,7 +108,7 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
     async handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(query: RunBoxedQueryTemplateOrBoxedExtractorTemplateAction): Promise<Action2ReturnType> {
       log.info(this.logHeader,'handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY', 'query',query);
       
-      const result: Action2ReturnType = await this.extractorTemplateRunner.handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(query);
+      const result: Action2ReturnType = await this.extractorTemplateRunner.handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(query, defaultMetaModelEnvironment);
 
       log.info(this.logHeader,'handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY','query',query, "result", result);
       return result;

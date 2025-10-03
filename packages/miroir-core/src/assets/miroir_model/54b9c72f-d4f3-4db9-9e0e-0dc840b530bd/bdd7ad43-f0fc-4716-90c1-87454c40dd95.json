@@ -113,7 +113,12 @@
           "value": {
             "id": 9,
             "defaultLabel": "Default Report used to display instances of this Entity",
-            "editable": false
+            "editable": false,
+            "selectorParams": {
+              "targetEntity": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+              "targetEntityApplicationSection": "model",
+              "targetEntityOrderInstancesBy": "name"
+            }
           }
         }
       },
@@ -131,14 +136,11 @@
         }
       },
       "icon": {
-        "type": "string",
+        "type": "schemaReference",
         "optional": true,
-        "tag": {
-          "value": {
-            "id": 11,
-            "defaultLabel": "Icon used to represent instances of this Entity",
-            "editable": true
-          }
+        "definition": {
+          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          "relativePath": "miroirIcon"
         }
       },
       "display": {

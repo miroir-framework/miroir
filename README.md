@@ -1,6 +1,76 @@
 # Miroir
 
-This is the monorepo for the Miroir Framework
+**caveat: developments are still ongoing, only a fraction of the goals described below have been reached yet. First official release is not yet available (soon)**
+
+## Introduction
+
+**Miroir is an end-to-end, low code, agentic development platform for data-centric applications.**
+
+- Miroir is **end-to-end** as it allows to define concepts used across both storage (database, NoSQL) and presentation (Web UI, web Services) and to leverage the same concepts in "business" code (e.g. computed attributes, business presentation functions, data migration, etc.).
+- Miroir will be **low-code** as value-adding behavior can be created, modified and tested at run-time, without the need to build a new package or redeploy a running application. Miroir provides the necessary interpreters and visual reprensentation (yet to be provided) to muster all aspects of an application. JSON is presently available as textual representation for all model elements.
+- Miroir will be **agentic**, being available to any A.I. client implementing the **Model Context Protocol (MCP)**. Miroir thus allows one to use natural language to manipulate and define business-related behavior, freely combining "structured" and "loose" code.
+- Miroir is **data-centric** and **Language-oriented**, fostering the creation of **Domain-Specific Languages** for Model manipulation, using these languages in low-code or natural language code.
+
+## Use case: start small, grow seamlessly
+
+The foreseen first use case for the framework is the need for automation or data-management "in the small" that often takes the form of a spreadsheet and, as the developed "software" gains traction, needs to migrate to a more sturdy development environment. In speadsheets indeed, means to address ubiquitous software development issues such as non-regression, automated testing, or changing technical environment are scant, if any exist at all. The Miroir Frameworks integrates all activities taking place during of software creation, at any scale, providing opinionated solutions and tools while keeping the requirement to use them at a minimum. Along the way, it ensures the development and runtime environments to be as close as possible, guaranteeing instantaneous feedback that fosters an experimental to software creation. One can then concentrate on the problem to be solved, being rid of usual chores like compiling every time before getting feedback. 
+
+## This Repository
+This is the monorepo for the Miroir Framework.
+
+
+
+Activities encompassed by the Miroir Framework are (tentatively):
+
+- **modeling and management of the application's data:** (logical and physical) data model elaboration and evolution, data store management (Relational schema maintenance, data migration, etc.)
+- **practicing domain-driven development:** coding value-producing analysis and behavior from the application domain, create you own Domain-Specific Languages (DSLs), make them available as a services, or as a desktop and web applications.
+- **managing the software development cycle:** enable software versioning, produce artefacts, automated Test management (unit tests, integration tests), enable continuous integration.
+- **adapt your development environment to your needs**: benefit from the powerful javascript / web universe, leverage the LLM tools, adopt an experimental and incremental development approach (Test-Driven Development), be free to run your business-domain code in the client, on the server or in the database (SQL), or even switch data storage architecture according to your needs.
+ 
+Miroir is developed largely in Miroir, making it extremely adaptable.
+
+The technically-inclined reader can refer to the defined [LLM-agent instructions employed during development](https://github.com/miroir-framework/miroir/blob/master/.github/copilot-instructions.md), which provide a Markdown-format description of the development environment.
+
+## Current State
+
+### What already exists
+
+- The Meta-Language [jzod](https://github.com/miroir-framework/jzod), also called MML for Miroir Meta-Language.
+- The Miroir Meta-model, used to define an application's logical data model: Entity and EntityDefinitions. Attributes and other properties of an Entity are defined using an MML (jzod) Schema.
+- Connectors to PostgreSQL, to an indexedDB key-value datastore, and to a JSON file-based datastore.
+- The core of the Miroir application model use to define business-domain data presentation and behavior: Transformer, Query, Report, Endpoint & Action, Test, Application.
+- An interpreter for Actions, Transformers and Queries (in-memory and SQL).
+- A Web Application and a server leveraging the mentioned interpreters and providing rudimentary local cache management for data (to be used as working space).
+- A substancial set of tests for non-regression on core features.
+- An Event system to monitor activities and troubleshoot issues.
+- A desktop application using Electron providing the same functionality as the Web App / Web Server combination.
+
+### Present Developments
+
+Today's on-going effort are centered on the identifcation and provision of actual workflows in the web interface:
+
+- finalize the Event system, allowing to monitor activities and troubleshoot issue while during the development phase.
+- providing an interactive, instant-feedback giving Transformer editor, enabling to create Transformer that encode the domain logic in a straightforward and confident way.
+- provide similar editors for Queries and Actions.
+- Provide a read/write connector to Spreadsheets (ODS and other formats) to store an Application's model and data.
+- make a first official release ecompassing the above points.
+
+### Future Developments
+
+Here's an overview, browse the [issues](https://github.com/miroir-framework/miroir/issues) for more details on some of the following (envisioned) goals
+
+- enable graphs in Reports (using D3js)
+- enable some text edition tool (probably based on Markdown, potentially html) to enable the creation of text-containing Reports and to create the documentation for Miroir
+- enable visual (UML-Like) Application Model edition
+- enable block-based visual programming (low code) for Actions and Transformers
+- support NOSQL datastores (MongoDB, ElasticSearch, DuckDb, etc.)
+- support for a Miroir Command Line Interface
+- support connection to software versioning tools: local Git repos, Github.
+- support connection to issue-tracking and project management tools (Github, Jira, etc.)
+- support for LLM-based tools & MCP client
+- "Freezing" code to Javascript: generate js libraries from Miroir Transformers, Queries and Actions giving a proper escape hatch or enabling to use Miroir as an Application generator
+- "Freezing" code to Rust: enabling the production of industrial web services implemented in Rust, maybe even a Rust-based Desktop / Web Application?
+- develop "example" applications and tools: a relational DB model manager, an interface to the R programming platform
 
 ## installation
 

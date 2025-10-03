@@ -25,9 +25,8 @@ import {
 
 import { useReduxDeploymentsStateJzodSchemaSelector, useReduxDeploymentsStateQuerySelector } from '../../ReduxHooks.js';
 import { ReportSectionView } from './ReportSectionView.js';
-import { useDocumentOutlineContext } from '../Page/RootComponent.js';
 import { useMiroirContextService } from "../../MiroirContextReactProvider.js";
-import { ThemedSpan } from '../Themes/index.js';
+import { ThemedBox, ThemedSpan } from '../Themes/index.js';
 
 import {
   getMemoizedReduxDeploymentsStateJzodSchemaSelectorMap,
@@ -36,10 +35,11 @@ import {
 import { packageName, ReportUrlParamKeys } from '../../../../constants.js';
 import { cleanLevel } from '../../constants.js';
 import { useRenderTracker } from '../../tools/renderCountTracker.js';
+import { useDocumentOutlineContext } from '../ValueObjectEditor/InstanceEditorOutlineContext.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ReportView")
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ReportView"), "UI",
 ).then((logger: LoggerInterface) => {log = logger});
 
 
@@ -68,8 +68,7 @@ export const ReportView = (props: ReportViewProps) => {
   const outlineContext = useDocumentOutlineContext();
 
   const paramsAsdomainElements: Domain2QueryReturnType<Record<string,any>> = props.pageParams;
-  // log.info("########################## ReportView rendering", count, "props", props);
-  log.info("########################## ReportView rendering", "navigationCount", navigationCount, "totalCount", totalCount);
+  // log.info("########################## ReportView rendering", "navigationCount", navigationCount, "totalCount", totalCount);
 
   // log.info(
   //   "deploymentUuid",
@@ -181,7 +180,7 @@ export const ReportView = (props: ReportViewProps) => {
     deploymentEntityStateFetchQueryParams
   );
 
-  log.info("deploymentEntityStateQueryResults", deploymentEntityStateQueryResults);
+  // log.info("deploymentEntityStateQueryResults", deploymentEntityStateQueryResults);
 
 
   const jzodSchemaSelectorMap: QueryRunnerMapForJzodSchema<ReduxDeploymentsState> = useMemo(
@@ -260,7 +259,7 @@ export const ReportView = (props: ReportViewProps) => {
   // );
   // log.info("ReportView props.reportSection", props.reportDefinition);
 
-  const outlineElement = useMemo(() => {
+  const outlineElement = useMemo(() => { // TODO: belongs to the outline!
     if (
       deploymentEntityStateQueryResults &&
       deploymentEntityStateQueryResults.elementType !== "failure"
@@ -295,38 +294,30 @@ export const ReportView = (props: ReportViewProps) => {
   const showPerformanceDisplay = context.showPerformanceDisplay;
 
   if (props.applicationSection) {
-    return (
+    return deploymentEntityStateQueryResults.elementType == "failure" ? (
+      <div>found query failure! {JSON.stringify(deploymentEntityStateQueryResults, null, 2)}</div>
+    ) : props.deploymentUuid ? (
       <>
-        {
-          deploymentEntityStateQueryResults.elementType == "failure" ? (
-            <div>found query failure! {JSON.stringify(deploymentEntityStateQueryResults, null, 2)}</div>
-          ) : (
-            <>
-              {props.deploymentUuid ? (
-                <div>
-                  {showPerformanceDisplay && (
-                    <div>ReportView renders: {navigationCount} (total: {totalCount})</div>
-                  )}
-                  <ReportSectionView
-                    reportQueriesResultsRecord={deploymentEntityStateQueryResults}
-                    fetchedDataJzodSchema={fetchedDataJzodSchema}
-                    reportSection={props.reportDefinition?.section}
-                    rootReport={props.reportDefinition}
-                    applicationSection={props.applicationSection}
-                    deploymentUuid={props.deploymentUuid}
-                    paramsAsdomainElements={paramsAsdomainElements}
-                    // Pass outline state down from context
-                    isOutlineOpen={outlineContext.isOutlineOpen}
-                    onToggleOutline={outlineContext.onToggleOutline}
-                  />
-                </div>
-              ) : (
-                <ThemedSpan style={{ color: "red" }}>no deployment found!</ThemedSpan>
-              )}
-            </>
-          )
-        }
+        {showPerformanceDisplay && (
+          <div>
+            ReportView renders: {navigationCount} (total: {totalCount})
+          </div>
+        )}
+        <ReportSectionView
+          reportQueriesResultsRecord={deploymentEntityStateQueryResults}
+          fetchedDataJzodSchema={fetchedDataJzodSchema}
+          reportSection={props.reportDefinition?.section}
+          rootReport={props.reportDefinition}
+          applicationSection={props.applicationSection}
+          deploymentUuid={props.deploymentUuid}
+          paramsAsdomainElements={paramsAsdomainElements}
+          // Pass outline state down from context
+          isOutlineOpen={outlineContext.isOutlineOpen}
+          onToggleOutline={outlineContext.onToggleOutline}
+        />
       </>
+    ) : (
+      <ThemedSpan style={{ color: "red" }}>no deployment found!</ThemedSpan>
     );
   } else {
     return <>RootReport Invalid props! {JSON.stringify(props)}</>;

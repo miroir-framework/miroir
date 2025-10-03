@@ -1,9 +1,4 @@
 
-// import {
-//   JzodElement,
-//   JzodObject,
-//   JzodReference
-// } from "@miroir-framework/jzod-ts";
 import {
   JzodElement,
   JzodObject,
@@ -12,6 +7,7 @@ import {
 
 // import { JzodReferenceResolutionFunction } from "@miroir-framework/jzod";
 import { applyLimitedCarryOnSchema } from "../../../src/1_core/jzod/JzodToJzod";
+import { cleanupObject } from "../../../src/tools";
 
 type JzodReferenceResolutionFunction = (schema: JzodReference) => JzodElement | undefined;
 
@@ -27,7 +23,7 @@ interface TestCase {
 function runTest(
   t: TestCase
 ) {
-  const testResult = applyLimitedCarryOnSchema(
+  const testResult = cleanupObject(applyLimitedCarryOnSchema(
     t.testJzodSchema,
     t.carryOnJzodSchema,
     undefined, // carryOnSchemaDiscriminator
@@ -37,7 +33,7 @@ function runTest(
     undefined, // suffixForReference
     t.resolveJzodReference,
     t.convertedReferences
-  );
+  ));
   console.log(t.name, "result references=", JSON.stringify(testResult.resolvedReferences, null, 2))
   console.log(t.name, "result=", JSON.stringify(testResult.resultSchema, null, 2))
   // console.log(t.name, "expectedResult=", JSON.stringify(t.expectedResult, null, 2))
@@ -86,7 +82,7 @@ describe(
             name: "test001",
             testJzodSchema: {
               type: "string",
-              tag: { value: {canBeTemplate: true} } as any,
+              tag: { value: { canBeTemplate: true } } as any,
             },
             carryOnJzodSchema: {
               type: "object",
@@ -97,11 +93,12 @@ describe(
             expectedResult: {
               schema: {
                 type: "union",
-                tag: { value: {canBeTemplate: true} } as any,
+                discriminator: undefined,
+                tag: { value: { canBeTemplate: true, isTemplate: true } } as any,
                 definition: [
                   {
                     type: "string",
-                    tag: { value: {canBeTemplate: true} } as any,
+                    tag: { value: { canBeTemplate: true } } as any,
                   },
                   {
                     type: "object",
@@ -123,14 +120,17 @@ describe(
             testJzodSchema: {
               type: "object",
               definition: {
-                a: { type: "string", tag: { value: {canBeTemplate: true} } as any },
+                a: { type: "string", tag: { value: { canBeTemplate: true } } as any },
                 b: {
                   type: "object",
                   definition: {
                     b1: { type: "boolean", optional: true },
                     b2: {
                       type: "array",
-                      definition: { type: "boolean", tag: { value: {canBeTemplate: true} } as any },
+                      definition: {
+                        type: "boolean",
+                        tag: { value: { canBeTemplate: true } } as any,
+                      },
                     },
                   },
                 },
@@ -148,11 +148,20 @@ describe(
                 definition: {
                   a: {
                     type: "union",
-                    tag: { value: {canBeTemplate: true} } as any,
+                    tag: {
+                      value: {
+                        canBeTemplate: true,
+                        isTemplate: true,
+                      },
+                    },
                     definition: [
                       {
                         type: "string",
-                        tag: { value: {canBeTemplate: true} } as any,
+                        tag: {
+                          value: {
+                            canBeTemplate: true,
+                          },
+                        },
                       },
                       {
                         type: "object",
@@ -175,11 +184,20 @@ describe(
                         type: "array",
                         definition: {
                           type: "union",
-                          tag: { value: {canBeTemplate: true} } as any,
+                          tag: {
+                            value: {
+                              canBeTemplate: true,
+                              isTemplate: true,
+                            },
+                          },
                           definition: [
                             {
                               type: "boolean",
-                              tag: { value: {canBeTemplate: true} } as any,
+                              tag: {
+                                value: {
+                                  canBeTemplate: true,
+                                },
+                              },
                             },
                             {
                               type: "object",
@@ -208,7 +226,7 @@ describe(
               extend: {
                 type: "object",
                 definition: {
-                  a: { type: "string", tag: { value: {canBeTemplate: true} } as any },
+                  a: { type: "string", tag: { value: { canBeTemplate: true } } as any },
                 },
               },
               definition: {
@@ -218,7 +236,10 @@ describe(
                     b1: { type: "boolean", optional: true },
                     b2: {
                       type: "array",
-                      definition: { type: "boolean", tag: { value:{canBeTemplate: true} } as any },
+                      definition: {
+                        type: "boolean",
+                        tag: { value: { canBeTemplate: true } } as any,
+                      },
                     },
                   },
                 },
@@ -240,13 +261,18 @@ describe(
                       a: {
                         type: "union",
                         tag: {
-                          value: {canBeTemplate: true},
+                          value: {
+                            canBeTemplate: true,
+                            isTemplate: true,
+                          },
                         },
                         definition: [
                           {
                             type: "string",
                             tag: {
-                              value: {canBeTemplate: true},
+                              value: {
+                                canBeTemplate: true,
+                              },
                             },
                           },
                           {
@@ -275,13 +301,18 @@ describe(
                         definition: {
                           type: "union",
                           tag: {
-                            value: {canBeTemplate: true},
+                            value: {
+                              canBeTemplate: true,
+                              isTemplate: true,
+                            },
                           },
                           definition: [
                             {
                               type: "boolean",
                               tag: {
-                                value: {canBeTemplate: true},
+                                value: {
+                                  canBeTemplate: true,
+                                },
                               },
                             },
                             {
@@ -305,13 +336,13 @@ describe(
           },
           // test016: simple object schema with extend clause wich canBeTemplate accessed as a reference
           {
-            name: "test015",
+            name: "test016",
             testJzodSchema: {
               type: "object",
               extend: {
                 type: "object",
                 definition: {
-                  a: { type: "string", tag: { value: {canBeTemplate: true} } as any },
+                  a: { type: "string", tag: { value: { canBeTemplate: true } } as any },
                 },
               },
               definition: {
@@ -321,7 +352,10 @@ describe(
                     b1: { type: "boolean", optional: true },
                     b2: {
                       type: "array",
-                      definition: { type: "boolean", tag: { value:{canBeTemplate: true} } as any },
+                      definition: {
+                        type: "boolean",
+                        tag: { value: { canBeTemplate: true } } as any,
+                      },
                     },
                   },
                 },
@@ -343,13 +377,18 @@ describe(
                       a: {
                         type: "union",
                         tag: {
-                          value: {canBeTemplate: true},
+                          value: {
+                            canBeTemplate: true,
+                            isTemplate: true,
+                          },
                         },
                         definition: [
                           {
                             type: "string",
                             tag: {
-                              value: {canBeTemplate: true},
+                              value: {
+                                canBeTemplate: true,
+                              },
                             },
                           },
                           {
@@ -378,13 +417,18 @@ describe(
                         definition: {
                           type: "union",
                           tag: {
-                            value: {canBeTemplate: true},
+                            value: {
+                              canBeTemplate: true,
+                              isTemplate: true,
+                            },
                           },
                           definition: [
                             {
                               type: "boolean",
                               tag: {
-                                value: {canBeTemplate: true},
+                                value: {
+                                  canBeTemplate: true,
+                                },
                               },
                             },
                             {
@@ -492,7 +536,10 @@ describe(
             name: "test30",
             testJzodSchema: {
               type: "schemaReference",
-              definition: { absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9", relativePath: "myString" },
+              definition: {
+                absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                relativePath: "myString",
+              },
             },
             carryOnJzodSchema: {
               type: "object",
@@ -528,10 +575,11 @@ describe(
             expectedReferences: {
               carryOn_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_myString: {
                 type: "union",
-                tag: { value: { canBeTemplate: true } },
+                tag: { value: { canBeTemplate: true, isTemplate: true } },
                 definition: [
                   {
-                    type: "string", tag: { value: { canBeTemplate: true } }
+                    type: "string",
+                    tag: { value: { canBeTemplate: true } },
                   },
                   {
                     type: "object",
@@ -554,7 +602,10 @@ describe(
               definition: {
                 a: {
                   type: "schemaReference",
-                  definition: { absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9", relativePath: "myString" },
+                  definition: {
+                    absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                    relativePath: "myString",
+                  },
                 },
               },
             },
@@ -581,10 +632,13 @@ describe(
             },
             expectedResult: {
               schema: {
+                tag: {
+                  value: {
+                    canBeTemplate: true,
+                    isTemplate: true,
+                  },
+                },
                 type: "union",
-                tag: { value: { canBeTemplate: true } },
-                optional: undefined,
-                nullable: undefined,
                 definition: [
                   {
                     type: "object",
@@ -596,13 +650,15 @@ describe(
                   },
                   {
                     type: "object",
-                    extend: undefined,
-                    tag: { value: { canBeTemplate: true } },
+                    tag: {
+                      value: {
+                        canBeTemplate: true,
+                        isTemplate: true,
+                      },
+                    },
                     definition: {
                       a: {
                         type: "schemaReference",
-                        context: undefined,
-                        tag: undefined,
                         definition: {
                           absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
                           relativePath: "carryOn_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_myString",
@@ -617,10 +673,11 @@ describe(
             expectedReferences: {
               carryOn_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_myString: {
                 type: "union",
-                tag: { value: { canBeTemplate: true } },
+                tag: { value: { canBeTemplate: true, isTemplate: true } },
                 definition: [
                   {
-                    type: "string", tag: { value: { canBeTemplate: true } }
+                    type: "string",
+                    tag: { value: { canBeTemplate: true } },
                   },
                   {
                     type: "object",
@@ -648,7 +705,10 @@ describe(
                     {
                       type: "schemaReference",
                       // tag: { value: { canBeTemplate: true } },
-                      definition: { absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9", relativePath: "myString" },
+                      definition: {
+                        absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                        relativePath: "myString",
+                      },
                     },
                     {
                       type: "number",
@@ -680,8 +740,13 @@ describe(
             },
             expectedResult: {
               schema: {
+                tag: {
+                  value: {
+                    canBeTemplate: true,
+                    isTemplate: true,
+                  },
+                },
                 type: "union",
-                tag: { value: { canBeTemplate: true } },
                 definition: [
                   {
                     type: "object",
@@ -693,19 +758,24 @@ describe(
                   },
                   {
                     type: "object",
-                    tag: { value: { canBeTemplate: true } },
-                    extend: undefined,
-                    // nullable: undefined,
-                    // optional: undefined,
+                    tag: {
+                      value: {
+                        canBeTemplate: true,
+                        isTemplate: true,
+                      },
+                    },
                     definition: {
                       a: {
                         type: "union",
-                        tag: { value: { canBeTemplate: true } },
+                        tag: {
+                          value: {
+                            canBeTemplate: true,
+                            isTemplate: true,
+                          },
+                        },
                         definition: [
                           {
                             type: "schemaReference",
-                            context: undefined,
-                            tag: undefined,
                             definition: {
                               absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
                               relativePath: "carryOn_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_myString",
@@ -733,11 +803,11 @@ describe(
             expectedReferences: {
               carryOn_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_myString: {
                 type: "union",
-                tag: { value: { canBeTemplate: true } },
+                tag: { value: { canBeTemplate: true, isTemplate: true } },
                 definition: [
                   {
                     type: "string",
-                    tag: { value: { canBeTemplate: true } }
+                    tag: { value: { canBeTemplate: true } },
                   },
                   {
                     type: "object",
@@ -767,11 +837,17 @@ describe(
                 },
                 b: {
                   type: "schemaReference",
-                  definition: { absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9", relativePath: "myString" },
+                  definition: {
+                    absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                    relativePath: "myString",
+                  },
                 },
                 d: {
                   type: "schemaReference",
-                  definition: { absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9", relativePath: "myString" },
+                  definition: {
+                    absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                    relativePath: "myString",
+                  },
                 },
               },
             },
@@ -798,8 +874,13 @@ describe(
             },
             expectedResult: {
               schema: {
+                tag: {
+                  value: {
+                    canBeTemplate: true,
+                    isTemplate: true,
+                  },
+                },
                 type: "union",
-                tag: { value: { canBeTemplate: true } },
                 definition: [
                   {
                     type: "object",
@@ -811,18 +892,32 @@ describe(
                   },
                   {
                     type: "object",
-                    tag: { value: { canBeTemplate: true } },
+                    tag: {
+                      value: {
+                        canBeTemplate: true,
+                        isTemplate: true,
+                      },
+                    },
                     definition: {
                       a: {
                         type: "schemaReference",
                         context: {
                           innerString: {
                             type: "union",
-                            tag: { value: { canBeTemplate: true } },
+                            tag: {
+                              value: {
+                                canBeTemplate: true,
+                                isTemplate: true,
+                              },
+                            },
                             definition: [
                               {
                                 type: "string",
-                                tag: { value: { canBeTemplate: true } },
+                                tag: {
+                                  value: {
+                                    canBeTemplate: true,
+                                  },
+                                },
                               },
                               {
                                 type: "object",
@@ -862,7 +957,7 @@ describe(
             expectedReferences: {
               carryOn_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_myString: {
                 type: "union",
-                tag: { value: { canBeTemplate: true } },
+                tag: { value: { canBeTemplate: true, isTemplate: true } },
                 definition: [
                   {
                     type: "string",
@@ -928,8 +1023,13 @@ describe(
             },
             expectedResult: {
               schema: {
+                tag: {
+                  value: {
+                    canBeTemplate: true,
+                    isTemplate: true,
+                  },
+                },
                 type: "union",
-                tag: { value: { canBeTemplate: true } },
                 definition: [
                   {
                     type: "object",
@@ -941,27 +1041,40 @@ describe(
                   },
                   {
                     type: "object",
-                    tag: { value: { canBeTemplate: true } },
                     extend: [
                       {
                         type: "schemaReference",
-                        tag: undefined,
-                        context: undefined,
                         definition: {
                           eager: true,
                           absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                          relativePath: "carryOn_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_extendedObject_extend",
+                          relativePath:
+                            "carryOn_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_extendedObject_extend",
                         },
                       },
                     ],
+                    tag: {
+                      value: {
+                        canBeTemplate: true,
+                        isTemplate: true,
+                      },
+                    },
                     definition: {
                       a: {
                         type: "union",
-                        tag: { value: { canBeTemplate: true } },
+                        tag: {
+                          value: {
+                            canBeTemplate: true,
+                            isTemplate: true,
+                          },
+                        },
                         definition: [
                           {
                             type: "string",
-                            tag: { value: { canBeTemplate: true } },
+                            tag: {
+                              value: {
+                                canBeTemplate: true,
+                              },
+                            },
                           },
                           {
                             type: "object",
@@ -982,7 +1095,7 @@ describe(
             expectedReferences: {
               carryOn_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_extendedObject_extend: {
                 type: "union",
-                tag: { value: { canBeTemplate: true } },
+                tag: { value: { canBeTemplate: true, isTemplate: true } },
                 definition: [
                   {
                     type: "object",
@@ -994,11 +1107,11 @@ describe(
                   },
                   {
                     type: "object",
-                    tag: { value: { canBeTemplate: true } },
+                    tag: { value: { canBeTemplate: true, isTemplate: true } },
                     definition: {
                       b: {
                         type: "union",
-                        tag: { value: { canBeTemplate: true } },
+                        tag: { value: { canBeTemplate: true, isTemplate: true } },
                         definition: [
                           {
                             type: "number",
@@ -1084,8 +1197,13 @@ describe(
             },
             expectedResult: {
               schema: {
+                tag: {
+                  value: {
+                    canBeTemplate: true,
+                    isTemplate: true,
+                  },
+                },
                 type: "union",
-                tag: { value: { canBeTemplate: true } },
                 definition: [
                   {
                     type: "object",
@@ -1097,33 +1215,49 @@ describe(
                   },
                   {
                     type: "object",
-                    tag: { value: { canBeTemplate: true } },
                     extend: [
                       {
                         type: "schemaReference",
                         definition: {
-                          absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
                           eager: true,
-                          relativePath: "carryOn_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_extendedObject1_extend",
+                          absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                          relativePath:
+                            "carryOn_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_extendedObject1_extend",
                         },
                       },
                       {
                         type: "schemaReference",
                         definition: {
-                          absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
                           eager: true,
-                          relativePath: "carryOn_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_extendedObject2_extend",
+                          absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                          relativePath:
+                            "carryOn_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_extendedObject2_extend",
                         },
                       },
                     ],
+                    tag: {
+                      value: {
+                        canBeTemplate: true,
+                        isTemplate: true,
+                      },
+                    },
                     definition: {
                       a: {
                         type: "union",
-                        tag: { value: { canBeTemplate: true } },
+                        tag: {
+                          value: {
+                            canBeTemplate: true,
+                            isTemplate: true,
+                          },
+                        },
                         definition: [
                           {
                             type: "string",
-                            tag: { value: { canBeTemplate: true } },
+                            tag: {
+                              value: {
+                                canBeTemplate: true,
+                              },
+                            },
                           },
                           {
                             type: "object",
@@ -1144,7 +1278,7 @@ describe(
             expectedReferences: {
               carryOn_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_extendedObject1_extend: {
                 type: "union",
-                tag: { value: { canBeTemplate: true } },
+                tag: { value: { canBeTemplate: true, isTemplate: true } },
                 definition: [
                   {
                     type: "object",
@@ -1156,11 +1290,11 @@ describe(
                   },
                   {
                     type: "object",
-                    tag: { value: { canBeTemplate: true } },
+                    tag: { value: { canBeTemplate: true, isTemplate: true } },
                     definition: {
                       b: {
                         type: "union",
-                        tag: { value: { canBeTemplate: true } },
+                        tag: { value: { canBeTemplate: true, isTemplate: true } },
                         definition: [
                           {
                             type: "number",
@@ -1182,7 +1316,7 @@ describe(
               },
               carryOn_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_extendedObject2_extend: {
                 type: "union",
-                tag: { value: { canBeTemplate: true } },
+                tag: { value: { canBeTemplate: true, isTemplate: true } },
                 definition: [
                   {
                     type: "object",
@@ -1194,11 +1328,11 @@ describe(
                   },
                   {
                     type: "object",
-                    tag: { value: { canBeTemplate: true } },
+                    tag: { value: { canBeTemplate: true, isTemplate: true } },
                     definition: {
                       d: {
                         type: "union",
-                        tag: { value: { canBeTemplate: true } },
+                        tag: { value: { canBeTemplate: true, isTemplate: true } },
                         definition: [
                           {
                             type: "string",
@@ -1292,7 +1426,7 @@ describe(
                 definition: {
                   b: {
                     type: "union",
-                    tag: { value: { canBeTemplate: true } },
+                    tag: { value: { canBeTemplate: true, isTemplate: true } },
                     definition: [
                       {
                         type: "number",
@@ -1318,7 +1452,8 @@ describe(
             testJzodSchema: {
               type: "record",
               definition: {
-                type: "string", tag: { value: { canBeTemplate: true } } 
+                type: "string",
+                tag: { value: { canBeTemplate: true } },
               },
             },
             carryOnJzodSchema: {
@@ -1333,11 +1468,20 @@ describe(
                 type: "record",
                 definition: {
                   type: "union",
-                  tag: { value: { canBeTemplate: true } },
+                  tag: {
+                    value: {
+                      canBeTemplate: true,
+                      isTemplate: true,
+                    },
+                  },
                   definition: [
                     {
                       type: "string",
-                      tag: { value: { canBeTemplate: true } },
+                      tag: {
+                        value: {
+                          canBeTemplate: true,
+                        },
+                      },
                     },
                     {
                       type: "object",
@@ -1346,14 +1490,14 @@ describe(
                           type: "number",
                         },
                       },
-                    }
+                    },
                   ],
                 },
               },
               hasBeenApplied: true,
             },
             expectedReferences: {},
-          }
+          },
         ];
         for (const t of tests) {
           runTest(t)

@@ -1,46 +1,87 @@
 import * as vitest from 'vitest';
+import { defaultMetaModelEnvironment } from '../../src/1_core/Model';
+import { MiroirActivityTracker } from '../../src/3_controllers/MiroirActivityTracker';
+import { MiroirEventService } from '../../src/3_controllers/MiroirEventService';
+import {
+  runUnitTransformerTests,
+  transformerTestsDisplayResults
+} from "../../src/4_services/TestTools";
 import {
   currentTestSuite,
 } from "./transformersTests_miroir.data";
-import { runTransformerTestInMemory, runTransformerTestSuite, transformerTestsDisplayResults } from '../../src/4_services/TestTools';
 
+type VitestNamespace = typeof vitest;
 
-// const env:any = (import.meta as any).env
-// const env:any = (process as any).env
-// console.log("@@@@@@@@@@@@@@@@@@ env", JSON.stringify(env, null, 2));
+// Access the test configuration from environment variables
+const RUN_TEST = process.env.RUN_TEST;
+// const vitestArgs = process.argv.slice(2); // does not work with npm test -- ...
+// const filePattern = vitestArgs.find(arg => !arg.startsWith('-')) || '';
+console.log("@@@@@@@@@@@@@@@@@@ RUN_TEST:", RUN_TEST);
+// console.log("@@@@@@@@@@@@@@@@@@ vitestArgs:", JSON.stringify(vitestArgs));
+// console.log("@@@@@@@@@@@@@@@@@@ File Pattern:", filePattern);
 
-const RUN_TEST= process.env.RUN_TEST
-console.log("@@@@@@@@@@@@@@@@@@ RUN_TEST", RUN_TEST);
-function getCommandLineArgs() {
-  const args = process.argv.slice(2);
-  const params: { [key: string]: string } = {};
-  args.forEach(arg => {
-    const [key, value] = arg.split('=');
-    if (key.startsWith('--')) {
-      params[key.slice(2)] = value;
-    }
-  });
-  return params;
-}
+const testSuiteName = "transformers.unit.test";
 
-// Get command line parameters
-const params = getCommandLineArgs();
-// // console.log('@@@@@@@@@@@@@@@@@@@@@@@ Command line parameters:', JSON.stringify(params, null, 2));
-// console.log('@@@@@@@@@@@@@@@@@@@@@@@ Command line parameters:', JSON.stringify(process.argv, null, 2));
-// // console.log("@@@@@@@@@@@@@@@@@@ miroirConfig", miroirConfig);
-// console.log("@@@@@@@@@@@@@@@@@@ vitest",vitest.describe)
-// describe.sequential("templatesDEFUNCT.unit.test", () => {
+// Skip this test when running other test patterns or when RUN_TEST doesn't match
+// const shouldSkip = RUN_TEST !== testSuiteName && !filePattern.includes(testSuiteName);
+const shouldSkip = RUN_TEST !== testSuiteName;
 
-afterAll(async () => {
-  if (RUN_TEST) {
-    transformerTestsDisplayResults(currentTestSuite, RUN_TEST, testSuiteName);
+// ##################################################################################################
+const miroirActivityTracker = new MiroirActivityTracker();
+const miroirEventService = new MiroirEventService(miroirActivityTracker);
+
+afterAll(() => {
+  if (!shouldSkip) {
+    transformerTestsDisplayResults(
+      currentTestSuite,
+      RUN_TEST, // filePattern || "",
+      testSuiteName,
+      miroirActivityTracker
+    );
   }
 });
-
 // ################################################################################################
-const testSuiteName = "transformers.unit.test";
-if (RUN_TEST == testSuiteName) {
-  await runTransformerTestSuite(vitest, [], currentTestSuite, runTransformerTestInMemory);
-} else {
+
+if (shouldSkip) {
   console.log("################################ skipping test suite:", testSuiteName);
+  // console.log("################################ File pattern:", filePattern);
+} else {
+  // await runTransformerTestSuite(
+  // await runTransformerTestsWithTracking._runTransformerTestSuite(
+  await runUnitTransformerTests._runTransformerTestSuite(
+    vitest,
+    [],
+    currentTestSuite,
+    undefined, // filter
+    // {
+    //   testList: {
+    //     miroirCoreTransformers: {
+    //       runtimeTransformerTests: {
+    //         conditional: [
+    //           "conditional equality true - basic string comparison",
+    //           "conditional equality false - basic string comparison",
+    //           "conditional not equal true - string comparison",
+    //           "conditional not equal false - string comparison",
+    //           "conditional less than true - number comparison",
+    //           "conditional less than false - number comparison",
+    //           "conditional less than or equal true - number comparison",
+    //           "conditional less than or equal false - number comparison",
+    //           "conditional greater than true - number comparison",
+    //           "conditional greater than false - number comparison",
+    //           "conditional greater than or equal true - number comparison",
+    //           "conditional greater than or equal false - number comparison",
+    //           "conditional without else clause - equality true",
+    //           "conditional with parameter reference comparison",
+    //         ]
+    //       },
+    //     },
+    //   },
+    // },
+    defaultMetaModelEnvironment,
+    miroirActivityTracker,
+    undefined, // parentTrackingId,
+    true, // trackActionsBelow
+    runUnitTransformerTests,
+  );
+  
 }

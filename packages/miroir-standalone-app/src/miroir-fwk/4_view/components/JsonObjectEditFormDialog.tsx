@@ -39,7 +39,7 @@ import {
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "JsonObjectEditFormDialog")
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "JsonObjectEditFormDialog"), "UI"
 ).then((logger: LoggerInterface) => {log = logger});
 
 
@@ -247,7 +247,7 @@ const JsonElementEditorDialog: React.FC<JsonElementEditorDialogProps> = ({
   onSubmit,
 }) => {
   // Add state for folded object attributes/array items
-  const [foldedObjectAttributeOrArrayItems, setFoldedObjectAttributeOrArrayItems] = useState<{ [k: string]: boolean }>({});
+  const context = useMiroirContextService();
 
   const onCodeEditorChange = useCallback((values: any, viewUpdate: any) => {
     log.info('edit code received value:', values);
@@ -377,8 +377,6 @@ const JsonElementEditorDialog: React.FC<JsonElementEditorDialogProps> = ({
                           : {}
                       }
                       foreignKeyObjects={foreignKeyObjects}
-                      foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
-                      setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
                       indentLevel={0}
                       submitButton={
                         <button type="submit" name={label} form={"form." + label}>

@@ -13,8 +13,7 @@
         "extractorTemplateType": "extractorTemplateForObjectListByEntity",
         "parentName": "Commit",
         "parentUuid": {
-          "transformerType": "constantUuid",
-          "interpolation": "build",
+          "transformerType": "constant",
           "value": "73bb0c69-e636-4e3b-a230-51f25469c089"
         }
       }

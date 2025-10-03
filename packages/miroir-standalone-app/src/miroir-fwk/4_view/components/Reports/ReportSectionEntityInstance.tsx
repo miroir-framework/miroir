@@ -2,6 +2,8 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import {
   ApplicationSection,
+  BoxedQueryWithExtractorCombinerTransformer,
+  Domain2QueryReturnType,
   DomainControllerInterface,
   Entity,
   EntityDefinition,
@@ -10,27 +12,47 @@ import {
   LoggerInterface,
   MetaModel,
   MiroirLoggerFactory,
+  ReduxDeploymentsState,
+  SyncBoxedExtractorOrQueryRunnerMap,
+  SyncQueryRunnerParams,
   Uuid,
   adminConfigurationDeploymentMiroir,
-  entityTransformerTest
+  entityDefinitionQuery,
+  entityQueryVersion,
+  entityTransformerTest,
+  getQueryRunnerParamsForReduxDeploymentsState,
+  getQueryTemplateRunnerParamsForReduxDeploymentsState,
+  miroirFundamentalJzodSchema,
+  runQueryTemplateFromReduxDeploymentsState,
+  safeStringify,
+  type BoxedQueryTemplateWithExtractorCombinerTransformer,
+  type JzodElement,
+  type MiroirQuery,
+  type SyncBoxedExtractorTemplateRunner,
+  type SyncQueryTemplateRunnerParams
 } from "miroir-core";
 
 import {
   useDomainControllerService,
-  useMiroirContextService
+  useMiroirContextService,
+  useViewParams
 } from "../../MiroirContextReactProvider.js";
 
 import { Toc } from '@mui/icons-material';
 import { packageName } from '../../../../constants.js';
 import { cleanLevel } from '../../constants.js';
 import {
-  useCurrentModel
+  useCurrentModel,
+  useReduxDeploymentsStateQueryTemplateSelector
 } from "../../ReduxHooks.js";
+import { useReduxDeploymentsStateQuerySelector } from '../../ReduxHooks.js';
+import {
+  getMemoizedReduxDeploymentsStateSelectorForTemplateMap,
+  getMemoizedReduxDeploymentsStateSelectorMap,
+} from "miroir-localcache-redux";
 import { useRenderTracker } from '../../tools/renderCountTracker.js';
 import { RenderPerformanceMetrics } from '../../tools/renderPerformanceMeasure.js';
-import { RunTransformerTestSuiteButton } from '../Buttons/RunTransformerTestSuiteButton.js';
 import { ValueObjectGrid } from '../Grids/ValueObjectGrid.js';
-import { useDocumentOutlineContext } from '../Page/RootComponent.js';
 import {
   ThemedCodeBlock,
   // ThemedCodeBlock,
@@ -45,30 +67,17 @@ import {
   ThemedTitle,
   ThemedTooltip
 } from "../Themes/index"
-import { TestCellWithDetails } from './TestCellWithDetails.js';
-import { TestResultCellWithActualValue } from './TestResultCellWithActualValue.js';
+import { TransformerTestDisplay } from './TransformerTestDisplay.js';
 import { TypedValueObjectEditor } from './TypedValueObjectEditor.js';
+import { useDocumentOutlineContext } from '../ValueObjectEditor/InstanceEditorOutlineContext.js';
+import { useReportPageContext } from './ReportPageContext.js';
+import type { FoldedStateTree } from './FoldedStateTreeUtils.js';
+import type { Query } from '@testing-library/dom';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ReportSectionEntityInstance")
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ReportSectionEntityInstance"), "UI",
 ).then((logger: LoggerInterface) => {log = logger});
-
-// ################################################################################################
-// ################################################################################################
-// Safe stringify function that prevents "Invalid string length" errors
-// ################################################################################################
-function safeStringify(obj: any, maxLength: number = 2000): string {
-  try {
-    const str = JSON.stringify(obj, null, 2);
-    if (str && str.length > maxLength) {
-      return str.substring(0, maxLength) + "... [truncated]";
-    }
-    return str || "[unable to stringify]";
-  } catch (error) {
-    return `[stringify error: ${error instanceof Error ? error.message : 'unknown'}]`;
-  }
-}
 
 
 // // Performance metrics display component
@@ -121,12 +130,23 @@ export interface ReportSectionEntityInstanceProps {
   maxRenderDepth?: number; // Optional max depth for initial rendering, default 1
 }
 
+// Test Selection Types are now in TransformerTestDisplay
+
+// ###############################################################################################################
+// ###############################################################################################################
+// ###############################################################################################################
+// ###############################################################################################################
+// ###############################################################################################################
+// ###############################################################################################################
+// ###############################################################################################################
+// ###############################################################################################################
 // ###############################################################################################################
 export const ReportSectionEntityInstance = (props: ReportSectionEntityInstanceProps) => {
   const renderStartTime = performance.now();
 
   // const errorLog = useErrorLogService();
   const context = useMiroirContextService();
+  const viewParams = useViewParams();
   const showPerformanceDisplay = context.showPerformanceDisplay;
   // const { currentTheme } = useMiroirTheme();
 
@@ -139,27 +159,29 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   // Track performance immediately for initial render
   const componentKey = `ReportSectionEntityInstance-${props.instance?.uuid || props.entityUuid}`;
 
-  log.info(
-    "++++++++++++++++++++++++++++++++ render",
-    "navigationCount",
-    navigationCount,
-    "totalCount",
-    totalCount,
-    "with props",
-    props
-  );
+  // log.info(
+  //   "++++++++++++++++++++++++++++++++ render",
+  //   "navigationCount",
+  //   navigationCount,
+  //   "totalCount",
+  //   totalCount,
+  //   "with props",
+  //   props
+  // );
 
   const [displayAsStructuredElement, setDisplayAsStructuredElement] = useState(true);
   const [displayEditor, setDisplayEditor] = useState(true);
+  const [isResultsCollapsed, setIsResultsCollapsed] = useState(true);
   // const [maxRenderDepth, setMaxRenderDepth] = useState<number>(props.maxRenderDepth ?? 1);
-  const [resolveConditionalSchemaResultsData, setResolveConditionalSchemaResultsData] = useState<
-    any[]
-  >([]); // TODO: use a precise type!
 
   // Use outline context for outline state management
   const outlineContext = useDocumentOutlineContext();
+  const reportContext = useReportPageContext();
   const isOutlineOpen = outlineContext.isOutlineOpen;
   const handleToggleOutline = outlineContext.onToggleOutline;
+
+  // Removed redundant availableWidth calculation - parent components handle sizing
+  // Just use 100% width since RootComponent's ThemedMain handles sidebar/outline spacing
 
   const instance: any = props.instance;
 
@@ -183,18 +205,56 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
       (e) => e?.entityUuid === currentReportTargetEntity?.uuid
     );
 
-  const [foldedObjectAttributeOrArrayItems, setFoldedObjectAttributeOrArrayItems] = useState<{
-    [k: string]: boolean;
-    // }>({"ROOT": true}); // Initialize with empty key to handle root object folding
-  }>(
-    currentReportTargetEntityDefinition?.display?.foldSubLevels
-      ? Object.fromEntries(
-          Object.entries(currentReportTargetEntityDefinition?.display?.foldSubLevels).map(
-            ([keyMapEntry, value]) => [keyMapEntry.replace("#", "."), value]
-          )
-        )
-      : {}
-  ); // Initialize with empty key to handle root object folding
+  // log.info(
+  //   "ReportSectionEntityInstance: currentReportTargetEntityDefinition:",
+  //   currentReportTargetEntityDefinition,
+  //   "miroirFundamentalJzodSchema",
+  //   miroirFundamentalJzodSchema
+  // );
+
+  // ##############################################################################################
+  // ################################################################################################
+  // ################################################################################################
+  // ################################################################################################
+  // CALLS setFoldedObjectAttributeOrArrayItems
+  useEffect(() => {
+    const foldedStringPaths = currentReportTargetEntityDefinition?.display?.foldSubLevels
+    ? Object.entries(currentReportTargetEntityDefinition?.display?.foldSubLevels).filter(([key, value]) => value): [];
+    
+    // log.info("Setting initial folded paths foldedStringPaths:", foldedStringPaths);
+    const foldedPaths = foldedStringPaths.map(([key, value]) => key.split("#"));
+    // log.info("Setting initial folded paths foldedPaths:", foldedPaths);
+    const newFoldedObjectAttributeOrArrayItems: FoldedStateTree = {};
+    foldedPaths.forEach((pathArr) => {
+      let node = newFoldedObjectAttributeOrArrayItems;
+      pathArr.forEach((segment, idx) => {
+        if (idx === pathArr.length - 1) {
+          (node as any)[segment] = "folded";
+        } else {
+          if (!node[segment] || typeof node[segment] !== "object") {
+            node[segment] = {};
+          }
+          node = node[segment];
+        }
+      });
+    });
+    log.info("Setting initial folded paths newFoldedObjectAttributeOrArrayItems:", newFoldedObjectAttributeOrArrayItems);
+
+    reportContext.setFoldedObjectAttributeOrArrayItems(
+      newFoldedObjectAttributeOrArrayItems
+  );
+  }, [currentReportTargetEntityDefinition?.display?.foldSubLevels, reportContext.setFoldedObjectAttributeOrArrayItems]);
+
+  // // Initialize test selections when test results are available
+  // useEffect(() => {
+  //   if (resolveConditionalSchemaResultsData && resolveConditionalSchemaResultsData.length > 0) {
+  //     reportContext.initializeTestSelections(resolveConditionalSchemaResultsData, (testPath) => {
+  //       // Don't select tests that were originally skipped
+  //       const test = resolveConditionalSchemaResultsData.find(t => t.testName === testPath);
+  //       return test ? test.testResult !== "skipped" : true;
+  //     });
+  //   }
+  // }, [resolveConditionalSchemaResultsData, reportContext.initializeTestSelections]);
 
   const formLabel: string =
     props.applicationSection +
@@ -202,10 +262,13 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
     currentReportTargetEntity?.name +
     (props.zoomInPath ? ` (${props.zoomInPath})` : "");
 
-  // Update the outline title when the current entity changes
+
+  // ###############################################################################################
+  // CALLS setOutlineTitle and setReportInstance
   useEffect(() => {
     if (currentReportTargetEntity?.name) {
       outlineContext.setOutlineTitle(currentReportTargetEntity.name + " details");
+      outlineContext.setReportInstance(instance);
     }
   }, [currentReportTargetEntity?.name, outlineContext.setOutlineTitle]);
 
@@ -215,52 +278,12 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
 
   // const currentMiroirModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
 
-  // const currentEnumJzodSchemaResolver: JzodEnumSchemaToJzodElementResolver | undefined = useMemo(
-  //   () =>
-  //     context.miroirFundamentalJzodSchema
-  //       ? getCurrentEnumJzodSchemaResolver(currentMiroirModel, context.miroirFundamentalJzodSchema)
-  //       : undefined,
-  //   [context.miroirFundamentalJzodSchema, currentMiroirModel]
-  // );
-
-  // log.info("ReportSectionEntityInstance instance", instance);
-  // log.info("ReportSectionEntityInstance entityJzodSchema", entityJzodSchemaDefinition);
-  // log.info("ReportSectionEntityInstance miroirFundamentalJzodSchema", context.miroirFundamentalJzodSchema);
-  // log.info("ReportSectionEntityInstance currentReportTargetEntityDefinition", currentReportTargetEntityDefinition);
-  // log.info("ReportSectionEntityInstance currentModel", currentModel);
-  // log.info("ReportSectionEntityInstance currentMiroirModel", currentMiroirModel);
-
-
-  useEffect(() => {
-    // Track render performance at the end of render
-    if (props.instance?.uuid) {
-      const renderEndTime = performance.now();
-      const renderDuration = renderEndTime - renderStartTime;
-
-      // Only track performance if render took longer than 5ms or every 100 renders
-      if (renderDuration > 5) {
-        const currentMetrics = RenderPerformanceMetrics.trackRenderPerformance(
-          componentKey,
-          renderDuration
-        );
-
-        // Log performance every 100 renders or if render took longer than 15ms
-        if (currentMetrics.renderCount % 100 === 0 || renderDuration > 15) {
-          log.info(
-            `ReportSectionEntityInstance render performance - ${componentKey}: ` +
-              `#${currentMetrics.renderCount} renders, ` +
-              `Current: ${renderDuration.toFixed(2)}ms, ` +
-              `Total: ${currentMetrics.totalRenderTime.toFixed(2)}ms, ` +
-              `Avg: ${currentMetrics.averageRenderTime.toFixed(2)}ms, ` +
-              `Min/Max: ${currentMetrics.minRenderTime.toFixed(
-                2
-              )}ms/${currentMetrics.maxRenderTime.toFixed(2)}ms`
-          );
-        }
-      }
-    }
-  }, [props.instance, props.entityUuid]);
-  // });
+  // log performance metrics at the end of render (conditional)
+  if (context.showPerformanceDisplay) {
+    const renderEndTime = performance.now();
+    const renderDuration = renderEndTime - renderStartTime;
+    RenderPerformanceMetrics.trackRenderPerformance(componentKey, renderDuration);
+  }
 
   // ##############################################################################################
   const handleDisplayEditorSwitchChange = useCallback(
@@ -326,39 +349,91 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
     [domainController, props]
   );
 
-  // ##############################################################################################
   // Check if this is a TransformerTest entity instance
   const isTransformerTestEntity = currentReportTargetEntity?.uuid === entityTransformerTest.uuid;
   const isTransformerTest =
     isTransformerTestEntity && instance?.parentUuid === entityTransformerTest.uuid;
 
-  // Log for debugging
-  log.info(
-    "ReportSectionEntityInstance - TransformerTest detection:",
-    "currentReportTargetEntity",
-    currentReportTargetEntity,
-    "entityUuid",
-    currentReportTargetEntity?.uuid,
-    "entityTransformerTest",
-    entityTransformerTest,
-    "instance",
-    instance,
-    "isTransformerTest",
-    isTransformerTest
-    //   {
-    //   transformerTestEntityUuid: entityTransformerTest.uuid,
-    //   isTransformerTestEntity,
-    //   instanceTransformerTestType: instance?.transformerTestType,
-    //   instanceName: instance?.name,
-    //   transformerTestLabel: instance?.transformerTestLabel
-    // }
+  // Check if this is a Query entity instance
+  // const QUERY_ENTITY_UUID = "e4320b9e-ab45-4abe-85d8-359604b3c62f";
+  const isQueryEntity = instance?.parentUuid === entityQueryVersion.uuid;
+
+  const currentQuery: any | undefined = isQueryEntity ? instance : undefined;
+  log.info("ReportSectionEntityInstance: isQueryEntity", isQueryEntity, "currentQuery", currentQuery);
+  // ##############################################################################################
+  // Query execution logic for Query entities
+  const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> = useMemo(
+    () => getMemoizedReduxDeploymentsStateSelectorForTemplateMap(),
+    // () => getMemoizedReduxDeploymentsStateSelectorMap(),
+    // () => getMemoizedReduxDeploymentsStateSelectorMap(),
+    []
   );
 
+  const queryForExecution =
+    useMemo((): BoxedQueryTemplateWithExtractorCombinerTransformer => {
+      // Convert the instance query to the expected format
+      return isQueryEntity && currentQuery?.definition && !isResultsCollapsed
+        ? {
+            queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
+            deploymentUuid: props.deploymentUuid,
+            pageParams: {
+              deploymentUuid: props.deploymentUuid,
+              // applicationSection: props.applicationSection,
+              applicationSection: "model",
+              instanceUuid: instance.uuid,
+            },
+            queryParams: {},
+            contextResults: {},
+            extractorTemplates: currentQuery?.definition.extractorTemplates || {},
+            combinerTemplates: currentQuery?.definition.combinerTemplates || {},
+            runtimeTransformers: currentQuery?.definition.runtimeTransformers || {},
+          }
+        : {
+            queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
+            deploymentUuid: props.deploymentUuid,
+            pageParams: {},
+            queryParams: {},
+            contextResults: {},
+            extractorTemplates: {},
+          };
+    }, [
+      isQueryEntity,
+      currentQuery,
+      isResultsCollapsed,
+      props.deploymentUuid,
+      props.applicationSection,
+      instance?.uuid,
+    ]);
+
+  log.info("ReportSectionEntityInstance: queryForExecution:", queryForExecution);
+  // const deploymentEntityStateFetchQueryParams: SyncQueryRunnerParams<ReduxDeploymentsState> | undefined = useMemo(
+  const deploymentEntityStateFetchQueryParams: SyncQueryTemplateRunnerParams<ReduxDeploymentsState> = useMemo(
+    () => {
+      // if (!queryForExecution) return undefined;
+      // return getQueryRunnerParamsForReduxDeploymentsState(
+      return getQueryTemplateRunnerParamsForReduxDeploymentsState(
+        queryForExecution,
+        deploymentEntityStateSelectorMap
+      );
+    },
+    [queryForExecution, deploymentEntityStateSelectorMap]
+  );
+
+  const queryResults: Domain2QueryReturnType<Domain2QueryReturnType<Record<string, any>>> | undefined = 
+    // Only execute query when results section is expanded
+     useReduxDeploymentsStateQueryTemplateSelector(
+    // (!isResultsCollapsed && deploymentEntityStateFetchQueryParams) ? runQueryTemplateFromReduxDeploymentsState(
+      deploymentEntityStateSelectorMap.runQueryTemplateWithExtractorCombinerTransformer,
+      deploymentEntityStateFetchQueryParams
+    );
+
   // ##############################################################################################
+  const testLabel = instance.transformerTestLabel || instance.name || "TransformerTest";
+  
   if (instance) {
     return (
+      // <ThemedContainer style={{ width: '100%' }}>
       <ThemedContainer>
-        <div>
           {showPerformanceDisplay && (
             <ThemedText>
               ReportSectionEntityInstance renders: {navigationCount} (total: {totalCount})
@@ -367,136 +442,14 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
 
           {/* Show test button if this is a TransformerTest entity */}
           {isTransformerTest && (
-            <div
-              style={{
-                marginBottom: "16px",
-                padding: "12px",
-                backgroundColor: "#e8f4fd",
-                borderRadius: "8px",
-                border: "1px solid #b3d9ff",
-                boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+            <TransformerTestDisplay
+              transformerTest={instance}
+              testLabel={testLabel}
+              useSnackBar={true}
+              onTestComplete={(testSuiteKey, structuredResults) => {
+                log.info(`Test completed for ${testSuiteKey}:`, structuredResults);
               }}
-            >
-              <div style={{ marginBottom: "8px", fontWeight: "bold", color: "#1976d2" }}>
-                🧪 Transformer Test Available
-              </div>
-              <RunTransformerTestSuiteButton
-                transformerTestSuite={instance}
-                testSuiteKey={instance.transformerTestLabel || instance.name || "TransformerTest"}
-                useSnackBar={true}
-                onTestComplete={(testSuiteKey, structuredResults) => {
-                  setResolveConditionalSchemaResultsData(structuredResults);
-                  log.info(`Test completed for ${testSuiteKey}:`, structuredResults);
-                }}
-                label={`▶️ Run ${instance.transformerTestLabel || "Transformer Test"}`}
-                style={{
-                  backgroundColor: "#1976d2",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "6px",
-                  padding: "8px 16px",
-                  fontWeight: "bold",
-                }}
-              />
-              {/* Test Results Display */}
-              {resolveConditionalSchemaResultsData &&
-                resolveConditionalSchemaResultsData.length > 0 && (
-                  <div style={{ margin: "20px 0" }}>
-                    <h3>resolveConditionalSchema Test Results:</h3>
-                    <ValueObjectGrid
-                      valueObjects={resolveConditionalSchemaResultsData}
-                      jzodSchema={{
-                        type: "object",
-                        definition: {
-                          testName: { type: "string" },
-                          testResult: { type: "string" },
-                          status: { type: "string" },
-                          assertionCount: { type: "number" },
-                          assertions: { type: "string" },
-                          fullAssertionsResults: {
-                            type: "object",
-                            definition: {},
-                          },
-                        },
-                      }}
-                      columnDefs={{
-                        columnDefs: [
-                          {
-                            field: "testName",
-                            headerName: "Test Name",
-                            cellRenderer: (params: any) => (
-                              <TestCellWithDetails
-                                value={params.value}
-                                testData={params.data.rawValue}
-                                testName={params.data.rawValue.testName}
-                                type="testName"
-                              />
-                            ),
-                            width: 200,
-                          },
-                          {
-                            field: "status",
-                            headerName: "Status",
-                            cellRenderer: (params: any) => (
-                              <TestCellWithDetails
-                                value={params.value}
-                                testData={params.data.rawValue}
-                                testName={params.data.rawValue.testName}
-                                type="status"
-                              />
-                            ),
-                            width: 100,
-                          },
-                          {
-                            field: "testResult",
-                            headerName: "Result",
-                            cellRenderer: (params: any) => (
-                              <TestResultCellWithActualValue
-                                value={params.value}
-                                testData={params.data.rawValue}
-                                testName={params.data.rawValue.testName}
-                              />
-                            ),
-                            width: 100,
-                          },
-                          {
-                            field: "assertionCount",
-                            headerName: "Assertions",
-                            width: 100,
-                          },
-                          {
-                            field: "assertions",
-                            headerName: "Summary",
-                            cellRenderer: (params: any) => (
-                              <div
-                                style={{
-                                  maxWidth: "200px",
-                                  overflow: "hidden",
-                                  textOverflow: "ellipsis",
-                                  whiteSpace: "nowrap",
-                                  cursor: "pointer",
-                                }}
-                                title="Click test name or status for full details"
-                              >
-                                {params.value}
-                              </div>
-                            ),
-                            width: 250,
-                          },
-                        ],
-                      }}
-                      styles={{
-                        height: "400px",
-                        width: "100%",
-                      }}
-                      maxRows={20}
-                      sortByAttribute="testName"
-                      displayTools={false}
-                      gridType="ag-grid"
-                    />
-                  </div>
-                )}
-            </div>
+            />
           )}
 
           <div>
@@ -507,65 +460,6 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
               onChange={handleDisplayEditorSwitchChange}
             />
           </div>
-
-          {/* {displayEditor && (
-            <div style={{ marginTop: "12px", padding: "12px", backgroundColor: "#f5f5f5", borderRadius: "6px" }}>
-              <ThemedText style={{ fontWeight: "bold", marginBottom: "8px" }}>
-                🎛️ Rendering Depth Controls
-              </ThemedText>
-              
-              <ThemedFlexRow align="center" style={{ marginBottom: "8px" }}>
-                <ThemedLabel style={{ marginRight: "12px", minWidth: "120px" }}>
-                  Max Render Depth:
-                </ThemedLabel>
-                <ThemedTextField
-                  type="number"
-                  value={maxRenderDepth.toString()}
-                  onChange={handleMaxRenderDepthChange}
-                  style={{ width: "80px", marginRight: "12px" }}
-                  minWidth="80px"
-                  maxWidth="80px"
-                />
-                <ThemedText style={{ fontSize: "0.85em", color: "#666" }}>
-                  (1 = shallow, higher = deeper)
-                </ThemedText>
-              </ThemedFlexRow>
-              
-              <ThemedFlexRow align="center" style={{ gap: "8px" }}>
-                <ThemedText style={{ marginRight: "8px" }}>Quick expand to:</ThemedText>
-                <ThemedButton
-                  onClick={() => handleUnfoldToDepth(1)}
-                  style={{ fontSize: "0.8em", padding: "4px 8px" }}
-                >
-                  Depth 1
-                </ThemedButton>
-                <ThemedButton
-                  onClick={() => handleUnfoldToDepth(2)}
-                  style={{ fontSize: "0.8em", padding: "4px 8px" }}
-                >
-                  Depth 2
-                </ThemedButton>
-                <ThemedButton
-                  onClick={() => handleUnfoldToDepth(3)}
-                  style={{ fontSize: "0.8em", padding: "4px 8px" }}
-                >
-                  Depth 3
-                </ThemedButton>
-                <ThemedButton
-                  onClick={() => handleUnfoldToDepth(-1)}
-                  style={{ fontSize: "0.8em", fontWeight: "bold", padding: "4px 8px" }}
-                >
-                  Full ∞
-                </ThemedButton>
-                <ThemedButton
-                  onClick={handleCollapseAll}
-                  style={{ fontSize: "0.8em", padding: "4px 8px" }}
-                >
-                  Collapse
-                </ThemedButton>
-              </ThemedFlexRow>
-            </div>
-          )} */}
           <div>
             <ThemedStatusText>
               displayAsStructuredElement: {displayAsStructuredElement ? "true" : "false"}{" "}
@@ -597,6 +491,72 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
               </ThemedTooltip>
             )}
           </ThemedHeaderSection>
+          
+          {/* Query Results Section - Collapsible */}
+          {isQueryEntity && (
+            <div style={{ 
+              marginBottom: '16px',
+              border: '1px solid #dee2e6',
+              borderRadius: '4px',
+              backgroundColor: '#f8f9fa'
+            }}>
+              <div 
+                style={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'space-between',
+                  padding: '12px 16px',
+                  cursor: 'pointer',
+                  borderBottom: isResultsCollapsed ? 'none' : '1px solid #dee2e6'
+                }}
+                onClick={() => setIsResultsCollapsed(!isResultsCollapsed)}
+              >
+                <ThemedTitle style={{ margin: 0, fontSize: '16px' }}>
+                  Query Results
+                </ThemedTitle>
+                <span style={{ color: '#666', fontSize: '14px' }}>
+                  {isResultsCollapsed ? '▶' : '▼'}
+                </span>
+              </div>
+              
+              {!isResultsCollapsed && (
+                <div style={{ padding: '16px' }}>
+                  {queryResults ? (
+                    queryResults.elementType === "failure" ? (
+                      <div style={{ color: '#dc3545', padding: '8px' }}>
+                        <strong>Query execution failed:</strong>
+                        <ThemedCodeBlock style={{ marginTop: '8px' }}>
+                          {JSON.stringify(queryResults, null, 2)}
+                        </ThemedCodeBlock>
+                      </div>
+                    ) : (
+                      <div>
+                        <div style={{ marginBottom: '8px', fontSize: '14px', color: '#666' }}>
+                          Query executed successfully. Results:
+                        </div>
+                        <ThemedCodeBlock>
+                          {JSON.stringify(queryResults, null, 2)}
+                        </ThemedCodeBlock>
+                      </div>
+                    )
+                  ) : (
+                    <div style={{ 
+                      textAlign: 'center', 
+                      padding: '16px',
+                      color: '#666',
+                      fontStyle: 'italic'
+                    }}>
+                      {queryForExecution ? 
+                        "Executing query..." : 
+                        "No query definition found for this instance"
+                      }
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+
           {currentReportTargetEntityDefinition && context.applicationSection ? (
             displayEditor ? (
               <TypedValueObjectEditor
@@ -608,8 +568,6 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                 //
                 formLabel={formLabel}
                 onSubmit={onEditValueObjectFormSubmit}
-                foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
-                setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
                 zoomInPath={props.zoomInPath}
                 maxRenderDepth={Infinity} // Always render fully for editor
               />
@@ -676,7 +634,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
               </ThemedPreformattedText>
             </div>
           )}
-        </div>
+        {/* </div> */}
         {/* <PerformanceMetricsDisplay /> */}
       </ThemedContainer>
     );

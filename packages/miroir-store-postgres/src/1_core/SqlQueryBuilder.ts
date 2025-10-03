@@ -1,4 +1,4 @@
-import { JzodReference } from "miroir-core";
+import { JzodReference, MiroirLoggerFactory, type LoggerInterface } from "miroir-core";
 import {
   SqlQueryDefineColumnSchema,
   SqlQueryHereTableDefinitionSchema,
@@ -8,6 +8,13 @@ import {
   SqlQueryTableColumnAccessSchema,
   SqlQueryTableLiteralSchema,
 } from "../generated";
+import { cleanLevel } from "../4_services/constants";
+import { packageName } from "../constants";
+
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "SqlQueryBuilder")
+).then((logger: LoggerInterface) => {log = logger});
 
 // ################################################################################################
 export function indent(indentLevel: number | undefined) {
@@ -91,7 +98,7 @@ export function sqlSelectExpression(
     }
     case "case": {
       const indentNext = indentLevel != undefined ? indentLevel + 1 : undefined;
-      // console.log("sqlSelectExpression", q.queryPart, "indentLevel", indentLevel, "indentNext", indentNext);
+      // log.info("sqlSelectExpression", q.queryPart, "indentLevel", indentLevel, "indentNext", indentNext);
       result = `${indent(indentLevel)}CASE${flushAndIndentOrSpace(indentNext)}WHEN ${sqlSelectExpression(undefined, q.when)}${flushAndIndentOrSpace(indentNext)}THEN ${sqlSelectExpression(
         undefined,
         q.then
@@ -107,8 +114,8 @@ export function sqlSelectExpression(
       break;
     }
   }
-  // console.log(`indent(${indentLevel})="${indent(indentLevel)}"`);
-  // console.log("sqlSelectExpression", q.queryPart, "returns", result);
+  // log.info(`indent(${indentLevel})="${indent(indentLevel)}"`);
+  // log.info("sqlSelectExpression", q.queryPart, "returns", result);
   return result;
 }
 
@@ -213,7 +220,7 @@ export function sqlQuery(indentLevel: number | undefined, q: SqlQuerySelectSchem
       : q.select
           .map((item) => typeof item == "string"?item:sqlDefineColumn(indentLevel, item))
           .join(", ");
-  console.log("sqlQuery selectParts", selectParts);
+  log.info("sqlQuery selectParts", selectParts);
   const fromParts =
     (q.from == undefined || (Array.isArray(q.from) && q.from.length == 0))
       ? ""
@@ -226,7 +233,7 @@ export function sqlQuery(indentLevel: number | undefined, q: SqlQuerySelectSchem
               })
               .join(", ")));
 
-  console.log("sqlQuery fromParts", fromParts);
+  log.info("sqlQuery fromParts", fromParts);
   return `SELECT ${selectParts}${flushAndIndentOrSpace(indentLevel)}${fromParts}${q.where ? `${flushAndIndentOrSpace(indentLevel)}WHERE ${q.where}` : ""}`;
 }
 

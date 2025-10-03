@@ -30,7 +30,7 @@ import { MiroirThemeSelector } from '../MiroirThemeSelector.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ResponsiveAppBar")
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ResponsiveAppBar"), "UI",
 ).then((logger: LoggerInterface) => {log = logger});
 
 const pages: MiroirMenuItem[] = [
@@ -54,6 +54,20 @@ const pages: MiroirMenuItem[] = [
     "selfApplication": "10ff36f2-50a3-48d8-b80f-e48e5d13af8e", //not used
     "reportUuid": "c9ea3359-690c-4620-9603-b5b402e4a2b9", //not used
     "icon": "category"
+  },
+  {
+    "label": "events",
+    "section": "model",
+    "selfApplication": "10ff36f2-50a3-48d8-b80f-e48e5d13af8e", //not used
+    "reportUuid": "c9ea3359-690c-4620-9603-b5b402e4a2b9", //not used
+    "icon": "event_note"
+  },
+  {
+    "label": "error-logs",
+    "section": "model",
+    "selfApplication": "10ff36f2-50a3-48d8-b80f-e48e5d13af8e", //not used
+    "reportUuid": "c9ea3359-690c-4620-9603-b5b402e4a2b9", //not used
+    "icon": "error"
   },
 ];
 const settings = ['Setting1', 'Setting2', 'Setting3', 'Setting4'];
@@ -381,9 +395,13 @@ export function AppBar(props:AppBarProps) {
                 }
               >
                 <Button
-                  onClick={() =>
-                    context.setShowActionTimeline?.(!context.showActionTimeline)
-                  }
+                  onClick={() => {
+                    console.log('Action Timeline toggle clicked:', { 
+                      current: context.showActionTimeline, 
+                      willBecome: !context.showActionTimeline 
+                    });
+                    context.setShowActionTimeline?.(!context.showActionTimeline);
+                  }}
                   sx={{
                     mr: 2,
                     px: 1,

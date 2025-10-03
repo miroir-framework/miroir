@@ -39,7 +39,7 @@ import { useCurrentModel } from "./ReduxHooks.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "importer")
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "importer"), "UI",
 ).then((logger: LoggerInterface) => {log = logger});
 
 

@@ -11,47 +11,38 @@ import { useSelector } from "react-redux";
 
 import {
   adminConfigurationDeploymentAdmin,
-  adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
   defaultMiroirMetaModel,
-  ReduxDeploymentsState,
-  Domain2QueryReturnType,
   DomainControllerInterface,
-  DomainElementSuccess,
   EndpointDefinition,
-  EntityInstancesUuidIndex,
-  getApplicationSection,
-  getDefaultValueForJzodSchemaWithResolution,
   getDefaultValueForJzodSchemaWithResolutionNonHook,
-  getQueryRunnerParamsForReduxDeploymentsState,
   instanceEndpointVersionV1,
   JzodObject,
   LoggerInterface,
   MetaModel,
+  miroirFundamentalJzodSchema,
   MiroirLoggerFactory,
   queryEndpointVersionV1,
+  ReduxDeploymentsState,
   SelfApplicationDeploymentConfiguration,
   SyncBoxedExtractorOrQueryRunnerMap,
-  SyncQueryRunner,
-  SyncQueryRunnerParams,
-  Uuid,
-  type MiroirModelEnvironment,
-  miroirFundamentalJzodSchema,
-  type JzodSchema
+  type JzodSchema,
+  type MiroirModelEnvironment
 } from 'miroir-core';
 import { Action } from 'miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js';
+import { getMemoizedReduxDeploymentsStateSelectorMap, ReduxStateWithUndoRedo } from 'miroir-localcache-redux';
 import { FC, useMemo, useState } from 'react';
 import { deployments, packageName } from '../../../constants.js';
-import { useDomainControllerService, useMiroirContextService } from '../MiroirContextReactProvider.js';
+import { useDomainControllerService, useMiroirContextService, useSnackbar } from '../MiroirContextReactProvider.js';
+import { useCurrentModel } from '../ReduxHooks.js';
 import { cleanLevel } from '../constants.js';
 import { TypedValueObjectEditor } from './Reports/TypedValueObjectEditor.js';
 import { ThemedFormControl, ThemedInputLabel, ThemedMUISelect, ThemedPaper } from './Themes/index.js';
-import { useCurrentModel, useReduxDeploymentsStateQuerySelectorForCleanedResult } from '../ReduxHooks.js';
-import { getMemoizedReduxDeploymentsStateSelectorMap, ReduxStateWithUndoRedo } from 'miroir-localcache-redux';
+import { useReportPageContext } from './Reports/ReportPageContext.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "EndpointActionCaller")
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "EndpointActionCaller"), "UI",
 ).then((logger: LoggerInterface) => {log = logger});
 
 export interface EndpointActionCallerProps {}
@@ -101,11 +92,12 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
   const [selectedDeploymentUuid, setSelectedDeploymentUuid] = useState<string>('');
   const [selectedEndpointUuid, setSelectedEndpointUuid] = useState<string>('');
   const [selectedActionIndex, setSelectedActionIndex] = useState<number>(-1);
-  const [foldedObjectAttributeOrArrayItems, setFoldedObjectAttributeOrArrayItems] = useState<{[k: string]: boolean}>({});
   const [actionFormInitialValues, setActionFormInitialValues] = useState<Record<string, any>>({});
 
   const domainController: DomainControllerInterface = useDomainControllerService();
+  const reportContext = useReportPageContext();
   const context = useMiroirContextService();
+  const { showSnackbar } = useSnackbar();
   const currentModel: MetaModel = useCurrentModel(
     context.applicationSection == "data" ? context.deploymentUuid : adminConfigurationDeploymentMiroir.uuid
   );
@@ -177,19 +169,19 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
     setSelectedDeploymentUuid(event.target.value);
     setSelectedEndpointUuid('');
     setSelectedActionIndex(-1);
-    setFoldedObjectAttributeOrArrayItems({});
+    reportContext.setFoldedObjectAttributeOrArrayItems({});
   };
 
   const handleEndpointChange = (event: SelectChangeEvent<string>) => {
     setSelectedEndpointUuid(event.target.value);
     setSelectedActionIndex(-1);
-    setFoldedObjectAttributeOrArrayItems({});
+    reportContext.setFoldedObjectAttributeOrArrayItems({});
   };
 
   const handleActionChange = (event: SelectChangeEvent) => {
     log.info('EndpointActionCaller: handleActionChange', event.target.value);
     setSelectedActionIndex(parseInt(event.target.value));
-    setFoldedObjectAttributeOrArrayItems({});
+    reportContext.setFoldedObjectAttributeOrArrayItems({});
     
     const selectedActionIndex = parseInt(event.target.value);
     const currentAction =
@@ -203,6 +195,7 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
       !selectedDeploymentUuid
         ? {}
         : getDefaultValueForJzodSchemaWithResolutionNonHook(
+            "build",
             {
               type: "object",
               definition: currentAction.actionParameters || {},
@@ -261,14 +254,27 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
       log.info('EndpointActionCaller: Action result', result);
       
       if (result.status === 'error') {
-        alert(`Action failed: ${result.errorMessage || 'Unknown error'}`);
+        // Handle server errors with snackbar
+        // if (result.isServerError && result.errorMessage) {
+        if (result.errorMessage) {
+          showSnackbar(`Server error: ${result.errorMessage}`, "error");
+        } else {
+          showSnackbar(`Action failed: ${result.errorMessage || 'Unknown error'}`, "error");
+        }
       } else {
+        showSnackbar('Action submitted successfully!', "success");
         log.info('Action submitted successfully! Check console for details.');
       }
       
     } catch (error) {
       log.error('EndpointActionCaller: Error submitting action', error);
-      alert('Error submitting action. Check console for details.');
+      
+      // Check if the error has structured server error data
+      if (error && typeof error === 'object' && (error as any).isServerError) {
+        showSnackbar(`Server error: ${(error as any).errorMessage || (error as any).message || 'Unknown server error'}`, "error");
+      } else {
+        showSnackbar('Error submitting action. Check console for details.', "error");
+      }
     }
   };
 
@@ -373,8 +379,6 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
               // 
               formLabel={"formLabel"}
               onSubmit={handleSubmit}
-              foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
-              setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
             />
           </Box>
         )}

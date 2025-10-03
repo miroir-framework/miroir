@@ -31,7 +31,9 @@ import {
   TransformerForRuntime_objectEntries,
   TransformerForRuntime_objectValues,
   TransformerForRuntime_unique,
-  defaultMiroirModelEnviroment,
+  defaultMetaModelEnvironment,
+  defaultTransformerInput,
+  type TransformerForBuildPlusRuntime_conditional,
 } from "miroir-core";
 import { RecursiveStringRecords } from "../4_services/SqlDbQueryTemplateRunner";
 import { cleanLevel } from "../4_services/constants";
@@ -83,6 +85,7 @@ export type ITransformerHandler<T> = (
 ) => Domain2QueryReturnType<SqlStringForTransformerElementValue>;
 
 const sqlTransformerImplementations: Record<string, ITransformerHandler<any>> = {
+  sqlStringForConditionalTransformer,
   sqlStringForConstantAnyTransformer,
   sqlStringForConstantTransformer,
   sqlStringForConstantAsExtractorTransformer,
@@ -105,37 +108,39 @@ const sqlTransformerImplementations: Record<string, ITransformerHandler<any>> = 
 }
 
 // ##############################################################################################
+// It represents the type of the SQL string or object being generated. 
+// The type can be one of the following: 
+// - "json": A JSON object.
+// - "scalar": A single scalar value.
+// - "table": A table structure.
+// - "json_array": An array of JSON objects.
+// - "tableOf1JsonColumn": A table with one column containing JSON values.
+/**
+ * * This type represents the possible types of SQL strings or objects that can be generated for a transformer element.
+ * @typedef {("json" | "scalar" | "table" | "json_array" | "tableOf1JsonColumn")} SqlStringForTransformerElementValueType
+ */
 export type SqlStringForTransformerElementValueType = "json" | "scalar" | "table" | "json_array" | "tableOf1JsonColumn";
 /**
  * * This type represents the structure of the SQL string or object that is generated for a transformer element.
- * @param sqlStringOrObject - The SQL string or object generated for the transformer element.
- * @param resultAccessPath - The path to access the result of the SQL string or object.
- * @param columnNameContainingJsonValue - The name of the column containing JSON values, if applicable.
- * @param encloseEndResultInArray - Indicates whether to enclose the end result in an array.
- * @param extraWith - Additional SQL strings or objects to include in the result.
- * @param usedContextEntries - The context entries used in the SQL string or object.
- * @param type - The type of the SQL string or object generated.
- * @param preparedStatementParameters - The parameters for the prepared statement, if applicable.
+ * @property {string} sqlStringOrObject - The SQL string or object generated for the transformer element.
+ * @property {ResultAccessPath} [resultAccessPath] - The path to access the result of the SQL string or object.
+ * @property {string} [columnNameContainingJsonValue] - The name of the column containing JSON values, if applicable.
+ * @property {boolean} [encloseEndResultInArray] - Indicates whether to enclose the end result in an array.
+ * @property {{ name: string; sql: string; sqlResultAccessPath?: ResultAccessPath }[]} [extraWith] - Additional SQL strings or objects to include in the result.
+ * @property {string[]} [usedContextEntries] - The context entries used in the SQL string or object.
+ * @property {number} [index] - The index of the transformer element, if applicable.
+ * @property {SqlStringForTransformerElementValueType} type - The type of the SQL string or object generated.
+ * @property {any[]} [preparedStatementParameters] - The parameters for the prepared statement, if applicable.
  */
 export type SqlStringForTransformerElementValue = {
   sqlStringOrObject: string;
-  // resultAccessPath?: (string | number)[];
   resultAccessPath?: ResultAccessPath;
   columnNameContainingJsonValue?: string;
   encloseEndResultInArray?: boolean;
   extraWith?: { name: string; sql: string; sqlResultAccessPath?: ResultAccessPath }[];
   usedContextEntries?: string[]; // 
   index?: number;
-  // This attribute is part of the `SqlStringForTransformerElementValue` interface. 
-  // It represents the type of the SQL string or object being generated. 
-  // The type can be one of the following: 
-  // - "json": A JSON object.
-  // - "scalar": A single scalar value.
-  // - "table": A table structure.
-  // - "json_array": An array of JSON objects.
-  // - "tableOf1JsonColumn": A table with one column containing JSON values.
   type: SqlStringForTransformerElementValueType;
-  // type: "json" | "tableOf1JsonColumn"| "json_array" | "table" | "scalar";
   preparedStatementParameters?: any[];
 };
 
@@ -431,6 +436,26 @@ function sqlStringForApplyTo(
   useAccessPathForContextReference: boolean = true,
   topLevelTransformer: boolean = true
 ): Domain2QueryReturnType<SqlStringForTransformerElementValue> {
+  log.info(
+    "sqlStringForApplyTo called with",
+    "actionRuntimeTransformer",
+    JSON.stringify(actionRuntimeTransformer, null, 2),
+  );
+  if (!actionRuntimeTransformer.applyTo) {
+      return sqlStringForRuntimeTransformer(
+        {
+          transformerType: "contextReference",
+          interpolation: "runtime",
+          referenceName: defaultTransformerInput,
+        },
+        preparedStatementParametersIndex,
+        indentLevel,
+        queryParams,
+        definedContextEntries,
+        useAccessPathForContextReference,
+        topLevelTransformer
+      )
+  }
   switch (typeof actionRuntimeTransformer.applyTo) {
     case "string":
     case "number":
@@ -469,24 +494,42 @@ function sqlStringForApplyTo(
           topLevelTransformer
         );
       }
-      if (actionRuntimeTransformer.applyTo.transformerType != "contextReference") {
-        return new Domain2ElementFailed({
-          queryFailure: "QueryNotExecutable",
-          query: actionRuntimeTransformer as any,
-          failureMessage:
-            "sqlStringForRuntimeTransformer sqlStringForApplyTo implemented only for contextReference type: " + JSON.stringify(actionRuntimeTransformer.applyTo),
-        });
+      if (
+        ["constantAsExtractor", "constant", "contextReference", "parameterReference"].includes(
+          actionRuntimeTransformer.applyTo.transformerType || ""
+        )
+      ) {
+        return sqlStringForRuntimeTransformer(
+          actionRuntimeTransformer.applyTo as any, // TODO: fix types of sqlStringForApplyTo and sqlStringForRuntimeTransformer
+          preparedStatementParametersIndex,
+          indentLevel,
+          queryParams,
+          definedContextEntries,
+          useAccessPathForContextReference,
+          topLevelTransformer
+        );
       }
-      const referenceQuery = sqlStringForRuntimeTransformer(
-              actionRuntimeTransformer.applyTo,
-              preparedStatementParametersIndex,
-              indentLevel,
-              queryParams,
-              definedContextEntries,
-              useAccessPathForContextReference,
-              topLevelTransformer
-            );
-      return referenceQuery;
+      // if (actionRuntimeTransformer.applyTo.transformerType != "contextReference") {
+      return new Domain2ElementFailed({
+        queryFailure: "QueryNotExecutable",
+        query: actionRuntimeTransformer as any,
+        failureMessage:
+          "sqlStringForRuntimeTransformer sqlStringForApplyTo not implemented for " +
+          actionRuntimeTransformer.applyTo.transformerType +
+          " type: " +
+          JSON.stringify(actionRuntimeTransformer.applyTo),
+      });
+      // }
+      // const referenceQuery = sqlStringForRuntimeTransformer(
+      //   actionRuntimeTransformer.applyTo,
+      //   preparedStatementParametersIndex,
+      //   indentLevel,
+      //   queryParams,
+      //   definedContextEntries,
+      //   useAccessPathForContextReference,
+      //   topLevelTransformer
+      // );
+      // return referenceQuery;
     
     }
     case "symbol":
@@ -523,7 +566,7 @@ function sqlStringForCountTransformer(
     useAccessPathForContextReference,
     topLevelTransformer,
   );
-  console.log("sqlStringForRuntimeTransformer count referenceQuery", JSON.stringify(referenceQuery, null, 2));
+  log.info("sqlStringForRuntimeTransformer count referenceQuery", JSON.stringify(referenceQuery, null, 2));
   if (referenceQuery instanceof Domain2ElementFailed) {
     return referenceQuery;
   }
@@ -589,6 +632,158 @@ FROM (${referenceQuery.sqlStringOrObject}) AS "count_applyTo",
       });
     }
   }
+}
+
+const jsOperatorToSqlOperatorMap: Record<string, string> = {
+  "==": "=",
+  "===": "=",
+  "!=": "<>",
+  "!==": "<>",
+  "<": "<",
+  "<=": "<=",
+  ">": ">",
+  ">=": ">=",
+}
+// ################################################################################################
+function sqlStringForConditionalTransformer(
+  actionRuntimeTransformer: TransformerForBuildPlusRuntime_conditional,
+  preparedStatementParametersCount: number,
+  indentLevel: number,
+  queryParams: Record<string, any>,
+  definedContextEntries: Record<string, SqlContextEntry>,
+  useAccessPathForContextReference: boolean,
+  topLevelTransformer: boolean,
+  withClauseColumnName?: string,
+  iterateOn?: string,
+): Domain2QueryReturnType<SqlStringForTransformerElementValue> {
+  let newPreparedStatementParametersCount = preparedStatementParametersCount;
+  let preparedStatementParameters: any[] = [];
+
+  const left = sqlStringForRuntimeTransformer(
+    actionRuntimeTransformer.left as TransformerForRuntime,
+    newPreparedStatementParametersCount,
+    indentLevel,
+    queryParams,
+    definedContextEntries,
+    useAccessPathForContextReference,
+    false, // topLevelTransformer
+    undefined, // withClauseColumnName
+    // referenceToOuterObjectRenamed // iterateOn
+  )
+  if (left instanceof Domain2ElementFailed) {
+    return left;
+  }
+  if (left.preparedStatementParameters) {
+    preparedStatementParameters = [
+      ...preparedStatementParameters,
+      ...left.preparedStatementParameters,
+    ];
+    newPreparedStatementParametersCount +=
+      left.preparedStatementParameters.length;
+  }
+
+  const right = sqlStringForRuntimeTransformer(
+    actionRuntimeTransformer.right as TransformerForRuntime,
+    newPreparedStatementParametersCount,
+    indentLevel,
+    queryParams,
+    definedContextEntries,
+    useAccessPathForContextReference,
+    false, // topLevelTransformer
+    undefined, // withClauseColumnName
+    // referenceToOuterObjectRenamed // iterateOn
+  )
+  if (right instanceof Domain2ElementFailed) {
+    return right;
+  }
+  if (right.preparedStatementParameters) {
+    preparedStatementParameters = [
+      ...preparedStatementParameters,
+      ...right.preparedStatementParameters,
+    ];
+    newPreparedStatementParametersCount +=
+      right.preparedStatementParameters.length;
+  }
+  const _then = sqlStringForRuntimeTransformer(
+    actionRuntimeTransformer.then as TransformerForRuntime,
+    newPreparedStatementParametersCount,
+    indentLevel,
+    queryParams,
+    definedContextEntries,
+    useAccessPathForContextReference,
+    false, // topLevelTransformer
+    undefined, // withClauseColumnName
+    // referenceToOuterObjectRenamed // iterateOn
+  )
+  if (_then instanceof Domain2ElementFailed) {
+    return _then;
+  }
+  if (_then.preparedStatementParameters) {
+    preparedStatementParameters = [
+      ...preparedStatementParameters,
+      ..._then.preparedStatementParameters,
+    ];
+    newPreparedStatementParametersCount +=
+      _then.preparedStatementParameters.length;
+  }
+  const _else = sqlStringForRuntimeTransformer(
+    actionRuntimeTransformer.else as TransformerForRuntime,
+    newPreparedStatementParametersCount,
+    indentLevel,
+    queryParams,
+    definedContextEntries,
+    useAccessPathForContextReference,
+    false, // topLevelTransformer
+    undefined, // withClauseColumnName
+    // referenceToOuterObjectRenamed // iterateOn
+  )
+  if (_else instanceof Domain2ElementFailed) {
+    return _else;
+  }
+  if (_else.preparedStatementParameters) {
+    preparedStatementParameters = [
+      ...preparedStatementParameters,
+      ..._else.preparedStatementParameters,
+    ];
+    newPreparedStatementParametersCount +=
+      _else.preparedStatementParameters.length;
+  }
+  // switch (left.type) {
+  //   case "json":
+  //   case "scalar":
+  //   case "table":
+  //   case "json_array":
+  //   case "tableOf1JsonColumn":
+  // }
+  if (left.type !== "scalar" || right.type !== "scalar") {
+    return new Domain2ElementFailed({
+      queryFailure: "QueryNotExecutable",
+      query: actionRuntimeTransformer as any,
+      failureMessage: "sqlStringForRuntimeTransformer conditional left or right is not scalar",
+    });
+  }
+  return {
+    type: "scalar",
+    sqlStringOrObject: (topLevelTransformer ? "select " : "") + "case when " +
+      left.sqlStringOrObject + " " + jsOperatorToSqlOperatorMap[actionRuntimeTransformer.transformerType] + " " + right.sqlStringOrObject +
+      " then " + _then.sqlStringOrObject + " else " + _else.sqlStringOrObject + " end" +
+      (topLevelTransformer ? ` AS "${withClauseColumnName??"conditional"}"` : ""),
+    preparedStatementParameters: [
+      ...(left.preparedStatementParameters ?? []),
+      ...(right.preparedStatementParameters ?? []),
+      ...(_then.preparedStatementParameters ?? []),
+      ...(_else.preparedStatementParameters ?? []),
+    ],
+    resultAccessPath: topLevelTransformer ? [0, withClauseColumnName??"conditional"] : undefined,
+    columnNameContainingJsonValue: topLevelTransformer ? withClauseColumnName??"conditional" : undefined,
+    // encloseEndResultInArray: true
+    usedContextEntries: [
+      ...(left.usedContextEntries ?? []),
+      ...(right.usedContextEntries ?? []),
+      ...(_then.usedContextEntries ?? []),
+      ...(_else.usedContextEntries ?? []),
+    ],
+  };
 }
 
 // ################################################################################################
@@ -1026,7 +1221,7 @@ function sqlStringForMapperListToListTransformer(
   const sqlStringForElementTransformer =
     typeof actionRuntimeTransformer.elementTransformer == "object" &&
     Object.hasOwn(actionRuntimeTransformer.elementTransformer, "transformerType") &&
-    (actionRuntimeTransformer.elementTransformer as any)["interpolation"] == "runtime"
+    ((actionRuntimeTransformer.elementTransformer as any)["interpolation"]??"build") == "runtime"
       ? sqlStringForRuntimeTransformer(
           actionRuntimeTransformer.elementTransformer as TransformerForRuntime,
           newPreparedStatementParametersCount,
@@ -1034,7 +1229,7 @@ function sqlStringForMapperListToListTransformer(
           queryParams,
           {
             ...definedContextEntries,
-            [actionRuntimeTransformer.referenceToOuterObject]: {
+            [actionRuntimeTransformer.referenceToOuterObject??defaultTransformerInput]: {
               type: "json",
               renameTo: referenceToOuterObjectRenamed,
               attributeResultAccessPath: ["element"],
@@ -1050,10 +1245,12 @@ function sqlStringForMapperListToListTransformer(
             transformerType: "constant",
             interpolation: "runtime",
             value: transformer_extended_apply_wrapper(
+              undefined, // activityTracker
               "build", // TODO: resolve for runtime transformer. Does it make sense?
+              [], // tranformerPath
               undefined,
               actionRuntimeTransformer.elementTransformer,
-              {...defaultMiroirModelEnviroment, ...queryParams},
+              {...defaultMetaModelEnvironment, ...queryParams},
               {}, // contextResults, we are evaluating a build transformer here, not a runtime transformer
               "value"
             ),
@@ -1063,7 +1260,7 @@ function sqlStringForMapperListToListTransformer(
           queryParams,
           {
             ...definedContextEntries,
-            [actionRuntimeTransformer.referenceToOuterObject]: {
+            [actionRuntimeTransformer.referenceToOuterObject??defaultTransformerInput]: {
               type: "json",
               renameTo: referenceToOuterObjectRenamed,
               attributeResultAccessPath: ["element"],
@@ -1384,7 +1581,7 @@ function sqlStringForObjectFullTemplateTransformer(
       "_" +
       actionRuntimeTransformer.referenceToOuterObject;
 
-    newDefinedContextEntries[actionRuntimeTransformer.referenceToOuterObject] = {
+    newDefinedContextEntries[actionRuntimeTransformer.referenceToOuterObject??defaultTransformerInput] = {
       type: "json",
       renameTo: applyToName,
       attributeResultAccessPath: resolvedApplyTo.columnNameContainingJsonValue
@@ -1641,11 +1838,11 @@ function sqlStringForObjectFullTemplateTransformer(
         failureMessage: "sqlStringForObjectFullTemplateTransformer object_fullTemplate attributeKey or attributeValue failed: " + JSON.stringify(foundError, null, 2),
       });
     }
-    console.log(
+    log.info(
       "sqlStringForObjectFullTemplateTransformer object_fullTemplate objectAttributes",
       JSON.stringify(objectAttributes, null, 2)
     );
-    console.log(
+    log.info(
       "sqlStringForObjectFullTemplateTransformer object_fullTemplate preparedStatementParameters",
       JSON.stringify(preparedStatementParameters, null, 2)
     );
@@ -1724,7 +1921,7 @@ function sqlStringForObjectAlterTransformer(
   preparedStatementParameters = [...preparedStatementParameters, ...(applyToSql.preparedStatementParameters ?? [])];
 
   let newDefinedContextEntries = { ...definedContextEntries };
-  newDefinedContextEntries[actionRuntimeTransformer.referenceToOuterObject] = {
+  newDefinedContextEntries[actionRuntimeTransformer.referenceToOuterObject??defaultTransformerInput] = {
     type: "json",
     renameTo: applyToName,
     attributeResultAccessPath: applyToSql.resultAccessPath?.slice(1) as any, // correct since resolvedApplyTo has no "map" (object) item
@@ -2531,6 +2728,7 @@ function sqlStringForParameterReferenceTransformer(
   // TODO: resolve each parameter as WITH clause, then only call the name of the clause in each reference?
   const resolvedReference = transformer_resolveReference(
     "runtime",
+    [], // transformerPath
     actionRuntimeTransformer,
     "param",
     queryParams,

@@ -6,6 +6,9 @@
 
 import { LoggerContextElement, LoggerGlobalContext } from "../../4_services/LoggerContext";
 
+// 
+export type LogTopic = "test" | "action" | "transformer" | "UI"; // "storage" | "network" | "performance" | "security" | "other"; // "report" for report rendering?
+
 // From LoglevelNext
 // export type FactoryLevels = Record<Uppercase<string>, number> & {
 export type FactoryLevels = {
@@ -73,6 +76,8 @@ export interface LoggerFactoryAsyncInterface {
   get loggers(): Record<string, LoggerInterface>
 }
 
+
+export type LogLevel = "trace" | "debug" | "info" | "warn" | "error";
 
 export interface LoggerInterface {
 

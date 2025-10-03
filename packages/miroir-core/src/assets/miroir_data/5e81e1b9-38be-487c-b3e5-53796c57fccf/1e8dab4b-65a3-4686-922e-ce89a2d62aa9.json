@@ -55,6 +55,38 @@
                   "type": "string",
                   "optional": true
                 },
+                "editorButton": {
+                  "type": "object",
+                  "optional": true,
+                  "definition": {
+                    "icon": {
+                      "type": "string",
+                      "optional": true
+                    },
+                    "label": {
+                      "type": "string",
+                      "optional": true
+                    },
+                    "tooltip": {
+                      "type": "string",
+                      "optional": true
+                    },
+                    "transformer": {
+                      "type": "any",
+                      "tag": {
+                        "value": {
+                          "conditionalMMLS": {
+                            "mmlsReference": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "transformerForBuild"
+                            }
+                          }
+                        }
+                      },
+                      "optional": true
+                    }
+                  }
+                },
                 "initializeTo": {
                   "type": "union",
                   "discriminator": "initializeToType",
@@ -147,6 +179,10 @@
                   "type": "boolean",
                   "optional": true
                 },
+                "isTemplate": {
+                  "type": "boolean",
+                  "optional": true
+                },
                 "conditionalMMLS": {
                   "type": "object",
                   "optional": true,
@@ -220,6 +256,10 @@
             "type": "boolean",
             "optional": true
           },
+          "description": {
+            "type": "string",
+            "optional": true
+          },
           "tag": {
             "type": "object",
             "optional": true,
@@ -239,6 +279,38 @@
                   "description": {
                     "type": "string",
                     "optional": true
+                  },
+                  "editorButton": {
+                    "type": "object",
+                    "optional": true,
+                    "definition": {
+                      "icon": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "label": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "tooltip": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "transformer": {
+                        "type": "any",
+                        "tag": {
+                          "value": {
+                            "conditionalMMLS": {
+                              "mmlsReference": {
+                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                "relativePath": "transformerForBuild"
+                              }
+                            }
+                          }
+                        },
+                        "optional": true
+                      }
+                    }
                   },
                   "initializeTo": {
                     "type": "union",
@@ -330,6 +402,10 @@
                     "optional": true
                   },
                   "canBeTemplate": {
+                    "type": "boolean",
+                    "optional": true
+                  },
+                  "isTemplate": {
                     "type": "boolean",
                     "optional": true
                   },
@@ -437,9 +513,29 @@
             "relativePath": "jzodBaseObject"
           }
         },
+        "tag": {
+          "value": {
+            "description": "A plain attribute (not object, not array) with no validation.",
+            "editable": true,
+            "initializeTo": {
+              "initializeToType": "value",
+              "value": null
+            }
+          }
+        },
         "definition": {
           "type": {
             "type": "enum",
+            "tag": {
+              "value": {
+                "description": "The type of a plain attribute (not object, not array) with no validation.",
+                "editable": true,
+                "initializeTo": {
+                  "initializeToType": "value",
+                  "value": "any"
+                }
+              }
+            },
             "definition": [
               "any",
               "bigint",
@@ -992,6 +1088,7 @@
         "definition": {
           "extend": {
             "type": "union",
+            "discriminator": "type",
             "optional": true,
             "definition": [
               {

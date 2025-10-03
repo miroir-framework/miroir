@@ -12,27 +12,20 @@ import { ThemedComponentProps } from './BaseTypes';
 // ################################################################################################
 
 export const ThemedFlexRow: React.FC<ThemedComponentProps & {
-  justify?: 'start' | 'center' | 'end' | 'space-between';
-  align?: 'start' | 'center' | 'end' | 'stretch';
-  gap?: string;
-  wrap?: boolean;
-}> = ({ 
-  children, 
-  className, 
-  style,
-  justify = 'start',
-  align = 'center',
-  gap,
-  wrap = false
-}) => {
+    justify?: "start" | "center" | "end" | "space-between";
+    align?: "start" | "center" | "end" | "stretch";
+    gap?: string;
+    wrap?: boolean;
+  }
+> = ({ children, className, style, justify = "start", align = "center", gap, wrap = false }) => {
   const { currentTheme } = useMiroirTheme();
-  
+
   const flexStyles = css({
     display: "flex",
     flexDirection: "row",
-    justifyContent: justify === 'start' ? 'flex-start' : justify === 'end' ? 'flex-end' : justify,
-    alignItems: align === 'start' ? 'flex-start' : align === 'end' ? 'flex-end' : align,
-    flexWrap: wrap ? 'wrap' : 'nowrap',
+    justifyContent: justify === "start" ? "flex-start" : justify === "end" ? "flex-end" : justify,
+    alignItems: align === "start" ? "flex-start" : align === "end" ? "flex-end" : align,
+    flexWrap: wrap ? "wrap" : "nowrap",
     gap: gap || currentTheme.spacing.sm,
   });
 
@@ -442,5 +435,72 @@ export const ThemedScrollableContent: React.FC<ThemedComponentProps> = ({
     <div css={scrollableStyles} className={className} style={style}>
       {children}
     </div>
+  );
+};
+
+export const ThemedMain: React.FC<ThemedComponentProps & {
+  open?: boolean;
+  width?: number;
+  outlineOpen?: boolean;
+  outlineWidth?: number;
+}> = ({ 
+  children, 
+  className, 
+  style,
+  open,
+  width = 200, // SidebarWidth default
+  outlineOpen,
+  outlineWidth = 300
+}) => {
+  const { currentTheme } = useMiroirTheme();
+  
+  // Base styles for all conditions
+  const baseStyles = {
+    flexGrow: 1,
+    padding: currentTheme.spacing.md,
+    boxSizing: 'border-box' as const,
+    minWidth: 0, // Allow shrinking
+    minHeight: 0, // Allow shrinking
+    height: '100%',
+    display: 'flex',
+    flexDirection: 'column' as const,
+    marginTop: 0, // Fix wide gap below the appbar
+    paddingTop: currentTheme.spacing.md,
+    // Simple transition for all properties
+    transition: 'margin 300ms ease-out, width 300ms ease-out',
+    // Handle overflow - let content determine scrolling behavior
+    overflow: 'hidden', // Prevent main panel from scrolling, let content handle it
+  };
+
+  // Calculate responsive layout based on sidebar and outline states
+  const responsiveStyles = css({
+    ...baseStyles,
+    // When sidebar is open
+    ...(open && {
+      width: `calc(100% - ${width}px - ${outlineOpen ? outlineWidth : 0}px)`,
+      marginLeft: `${width}px`,
+      marginRight: outlineOpen ? `${outlineWidth}px` : 0,
+      // Let the element naturally fill remaining space
+      // width: 'auto',
+    }),
+    // When sidebar is closed but outline is open
+    ...(!open && outlineOpen && {
+      width: `calc(100% - ${outlineWidth}px)`,
+      marginRight: `${outlineWidth}px`,
+      // width: 'auto',
+    }),
+    // When both sidebar and outline are closed
+    ...(!open && !outlineOpen && {
+      width: '100%',
+      marginLeft: 0,
+      marginRight: 0,
+      // width: 'auto',
+    }),
+  });
+
+  return (
+    <main css={responsiveStyles} className={className} style={style}>
+      {children}
+    </main>
   );
 };

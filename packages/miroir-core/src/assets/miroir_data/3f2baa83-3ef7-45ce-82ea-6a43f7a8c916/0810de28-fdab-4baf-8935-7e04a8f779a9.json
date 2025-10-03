@@ -13,8 +13,7 @@
         "extractorTemplateType": "extractorTemplateForObjectListByEntity",
         "parentName": "ApplicationVersion",
         "parentUuid": {
-          "transformerType": "constantUuid",
-          "interpolation": "build",
+          "transformerType": "constant",
           "value": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24"
         }
       }

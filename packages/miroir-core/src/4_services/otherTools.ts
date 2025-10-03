@@ -1,5 +1,4 @@
 import { EntityInstance } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType"
-import { TestSuiteContext } from "./TestSuiteContext"
 
 // ################################################################################################
 export function ignorePostgresExtraAttributesOnRecord(instances: Record<string, EntityInstance>, furtherIgnore: string[] = []){
@@ -30,3 +29,85 @@ export function ignorePostgresExtraAttributes(instance: any, furtherIgnore: stri
 }
 
 
+// ################################################################################################
+export function isJson(t: any) {
+  // return t == "json" || t == "json_array" || t == "tableOf1JsonColumn";
+  return typeof t == "object" && t !== null;
+}
+
+// ################################################################################################
+export function isJsonArray(t: any) {
+  // return t == "json" || t == "json_array" || t == "tableOf1JsonColumn";
+  return Array.isArray(t);
+  // return typeof t == "object" && t !== null && Array.isArray(t);
+}
+
+// ################################################################################################
+/**
+ * Recursively replaces all `null` values with `undefined` in the input.
+ * Leaves all other values unchanged.
+ */
+export function unNullify<T>(value: T): T {
+  if (value === null) {
+    return undefined as any;
+  }
+  if (Array.isArray(value)) {
+    return value.map(unNullify) as any;
+  }
+  if (typeof value === "object" && value !== null) {
+    const result: any = {};
+    for (const [k, v] of Object.entries(value)) {
+      result[k] = unNullify(v);
+    }
+    return result;
+  }
+  return value;
+}
+
+/**
+ * Recursively removes all properties with `undefined` values to match JSON serialization behavior.
+ * This ensures that objects with explicit `undefined` properties match their JSON-serialized counterparts.
+ */
+export function removeUndefinedProperties<T>(value: T): T {
+  if (Array.isArray(value)) {
+    return value.map(removeUndefinedProperties) as any;
+  }
+  if (typeof value === "object" && value !== null) {
+    const result: any = {};
+    for (const [k, v] of Object.entries(value)) {
+      if (v !== undefined) {
+        result[k] = removeUndefinedProperties(v);
+      }
+    }
+    return result;
+  }
+  return value;
+}
+
+// ################################################################################################
+// Safe stringify function that prevents "Invalid string length" errors with memoization
+// ################################################################################################
+const stringifyCache = new WeakMap<object, string>();
+
+export function safeStringify(obj: any, maxLength: number = 2000): string {
+  try {
+    // Use cache for objects to avoid re-stringifying the same object
+    if (obj && typeof obj === 'object' && stringifyCache.has(obj)) {
+      return stringifyCache.get(obj)!;
+    }
+    
+    const str = JSON.stringify(obj, null, 2);
+    const result = str && str.length > maxLength 
+      ? str.substring(0, maxLength) + "... [truncated]" 
+      : str || "[unable to stringify]";
+    
+    // Cache the result for objects
+    if (obj && typeof obj === 'object') {
+      stringifyCache.set(obj, result);
+    }
+    
+    return result;
+  } catch (error) {
+    return `[stringify error: ${error instanceof Error ? error.message : 'unknown'}]`;
+  }
+}

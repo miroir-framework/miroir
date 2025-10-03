@@ -30,7 +30,7 @@ import {
   SyncQueryTemplateRunner,
   SyncQueryTemplateRunnerParams,
   Uuid,
-  defaultMiroirModelEnviroment,
+  defaultMetaModelEnvironment,
   selectEntityUuidFromJzodAttribute,
 } from "miroir-core";
 import {
@@ -54,7 +54,7 @@ import { cleanLevel } from "./constants.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ReduxHooks")
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ReduxHooks"), "UI",
 ).then((logger: LoggerInterface) => {
   log = logger;
 });
@@ -78,7 +78,7 @@ export function useReduxDeploymentsStateQueryTemplateSelector<
     return applyReduxDeploymentsStateQueryTemplateSelector(deploymentEntityStateQuerySelector);
   }, [deploymentEntityStateQuerySelector]);
   const result: ResultType = useSelector((state: ReduxStateWithUndoRedo) =>
-    innerSelector(state, selectorParams, defaultMiroirModelEnviroment)
+    innerSelector(state, selectorParams, defaultMetaModelEnvironment)
   );
   return result;
 }
@@ -95,7 +95,7 @@ export function useReduxDeploymentsStateQuerySelector<
     return applyReduxDeploymentsStateQuerySelector(deploymentEntityStateQuerySelector);
   }, [deploymentEntityStateQuerySelector]);
   const result: ResultType = useSelector((state: ReduxStateWithUndoRedo) =>
-    innerSelector(state, selectorParams, defaultMiroirModelEnviroment)
+    innerSelector(state, selectorParams, defaultMetaModelEnvironment)
   );
   return result;
 }
@@ -117,7 +117,7 @@ export function useReduxDeploymentsStateQueryTemplateSelectorForCleanedResult(
     );
   }, [deploymentEntityStateQueryTemplateSelector]);
   const result: any = useSelector((state: ReduxStateWithUndoRedo) =>
-    innerSelector(state, selectorParams, defaultMiroirModelEnviroment)
+    innerSelector(state, selectorParams, defaultMetaModelEnvironment)
   );
   return result;
 }
@@ -139,7 +139,7 @@ export function useReduxDeploymentsStateQuerySelectorForCleanedResult(
     );
   }, [deploymentEntityStateQuerySelector]);
   const result: any = useSelector((state: ReduxStateWithUndoRedo) =>
-    innerSelector(state, selectorParams, defaultMiroirModelEnviroment)
+    innerSelector(state, selectorParams, defaultMetaModelEnvironment)
   );
   return result;
 }
@@ -159,7 +159,7 @@ export function useDomainStateQueryTemplateSelector<ResultType>(
     return applyDomainStateQueryTemplateSelector(domainStateSelector);
   }, [domainStateSelector]);
   const result: ResultType = useSelector((state: ReduxStateWithUndoRedo) =>
-    innerSelector(state, selectorParams, defaultMiroirModelEnviroment)
+    innerSelector(state, selectorParams, defaultMetaModelEnvironment)
   );
   return result;
 }
@@ -178,7 +178,7 @@ export function useDomainStateQueryTemplateSelectorForCleanedResult<ResultType>(
     return applyDomainStateQuerySelectorForCleanedResult(domainStateSelector);
   }, [domainStateSelector]);
   const result: ResultType = useSelector((state: ReduxStateWithUndoRedo) =>
-    innerSelector(state, selectorParams, defaultMiroirModelEnviroment)
+    innerSelector(state, selectorParams, defaultMetaModelEnvironment)
   );
   return result;
 }
@@ -200,7 +200,7 @@ export function useDomainStateJzodSchemaSelector<
   }, [domainStateSelector]);
   const result: RecordOfJzodElement | JzodElement | undefined = useSelector(
     (state: ReduxStateWithUndoRedo) =>
-      innerSelector(state, selectorParams, defaultMiroirModelEnviroment)
+      innerSelector(state, selectorParams, defaultMetaModelEnvironment)
   );
   return result;
 }
@@ -225,7 +225,7 @@ export function useReduxDeploymentsStateJzodSchemaSelectorForTemplate<
   }, [domainStateSelector]);
   const result: RecordOfJzodElement | JzodElement | undefined = useSelector(
     (state: ReduxStateWithUndoRedo) =>
-      innerSelector(state, selectorParams, defaultMiroirModelEnviroment)
+      innerSelector(state, selectorParams, defaultMetaModelEnvironment)
   );
   return result;
 }
@@ -243,7 +243,7 @@ export function useReduxDeploymentsStateJzodSchemaSelector<QueryType extends Que
   }, [domainStateSelector]);
   const result: RecordOfJzodElement | JzodElement | undefined = useSelector(
     (state: ReduxStateWithUndoRedo) =>
-      innerSelector(state, selectorParams, defaultMiroirModelEnviroment)
+      innerSelector(state, selectorParams, defaultMetaModelEnvironment)
   );
   return result;
 }

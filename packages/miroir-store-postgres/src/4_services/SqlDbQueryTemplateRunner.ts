@@ -6,6 +6,7 @@ import {
   asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,
   asyncExtractWithExtractor,
   asyncRunQuery,
+  defaultMetaModelEnvironment,
   DomainState,
   handleBoxedExtractorTemplateAction,
   handleBoxedExtractorTemplateOrQueryTemplateAction,
@@ -82,13 +83,13 @@ export class SqlDbExtractTemplateRunner {
   // ##############################################################################################
   async handleQueryTemplateActionForServerONLY(runBoxedQueryTemplateAction: RunBoxedQueryTemplateAction): Promise<Action2ReturnType> {
     log.info(this.logHeader, "handleQueryTemplateActionForServerONLY", "runBoxedQueryTemplateAction", JSON.stringify(runBoxedQueryTemplateAction, null, 2));
-    return handleQueryTemplateAction("SqlDbQueryTemplateRunner", runBoxedQueryTemplateAction, this.extractorRunnerMapForServerOnly);
+    return handleQueryTemplateAction("SqlDbQueryTemplateRunner", runBoxedQueryTemplateAction, this.extractorRunnerMapForServerOnly, defaultMetaModelEnvironment);
   }
 
   // ##############################################################################################
   async handleBoxedExtractorTemplateActionForServerONLY(runBoxedExtractorTemplateAction: RunBoxedExtractorTemplateAction): Promise<Action2ReturnType> {
     log.info(this.logHeader, "handleBoxedExtractorTemplateActionForServerONLY", "runBoxedExtractorTemplateAction", JSON.stringify(runBoxedExtractorTemplateAction, null, 2));
-    return handleBoxedExtractorTemplateAction("SqlDbQueryTemplateRunner", runBoxedExtractorTemplateAction, this.extractorRunnerMapForServerOnly);
+    return handleBoxedExtractorTemplateAction("SqlDbQueryTemplateRunner", runBoxedExtractorTemplateAction, this.extractorRunnerMapForServerOnly, defaultMetaModelEnvironment);
   }
 
   // ##############################################################################################
@@ -99,7 +100,7 @@ export class SqlDbExtractTemplateRunner {
       "runBoxedQueryTemplateOrBoxedExtractorTemplateAction",
       JSON.stringify(runBoxedQueryTemplateOrBoxedExtractorTemplateAction, null, 2)
     );
-    return handleBoxedExtractorTemplateOrQueryTemplateAction("SqlDbQueryTemplateRunner", runBoxedQueryTemplateOrBoxedExtractorTemplateAction, this.extractorRunnerMapForServerOnly);
+    return handleBoxedExtractorTemplateOrQueryTemplateAction("SqlDbQueryTemplateRunner", runBoxedQueryTemplateOrBoxedExtractorTemplateAction, this.extractorRunnerMapForServerOnly, defaultMetaModelEnvironment);
   }
 
 }

@@ -21,7 +21,7 @@ import { EntityInstanceLink } from "./EntityInstanceLink.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "JzodElementDisplay")
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "JzodElementDisplay"), "UI",
 ).then((logger: LoggerInterface) => {log = logger});
 
 
@@ -32,10 +32,8 @@ export interface JzodElementDisplayProps {
   applicationSection?: ApplicationSection,
   entityUuid?: Uuid,
   element: any,
-  // rootJzodSchema: JzodObject;
   elementJzodSchema: JzodElement, // used only for displaying error messages
   resolvedElementJzodSchema: JzodElement,
-  // currentReportDeploymentSectionEntities?: MetaEntity[],
   currentReportDeploymentSectionEntities?: Entity[],
   currentEnumJzodSchemaResolver: JzodEnumSchemaToJzodElementResolver,
 }
@@ -50,13 +48,6 @@ export function JzodElementDisplay(props: JzodElementDisplayProps){
       : props.resolvedElementJzodSchema;
 
   const displayName = targetJzodSchema?.tag?.value?.defaultLabel?targetJzodSchema?.tag?.value?.defaultLabel:props.name;
-  const styles = useMemo(
-    () => ({
-      width: "50vw",
-      // height: "22vw",
-    }),
-    []
-  );
   log.info(
     "JzodElementDisplay",
     "props",
@@ -93,14 +84,6 @@ export function JzodElementDisplay(props: JzodElementDisplayProps){
       return (
         <>
         array!
-          {/* <EntityInstanceGrid
-            type="JSON_ARRAY"
-            styles={styles}
-            columnDefs={{columnDefs:columnDefs}}
-            rowData={props.element}
-            displayTools={true}
-          >
-          </EntityInstanceGrid> */}
         </>
       )
       break;
@@ -255,12 +238,7 @@ export function JzodElementDisplay(props: JzodElementDisplayProps){
           <div>
             {displayName}:
             <EntityInstanceLink
-              deploymentUuid={
-                context.deploymentUuid
-                // targetJzodSchema.tag?.targetEntityApplication == "metaModel"
-                //   ? adminConfigurationDeploymentMiroir.uuid
-                //   : props.deploymentUuid
-              }
+              deploymentUuid={context.deploymentUuid}
               applicationSection={context.applicationSection}
               entityUuid={targetJzodSchema?.tag?.value?.selectorParams?.targetEntity}
               instanceUuid={props.element}

@@ -13,6 +13,7 @@ import {
   asyncRunQuery,
   BoxedExtractorOrCombinerReturningObject,
   BoxedExtractorOrCombinerReturningObjectList,
+  defaultMiroirModelEnvironment,
   Domain2ElementFailed,
   Domain2QueryReturnType,
   DomainElementSuccess,
@@ -71,7 +72,7 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
       {
         extractor: runBoxedExtractorAction.payload.query,
         extractorRunnerMap: this.selectorMap,
-      }
+      }, defaultMiroirModelEnvironment
     );
     if (queryResult instanceof Domain2ElementFailed) {
       return Promise.resolve(new Action2Error(
@@ -93,7 +94,7 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
       {
         extractor: runBoxedQueryAction.payload.query,
         extractorRunnerMap: this.selectorMap,
-      }
+      }, defaultMiroirModelEnvironment
     );
     if (queryResult instanceof Domain2ElementFailed) {
       return Promise.resolve(new Action2Error(
@@ -135,10 +136,12 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
         // const referenceObject = querySelectorParams.objectReference;
         const referenceObject = transformer_InnerReference_resolve(
           "runtime",
+          [],
           { transformerType: "contextReference", referenceName: querySelectorParams.objectReference },
           "value",
-          selectorParams.extractor.queryParams,
-          selectorParams.extractor.contextResults
+          defaultMiroirModelEnvironment,
+          // selectorParams.extractor.queryParams,
+          // selectorParams.extractor.contextResults
         );
   
         if (
@@ -241,13 +244,14 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
   > = async (
     extractorRunnerParams: AsyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList>
   ): Promise<Domain2QueryReturnType<EntityInstancesUuidIndex>> => {
-    return this.extractEntityInstanceList(extractorRunnerParams).then((result) => {
+    return this.extractEntityInstanceList(
+      extractorRunnerParams,
+      defaultMiroirModelEnvironment
+    ).then((result) => {
       if (result instanceof Domain2ElementFailed) {
         return result;
       }
-      const entityInstanceUuidIndex = Object.fromEntries(
-        result.map((i: any) => [i.uuid, i])
-      );
+      const entityInstanceUuidIndex = Object.fromEntries(result.map((i: any) => [i.uuid, i]));
       return entityInstanceUuidIndex;
     });
   }

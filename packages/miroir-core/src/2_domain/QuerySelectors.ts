@@ -45,7 +45,7 @@ import {
   SyncQueryRunnerParams
 } from "../0_interfaces/2_domain/ExtractorRunnerInterface";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
-import { MiroirLoggerFactory } from "../4_services/LoggerFactory";
+import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
 import { resolveExtractorTemplate } from "./Templates";
@@ -526,7 +526,9 @@ export const applyExtractorTransformerInMemory = <T extends MiroirModelEnvironme
 ): Domain2QueryReturnType<any> => {
   log.info("applyExtractorTransformerInMemory  query", JSON.stringify(actionRuntimeTransformer, null, 2));
   return transformer_extended_apply_wrapper(
+    undefined, // activityTracker
     "runtime",
+    [],
     "ROOT" /**WHAT?? */,
     actionRuntimeTransformer,
     queryParams,

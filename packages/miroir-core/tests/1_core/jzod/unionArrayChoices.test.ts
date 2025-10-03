@@ -12,6 +12,8 @@ import {
 import { miroirFundamentalJzodSchema } from "../../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalJzodSchema";
 import { resolveJzodSchemaReferenceInContext } from '../../../src/1_core/jzod/jzodResolveSchemaReferenceInContext';
 import { defaultMiroirMetaModel } from '../../test_assets/defaultMiroirMetaModel';
+import { defaultMetaModelEnvironment } from '../../../src/1_core/Model';
+
 const castMiroirFundamentalJzodSchema = miroirFundamentalJzodSchema as JzodSchema;
 
 
@@ -53,9 +55,10 @@ describe('unionArrayChoices', () => {
   it('should return array and tuple schemas directly from concreteUnrolledJzodSchemas', () => {
     const result = unionArrayChoices(
       mockConcreteUnrolledJzodSchemas,
-      castMiroirFundamentalJzodSchema,
-      defaultMiroirMetaModel,
-      defaultMiroirMetaModel,
+      defaultMetaModelEnvironment,
+      // castMiroirFundamentalJzodSchema,
+      // defaultMiroirMetaModel,
+      // defaultMiroirMetaModel,
       mockRelativeReferenceJzodContext
     );
 
@@ -84,9 +87,10 @@ describe('unionArrayChoices', () => {
 
     const result = unionArrayChoices(
       mockConcreteUnrolledJzodSchemasWithReference,
-      castMiroirFundamentalJzodSchema,
-      defaultMiroirMetaModel,
-      defaultMiroirMetaModel,
+      defaultMetaModelEnvironment,
+      // castMiroirFundamentalJzodSchema,
+      // defaultMiroirMetaModel,
+      // defaultMiroirMetaModel,
       mockRelativeReferenceJzodContext
     );
 

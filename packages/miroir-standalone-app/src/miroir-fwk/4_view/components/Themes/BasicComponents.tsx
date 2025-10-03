@@ -69,6 +69,7 @@ export const ThemedButton: React.FC<ThemedComponentProps & {
   );
 };
 
+// ################################################################################################
 // Additional themed components for common UI patterns
 export const ThemedHeaderSection: React.FC<ThemedComponentProps> = ({ 
   children, 
@@ -97,6 +98,7 @@ export const ThemedHeaderSection: React.FC<ThemedComponentProps> = ({
   );
 };
 
+// ################################################################################################
 export const ThemedTitle: React.FC<ThemedComponentProps> = ({ 
   children, 
   className, 
@@ -119,6 +121,7 @@ export const ThemedTitle: React.FC<ThemedComponentProps> = ({
   );
 };
 
+// ################################################################################################
 export const ThemedStatusText: React.FC<ThemedComponentProps> = ({ 
   children, 
   className, 
@@ -140,6 +143,7 @@ export const ThemedStatusText: React.FC<ThemedComponentProps> = ({
   );
 };
 
+// ################################################################################################
 export const ThemedCodeBlock: React.FC<ThemedComponentProps> = ({ 
   children, 
   className, 
@@ -201,6 +205,7 @@ export const ThemedCodeBlock: React.FC<ThemedComponentProps> = ({
   );
 };
 
+// ################################################################################################
 export const ThemedPreformattedText: React.FC<ThemedComponentProps> = ({ 
   children, 
   className, 
@@ -222,6 +227,7 @@ export const ThemedPreformattedText: React.FC<ThemedComponentProps> = ({
   );
 };
 
+// ################################################################################################
 export const ThemedLabel: React.FC<ThemedComponentProps> = ({ 
   children, 
   className, 
@@ -244,6 +250,7 @@ export const ThemedLabel: React.FC<ThemedComponentProps> = ({
   );
 };
 
+// ################################################################################################
 export const ThemedText: React.FC<ThemedComponentProps> = ({ 
   children, 
   className, 
@@ -267,6 +274,7 @@ export const ThemedText: React.FC<ThemedComponentProps> = ({
   );
 };
 
+// ################################################################################################
 export const ThemedSpan: React.FC<ThemedComponentProps & {
   fontWeight?: 'normal' | 'bold';
   color?: string;

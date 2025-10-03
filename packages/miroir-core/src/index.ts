@@ -388,6 +388,10 @@ export {
   TransformerForBuild_parameterReference,
   transformerForBuild_parameterReference,
   transformerForBuild_unique,
+  // 
+  TransformerForBuildPlusRuntime_conditional,
+  transformerForBuildPlusRuntime_conditional,
+  // 
   TransformerForBuildOrRuntime,
   transformerForBuildOrRuntime,
   TransformerForRuntime,
@@ -458,6 +462,8 @@ export {
   resolvedJzodSchemaReturnTypeError,
   ResolvedJzodSchemaReturnTypeOK,
   resolvedJzodSchemaReturnTypeOK,
+  MiroirIcon,
+  miroirIcon,
   // those are zod schemas, not imported. Importing MLS with the same name.
   // jzodUnion_RecursivelyUnfold_ReturnType,
   // jzodUnion_RecursivelyUnfold_ReturnTypeError,
@@ -467,9 +473,6 @@ export {
 export {
   miroirFundamentalJzodSchema
 } from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalJzodSchema";
-
-console.log("miroir-core: loading miroirFundamentalType.js");
-console.log("miroir-core: loading miroirFundamentalType.js DONE");
 
 export {
   InstanceDictionary,
@@ -542,6 +545,7 @@ export {
   entityDefinitionEntityDefinitionSchema,
 } from "./0_interfaces/1_core/writtenByHandSchema.js";
 export {
+  defaultTransformerInput,
   ITransformerHandler,
   MiroirModelEnvironment
 } from "./0_interfaces/1_core/Transformer";
@@ -584,6 +588,10 @@ export {
   Domain2ElementFailed,
   domain2ElementObjectZodSchema,
   Domain2QueryReturnType,
+  TransformerFailure,
+  TransformerFailureType,
+  TransformerResult,
+  TransformerReturnType,
 } from "./0_interfaces/2_domain/DomainElement.js";
 export {
   RecordOfJzodElement,
@@ -632,15 +640,32 @@ export {
 } from "./0_interfaces/3_controllers/ErrorLogServiceInterface.js";
 export { MiroirContextInterface } from "./0_interfaces/3_controllers/MiroirContextInterface.js";
 export { 
-  RunActionTrackerInterface,
-  ActionTrackingData,
-} from "./0_interfaces/3_controllers/RunActionTrackerInterface.js";
+  MiroirActivityTrackerInterface as MiroirEventTrackerInterface,
+  MiroirActivity as MiroirEventTrackingData,
+} from "./0_interfaces/3_controllers/MiroirActivityTrackerInterface.js";
+// export {
+//   TransformerEventServiceInterface,
+//   TransformerEntry,
+//   TransformerEvent,
+//   TransformerEventFilter,
+// } from "./0_interfaces/3_controllers/TransformerEventInterface.js";
+export {
+  ActionEvent,
+  TestEvent,
+  TransformerEvent,
+  MiroirEventServiceInterface,
+  MiroirEventLog,
+  MiroirEvent,
+  MiroirEventService,
+  EventFilter,
+} from "./3_controllers/MiroirEventService.js";
 export { LocalCacheInterface } from "./0_interfaces/4-services/LocalCacheInterface.js";
 export {
   ViewParams,
   ViewParamsData,
   GridType,
   AppTheme,
+  ToolsPageState,
   viewParams,
 } from "./0_interfaces/4-views/ViewParams";
 export {
@@ -685,10 +710,9 @@ export {
 } from "./0_interfaces/4-services/PersistenceStoreControllerInterface";
 export { PersistenceStoreControllerManagerInterface } from "./0_interfaces/4-services/PersistenceStoreControllerManagerInterface";
 export { getApplicationSection } from "./1_core/AdminApplication.js";
-export { alterObjectAtPath, deleteObjectAtPath } from "./1_core/alterObjectAtPath.js";
 export { ACTION_OK } from "./1_core/constants.js";
 export { DomainInstanceUuidIndexToArray } from "./1_core/DomainState.js";
-export { rootLessListKeyMapDEFUNCT } from "./1_core/jzod/rootLessListKeyMap";
+// export { rootLessListKeyMapDEFUNCT } from "./1_core/jzod/rootLessListKeyMap";
 export {
   // getDefaultValueForJzodSchemaDEFUNCT,
   getDefaultValueForJzodSchemaWithResolution,
@@ -721,9 +745,14 @@ export {
   getInnermostTypeCheckError,
 } from "./1_core/jzod/mlsTypeCheckError";
 export {
+  defaultLibraryAppModel,
+  defaultLibraryModelEnvironment,
+} from "./1_core/Library";
+export {
   applicationModelEntities,
   defaultMiroirMetaModel,
-  defaultMiroirModelEnviroment,
+  defaultMetaModelEnvironment,
+  defaultMiroirModelEnvironment,
   // getCurrentEntityDefinition,
   getReportsAndEntitiesDefinitionsForDeploymentUuid,
   metaModelEntities,
@@ -732,6 +761,7 @@ export {
 export {
   describe,
   expect,
+  TestFramework,
 } from "./1_core/test-expect";
 export {} from "./1_core/Report";
 export {} from "./1_core/Report.js";
@@ -861,6 +891,7 @@ export {
 export { transformer_spreadSheetToJzodSchema } from "./2_domain/Transformer_Spreadsheet";
 export {
   applicationTransformerDefinitions,
+  getInnermostTransformerError,
   resolveApplyTo_legacy,
   transformer_extended_apply,
   transformer_extended_apply_wrapper,
@@ -888,13 +919,14 @@ export { Endpoint } from "./3_controllers/Endpoint.js";
 export { CallUtils } from "./3_controllers/ErrorHandling/CallUtils.js";
 export { ErrorAdminStore } from "./3_controllers/ErrorHandling/ErrorAdminStore.js";
 export { ErrorDataStore } from "./3_controllers/ErrorHandling/ErrorDataStore.js";
-export { ErrorLogService } from "./3_controllers/ErrorHandling/ErrorLogService.js";
 export { ErrorModelStore } from "./3_controllers/ErrorHandling/ErrorModelStore.js";
 export { MiroirContext } from "./3_controllers/MiroirContext.js";
-export { RunActionTracker } from "./3_controllers/RunActionTracker.js";
+export { getActivityTopic, MiroirActivityTracker } from "./3_controllers/MiroirActivityTracker.js";
+// export { TransformerEventService } from "./3_controllers/TransformerEventService.js";
 export { modelInitialize } from "./3_controllers/ModelInitializer.js";
 export { LoggerGlobalContext } from "./4_services/LoggerContext.js";
-export { MiroirLoggerFactory, testLogger } from "./4_services/LoggerFactory.js";
+export { TransformerGlobalContext } from "./4_services/TransformerContext.js";
+export { MiroirLoggerFactory, testLogger } from "./4_services/MiroirLoggerFactory.js";
 export {
   PersistenceStoreController,
   PersistenceStoreControllerFactoryReturnType,
@@ -908,14 +940,17 @@ export { RestClient } from "./4_services/RestClient.js";
 export { RestClientStub } from "./4_services/RestClientStub";
 export { restServerDefaultHandlers } from "./4_services/RestServer.js";
 export { generateRestServiceResponse } from "./4_services/RestTools.js";
-export { TestSuiteContext } from "./4_services/TestSuiteContext.js";
 export {
-  displayTestSuiteResults,
+  // displayTestSuiteResults,
+  RunTransformerTest,
+  RunTransformerTests,
+  runUnitTransformerTests,
   displayTestSuiteResultsDetails,
   runTransformerTestInMemory,
   runTransformerTestSuite,
   testSuites,
   transformerTestsDisplayResults,
+  type TestSuiteListFilter,
 } from "./4_services/TestTools.js";
 export { defaultViewParamsFromAdminStorageFetchQueryParams } from "./4_views/viewParams";
 
@@ -924,6 +959,11 @@ export {
   ignorePostgresExtraAttributesOnList,
   ignorePostgresExtraAttributesOnObject,
   ignorePostgresExtraAttributesOnRecord,
+  isJson,
+  isJsonArray,
+  removeUndefinedProperties,
+  safeStringify,
+  unNullify,
 } from "./4_services/otherTools.js";
 export {
   performanceMetrics,
@@ -938,15 +978,20 @@ export {
   safeResolvePathOnObject,
   stringTuple,
   mStringify,
+  alterObjectAtPath,
+  alterObjectAtPathWithCreate,
+  cleanupObject,
+  deleteObjectAtPath,
+  resolveRelativePath,
+  RelativePath,
+  ResolveRelativePathError,
+  ResolveRelativePathResult,
 } from "./tools";
 
 export {
   testSuitesResults
 } from "./0_interfaces/4-services/TestInterface.js";
 
-console.log("miroir-core: DONE exports");
-
-console.log("miroir-core: loading MIROIR json files");
 // admin
 const entityAdminApplication = require("../src/assets/admin_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/25d935e7-9e93-42c2-aade-0472b883492b.json"); //assert { type: "json" };
 const entityViewParams = require("../src/assets/admin_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/b9765b7c-b614-4126-a0e2-634463f99937.json"); //assert { type: "json" };
@@ -1051,8 +1096,6 @@ const jzodSchemajzodMiroirBootstrapSchema = require("../src/assets/miroir_data/5
 // const transformerMenuV1 = require("../src/assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/685440be-7f3f-4774-b90d-bafa82d6832b.json"); //assert { type: "json" };
 const transformerMenuV1 = require("../src/assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/685440be-7f3f-4774-b90d-bafa82d6832b.json"); //assert { type: "json" };
 
-console.log("miroir-core: loading MIROIR json files DONE");
-
 export {
   // applicationEndpoint,
   // deploymentEndpoint,
@@ -1156,7 +1199,6 @@ export {
 // LIBRARY APPLICATION
 // ################################################################################################
 // import adminApplicationLibrary from "./assets/admin_model/a659d350-dd97-4da9-91de-524fa01745dc/55af124e-8c05-4bae-a3ef-0933d41daa92.json" //assert { type: "json" };
-console.log("miroir-core: loading APP json files");
 const adminApplicationLibrary = require("./assets/admin_data/25d935e7-9e93-42c2-aade-0472b883492b/dbabc841-b1fb-48f6-a31a-b8ce294127da.json");
 const selfApplicationLibrary = require("./assets/library_model/a659d350-dd97-4da9-91de-524fa01745dc/5af03c98-fe5e-490b-b08f-e1230971c57f.json");
 const selfApplicationStoreBasedConfigurationLibrary = require("./assets/library_model/7990c0c9-86c3-40a1-a121-036c91b55ed7/2e5b7948-ff33-4917-acac-6ae6e1ef364f.json");
@@ -1207,7 +1249,6 @@ const publisher1 = require("./assets/library_data/a027c379-8468-43a5-ba4d-bf618b
 const publisher2 = require("./assets/library_data/a027c379-8468-43a5-ba4d-bf618be25cab/516a7366-39e7-4998-82cb-80199a7fa667.json");
 const publisher3 = require("./assets/library_data/a027c379-8468-43a5-ba4d-bf618be25cab/c1c97d54-aba8-4599-883a-7fe8f3874095.json");
 
-console.log("miroir-core: loading APP json files DONE");
 export {
   author1,
   author2,

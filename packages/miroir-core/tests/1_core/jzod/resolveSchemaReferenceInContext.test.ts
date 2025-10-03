@@ -1,4 +1,4 @@
-// import * as vitest from 'vitest';
+import * as vitest from 'vitest';
 // import { describe, expect, it } from "vitest";
 import {
   describe,
@@ -23,16 +23,28 @@ import {
   transformerTestsDisplayResults,
 } from "../../../src/4_services/TestTools";
 
+import { MiroirActivityTracker } from "../../../src/3_controllers/MiroirActivityTracker";
+import { defaultMetaModelEnvironment } from "../../../src/1_core/Model";
+
 import transformerTestSuite_resolveSchemaReferenceInContext from "../../../src/assets/miroir_data/681be9ca-c593-45f5-b45a-5f1d4969e91e/b9e7f4d5-6543-4a1b-9c8d-987654321fed.json";
 
-const RUN_TEST= process.env.RUN_TEST
-console.log("@@@@@@@@@@@@@@@@@@ RUN_TEST", RUN_TEST);
+// Access the test file pattern from Vitest's process arguments
+const vitestArgs = process.argv.slice(2);
+const filePattern = vitestArgs.find(arg => !arg.startsWith('-')) || '';
+console.log("@@@@@@@@@@@@@@@@@@ File Pattern:", filePattern);
 
 const selectedTestName: string[] = [];
 
 // ################################################################################################
-// const testSuiteName = "transformers.unit.test";
-if (RUN_TEST == transformerTestSuite_resolveSchemaReferenceInContext.definition.transformerTestLabel) {
+const testSuiteName = transformerTestSuite_resolveSchemaReferenceInContext.definition.transformerTestLabel;
+
+// Skip this test when running resolveConditionalSchema pattern
+const shouldSkip = filePattern.includes('resolveConditionalSchema');
+
+if (shouldSkip) {
+  console.log("################################ skipping test suite:", transformerTestSuite_resolveSchemaReferenceInContext.definition.transformerTestLabel);
+  console.log("################################ File pattern:", filePattern);
+} else {
   const testSuite: TransformerTestSuite = transformerTestSuite_resolveSchemaReferenceInContext.definition as TransformerTestSuite;
   // if (!Object.hasOwn(testSuite, "transformerTestType") || (testSuite as any).transformerTests === undefined) {
   if (!Object.hasOwn(testSuite, "transformerTestType") || testSuite.transformerTestType !== "transformerTestSuite" ) {
@@ -45,22 +57,25 @@ if (RUN_TEST == transformerTestSuite_resolveSchemaReferenceInContext.definition.
     ...testSuite,
     transformerTests: selectedTests as any
   } as any;
+  
+  const miroirActivityTracker = new MiroirActivityTracker();
+  
   await runTransformerTestSuite(
-    { describe, expect},//vitest,
+    // { describe, expect} as any,//vitest,
+    vitest,
     [],
     // transformerTestSuite_resolveSchemaReferenceInContext.definition as TransformerTestSuite,
     effectiveTests,
-    runTransformerTestInMemory
+    undefined, // filter
+    runTransformerTestInMemory,
+    defaultMetaModelEnvironment,
+    miroirActivityTracker
   );
   transformerTestsDisplayResults(
     // transformerTestSuite_resolveSchemaReferenceInContext.definition as TransformerTestSuite,
     effectiveTests,
-    RUN_TEST,
-    transformerTestSuite_resolveSchemaReferenceInContext.definition.transformerTestLabel
-  );
-} else {
-  console.log(
-    "################################ skipping test suite:",
-    transformerTestSuite_resolveSchemaReferenceInContext.definition.transformerTestLabel
+    filePattern || "",
+    transformerTestSuite_resolveSchemaReferenceInContext.definition.transformerTestLabel,
+    miroirActivityTracker
   );
 }

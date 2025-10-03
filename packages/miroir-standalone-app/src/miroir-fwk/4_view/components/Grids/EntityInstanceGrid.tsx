@@ -100,7 +100,7 @@ import { generateAgGridStyles, generateGlideTheme, getFilterToolbarStyles } from
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "EntityInstanceGrid")
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "EntityInstanceGrid"), "UI",
 ).then((logger: LoggerInterface) => {log = logger});
 
 
@@ -521,6 +521,7 @@ export const EntityInstanceGrid = (props: TableComponentProps & { theme?: DeepPa
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState<number>(1200);
 
+  // ##############################################################################################
   // Monitor container width changes for dynamic table width calculation
   useEffect(() => {
     let updateTimer: NodeJS.Timeout;
@@ -1090,8 +1091,8 @@ export const EntityInstanceGrid = (props: TableComponentProps & { theme?: DeepPa
                   onCellClicked={onCellClicked}
                   onCellValueChanged={onCellValueChanged}
                   onGridReady={onGridReady}
-                  // Enable advanced filtering and sorting features
-                  enableRangeSelection={true}
+                  // DO NOT Enable advanced filtering and sorting features, not free software
+                  // enableRangeSelection={true}
                   enableCellTextSelection={true}
                   suppressRowClickSelection={true}
                   animateRows={true}

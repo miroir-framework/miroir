@@ -14,6 +14,7 @@ import {
   miroirFundamentalJzodSchema,
   MiroirLoggerFactory,
   resolvePathOnObject,
+  type JzodObject,
   type JzodSchema,
   type KeyMapEntry,
   type MiroirModelEnvironment
@@ -32,7 +33,7 @@ import { JzodLiteralEditorProps } from "./JzodElementEditorInterface";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "JzodLiteralEditor")
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "JzodLiteralEditor"), "UI"
 ).then((logger: LoggerInterface) => {
   log = logger;
 });
@@ -49,7 +50,7 @@ const handleDiscriminatorChange = (
   formik: any,
   log: LoggerInterface
 ) => {
-  console.log("handleDiscriminatorChange called with:", {
+  log.info("handleDiscriminatorChange called with:", {
     selectedValue,
     discriminatorType,
     rootLessListKey,
@@ -83,24 +84,19 @@ const handleDiscriminatorChange = (
         "handleDiscriminatorChange called but current object is not of type object, cannot proceed!"
       );
     }
-    // if (parentKeyMap.discriminator.length !== 1) {
-    //   throw new Error(
-    //     "handleDiscriminatorChange called but current object has multiple discriminators, which is not supported yet!"
-    //   );
-    // }
-    // // for now we only support one discriminator per union
-    // if (parentKeyMap.discriminatorValues.length !== 1) {
-    //   throw new Error(
-    //     "handleDiscriminatorChange called but current object has multiple discriminatorValues sets, which is not supported yet!"
-    //   );
-    // }
-    // if (parentKeyMap.discriminatorValues[0].length === 0) {
-    //   throw new Error(
-    //     "handleDiscriminatorChange called but current object has no discriminatorValues, cannot proceed!"
-    //   );
-    // }
     const discriminator = parentKeyMap.discriminator[0];
-    const discriminatorTypeLocal = parentKeyMap.resolvedSchema.definition[discriminator]?.type;
+    // const discriminatorTypeLocal = parentKeyMap.resolvedSchema.definition[discriminator]?.type;
+    const parentNewUnionBranch:JzodObject | undefined = parentKeyMap.recursivelyUnfoldedUnionSchema.result.find((a: JzodElement) => {
+      if (a.type !== "object") return false;
+      const discriminatorElement = a.definition[discriminator as string];
+      if (!discriminatorElement) return false;
+      return true;
+    }) as JzodObject | undefined;
+
+    log.info("handleDiscriminatorChange found parentNewUnionBranch", parentNewUnionBranch);
+
+    const discriminatorTypeLocal: string | undefined = parentNewUnionBranch?.definition[discriminator as string].type;
+
     if (!discriminatorTypeLocal) {
       throw new Error(
         `handleDiscriminatorChange could not find discriminator type for discriminator ${discriminator} in ${JSON.stringify(parentKeyMap.resolvedSchema)}`
@@ -112,7 +108,9 @@ const handleDiscriminatorChange = (
       (discriminatorType === "schemaReference" && discriminatorTypeLocal !== "schemaReference")
     ) {
       throw new Error(
-        `handleDiscriminatorChange discriminator type mismatch: expected ${discriminatorType} but found ${discriminatorTypeLocal} for discriminator ${discriminator} in ${JSON.stringify(parentKeyMap.resolvedSchema)}`
+        `handleDiscriminatorChange discriminator type mismatch: expected ${discriminatorType} but found ${discriminatorTypeLocal} for discriminator ${discriminator} in ${JSON.stringify(
+          parentKeyMap.resolvedSchema
+        )}`
       );
     }
     const newParentValue = {
@@ -178,9 +176,17 @@ const handleDiscriminatorChange = (
         const discriminatorElement = a.definition[parentKeyMap.discriminator as string];
         if (!discriminatorElement) return false;
         
-        if (discriminatorType === "literal" && discriminatorElement.type === "literal") {
+        // if (discriminatorType === "literal" && discriminatorElement.type === "literal") {
+        if (discriminatorElement.type === "literal") {
           return (discriminatorElement as JzodLiteral).definition === selectedValue;
-        } else if (discriminatorType === "enum" && discriminatorElement.type === "enum") {
+        // } else if (discriminatorType === "enum" && discriminatorElement.type === "enum") {
+        } else if (discriminatorElement.type === "enum") {
+          log.info(
+            "handleDiscriminatorChange checking enum",
+            (discriminatorElement as JzodEnum).definition,
+            "for value",
+            selectedValue
+          );
           return (discriminatorElement as JzodEnum).definition.includes(selectedValue);
         } else if (discriminatorType === "schemaReference" && discriminatorElement.type === "schemaReference") {
           return (
@@ -214,7 +220,9 @@ const handleDiscriminatorChange = (
 
   log.info(`handleDiscriminatorChange (${discriminatorType})`, "newJzodSchema", JSON.stringify(newJzodSchema, null, 2));
   const defaultValue = modelEnvironment
-    ? getDefaultValueForJzodSchemaWithResolutionNonHook(
+    ? {
+      ...getDefaultValueForJzodSchemaWithResolutionNonHook(
+        "build",
         newJzodSchemaWithOptional,
         formik.values,
         rootLessListKey,
@@ -224,7 +232,9 @@ const handleDiscriminatorChange = (
         true,
         currentDeploymentUuid,
         modelEnvironment
-      )
+      ),
+      [Array.isArray(parentKeyMap.discriminator) ? parentKeyMap.discriminator[0] : parentKeyMap.discriminator]: selectedValue,
+    }
     : undefined;
 
   const targetRootLessListKey = rootLessListKeyArray.slice(0, rootLessListKeyArray.length - 1).join(".")??"";
@@ -275,6 +285,7 @@ export const JzodLiteralEditor: FC<JzodLiteralEditorProps> =  (
     currentDeploymentUuid,
     typeCheckKeyMap,
     readOnly,
+    hasPathError,
   }
 ) => {
   JzodLiteralEditorRenderCount++;
@@ -310,7 +321,7 @@ export const JzodLiteralEditor: FC<JzodLiteralEditorProps> =  (
     : parentKeyMap?.discriminator?.findIndex((d: string) => d === name);
   if (isDiscriminator && discriminatorIndex === -1) {
     throw new Error(
-      `JzodLiteralEditor: isDiscriminator is true but could not find discriminator index for name "${name}" in parentKeyMap.discriminator ${parentKeyMap?.discriminator}`
+      `JzodLiteralEditor: isDiscriminator is true but could not find discriminator index for name "${name}" in parentKeyMap.discriminator ${parentKeyMap?.discriminator} with values ${parentKeyMap?.discriminatorValues}`
     );
   }
 
@@ -333,7 +344,7 @@ export const JzodLiteralEditor: FC<JzodLiteralEditorProps> =  (
           e
         );
         return formik.values; // fallback to formik.values if the path
-        //        console.log("JzodLiteralEditor handleFilterableSelectChange called with event (DEBUG):", event);
+        //        log.info("JzodLiteralEditor handleFilterableSelectChange called with event (DEBUG):", event);
       }
     }, [formik.values, rootLessListKeyArray]);
 
@@ -341,12 +352,12 @@ export const JzodLiteralEditor: FC<JzodLiteralEditorProps> =  (
   // Handler for the new filterable select component
   const handleFilterableSelectChange = useCallback(
     (event: React.ChangeEvent<HTMLSelectElement>) => {
-      console.log("handleFilterableSelectChange called with event:", event);
-      console.log("event.target.value:", event.target.value);
-      console.log("event.type:", event.type);
-      console.log("isDiscriminator:", isDiscriminator);
-      console.log("parentKeyMap:", parentKeyMap);
-      console.log("Stack trace:", new Error().stack);
+      log.info("handleFilterableSelectChange called with event:", event);
+      log.info("event.target.value:", event.target.value);
+      log.info("event.type:", event.type);
+      log.info("isDiscriminator:", isDiscriminator);
+      log.info("parentKeyMap:", parentKeyMap);
+      // log.info("Stack trace:", new Error().stack);
       
       if (!isDiscriminator) {
         throw new Error(
@@ -450,6 +461,7 @@ export const JzodLiteralEditor: FC<JzodLiteralEditorProps> =  (
               placeholder={`Select ${name}...`}
               filterPlaceholder="Type to filter options..."
               minWidth="200px"
+              // error={hasPathError}
             />
             <span style={{ fontSize: '1.2em', color: '#87CEEB' }} title="Literal discriminator">★</span>
           </>

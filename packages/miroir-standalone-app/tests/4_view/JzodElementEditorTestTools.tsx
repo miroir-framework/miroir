@@ -31,7 +31,9 @@ import {
   LocalCacheInterface,
   menuDefaultLibrary,
   MetaModel,
+  MiroirActivityTracker,
   MiroirContext,
+  MiroirEventService,
   PersistenceStoreControllerManager,
   reportAuthorDetails,
   reportAuthorList,
@@ -44,7 +46,7 @@ import {
 } from "miroir-core";
 import { LocalCache, PersistenceReduxSaga } from "miroir-localcache-redux";
 
-import { rootLessListKeyMapDEFUNCT } from "miroir-core";
+// import { rootLessListKeyMapDEFUNCT } from "miroir-core";
 import { Container } from "react-dom";
 import { JzodElementEditor } from "../../src/miroir-fwk/4_view/components/ValueObjectEditor/JzodElementEditor";
 import { JzodEditorPropsRoot } from "../../src/miroir-fwk/4_view/components/ValueObjectEditor/JzodElementEditorInterface";
@@ -55,6 +57,8 @@ import { libraryApplicationInstances } from "../../src/miroir-fwk/4_view/uploadB
 import { ResolvedJzodSchemaReturnType } from "miroir-core";
 import { measuredJzodTypeCheck } from "../../src/miroir-fwk/4_view/tools/hookPerformanceMeasure";
 import { jzodTypeCheck } from "miroir-core";
+import { ReportPageContextProvider } from "../../src/miroir-fwk/4_view/components/Reports/ReportPageContext";
+import { DocumentOutlineContextProvider } from "../../src/miroir-fwk/4_view/components/ValueObjectEditor/InstanceEditorOutlineContext";
 
 export type TestMode = 'jzodElementEditor' | 'component';
 export type TestModeStar = 'jzodElementEditor' | 'component' | '*';
@@ -182,7 +186,9 @@ export const testThemeParams = {
   }
 };
 
+// ################################################################################################
 // Helper function to wait for progressive rendering to complete
+// TODO: hasn't progressive rendering been disabled for tests?
 export const waitForProgressiveRendering = async () => {
   // Wait for loading messages to disappear with more attempts
   await waitFor(
@@ -390,8 +396,6 @@ export const getJzodElementEditorForTest: (pageLabel: string) => React.FC<JzodEl
     JzodElementEditorForTestRenderCount++;
     const context = useMiroirContextService();
 
-    const [foldedObjectAttributeOrArrayItems, setFoldedObjectAttributeOrArrayItems] = useState<{ [k: string]: boolean }>({});
-    
     context.setDeploymentUuid
 
     const currentModel: MetaModel = useCurrentModel(selfApplicationDeploymentLibrary.uuid);
@@ -530,9 +534,6 @@ export const getJzodElementEditorForTest: (pageLabel: string) => React.FC<JzodEl
                         labelElement={labelElement}
                         currentDeploymentUuid={context.deploymentUuid}
                         currentApplicationSection={"data"}
-                        // rawJzodSchema={effectiveRawJzodSchema}
-                        foldedObjectAttributeOrArrayItems={foldedObjectAttributeOrArrayItems}
-                        setFoldedObjectAttributeOrArrayItems={setFoldedObjectAttributeOrArrayItems}
                         resolvedElementJzodSchema={resolvedJzodSchema.resolvedSchema}
                         typeCheckKeyMap={resolvedJzodSchema.keyMap}
                         // localRootLessListKeyMap={localRootLessListKeyMap}
@@ -561,8 +562,13 @@ export const getJzodElementEditorForTest: (pageLabel: string) => React.FC<JzodEl
 export function getWrapperForLocalJzodElementEditor(
   isPerformanceTest: boolean = false,
 ): React.FC<any> {
-  // const miroirContext: MiroirContext = new MiroirContext(currentMiroirConfig);
-  const miroirContext: MiroirContext = new MiroirContext(undefined as any);
+  const miroirActivityTracker = new MiroirActivityTracker();
+  const miroirEventService = new MiroirEventService(miroirActivityTracker);
+  const miroirContext: MiroirContext = new MiroirContext(
+    miroirActivityTracker,
+    miroirEventService,
+    undefined as any,
+  );
   const theme = createTheme(testThemeParams);
   
   ConfigurationService.registerTestImplementation({ expect: expect as any });
@@ -767,6 +773,10 @@ export function getWrapperForLocalJzodElementEditor(
   //   }
   // );
 
+  // const handleToggleOutline = useCallback(() => {}, []);
+  // const handleNavigateToPath = useCallback((path: string[]) => {}, []);
+  const handleToggleOutline = () => {};
+  const handleNavigateToPath = (path: string[]) => {};
   // ###############################################
   return (props: { children?: React.ReactNode }) => {
     // console.log("############################################## getWrapperForLocalJzodElementEditor returned", "props", props);
@@ -795,7 +805,8 @@ export function getWrapperForLocalJzodElementEditor(
       );
     }, []);
 
-    return isPerformanceTest?(
+
+    return isPerformanceTest ? (
       <Profiler id="App" onRender={onRender}>
         <ThemeProvider theme={theme}>
           <StyledEngineProvider injectFirst>
@@ -805,13 +816,19 @@ export function getWrapperForLocalJzodElementEditor(
                 domainController={domainController}
                 testingDeploymentUuid={selfApplicationDeploymentLibrary.uuid}
               >
-                {props.children}
+                <DocumentOutlineContextProvider
+                  isOutlineOpen={true}
+                  onToggleOutline={handleToggleOutline}
+                  onNavigateToPath={handleNavigateToPath}
+                >
+                  <ReportPageContextProvider>{props.children}</ReportPageContextProvider>
+                </DocumentOutlineContextProvider>
               </MiroirContextReactProvider>
             </Provider>
           </StyledEngineProvider>
         </ThemeProvider>
       </Profiler>
-    ):(
+    ) : (
       <ThemeProvider theme={theme}>
         <StyledEngineProvider injectFirst>
           <Provider store={localCache.getInnerStore()}>
@@ -820,7 +837,13 @@ export function getWrapperForLocalJzodElementEditor(
               domainController={domainController}
               testingDeploymentUuid={selfApplicationDeploymentLibrary.uuid}
             >
-              {props.children}
+              <DocumentOutlineContextProvider
+                isOutlineOpen={true}
+                onToggleOutline={handleToggleOutline}
+                onNavigateToPath={handleNavigateToPath}
+              >
+                <ReportPageContextProvider>{props.children}</ReportPageContextProvider>
+              </DocumentOutlineContextProvider>
             </MiroirContextReactProvider>
           </Provider>
         </StyledEngineProvider>

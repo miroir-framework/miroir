@@ -42,11 +42,14 @@ export const transformer_spreadSheetToJzodSchema: TransformerDefinition = {
       },
     },
     transformerResultSchema: {
-      type: "schemaReference",
+      returns: "mlSchema",
       definition: {
-        absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-        relativePath: "jzodElement",
-      },
+        type: "schemaReference",
+        definition: {
+          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          relativePath: "jzodElement",
+        },
+      }
     },
   },
   transformerImplementation: {

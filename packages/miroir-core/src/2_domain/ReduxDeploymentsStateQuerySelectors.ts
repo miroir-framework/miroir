@@ -23,7 +23,7 @@ import {
   SyncQueryRunnerParams
 } from "../0_interfaces/2_domain/ExtractorRunnerInterface";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
-import { MiroirLoggerFactory } from "../4_services/LoggerFactory";
+import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
 const entityEntityDefinition = require("../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd.json");
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
@@ -41,7 +41,8 @@ import {
   runQueryTemplateWithExtractorCombinerTransformer
 } from "./QueryTemplateSelectors";
 import { type MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
-import { transformer_InnerReference_resolve } from "./TransformersForRuntime";
+import { transformer_extended_apply } from "./TransformersForRuntime";
+// import { transformer_InnerReference_resolve } from "./TransformersForRuntime";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -95,8 +96,11 @@ export const selectEntityInstanceFromReduxDeploymentsState: SyncBoxedExtractorRu
     case "combinerForObjectByRelation": {
       // TODO: reference object is implicitly a contextReference here, should be made explicit?!
       // TODO: gives a condition for "build" resolution to yield value not constantTransformer, this is actually not relevant, the interface must be corrected.
-      const referenceObject = transformer_InnerReference_resolve(
+      // const referenceObject = transformer_InnerReference_resolve(
+      const referenceObject = transformer_extended_apply(
         "runtime",
+        [], // transformerPath
+        querySelectorParams.label??querySelectorParams.extractorOrCombinerType,
         {
           transformerType: "contextReference",
           interpolation: "runtime",

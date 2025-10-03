@@ -1,0 +1,3017 @@
+{
+  "uuid": "a5b4be38-78e3-4f31-9e9b-8ab0b71d4993",
+  "parentName": "TransformerTest",
+  "parentUuid": "681be9ca-c593-45f5-b45a-5f1d4969e91e",
+  "name": "miroirCoreTransformers",
+  "selfApplication": "21840247-b5b1-4344-baec-f818f4797d92",
+  "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
+  "description": "The Test for the Miroir Core Transformers",
+  "definition": {
+    "transformerTestType": "transformerTestSuite",
+    "transformerTestLabel": "miroirCoreTransformers",
+    "transformerTests": [
+      {
+        "transformerTestType": "transformerTestSuite",
+        "transformerTestLabel": "buildTransformerTests",
+        "skip": true,
+        "transformerTests": [
+          {
+            "transformerTestType": "transformerTestSuite",
+            "transformerTestLabel": "constants",
+            "transformerTests": [
+              {
+                "transformerTestType": "transformerTestSuite",
+                "transformerTestLabel": "constantArray",
+                "transformerTests": [
+                  {
+                    "transformerTestType": "transformerTest",
+                    "transformerTestLabel": "resolve basic build transformer constantArray",
+                    "transformerName": "constantArrayAtBuild",
+                    "runTestStep": "build",
+                    "transformer": {
+                      "transformerType": "constantArray",
+                      "interpolation": "build",
+                      "value": ["testA", "testB"]
+                    },
+                    "transformerParams": {},
+                    "expectedValue": ["testA", "testB"]
+                  }
+                ]
+              },
+              {
+                "transformerTestType": "transformerTestSuite",
+                "transformerTestLabel": "constantArray",
+                "transformerTests": [
+                  {
+                    "transformerTestType": "transformerTest",
+                    "transformerTestLabel": "resolve basic build transformer constantUuid",
+                    "transformerName": "constantUuid",
+                    "runTestStep": "build",
+                    "transformer": {
+                      "transformerType": "constantUuid",
+                      "interpolation": "build",
+                      "value": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+                    },
+                    "transformerParams": {},
+                    "expectedValue": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+                  },
+                  {
+                    "transformerTestType": "transformerTest",
+                    "transformerTestLabel": "failed constantUuid transformer for non-uuid value",
+                    "transformerName": "constantUuidFailed",
+                    "runTestStep": "build",
+                    "transformer": {
+                      "transformerType": "constantUuid",
+                      "interpolation": "build",
+                      "value": "test"
+                    },
+                    "transformerParams": {},
+                    "expectedValue": "test"
+                  }
+                ]
+              },
+              {
+                "transformerTestType": "transformerTestSuite",
+                "transformerTestLabel": "constantNumber",
+                "transformerTests": [
+                  {
+                    "transformerTestType": "transformerTest",
+                    "transformerTestLabel": "resolve basic build transformer constantNumber",
+                    "transformerName": "constantNumber",
+                    "runTestStep": "build",
+                    "transformer": {
+                      "transformerType": "constantNumber",
+                      "interpolation": "build",
+                      "value": 42
+                    },
+                    "transformerParams": {},
+                    "expectedValue": 42
+                  }
+                ]
+              },
+              {
+                "transformerTestType": "transformerTestSuite",
+                "transformerTestLabel": "constantString",
+                "transformerTests": [
+                  {
+                    "transformerTestType": "transformerTest",
+                    "transformerTestLabel": "resolve basic build transformer constantString",
+                    "transformerName": "constantString",
+                    "runTestStep": "build",
+                    "transformer": {
+                      "transformerType": "constantString",
+                      "interpolation": "build",
+                      "value": "test"
+                    },
+                    "transformerParams": {},
+                    "expectedValue": "test"
+                  }
+                ]
+              },
+              {
+                "transformerTestType": "transformerTestSuite",
+                "transformerTestLabel": "constantObject",
+                "transformerTests": [
+                  {
+                    "transformerTestType": "transformerTest",
+                    "transformerTestLabel": "resolve basic build transformer constantObject before runtime",
+                    "transformerName": "constantObjectBeforeRuntime",
+                    "runTestStep": "build",
+                    "transformer": {
+                      "transformerType": "constantObject",
+                      "interpolation": "build",
+                      "value": { "test": "test" }
+                    },
+                    "transformerParams": {},
+                    "expectedValue": { "test": "test" }
+                  }
+                ]
+              },
+              {
+                "transformerTestType": "transformerTestSuite",
+                "transformerTestLabel": "constantBoolean",
+                "transformerTests": [
+                  {
+                    "transformerTestType": "transformerTest",
+                    "transformerTestLabel": "resolve basic build transformer constantBoolean",
+                    "transformerName": "constantBoolean",
+                    "runTestStep": "build",
+                    "transformer": {
+                      "transformerType": "constantBoolean",
+                      "interpolation": "build",
+                      "value": true
+                    },
+                    "transformerParams": {},
+                    "expectedValue": true
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "transformerTestType": "transformerTestSuite",
+            "transformerTestLabel": "references",
+            "transformerTests": [
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "resolve basic build transformer parameterReference",
+                "transformerName": "parameterReference",
+                "runTestStep": "build",
+                "transformer": {
+                  "transformerType": "parameterReference",
+                  "referenceName": "fileData"
+                },
+                "transformerParams": {
+                  "fileData": [
+                    { "a": "A", "b": "B" },
+                    { "a": "1", "b": "2" },
+                    { "a": "3", "b": "4" }
+                  ]
+                },
+                "expectedValue": [
+                  { "a": "A", "b": "B" },
+                  { "a": "1", "b": "2" },
+                  { "a": "3", "b": "4" }
+                ]
+              }
+            ]
+          },
+          {
+            "transformerTestType": "transformerTestSuite",
+            "transformerTestLabel": "mustache",
+            "transformerTests": [
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "mustache string template",
+                "transformerName": "mustache",
+                "runTestStep": "build",
+                "transformer": {
+                  "transformerType": "mustacheStringTemplate",
+                  "interpolation": "build",
+                  "definition": "a{{newApplication.name}}_{{newApplication.suffix}} example"
+                },
+                "transformerParams": {
+                  "newApplication": { "name": "Test", "suffix": "Z" }
+                },
+                "expectedValue": "aTest_Z example"
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "failed mustache string template",
+                "transformerName": "mustacheStringTemplateFailed",
+                "runTestStep": "build",
+                "transformer": {
+                  "transformerType": "mustacheStringTemplate",
+                  "interpolation": "build",
+                  "definition": "{{newApplicationName}SelfApplication"
+                },
+                "transformerParams": {},
+                "retainAttributes": ["queryFailure"],
+                "expectedValue": {
+                  "queryFailure": "FailedTransformer"
+                }
+              }
+            ]
+          },
+          {
+            "transformerTestType": "transformerTestSuite",
+            "transformerTestLabel": "simpleCompositions",
+            "transformerTests": [
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "resolve basic build transformer count on parameter array",
+                "transformerName": "buildCountElementsOfParameterArray",
+                "runTestStep": "build",
+                "transformer": {
+                  "transformerType": "count",
+                  "interpolation": "build",
+                  "applyTo": {
+                    "transformerType": "parameterReference",
+                    "referenceName": "fileData"
+                  }
+                },
+                "transformerParams": { "fileData": ["a", "b", "c"] },
+                "expectedValue": [{ "count": 3 }]
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "resolve basic runtime transformer count on build-resolved parameter array",
+                "transformerName": "runtimeCountElementsOfBuildParameterArray",
+                "runTestStep": "build",
+                "transformer": {
+                  "transformerType": "count",
+                  "interpolation": "build",
+                  "applyTo": {
+                    "transformerType": "parameterReference",
+                    "referenceName": "smallStringArray"
+                  }
+                },
+                "transformerParams": { "smallStringArray": ["a", "b", "c"] },
+                "expectedValue": [
+                  {
+                    "count": 3
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "transformerTestType": "transformerTestSuite",
+        "transformerTestLabel": "runtimeTransformerTests",
+        "transformerTests": [
+          {
+            "transformerTestType": "transformerTestSuite",
+            "transformerTestLabel": "constants",
+            "skip": true,
+            "transformerTests": [
+              {
+                "transformerTestType": "transformerTestSuite",
+                "transformerTestLabel": "constantArray",
+                "transformerTests": [
+                  {
+                    "transformerTestType": "transformerTest",
+                    "transformerTestLabel": "resolve basic runtime transformer constantArray",
+                    "transformerName": "constantArrayAtRuntime",
+                    "transformer": {
+                      "transformerType": "constantArray",
+                      "interpolation": "runtime",
+                      "value": ["testA", "testB"]
+                    },
+                    "transformerParams": {},
+                    "expectedValue": ["testA", "testB"]
+                  }
+                ]
+              },
+              {
+                "transformerTestType": "transformerTestSuite",
+                "transformerTestLabel": "constantUuid",
+                "transformerTests": [
+                  {
+                    "transformerTestType": "transformerTest",
+                    "transformerTestLabel": "resolve basic transformer constantUuid",
+                    "transformerName": "constantUuid",
+                    "transformer": {
+                      "transformerType": "constantUuid",
+                      "interpolation": "runtime",
+                      "value": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+                    },
+                    "transformerParams": {},
+                    "expectedValue": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+                  }
+                ]
+              },
+              {
+                "transformerTestType": "transformerTestSuite",
+                "transformerTestLabel": "constantNumber",
+                "transformerTests": [
+                  {
+                    "transformerTestType": "transformerTest",
+                    "transformerTestLabel": "resolve basic transformer constantNumber",
+                    "transformerName": "constantNumber",
+                    "transformer": {
+                      "transformerType": "constantNumber",
+                      "interpolation": "runtime",
+                      "value": 42
+                    },
+                    "transformerParams": {},
+                    "expectedValue": 42
+                  }
+                ]
+              },
+              {
+                "transformerTestType": "transformerTestSuite",
+                "transformerTestLabel": "constantString",
+                "transformerTests": [
+                  {
+                    "transformerTestType": "transformerTest",
+                    "transformerTestLabel": "resolve basic transformer constantString",
+                    "transformerName": "constantString",
+                    "transformer": {
+                      "transformerType": "constantString",
+                      "interpolation": "runtime",
+                      "value": "test"
+                    },
+                    "transformerParams": {},
+                    "expectedValue": "test"
+                  }
+                ]
+              },
+              {
+                "transformerTestType": "transformerTestSuite",
+                "transformerTestLabel": "constantObject",
+                "transformerTests": [
+                  {
+                    "transformerTestType": "transformerTest",
+                    "transformerTestLabel": "resolve basic transformer constantObject before runtime",
+                    "transformerName": "constantObjectBeforeRuntime",
+                    "transformer": {
+                      "transformerType": "constantObject",
+                      "interpolation": "runtime",
+                      "value": { "test": "test" }
+                    },
+                    "transformerParams": {},
+                    "expectedValue": { "test": "test" }
+                  },
+                  {
+                    "transformerTestType": "transformerTest",
+                    "transformerTestLabel": "resolve basic transformer constantObject at runtime",
+                    "transformerName": "constantObjectAtRuntime",
+                    "transformer": {
+                      "transformerType": "constantObject",
+                      "interpolation": "runtime",
+                      "value": { "test": "test" }
+                    },
+                    "transformerParams": {},
+                    "expectedValue": { "test": "test" }
+                  }
+                ]
+              },
+              {
+                "transformerTestType": "transformerTestSuite",
+                "transformerTestLabel": "constantBoolean",
+                "transformerTests": [
+                  {
+                    "transformerTestType": "transformerTest",
+                    "transformerTestLabel": "resolve basic transformer constantBoolean",
+                    "transformerName": "constantBoolean",
+                    "transformer": {
+                      "transformerType": "constantBoolean",
+                      "interpolation": "runtime",
+                      "value": true
+                    },
+                    "transformerParams": {},
+                    "expectedValue": true
+                  }
+                ]
+              },
+              {
+                "transformerTestType": "transformerTestSuite",
+                "transformerTestLabel": "constantAsExtractor",
+                "transformerTests": [
+                  {
+                    "transformerTestType": "transformerTest",
+                    "transformerTestLabel": "resolve basic transformer constantAsExtractor for simple object",
+                    "transformerName": "constantAsExtractor",
+                    "transformer": {
+                      "transformerType": "constantAsExtractor",
+                      "interpolation": "runtime",
+                      "valueJzodSchema": {
+                        "type": "object",
+                        "definition": {
+                          "test": { "type": "string" }
+                        }
+                      },
+                      "value": { "test": "a" }
+                    },
+                    "transformerParams": {},
+                    "expectedValue": { "test": "a" }
+                  },
+                  {
+                    "transformerTestType": "transformerTest",
+                    "transformerTestLabel": "resolve basic transformer constantAsExtractor for Country object",
+                    "transformerName": "constantAsExtractor",
+                    "transformer": {
+                      "transformerType": "constantAsExtractor",
+                      "interpolation": "runtime",
+                      "valueJzodSchema": {
+                        "type": "object",
+                        "definition": {
+                          "uuid": {
+                            "type": "uuid",
+                            "tag": {
+                              "value": { "id": 1, "defaultLabel": "Uuid", "editable": false }
+                            }
+                          },
+                          "parentName": {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": { "id": 2, "defaultLabel": "Entity Name", "editable": false }
+                            }
+                          },
+                          "parentUuid": {
+                            "type": "uuid",
+                            "tag": {
+                              "value": { "id": 3, "defaultLabel": "Entity Uuid", "editable": false }
+                            }
+                          },
+                          "conceptLevel": {
+                            "type": "enum",
+                            "definition": ["MetaModel", "Model", "Data"],
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "id": 5,
+                                "defaultLabel": "Concept Level",
+                                "editable": false
+                              }
+                            }
+                          },
+                          "name": {
+                            "type": "string",
+                            "tag": {
+                              "value": { "id": 4, "defaultLabel": "Name", "editable": true }
+                            }
+                          },
+                          "iso3166-1Alpha-2": {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": { "id": 5, "defaultLabel": "Country Code", "editable": true }
+                            }
+                          },
+                          "icon": {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": { "id": 6, "defaultLabel": "Icon", "editable": true }
+                            }
+                          }
+                        }
+                      },
+                      "value": {
+                        "uuid": "2eda1207-4dcc-4af9-a3ba-ef75e7f12c11",
+                        "parentName": "Country",
+                        "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                        "name": "U.S.A.",
+                        "iso3166-1Alpha-2": "US"
+                      }
+                    },
+                    "transformerParams": {},
+                    "ignoreAttributes": ["conceptLevel", "icon"],
+                    "expectedValue": {
+                      "uuid": "2eda1207-4dcc-4af9-a3ba-ef75e7f12c11",
+                      "parentName": "Country",
+                      "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                      "name": "U.S.A.",
+                      "iso3166-1Alpha-2": "US"
+                    }
+                  },
+                  {
+                    "transformerTestType": "transformerTest",
+                    "transformerTestLabel": "resolve basic transformer constantAsExtractor for array of simple objects",
+                    "transformerName": "constantAsExtractor",
+                    "transformer": {
+                      "transformerType": "constantAsExtractor",
+                      "interpolation": "runtime",
+                      "valueJzodSchema": {
+                        "type": "array",
+                        "definition": {
+                          "type": "object",
+                          "definition": {
+                            "test": { "type": "string" }
+                          }
+                        }
+                      },
+                      "value": [{ "test": "a" }, { "test": "b" }]
+                    },
+                    "transformerParams": {},
+                    "expectedValue": [{ "test": "a" }, { "test": "b" }]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "transformerTestType": "transformerTestSuite",
+            "transformerTestLabel": "conditional",
+            "transformerTests": [
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "conditional equality true - basic string comparison",
+                "transformerName": "conditionalEqualityTrue",
+                "transformer": {
+                  "transformerType": "==",
+                  "interpolation": "runtime",
+                  "left": {
+                    "transformerType": "constantString",
+                    "interpolation": "runtime",
+                    "value": "hello"
+                  },
+                  "right": {
+                    "transformerType": "constantString",
+                    "interpolation": "runtime",
+                    "value": "hello"
+                  },
+                  "then": {
+                    "transformerType": "constantString",
+                    "interpolation": "runtime",
+                    "value": "match"
+                  },
+                  "else": {
+                    "transformerType": "constantString",
+                    "interpolation": "runtime",
+                    "value": "no match"
+                  }
+                },
+                "transformerParams": {},
+                "expectedValue": "match"
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "conditional equality false - basic string comparison",
+                "transformerName": "conditionalEqualityFalse",
+                "transformer": {
+                  "transformerType": "==",
+                  "interpolation": "runtime",
+                  "left": {
+                    "transformerType": "constantString",
+                    "interpolation": "runtime",
+                    "value": "hello"
+                  },
+                  "right": {
+                    "transformerType": "constantString",
+                    "interpolation": "runtime",
+                    "value": "world"
+                  },
+                  "then": {
+                    "transformerType": "constantString",
+                    "interpolation": "runtime",
+                    "value": "match"
+                  },
+                  "else": {
+                    "transformerType": "constantString",
+                    "interpolation": "runtime",
+                    "value": "no match"
+                  }
+                },
+                "transformerParams": {},
+                "expectedValue": "no match"
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "conditional not equal true - string comparison",
+                "transformerName": "conditionalNotEqualTrue",
+                "transformer": {
+                  "transformerType": "!=",
+                  "interpolation": "runtime",
+                  "left": {
+                    "transformerType": "constantString",
+                    "interpolation": "runtime",
+                    "value": "hello"
+                  },
+                  "right": {
+                    "transformerType": "constantString",
+                    "interpolation": "runtime",
+                    "value": "world"
+                  },
+                  "then": {
+                    "transformerType": "constantString",
+                    "interpolation": "runtime",
+                    "value": "different"
+                  },
+                  "else": {
+                    "transformerType": "constantString",
+                    "interpolation": "runtime",
+                    "value": "same"
+                  }
+                },
+                "transformerParams": {},
+                "expectedValue": "different"
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "conditional not equal false - string comparison",
+                "transformerName": "conditionalNotEqualFalse",
+                "transformer": {
+                  "transformerType": "!=",
+                  "interpolation": "runtime",
+                  "left": {
+                    "transformerType": "constantString",
+                    "interpolation": "runtime",
+                    "value": "hello"
+                  },
+                  "right": {
+                    "transformerType": "constantString",
+                    "interpolation": "runtime",
+                    "value": "hello"
+                  },
+                  "then": {
+                    "transformerType": "constantString",
+                    "interpolation": "runtime",
+                    "value": "different"
+                  },
+                  "else": {
+                    "transformerType": "constantString",
+                    "interpolation": "runtime",
+                    "value": "same"
+                  }
+                },
+                "transformerParams": {},
+                "expectedValue": "same"
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "conditional less than true - number comparison",
+                "transformerName": "conditionalLessThanTrue",
+                "transformer": {
+                  "transformerType": "<",
+                  "interpolation": "runtime",
+                  "left": {
+                    "transformerType": "constantNumber",
+                    "interpolation": "runtime",
+                    "value": 5
+                  },
+                  "right": {
+                    "transformerType": "constantNumber",
+                    "interpolation": "runtime",
+                    "value": 10
+                  },
+                  "then": {
+                    "transformerType": "constantString",
+                    "interpolation": "runtime",
+                    "value": "smaller"
+                  },
+                  "else": {
+                    "transformerType": "constantString",
+                    "interpolation": "runtime",
+                    "value": "bigger or equal"
+                  }
+                },
+                "transformerParams": {},
+                "expectedValue": "smaller"
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "conditional less than false - number comparison",
+                "transformerName": "conditionalLessThanFalse",
+                "transformer": {
+                  "transformerType": "<",
+                  "interpolation": "runtime",
+                  "left": {
+                    "transformerType": "constantNumber",
+                    "interpolation": "runtime",
+                    "value": 15
+                  },
+                  "right": {
+                    "transformerType": "constantNumber",
+                    "interpolation": "runtime",
+                    "value": 10
+                  },
+                  "then": {
+                    "transformerType": "constantString",
+                    "interpolation": "runtime",
+                    "value": "smaller"
+                  },
+                  "else": {
+                    "transformerType": "constantString",
+                    "interpolation": "runtime",
+                    "value": "bigger or equal"
+                  }
+                },
+                "transformerParams": {},
+                "expectedValue": "bigger or equal"
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "conditional less than or equal true - number comparison",
+                "transformerName": "conditionalLessThanOrEqualTrue",
+                "transformer": {
+                  "transformerType": "<=",
+                  "interpolation": "runtime",
+                  "left": {
+                    "transformerType": "constantNumber",
+                    "interpolation": "runtime",
+                    "value": 10
+                  },
+                  "right": {
+                    "transformerType": "constantNumber",
+                    "interpolation": "runtime",
+                    "value": 10
+                  },
+                  "then": {
+                    "transformerType": "constantString",
+                    "interpolation": "runtime",
+                    "value": "smaller or equal"
+                  },
+                  "else": {
+                    "transformerType": "constantString",
+                    "interpolation": "runtime",
+                    "value": "bigger"
+                  }
+                },
+                "transformerParams": {},
+                "expectedValue": "smaller or equal"
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "conditional less than or equal false - number comparison",
+                "transformerName": "conditionalLessThanOrEqualFalse",
+                "transformer": {
+                  "transformerType": "<=",
+                  "interpolation": "runtime",
+                  "left": {
+                    "transformerType": "constantNumber",
+                    "interpolation": "runtime",
+                    "value": 15
+                  },
+                  "right": {
+                    "transformerType": "constantNumber",
+                    "interpolation": "runtime",
+                    "value": 10
+                  },
+                  "then": {
+                    "transformerType": "constantString",
+                    "interpolation": "runtime",
+                    "value": "smaller or equal"
+                  },
+                  "else": {
+                    "transformerType": "constantString",
+                    "interpolation": "runtime",
+                    "value": "bigger"
+                  }
+                },
+                "transformerParams": {},
+                "expectedValue": "bigger"
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "conditional greater than true - number comparison",
+                "transformerName": "conditionalGreaterThanTrue",
+                "transformer": {
+                  "transformerType": ">",
+                  "interpolation": "runtime",
+                  "left": {
+                    "transformerType": "constantNumber",
+                    "interpolation": "runtime",
+                    "value": 15
+                  },
+                  "right": {
+                    "transformerType": "constantNumber",
+                    "interpolation": "runtime",
+                    "value": 10
+                  },
+                  "then": {
+                    "transformerType": "constantString",
+                    "interpolation": "runtime",
+                    "value": "bigger"
+                  },
+                  "else": {
+                    "transformerType": "constantString",
+                    "interpolation": "runtime",
+                    "value": "smaller or equal"
+                  }
+                },
+                "transformerParams": {},
+                "expectedValue": "bigger"
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "conditional greater than false - number comparison",
+                "transformerName": "conditionalGreaterThanFalse",
+                "transformer": {
+                  "transformerType": ">",
+                  "interpolation": "runtime",
+                  "left": {
+                    "transformerType": "constantNumber",
+                    "interpolation": "runtime",
+                    "value": 5
+                  },
+                  "right": {
+                    "transformerType": "constantNumber",
+                    "interpolation": "runtime",
+                    "value": 10
+                  },
+                  "then": {
+                    "transformerType": "constantString",
+                    "interpolation": "runtime",
+                    "value": "bigger"
+                  },
+                  "else": {
+                    "transformerType": "constantString",
+                    "interpolation": "runtime",
+                    "value": "smaller or equal"
+                  }
+                },
+                "transformerParams": {},
+                "expectedValue": "smaller or equal"
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "conditional greater than or equal true - number comparison",
+                "transformerName": "conditionalGreaterThanOrEqualTrue",
+                "transformer": {
+                  "transformerType": ">=",
+                  "interpolation": "runtime",
+                  "left": {
+                    "transformerType": "constantNumber",
+                    "interpolation": "runtime",
+                    "value": 10
+                  },
+                  "right": {
+                    "transformerType": "constantNumber",
+                    "interpolation": "runtime",
+                    "value": 10
+                  },
+                  "then": {
+                    "transformerType": "constantString",
+                    "interpolation": "runtime",
+                    "value": "bigger or equal"
+                  },
+                  "else": {
+                    "transformerType": "constantString",
+                    "interpolation": "runtime",
+                    "value": "smaller"
+                  }
+                },
+                "transformerParams": {},
+                "expectedValue": "bigger or equal"
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "conditional greater than or equal false - number comparison",
+                "transformerName": "conditionalGreaterThanOrEqualFalse",
+                "transformer": {
+                  "transformerType": ">=",
+                  "interpolation": "runtime",
+                  "left": {
+                    "transformerType": "constantNumber",
+                    "interpolation": "runtime",
+                    "value": 5
+                  },
+                  "right": {
+                    "transformerType": "constantNumber",
+                    "interpolation": "runtime",
+                    "value": 10
+                  },
+                  "then": {
+                    "transformerType": "constantString",
+                    "interpolation": "runtime",
+                    "value": "bigger or equal"
+                  },
+                  "else": {
+                    "transformerType": "constantString",
+                    "interpolation": "runtime",
+                    "value": "smaller"
+                  }
+                },
+                "transformerParams": {},
+                "expectedValue": "smaller"
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "conditional with parameter reference comparison",
+                "transformerName": "conditionalWithParameterReference",
+                "transformer": {
+                  "transformerType": "==",
+                  "interpolation": "runtime",
+                  "left": {
+                    "transformerType": "parameterReference",
+                    "interpolation": "runtime",
+                    "referenceName": "userType"
+                  },
+                  "right": {
+                    "transformerType": "constantString",
+                    "interpolation": "runtime",
+                    "value": "admin"
+                  },
+                  "then": {
+                    "transformerType": "constantString",
+                    "interpolation": "runtime",
+                    "value": "admin access"
+                  },
+                  "else": {
+                    "transformerType": "constantString",
+                    "interpolation": "runtime",
+                    "value": "regular access"
+                  }
+                },
+                "transformerParams": {
+                  "userType": "admin"
+                },
+                "expectedValue": "admin access"
+              }
+            ]
+          },
+          {
+            "transformerTestType": "transformerTestSuite",
+            "transformerTestLabel": "references",
+            "skip": true,
+            "transformerTests": [
+              {
+                "transformerTestType": "transformerTestSuite",
+                "transformerTestLabel": "parameterReference",
+                "transformerTests": [
+                  {
+                    "transformerTestType": "transformerTest",
+                    "transformerTestLabel": "resolve basic transformer parameterReference",
+                    "transformerName": "parameterReference",
+                    "transformer": {
+                      "transformerType": "parameterReference",
+                      "interpolation": "build",
+                      "referenceName": "a"
+                    },
+                    "transformerParams": {
+                      "a": "test"
+                    },
+                    "expectedValue": "test"
+                  },
+                  {
+                    "transformerTestType": "transformerTest",
+                    "transformerTestLabel": "resolve basic transformer parameterReference for referencePath",
+                    "transformerName": "parameterReferenceForReferencePath",
+                    "transformer": {
+                      "transformerType": "parameterReference",
+                      "referencePath": ["a", "b", "c"]
+                    },
+                    "transformerParams": {
+                      "a": { "b": { "c": "test" } }
+                    },
+                    "expectedValue": "test"
+                  },
+                  {
+                    "transformerTestType": "transformerTest",
+                    "transformerTestLabel": "should fail when parameter referenceName is not found",
+                    "transformerName": "parameterReference",
+                    "transformer": {
+                      "transformerType": "parameterReference",
+                      "referenceName": "nonExistentReference"
+                    },
+                    "transformerParams": {},
+                    "retainAttributes": ["queryFailure"],
+                    "expectedValue": {
+                      "queryFailure": "FailedTransformer"
+                    }
+                  },
+                  {
+                    "transformerTestType": "transformerTest",
+                    "transformerTestLabel": "should fail when parameter referencePath is invalid",
+                    "transformerName": "parameterReference",
+                    "transformer": {
+                      "transformerType": "parameterReference",
+                      "referencePath": ["invalidPath"]
+                    },
+                    "transformerParams": {
+                      "a": "test"
+                    },
+                    "retainAttributes": ["queryFailure"],
+                    "expectedValue": {
+                      "queryFailure": "FailedTransformer"
+                    }
+                  }
+                ]
+              },
+              {
+                "transformerTestType": "transformerTestSuite",
+                "transformerTestLabel": "contextReference",
+                "transformerTests": [
+                  {
+                    "transformerTestType": "transformerTest",
+                    "transformerTestLabel": "resolve basic transformer contextReference for referenceName",
+                    "transformerName": "contextReferenceForReferenceName",
+                    "transformer": {
+                      "transformerType": "contextReference",
+                      "interpolation": "runtime",
+                      "referenceName": "a"
+                    },
+                    "transformerParams": {},
+                    "transformerRuntimeContext": {
+                      "a": "test"
+                    },
+                    "expectedValue": "test"
+                  },
+                  {
+                    "transformerTestType": "transformerTest",
+                    "transformerTestLabel": "resolve basic transformer contextReference for referencePath",
+                    "transformerName": "contextReferenceForReferencePath",
+                    "transformer": {
+                      "transformerType": "contextReference",
+                      "interpolation": "runtime",
+                      "referencePath": ["a", "b", "c"]
+                    },
+                    "transformerParams": {},
+                    "transformerRuntimeContext": {
+                      "a": { "b": { "c": "test" } }
+                    },
+                    "expectedValue": "test"
+                  },
+                  {
+                    "transformerTestType": "transformerTest",
+                    "transformerTestLabel": "should fail when context referenceName is not found",
+                    "transformerName": "contextReference",
+                    "transformer": {
+                      "transformerType": "contextReference",
+                      "interpolation": "runtime",
+                      "referenceName": "nonExistentReference"
+                    },
+                    "transformerParams": {},
+                    "retainAttributes": ["queryFailure"],
+                    "integrationTestExpectedValue": {
+                      "queryFailure": "QueryNotExecutable"
+                    },
+                    "unitTestExpectedValue": {
+                      "queryFailure": "FailedTransformer"
+                    }
+                  },
+                  {
+                    "transformerTestType": "transformerTest",
+                    "transformerTestLabel": "should fail when context referencePath is invalid",
+                    "transformerName": "contextReference",
+                    "transformer": {
+                      "transformerType": "contextReference",
+                      "interpolation": "runtime",
+                      "referencePath": ["a", "invalidPath"]
+                    },
+                    "transformerParams": {},
+                    "transformerRuntimeContext": {
+                      "a": { "b": "test" }
+                    },
+                    "retainAttributes": ["queryFailure"],
+                    "integrationTestExpectedValue": {
+                      "queryFailure": "QueryNotExecutable"
+                    },
+                    "unitTestExpectedValue": {
+                      "queryFailure": "FailedTransformer"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "transformerTestType": "transformerTestSuite",
+            "transformerTestLabel": "objectEntries",
+            "skip": true,
+            "transformerTests": [
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "objectEntries used on constant object before runtime",
+                "transformerName": "objectEntries",
+                "transformer": {
+                  "transformerType": "objectEntries",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "constant",
+                    "interpolation": "runtime",
+                    "value": { "a": "testA", "b": "testB" }
+                  }
+                },
+                "transformerParams": {},
+                "expectedValue": [
+                  ["a", "testA"],
+                  ["b", "testB"]
+                ]
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "objectEntries used on reference before runtime",
+                "transformerName": "objectEntries",
+                "transformer": {
+                  "transformerType": "objectEntries",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "parameterReference",
+                    "referenceName": "testObject1"
+                  }
+                },
+                "transformerParams": {
+                  "testObject1": { "a": "testA", "b": "testB" }
+                },
+                "expectedValue": [
+                  ["a", "testA"],
+                  ["b", "testB"]
+                ]
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "objectEntries used on reference at runtime",
+                "transformerName": "objectEntries",
+                "transformer": {
+                  "transformerType": "objectEntries",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "contextReference",
+                    "interpolation": "runtime",
+                    "referenceName": "testObject1"
+                  }
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "testObject1": { "a": "testA", "b": "testB" }
+                },
+                "expectedValue": [
+                  ["a", "testA"],
+                  ["b", "testB"]
+                ]
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "failed object entries for string parameter",
+                "transformerName": "objectEntriesFailed",
+                "transformer": {
+                  "transformerType": "objectEntries",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "constant",
+                    "interpolation": "runtime",
+                    "value": "nonExistingTestObject"
+                  }
+                },
+                "transformerParams": {},
+                "retainAttributes": ["queryFailure"],
+                "unitTestExpectedValue": {
+                  "queryFailure": "FailedTransformer"
+                },
+                "integrationTestExpectedValue": {
+                  "queryFailure": "QueryNotExecutable"
+                }
+              }
+            ]
+          },
+          {
+            "transformerTestType": "transformerTestSuite",
+            "transformerTestLabel": "objectValues",
+            "skip": true,
+            "transformerTests": [
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "objectValues on constant object at runtime",
+                "transformerName": "objectValuesBeforeRuntime",
+                "transformer": {
+                  "transformerType": "objectValues",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "constant",
+                    "interpolation": "runtime",
+                    "value": { "a": "testA", "b": "testB" }
+                  }
+                },
+                "transformerParams": {
+                  "testObject": { "a": "testA", "b": "testB" }
+                },
+                "expectedValue": ["testA", "testB"]
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "object values with reference before runtime",
+                "transformerName": "objectValuesBeforeRuntime",
+                "transformer": {
+                  "transformerType": "objectValues",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "contextReference",
+                    "interpolation": "runtime",
+                    "referenceName": "testObject"
+                  }
+                },
+                "transformerRuntimeContext": {
+                  "testObject": { "a": "testA", "b": "testB" }
+                },
+                "expectedValue": ["testA", "testB"]
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "objectValues with reference at runtime",
+                "transformerName": "objectValuesAtRuntime",
+                "transformer": {
+                  "transformerType": "objectValues",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "contextReference",
+                    "interpolation": "runtime",
+                    "referenceName": "testObject"
+                  }
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "testObject": { "a": "testA", "b": "testB" }
+                },
+                "expectedValue": ["testA", "testB"]
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "failed object values for string parameter",
+                "transformerName": "objectValuesFailed",
+                "transformer": {
+                  "transformerType": "objectValues",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "constant",
+                    "interpolation": "runtime",
+                    "value": "nonExistingTestObject"
+                  }
+                },
+                "transformerParams": {},
+                "retainAttributes": ["queryFailure"],
+                "unitTestExpectedValue": {
+                  "queryFailure": "FailedTransformer"
+                },
+                "integrationTestExpectedValue": {
+                  "queryFailure": "QueryNotExecutable"
+                }
+              }
+            ]
+          },
+          {
+            "transformerTestType": "transformerTestSuite",
+            "transformerTestLabel": "listPickElement",
+            "skip": true,
+            "transformerTests": [
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "listPickElement selects wanted element from a constant string list before runtime",
+                "transformerName": "listPickElementForString",
+                "transformer": {
+                  "transformerType": "listPickElement",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "constant",
+                    "interpolation": "runtime",
+                    "value": ["testA", "testB", "testC"]
+                  },
+                  "index": 1
+                },
+                "transformerParams": {},
+                "expectedValue": "testB"
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "listPickElement selects wanted element from a string list parameter reference before runtime",
+                "transformerName": "listPickElementForString",
+                "transformer": {
+                  "transformerType": "listPickElement",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "contextReference",
+                    "interpolation": "runtime",
+                    "referenceName": "testList"
+                  },
+                  "index": 1
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "testList": ["testA", "testB", "testC"]
+                },
+                "expectedValue": "testB"
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "listPickElement selects wanted object from a pre-sorted object list before runtime",
+                "transformerName": "listPickElementForObject",
+                "transformer": {
+                  "transformerType": "listPickElement",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "contextReference",
+                    "interpolation": "runtime",
+                    "referenceName": "testList"
+                  },
+                  "orderBy": "test",
+                  "index": 1
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "testList": [{ "test": "testA" }, { "test": "testB" }, { "test": "testC" }]
+                },
+                "expectedValue": { "test": "testB" }
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "listPickElement from extractor selects wanted element from string list context reference at runtime",
+                "transformerName": "listPickElementForString",
+                "transformer": {
+                  "transformerType": "listPickElement",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "constantAsExtractor",
+                    "interpolation": "runtime",
+                    "valueJzodSchema": {
+                      "type": "array",
+                      "definition": {
+                        "type": "string"
+                      }
+                    },
+                    "value": ["testA", "testB", "testC"]
+                  },
+                  "index": 1
+                },
+                "transformerParams": {},
+                "expectedValue": "testB"
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "listPickElement from extractor selects wanted element from object ordered list at runtime",
+                "transformerName": "listPickElementForString",
+                "transformer": {
+                  "transformerType": "listPickElement",
+                  "interpolation": "runtime",
+                  "orderBy": "test",
+                  "applyTo": {
+                    "transformerType": "constantAsExtractor",
+                    "interpolation": "runtime",
+                    "valueJzodSchema": {
+                      "type": "array",
+                      "definition": {
+                        "type": "object",
+                        "definition": {
+                          "test": { "type": "string" }
+                        }
+                      }
+                    },
+                    "value": [{ "test": "testA" }, { "test": "testB" }, { "test": "testC" }]
+                  },
+                  "index": 1
+                },
+                "transformerParams": {},
+                "expectedValue": { "test": "testB" }
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "listPickElement returns null when index is out of bounds before runtime",
+                "transformerName": "listPickElementForString",
+                "transformer": {
+                  "transformerType": "listPickElement",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "contextReference",
+                    "interpolation": "runtime",
+                    "referenceName": "testList"
+                  },
+                  "index": 4
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "testList": ["testA", "testB", "testC"]
+                },
+                "expectedValue": null
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "listPickElement returns null when index is out of bounds at runtime",
+                "transformerName": "listPickElementForString",
+                "transformer": {
+                  "transformerType": "listPickElement",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "contextReference",
+                    "interpolation": "runtime",
+                    "referenceName": "testList"
+                  },
+                  "index": 4
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "testList": ["testA", "testB", "testC"]
+                },
+                "expectedValue": null
+              }
+            ]
+          },
+          {
+            "transformerTestType": "transformerTestSuite",
+            "transformerTestLabel": "unique",
+            "skip": true,
+            "transformerTests": [
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "unique returns list of unique objects from constant array at runtime",
+                "transformerName": "uniqueForReferenceAtRuntime",
+                "transformer": {
+                  "transformerType": "unique",
+                  "interpolation": "runtime",
+                  "attribute": "a",
+                  "applyTo": {
+                    "transformerType": "constant",
+                    "interpolation": "runtime",
+                    "value": [
+                    { "a": "testA" },
+                    { "a": "testB" },
+                    { "a": "testA" },
+                    { "a": "testC" }
+                  ]}
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {},
+                "expectedValue": [{ "a": "testA" }, { "a": "testB" }, { "a": "testC" }]
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "unique returns list of unique objects from reference at runtime",
+                "transformerName": "uniqueForReferenceAtRuntime",
+                "transformer": {
+                  "transformerType": "unique",
+                  "interpolation": "runtime",
+                  "attribute": "a",
+                  "applyTo": {
+                    "transformerType": "contextReference",
+                    "interpolation": "runtime",
+                    "referenceName": "testList"
+                  }
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "testList": [
+                    { "a": "testA" },
+                    { "a": "testB" },
+                    { "a": "testA" },
+                    { "a": "testC" }
+                  ]
+                },
+                "expectedValue": [{ "a": "testA" }, { "a": "testB" }, { "a": "testC" }]
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "unique returns list of unique objects from extractor at runtime",
+                "transformerName": "uniqueForExtractorAtRuntime",
+                "transformer": {
+                  "transformerType": "unique",
+                  "interpolation": "runtime",
+                  "attribute": "a",
+                  "applyTo": {
+                    "transformerType": "constantAsExtractor",
+                    "interpolation": "runtime",
+                    "valueJzodSchema": {
+                      "type": "array",
+                      "definition": {
+                        "type": "object",
+                        "definition": {
+                          "a": { "type": "string" }
+                        }
+                      }
+                    },
+                    "value": [
+                      { "a": "testA" },
+                      { "a": "testB" },
+                      { "a": "testA" },
+                      { "a": "testC" }
+                    ]
+                  }
+                },
+                "transformerParams": {},
+                "expectedValue": [{ "a": "testA" }, { "a": "testB" }, { "a": "testC" }]
+              }
+            ]
+          },
+          {
+            "transformerTestType": "transformerTestSuite",
+            "transformerTestLabel": "count",
+            "skip": true,
+            "transformerTests": [
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "count returns number of elements in an object list at runtime",
+                "transformerName": "countForConstantObjectListAtRuntime",
+                "transformer": {
+                  "transformerType": "count",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "constant",
+                    "interpolation": "runtime",
+                    "value": [{ "test": "testA" }, { "test": "testB" }, { "test": "testC" }]}
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {},
+                "expectedValue": [{ "count": 3 }]
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "count returns number of elements in a constant transformer object list at runtime",
+                "transformerName": "countForConstantObjectListAtRuntime",
+                "transformer": {
+                  "transformerType": "count",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "constant",
+                    "interpolation": "runtime",
+                    "value": [{ "test": "testA" }, { "test": "testB" }, { "test": "testC" }]
+                  }
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {},
+                "expectedValue": [{ "count": 3 }]
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "count returns number of elements in a contextReference object list at runtime",
+                "transformerName": "countForObjectListAtRuntime",
+                "transformer": {
+                  "transformerType": "count",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "contextReference",
+                    "interpolation": "runtime",
+                    "referenceName": "testList"
+                  }
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "testList": [{ "test": "testA" }, { "test": "testB" }, { "test": "testC" }]
+                },
+                "expectedValue": [{ "count": 3 }]
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "count returns number of elements in a string list from an extractor at runtime",
+                "transformerName": "countForStringListExtractor",
+                "transformer": {
+                  "transformerType": "count",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "constantAsExtractor",
+                    "interpolation": "runtime",
+                    "valueJzodSchema": {
+                      "type": "array",
+                      "definition": {
+                        "type": "string"
+                      }
+                    },
+                    "value": ["testA", "testB", "testC"]
+                  }
+                },
+                "transformerParams": {},
+                "expectedValue": [{ "count": 3 }]
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "count returns number of elements in an object list from an extractor",
+                "transformerName": "countForObjectListExtractor",
+                "transformer": {
+                  "transformerType": "count",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "constantAsExtractor",
+                    "interpolation": "runtime",
+                    "valueJzodSchema": {
+                      "type": "array",
+                      "definition": {
+                        "type": "object",
+                        "definition": {
+                          "test": { "type": "string" }
+                        }
+                      }
+                    },
+                    "value": [{ "test": "testA" }, { "test": "testB" }, { "test": "testC" }]
+                  }
+                },
+                "transformerParams": {},
+                "expectedValue": [{ "count": 3 }]
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "count returns number of elements in an object list with a group at runtime",
+                "transformerName": "countForObject",
+                "transformer": {
+                  "transformerType": "count",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "contextReference",
+                    "interpolation": "runtime",
+                    "referenceName": "testList"
+                  },
+                  "groupBy": "test"
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "testList": [
+                    { "test": "testA" },
+                    { "test": "testB" },
+                    { "test": "testA" },
+                    { "test": "testC" }
+                  ]
+                },
+                "expectedValue": [{ "testA": 2, "testB": 1, "testC": 1 }]
+              }
+            ]
+          },
+          {
+            "transformerTestType": "transformerTestSuite",
+            "transformerTestLabel": "object_fullTemplate",
+            "skip": true,
+            "transformerTests": [
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "object_fullTemplate allows to dynamically build an object from a constant object before runtime (unknown keys, unknown values)",
+                "transformerName": "fullTemplate",
+                "transformer": {
+                  "transformerType": "object_fullTemplate",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "constant",
+                    "interpolation": "runtime",
+                    "value": {
+                    "uuid": "2eda1207-4dcc-4af9-a3ba-ef75e7f12c11",
+                    "parentName": "Country",
+                    "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                    "name": "U.S.A.",
+                    "iso3166-1Alpha-2": "US"
+                  }},
+                  "referenceToOuterObject": "country",
+                  "definition": [
+                    {
+                      "attributeKey": {
+                        "transformerType": "constantUuid",
+                        "interpolation": "runtime",
+                        "value": "uuid"
+                      },
+                      "attributeValue": {
+                        "transformerType": "contextReference",
+                        "interpolation": "runtime",
+                        "referenceName": "newUuid"
+                      }
+                    },
+                    {
+                      "attributeKey": {
+                        "transformerType": "constantUuid",
+                        "interpolation": "runtime",
+                        "value": "name"
+                      },
+                      "attributeValue": {
+                        "transformerType": "contextReference",
+                        "interpolation": "runtime",
+                        "referencePath": ["country", "iso3166-1Alpha-2"]
+                      }
+                    }
+                  ]
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "newUuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+                },
+                "expectedValue": { "uuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx", "name": "US" }
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "object_fullTemplate allows to dynamically build an object before runtime (unknown keys, unknown values)",
+                "transformerName": "fullTemplate",
+                "transformer": {
+                  "transformerType": "object_fullTemplate",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "contextReference",
+                    "interpolation": "runtime",
+                    "referenceName": "country"
+                  },
+                  "referenceToOuterObject": "country",
+                  "definition": [
+                    {
+                      "attributeKey": {
+                        "transformerType": "constantUuid",
+                        "interpolation": "runtime",
+                        "value": "uuid"
+                      },
+                      "attributeValue": {
+                        "transformerType": "contextReference",
+                        "interpolation": "runtime",
+                        "referenceName": "newUuid"
+                      }
+                    },
+                    {
+                      "attributeKey": {
+                        "transformerType": "constantUuid",
+                        "interpolation": "runtime",
+                        "value": "name"
+                      },
+                      "attributeValue": {
+                        "transformerType": "contextReference",
+                        "interpolation": "runtime",
+                        "referencePath": ["country", "iso3166-1Alpha-2"]
+                      }
+                    }
+                  ]
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "newUuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                  "country": {
+                    "uuid": "2eda1207-4dcc-4af9-a3ba-ef75e7f12c11",
+                    "parentName": "Country",
+                    "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                    "name": "U.S.A.",
+                    "iso3166-1Alpha-2": "US"
+                  }
+                },
+                "expectedValue": { "uuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx", "name": "US" }
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "object_fullTemplate allows to dynamically build an object during runtime using parameterReference (unknown keys, unknown values)",
+                "transformerName": "fullTemplate",
+                "transformer": {
+                  "transformerType": "object_fullTemplate",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "contextReference",
+                    "interpolation": "runtime",
+                    "referenceName": "country"
+                  },
+                  "referenceToOuterObject": "country",
+                  "definition": [
+                    {
+                      "attributeKey": {
+                        "transformerType": "constantString",
+                        "interpolation": "runtime",
+                        "value": "uuid"
+                      },
+                      "attributeValue": {
+                        "transformerType": "contextReference",
+                        "interpolation": "runtime",
+                        "referenceName": "newUuid"
+                      }
+                    },
+                    {
+                      "attributeKey": {
+                        "transformerType": "constantString",
+                        "interpolation": "runtime",
+                        "value": "name"
+                      },
+                      "attributeValue": {
+                        "transformerType": "contextReference",
+                        "interpolation": "runtime",
+                        "referencePath": ["country", "iso3166-1Alpha-2"]
+                      }
+                    }
+                  ]
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "newUuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                  "country": {
+                    "uuid": "2eda1207-4dcc-4af9-a3ba-ef75e7f12c11",
+                    "parentName": "Country",
+                    "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                    "name": "U.S.A.",
+                    "iso3166-1Alpha-2": "US"
+                  }
+                },
+                "expectedValue": { "uuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx", "name": "US" }
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "object_fullTemplate allows to dynamically build an object using an extractor",
+                "transformerName": "fullTemplate",
+                "transformer": {
+                  "transformerType": "object_fullTemplate",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "constantAsExtractor",
+                    "interpolation": "runtime",
+                    "valueJzodSchema": {
+                      "type": "object",
+                      "definition": {
+                        "uuid": {
+                          "type": "uuid",
+                          "tag": { "value": { "id": 1, "defaultLabel": "Uuid", "editable": false } }
+                        },
+                        "parentName": {
+                          "type": "string",
+                          "optional": true,
+                          "tag": {
+                            "value": { "id": 2, "defaultLabel": "Entity Name", "editable": false }
+                          }
+                        },
+                        "parentUuid": {
+                          "type": "uuid",
+                          "tag": {
+                            "value": { "id": 3, "defaultLabel": "Entity Uuid", "editable": false }
+                          }
+                        },
+                        "conceptLevel": {
+                          "type": "enum",
+                          "definition": ["MetaModel", "Model", "Data"],
+                          "optional": true,
+                          "tag": {
+                            "value": { "id": 5, "defaultLabel": "Concept Level", "editable": false }
+                          }
+                        },
+                        "name": {
+                          "type": "string",
+                          "tag": { "value": { "id": 4, "defaultLabel": "Name", "editable": true } }
+                        },
+                        "iso3166-1Alpha-2": {
+                          "type": "string",
+                          "optional": true,
+                          "tag": {
+                            "value": { "id": 5, "defaultLabel": "Country Code", "editable": true }
+                          }
+                        },
+                        "icon": {
+                          "type": "string",
+                          "optional": true,
+                          "tag": { "value": { "id": 6, "defaultLabel": "Icon", "editable": true } }
+                        }
+                      }
+                    },
+                    "value": {
+                      "uuid": "2eda1207-4dcc-4af9-a3ba-ef75e7f12c11",
+                      "parentName": "Country",
+                      "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                      "name": "U.S.A.",
+                      "iso3166-1Alpha-2": "US"
+                    }
+                  },
+                  "referenceToOuterObject": "country",
+                  "definition": [
+                    {
+                      "attributeKey": {
+                        "transformerType": "constantString",
+                        "interpolation": "runtime",
+                        "value": "uuid"
+                      },
+                      "attributeValue": {
+                        "transformerType": "contextReference",
+                        "interpolation": "runtime",
+                        "referenceName": "newUuid"
+                      }
+                    },
+                    {
+                      "attributeKey": {
+                        "transformerType": "constantString",
+                        "interpolation": "runtime",
+                        "value": "name"
+                      },
+                      "attributeValue": {
+                        "transformerType": "contextReference",
+                        "interpolation": "runtime",
+                        "referencePath": ["country", "iso3166-1Alpha-2"]
+                      }
+                    }
+                  ]
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "newUuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                  "country": {
+                    "uuid": "2eda1207-4dcc-4af9-a3ba-ef75e7f12c11",
+                    "parentName": "Country",
+                    "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                    "name": "U.S.A.",
+                    "iso3166-1Alpha-2": "US"
+                  }
+                },
+                "expectedValue": { "uuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx", "name": "US" }
+              }
+            ]
+          },
+          {
+            "transformerTestType": "transformerTestSuite",
+            "transformerTestLabel": "freeObjectTemplate",
+            "skip": true,
+            "transformerTests": [
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "freeObjectTemplate allows to build a simple object with static values",
+                "transformerName": "freeObjectTemplate",
+                "transformer": {
+                  "transformerType": "freeObjectTemplate",
+                  "interpolation": "runtime",
+                  "definition": {
+                    "uuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                    "name": "US",
+                    "isEntity": false,
+                    "allocation": 1234
+                  }
+                },
+                "transformerParams": {
+                  "country": {
+                    "uuid": "2eda1207-4dcc-4af9-a3ba-ef75e7f12c11",
+                    "parentName": "Country",
+                    "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                    "name": "U.S.A.",
+                    "iso3166-1Alpha-2": "US"
+                  }
+                },
+                "expectedValue": {
+                  "uuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                  "name": "US",
+                  "isEntity": false,
+                  "allocation": 1234
+                }
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "freeObjectTemplate allows to build a simple object with dynamic values",
+                "transformerName": "freeObjectTemplate",
+                "transformer": {
+                  "transformerType": "freeObjectTemplate",
+                  "interpolation": "runtime",
+                  "definition": {
+                    "uuid": {
+                      "transformerType": "constantUuid",
+                      "interpolation": "runtime",
+                      "value": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+                    },
+                    "name": {
+                      "transformerType": "contextReference",
+                      "interpolation": "runtime",
+                      "referencePath": ["country", "iso3166-1Alpha-2"]
+                    }
+                  }
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "country": {
+                    "uuid": "2eda1207-4dcc-4af9-a3ba-ef75e7f12c11",
+                    "parentName": "Country",
+                    "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                    "name": "U.S.A.",
+                    "iso3166-1Alpha-2": "US"
+                  }
+                },
+                "expectedValue": { "uuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx", "name": "US" }
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "freeObjectTemplate allows to build a 2-level object with dynamic values",
+                "transformerName": "freeObjectTemplate",
+                "transformer": {
+                  "transformerType": "freeObjectTemplate",
+                  "interpolation": "runtime",
+                  "definition": {
+                    "uuid": {
+                      "transformerType": "constantUuid",
+                      "interpolation": "runtime",
+                      "value": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+                    },
+                    "name": {
+                      "transformerType": "contextReference",
+                      "interpolation": "runtime",
+                      "referencePath": ["country", "iso3166-1Alpha-2"]
+                    },
+                    "country": {
+                      "transformerType": "freeObjectTemplate",
+                      "interpolation": "runtime",
+                      "definition": {
+                        "uuid": {
+                          "transformerType": "constantUuid",
+                          "interpolation": "runtime",
+                          "value": "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy"
+                        },
+                        "name": {
+                          "transformerType": "contextReference",
+                          "interpolation": "runtime",
+                          "referencePath": ["country", "iso3166-1Alpha-2"]
+                        }
+                      }
+                    }
+                  }
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "country": {
+                    "uuid": "2eda1207-4dcc-4af9-a3ba-ef75e7f12c11",
+                    "parentName": "Country",
+                    "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                    "name": "U.S.A.",
+                    "iso3166-1Alpha-2": "US"
+                  }
+                },
+                "expectedValue": {
+                  "uuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                  "name": "US",
+                  "country": { "uuid": "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy", "name": "US" }
+                }
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "freeObjectTemplate should fail when definition fails to resolve correctly",
+                "transformerName": "freeObjectTemplate",
+                "transformer": {
+                  "transformerType": "freeObjectTemplate",
+                  "interpolation": "runtime",
+                  "definition": {
+                    "uuid": {
+                      "transformerType": "constantUuid",
+                      "interpolation": "runtime",
+                      "value": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+                    },
+                    "name": {
+                      "transformerType": "contextReference",
+                      "interpolation": "runtime",
+                      "referencePath": ["country", "nonExistingAttribute"]
+                    }
+                  }
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "country": {
+                    "uuid": "2eda1207-4dcc-4af9-a3ba-ef75e7f12c11",
+                    "parentName": "Country",
+                    "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                    "name": "U.S.A.",
+                    "iso3166-1Alpha-2": "US"
+                  }
+                },
+                "retainAttributes": ["queryFailure"],
+                "unitTestExpectedValue": {
+                  "queryFailure": "FailedTransformer"
+                },
+                "integrationTestExpectedValue": {
+                  "queryFailure": "QueryNotExecutable"
+                }
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "freeObjectTemplate should fail when sub-definition fails to resolve correctly",
+                "transformerName": "freeObjectTemplate",
+                "transformer": {
+                  "transformerType": "freeObjectTemplate",
+                  "interpolation": "runtime",
+                  "definition": {
+                    "uuid": {
+                      "transformerType": "constantUuid",
+                      "interpolation": "runtime",
+                      "value": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+                    },
+                    "name": {
+                      "transformerType": "contextReference",
+                      "interpolation": "runtime",
+                      "referencePath": ["country", "name"]
+                    },
+                    "country": {
+                      "transformerType": "freeObjectTemplate",
+                      "interpolation": "runtime",
+                      "definition": {
+                        "uuid": {
+                          "transformerType": "constantUuid",
+                          "interpolation": "runtime",
+                          "value": "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy"
+                        },
+                        "name": {
+                          "transformerType": "contextReference",
+                          "interpolation": "runtime",
+                          "referencePath": ["country", "nonExistingAttribute"]
+                        }
+                      }
+                    }
+                  }
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "country": {
+                    "uuid": "2eda1207-4dcc-4af9-a3ba-ef75e7f12c11",
+                    "parentName": "Country",
+                    "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                    "name": "U.S.A.",
+                    "iso3166-1Alpha-2": "US"
+                  }
+                },
+                "retainAttributes": ["queryFailure"],
+                "unitTestExpectedValue": {
+                  "queryFailure": "FailedTransformer"
+                },
+                "integrationTestExpectedValue": {
+                  "queryFailure": "QueryNotExecutable"
+                }
+              }
+            ]
+          },
+          {
+            "transformerTestType": "transformerTestSuite",
+            "transformerTestLabel": "object_alter",
+            "skip": true,
+            "transformerTests": [
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "objectAlter allows to change a constant object attribute value",
+                "transformerName": "objectAlter",
+                "transformer": {
+                  "transformerType": "objectAlter",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                      "transformerType": "constant",
+                    "interpolation": "runtime",
+                    "value": {
+                    "uuid": "2eda1207-4dcc-4af9-a3ba-ef75e7f12c11",
+                    "parentName": "Country",
+                    "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                    "name": "U.S.A.",
+                    "iso3166-1Alpha-2": "US"
+                  }},
+                  "referenceToOuterObject": "country",
+                  "definition": {
+                    "transformerType": "freeObjectTemplate",
+                    "interpolation": "runtime",
+                    "definition": {
+                      "iso3166-1Alpha-2": {
+                        "transformerType": "constantString",
+                        "interpolation": "runtime",
+                        "value": "DE"
+                      }
+                    }
+                  }
+                },
+                "transformerParams": {},
+                "expectedValue": {
+                  "uuid": "2eda1207-4dcc-4af9-a3ba-ef75e7f12c11",
+                  "parentName": "Country",
+                  "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                  "name": "U.S.A.",
+                  "iso3166-1Alpha-2": "DE"
+                }
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "objectAlter allows to change a referenced object attribute value",
+                "transformerName": "objectAlter",
+                "transformer": {
+                  "transformerType": "objectAlter",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "parameterReference",
+                    "referenceName": "country"
+                  },
+                  "referenceToOuterObject": "country",
+                  "definition": {
+                    "transformerType": "freeObjectTemplate",
+                    "interpolation": "runtime",
+                    "definition": {
+                      "iso3166-1Alpha-2": {
+                        "transformerType": "constantString",
+                        "interpolation": "runtime",
+                        "value": "DE"
+                      }
+                    }
+                  }
+                },
+                "transformerParams": {
+                  "country": {
+                    "uuid": "2eda1207-4dcc-4af9-a3ba-ef75e7f12c11",
+                    "parentName": "Country",
+                    "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                    "name": "U.S.A.",
+                    "iso3166-1Alpha-2": "US"
+                  }
+                },
+                "expectedValue": {
+                  "uuid": "2eda1207-4dcc-4af9-a3ba-ef75e7f12c11",
+                  "parentName": "Country",
+                  "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                  "name": "U.S.A.",
+                  "iso3166-1Alpha-2": "DE"
+                }
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "objectAlter should fail when applyTo fails to resolve correctly",
+                "transformerName": "objectAlter",
+                "transformer": {
+                  "transformerType": "objectAlter",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "contextReference",
+                    "interpolation": "runtime",
+                    "referenceName": "nonExistingCountry"
+                  },
+                  "referenceToOuterObject": "country",
+                  "definition": {
+                    "transformerType": "freeObjectTemplate",
+                    "interpolation": "runtime",
+                    "definition": {
+                      "iso3166-1Alpha-2": {
+                        "transformerType": "constantString",
+                        "interpolation": "runtime",
+                        "value": "DE"
+                      }
+                    }
+                  }
+                },
+                "transformerParams": {
+                  "country": {
+                    "uuid": "2eda1207-4dcc-4af9-a3ba-ef75e7f12c11",
+                    "parentName": "Country",
+                    "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                    "name": "U.S.A.",
+                    "iso3166-1Alpha-2": "US"
+                  }
+                },
+                "retainAttributes": ["queryFailure"],
+                "unitTestExpectedValue": {
+                  "queryFailure": "FailedTransformer"
+                },
+                "integrationTestExpectedValue": {
+                  "queryFailure": "QueryNotExecutable"
+                }
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "objectAlter should fail when definition fails to resolve correctly",
+                "transformerName": "objectAlter",
+                "transformer": {
+                  "transformerType": "objectAlter",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "parameterReference",
+                    "referenceName": "country"
+                  },
+                  "referenceToOuterObject": "country",
+                  "definition": {
+                    "transformerType": "freeObjectTemplate",
+                    "interpolation": "runtime",
+                    "definition": {
+                      "iso3166-1Alpha-2": {
+                        "transformerType": "contextReference",
+                        "interpolation": "runtime",
+                        "referencePath": ["country", "nonExistingAttribute"]
+                      }
+                    }
+                  }
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "country": {
+                    "uuid": "2eda1207-4dcc-4af9-a3ba-ef75e7f12c11",
+                    "parentName": "Country",
+                    "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                    "name": "U.S.A.",
+                    "iso3166-1Alpha-2": "US"
+                  }
+                },
+                "retainAttributes": ["queryFailure"],
+                "unitTestExpectedValue": {
+                  "queryFailure": "FailedTransformer"
+                },
+                "integrationTestExpectedValue": {
+                  "queryFailure": "QueryNotExecutable"
+                }
+              }
+            ]
+          },
+          {
+            "transformerTestType": "transformerTestSuite",
+            "transformerTestLabel": "mapperListToList",
+            "skip": true,
+            "transformerTests": [
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "mapperListToList maps a constant list of objects to a list of constant objects",
+                "transformerName": "mapperListToList",
+                "transformer": {
+                  "transformerType": "mapperListToList",
+                  "label": "countryListMapperToObjectList",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "constant",
+                    "interpolation": "runtime",
+                    "value":[
+                    {
+                      "uuid": "2eda1207-4dcc-4af9-a3ba-ef75e7f12c11",
+                      "parentName": "Country",
+                      "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                      "name": "U.S.A.",
+                      "iso3166-1Alpha-2": "US"
+                    },
+                    {
+                      "uuid": "30b8e7c6-b75d-4db0-906f-fa81fa5c4cc0",
+                      "parentName": "Country",
+                      "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                      "name": "Germany",
+                      "iso3166-1Alpha-2": "DE"
+                    }
+                  ]},
+                  "referenceToOuterObject": "country",
+                  "elementTransformer": {
+                    "transformerType": "freeObjectTemplate",
+                    "interpolation": "runtime",
+                    "definition": {
+                      "test": "1"
+                    }
+                  }
+                },
+                "transformerRuntimeContext": {
+                  "newUuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+                },
+                "transformerParams": {},
+                "expectedValue": [{ "test": "1" }, { "test": "1" }]
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "mapperListToList maps a constant list of objects to a list of constant objects with subObject",
+                "transformerName": "mapperListToList",
+                "transformer": {
+                  "transformerType": "mapperListToList",
+                  "label": "countryListMapperToObjectList",
+                  "interpolation": "runtime",
+                  "applyTo": {                    "transformerType": "constant",
+                    "interpolation": "runtime",
+"value":[
+                    {
+                      "uuid": "2eda1207-4dcc-4af9-a3ba-ef75e7f12c11",
+                      "parentName": "Country",
+                      "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                      "name": "U.S.A.",
+                      "iso3166-1Alpha-2": "US"
+                    },
+                    {
+                      "uuid": "30b8e7c6-b75d-4db0-906f-fa81fa5c4cc0",
+                      "parentName": "Country",
+                      "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                      "name": "Germany",
+                      "iso3166-1Alpha-2": "DE"
+                    }
+                  ]},
+                  "referenceToOuterObject": "country",
+                  "elementTransformer": {
+                    "transformerType": "freeObjectTemplate",
+                    "interpolation": "runtime",
+                    "definition": {
+                      "test": "1",
+                      "subObject": {
+                        "transformerType": "freeObjectTemplate",
+                        "interpolation": "runtime",
+                        "definition": {
+                          "uuid": {
+                            "transformerType": "constantUuid",
+                            "interpolation": "runtime",
+                            "value": "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy"
+                          },
+                          "name": {
+                            "transformerType": "constant",
+                            "interpolation": "runtime",
+                            "value": "TEST"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "transformerRuntimeContext": {
+                  "newUuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+                },
+                "transformerParams": {},
+                "expectedValue": [
+                  {
+                    "test": "1",
+                    "subObject": { "uuid": "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy", "name": "TEST" }
+                  },
+                  {
+                    "test": "1",
+                    "subObject": { "uuid": "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy", "name": "TEST" }
+                  }
+                ]
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "mapperListToList maps a list of objects to another list of objects using object_fullTemplate",
+                "transformerName": "mapperListToList",
+                "transformer": {
+                  "transformerType": "mapperListToList",
+                  "label": "countryListMapperToObjectList",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "contextReference",
+                    "interpolation": "runtime",
+                    "referenceName": "countryList"
+                  },
+                  "referenceToOuterObject": "country",
+                  "elementTransformer": {
+                    "transformerType": "object_fullTemplate",
+                    "interpolation": "runtime",
+                    "applyTo": {
+                      "transformerType": "contextReference",
+                      "interpolation": "runtime",
+                      "referenceName": "country"
+                    },
+                    "referenceToOuterObject": "country",
+                    "definition": [
+                      {
+                        "attributeKey": {
+                          "transformerType": "constant",
+                          "interpolation": "runtime",
+                          "value": "uuid"
+                        },
+                        "attributeValue": {
+                          "transformerType": "constant",
+                          "interpolation": "runtime",
+                          "value": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+                        }
+                      },
+                      {
+                        "attributeKey": {
+                          "transformerType": "constantUuid",
+                          "interpolation": "runtime",
+                          "value": "name"
+                        },
+                        "attributeValue": {
+                          "transformerType": "contextReference",
+                          "interpolation": "runtime",
+                          "referencePath": ["country", "iso3166-1Alpha-2"]
+                        }
+                      }
+                    ]
+                  }
+                },
+                "transformerRuntimeContext": {
+                  "newUuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                  "countryList": [
+                    {
+                      "uuid": "2eda1207-4dcc-4af9-a3ba-ef75e7f12c11",
+                      "parentName": "Country",
+                      "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                      "name": "U.S.A.",
+                      "iso3166-1Alpha-2": "US"
+                    },
+                    {
+                      "uuid": "30b8e7c6-b75d-4db0-906f-fa81fa5c4cc0",
+                      "parentName": "Country",
+                      "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                      "name": "Germany",
+                      "iso3166-1Alpha-2": "DE"
+                    }
+                  ]
+                },
+                "transformerParams": {},
+                "expectedValue": [
+                  { "uuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx", "name": "US" },
+                  { "uuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx", "name": "DE" }
+                ]
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "mapperListToList maps a list of objects to a list of altered objects using objectAlter",
+                "transformerName": "mapperListToList",
+                "transformer": {
+                  "transformerType": "mapperListToList",
+                  "label": "countryListMapperToObjectList",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "contextReference",
+                    "interpolation": "runtime",
+                    "referenceName": "countryList"
+                  },
+                  "referenceToOuterObject": "country2",
+                  "elementTransformer": {
+                    "transformerType": "objectAlter",
+                    "interpolation": "runtime",
+                    "applyTo": {
+                      "transformerType": "contextReference",
+                      "interpolation": "runtime",
+                      "referenceName": "country2"
+                    },
+                    "referenceToOuterObject": "country3",
+                    "definition": {
+                      "transformerType": "freeObjectTemplate",
+                      "interpolation": "runtime",
+                      "definition": {
+                        "id": {
+                          "transformerType": "contextReference",
+                          "interpolation": "runtime",
+                          "referencePath": ["country3", "uuid"]
+                        },
+                        "name": {
+                          "transformerType": "contextReference",
+                          "interpolation": "runtime",
+                          "referencePath": ["country3", "iso3166-1Alpha-2"]
+                        }
+                      }
+                    }
+                  }
+                },
+                "transformerRuntimeContext": {
+                  "newUuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                  "countryList": [
+                    {
+                      "uuid": "2eda1207-4dcc-4af9-a3ba-ef75e7f12c11",
+                      "parentName": "Country",
+                      "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                      "name": "U.S.A.",
+                      "iso3166-1Alpha-2": "US"
+                    },
+                    {
+                      "uuid": "30b8e7c6-b75d-4db0-906f-fa81fa5c4cc0",
+                      "parentName": "Country",
+                      "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                      "name": "Germany",
+                      "iso3166-1Alpha-2": "DE"
+                    }
+                  ]
+                },
+                "transformerParams": {},
+                "expectedValue": [
+                  {
+                    "uuid": "2eda1207-4dcc-4af9-a3ba-ef75e7f12c11",
+                    "parentName": "Country",
+                    "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                    "iso3166-1Alpha-2": "US",
+                    "id": "2eda1207-4dcc-4af9-a3ba-ef75e7f12c11",
+                    "name": "US"
+                  },
+                  {
+                    "uuid": "30b8e7c6-b75d-4db0-906f-fa81fa5c4cc0",
+                    "parentName": "Country",
+                    "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                    "iso3166-1Alpha-2": "DE",
+                    "id": "30b8e7c6-b75d-4db0-906f-fa81fa5c4cc0",
+                    "name": "DE"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "transformerTestType": "transformerTestSuite",
+            "transformerTestLabel": "dataflowObject",
+            "skip": true,
+            "transformerTests": [
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "dataflowObject with single entry allows to build an object with dynamic keys and values",
+                "transformerName": "dataflowObject",
+                "transformer": {
+                  "transformerType": "dataflowObject",
+                  "interpolation": "runtime",
+                  "target": "newObject",
+                  "definition": {
+                    "newObject": {
+                      "transformerType": "object_fullTemplate",
+                      "interpolation": "runtime",
+                      "applyTo": {
+                        "transformerType": "contextReference",
+                        "interpolation": "runtime",
+                        "referenceName": "country"
+                      },
+                      "referenceToOuterObject": "country2",
+                      "definition": [
+                        {
+                          "attributeKey": {
+                            "transformerType": "constantUuid",
+                            "interpolation": "runtime",
+                            "value": "uuid"
+                          },
+                          "attributeValue": {
+                            "transformerType": "contextReference",
+                            "interpolation": "runtime",
+                            "referenceName": "newUuid"
+                          }
+                        },
+                        {
+                          "attributeKey": {
+                            "transformerType": "constantUuid",
+                            "interpolation": "runtime",
+                            "value": "name"
+                          },
+                          "attributeValue": {
+                            "transformerType": "contextReference",
+                            "interpolation": "runtime",
+                            "referencePath": ["country2", "iso3166-1Alpha-2"]
+                          }
+                        }
+                      ]
+                    }
+                  }
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "newUuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                  "country": {
+                    "uuid": "2eda1207-4dcc-4af9-a3ba-ef75e7f12c11",
+                    "parentName": "Country",
+                    "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                    "name": "U.S.A.",
+                    "iso3166-1Alpha-2": "US"
+                  }
+                },
+                "expectedValue": { "uuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx", "name": "US" }
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "dataflowObject with two entries allows to build an object with dynamic keys and values",
+                "transformerName": "dataflowObject",
+                "transformer": {
+                  "transformerType": "dataflowObject",
+                  "interpolation": "runtime",
+                  "target": "newObject2",
+                  "definition": {
+                    "newObject": {
+                      "transformerType": "object_fullTemplate",
+                      "interpolation": "runtime",
+                      "label": "newObject",
+                      "applyTo": {
+                        "transformerType": "contextReference",
+                        "interpolation": "runtime",
+                        "referenceName": "country"
+                      },
+                      "referenceToOuterObject": "country",
+                      "definition": [
+                        {
+                          "attributeKey": {
+                            "transformerType": "constantUuid",
+                            "interpolation": "runtime",
+                            "value": "uuid"
+                          },
+                          "attributeValue": {
+                            "transformerType": "contextReference",
+                            "interpolation": "runtime",
+                            "referenceName": "newUuid"
+                          }
+                        },
+                        {
+                          "attributeKey": {
+                            "transformerType": "constantUuid",
+                            "interpolation": "runtime",
+                            "value": "name"
+                          },
+                          "attributeValue": {
+                            "transformerType": "contextReference",
+                            "interpolation": "runtime",
+                            "referencePath": ["country", "iso3166-1Alpha-2"]
+                          }
+                        }
+                      ]
+                    },
+                    "newObject2": {
+                      "transformerType": "object_fullTemplate",
+                      "interpolation": "runtime",
+                      "label": "newObject2",
+                      "applyTo": {
+                        "transformerType": "contextReference",
+                        "interpolation": "runtime",
+                        "referenceName": "newObject"
+                      },
+                      "referenceToOuterObject": "newObject",
+                      "definition": [
+                        {
+                          "attributeKey": {
+                            "transformerType": "constantUuid",
+                            "interpolation": "runtime",
+                            "value": "uuid"
+                          },
+                          "attributeValue": {
+                            "transformerType": "contextReference",
+                            "interpolation": "runtime",
+                            "referenceName": "newUuid2"
+                          }
+                        },
+                        {
+                          "attributeKey": {
+                            "transformerType": "constantUuid",
+                            "interpolation": "runtime",
+                            "value": "name"
+                          },
+                          "attributeValue": {
+                            "transformerType": "contextReference",
+                            "interpolation": "runtime",
+                            "referencePath": ["newObject", "name"]
+                          }
+                        }
+                      ]
+                    }
+                  }
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "newUuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                  "newUuid2": "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
+                  "country": {
+                    "uuid": "2eda1207-4dcc-4af9-a3ba-ef75e7f12c11",
+                    "parentName": "Country",
+                    "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                    "name": "U.S.A.",
+                    "iso3166-1Alpha-2": "US"
+                  }
+                },
+                "expectedValue": {
+                  "uuid": "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
+                  "name": "US"
+                }
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "dataflowObject shall fail when an entry fails",
+                "transformerName": "dataflowObject",
+                "transformer": {
+                  "transformerType": "dataflowObject",
+                  "interpolation": "runtime",
+                  "target": "newObject",
+                  "definition": {
+                    "newObject": {
+                      "transformerType": "object_fullTemplate",
+                      "interpolation": "runtime",
+                      "applyTo": {
+                        "transformerType": "contextReference",
+                        "interpolation": "runtime",
+                        "referenceName": "country"
+                      },
+                      "referenceToOuterObject": "country2",
+                      "definition": [
+                        {
+                          "attributeKey": {
+                            "transformerType": "constantUuid",
+                            "interpolation": "runtime",
+                            "value": "uuid"
+                          },
+                          "attributeValue": {
+                            "transformerType": "contextReference",
+                            "interpolation": "runtime",
+                            "referenceName": "newUuid"
+                          }
+                        },
+                        {
+                          "attributeKey": {
+                            "transformerType": "constantUuid",
+                            "interpolation": "runtime",
+                            "value": "name"
+                          },
+                          "attributeValue": {
+                            "transformerType": "contextReference",
+                            "interpolation": "runtime",
+                            "referencePath": ["country3", "nonExistingAttribute"]
+                          }
+                        }
+                      ]
+                    }
+                  }
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "newUuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                  "country": {
+                    "uuid": "2eda1207-4dcc-4af9-a3ba-ef75e7f12c11",
+                    "parentName": "Country",
+                    "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                    "name": "U.S.A.",
+                    "iso3166-1Alpha-2": "US"
+                  }
+                },
+                "retainAttributes": ["queryFailure"],
+                "unitTestExpectedValue": {
+                  "queryFailure": "FailedTransformer"
+                },
+                "integrationTestExpectedValue": {
+                  "queryFailure": "QueryNotExecutable"
+                }
+              }
+            ]
+          },
+          {
+            "transformerTestType": "transformerTestSuite",
+            "transformerTestLabel": "listReducerToSpreadObject",
+            "skip": true,
+            "transformerTests": [
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "listReducerToSpreadObject allows to reduce a constant list of objects to a single object",
+                "transformerName": "listReducerToSpreadObject",
+                "transformer": {
+                  "transformerType": "listReducerToSpreadObject",
+                  "interpolation": "runtime",
+                  "applyTo": {                    "transformerType": "constant",
+                    "interpolation": "runtime",
+"value":[
+                    {
+                      "uuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                      "name": "US"
+                    },
+                    {
+                      "uuid2": "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
+                      "name2": "DE"
+                    }
+                  ]}
+                },
+                "transformerParams": {},
+                "expectedValue": {
+                  "uuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                  "name": "US",
+                  "uuid2": "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
+                  "name2": "DE"
+                }
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "listReducerToSpreadObject allows to reduce a list of objects from parameter to a single object",
+                "transformerName": "listReducerToSpreadObject",
+                "transformer": {
+                  "transformerType": "listReducerToSpreadObject",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "contextReference",
+                    "interpolation": "runtime",
+                    "referenceName": "objectList"
+                  }
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "objectList": [
+                    {
+                      "uuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                      "name": "US"
+                    },
+                    {
+                      "uuid2": "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
+                      "name2": "DE"
+                    }
+                  ]
+                },
+                "expectedValue": {
+                  "uuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                  "name": "US",
+                  "uuid2": "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
+                  "name2": "DE"
+                }
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "listReducerToSpreadObject fails when input is not a list",
+                "transformerName": "listReducerToSpreadObject",
+                "transformer": {
+                  "transformerType": "listReducerToSpreadObject",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "contextReference",
+                    "interpolation": "runtime",
+                    "referenceName": "objectList"
+                  }
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "objectList": {
+                    "uuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                    "name": "US"
+                  }
+                },
+                "retainAttributes": ["queryFailure"],
+                "unitTestExpectedValue": {
+                  "queryFailure": "FailedTransformer"
+                },
+                "integrationTestExpectedValue": {
+                  "queryFailure": "QueryNotExecutable"
+                }
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "listReducerToSpreadObject fails when non-objects are included in the list",
+                "transformerName": "listReducerToSpreadObject",
+                "transformer": {
+                  "transformerType": "listReducerToSpreadObject",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "contextReference",
+                    "interpolation": "runtime",
+                    "referenceName": "objectList"
+                  }
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "objectList": [
+                    {
+                      "uuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                      "name": "US"
+                    },
+                    "DE"
+                  ]
+                },
+                "retainAttributes": ["queryFailure"],
+                "unitTestExpectedValue": {
+                  "queryFailure": "FailedTransformer"
+                },
+                "integrationTestExpectedValue": {
+                  "queryFailure": "QueryNotExecutable"
+                }
+              }
+            ]
+          },
+          {
+            "transformerTestType": "transformerTestSuite",
+            "transformerTestLabel": "listReducerToIndexObject",
+            "skip": true,
+            "transformerTests": [
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "listReducerToIndexObject allows to reduce a constant list of objects to an object with dynamic keys and values",
+                "transformerName": "listReducerToIndexObject",
+                "transformer": {
+                  "transformerType": "listReducerToIndexObject",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "constant",
+                    "interpolation": "runtime",
+                    "value":
+                    [
+                    {
+                      "uuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                      "name": "US"
+                    },
+                    {
+                      "uuid": "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
+                      "name": "DE"
+                    }
+                  ]},
+                  "indexAttribute": "uuid"
+                },
+                "transformerParams": {},
+                "expectedValue": {
+                  "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx": {
+                    "uuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                    "name": "US"
+                  },
+                  "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy": {
+                    "uuid": "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
+                    "name": "DE"
+                  }
+                }
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "listReducerToIndexObject allows to reduce a list of objects from parameter to an object with dynamic keys and values",
+                "transformerName": "listReducerToIndexObject",
+                "transformer": {
+                  "transformerType": "listReducerToIndexObject",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "contextReference",
+                    "interpolation": "runtime",
+                    "referenceName": "objectList"
+                  },
+                  "indexAttribute": "uuid"
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "objectList": [
+                    {
+                      "uuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                      "name": "US"
+                    },
+                    {
+                      "uuid": "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
+                      "name": "DE"
+                    }
+                  ]
+                },
+                "expectedValue": {
+                  "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx": {
+                    "uuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                    "name": "US"
+                  },
+                  "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy": {
+                    "uuid": "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
+                    "name": "DE"
+                  }
+                }
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "listReducerToIndexObject fails when input is not a list",
+                "transformerName": "listReducerToIndexObject",
+                "transformer": {
+                  "transformerType": "listReducerToIndexObject",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "contextReference",
+                    "interpolation": "runtime",
+                    "referenceName": "objectNotList"
+                  },
+                  "indexAttribute": "uuid"
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "objectNotList": {
+                    "uuid": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                    "name": "US"
+                  }
+                },
+                "retainAttributes": ["queryFailure"],
+                "unitTestExpectedValue": {
+                  "queryFailure": "FailedTransformer"
+                },
+                "integrationTestExpectedValue": {
+                  "queryFailure": "QueryNotExecutable"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

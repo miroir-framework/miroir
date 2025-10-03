@@ -9,8 +9,8 @@
   "definition": {
     "transformerTestType": "transformerTestSuite",
     "transformerTestLabel": "unfoldSchemaOnce",
-    "transformerTests": {
-      "literal schema remains unchanged": {
+    "transformerTests": [
+      {
         "transformerTestType": "transformerTest",
         "transformerTestLabel": "literal schema remains unchanged",
         "transformerName": "unfoldSchemaOnce",
@@ -26,7 +26,19 @@
           "unfoldingReference": [],
           "depth": 0,
           "miroirFundamentalJzodSchema": {
-            "type": "any"
+            "uuid": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "parentName": "JzodSchema",
+            "parentUuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf",
+            "name": "miroirFundamentalJzodSchema",
+            "defaultLabel": "The Jzod Schema of Miroir Fundamental Schemas",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "jzodElement"
+              },
+              "context": {}
+            }
           }
         },
         "transformerParams": {},
@@ -38,7 +50,7 @@
           }
         }
       },
-      "simple string schema remains unchanged": {
+      {
         "transformerTestType": "transformerTest",
         "transformerTestLabel": "simple string schema remains unchanged",
         "transformerName": "unfoldSchemaOnce",
@@ -53,7 +65,19 @@
           "unfoldingReference": [],
           "depth": 0,
           "miroirFundamentalJzodSchema": {
-            "type": "any"
+            "uuid": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "parentName": "JzodSchema",
+            "parentUuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf",
+            "name": "miroirFundamentalJzodSchema",
+            "defaultLabel": "The Jzod Schema of Miroir Fundamental Schemas",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "jzodElement"
+              },
+              "context": {}
+            }
           }
         },
         "transformerParams": {},
@@ -64,7 +88,7 @@
           }
         }
       },
-      "simple schema reference resolution": {
+      {
         "transformerTestType": "transformerTest",
         "transformerTestLabel": "simple schema reference resolution",
         "transformerName": "unfoldSchemaOnce",
@@ -87,7 +111,19 @@
           "unfoldingReference": [],
           "depth": 0,
           "miroirFundamentalJzodSchema": {
-            "type": "any"
+            "uuid": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "parentName": "JzodSchema",
+            "parentUuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf",
+            "name": "miroirFundamentalJzodSchema",
+            "defaultLabel": "The Jzod Schema of Miroir Fundamental Schemas",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "jzodElement"
+              },
+              "context": {}
+            }
           },
           "relativeReferenceJzodContext": {}
         },
@@ -99,7 +135,7 @@
           }
         }
       },
-      "object with schema reference unfolding": {
+      {
         "transformerTestType": "transformerTest",
         "transformerTestLabel": "object with schema reference unfolding",
         "transformerName": "unfoldSchemaOnce",
@@ -132,7 +168,19 @@
           "unfoldingReference": [],
           "depth": 0,
           "miroirFundamentalJzodSchema": {
-            "type": "any"
+            "uuid": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "parentName": "JzodSchema",
+            "parentUuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf",
+            "name": "miroirFundamentalJzodSchema",
+            "defaultLabel": "The Jzod Schema of Miroir Fundamental Schemas",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "jzodElement"
+              },
+              "context": {}
+            }
           },
           "relativeReferenceJzodContext": {}
         },
@@ -154,7 +202,7 @@
           }
         }
       },
-      "array with schema reference unfolding": {
+      {
         "transformerTestType": "transformerTest",
         "transformerTestLabel": "array with schema reference unfolding",
         "transformerName": "unfoldSchemaOnce",
@@ -180,7 +228,19 @@
           "unfoldingReference": [],
           "depth": 0,
           "miroirFundamentalJzodSchema": {
-            "type": "any"
+            "uuid": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "parentName": "JzodSchema",
+            "parentUuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf",
+            "name": "miroirFundamentalJzodSchema",
+            "defaultLabel": "The Jzod Schema of Miroir Fundamental Schemas",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "jzodElement"
+              },
+              "context": {}
+            }
           },
           "relativeReferenceJzodContext": {}
         },
@@ -195,7 +255,7 @@
           }
         }
       },
-      "recursive schema reference unfolding": {
+      {
         "transformerTestType": "transformerTest",
         "transformerTestLabel": "recursive schema reference unfolding",
         "transformerName": "unfoldSchemaOnce",
@@ -235,7 +295,19 @@
           "unfoldingReference": [],
           "depth": 0,
           "miroirFundamentalJzodSchema": {
-            "type": "any"
+            "uuid": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "parentName": "JzodSchema",
+            "parentUuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf",
+            "name": "miroirFundamentalJzodSchema",
+            "defaultLabel": "The Jzod Schema of Miroir Fundamental Schemas",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "jzodElement"
+              },
+              "context": {}
+            }
           },
           "relativeReferenceJzodContext": {}
         },
@@ -286,7 +358,7 @@
           }
         }
       },
-      "record with union unfolding": {
+      {
         "transformerTestType": "transformerTest",
         "transformerTestLabel": "record with union unfolding",
         "transformerName": "unfoldSchemaOnce",
@@ -320,7 +392,19 @@
           "unfoldingReference": [],
           "depth": 0,
           "miroirFundamentalJzodSchema": {
-            "type": "any"
+            "uuid": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "parentName": "JzodSchema",
+            "parentUuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf",
+            "name": "miroirFundamentalJzodSchema",
+            "defaultLabel": "The Jzod Schema of Miroir Fundamental Schemas",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "jzodElement"
+              },
+              "context": {}
+            }
           },
           "relativeReferenceJzodContext": {}
         },
@@ -351,7 +435,7 @@
           }
         }
       },
-      "union with simple schema references": {
+      {
         "transformerTestType": "transformerTest",
         "transformerTestLabel": "union with simple schema references",
         "transformerName": "unfoldSchemaOnce",
@@ -390,7 +474,19 @@
           "unfoldingReference": [],
           "depth": 0,
           "miroirFundamentalJzodSchema": {
-            "type": "any"
+            "uuid": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "parentName": "JzodSchema",
+            "parentUuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf",
+            "name": "miroirFundamentalJzodSchema",
+            "defaultLabel": "The Jzod Schema of Miroir Fundamental Schemas",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "jzodElement"
+              },
+              "context": {}
+            }
           },
           "relativeReferenceJzodContext": {}
         },
@@ -410,6 +506,6 @@
           }
         }
       }
-    }
+    ]
   }
 }

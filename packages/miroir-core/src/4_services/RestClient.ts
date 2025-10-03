@@ -4,7 +4,7 @@
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { RestClientCallReturnType, RestClientInterface } from "../0_interfaces/4-services/PersistenceInterface";
 import { packageName } from "../constants";
-import { MiroirLoggerFactory } from "./LoggerFactory";
+import { MiroirLoggerFactory } from "./MiroirLoggerFactory";
 import { cleanLevel } from "./constants";
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -50,7 +50,7 @@ export class RestClient implements RestClientInterface {
 
       const responseText: string = await response.text();
       log.info("RestClient response length", responseText.length);
-      const data = responseText.length > 0 ? JSON.parse(responseText) : undefined;
+      data = responseText.length > 0 ? JSON.parse(responseText) : undefined;
       // log.info("RestClient parsed response", data);
       if (response.ok) {
         return {
@@ -60,8 +60,24 @@ export class RestClient implements RestClientInterface {
           url: response.url,
         };
       }
+      // For non-OK responses, if we have structured error data, use it
+      if (data && typeof data === 'object' && data.error) {
+        const error = new Error(data.message || response.statusText);
+        (error as any).errorData = data;
+        (error as any).statusCode = response.status;
+        throw error;
+      }
       throw new Error(response.statusText);
     } catch (err: any) {
+      // If the error has structured data, preserve it in the rejection
+      if (err.errorData) {
+        return Promise.reject({
+          message: err.message,
+          errorData: err.errorData,
+          statusCode: err.statusCode,
+          isStructuredError: true
+        });
+      }
       return Promise.reject(err.message ? err.message : data);
     }
   }

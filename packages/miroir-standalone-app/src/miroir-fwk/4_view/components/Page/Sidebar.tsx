@@ -29,7 +29,7 @@ import {
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "Sidebar")
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "Sidebar"), "UI",
 ).then((logger: LoggerInterface) => {log = logger});
 
 export const SidebarWidth = 200;

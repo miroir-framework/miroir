@@ -21,13 +21,12 @@ import { useMiroirContextService } from '../../MiroirContextReactProvider.js';
 import { cleanLevel } from '../../constants.js';
 import { ReportSectionEntityInstance } from './ReportSectionEntityInstance.js';
 import { ReportSectionListDisplay } from './ReportSectionListDisplay.js';
-import { GraphReportSectionView } from '../Graph/GraphReportSectionView.js';
 import { useRenderTracker } from '../../tools/renderCountTracker.js';
-import { ThemedBox } from '../Themes/index.js';
+import { ThemedBox, ThemedText } from '../Themes/index.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ReportSectionView")
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ReportSectionView"), "UI",
 ).then((logger: LoggerInterface) => {log = logger});
 
 
@@ -91,7 +90,7 @@ export const ReportSectionView = (props: ReportSectionViewProps) => {
   const currentNavigationKey = `${props.deploymentUuid}-${props.applicationSection}`;
   const { navigationCount, totalCount } = useRenderTracker("ReportSectionView", currentNavigationKey);
 
-  log.info("########################## ReportSectionView render", "navigationCount", navigationCount, "totalCount", totalCount, "props", props);
+  // log.info("########################## ReportSectionView render", "navigationCount", navigationCount, "totalCount", totalCount, "props", props);
 
 
   // ##############################################################################################
@@ -143,132 +142,91 @@ export const ReportSectionView = (props: ReportSectionViewProps) => {
   //   props
   // );
 
-  const styles = useMemo(()=>({
-    width: "80vw",
-  }),[])
+  // const styles = useMemo(()=>({
+  //   width: "80vw",
+  // }),[])
 
-  if (props.applicationSection) {
-    return (
-      <div>
-        {props.applicationSection && props.reportSection ? (
-          <div>
-            {showPerformanceDisplay && (
-              <ThemedBox 
-                style={{ 
-                  fontSize: '12px', 
-                  opacity: 0.6, 
-                  padding: '2px' 
-                }}
-              >
-                ReportSectionView renders: {navigationCount} (total: {totalCount})
-              </ThemedBox>
-            )}
-            {/* params:{JSON.stringify(params)}
-            <p /> */}
-            {/* <p>ReportSection</p> */}
-            {props.reportSection?.type === "grid" ? (
-              <div>
-                <table>
-                  <tbody>
-                    <tr>
-                      <td>grid not supported yet!</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            ) : (
-              // <div>Not a list!!</div>
-              <div></div>
-            )}
-            {props.reportSection?.type === "list" ? (
-              <div>
-                <table>
-                  <tbody>
-                    {props.reportSection?.definition.map((innerReportSection, index) => {
-                      return (
-                        <tr key={index}>
-                          <td>
-                            <ReportSectionView
-                              applicationSection={props.applicationSection}
-                              reportQueriesResultsRecord={props.reportQueriesResultsRecord}
-                              deploymentUuid={props.deploymentUuid}
-                              fetchedDataJzodSchema={props.fetchedDataJzodSchema}
-                              paramsAsdomainElements={props.paramsAsdomainElements}
-                              reportSection={innerReportSection}
-                              rootReport={props.rootReport}
-                            />
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            ) : (
-              // <div>Not a list!!</div>
-              <div></div>
-            )}
-            {props.reportSection.type == "objectListReportSection" ? (
-              <div>
-                {/* {JSON.stringify(props.domainElementObject, circularReplacer(), 2)} */}
-                {(currentListReportTargetEntity && currentListReportTargetEntityDefinition) || props.reportQueriesResultsRecord ? (
-                  <ReportSectionListDisplay
-                    tableComponentReportType="EntityInstance"
-                    label={"EntityInstance-" + currentListReportTargetEntity?.name}
-                    defaultlabel={interpolateExpression(props.reportSection.definition?.label, props.reportQueriesResultsRecord, "report label")}
-                    styles={styles}
-                    deploymentUuid={props.deploymentUuid}
-                    chosenApplicationSection={props.applicationSection as ApplicationSection}
-                    displayedDeploymentDefinition={displayedDeploymentDefinition}
-                    domainElementObject={props.reportQueriesResultsRecord}
-                    fetchedDataJzodSchema={props.fetchedDataJzodSchema}
-                    section={props.reportSection}
-                    paramsAsdomainElements={props.paramsAsdomainElements}
-                  />
-                ) : (
-                  <div>error on object list {JSON.stringify(currentListReportTargetEntity)}</div>
-                )}
-              </div>
-            ) : (
-              <div></div>
-            )}
-            {props.reportSection.type == "objectInstanceReportSection" ? (
-              <div>
-                <ReportSectionEntityInstance
-                  domainElement={props.reportQueriesResultsRecord}
-                  instance={entityInstance}
-                  applicationSection={props.applicationSection as ApplicationSection}
-                  deploymentUuid={props.deploymentUuid}
-                  entityUuid={props.reportSection.definition.parentUuid}
-                />
-              </div>
-            ) : (
-              <div></div>
-            )}
-            {props.reportSection.type == "graphReportSection" ? (
-              <div>
-                <GraphReportSectionView
-                  applicationSection={props.applicationSection}
-                  deploymentUuid={props.deploymentUuid}
-                  queryResults={props.queryResults}
-                  reportSection={props.reportSection as any}
-                  showPerformanceDisplay={props.showPerformanceDisplay}
-                />
-              </div>
-            ) : (
-              <div></div>
-            )}
-          </div>
-        ) : (
-          <div>Oops, ReportSectionView could not be displayed.</div>
-        )}
-      </div>
-    );
-  } else {
-    return (
-      <>
-        ReportSection Invalid props! {JSON.stringify(props)}
-      </>
-    )
-  }
+  return props.applicationSection && props.reportSection ? (
+    <>
+      {showPerformanceDisplay && (
+        <ThemedText
+          style={{
+            fontSize: "12px",
+            opacity: 0.6,
+            // padding: "2px",
+          }}
+        >
+          ReportSectionView renders: {navigationCount} (total: {totalCount})
+        </ThemedText>
+      )}
+      {props.reportSection?.type === "grid" && <div>grid not supported yet!</div>}
+      {props.reportSection?.type === "list" &&
+        props.reportSection?.definition.map((innerReportSection, index) => {
+          return (
+            <div key={index}>
+              <ReportSectionView
+                applicationSection={props.applicationSection}
+                reportQueriesResultsRecord={props.reportQueriesResultsRecord}
+                deploymentUuid={props.deploymentUuid}
+                fetchedDataJzodSchema={props.fetchedDataJzodSchema}
+                paramsAsdomainElements={props.paramsAsdomainElements}
+                reportSection={innerReportSection}
+                rootReport={props.rootReport}
+              />
+            </div>
+          );
+        })}
+      {props.reportSection.type == "objectListReportSection" && (
+        <div>
+          {/* {JSON.stringify(props.domainElementObject, circularReplacer(), 2)} */}
+          {(currentListReportTargetEntity && currentListReportTargetEntityDefinition) ||
+          props.reportQueriesResultsRecord ? (
+            <ReportSectionListDisplay
+              tableComponentReportType="EntityInstance"
+              label={"EntityInstance-" + currentListReportTargetEntity?.name}
+              defaultlabel={interpolateExpression(
+                props.reportSection.definition?.label,
+                props.reportQueriesResultsRecord,
+                "report label"
+              )}
+              // styles={styles}
+              deploymentUuid={props.deploymentUuid}
+              chosenApplicationSection={props.applicationSection as ApplicationSection}
+              displayedDeploymentDefinition={displayedDeploymentDefinition}
+              domainElementObject={props.reportQueriesResultsRecord}
+              fetchedDataJzodSchema={props.fetchedDataJzodSchema}
+              section={props.reportSection}
+              paramsAsdomainElements={props.paramsAsdomainElements}
+            />
+          ) : (
+            <div>error on object list {JSON.stringify(currentListReportTargetEntity)}</div>
+          )}
+        </div>
+      )}
+      {props.reportSection.type == "objectInstanceReportSection" && (
+        <ReportSectionEntityInstance
+          domainElement={props.reportQueriesResultsRecord}
+          instance={entityInstance}
+          applicationSection={props.applicationSection as ApplicationSection}
+          deploymentUuid={props.deploymentUuid}
+          entityUuid={props.reportSection.definition.parentUuid}
+        />
+      )}
+      {/* {props.reportSection.type == "graphReportSection" ? (
+        <div>
+          <GraphReportSectionView
+            applicationSection={props.applicationSection}
+            deploymentUuid={props.deploymentUuid}
+            queryResults={props.queryResults}
+            reportSection={props.reportSection as any}
+            showPerformanceDisplay={props.showPerformanceDisplay}
+          />
+        </div>
+      ) : (
+        <div></div>
+      )} */}
+    </>
+  ) : (
+    <div>Oops, ReportSectionView could not be displayed.</div>
+  );
 };

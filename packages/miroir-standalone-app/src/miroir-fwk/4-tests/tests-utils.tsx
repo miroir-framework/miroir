@@ -27,9 +27,11 @@ import {
   LocalCacheInterface,
   LoggerInterface,
   MetaEntity,
+  MiroirActivityTracker,
   MiroirConfigClient,
   MiroirContext,
   MiroirContextInterface,
+  MiroirEventService,
   MiroirLoggerFactory,
   PersistenceStoreControllerInterface,
   PersistenceStoreControllerManager,
@@ -44,13 +46,13 @@ import {
   TestCompositeActionSuite,
   TestCompositeActionTemplate,
   TestCompositeActionTemplateSuite,
-  TestSuiteContext,
   Uuid,
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
   defaultMiroirMetaModel,
   selfApplicationDeploymentLibrary,
-  selfApplicationDeploymentMiroir
+  selfApplicationDeploymentMiroir,
+  type MiroirEventTrackerInterface
 } from "miroir-core";
 import {
   LocalCache,
@@ -485,7 +487,13 @@ export async function setupMiroirTest(
   miroirConfig: MiroirConfigClient,
   customfetch?: any,
 ) {
-  const miroirContext = new MiroirContext(miroirConfig);
+  const miroirActivityTracker = new MiroirActivityTracker();
+  const miroirEventService = new MiroirEventService(miroirActivityTracker);
+  const miroirContext = new MiroirContext(
+    miroirActivityTracker,
+    miroirEventService,
+    miroirConfig
+  );
   console.log("setupMiroirTest miroirConfig", JSON.stringify(miroirConfig, null, 2));
   let client: RestClientInterface | undefined = undefined;
   let remotePersistenceStoreRestClient: RestPersistenceClientAndRestClientInterface | undefined = undefined;
@@ -718,6 +726,7 @@ export async function runTestOrTestSuite(
   // localCache: LocalCacheInterface,
   domainController: DomainControllerInterface,
   testAction: TestCompositeActionParams,
+  miroirActivityTracker: MiroirEventTrackerInterface, // Optional unified tracker for test execution tracking
   testActionParamValues?: {[k:string]: any},
 ) {
   const fullTestName = testAction.testActionLabel??testAction.testActionType;
@@ -747,7 +756,7 @@ export async function runTestOrTestSuite(
           ": queryResult=",
           JSON.stringify(queryResult, null, 2),
           "TestContextResults",
-          JSON.stringify(TestSuiteContext.getTestAssertionsResults(), null, 2)
+          JSON.stringify(miroirActivityTracker.getTestAssertionsResults([{testSuite: testAction.testActionLabel}]), null, 2)
         );
         // log.info(
         //   "received results for test testCompositeActionSuite",
@@ -789,7 +798,7 @@ export async function runTestOrTestSuite(
           ": queryResult=",
           JSON.stringify(queryResult, null, 2),
           "TestContextResults",
-          JSON.stringify(TestSuiteContext.getTestAssertionsResults(), null, 2)
+          JSON.stringify(miroirActivityTracker.getTestAssertionsResults([{testSuite: testAction.testActionLabel}]), null, 2)
         );
         return queryResult;
       }

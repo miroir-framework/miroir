@@ -1,10 +1,11 @@
-import { ErrorLogServiceInterface } from "../../0_interfaces/3_controllers/ErrorLogServiceInterface";
-import { RunActionTrackerInterface } from "../../0_interfaces/3_controllers/RunActionTrackerInterface";
+import { type MiroirEventService } from "../../3_controllers/MiroirEventService";
 import { MiroirConfigClient, MiroirConfigServer } from "../1_core/preprocessor-generated/miroirFundamentalType";
+import { MiroirActivityTrackerInterface } from "./MiroirActivityTrackerInterface";
+import { TransformerEventServiceInterface } from "./TransformerEventInterface";
 
 export interface MiroirContextInterface {
-  errorLogService:ErrorLogServiceInterface,
-  runActionTracker: RunActionTrackerInterface,
+  miroirActivityTracker: MiroirActivityTrackerInterface,
+  miroirEventService: MiroirEventService,
   getMiroirConfig(): MiroirConfigClient | MiroirConfigServer | undefined,
 }
 

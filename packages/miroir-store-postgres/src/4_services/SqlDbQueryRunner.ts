@@ -14,6 +14,7 @@ import {
   asyncRunQuery,
   BoxedExtractorOrCombinerReturningObject,
   BoxedExtractorOrCombinerReturningObjectList,
+  defaultMetaModelEnvironment,
   Domain2ElementFailed,
   Domain2QueryReturnType,
   DomainElementSuccess,
@@ -242,7 +243,7 @@ export class SqlDbQueryRunner {
   ): Promise<Domain2QueryReturnType<EntityInstance[]>> => {
     switch (selectorParams.extractor.select.extractorOrCombinerType) {
       case "extractorByEntityReturningObjectList": {
-        return this.extractEntityInstanceListWithFilter(selectorParams);
+        return this.extractEntityInstanceListWithFilter(selectorParams, defaultMetaModelEnvironment);
       }
       case "combinerByRelationReturningObjectList":
       case "combinerByManyToManyRelationReturningObjectList": {
@@ -264,7 +265,7 @@ export class SqlDbQueryRunner {
                   applicationSection: selectorParams.extractor.pageParams.applicationSection as ApplicationSection,
                 },
           },
-        });
+        }, defaultMetaModelEnvironment);
         break;
       }
       default: {
@@ -290,7 +291,7 @@ export class SqlDbQueryRunner {
     // let result: Promise<Domain2QueryReturnType<EntityInstancesUuidIndex>>;
     switch (selectorParams.extractor.select.extractorOrCombinerType) {
       case "extractorByEntityReturningObjectList": {
-        return this.extractEntityInstanceUuidIndexWithFilter(selectorParams);
+        return this.extractEntityInstanceUuidIndexWithFilter(selectorParams, defaultMetaModelEnvironment);
       }
       case "combinerByRelationReturningObjectList":
       case "combinerByManyToManyRelationReturningObjectList": {
@@ -312,7 +313,7 @@ export class SqlDbQueryRunner {
                   applicationSection: selectorParams.extractor.pageParams.applicationSection as ApplicationSection,
                 },
           },
-        });
+        }, defaultMetaModelEnvironment);
         break;
       }
       default: {
@@ -339,7 +340,7 @@ export class SqlDbQueryRunner {
         {
           extractor: runBoxedExtractorAction.payload.query,
           extractorRunnerMap: this.inMemoryImplementationExtractorRunnerMap,
-        }
+        }, defaultMetaModelEnvironment
       );
     if (queryResult instanceof Domain2ElementFailed) {
       log.info("handleBoxedExtractorAction failed to run extractor, failure:", JSON.stringify(queryResult));
@@ -375,12 +376,12 @@ export class SqlDbQueryRunner {
       queryResult = await this.dbImplementationExtractorRunnerMap.runQuery({
         extractor: runBoxedQueryAction.payload.query,
         extractorRunnerMap: this.dbImplementationExtractorRunnerMap,
-      });
+      }, defaultMetaModelEnvironment);
     } else {
       queryResult = await this.inMemoryImplementationExtractorRunnerMap.runQuery({
         extractor: runBoxedQueryAction.payload.query,
         extractorRunnerMap: this.inMemoryImplementationExtractorRunnerMap,
-      });
+      }, defaultMetaModelEnvironment);
     }
     if (queryResult instanceof Domain2ElementFailed) {
       return Promise.resolve(
@@ -433,13 +434,14 @@ export class SqlDbQueryRunner {
       case "combinerForObjectByRelation": {
         const referenceObject = transformer_InnerReference_resolve(
           "runtime",
+          [],
           {
             transformerType: "contextReference",
             interpolation: "runtime",
             referenceName: querySelectorParams.objectReference,
           },
           "value",
-          selectorParams.extractor.queryParams,
+          {...defaultMetaModelEnvironment, ...selectorParams.extractor.queryParams},
           selectorParams.extractor.contextResults
         );
   
@@ -545,7 +547,7 @@ export class SqlDbQueryRunner {
   > = async (
     extractorRunnerParams: AsyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList>
   ): Promise<Domain2QueryReturnType<EntityInstancesUuidIndex>> => {
-    return this.extractEntityInstanceList(extractorRunnerParams).then((result) => {
+    return this.extractEntityInstanceList(extractorRunnerParams, defaultMetaModelEnvironment).then((result) => {
       if (result instanceof Domain2ElementFailed) {
         return result;
       }
@@ -611,7 +613,7 @@ export class SqlDbQueryRunner {
   > = async (
     extractorRunnerParams: AsyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList>
   ): Promise<Domain2QueryReturnType<EntityInstancesUuidIndex>> => {
-    return this.extractEntityInstanceListWithFilter(extractorRunnerParams).then((result) => {
+    return this.extractEntityInstanceListWithFilter(extractorRunnerParams, defaultMetaModelEnvironment).then((result) => {
       if (result instanceof Domain2ElementFailed) {
         return result;
       }

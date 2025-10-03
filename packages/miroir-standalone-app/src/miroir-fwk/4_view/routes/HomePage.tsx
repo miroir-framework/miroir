@@ -63,7 +63,7 @@ import { EndpointActionCaller } from "../components/EndpointActionCaller.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "HomePage")
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "HomePage"), "UI",
 ).then((logger: LoggerInterface) => {log = logger});
 
 

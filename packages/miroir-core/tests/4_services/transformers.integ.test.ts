@@ -40,27 +40,38 @@ import {
   InitApplicationParameters,
   PersistenceStoreAdminSectionInterface,
 } from "../../src/0_interfaces/4-services/PersistenceStoreControllerInterface.js";
-import { defaultMiroirMetaModel } from '../../src/1_core/Model.js';
+import { defaultMiroirMetaModel, defaultMetaModelEnvironment } from '../../src/1_core/Model.js';
 import { getBasicApplicationConfiguration, getBasicStoreUnitConfiguration } from '../../src/2_domain/Deployment.js';
 import { PersistenceStoreController } from '../../src/4_services/PersistenceStoreController.js';
 import {
   runTransformerIntegrationTest,
   runTransformerTestSuite,
-  transformerTestsDisplayResults
+  runUnitTransformerTests,
+  transformerTestsDisplayResults,
+  type RunTransformerTests
 } from "../../src/4_services/TestTools";
 import {
   currentTestSuite,
 } from "../2_domain/transformersTests_miroir.data";
-// const env:any = (import.meta as any).env
-// console.log("@@@@@@@@@@@@@@@@@@ env", env);
-const RUN_TEST= process.env.RUN_TEST
-console.log("@@@@@@@@@@@@@@@@@@ RUN_TEST", RUN_TEST);
+import { MiroirActivityTracker } from '../../src/3_controllers/MiroirActivityTracker';
+import { MiroirEventService } from '../../src/3_controllers/MiroirEventService';
+
+// Access the test file pattern from Vitest's process arguments
+const vitestArgs = process.argv.slice(2);
+const filePattern = vitestArgs.find(arg => !arg.startsWith('-')) || '';
+console.log("@@@@@@@@@@@@@@@@@@ File Pattern:", filePattern);
+
+const miroirActivityTracker = new MiroirActivityTracker();
+const miroirEventService = new MiroirEventService(miroirActivityTracker);
 
 // console.log("@@@@@@@@@@@@@@@@@@ miroirConfig", miroirConfig);
 
 // describe.sequential("templatesDEFUNCT.unit.test", () => {
 
 const testSuiteName = "transformers.integ.test";
+
+// Skip this test when running resolveConditionalSchema pattern
+const shouldSkip = filePattern.includes(testSuiteName);
 
 const testApplicationName = "testApplication"
 const sqlDbStoreName = "testStoreName"
@@ -116,7 +127,7 @@ const libraryEntitesAndInstances = [
 ];
 
 const beforeAll = async () => {
-  if (RUN_TEST == testSuiteName) {
+  if (!shouldSkip) {
     console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ beforeAll");
     // sqlDbAdminStore = new SqlDbDataStoreSection("data", sqlDbStoreName, connectionString, schema);
     sqlDbAdminStore = new SqlDbAdminStore("data", sqlDbStoreName, connectionString, schema);
@@ -128,10 +139,6 @@ const beforeAll = async () => {
     const testApplicationConfig: InitApplicationParameters = getBasicApplicationConfiguration(
       testApplicationName,
       paramSelfApplicationUuid,
-      // {
-      //   emulatedServerType: "sql",
-      //   connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
-      // },
       paramAdminConfigurationDeploymentUuid,
       applicationModelBranchUuid,
       selfApplicationVersionUuid
@@ -212,37 +219,74 @@ const beforeAll = async () => {
 
 afterAll(async () => {
   console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ afterAll");
-  if (RUN_TEST == testSuiteName) {
+  if (!shouldSkip) {
     // await persistenceStoreController.deleteStore(testStoreConfig.data);
     // await persistenceStoreController.deleteStore(testStoreConfig.model);
     // await persistenceStoreController.deleteStore(testStoreConfig.admin);
     // await persistenceStoreController.close();
-    transformerTestsDisplayResults(currentTestSuite, RUN_TEST, testSuiteName);
+    transformerTestsDisplayResults(currentTestSuite, testSuiteName, testSuiteName, miroirActivityTracker);
   }
   console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ afterAll DONE");
 });
 
+// const extractors: ExtractorOrCombinerRecord = {
+//   books: {
+//     extractorOrCombinerType: "extractorByEntityReturningObjectList",
+//     applicationSection: "data",
+//     parentName: "Book",
+//     parentUuid: entityBook.uuid,
+//   },
+// };
 
-
-const extractors: ExtractorOrCombinerRecord = {
-  books: {
-    extractorOrCombinerType: "extractorByEntityReturningObjectList",
-    applicationSection: "data",
-    parentName: "Book",
-    parentUuid: entityBook.uuid,
-  },
-};
-
-
-
-// (async () => {
-if (RUN_TEST == testSuiteName) {
+if (shouldSkip) {
+  console.log("################################ skipping test suite:", testSuiteName);
+  console.log("################################ File pattern:", filePattern);
+} else {
   await beforeAll(); // beforeAll is a function, not the call to the jest/vitest hook
   // await runTransformerTestSuite(vitest, [], transformerTestSuite_miroirTransformers, runTransformerIntegrationTest);
   if (!sqlDbDataStore) {
     throw new Error("sqlDbDataStore is not defined!");
   }
-  await runTransformerTestSuite(vitest, [], currentTestSuite, runTransformerIntegrationTest(sqlDbDataStore));
-} else {
-  console.log("################################ skipping test suite:", testSuiteName, "RUN_TEST=", RUN_TEST);
+  const runIntegTransformerTests: RunTransformerTests = {
+    _runTransformerTestSuiteWithTracking: runUnitTransformerTests._runTransformerTestSuiteWithTracking,
+    _runTransformerTestWithTracking: runUnitTransformerTests._runTransformerTestWithTracking,
+    _runTransformerTestSuite: runUnitTransformerTests._runTransformerTestSuite,
+    _runTransformerTest: runTransformerIntegrationTest(sqlDbDataStore),
+  }
+  await runTransformerTestSuite(
+    vitest,
+    [],
+    currentTestSuite,
+    undefined, // filter
+    // {
+    //   testList: {
+    //     miroirCoreTransformers: {
+    //       runtimeTransformerTests: {
+    //         conditional: [
+    //           "conditional equality true - basic string comparison",
+    //           "conditional equality false - basic string comparison",
+    //           "conditional not equal true - string comparison",
+    //           "conditional not equal false - string comparison",
+    //           "conditional less than true - number comparison",
+    //           "conditional less than false - number comparison",
+    //           "conditional less than or equal true - number comparison",
+    //           "conditional less than or equal false - number comparison",
+    //           "conditional greater than true - number comparison",
+    //           "conditional greater than false - number comparison",
+    //           "conditional greater than or equal true - number comparison",
+    //           "conditional greater than or equal false - number comparison",
+    //           "conditional with parameter reference comparison",
+    //         ]
+    //       },
+    //     },
+    //   },
+    // },
+    defaultMetaModelEnvironment,
+    miroirActivityTracker,
+    undefined, // parentTrackingId,
+    true, // trackActionsBelow
+    runIntegTransformerTests,
+  );
+  
+  // await transformerTestsDisplayResults(currentTestSuite, filePattern || "", testSuiteName, miroirActivityTracker);
 }

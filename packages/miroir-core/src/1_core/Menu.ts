@@ -5,11 +5,11 @@ import {
   TransformerForBuild_menu_addItem,
   TransformerForRuntime_menu_addItem
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import { Domain2QueryReturnType } from "../0_interfaces/2_domain/DomainElement";
+import { Domain2QueryReturnType, type TransformerReturnType } from "../0_interfaces/2_domain/DomainElement";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { type MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import { defaultTransformers, ResolveBuildTransformersTo, Step } from "../2_domain/TransformersForRuntime";
-import { MiroirLoggerFactory } from "../4_services/LoggerFactory";
+import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
 
@@ -29,13 +29,14 @@ MiroirLoggerFactory.registerLoggerToStart(
 
 export function handleTransformer_menu_AddItem(
   step: Step,
+  transformerPath: string[],
   objectName: string | undefined,
   // transformers: any,
   transformer: TransformerForBuild_menu_addItem | TransformerForRuntime_menu_addItem,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   queryParams: MiroirModelEnvironment & Record<string, any>,
   contextResults?: Record<string, any>,
-): Domain2QueryReturnType<Menu> {
+): TransformerReturnType<Menu> {
   // TODO: DO A COPY OF THE MENU, DO NOT UPDATE VIA REFERENCE, IT MODIFIES THE "OLD" MENU
   log.info(
     "handleTransformer_menu_AddItem called with",
@@ -52,8 +53,12 @@ export function handleTransformer_menu_AddItem(
   );
   const menu =
     typeof transformer.menuReference == "string"
-      ? (defaultTransformers.transformer_InnerReference_resolve(
+      // ? (defaultTransformers.transformer_InnerReference_resolve(
+      ? (defaultTransformers.transformer_extended_apply(
           step,
+          transformerPath,
+          transformer.label??transformer.transformerType,
+          // transformer.menuReference,
           {
             transformerType: "contextReference",
             interpolation: "runtime",
@@ -63,8 +68,11 @@ export function handleTransformer_menu_AddItem(
           queryParams,
           contextResults
         ) as Menu)
-      : (defaultTransformers.transformer_InnerReference_resolve(
+        // : (defaultTransformers.transformer_InnerReference_resolve(
+        : (defaultTransformers.transformer_extended_apply(
           step,
+          transformerPath,
+          transformer.label??transformer.transformerType,
           transformer.menuReference,
           "value",
           queryParams,
@@ -76,8 +84,11 @@ export function handleTransformer_menu_AddItem(
 
   const menuItem =
     typeof transformer.menuItemReference == "string"
-      ? (defaultTransformers.transformer_InnerReference_resolve(
+      // ? (defaultTransformers.transformer_InnerReference_resolve(
+      ? (defaultTransformers.transformer_extended_apply(
           step,
+          transformerPath,
+          transformer.label??transformer.transformerType,
           {
             transformerType: "contextReference",
             interpolation: "runtime",
@@ -87,8 +98,11 @@ export function handleTransformer_menu_AddItem(
           queryParams,
           contextResults
         ) as MiroirMenuItem)
-      : (defaultTransformers.transformer_InnerReference_resolve(
+      // : (defaultTransformers.transformer_InnerReference_resolve(
+      : (defaultTransformers.transformer_extended_apply(
           step,
+          transformerPath,
+          transformer.label??transformer.transformerType,
           transformer.menuItemReference,
           "value",
           queryParams,

@@ -26,8 +26,10 @@ import {
   entityPublisher,
   LoggerInterface,
   MetaEntity,
+  MiroirActivityTracker,
   MiroirContextInterface,
   miroirCoreStartup,
+  MiroirEventService,
   MiroirLoggerFactory,
   PersistenceStoreControllerManagerInterface,
   publisher1,
@@ -101,7 +103,14 @@ loggerOptions = logConfig;
 myConsoleLog("received miroirConfig", JSON.stringify(miroirConfig, null, 2));
 myConsoleLog("received miroirConfig.client", JSON.stringify(miroirConfig.client, null, 2));
 myConsoleLog("received loggerOptions", JSON.stringify(loggerOptions, null, 2));
-MiroirLoggerFactory.startRegisteredLoggers(loglevelnext, loggerOptions);
+const miroirActivityTracker = new MiroirActivityTracker();
+const miroirEventService = new MiroirEventService(miroirActivityTracker);
+MiroirLoggerFactory.startRegisteredLoggers(
+  miroirActivityTracker,
+  miroirEventService,
+  loglevelnext,
+  loggerOptions
+);
 myConsoleLog("started registered loggers DONE");
 
 const globalTimeOut = 30000;

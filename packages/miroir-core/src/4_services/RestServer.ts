@@ -23,7 +23,7 @@ import {
 import { PersistenceStoreControllerManagerInterface } from "../0_interfaces/4-services/PersistenceStoreControllerManagerInterface";
 import { packageName } from "../constants";
 
-import { MiroirLoggerFactory } from "./LoggerFactory";
+import { MiroirLoggerFactory } from "./MiroirLoggerFactory";
 import { generateRestServiceResponse } from "./RestTools";
 import { cleanLevel } from "./constants";
 
@@ -112,7 +112,7 @@ export async function restMethodGetHandler
   );
 
   try {
-    const result = generateRestServiceResponse(
+    const result = await generateRestServiceResponse(
       { section, parentUuid },
       ["section", "parentUuid"],
       [],
@@ -153,7 +153,7 @@ export async function restMethodGetHandler
     // log.debug("restMethodGetHandler get CRUD/ result", JSON.stringify(result, undefined, 2));
     return Promise.resolve(result);
   } catch (error) {
-    console.warn(
+    log.error(
       "restMethodGetHandler get url",
       effectiveUrl,
       "deployment",
@@ -161,7 +161,15 @@ export async function restMethodGetHandler
       "failed with error",
       error
     );
-    return Promise.resolve(undefined);
+    // Send error response to client to prevent hanging
+    const errorResponse = {
+      error: "Internal server error",
+      message: error instanceof Error ? error.message : String(error),
+      statusCode: 500
+    };
+    continuationFunction(responseHandler)(errorResponse);
+    // Re-throw the error so it can be handled by the server's error handler
+    throw error;
   }
 }
 
@@ -255,7 +263,7 @@ export async function restActionHandler(
 ):Promise<void> {
   log.info("restActionHandler called with method", method);
   log.info("restActionHandler called with effectiveUrl", effectiveUrl);
-  // console.log("restActionHandler called with params", JSON.stringify(params,undefined,2));
+  // log.info("restActionHandler called with params", JSON.stringify(params,undefined,2));
   log.info("restActionHandler called with params", params);
 
   if (body && (body as any).actionType !== "initModel") {
@@ -263,7 +271,7 @@ export async function restActionHandler(
     log.info("restActionHandler called with", "body", body);
   }
   // else {
-  //   console.log("restActionHandler called");
+  //   log.info("restActionHandler called");
   // }
   // const actionName: string = typeof params["actionName"] == "string" ? params["actionName"] : params["actionName"][0];
   const actionType: string =
@@ -432,10 +440,10 @@ export async function queryTemplateActionHandler(
   params: any,
 ):Promise<void> {
   // log.info("RestServer queryTemplateActionHandler params", params, "body", body);
-  // console.log("queryTemplateActionHandler called with method", method);
-  // console.log("queryTemplateActionHandler called with effectiveUrl", effectiveUrl);
-  // console.log("queryTemplateActionHandler called with","body", JSON.stringify(body, undefined, 2));
-  // console.log("queryTemplateActionHandler called with params", JSON.stringify(params,undefined,2));
+  // log.info("queryTemplateActionHandler called with method", method);
+  // log.info("queryTemplateActionHandler called with effectiveUrl", effectiveUrl);
+  // log.info("queryTemplateActionHandler called with","body", JSON.stringify(body, undefined, 2));
+  // log.info("queryTemplateActionHandler called with params", JSON.stringify(params,undefined,2));
 
 
   /**

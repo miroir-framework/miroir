@@ -2,13 +2,13 @@ import { PayloadAction, Store } from "@reduxjs/toolkit";
 import { Patch } from "immer";
 import {
   Commit,
-  ReduxDeploymentsState,
-  DomainElementSuccess,
   Domain2QueryReturnType,
+  DomainElementSuccess,
   InstanceAction,
   LocalCacheAction,
   ModelAction,
   ModelActionReplayableAction,
+  ReduxDeploymentsState,
   RestPersistenceAction,
   TransactionalInstanceAction,
   UndoRedoAction

@@ -30,7 +30,7 @@ import { JzodEnumEditorProps } from "./JzodElementEditorInterface";
 // Common function to handle discriminator changes
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "JzodEnumEditor")
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "JzodEnumEditor"), "UI"
 ).then((logger: LoggerInterface) => {
   log = logger;
 });
@@ -81,15 +81,6 @@ const handleDiscriminatorChange = (
         `handleDiscriminatorChange could not find discriminator type for discriminator ${discriminator} in ${JSON.stringify(parentKeyMap.resolvedSchema)}`
       );
     }
-    if (
-      (discriminatorType === "literal" && discriminatorTypeLocal !== "literal") ||
-      (discriminatorType === "enum" && discriminatorTypeLocal !== "enum") ||
-      (discriminatorType === "schemaReference" && discriminatorTypeLocal !== "schemaReference")
-    ) {
-      throw new Error(
-        `handleDiscriminatorChange discriminator type mismatch: expected ${discriminatorType} but found ${discriminatorTypeLocal} for discriminator ${discriminator} in ${JSON.stringify(parentKeyMap.resolvedSchema)}`
-      );
-    }
     const newParentValue = {
       ...resolvePathOnObject(formik.values, parentKeyMap.valuePath),
       [rootLessListKeyArray[rootLessListKeyArray.length - 1]]: selectedValue,
@@ -130,9 +121,9 @@ const handleDiscriminatorChange = (
         const discriminatorElement = a.definition[parentKeyMap.discriminator as string];
         if (!discriminatorElement) return false;
         
-        if (discriminatorType === "literal" && discriminatorElement.type === "literal") {
+        if (discriminatorElement.type === "literal") {
           return (discriminatorElement as JzodLiteral).definition === selectedValue;
-        } else if (discriminatorType === "enum" && discriminatorElement.type === "enum") {
+        } else if (discriminatorElement.type === "enum") {
           return (discriminatorElement as JzodEnum).definition.includes(selectedValue);
         } else if (discriminatorType === "schemaReference" && discriminatorElement.type === "schemaReference") {
           return (
@@ -165,7 +156,9 @@ const handleDiscriminatorChange = (
 
   log.info(`handleDiscriminatorChange (${discriminatorType})`, "newJzodSchema", JSON.stringify(newJzodSchema, null, 2));
   const defaultValue = modelEnvironment
-    ? getDefaultValueForJzodSchemaWithResolutionNonHook(
+    ? {
+      ...getDefaultValueForJzodSchemaWithResolutionNonHook(
+        "build",
         newJzodSchemaWithOptional,
         formik.values,
         rootLessListKey,
@@ -175,7 +168,9 @@ const handleDiscriminatorChange = (
         true,
         currentDeploymentUuid,
         modelEnvironment
-      )
+      ),
+      [Array.isArray(parentKeyMap.discriminator) ? parentKeyMap.discriminator[0] : parentKeyMap.discriminator]: selectedValue,
+    }
     : undefined;
 
   const targetRootLessListKey = rootLessListKeyArray.slice(0, rootLessListKeyArray.length - 1).join(".")??"";
@@ -239,20 +234,23 @@ export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
   //     "rawJzodSchema=", rawJzodSchema,
   // );
 
-  const isDiscriminator =
-    parentKeyMap?.discriminator &&
-    parentKeyMap?.discriminatorValues;
 
   const discriminatorIndex: number = !parentKeyMap?.discriminator
     ? -1
     : typeof parentKeyMap?.discriminator == "string"
     ? 0
     : parentKeyMap?.discriminator?.findIndex((d: string) => d === name);
-  if (isDiscriminator && discriminatorIndex === -1) {
-    throw new Error(
-      `JzodLiteralEditor: isDiscriminator is true but could not find discriminator index for name "${name}" in parentKeyMap.discriminator ${parentKeyMap?.discriminator}`
-    );
-  }
+
+  const isDiscriminator =
+    parentKeyMap?.discriminator &&
+    parentKeyMap?.discriminatorValues &&
+    discriminatorIndex !== -1;
+
+  // if (isDiscriminator && discriminatorIndex === -1) {
+  //   throw new Error(
+  //     `JzodEnumEditor: isDiscriminator is true but could not find discriminator index for name "${name}" in parentKeyMap.discriminator ${parentKeyMap?.discriminator} with values ${parentKeyMap?.discriminatorValues}`
+  //   );
+  // }
 
   // Create the model environment needed for discriminator change handling
   const currentMiroirModelEnvironment: MiroirModelEnvironment = useMemo(() => {
@@ -292,10 +290,10 @@ export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
     ]
   );
 
-    const currentDiscriminatorValues =
-      parentKeyMap?.discriminatorValues && discriminatorIndex !== -1
-        ? parentKeyMap.discriminatorValues[discriminatorIndex]
-        : [];
+  const currentDiscriminatorValues =
+    parentKeyMap?.discriminatorValues && discriminatorIndex !== -1
+      ? parentKeyMap.discriminatorValues[discriminatorIndex]
+      : [];
 
   // Memoize the menu items for better performance
   const menuItems = useMemo(() => {

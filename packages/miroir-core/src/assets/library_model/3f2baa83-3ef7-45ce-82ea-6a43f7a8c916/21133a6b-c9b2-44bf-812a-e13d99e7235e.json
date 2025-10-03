@@ -12,13 +12,11 @@
         "extractorTemplateType": "extractorForObjectByDirectReference",
         "parentName": "Author",
         "parentUuid": {
-          "transformerType": "constantUuid",
-          "interpolation": "build",
+          "transformerType": "constant",
           "value": "a027c379-8468-43a5-ba4d-bf618be25cab"
         },
         "instanceUuid": {
           "transformerType": "parameterReference",
-          "interpolation": "build",
           "referenceName": "instanceUuid"
         }
       }
@@ -28,13 +26,12 @@
         "extractorTemplateType": "combinerByRelationReturningObjectList",
         "parentName": "Book",
         "parentUuid": {
-          "transformerType": "constantUuid",
-          "interpolation": "build",
+          "transformerType": "constant",
           "value": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
         },
         "objectReference": {
           "transformerType": "contextReference",
-          "interpolation": "build",
+          "interpolation": "runtime",
           "referenceName": "publisher"
         },
         "AttributeOfListObjectToCompareToReferenceUuid": "publisher"

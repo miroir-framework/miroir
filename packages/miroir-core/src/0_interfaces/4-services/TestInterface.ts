@@ -5,20 +5,20 @@ export const testAssertionResult: JzodElement = {
   definition: {
     assertionName: {
       type: "string",
-      // description: "The name of the assertion",
+      description: "The name of the assertion",
     },
     assertionResult: {
       type: "enum",
-      // description: "The result of the assertion",
-      definition: ["ok", "error"],
+      description: "The result of the assertion",
+      definition: ["ok", "error", "skipped"],
     },
     assertionExpectedValue: {
       type: "any",
-      // description: "The expected value of the assertion",
+      description: "The expected value of the assertion",
     },
     assertionActualValue: {
       type: "any",
-      // description: "The actual value of the assertion",
+      description: "The actual value of the assertion",
     },
   },
 };
@@ -42,7 +42,7 @@ export const testResult: JzodElement = {
     testResult: {
       type: "enum",
       // description: "The result of the test",
-      definition: ["ok", "error"],
+      definition: ["ok", "error", "skipped"],
     },
     testAssertionsResults: {
       // description: "The results of the assertions of the test",
@@ -64,16 +64,6 @@ export const testsResults: JzodElement = {
   },
 };
 
-export const testSuiteResult: JzodElement = {
-  type: "record",
-  definition: {
-    type: "schemaReference",
-    definition: {
-      relativePath: "testsResults",
-    },
-  },
-};
-
 export const innerTestSuitesResults: JzodElement = {
   type: "record",
   definition: {
@@ -83,6 +73,24 @@ export const innerTestSuitesResults: JzodElement = {
     },
   },
 };
+
+export const testSuiteResult: JzodElement = {
+  type: "object",
+  definition: {
+    testsResults: {
+      type: "schemaReference",
+      optional: true,
+      definition: { relativePath: "testsResults" },
+    },
+    testsSuiteResults: {
+      type: "schemaReference",
+      optional: true,
+      definition: { relativePath: "innerTestSuitesResults" },
+    },
+  },
+};
+
+
 export const testSuitesResults: JzodReference = {
   type: "schemaReference",
   context: {
@@ -95,5 +103,6 @@ export const testSuitesResults: JzodReference = {
   },
   definition: {
     relativePath: "innerTestSuitesResults",
+    // relativePath: "testSuiteResult",
   },
 };

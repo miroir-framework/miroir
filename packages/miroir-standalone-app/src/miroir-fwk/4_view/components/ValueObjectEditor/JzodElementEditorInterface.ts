@@ -36,6 +36,7 @@ export interface JzodEditorPropsRoot {
   foreignKeyObjects: Record<string, EntityInstancesUuidIndex>; // prop drilling: for uuid / objects only
   returnsEmptyElement?: boolean; // used to force the editor to return an empty element
   // any
+  isTopLevel?: boolean; // used to control if the editor is an inner editor (used for any type)
   insideAny?: boolean;
   hidden?: boolean; // used to control visibility of the editor
   optional?: boolean; // used to control if the displayed element can be removed or not
@@ -43,6 +44,11 @@ export interface JzodEditorPropsRoot {
   deleteButtonElement?: JSX.Element; // used to display a delete button in the editor
   hasTypeError?: boolean; // used to control if the editor has a type error or not
   readOnly?: boolean; // used to switch between editable and read-only display modes
+  // error highlighting
+  displayError?: {
+    errorPath: string[]; // Path to element that should be highlighted with red border due to error
+    errorMessage: string; // Error message to display as tooltip or title
+  };
 }
 
 // ################################################################################################
@@ -51,12 +57,6 @@ export interface JzodElementEditorProps extends JzodEditorPropsRoot {
   unresolvedJzodSchema?: JzodElement | undefined;
   indentLevel: number;
   submitButton?: JSX.Element; // used to display a submit button in the editor
-  foldedObjectAttributeOrArrayItems: { [k: string]: boolean };  
-  setFoldedObjectAttributeOrArrayItems: React.Dispatch<
-    React.SetStateAction<{
-      [k: string]: boolean;
-    }>
-  >;
   maxRenderDepth?: number; // Optional max depth for initial rendering, default 1
 }
 
@@ -67,13 +67,6 @@ export interface JzodArrayEditorProps extends JzodEditorPropsRoot {
   resolvedElementJzodSchema: JzodElement | undefined;
   // unfoldedRawSchema: JzodArray;
   indentLevel?: number;
-  foldedObjectAttributeOrArrayItems: { [k: string]: boolean };  
-  setFoldedObjectAttributeOrArrayItems: React.Dispatch<
-    React.SetStateAction<{
-      [k: string]: boolean;
-    }>
-  >;
-  // setItemsOrder: React.Dispatch<React.SetStateAction<any[]>>
   itemsOrder: any[];
   displayAsStructuredElementSwitch?: JSX.Element; // used to display switches in the editor
   maxRenderDepth?: number; // Optional max depth for initial rendering, default 1
@@ -87,17 +80,12 @@ export interface JzodEnumEditorProps extends JzodEditorPropsRoot {
 
 // #################################################################################################
 export interface JzodLiteralEditorProps extends JzodEditorPropsRoot {
+  hasPathError?: boolean;
 }
 
 // #################################################################################################
 export interface JzodAnyEditorProps extends JzodEditorPropsRoot {
   // visible?: boolean;
-  foldedObjectAttributeOrArrayItems: { [k: string]: boolean };  
-  setFoldedObjectAttributeOrArrayItems: React.Dispatch<
-    React.SetStateAction<{
-      [k: string]: boolean;
-    }>
-  >;
 }
 
 // #################################################################################################
@@ -106,12 +94,6 @@ export interface JzodObjectEditorProps extends JzodEditorPropsRoot {
   deleteButtonElement?: JSX.Element; // used to display a delete button in the editor
   displayAsStructuredElementSwitch?: JSX.Element; // used to display switches in the editor
   jzodSchemaTooltip?: JSX.Element; // used to display the actual raw jzod schema as a tooltip
-  foldedObjectAttributeOrArrayItems: { [k: string]: boolean };  
-  setFoldedObjectAttributeOrArrayItems: React.Dispatch<
-    React.SetStateAction<{
-      [k: string]: boolean;
-    }>
-  >;
   maxRenderDepth?: number; // Optional max depth for initial rendering, default 1
 }
 

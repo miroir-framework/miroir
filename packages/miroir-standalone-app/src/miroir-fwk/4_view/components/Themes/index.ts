@@ -45,6 +45,7 @@ export {
   ThemedDeleteButtonContainer,
   ThemedIndentedContainer,
   ThemedScrollableContent,
+  ThemedMain,
 } from './LayoutComponents';
 
 // Display components
@@ -75,7 +76,7 @@ export {
   ThemedList,
   ThemedListItem,
   ThemedListItemButton,
-  ThemedListItemIcon,
+  ThemedListMiroirIcon,
   ThemedListItemText,
 } from './ListComponents';
 
@@ -84,7 +85,7 @@ export {
   ThemedStyledButton,
   ThemedMenuItemOption,
   ThemedSwitch,
-  ThemedTextField,
+  ThemedTextEditor,
 } from './UIComponents';
 
 // Material-UI wrapper components
@@ -95,15 +96,3 @@ export {
   ThemedMUISelect,
   ThemedPaper,
 } from './MUIComponents';
-
-// Style components (legacy/deprecated)
-export {
-  SizedButton,
-  SizedAddBox,
-  SizedIcon,
-  SmallIconButton,
-  LineIconButton,
-  StyledSelect,
-  LabeledEditor,
-  getItemsOrder,
-} from './Style';

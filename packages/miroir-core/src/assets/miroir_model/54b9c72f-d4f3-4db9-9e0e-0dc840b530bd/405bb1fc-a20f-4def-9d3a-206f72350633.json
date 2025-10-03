@@ -88,6 +88,22 @@
           }
         }
       },
+      "skip": {
+        "type": "boolean",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 1,
+            "defaultLabel": "Skip",
+            "editable": true,
+            "description": "If true, this test will be skipped when running tests",
+            "initializeTo": {
+              "initializeToType": "value",
+              "definition": true
+            }
+          }
+        }
+      },
       "description": {
         "type": "string",
         "optional": true,
@@ -104,6 +120,16 @@
         "context": {
           "transformerTest": {
             "type": "object",
+            "tag": {
+              "value": {
+                "defaultLabel": "TransformerTest",
+                "description": "A test of a Transformer",
+                "editable": true,
+                "display": {
+                  "displayedAttributeValueWhenFolded": "transformerTestLabel"
+                }
+              }
+            },
             "definition": {
               "transformerTestType": {
                 "type": "literal",
@@ -114,6 +140,37 @@
               },
               "transformerName": {
                 "type": "string"
+              },
+              "testTag": {
+                "type": "union",
+                "optional": true,
+                "definition": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "array",
+                    "definition": {
+                      "type": "string"
+                    }
+                  }
+                ]
+              },
+              "skip": {
+                "type": "boolean",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "Skip",
+                    "editable": true,
+                    "description": "If true, this test will be skipped when running tests",
+                    "initializeTo": {
+                      "initializeToType": "value",
+                      "definition": true
+                    }
+                  }
+                }
               },
               "transformer": {
                 "type": "schemaReference",
@@ -141,7 +198,23 @@
                 "optional": true
               },
               "expectedValue": {
-                "type": "any"
+                "type": "any",
+                "optional": true
+              },
+              "integrationTestExpectedValue": {
+                "type": "any",
+                "optional": true
+              },
+              "unitTestExpectedValue": {
+                "type": "any",
+                "optional": true
+              },
+              "retainAttributes": {
+                "type": "array",
+                "definition": {
+                  "type": "string"
+                },
+                "optional": true
               },
               "ignoreAttributes": {
                 "type": "array",
@@ -153,37 +226,63 @@
             }
           },
           "transformerTestSuite": {
-            "type": "union",
-            "discriminator": "transformerTestType",
-            "definition": [
-              {
-                "type": "schemaReference",
-                "definition": {
-                  "relativePath": "transformerTest"
+            "type": "object",
+            "tag": {
+              "value": {
+                "defaultLabel": "TransformerTestSuite",
+                "description": "A suite of TransformerTests or nested TransformerTestSuites",
+                "editable": true,
+                "display": {
+                  "displayedAttributeValueWhenFolded": "transformerTestLabel"
+                }
+              }
+            },
+            "definition": {
+              "transformerTestType": {
+                "type": "literal",
+                "definition": "transformerTestSuite"
+              },
+              "transformerTestLabel": {
+                "type": "string"
+              },
+              "skip": {
+                "type": "boolean",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "Skip",
+                    "editable": true,
+                    "description": "If true, this test suite will be skipped when running tests",
+                    "initializeTo": {
+                      "initializeToType": "value",
+                      "definition": true
+                    }
+                  }
                 }
               },
-              {
-                "type": "object",
+              "transformerTests": {
+                "type": "array",
                 "definition": {
-                  "transformerTestType": {
-                    "type": "literal",
-                    "definition": "transformerTestSuite"
-                  },
-                  "transformerTestLabel": {
-                    "type": "string"
-                  },
-                  "transformerTests": {
-                    "type": "record",
-                    "definition": {
+                  "type": "union",
+                  "discriminator": "transformerTestType",
+                  "definition": [
+                    {
+                      "type": "schemaReference",
+                      "definition": {
+                        "relativePath": "transformerTest"
+                      }
+                    },
+                    {
                       "type": "schemaReference",
                       "definition": {
                         "relativePath": "transformerTestSuite"
                       }
                     }
-                  }
+                  ]
                 }
-              }
-            ]
+              } 
+            }
           }
         },
         "definition": {
@@ -194,7 +293,7 @@
   },
   "display": {
     "foldSubLevels": {
-      "ROOT#definition": true
+      "definition": true
     }
   }
 }

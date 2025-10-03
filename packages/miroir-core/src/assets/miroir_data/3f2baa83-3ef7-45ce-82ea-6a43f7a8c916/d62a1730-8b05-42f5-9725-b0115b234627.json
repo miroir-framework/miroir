@@ -11,8 +11,7 @@
       "transformers": {
         "extractorTemplateType": "extractorTemplateForObjectListByEntity",
         "parentUuid": {
-          "transformerType": "constantUuid",
-          "interpolation": "build",
+          "transformerType": "constant",
           "value": "a557419d-a288-4fb8-8a1e-971c86c113b8"
         }
       }

@@ -31,7 +31,7 @@ import {
   miroirFundamentalJzodSchema,
   defaultMiroirMetaModel,
   type JzodSchema,
-  defaultMiroirModelEnviroment
+  defaultMetaModelEnvironment
 } from "miroir-core";
 import { packageName } from '../constants.js';
 import { cleanLevel } from './constants.js';
@@ -211,7 +211,7 @@ export class LocalCache implements LocalCacheInterface {
          queryResult = extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList(
            domainState,
            getExtractorRunnerParamsForDomainState(action.payload.query, extractorRunnerMapOnDomainState),
-           defaultMiroirModelEnviroment,
+           defaultMetaModelEnvironment,
          );
          break;
        }
@@ -219,7 +219,7 @@ export class LocalCache implements LocalCacheInterface {
          queryResult = extractorRunnerMapOnDomainState.runQuery(
            domainState,
            getQueryRunnerParamsForDomainState(action.payload.query, extractorRunnerMapOnDomainState),
-           defaultMiroirModelEnviroment,
+           defaultMetaModelEnvironment,
          );
          break;
        }

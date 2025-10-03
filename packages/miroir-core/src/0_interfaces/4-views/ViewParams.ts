@@ -21,11 +21,24 @@ export const viewParams: JzodElement = {
     sidebarWidth: { type: "number" },
     gridType: { type: "enum", definition: ["ag-grid", "glide-data-grid"] },
     appTheme: { type: "enum", definition: ["default", "dark", "compact", "material"] },
+    toolsPage: { type: "object", definition: {} }, // Add toolsPage to the schema
   },
 };
 
 export type GridType = "ag-grid" | "glide-data-grid";
 export type AppTheme = "default" | "dark" | "compact" | "material";
+
+// ToolsPage state interface for persistence
+export interface ToolsPageState {
+  transformerEditor?: {
+    selectedEntityUuid?: string;
+    currentInstanceIndex?: number;
+    currentTransformerDefinition?: any;
+    foldedObjectAttributeOrArrayItems?: { [k: string]: boolean };
+    foldedEntityInstanceItems?: { [k: string]: boolean };
+    foldedTransformationResultItems?: { [k: string]: boolean };
+  };
+}
 
 // Interface for ViewParams as entity instance data (plain object)
 export interface ViewParamsData {
@@ -35,24 +48,44 @@ export interface ViewParamsData {
   name: string;
   defaultLabel?: string;
   description?: string;
+  sidebarisOpen: number;
   sidebarWidth: number;
   gridType: GridType;
   appTheme: AppTheme;
+  toolsPage?: ToolsPageState;
 }
 
 export class ViewParams {
+  private _sidebarIsOpen: boolean;
   private _sidebarWidth: number;
   private _gridType: GridType;
   private _appTheme: AppTheme;
+  private _toolsPage: ToolsPageState;
 
   constructor(
+    initialSidebarIsOpen: boolean = true,
     initialSidebarWidth: number = 250, 
     initialGridType: GridType = 'ag-grid', 
-    initialAppTheme: AppTheme = 'default'
+    initialAppTheme: AppTheme = 'default',
+    initialToolsPage: ToolsPageState = {}
   ) {
+    this._sidebarIsOpen = initialSidebarIsOpen;
     this._sidebarWidth = initialSidebarWidth;
     this._gridType = initialGridType;
     this._appTheme = initialAppTheme;
+    this._toolsPage = initialToolsPage;
+  }
+
+  get sidebarIsOpen(): boolean {
+    return this._sidebarIsOpen;
+  }
+
+  set sidebarIsOpen(isOpen: boolean) {
+    this._sidebarIsOpen = isOpen;
+  }
+
+  updateSidebarIsOpen(isOpen: boolean): void {
+    this._sidebarIsOpen = isOpen;
   }
 
   get sidebarWidth(): number {
@@ -81,5 +114,20 @@ export class ViewParams {
 
   setAppTheme(theme: AppTheme): void {
     this._appTheme = theme;
+  }
+
+  get toolsPage(): ToolsPageState {
+    return this._toolsPage;
+  }
+
+  updateToolsPage(updates: Partial<ToolsPageState>): void {
+    this._toolsPage = { ...this._toolsPage, ...updates };
+  }
+
+  updateTransformerEditor(updates: Partial<ToolsPageState['transformerEditor']>): void {
+    this._toolsPage = {
+      ...this._toolsPage,
+      transformerEditor: { ...this._toolsPage.transformerEditor, ...updates }
+    };
   }
 }

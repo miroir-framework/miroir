@@ -20,20 +20,20 @@ export const applicationDeploymentAdmin: SelfApplicationDeploymentConfiguration 
   //     "schema": "library"
   //   }
   // },
-  "model": {
-    "location": {
-      "type": "sql",
-      "side":"server",
-      "connectionString": "postgres://postgres:postgres@localhost:5432/postgres",
-      "schema": "admin"
-    }
-  },
-  "data": {
-    "location": {
-      "type": "sql",
-      "side":"server",
-      "connectionString": "postgres://postgres:postgres@localhost:5432/postgres",
-      "schema": "admin"
-    }
-  }
+  // "model": {
+  //   "location": {
+  //     "type": "sql",
+  //     "side":"server",
+  //     "connectionString": "postgres://postgres:postgres@localhost:5432/postgres",
+  //     "schema": "admin"
+  //   }
+  // },
+  // "data": {
+  //   "location": {
+  //     "type": "sql",
+  //     "side":"server",
+  //     "connectionString": "postgres://postgres:postgres@localhost:5432/postgres",
+  //     "schema": "admin"
+  //   }
+  // }
 }

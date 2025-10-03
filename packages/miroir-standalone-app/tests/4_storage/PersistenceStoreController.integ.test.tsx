@@ -15,7 +15,9 @@ import {
   JzodElement,
   LoggerInterface,
   MetaEntity,
+  MiroirActivityTracker,
   MiroirConfigClient,
+  MiroirEventService,
   MiroirLoggerFactory,
   ModelAction,
   ModelActionDropEntity,
@@ -94,7 +96,11 @@ myConsoleLog(
   JSON.stringify(miroirConfig.client, null, 2)
 );
 myConsoleLog("received loggerOptions", JSON.stringify(loggerOptions, null, 2));
+const miroirActivityTracker = new MiroirActivityTracker();
+const miroirEventService = new MiroirEventService(miroirActivityTracker);
 MiroirLoggerFactory.startRegisteredLoggers(
+  miroirActivityTracker,
+  miroirEventService,
   loglevelnext,
   (defaultLevels as any)[loggerOptions.defaultLevel],
 );
@@ -252,7 +258,7 @@ const chainVitestSteps = async (
   } else {
     expect(
       domainElement.status,
-      domainElement.errorType ?? "no errorType" + ": " + domainElement.errorMessage ?? "no errorMessage"
+      domainElement.errorType  + ": " + (domainElement.errorMessage ?? "no errorMessage")
     ).toEqual("ok");
   }
   console.log("########################################### chainTestAsyncDomainCalls", stepName, "testResult:", JSON.stringify(testResult,undefined, 2));

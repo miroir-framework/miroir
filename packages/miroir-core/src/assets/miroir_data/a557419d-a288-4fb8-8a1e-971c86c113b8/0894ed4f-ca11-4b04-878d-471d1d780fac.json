@@ -8,6 +8,10 @@
   "parentName": "TransformerDefinition",
   "classification": "basic",
   "transformerInterface": {
+    "inputOutput": {
+      "input": "array",
+      "output": "object"
+    },
     "transformerParameterSchema": {
       "transformerType": {
         "type": "literal",
@@ -17,21 +21,20 @@
         "type": "object",
         "definition": {
           "applyTo": {
-            "type": "array",
-            "definition": {
-              "type": "record",
-              "definition": {
-                "type": "any"
-              }
-            }
+            "type": "any",
+            "optional": true,
+            "description": "The list to transform. The actual type is set by the platform depending on interpolation for the transformer."
           }
         }
       }
     },
     "transformerResultSchema": {
-      "type": "record",
+      "returns": "mlSchema",
       "definition": {
-        "type": "any"
+        "type": "record",
+        "definition": {
+          "type": "any"
+        }
       }
     }
   },

@@ -29,25 +29,14 @@ export const PageContainer: React.FC<PageContainerProps> = ({
   children,
   withSidebar = true,
   withDocumentOutline = true,
-  padding = 2,
+  padding = 0,
   customSx = {},
   ...boxProps
 }) => {
   const theme = useMiroirTheme();
   
-  // Calculate dynamic width based on layout elements
-  const calculateWidth = () => {
-    let width = '100%'; // Use 100% instead of 100vw since margins are already handled by RootComponent
-    let marginLeft = '0';
-    let marginRight = '0';
-
-    // Don't add additional margins - they're already handled by RootComponent
-    // The RootComponent manages sidebar and outline positioning
-
-    return { width, marginLeft, marginRight };
-  };
-
-  const { width, marginLeft, marginRight } = calculateWidth();
+  // Simplified: Let RootComponent's ThemedMain handle all width/margin calculations
+  // PageContainer just provides basic flex layout and theme styling
 
   return (
     <Box
@@ -57,25 +46,16 @@ export const PageContainer: React.FC<PageContainerProps> = ({
         backgroundColor: theme.currentTheme.colors.background,
         color: theme.currentTheme.colors.text,
         
-        // Layout constraints - use 100% since RootComponent handles sidebar/outline margins
-        width,
-        minWidth: '320px', // Minimum width for mobile
-        maxWidth: '100%', // Constrain to parent container
-        minHeight: '100%', // Use 100% instead of 100vh to prevent overflow
-        // Removed fixed height to prevent double scrollbar
-        
-        // Positioning - let RootComponent handle margins
-        marginLeft,
-        marginRight,
-        
-        // Overflow handling - completely prevent all scrollbars
-        overflow: 'hidden',
+        // Use full available space - parent (RootComponent) handles sidebar/outline margins
+        width: '100%',
+        minWidth: '20vw', // Allow shrinking
+        height: '100%',
         
         // Box model
         boxSizing: 'border-box',
         padding,
         
-        // Flexbox for content management
+        // Flexbox for content management - let content determine overflow behavior
         display: 'flex',
         flexDirection: 'column',
         
@@ -88,14 +68,13 @@ export const PageContainer: React.FC<PageContainerProps> = ({
         // Handle tables and grids specifically
         '& .ag-root-wrapper, & .ag-root': {
           maxWidth: '100% !important',
-          overflow: 'hidden !important',
         },
         
         '& [data-testid="glide-data-grid"]': {
           maxWidth: '100% !important',
         },
         
-        // Responsive breakpoints - use CSS media queries instead
+        // Responsive breakpoints
         '@media (max-width: 600px)': {
           padding: 0.5,
         },

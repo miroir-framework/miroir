@@ -28,7 +28,8 @@ import { cleanLevel } from "./constants";
 import { SqlDbQueryRunner } from "./SqlDbQueryRunner";
 import { RecursiveStringRecords, SqlDbExtractTemplateRunner } from "./SqlDbQueryTemplateRunner";
 
-const consoleLog: any = console.log.bind(console, packageName, cleanLevel, "SqlDbInstanceStoreSectionMixin");
+// const consoleLog: any = log.info.bind(console, packageName, cleanLevel, "SqlDbInstanceStoreSectionMixin");
+
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "SqlDbInstanceStoreSectionMixin")
@@ -36,7 +37,9 @@ MiroirLoggerFactory.registerLoggerToStart(
 
 export const MixedSqlDbInstanceStoreSection = SqlDbInstanceStoreSectionMixin(SqlDbStoreSection);
 
-export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSection>(Base: TBase) {
+export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSection>(
+  Base: TBase
+) {
   return class MixedIndexedDbInstanceStoreSection
     extends Base
     implements PersistenceStoreInstanceSectionAbstractInterface
@@ -496,7 +499,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
       parentUuid: string,
       instance: EntityInstance
     ): Promise<Action2VoidReturnType> {
-      console.log(
+      log.info(
         "######################################################### upsertInstance #####################################################"
       );
       if (
@@ -519,17 +522,14 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
         );
       }
       try {
-        console.log("upsertInstance for instance:", JSON.stringify(instance, null, 2));
+        log.info("upsertInstance for instance:", JSON.stringify(instance, null, 2));
         const sequelizeModel = this.sqlSchemaTableAccess[instance.parentUuid].sequelizeModel;
         const tmp = await sequelizeModel.upsert(instance as any);
-        console.log(
-          "upsertInstance sequelizeModel.upsert done:",
-          JSON.stringify(instance, null, 2)
-        );
+        log.info("upsertInstance sequelizeModel.upsert done:", JSON.stringify(instance, null, 2));
       } catch (error: any) {
         const errorText: string = error.toString();
         // log.error(
-        console.log(
+        log.info(
           this.logHeader,
           "upsertInstance error",
           "FAILED upserting into Parent",

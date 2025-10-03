@@ -1,19 +1,19 @@
-import React, { memo } from 'react';
 import { styled } from '@mui/material/styles';
 import { LoggerInterface, MiroirLoggerFactory } from "miroir-core";
+import React, { memo } from 'react';
 
 import { packageName } from '../../../../constants.js';
 import { cleanLevel } from '../../constants.js';
 import { TableComponentRow } from './EntityInstanceGridInterface.js';
-import { 
-  EditActionButton, 
-  DuplicateActionButton, 
-  DeleteActionButton 
+import {
+  DeleteActionButton,
+  DuplicateActionButton,
+  EditActionButton
 } from './TableActionButtonComponents.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "TableActionButtons")
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "TableActionButtons"), "UI",
 ).then((logger: LoggerInterface) => {log = logger});
 
 const ActionButtonsContainer = styled('div')(({ theme }) => ({

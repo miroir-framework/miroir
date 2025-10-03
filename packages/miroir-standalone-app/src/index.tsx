@@ -14,9 +14,11 @@ import {
   ConfigurationService,
   expect,
   LoggerInterface,
+  MiroirActivityTracker,
   MiroirConfigClient,
   MiroirContext,
   miroirCoreStartup,
+  MiroirEventService,
   MiroirLoggerFactory,
   PersistenceStoreControllerManager,
   RestClient,
@@ -25,8 +27,11 @@ import {
 import { RestPersistenceClientAndRestClient, setupMiroirDomainController } from "miroir-localcache-redux";
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
 
+import { initializePerformanceConfig } from "./miroir-fwk/4_view/tools/performanceConfig.js";
 import { loglevelnext } from './loglevelnextImporter.js';
+import { MiroirEventsPage } from "./miroir-fwk/4_view/pages/MiroirEventsPage.js";
 import { ErrorPage } from "./miroir-fwk/4_view/ErrorPage.js";
+import { ErrorLogsPageDEFUNCT } from "./miroir-fwk/4_view/ErrorLogsPageDEFUNCT.js";
 import { MiroirContextReactProvider } from "./miroir-fwk/4_view/MiroirContextReactProvider.js";
 import { RootComponent } from "./miroir-fwk/4_view/components/Page/RootComponent.js";
 import { HomePage } from "./miroir-fwk/4_view/routes/HomePage.js";
@@ -63,7 +68,7 @@ const specificLoggerOptions: SpecificLoggerOptionsMap = {
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "index.tsx")
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "index.tsx"), "UI",
 ).then((logger: LoggerInterface) => {log = logger});
 
 const miroirConfigFiles: {[k: string]: MiroirConfigClient} = {
@@ -91,7 +96,12 @@ const currentMiroirConfig: MiroirConfigClient =
 
 log.info("currentMiroirConfigName:",currentMiroirConfigName, "currentMiroirConfig", currentMiroirConfig); 
 
+const miroirActivityTracker = new MiroirActivityTracker();
+const miroirEventService = new MiroirEventService(miroirActivityTracker);
+
 MiroirLoggerFactory.startRegisteredLoggers(
+  miroirActivityTracker,
+  miroirEventService,
   loglevelnext,
   {
     "defaultLevel": "INFO",
@@ -145,6 +155,17 @@ const router = createBrowserRouter([
         element: <CheckPage />,
         // errorElement: <ErrorPage />,
       },
+      {
+        path: "error-logs",
+        element: <ErrorLogsPageDEFUNCT />,
+        // errorElement: <ErrorPage />,
+      },
+      {
+        path: "events",
+        element: <MiroirEventsPage />,
+        // errorElement: <ErrorPage />,
+      },
+      // Renamed from action-logs to events
     ]
   },
 ]);
@@ -262,6 +283,9 @@ export const themeParams = {
 
 // ###################################################################################
 async function startWebApp(root:Root) {
+  // Initialize performance monitoring configuration
+  initializePerformanceConfig();
+  
   // Start our mock API server
   // const mServer: IndexedDbObjectStore = new IndexedDbObjectStore(miroirConfig.rootApiUrl);
 
@@ -275,7 +299,11 @@ async function startWebApp(root:Root) {
     // ConfigurationService.registerTestImplementation({expect: vitest.expect as any});
     ConfigurationService.registerTestImplementation({expect: expect as any});
 
-    const miroirContext = new MiroirContext(currentMiroirConfig);
+    const miroirContext = new MiroirContext(
+      miroirActivityTracker,
+      miroirEventService,
+      currentMiroirConfig
+    );
 
     const client: RestClient = new RestClient(window.fetch.bind(window));
 
