@@ -27,6 +27,13 @@
             "icon": "category"
           },
           {
+            "label": "Library Queries",
+            "section": "model",
+            "selfApplication": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+            "reportUuid": "32e52150-ac95-4d96-91b7-f231b85fe76e",
+            "icon": "saved_search"
+          },
+          {
             "label": "Library Reports",
             "section": "model",
             "selfApplication": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",

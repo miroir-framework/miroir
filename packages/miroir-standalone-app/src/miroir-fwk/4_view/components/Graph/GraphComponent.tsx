@@ -31,7 +31,7 @@ export interface GraphComponentProps {
 const DEFAULT_CONFIG: Required<GraphConfig> = {
   width: 600,
   height: 400,
-  margins: { top: 20, right: 20, bottom: 40, left: 60 },
+  margins: { top: 50, right: 20, bottom: 40, left: 60 },
   colors: ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b'],
   showLegend: true,
   showTooltips: true
@@ -304,7 +304,7 @@ const renderPieChart = (
   if (data.title) {
     svg.append('text')
       .attr('x', width / 2)
-      .attr('y', 20)
+      .attr('y', DEFAULT_CONFIG.margins.top / 2)
       .attr('text-anchor', 'middle')
       .style('font-size', '16px')
       .style('font-weight', 'bold')
@@ -420,6 +420,7 @@ export const GraphComponent: React.FC<GraphComponentProps> = ({
     border: `1px solid ${currentTheme.colors?.divider || '#e0e0e0'}`,
     borderRadius: currentTheme.borderRadius?.md || '4px',
     fontFamily: currentTheme.typography?.fontFamily || 'inherit',
+    // marginTop: currentTheme.spacing?.md || '16px',
     ...style
   });
 

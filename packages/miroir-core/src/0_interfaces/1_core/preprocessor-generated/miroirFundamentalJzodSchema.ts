@@ -12200,6 +12200,16 @@ export const miroirFundamentalJzodSchema = {
               },
               "graphType": {
                 "type": "enum",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Graph Type",
+                    "editable": true,
+                    "initializeTo": {
+                      "initializeToType": "value",
+                      "value": "bar"
+                    }
+                  }
+                },
                 "definition": [
                   "bar",
                   "line",
@@ -12947,6 +12957,16 @@ export const miroirFundamentalJzodSchema = {
                       },
                       "graphType": {
                         "type": "enum",
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Graph Type",
+                            "editable": true,
+                            "initializeTo": {
+                              "initializeToType": "value",
+                              "value": "bar"
+                            }
+                          }
+                        },
                         "definition": [
                           "bar",
                           "line",
@@ -15032,8 +15052,8 @@ export const miroirFundamentalJzodSchema = {
             "type": "schemaReference",
             "optional": true,
             "definition": {
-              "relativePath": "extractorOrCombinerTemplateRecord",
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "extractorOrCombinerTemplateRecord"
             },
             "context": {}
           },
@@ -15041,8 +15061,8 @@ export const miroirFundamentalJzodSchema = {
             "type": "schemaReference",
             "optional": true,
             "definition": {
-              "relativePath": "extractorOrCombinerTemplateRecord",
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "extractorOrCombinerTemplateRecord"
             },
             "context": {}
           },
@@ -36428,6 +36448,16 @@ export const miroirFundamentalJzodSchema = {
                               },
                               "graphType": {
                                 "type": "enum",
+                                "tag": {
+                                  "value": {
+                                    "defaultLabel": "Graph Type",
+                                    "editable": true,
+                                    "initializeTo": {
+                                      "initializeToType": "value",
+                                      "value": "bar"
+                                    }
+                                  }
+                                },
                                 "definition": [
                                   "bar",
                                   "line",
@@ -49324,9 +49354,30 @@ export const miroirFundamentalJzodSchema = {
                       },
                       "graphType": {
                         "type": "union",
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Graph Type",
+                            "editable": true,
+                            "initializeTo": {
+                              "initializeToType": "value",
+                              "value": "bar"
+                            },
+                            "isTemplate": true
+                          }
+                        },
                         "definition": [
                           {
                             "type": "enum",
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Graph Type",
+                                "editable": true,
+                                "initializeTo": {
+                                  "initializeToType": "value",
+                                  "value": "bar"
+                                }
+                              }
+                            },
                             "definition": [
                               "bar",
                               "line",
@@ -59337,6 +59388,16 @@ export const miroirFundamentalJzodSchema = {
                       },
                       "graphType": {
                         "type": "enum",
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Graph Type",
+                            "editable": true,
+                            "initializeTo": {
+                              "initializeToType": "value",
+                              "value": "bar"
+                            }
+                          }
+                        },
                         "definition": [
                           "bar",
                           "line",
@@ -68003,6 +68064,16 @@ export const miroirFundamentalJzodSchema = {
                       },
                       "graphType": {
                         "type": "enum",
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Graph Type",
+                            "editable": true,
+                            "initializeTo": {
+                              "initializeToType": "value",
+                              "value": "bar"
+                            }
+                          }
+                        },
                         "definition": [
                           "bar",
                           "line",
@@ -76709,6 +76780,16 @@ export const miroirFundamentalJzodSchema = {
                       },
                       "graphType": {
                         "type": "enum",
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Graph Type",
+                            "editable": true,
+                            "initializeTo": {
+                              "initializeToType": "value",
+                              "value": "bar"
+                            }
+                          }
+                        },
                         "definition": [
                           "bar",
                           "line",

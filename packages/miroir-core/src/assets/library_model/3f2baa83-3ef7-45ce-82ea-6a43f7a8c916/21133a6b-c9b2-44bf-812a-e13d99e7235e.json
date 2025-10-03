@@ -57,6 +57,25 @@
             "fetchedDataReference": "booksOfPublisher",
             "sortByAttribute": "name"
           }
+        },
+        {
+          "type": "graphReportSection",
+          "definition": {
+            "label": "Entity Values Bar Chart",
+            "fetchedDataReference": "entities",
+            "graphType": "bar",
+            "dataMapping": {
+              "labelField": "name",
+              "valueField": "value",
+              "colorField": "color"
+            },
+            "config": {
+              "width": 600,
+              "height": 400,
+              "showTooltips": true,
+              "showLegend": true
+            }
+          }
         }
       ]
     },

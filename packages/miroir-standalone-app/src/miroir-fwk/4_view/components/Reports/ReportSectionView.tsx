@@ -222,7 +222,15 @@ export const ReportSectionView = (props: ReportSectionViewProps) => {
             applicationSection={props.applicationSection}
             deploymentUuid={props.deploymentUuid}
             // queryResults={props.queryResults}
-            queryResults={{}}
+            queryResults={{
+              // booksOfPublisherCount: [
+              entities: [
+                { uuid: "1", name: "Entity A", value: 10, color: "blue" },
+                { uuid: "2", name: "Entity B", value: 20, color: "red" },
+                { uuid: "3", name: "Entity C", value: 15, color: "yellow" },
+                { uuid: "4", name: "Entity D", value: 25, color: "green" },
+              ],
+            }}
             reportSection={props.reportSection as any}
             showPerformanceDisplay={props.showPerformanceDisplay}
           />

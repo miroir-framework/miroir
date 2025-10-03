@@ -1,0 +1,106 @@
+{
+  "uuid": "14d6a920-9d86-4038-8d15-3f96e3337e59",
+  "parentName": "Query",
+  "parentUuid": "e4320b9e-ab45-4abe-85d8-359604b3c62f",
+  "name": "BooksByAuthorCount",
+  "defaultLabel": "The count of Books By Author.",
+  "description": "This query produces a list of authors, with the count of Books for each author.",
+  "definition": {
+    "extractorTemplates": {
+      "books": {
+        "extractorTemplateType": "extractorTemplateForObjectListByEntity",
+        "applicationSection": "data",
+        "parentName": "Book",
+        "parentUuid": {
+          "transformerType": "constant",
+          "value": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+        }
+      },
+      "authors": {
+        "extractorTemplateType": "extractorTemplateForObjectListByEntity",
+        "applicationSection": "data",
+        "parentName": "Book",
+        "parentUuid": {
+          "transformerType": "constant",
+          "value": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+        }
+      }
+    },
+    "runtimeTransformers": {
+      "00_entityCount": {
+        "transformerType": "count",
+        "applyTo": {
+          "transformerType": "contextReference",
+          "referenceName": "books"
+        },
+        "groupBy": "author"
+      },
+      "01_firstEntityCountElt": {
+        "transformerType": "contextReference",
+        "referencePath": [
+          "00_entityCount",
+          "0"
+        ]
+      },
+      "02_entityCountEntries": {
+        "transformerType": "objectEntries",
+        "applyTo": {
+          "transformerType": "contextReference",
+          "referenceName": "01_firstEntityCountElt"
+        }
+      },
+      "03_AuthorIndex": {
+        "transformerType": "listReducerToIndexObject",
+        "indexAttribute": "uuid",
+        "applyTo": {
+          "transformerType": "contextReference",
+          "referenceName": "authors"
+        }
+      },
+      "04_graphObject": {
+        "transformerType": "mapperListToList",
+        "elementTransformer": {
+          "transformerType": "freeObjectTemplate",
+          "definition": {
+            "id": {
+              "transformerType": "contextReference",
+              "referencePath": [
+                "mappedObject",
+                "0"
+              ]
+            },
+            "value": {
+              "transformerType": "contextReference",
+              "referencePath": [
+                "mappedObject",
+                "1"
+              ]
+            },
+            "name": {
+              "transformerType": "objectDynamicAccess",
+              "objectAccessPath": [
+                {
+                  "transformerType": "contextReference",
+                  "referenceName": "03_AuthorIndex"
+                },
+                {
+                  "transformerType": "contextReference",
+                  "referencePath": [
+                    "mappedObject",
+                    "0"
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        "applyTo": {
+          "transformerType": "contextReference",
+          "referenceName": "02_entityCountEntries"
+        },
+        "referenceToOuterObject": "mappedObject"
+      }
+    },
+    "combinerTemplates": {}
+  }
+}

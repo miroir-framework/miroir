@@ -3,10 +3,11 @@ const entitySelfApplicationVersion = require("../assets/miroir_model/16dbfe28-e1
 const entitySelfApplicationModelBranch = require("../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/cdb0aec6-b848-43ac-a058-fe2dbe5811f1.json");
 const entityEntity = require("../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json");
 // const entitySelfApplicationDeploymentConfiguration = require('../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/35c5608a-7678-4f07-a4ec-76fc5bc35424.json');
-const entityReport = require("../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916.json");
 const entityEntityDefinition = require("../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd.json");
 const entityJzodSchema = require("../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/5e81e1b9-38be-487c-b3e5-53796c57fccf.json");
 const entityMenu = require("../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/dde4c883-ae6d-47c3-b6df-26bc6e3c1842.json");
+const entityQueryVersion = require("../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/e4320b9e-ab45-4abe-85d8-359604b3c62f.json");
+const entityReport = require("../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916.json");
 // const entityStoreBasedConfiguration = require('../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/7990c0c9-86c3-40a1-a121-036c91b55ed7.json');
 
 const entityDefinitionJzodSchema = require("../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/15407b85-f2c8-4a34-bfa7-89f044ba2407.json");
@@ -15,6 +16,7 @@ const entityDefinitionEntity = require("../assets/miroir_model/54b9c72f-d4f3-4db
 const entityDefinitionSelfApplicationModelBranch = require("../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/69bf7c03-a1df-4d1c-88c1-44363feeea87.json");
 const entityDefinitionSelfApplication = require("../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/9460420b-f176-4918-bd45-894ab195ffe9.json");
 const entityDefinitionMenu = require("../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/0f421b2f-2fdc-47ee-8232-62121ea46350.json");
+const entityDefinitionQuery = require("../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/359f1f9b-7260-4d76-a864-72c839b9711b.json");
 const entityDefinitionReport = require("../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/952d2c65-4da2-45c2-9394-a0920ceedfb6.json");
 const entityDefinitionSelfApplicationDeploymentConfiguration = require("../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/bd303ae8-6bce-4b44-a63c-815b9ebf728b.json");
 const entityDefinitionEntityDefinition = require("../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/bdd7ad43-f0fc-4716-90c1-87454c40dd95.json");
@@ -47,6 +49,7 @@ const selfApplicationVersionInitialMiroirVersion = require("../assets/miroir_dat
 const instanceConfigurationReference = require("../assets/miroir_data/7990c0c9-86c3-40a1-a121-036c91b55ed7/360fcf1f-f0d4-4f8a-9262-07886e70fa15.json");
 const adminConfigurationDeploymentMiroir = require("../assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json");
 
+// import { entityDefinitionQueryVersionV1, entityQueryVersion } from "..";
 // import { entityJzodSchema, entitySelfApplicationDeploymentConfiguration, entityStoreBasedConfiguration } from "..";
 import { MetaEntity, Uuid } from "../0_interfaces/1_core/EntityDefinition";
 import { miroirFundamentalJzodSchema } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalJzodSchema";
@@ -71,6 +74,7 @@ export const metaModelEntities: MetaEntity[] = [
   entityEntity,
   entityEntityDefinition,
   entityMenu,
+  entityQueryVersion,
   entityReport,
   // entityStoreBasedConfiguration,
 ] as MetaEntity[];
@@ -79,11 +83,11 @@ export const metaModelEntities: MetaEntity[] = [
 
 export const miroirModelEntities: MetaEntity[] = metaModelEntities.filter((e: MetaEntity) => {
   // console.log("filtering metaModelEntities entity", e)
-  return e.conceptLevel == "MetaModel";
+  return e?.conceptLevel == "MetaModel";
 });
 
 export const applicationModelEntities: MetaEntity[] = metaModelEntities.filter(
-  (e: MetaEntity) => e.conceptLevel != "MetaModel"
+  (e: MetaEntity) => e?.conceptLevel != "MetaModel"
 );
 
 export const defaultMiroirMetaModel: MetaModel = {
@@ -98,6 +102,7 @@ export const defaultMiroirMetaModel: MetaModel = {
     entitySelfApplicationVersion as Entity,
     entityJzodSchema as Entity, // null
     entityMenu as Entity,
+    entityQueryVersion as Entity,
     entityReport as Entity,
     entitySelfApplicationVersion as Entity,
   ],
@@ -111,6 +116,7 @@ export const defaultMiroirMetaModel: MetaModel = {
     entityDefinitionSelfApplicationVersion as EntityDefinition,
     entityDefinitionJzodSchema as EntityDefinition, //
     entityDefinitionMenu as EntityDefinition,
+    entityDefinitionQuery as EntityDefinition,
     entityDefinitionReport as EntityDefinition,
   ],
   jzodSchemas: [jzodSchemajzodMiroirBootstrapSchema as JzodSchema],

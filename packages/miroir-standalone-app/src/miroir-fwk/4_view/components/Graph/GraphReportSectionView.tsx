@@ -51,6 +51,11 @@ const transformDataToGraphFormat = (
     return [];
   }
 
+  //   "dataMapping": {
+  //   "labelField": "labelField",
+  //   "valueField": "ValueField"
+  // }
+
   return rawData.map((item, index) => {
     const label = item[dataMapping.labelField]?.toString() || `Item ${index + 1}`;
     const value = Number(item[dataMapping.valueField]) || 0;
@@ -73,7 +78,19 @@ export const GraphReportSectionView: React.FC<GraphReportSectionViewProps> = (pr
   const currentNavigationKey = `${props.deploymentUuid}-${props.applicationSection}`;
   const { navigationCount, totalCount } = useRenderTracker("GraphReportSectionView", currentNavigationKey);
 
-  log.info("########################## GraphReportSectionView render", "navigationCount", navigationCount, "totalCount", totalCount, "props", props);
+  log.info(
+    "########################## GraphReportSectionView render",
+    "navigationCount",
+    navigationCount,
+    "totalCount",
+    totalCount,
+    "props.queryResults",
+    props.queryResults,
+    "props.reportSection.definition",
+    props.reportSection.definition,
+    // "props",
+    // props
+  );
 
   // Extract data from query results
   const rawData = useMemo(() => {

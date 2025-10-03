@@ -11,7 +11,7 @@
     "extractorTemplates": {
       "queries": {
         "extractorTemplateType": "extractorTemplateForObjectListByEntity",
-        "parentName": "Report",
+        "parentName": "Query",
         "parentUuid": {
           "transformerType": "constant",
           "value": "e4320b9e-ab45-4abe-85d8-359604b3c62f"
