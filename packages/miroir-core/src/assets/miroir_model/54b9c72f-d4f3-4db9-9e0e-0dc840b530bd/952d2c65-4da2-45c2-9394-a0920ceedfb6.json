@@ -296,6 +296,103 @@
               }
             }
           },
+          "graphReportSection": {
+            "type": "object",
+            "definition": {
+              "type": {
+                "type": "literal",
+                "definition": "graphReportSection"
+              },
+              "definition": {
+                "type": "object",
+                "definition": {
+                  "label": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "fetchedDataReference": {
+                    "type": "string"
+                  },
+                  "graphType": {
+                    "type": "enum",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Graph Type",
+                        "editable": true,
+                        "initializeTo": {
+                          "initializeToType": "value",
+                          "value": "bar"
+                        }
+                      }
+                    },
+                    "definition": ["bar", "line", "pie"]
+                  },
+                  "dataMapping": {
+                    "type": "object",
+                    "definition": {
+                      "labelField": {
+                        "type": "string"
+                      },
+                      "valueField": {
+                        "type": "string"
+                      },
+                      "colorField": {
+                        "type": "string",
+                        "optional": true
+                      }
+                    }
+                  },
+                  "config": {
+                    "type": "object",
+                    "optional": true,
+                    "definition": {
+                      "width": {
+                        "type": "number",
+                        "optional": true
+                      },
+                      "height": {
+                        "type": "number",
+                        "optional": true
+                      },
+                      "margins": {
+                        "type": "object",
+                        "optional": true,
+                        "definition": {
+                          "top": {
+                            "type": "number"
+                          },
+                          "right": {
+                            "type": "number"
+                          },
+                          "bottom": {
+                            "type": "number"
+                          },
+                          "left": {
+                            "type": "number"
+                          }
+                        }
+                      },
+                      "colors": {
+                        "type": "array",
+                        "optional": true,
+                        "definition": {
+                          "type": "string"
+                        }
+                      },
+                      "showLegend": {
+                        "type": "boolean",
+                        "optional": true
+                      },
+                      "showTooltips": {
+                        "type": "boolean",
+                        "optional": true
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
           "gridReportSection": {
             "type": "object",
             "definition": {
@@ -389,6 +486,13 @@
                       "type": "schemaReference",
                       "definition": {
                         "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        "relativePath": "graphReportSection"
+                      }
+                    },
+                    {
+                      "type": "schemaReference",
+                      "definition": {
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                         "relativePath": "objectInstanceReportSection"
                       }
                     },
@@ -408,6 +512,13 @@
             "type": "union",
             "discriminator": "type",
             "definition": [
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "graphReportSection"
+                }
+              },
               {
                 "type": "schemaReference",
                 "definition": {
