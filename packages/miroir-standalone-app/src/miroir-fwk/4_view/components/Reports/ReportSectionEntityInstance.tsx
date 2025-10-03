@@ -369,40 +369,41 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
     []
   );
 
-  const queryForExecution: BoxedQueryTemplateWithExtractorCombinerTransformer = useMemo(() => {
-    // Convert the instance query to the expected format
-    return isQueryEntity &&
-      currentQuery?.definition &&
-      !isResultsCollapsed
-      ? {
-          queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
-          deploymentUuid: props.deploymentUuid,
-          pageParams: {
+  const queryForExecution =
+    useMemo((): BoxedQueryTemplateWithExtractorCombinerTransformer => {
+      // Convert the instance query to the expected format
+      return isQueryEntity && currentQuery?.definition && !isResultsCollapsed
+        ? {
+            queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
             deploymentUuid: props.deploymentUuid,
-            // applicationSection: props.applicationSection,
-            applicationSection: "model",
-            instanceUuid: instance.uuid,
-          },
-          queryParams: {},
-          contextResults: {},
-          extractorTemplates: currentQuery?.definition || {},
-        }
-      : {
-          queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
-          deploymentUuid: props.deploymentUuid,
-          pageParams: {},
-          queryParams: {},
-          contextResults: {},
-          extractorTemplates: {},
-        };
-  }, [
-    isQueryEntity,
-    currentQuery,
-    isResultsCollapsed,
-    props.deploymentUuid,
-    props.applicationSection,
-    instance?.uuid,
-  ]);
+            pageParams: {
+              deploymentUuid: props.deploymentUuid,
+              // applicationSection: props.applicationSection,
+              applicationSection: "model",
+              instanceUuid: instance.uuid,
+            },
+            queryParams: {},
+            contextResults: {},
+            extractorTemplates: currentQuery?.definition.extractorTemplates || {},
+            combinerTemplates: currentQuery?.definition.combinerTemplates || {},
+            runtimeTransformers: currentQuery?.definition.runtimeTransformers || {},
+          }
+        : {
+            queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
+            deploymentUuid: props.deploymentUuid,
+            pageParams: {},
+            queryParams: {},
+            contextResults: {},
+            extractorTemplates: {},
+          };
+    }, [
+      isQueryEntity,
+      currentQuery,
+      isResultsCollapsed,
+      props.deploymentUuid,
+      props.applicationSection,
+      instance?.uuid,
+    ]);
 
   log.info("ReportSectionEntityInstance: queryForExecution:", queryForExecution);
   // const deploymentEntityStateFetchQueryParams: SyncQueryRunnerParams<ReduxDeploymentsState> | undefined = useMemo(
@@ -534,7 +535,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                           Query executed successfully. Results:
                         </div>
                         <ThemedCodeBlock>
-                          {safeStringify(queryResults)}
+                          {JSON.stringify(queryResults, null, 2)}
                         </ThemedCodeBlock>
                       </div>
                     )

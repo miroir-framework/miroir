@@ -6,13 +6,24 @@
   "defaultLabel": "Query listing Entities.",
   "description": "This query produces a list of existing Entities.",
   "definition": {
-    "entities": {
-      "extractorTemplateType": "extractorTemplateForObjectListByEntity",
-      "applicationSection": "model",
-      "parentName": "Entity",
-      "parentUuid": {
-        "transformerType": "constant",
-        "value": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad"
+    "extractorTemplates": {
+      "entities": {
+        "extractorTemplateType": "extractorTemplateForObjectListByEntity",
+        "applicationSection": "model",
+        "parentName": "Entity",
+        "parentUuid": {
+          "transformerType": "constant",
+          "value": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad"
+        }
+      }
+    },
+    "runtimeTransformers": {
+      "entityCount": {
+        "transformerType": "count",
+        "applyTo": {
+          "transformerType": "contextReference",
+          "referenceName": "entities"
+        }
       }
     }
   }

@@ -14540,6 +14540,36 @@ export const miroirFundamentalJzodSchema = {
           }
         ]
       },
+      "combinerReturningObjectOrObjectList": {
+        "type": "union",
+        "discriminator": "extractorOrCombinerType",
+        "definition": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "combinerForObjectByRelation",
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+            },
+            "context": {}
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "combinerByRelationReturningObjectList",
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+            },
+            "context": {}
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "combinerByManyToManyRelationReturningObjectList",
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+            },
+            "context": {}
+          }
+        ]
+      },
       "extractorOrCombinerReturningObjectOrObjectList": {
         "type": "union",
         "discriminator": "extractorOrCombinerType",
@@ -14783,6 +14813,41 @@ export const miroirFundamentalJzodSchema = {
             "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
           },
           "context": {}
+        }
+      },
+      "queryTemplateWithExtractorCombinerTransformer": {
+        "type": "object",
+        "definition": {
+          "extractorTemplates": {
+            "type": "schemaReference",
+            "optional": true,
+            "definition": {
+              "relativePath": "extractorOrCombinerTemplateRecord",
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+            },
+            "context": {}
+          },
+          "combinerTemplates": {
+            "type": "schemaReference",
+            "optional": true,
+            "definition": {
+              "relativePath": "extractorOrCombinerTemplateRecord",
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+            },
+            "context": {}
+          },
+          "runtimeTransformers": {
+            "type": "record",
+            "optional": true,
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "transformerForBuildPlusRuntime"
+              },
+              "context": {}
+            }
+          }
         }
       },
       "domainElementVoid": {

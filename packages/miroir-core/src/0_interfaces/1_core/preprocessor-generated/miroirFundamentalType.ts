@@ -4730,10 +4730,7 @@ export type ExtractorTemplateByManyToManyRelationReturningObjectList = {
     objectListReferenceAttribute?: string | undefined;
     AttributeOfRootListObjectToCompareToListReferenceUuid?: string | undefined;
 };
-export type ExtractorTemplateReturningObjectList =
-  | ExtractorTemplateForObjectListByEntity
-  | ExtractorTemplateByRelationReturningObjectList
-  | ExtractorTemplateByManyToManyRelationReturningObjectList;
+export type ExtractorTemplateReturningObjectList = ExtractorTemplateForObjectListByEntity | ExtractorTemplateByRelationReturningObjectList | ExtractorTemplateByManyToManyRelationReturningObjectList;
 export type ExtractorTemplateReturningObjectOrObjectList = ExtractorTemplateReturningObject | ExtractorTemplateReturningObjectList;
 export type ExtractorTemplateByExtractorCombiner = {
     extractorTemplateType: "extractorCombinerByHeteronomousManyToManyReturningListOfObjectList";
@@ -4828,6 +4825,7 @@ export type CombinerByManyToManyRelationReturningObjectList = {
     AttributeOfRootListObjectToCompareToListReferenceUuid?: string | undefined;
 };
 export type ExtractorOrCombinerReturningObjectList = ExtractorByEntityReturningObjectList | CombinerByRelationReturningObjectList | CombinerByManyToManyRelationReturningObjectList;
+export type CombinerReturningObjectOrObjectList = CombinerForObjectByRelation | CombinerByRelationReturningObjectList | CombinerByManyToManyRelationReturningObjectList;
 export type ExtractorOrCombinerReturningObjectOrObjectList = ExtractorOrCombinerReturningObject | ExtractorOrCombinerReturningObjectList;
 export type ExtractorCombinerByHeteronomousManyToManyReturningListOfObjectList = {
     extractorOrCombinerType: "extractorCombinerByHeteronomousManyToManyReturningListOfObjectList";
@@ -4858,6 +4856,13 @@ export type ExtractorOrCombiner = ExtractorOrCombinerContextReference | Extracto
 };
 export type ExtractorOrCombinerRecord = {
     [x: string]: ExtractorOrCombiner;
+};
+export type QueryTemplateWithExtractorCombinerTransformer = {
+    extractorTemplates?: ExtractorOrCombinerTemplateRecord | undefined;
+    combinerTemplates?: ExtractorOrCombinerTemplateRecord | undefined;
+    runtimeTransformers?: {
+        [x: string]: TransformerForBuildPlusRuntime;
+    } | undefined;
 };
 export type DomainElementVoid = {
     elementType: "void";
@@ -15174,6 +15179,7 @@ export const extractor: z.ZodType<Extractor> = z.union([z.lazy(() =>extractorFor
 export const combinerByRelationReturningObjectList: z.ZodType<CombinerByRelationReturningObjectList> = z.object({label:z.string().optional(), applicationSection:z.lazy(() =>applicationSection).optional(), parentName:z.string().optional(), parentUuid:z.string().uuid(), extractorOrCombinerType:z.literal("combinerByRelationReturningObjectList"), orderBy:z.object({attributeName:z.string(), direction:z.enum(["ASC","DESC"]).optional()}).strict().optional(), objectReference:z.string(), objectReferenceAttribute:z.string().optional(), AttributeOfListObjectToCompareToReferenceUuid:z.string()}).strict();
 export const combinerByManyToManyRelationReturningObjectList: z.ZodType<CombinerByManyToManyRelationReturningObjectList> = z.object({label:z.string().optional(), applicationSection:z.lazy(() =>applicationSection).optional(), parentName:z.string().optional(), parentUuid:z.string().uuid(), extractorOrCombinerType:z.literal("combinerByManyToManyRelationReturningObjectList"), orderBy:z.object({attributeName:z.string(), direction:z.enum(["ASC","DESC"]).optional()}).strict().optional(), objectListReference:z.string(), objectListReferenceAttribute:z.string().optional(), AttributeOfRootListObjectToCompareToListReferenceUuid:z.string().optional()}).strict();
 export const extractorOrCombinerReturningObjectList: z.ZodType<ExtractorOrCombinerReturningObjectList> = z.union([z.lazy(() =>extractorByEntityReturningObjectList), z.lazy(() =>combinerByRelationReturningObjectList), z.lazy(() =>combinerByManyToManyRelationReturningObjectList)]);
+export const combinerReturningObjectOrObjectList: z.ZodType<CombinerReturningObjectOrObjectList> = z.union([z.lazy(() =>combinerForObjectByRelation), z.lazy(() =>combinerByRelationReturningObjectList), z.lazy(() =>combinerByManyToManyRelationReturningObjectList)]);
 export const extractorOrCombinerReturningObjectOrObjectList: z.ZodType<ExtractorOrCombinerReturningObjectOrObjectList> = z.union([z.lazy(() =>extractorOrCombinerReturningObject), z.lazy(() =>extractorOrCombinerReturningObjectList)]);
 export const extractorCombinerByHeteronomousManyToManyReturningListOfObjectList: z.ZodType<ExtractorCombinerByHeteronomousManyToManyReturningListOfObjectList> = z.object({extractorOrCombinerType:z.literal("extractorCombinerByHeteronomousManyToManyReturningListOfObjectList"), orderBy:z.object({attributeName:z.string(), direction:z.enum(["ASC","DESC"]).optional()}).strict().optional(), rootExtractorOrReference:z.union([z.lazy(() =>extractor), z.string()]), subQueryTemplate:z.object({query:z.lazy(() =>extractorOrCombinerTemplate), rootQueryObjectTransformer:z.lazy(() =>recordOfTransformers)}).strict()}).strict();
 export const extractorWrapperReturningObject: z.ZodType<ExtractorWrapperReturningObject> = z.object({extractorOrCombinerType:z.literal("extractorWrapperReturningObject"), definition:z.record(z.string(),z.union([z.lazy(() =>extractorOrCombinerContextReference), z.lazy(() =>extractorOrCombiner)]))}).strict();
@@ -15181,6 +15187,7 @@ export const extractorWrapperReturningList: z.ZodType<ExtractorWrapperReturningL
 export const extractorWrapper: z.ZodType<ExtractorWrapper> = z.union([z.lazy(() =>extractorWrapperReturningObject), z.lazy(() =>extractorWrapperReturningList)]);
 export const extractorOrCombiner: z.ZodType<ExtractorOrCombiner> = z.union([z.lazy(() =>extractorOrCombinerContextReference), z.lazy(() =>extractorOrCombinerReturningObject), z.lazy(() =>extractorOrCombinerReturningObjectList), z.lazy(() =>extractorWrapper), z.lazy(() =>extractorCombinerByHeteronomousManyToManyReturningListOfObjectList), z.object({extractorOrCombinerType:z.literal("literal"), definition:z.string()}).strict()]);
 export const extractorOrCombinerRecord: z.ZodType<ExtractorOrCombinerRecord> = z.record(z.string(),z.lazy(() =>extractorOrCombiner));
+export const queryTemplateWithExtractorCombinerTransformer: z.ZodType<QueryTemplateWithExtractorCombinerTransformer> = z.object({extractorTemplates:z.lazy(() =>extractorOrCombinerTemplateRecord).optional(), combinerTemplates:z.lazy(() =>extractorOrCombinerTemplateRecord).optional(), runtimeTransformers:z.record(z.string(),z.lazy(() =>transformerForBuildPlusRuntime)).optional()}).strict();
 export const domainElementVoid: z.ZodType<DomainElementVoid> = z.object({elementType:z.literal("void"), elementValue:z.void()}).strict();
 export const domainElementAny: z.ZodType<DomainElementAny> = z.object({elementType:z.literal("any"), elementValue:z.any()}).strict();
 export const domainElementFailed: z.ZodType<DomainElementFailed> = z.object({elementType:z.literal("failure"), elementValue:z.lazy(() =>queryFailed)}).strict();
