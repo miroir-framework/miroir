@@ -46,16 +46,16 @@ export class MiroirLogger implements LoggerInterface {
       this.eventService.pushLogToEvent(level, loggerName, message, ...restArgs);
     } else {
       logger(
-        "FILTERED OUT of activity",
-        currentActivityId,
-        "topic",
-        currentActivityTopic,
-        "loggerTopic",
-        this.topic,
-        "level",
-        level,
-        "loggerName",
-        loggerName,
+        // "FILTERED OUT of activity",
+        // currentActivityId,
+        // "topic",
+        // currentActivityTopic,
+        // "loggerTopic",
+        // this.topic,
+        // "level",
+        // level,
+        // "loggerName",
+        // loggerName,
         message,
         ...restArgs
       );

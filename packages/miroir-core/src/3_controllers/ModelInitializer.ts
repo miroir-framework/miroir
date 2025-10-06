@@ -144,9 +144,9 @@ export async function modelInitialize(
     await persistenceStoreController.createEntity(entityReport as MetaEntity, entityDefinitionReport as EntityDefinition);
     log.info(logHeader, 'created entity EntityReport',persistenceStoreController.getEntityUuids());
     
-    // // bootstrap EntityQuery
-    // await persistenceStoreController.createEntity(entityQuery as MetaEntity, entityDefinitionQuery as EntityDefinition);
-    // log.info(logHeader, 'created entity Query',persistenceStoreController.getEntityUuids());
+    // bootstrap EntityQuery
+    await persistenceStoreController.createEntity(entityQueryVersion as MetaEntity, entityDefinitionQuery as EntityDefinition);
+    log.info(logHeader, 'created entity Query',persistenceStoreController.getEntityUuids());
     
     // bootstrap EntityQueryVersion
     await persistenceStoreController.createEntity(entityQueryVersion as MetaEntity, entityDefinitionQuery as EntityDefinition);
@@ -260,7 +260,15 @@ export async function modelInitialize(
     );
     log.info(logHeader, "app initialized entity Endpoint", persistenceStoreController.getEntityUuids());
 
+    // bootstrap QueryVersion
+    log.info(logHeader, "app initialized entity Query", persistenceStoreController.getEntityUuids());
+    await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
+      entityQueryVersion as MetaEntity,
+      entityDefinitionQuery as EntityDefinition
+    );
+
     // bootstrap EntityReport
+    log.info(logHeader, "app initialized entity Report", persistenceStoreController.getEntityUuids());
     await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
       entityReport as MetaEntity,
       entityDefinitionReport as EntityDefinition

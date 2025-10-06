@@ -485,13 +485,15 @@ export interface MiroirIntegrationTestEnvironment {
  */
 export async function setupMiroirTest(
   miroirConfig: MiroirConfigClient,
+  miroirActivityTracker?: MiroirActivityTracker,
+  miroirEventService?: MiroirEventService,
   customfetch?: any,
 ) {
-  const miroirActivityTracker = new MiroirActivityTracker();
-  const miroirEventService = new MiroirEventService(miroirActivityTracker);
+  const localMiroirActivityTracker = miroirActivityTracker??new MiroirActivityTracker();
+  const localMiroirEventService = miroirEventService??new MiroirEventService(localMiroirActivityTracker);
   const miroirContext = new MiroirContext(
-    miroirActivityTracker,
-    miroirEventService,
+    localMiroirActivityTracker,
+    localMiroirEventService,
     miroirConfig
   );
   console.log("setupMiroirTest miroirConfig", JSON.stringify(miroirConfig, null, 2));
@@ -745,18 +747,29 @@ export async function runTestOrTestSuite(
           "with params",
           JSON.stringify(newParams, null, 2)
         );
-        const queryResult: Action2ReturnType = await domainController.handleTestCompositeActionSuite(
-          testAction.testCompositeAction as any, // TODO: remove cast
-          newParams,
-          domainController.currentModel(testAction.deploymentUuid)
-        );
+        const queryResult: Action2ReturnType = await miroirActivityTracker.trackTestSuite(
+          fullTestName,
+          fullTestName,
+          undefined, // parentTrackId
+          async() => await domainController.handleTestCompositeActionSuite(
+            testAction.testCompositeAction as any, // TODO: remove cast
+            newParams,
+            domainController.currentModel(testAction.deploymentUuid)
+          )
+        ) 
+        // const queryResult: Action2ReturnType = await domainController.handleTestCompositeActionSuite(
+        //   testAction.testCompositeAction as any, // TODO: remove cast
+        //   newParams,
+        //   domainController.currentModel(testAction.deploymentUuid)
+        // );
         log.info(
           "received results for test testCompositeActionSuite",
           fullTestName,
           ": queryResult=",
           JSON.stringify(queryResult, null, 2),
           "TestContextResults",
-          JSON.stringify(miroirActivityTracker.getTestAssertionsResults([{testSuite: testAction.testActionLabel}]), null, 2)
+          // JSON.stringify(miroirActivityTracker.getTestAssertionsResults([{testSuite: testAction.testActionLabel}]), null, 2)
+          JSON.stringify(miroirActivityTracker.getTestAssertionsResults([]), null, 2)
         );
         // log.info(
         //   "received results for test testCompositeActionSuite",
@@ -769,11 +782,21 @@ export async function runTestOrTestSuite(
       case 'testBuildPlusRuntimeCompositeAction':
       case "testRuntimeCompositeAction": 
       case "testCompositeAction": {
-        const queryResult: Action2ReturnType = await domainController.handleTestCompositeAction(
-          testAction.testCompositeAction as any, // TODO: remove cast
-          {},
-          domainController.currentModel(testAction.deploymentUuid)
+        const queryResult: Action2ReturnType = await miroirActivityTracker.trackTest(
+          fullTestName,
+          miroirActivityTracker.getCurrentActivityId(),
+          async () =>
+            await domainController.handleTestCompositeAction(
+              testAction.testCompositeAction as any, // TODO: remove cast
+              {},
+              domainController.currentModel(testAction.deploymentUuid)
+            )
         );
+        // const queryResult: Action2ReturnType = await domainController.handleTestCompositeAction(
+        //   testAction.testCompositeAction as any, // TODO: remove cast
+        //   {},
+        //   domainController.currentModel(testAction.deploymentUuid)
+        // );
         log.info(
           "test testCompositeAction",
           fullTestName,
@@ -786,19 +809,28 @@ export async function runTestOrTestSuite(
       case "testCompositeActionTemplateSuite": {
         // throw new Error("testCompositeActionTemplateSuite not implemented yet!");
         log.info("testCompositeActionTemplateSuite", fullTestName, "running for testActionParamValues", testActionParamValues);
-        const queryResult: Action2ReturnType = await domainController.handleTestCompositeActionTemplateSuite(
-          testAction.testCompositeActionSuite,
-          // testAction.TestCompositeActionSuite,
-          testActionParamValues??{},
-          domainController.currentModel(testAction.deploymentUuid)
-        );
+        const queryResult: Action2ReturnType = await miroirActivityTracker.trackTest(
+          fullTestName,
+          miroirActivityTracker.getCurrentActivityId(),
+          async() => await domainController.handleTestCompositeActionTemplateSuite(
+            testAction.testCompositeActionSuite,
+            testActionParamValues??{},
+            domainController.currentModel(testAction.deploymentUuid)
+          )
+        )
+        // const queryResult: Action2ReturnType = await domainController.handleTestCompositeActionTemplateSuite(
+        //   testAction.testCompositeActionSuite,
+        //   testActionParamValues??{},
+        //   domainController.currentModel(testAction.deploymentUuid)
+        // );
         log.info(
           "received results for test testCompositeActionSuite",
           fullTestName,
           ": queryResult=",
           JSON.stringify(queryResult, null, 2),
           "TestContextResults",
-          JSON.stringify(miroirActivityTracker.getTestAssertionsResults([{testSuite: testAction.testActionLabel}]), null, 2)
+          // JSON.stringify(miroirActivityTracker.getTestAssertionsResults([{testSuite: testAction.testActionLabel}]), null, 2)
+          JSON.stringify(miroirActivityTracker.getTestAssertionsResults([]), null, 2)
         );
         return queryResult;
       }
@@ -813,6 +845,9 @@ export async function runTestOrTestSuite(
       "error",
       error
     );
+  } finally {
+    log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DONE test:", fullTestName);
+    miroirActivityTracker.resetContext();
   }
 }
 

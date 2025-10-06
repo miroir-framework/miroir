@@ -1259,7 +1259,7 @@ export class DomainController implements DomainControllerInterface {
     return this.miroirContext.miroirActivityTracker.trackAction(
       domainAction.actionType,
       (domainAction as any).actionLabel,
-      async () => this.handleActionInternal(domainAction, currentModel)
+      (async () => this.handleActionInternal(domainAction, currentModel)).bind(this)
     );
   }
 
@@ -1484,11 +1484,13 @@ export class DomainController implements DomainControllerInterface {
     actionParamValues: MiroirModelEnvironment & Record<string, any>,
     currentModel: MetaModel // TODO: redundant with actionParamValues, remove it?
   ): Promise<Action2VoidReturnType> {
-    return this.miroirContext.miroirActivityTracker
-    .trackAction(
+    return this.miroirContext.miroirActivityTracker.trackAction(
       "compositeAction",
       compositeAction.actionLabel,
-      async () => this.handleCompositeActionInternal(compositeAction, actionParamValues, currentModel)
+      (async () =>
+        this.handleCompositeActionInternal(compositeAction, actionParamValues, currentModel)).bind(
+        this
+      )
     );
   }
 
@@ -1640,11 +1642,21 @@ export class DomainController implements DomainControllerInterface {
           //   );
           // }
           case "compositeRunTestAssertion": {
-            actionResult = this.handleTestCompositeActionAssertion(
-              currentAction,
-              localContext,
-              actionResult
-            );
+            actionResult = await this.miroirContext.miroirActivityTracker.trackTestAssertion(
+              currentAction.actionLabel || "unnamed assertion",
+              this.miroirContext.miroirActivityTracker.getCurrentActivityId() || "unknown",
+              (async () =>
+                await this.handleTestCompositeActionAssertion(
+                  currentAction,
+                  localContext,
+                  actionResult
+                )).bind(this)
+            ); 
+            // actionResult = this.handleTestCompositeActionAssertion(
+            //   currentAction,
+            //   localContext,
+            //   actionResult
+            // );
             break;
           }
           case 'compositeRunBoxedExtractorAction':
@@ -1683,7 +1695,7 @@ export class DomainController implements DomainControllerInterface {
           [currentAction.actionLabel ?? currentAction.actionType]
         );
       } finally {
-        LoggerGlobalContext.setCompositeAction(undefined);
+        // LoggerGlobalContext.setCompositeAction(undefined);
         // Also clear in MiroirActivityTracker for MiroirEventService
         this.miroirContext.miroirActivityTracker.setCompositeAction(undefined);
       }
@@ -2171,9 +2183,7 @@ export class DomainController implements DomainControllerInterface {
     }
     let valueToTest: any = undefined;
     try {
-      // TestSuiteContext.setTestAssertion(currentAction.testAssertion.testLabel);
-      // Set test assertion in MiroirActivityTracker for TestLogService
-      this.miroirContext.miroirActivityTracker.setTestAssertion(currentAction.testAssertion.testLabel);
+      // this.miroirContext.miroirActivityTracker.setTestAssertion(currentAction.testAssertion.testLabel);
 
       // TODO: shall there be an interpretation at all?
       const prePreValueToTest = currentAction.testAssertion.definition.resultTransformer
@@ -2214,12 +2224,8 @@ export class DomainController implements DomainControllerInterface {
       log.info(
         "handleTestCompositeActionAssertion compositeRunTestAssertion to handle",
         JSON.stringify(currentAction.testAssertion, null, 2),
-        // "preValueToTest typeof", typeof preValueToTest,
-        // "preValueToTest instanceof Array", preValueToTest instanceof Array,
         "preValueToTest is array",
         Array.isArray(preValueToTest),
-        // "preValueToTest object proto is array", JSON.stringify(Object.prototype.toString.call(preValueToTest)),
-        // "preValueToTest constuctor is array", preValueToTest.constructor === Array,
         "preValueToTest",
         JSON.stringify(preValueToTest, null, 2),
         "valueToTest",
@@ -2284,18 +2290,18 @@ export class DomainController implements DomainControllerInterface {
       // });
       // Set test result in MiroirActivityTracker for TestLogService
       this.miroirContext.miroirActivityTracker.setTestAssertionResult(
-                  this.miroirContext.miroirActivityTracker.getCurrentTestAssertionPath(),
-{
-        assertionName: currentAction.testAssertion.testLabel,
-        assertionResult: "error",
-      });
+        this.miroirContext.miroirActivityTracker.getCurrentTestAssertionPath(),
+        {
+          assertionName: currentAction.testAssertion.testLabel,
+          assertionResult: "error",
+        }
+      );
       throw new Error(
         "handleTestCompositeActionAssertion compositeRunTestAssertion error" + JSON.stringify(error, null, 2)
       );
     } finally {
-      // TestSuiteContext.setTestAssertion(undefined);
       // Clear test assertion in MiroirActivityTracker for TestLogService
-      this.miroirContext.miroirActivityTracker.setTestAssertion(undefined);
+      // this.miroirContext.miroirActivityTracker.setTestAssertion(undefined);
     }
     return actionResult;
   }
@@ -2851,12 +2857,9 @@ export class DomainController implements DomainControllerInterface {
 
   // ##############################################################################################
   async handleTestCompositeActionSuite(
-    // testAction: TestCompositeActionSuite,
     testAction: TestCompositeActionSuite | TestRuntimeCompositeActionSuite | TestBuildPlusRuntimeCompositeActionSuite,
     actionParamValues: MiroirModelEnvironment & Record<string, any>,
     currentModel: MetaModel
-    // ): Promise<Action2VoidReturnType> {
-    // ): Promise<Action2ReturnType> {
   ): Promise<Action2VoidReturnType> {
     const localActionParams = { ...actionParamValues };
     let localContext: Record<string, any> = { ...actionParamValues };
@@ -2875,7 +2878,8 @@ export class DomainController implements DomainControllerInterface {
       this.miroirContext.miroirActivityTracker.setTestSuite(testAction.testLabel);
 
       if (testAction.beforeAll) {
-        LoggerGlobalContext.setTest("beforeAll");
+        // LoggerGlobalContext.setTest("beforeAll");
+          this.miroirContext.miroirActivityTracker.setTest(testAction.testLabel + ".beforeAll");
         // log.info(
         //   "handleTestCompositeActionSuite beforeAll",
         //   testAction.beforeAll.actionLabel,
@@ -2904,6 +2908,7 @@ export class DomainController implements DomainControllerInterface {
         log.info("handleTestCompositeActionSuite no beforeAll!");
       }
 
+      // testAction.testCompositeActions
       for (const testCompositeAction of Object.entries(testAction.testCompositeActions) as [
         string,
         TestCompositeAction | TestRuntimeCompositeAction | TestBuildPlusRuntimeCompositeAction
@@ -2917,7 +2922,8 @@ export class DomainController implements DomainControllerInterface {
           //   testAction.beforeEach.actionLabel,
           //   testAction.beforeEach
           // );
-          LoggerGlobalContext.setTest(testCompositeAction[1].testLabel + ".beforeEach");
+          // LoggerGlobalContext.setTest(testCompositeAction[1].testLabel + ".beforeEach");
+          this.miroirContext.miroirActivityTracker.setTest(testCompositeAction[1].testLabel + ".beforeEach");
           const beforeEachResult = await this.handleCompositeAction(
             testAction.beforeEach,
             localActionParams,
@@ -2946,6 +2952,7 @@ export class DomainController implements DomainControllerInterface {
           log.info("handleTestCompositeActionSuite", testCompositeAction[0], "no beforeEach!");
         }
 
+        // beforeTestSetupAction
         if (testCompositeAction[1].beforeTestSetupAction) {
           // TestSuiteContext.setTest(testCompositeAction[1].testLabel + ".beforeTestSetupAction");
           this.miroirContext.miroirActivityTracker.setTest(testCompositeAction[1].testLabel + ".beforeTestSetupAction");
@@ -3000,11 +3007,22 @@ export class DomainController implements DomainControllerInterface {
             };
             // TestSuiteContext.setTest(testCompositeAction[1].testLabel);
             this.miroirContext.miroirActivityTracker.setTest(testCompositeAction[1].testLabel);
-            testResult = await this.handleBuildPlusRuntimeCompositeAction(
-              localTestCompositeAction,
-              localActionParams,
-              currentModel
+            testResult = await this.miroirContext.miroirActivityTracker.trackTest(
+              testCompositeAction[1].testLabel,
+              this.miroirContext.miroirActivityTracker.getCurrentActivityId() || "unknown",
+              async() => await this.handleBuildPlusRuntimeCompositeAction(
+                localTestCompositeAction,
+                localActionParams,
+                currentModel
+              )
             );
+            //
+            //
+            // testResult = await this.handleBuildPlusRuntimeCompositeAction(
+            //   localTestCompositeAction,
+            //   localActionParams,
+            //   currentModel
+            // );
             break;
           }
           case "testRuntimeCompositeAction": {
@@ -3017,11 +3035,21 @@ export class DomainController implements DomainControllerInterface {
             };
             // TestSuiteContext.setTest(testCompositeAction[1].testLabel);
             this.miroirContext.miroirActivityTracker.setTest(testCompositeAction[1].testLabel);
-            testResult = await this.handleRuntimeCompositeActionDO_NOT_USE(
-              localTestCompositeAction,
-              localActionParams,
-              currentModel
+            testResult = await this.miroirContext.miroirActivityTracker.trackTest(
+              testCompositeAction[1].testLabel,
+              this.miroirContext.miroirActivityTracker.getCurrentActivityId() || "unknown",
+              async() => await this.handleRuntimeCompositeActionDO_NOT_USE(
+                localTestCompositeAction,
+                localActionParams,
+                currentModel
+              )
             );
+            //
+            // testResult = await this.handleRuntimeCompositeActionDO_NOT_USE(
+            //   localTestCompositeAction,
+            //   localActionParams,
+            //   currentModel
+            // );
             break;
           }
           case "testCompositeAction": {
@@ -3034,11 +3062,20 @@ export class DomainController implements DomainControllerInterface {
             };
             // TestSuiteContext.setTest(testCompositeAction[1].testLabel);
             this.miroirContext.miroirActivityTracker.setTest(testCompositeAction[1].testLabel);
-            testResult = await this.handleCompositeAction(
-              localTestCompositeAction,
-              localActionParams,
-              currentModel
-            );
+            testResult = await this.miroirContext.miroirActivityTracker.trackTest(
+              testCompositeAction[1].testLabel,
+              this.miroirContext.miroirActivityTracker.getCurrentActivityId() || "unknown",
+              async() => await this.handleCompositeAction(
+                localTestCompositeAction,
+                localActionParams,
+                currentModel
+              )
+            )
+            // testResult = await this.handleCompositeAction(
+            //   localTestCompositeAction,
+            //   localActionParams,
+            //   currentModel
+            // );
             break;
           }
         }
@@ -3182,7 +3219,7 @@ export class DomainController implements DomainControllerInterface {
         "handleTestCompositeActionSuite caught error: " + JSON.stringify(error, null, 2)
       );
     } finally {
-      this.miroirContext.miroirActivityTracker.resetContext();
+      // this.miroirContext.miroirActivityTracker.resetContext();
     }
   }
 

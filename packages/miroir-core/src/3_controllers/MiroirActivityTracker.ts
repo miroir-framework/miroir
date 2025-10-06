@@ -238,9 +238,9 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
       this.currentActivityStack.splice(index, 1);
     }
 
-    if (["testSuite", "test", "testAssertion"].includes(event.activityType)) {
-      this.currentTestPath.pop();
-    }
+    // if (["testSuite", "test", "testAssertion"].includes(event.activityType)) {
+    //   this.currentTestPath.pop();
+    // }
     this.miroirEventService?.pushEventFromActivity(event);
   }
 
@@ -340,31 +340,37 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
     actionFn: (parentId: string | undefined) => Promise<T>
   ): Promise<T> {
     const trackingId = this.startTestSuite(testSuiteName, parentId);
-    console.log(
-      "🧪🧪 Started tracking test suite",
-      testSuitePathAsString,
-      "with ID:",
-      trackingId,
-      "parent:",
-      parentId
-    );
     try {
+      this.currentTestPath.push({ testSuite: testSuiteName });
+      console.log(
+        "🧪🧪 Started tracking test suite",
+        testSuitePathAsString,
+        "with ID:",
+        trackingId,
+        "parent:",
+        parentId,
+        "currentTestPath:",
+        this.currentTestPath
+      );
       const result = await actionFn(parentId);
       this.endActivity(trackingId);
+      return Promise.resolve(result);
+    } catch (error) {
+      this.endActivity(trackingId, error instanceof Error ? error.message : String(error));
+      throw error;
+    } finally {
       console.log(
         "🧪🧪 ended tracking test suite",
         testSuitePathAsString,
         "with ID:",
         trackingId,
         "parent:",
-        parentId
+        parentId,
+        "currentTestPath:",
+        this.currentTestPath
       );
-      return Promise.resolve(result);
-    } catch (error) {
-      this.endActivity(trackingId, error instanceof Error ? error.message : String(error));
-      throw error;
-    } finally {
       this.currentTestPath.pop();
+      console.log("currentTestPath after pop:", this.currentTestPath);
     }
   }
 
@@ -378,13 +384,14 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
     const trackingId = this.startTest(testName, parentTrackingId);
     try {
       this.setTest(testName);
+      this.currentTestPath.push({ test: testName });
       console.log(
-        `🧪 Started tracking test ${testName} with ID: ${trackingId}, parent: ${parentTrackingId}`
+        `🧪 Started tracking test ${testName} with ID: ${trackingId}, parent: ${parentTrackingId}`,
+                "currentTestPath",
+        this.currentTestPath
+
       );
       const result = await actionFn(parentTrackingId);
-      console.log(
-        `🧪 Ended tracking test ${testName} with ID: ${trackingId}, parent: ${parentTrackingId}`
-      );
       this.endActivity(trackingId);
       this.setTest(undefined);
       return Promise.resolve(result);
@@ -392,6 +399,11 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
       this.endActivity(trackingId, error instanceof Error ? error.message : String(error));
       throw error;
     } finally {
+      console.log(
+        `🧪 Ended tracking test ${testName} with ID: ${trackingId}, parent: ${parentTrackingId}`,
+        "currentTestPath",
+        this.currentTestPath
+      );
       this.currentTestPath.pop();
     }
   }
@@ -405,15 +417,15 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
     // const testAssertionParentId = this.getCurrentActivityId();
     const trackingId = this.startTestAssertion(testAssertionName, parentTrackingId);
     try {
+      this.currentTestPath.push({ testAssertion: testAssertionName });
       this.setTestAssertion(testAssertionName);
       console.log(
-        `🧪 Started tracking test assertion ${testAssertionName} with ID: ${trackingId}, parent: ${parentTrackingId}`
+        `🧪 Started tracking test assertion ${testAssertionName} with ID: ${trackingId}, parent: ${parentTrackingId}`,
+        "currentTestPath",
+        this.currentTestPath
       );
       const result = await actionFn(parentTrackingId);
       // this.setTestAssertionResult(currentTestAssertionPath, testAssertionResult);
-      console.log(
-        `🧪 Ended tracking test assertion ${testAssertionName} with ID: ${trackingId}, parent: ${parentTrackingId}`
-      );
       this.endActivity(trackingId);
       this.setTestAssertion(undefined);
       return Promise.resolve(result);
@@ -421,6 +433,11 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
       this.endActivity(trackingId, error instanceof Error ? error.message : String(error));
       throw error;
     } finally {
+      console.log(
+        `🧪 Ended tracking test assertion ${testAssertionName} with ID: ${trackingId}, parent: ${parentTrackingId}`,
+        "currentTestPath",
+        this.currentTestPath
+      );
       this.currentTestPath.pop();
     }
   }
@@ -457,7 +474,7 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
 
     this.currentActivityStack.push(activity);
     this.currentTestSuite = testSuite;
-    this.currentTestPath.push({ testSuite });
+    // this.currentTestPath.push({ testSuite });
     if (!this.miroirEventService) {
       throw new Error("MiroirActivityTracker.startTestSuite miroirEventService is not set");
     }
@@ -465,6 +482,7 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
     return id;
   }
 
+  // ##############################################################################################
   public static testPathName(testSuitePath: string[]): string {
     return testSuitePath.join("#");
   }
@@ -551,8 +569,8 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
     this.currentTestAssertion = testAssertion;
 
     // // Remove any previous testAssertion entries from currentTestPath
-    // // to ensure each testAssertion gets its own clean entry
-    // while (this.currentTestPath.length > 0) {
+    // // to ensutry
+    // while (this.currentTestPath.length > 0) {re each testAssertion gets its own clean en
     //   const lastElement = this.currentTestPath[this.currentTestPath.length - 1];
     //   if (lastElement.testAssertion) {
     //     this.currentTestPath.pop();
@@ -561,18 +579,11 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
     //   }
     // }
 
-    this.currentTestPath.push({ testAssertion });
     this.miroirEventService?.pushEventFromActivity(activity);
 
     return id;
   }
 
-  getCurrentTestAssertionPath(): TestAssertionPath {
-    // if (!this.currentTestSuite || !this.currentTest || !this.currentTestAssertion) {
-    //   return [];
-    // }
-    return this.currentTestPath;
-  }
 
   // ##############################################################################################
   setTestAssertionResult(
@@ -730,7 +741,13 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
     for (const pathElement of testAssertionsPath) {
       if (pathElement.testSuite) {
         if (!current.testsSuiteResults || !current.testsSuiteResults[pathElement.testSuite]) {
-          throw new Error(`getTestAssertionsResults TestSuite not found: ${pathElement.testSuite}`);
+            throw new Error(
+            "getTestAssertionsResults TestSuite not found: " +
+              pathElement.testSuite +
+              " among results " +
+              JSON.stringify(current, null, 2)
+              // JSON.stringify(Object.keys(current.testsSuiteResults), null, 2)
+            );
         }
         current = current.testsSuiteResults[pathElement.testSuite];
       } else if (pathElement.test) {
@@ -744,6 +761,14 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
     }
 
     return current;
+  }
+
+  // ##############################################################################################
+  getCurrentTestAssertionPath(): TestAssertionPath {
+    // if (!this.currentTestSuite || !this.currentTest || !this.currentTestAssertion) {
+    //   return [];
+    // }
+    return this.currentTestPath;
   }
 
   // ##############################################################################################
@@ -795,7 +820,7 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
     //   }
     // }
 
-    this.currentTestPath.push({ test });
+    // this.currentTestPath.push({ test });
     this.miroirEventService?.pushEventFromActivity(activity);
 
     return id;

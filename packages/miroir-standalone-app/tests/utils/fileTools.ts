@@ -1,7 +1,7 @@
 import { MiroirConfigClient, MiroirLoggerFactory, type LoggerInterface } from "miroir-core";
-import { packageName } from "miroir-core/src/constants";
 import path from "path";
 import { cleanLevel } from "../3_controllers/constants";
+import { packageName } from "../../src/constants";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

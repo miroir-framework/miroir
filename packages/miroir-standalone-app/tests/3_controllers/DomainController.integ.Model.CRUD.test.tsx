@@ -4,18 +4,25 @@ import { fetch as crossFetch } from "cross-fetch";
 // import process from "process";
 
 import {
+  AdminApplicationDeploymentConfiguration,
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
-  displayTestSuiteResults,
+  ConfigurationService, defaultMiroirMetaModel,
+  displayTestSuiteResultsDetails,
   DomainControllerInterface,
+  Entity,
   entityAuthor,
   EntityDefinition,
   entityDefinitionAuthor,
   entityDefinitionPublisher,
+  entityEntity,
   entityEntityDefinition,
   EntityInstance,
   entityPublisher,
+  JzodElement,
+  LocalCacheInterface,
   LoggerInterface,
+  LoggerOptions,
   MetaEntity,
   MiroirActivityTracker,
   MiroirContextInterface,
@@ -33,7 +40,10 @@ import {
   selfApplicationModelBranchLibraryMasterBranch,
   selfApplicationVersionLibraryInitialVersion,
   StoreUnitConfiguration,
+  TestCompositeActionParams,
+  TestSuiteResult,
 } from "miroir-core";
+
 
 import {
   adminApplicationDeploymentConfigurations,
@@ -49,25 +59,19 @@ import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
 import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
 import { miroirAppStartup } from "../../src/startup.js";
 
-import { LocalCache } from "miroir-localcache-redux";
 
-import { ConfigurationService, defaultMiroirMetaModel, Entity, entityEntity, JzodElement } from "miroir-core";
 // import { packageName } from "miroir-core/src/constants.js";
-import { packageName } from "../../src/constants.js";
 import {
   ApplicationEntitiesAndInstances,
   testOnLibrary_deleteLibraryDeployment,
   testOnLibrary_resetLibraryDeployment,
 } from "../../src/miroir-fwk/4-tests/tests-utils-testOnLibrary.js";
 // import { loglevelnext } from '../../src/loglevelnextImporter.js';
-import { AdminApplicationDeploymentConfiguration } from "miroir-core/src/0_interfaces/1_core/StorageConfiguration.js";
-import { LoggerOptions } from "miroir-core/src/0_interfaces/4-services/LoggerInterface.js";
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
-import { cleanLevel } from "./constants.js";
-import { LocalCacheInterface } from "miroir-core";
 import { loadTestConfigFiles } from "../utils/fileTools.js";
-import { TestSuiteResult } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import { TestCompositeActionParams } from "miroir-core";
+
+import { packageName } from "../../src/constants.js";
+import { cleanLevel } from "./constants.js";
 
 const env: any = (import.meta as any).env;
 console.log("@@@@@@@@@@@@@@@@@@ env", env);
@@ -168,7 +172,7 @@ beforeAll(async () => {
     domainController: localdomainController,
     localCache: locallocalCache,
     miroirContext: localmiroirContext,
-  } = await setupMiroirTest(miroirConfig, crossFetch);
+  } = await setupMiroirTest(miroirConfig, miroirActivityTracker, miroirEventService, crossFetch);
 
   persistenceStoreControllerManager = localpersistenceStoreControllerManager;
   domainController = localdomainController;
@@ -200,7 +204,13 @@ beforeEach(async () => {
 
 afterAll(async () => {
   await deleteAndCloseApplicationDeployments(miroirConfig, domainController, adminApplicationDeploymentConfigurations);
-  displayTestSuiteResults(expect,Object.keys(testActions)[0]);
+  // displayTestSuiteResults(expect,Object.keys(testActions)[0]);
+  displayTestSuiteResultsDetails(
+    Object.keys(testActions)[0],
+    // [{ testSuite: Object.keys(testActions)[0] }],
+    [],
+    miroirActivityTracker
+  );
 });
 
 const testActions: Record<string, TestCompositeActionParams> = {
@@ -1219,7 +1229,12 @@ describe.sequential(
     it.each(Object.entries(testActions))(
       "test %s",
       async (currentTestSuiteName, testAction: TestCompositeActionParams) => {
-        const testSuiteResults = await runTestOrTestSuite(domainController, testAction);
+        const testSuiteResults = await runTestOrTestSuite(
+          domainController,
+          testAction,
+          miroirActivityTracker,
+          {}
+        );
         if (!testSuiteResults || testSuiteResults.status !== "ok") {
           expect(testSuiteResults?.status, `${currentTestSuiteName} failed!`).toBe("ok");
         }

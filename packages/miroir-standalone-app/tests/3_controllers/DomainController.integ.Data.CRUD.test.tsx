@@ -14,7 +14,7 @@ import {
   book4,
   book5,
   book6,
-  displayTestSuiteResults,
+  displayTestSuiteResultsDetails,
   DomainControllerInterface,
   entityAuthor,
   entityBook,
@@ -45,12 +45,10 @@ import {
 } from "miroir-core";
 
 import {
-  adminApplicationDeploymentConfigurations,
   createDeploymentCompositeAction,
-  deleteAndCloseApplicationDeployments,
   resetAndinitializeDeploymentCompositeAction,
   runTestOrTestSuite,
-  setupMiroirTest,
+  setupMiroirTest
 } from "../../src/miroir-fwk/4-tests/tests-utils.js";
 
 import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
@@ -59,19 +57,18 @@ import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
 import { miroirAppStartup } from "../../src/startup.js";
 
 
-import { ConfigurationService, defaultMiroirMetaModel, LocalCacheInterface } from "miroir-core";
+import { ConfigurationService, defaultMiroirMetaModel, LocalCacheInterface, TestCompositeActionParams } from "miroir-core";
+import { TestSuiteResult } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { AdminApplicationDeploymentConfiguration } from "miroir-core/src/0_interfaces/1_core/StorageConfiguration.js";
 import { LoggerOptions } from "miroir-core/src/0_interfaces/4-services/LoggerInterface.js";
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import {
   ApplicationEntitiesAndInstances,
   testOnLibrary_deleteLibraryDeployment,
-  testOnLibrary_resetLibraryDeployment,
+  testOnLibrary_resetLibraryDeployment
 } from "../../src/miroir-fwk/4-tests/tests-utils-testOnLibrary.js";
-import { cleanLevel, packageName } from "./constants.js";
 import { loadTestConfigFiles } from "../utils/fileTools.js";
-import { TestSuiteResult } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import { TestCompositeActionParams } from "miroir-core";
+import { cleanLevel, packageName } from "./constants.js";
 
 const env: any = (import.meta as any).env;
 
@@ -128,6 +125,7 @@ const testDeploymentStorageConfiguration = miroirConfig.client.emulateServer
 const typedAdminConfigurationDeploymentLibrary: AdminApplicationDeploymentConfiguration =
   adminConfigurationDeploymentLibrary as any;
 
+  
 let domainController: DomainControllerInterface;
 let localCache: LocalCacheInterface;
 let miroirContext: MiroirContextInterface;
@@ -167,7 +165,7 @@ beforeAll(async () => {
     domainController: localdomainController,
     localCache: locallocalCache,
     miroirContext: localmiroirContext,
-  } = await setupMiroirTest(miroirConfig);
+  } = await setupMiroirTest(miroirConfig, miroirActivityTracker, miroirEventService);
 
   persistenceStoreControllerManager = localpersistenceStoreControllerManager;
   domainController = localdomainController;
@@ -199,13 +197,18 @@ beforeEach(async () => {
 });
 
 afterAll(async () => {
-  await deleteAndCloseApplicationDeployments(
-    miroirConfig,
-    domainController,
-    // deploymentConfigurations,
-    adminApplicationDeploymentConfigurations
+  // await deleteAndCloseApplicationDeployments(
+  //   miroirConfig,
+  //   domainController,
+  //   // deploymentConfigurations,
+  //   adminApplicationDeploymentConfigurations
+  // );
+  displayTestSuiteResultsDetails(
+    Object.keys(testActions)[0],
+    // [{ testSuite: Object.keys(testActions)[0] }],
+    [],
+    miroirActivityTracker
   );
-  displayTestSuiteResults(expect, Object.keys(testActions)[0]);
 });
 
 const testActions: Record<string, TestCompositeActionParams> = {
@@ -215,6 +218,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
     testActionLabel: "DomainController.integ.Data.CRUD",
     testCompositeAction: {
       testType: "testCompositeActionSuite",
+      // testType: "testCompositeAction",
       testLabel: "DomainController.integ.Data.CRUD",
       beforeAll: createDeploymentCompositeAction(
         testApplicationDeploymentUuid,
@@ -981,7 +985,7 @@ describe.sequential(
     it.each(Object.entries(testActions))(
       "test %s",
       async (currentTestSuiteName, testAction: TestCompositeActionParams) => {
-        const testSuiteResults = await runTestOrTestSuite(domainController, testAction);
+        const testSuiteResults = await runTestOrTestSuite(domainController, testAction, miroirActivityTracker, {});
         if (!testSuiteResults || testSuiteResults.status !== "ok") {
           expect(testSuiteResults?.status, `${currentTestSuiteName} failed!`).toBe("ok");
         }

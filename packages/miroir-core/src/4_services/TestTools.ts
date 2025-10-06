@@ -916,14 +916,14 @@ export const displayTestSuiteResultsDetails = async (
   currentTestSuitePath: TestAssertionPath,
   miroirActivityTracker: MiroirActivityTrackerInterface, // Optional unified tracker for test execution tracking
 ) => {
-  log.info("#################################### displayTestSuiteResultsDetails ####################################");
+  log.info("#################################### displayTestSuiteResultsDetails:", currentTestSuitePath, "####################################");
   
   // Import chalk for colors
   // const chalk = (await import('chalk')).default;
   
   // Retrieve results for the requested suite path (fallback to root if not provided)
   const allResults = miroirActivityTracker.getTestAssertionsResults(currentTestSuitePath ?? []);
-
+  // console.log("allResults", JSON.stringify(allResults, null, 2));
   let totalTestSuites = 0;
   let totalTests = 0;
   let totalAssertions = 0;
@@ -1014,6 +1014,8 @@ export const displayTestSuiteResultsDetails = async (
   
   // Collect all test information
   const allTestInfo = collectTestInfo(allResults);
+
+  // console.log("allTestInfo", JSON.stringify(allTestInfo, null, 2));
   
   // Display detailed assertion results
   for (const item of allTestInfo) {
