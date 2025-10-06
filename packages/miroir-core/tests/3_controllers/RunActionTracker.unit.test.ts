@@ -76,7 +76,7 @@ describe('MiroirActivityTracker', () => {
       tracker.setCompositeAction('contextCompositeAction');
       
       // Verify both work
-      expect(tracker.getCurrentEventId()).toBe(eventId);
+      expect(tracker.getCurrentActivityId()).toBe(eventId);
       expect(tracker.getAction()).toBe('contextAction');
       expect(tracker.getCompositeAction()).toBe('contextCompositeAction');
       

@@ -6,7 +6,8 @@ import { defaultMetaModelEnvironment } from '../../src/1_core/Model';
 import { MiroirActivityTracker } from '../../src/3_controllers/MiroirActivityTracker';
 import {
   runTransformerTestInMemory,
-  runTransformerTestSuite
+  runTransformerTestSuite,
+  runUnitTransformerTests,
 } from "../../src/4_services/TestTools";
 
 // Access the test file pattern from Vitest's process arguments
@@ -18,8 +19,8 @@ console.log("@@@@@@@@@@@@@@@@@@ File Pattern:", filePattern);
 export const transformerTestSuite_applicativeTransformers: TransformerTestSuite = {
   transformerTestType: "transformerTestSuite",
   transformerTestLabel: "transformers",
-  transformerTests: {
-    "menu can be built from parts": {
+  transformerTests: [
+    {
       transformerTestType: "transformerTest",
       transformerTestLabel: "menu can be built from parts",
       transformerName: "menuBuild",
@@ -165,7 +166,7 @@ export const transformerTestSuite_applicativeTransformers: TransformerTestSuite 
         },
       },
     },
-  }
+  ]
 }
 
 const testSuiteName = "menu.unit.test";
@@ -185,14 +186,16 @@ if (shouldSkip) {
   
   // console.log("################################ result", JSON.stringify(result,null,2))
   // console.log("################################ expectedResult", JSON.stringify(expectedResult,null,2))
-  await runTransformerTestSuite(
+  await runUnitTransformerTests._runTransformerTestSuite(
     vitest,
     [],
     transformerTestSuite_applicativeTransformers,
     undefined, // filter
-    runTransformerTestInMemory,
     defaultMetaModelEnvironment,
-    miroirActivityTracker
+    miroirActivityTracker,
+    undefined, // parentTrackingId,
+    true, // trackActionsBelow
+    runUnitTransformerTests,
   );
   
   // expect(result).toEqual(expectedResult);

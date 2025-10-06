@@ -10,6 +10,7 @@ import {
   rootReport,
   transformerForBuild_constantUuid,
   transformerForBuild_InnerReference,
+  transformerForBuildPlusRuntime_InnerReference,
 } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 import entityPublisher from "../../src/assets/library_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/a027c379-8468-43a5-ba4d-bf618be25cab.json";
@@ -97,7 +98,7 @@ describe('check library entities', () => {
   describe("reportCountryList",
     ()  => {
       it("reportCountryList.definition.extractorTemplates.countries.parentUuid is parsable by transformerForBuild_InnerReference", () => {
-        const zodSchema = z.union([z.string(), z.lazy(() => transformerForBuild_InnerReference)])
+        const zodSchema = z.union([z.string(), z.lazy(() => transformerForBuildPlusRuntime_InnerReference)])
         const transformer = reportCountryList.definition.extractorTemplates.countries.parentUuid;
         console.log("transformer to test=", JSON.stringify(transformer, null, 2));
         expect(() => zodSchema.parse(transformer)).not.toThrow();

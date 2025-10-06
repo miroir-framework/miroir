@@ -15005,7 +15005,17 @@ export const transformer_inner_elementTransformer_transformerForBuild: z.ZodType
 export const transformer_inner_elementTransformer_transformerForRuntime: z.ZodType<Transformer_inner_elementTransformer_transformerForRuntime> = z.lazy(() =>transformerForRuntime);
 export const transformer_inner_elementTransformer_transformerForBuildPlusRuntime: z.ZodType<Transformer_inner_elementTransformer_transformerForBuildPlusRuntime> = z.lazy(() =>transformerForBuildPlusRuntime);
 export const transformerForRuntime_constants: z.ZodType<TransformerForRuntime_constants> = z.union([z.lazy(() =>transformerForRuntime_constant), z.lazy(() =>transformerForRuntime_constantAsExtractor), z.lazy(() =>transformerForRuntime_constantArray), z.lazy(() =>transformerForRuntime_constantBigint), z.lazy(() =>transformerForRuntime_constantBoolean), z.lazy(() =>transformerForRuntime_constantUuid), z.lazy(() =>transformerForRuntime_constantObject), z.lazy(() =>transformerForRuntime_constantNumber), z.lazy(() =>transformerForRuntime_constantString), z.lazy(() =>transformerForRuntime_newUuid)]);
-export const transformerForBuild_InnerReference: z.ZodType<TransformerForBuild_InnerReference> = z.union([z.lazy(() =>transformerForBuild_mustacheStringTemplate), z.lazy(() =>transformerForBuild_constant), z.lazy(() =>transformerForBuild_parameterReference), z.lazy(() =>transformerForBuild_constantUuid), z.lazy(() =>transformerForBuild_constantObject), z.lazy(() =>transformerForBuild_constantString), z.lazy(() =>transformerForBuild_newUuid), z.lazy(() =>transformerForBuild_objectDynamicAccess)]);
+export const transformerForBuild_InnerReference: z.ZodType<TransformerForBuild_InnerReference> =
+  z.union([
+    z.lazy(() => transformerForBuild_mustacheStringTemplate),
+    z.lazy(() => transformerForBuild_constant),
+    z.lazy(() => transformerForBuild_parameterReference),
+    z.lazy(() => transformerForBuild_constantUuid),
+    z.lazy(() => transformerForBuild_constantObject),
+    z.lazy(() => transformerForBuild_constantString),
+    z.lazy(() => transformerForBuild_newUuid),
+    z.lazy(() => transformerForBuild_objectDynamicAccess),
+  ]);
 export const transformerForRuntime_InnerReference: z.ZodType<TransformerForRuntime_InnerReference> = z.union([z.lazy(() =>transformerForRuntime_constant), z.lazy(() =>transformerForRuntime_constantUuid), z.lazy(() =>transformerForRuntime_constantObject), z.lazy(() =>transformerForRuntime_constantString), z.lazy(() =>transformerForRuntime_newUuid), z.lazy(() =>transformerForRuntime_contextReference), z.lazy(() =>transformerForRuntime_objectDynamicAccess)]);
 export const transformerForBuildPlusRuntime_InnerReference: z.ZodType<TransformerForBuildPlusRuntime_InnerReference> = z.union([z.lazy(() =>transformerForBuildPlusRuntime_constant), z.lazy(() =>transformerForBuildPlusRuntime_constantUuid), z.lazy(() =>transformerForBuildPlusRuntime_constantObject), z.lazy(() =>transformerForBuildPlusRuntime_constantString), z.lazy(() =>transformerForBuildPlusRuntime_newUuid), z.lazy(() =>transformerForBuildPlusRuntime_contextReference), z.lazy(() =>transformerForBuildPlusRuntime_objectDynamicAccess)]);
 export const transformerForBuild_dataflowSequence: z.ZodType<TransformerForBuild_dataflowSequence> = z.object({label:z.string().optional(), interpolation:z.literal("build"), transformerType:z.literal("dataflowSequence"), definition:z.array(z.lazy(() =>transformerForBuild))}).strict();

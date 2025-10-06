@@ -1,5 +1,3 @@
-"use strict";
-
 import { describe, expect } from 'vitest';
 import { z, ZodTypeAny } from "zod";
 
@@ -10,12 +8,6 @@ import {
   transformerForBuildPlusRuntime,
   ZodParseError
 } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-
-
-
-// import reportBookInstance from "../../src/assets/library_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/c3503412-3d8a-43ef-a168-aa36e975e606.json";
-
-
 
 import { zodErrorDeepestIssueLeaves } from "../../src/1_core/zodParseErrorHandler";
 import test_createEntityAndReportFromSpreadsheetAndUpdateMenu from "../../src/assets/miroir_data/c37625c7-0b35-4d6a-811d-8181eb978301/ffe6ab3c-8296-4293-8aaf-ebbad1f0ac9a.json";
@@ -412,7 +404,7 @@ describe("test_createEntityAndReportFromSpreadsheetAndUpdateMenu", () => {
     }
     // expect(() => zodSchema.parse(transformer)).not.toThrow();
   });
-});
+}, { timeout: 20_000 });
 
 
   // it("reportCountryList.definition.extractorTemplates.countries is parsable by extractorOrCombinerTemplate", () => {

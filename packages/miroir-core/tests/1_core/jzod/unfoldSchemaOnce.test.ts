@@ -12,6 +12,7 @@ import {
 import {
   runTransformerTestInMemory,
   runTransformerTestSuite,
+  runUnitTransformerTests,
   transformerTestsDisplayResults,
 } from "../../../src/4_services/TestTools";
 
@@ -38,7 +39,7 @@ if (shouldSkip) {
   console.log("################################ File pattern:", filePattern);
   describe.skip(testSuiteName, () => {});
 } else {
-  const miroirActivityTracker = new MiroirActivityTracker();
+  const activityTracker = new MiroirActivityTracker();
   
   const testSuite: TransformerTestSuite = transformerTestSuite_unfoldSchemaOnce.definition as TransformerTestSuite;
   if (!Object.hasOwn(testSuite, "transformerTestType") || testSuite.transformerTestType !== "transformerTestSuite" ) {
@@ -51,19 +52,24 @@ if (shouldSkip) {
     ...testSuite,
     transformerTests: selectedTests as any
   } as any;
-  await runTransformerTestSuite(
+  await runUnitTransformerTests._runTransformerTestSuite(
     vitest,//{ describe, expect } as any, //vitest,
     [],
     effectiveTests,
     undefined, // filter
-    runTransformerTestInMemory,
     defaultMetaModelEnvironment,
-    miroirActivityTracker
+    activityTracker,
+    undefined, // parentTrackingId,
+    true, // trackActionsBelow
+    runUnitTransformerTests,
+    // runTransformerTestInMemory,
+    // defaultMetaModelEnvironment,
+    // miroirActivityTracker
   );
   transformerTestsDisplayResults(
     effectiveTests,
     filePattern || "",
     transformerTestSuite_unfoldSchemaOnce.definition.transformerTestLabel,
-    miroirActivityTracker
+    activityTracker
   );
 }

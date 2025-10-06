@@ -11,23 +11,25 @@ import {
 } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 
-// import entityDefinitionTransformerTest from "../../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/405bb1fc-a20f-4def-9d3a-206f72350633.json";
 import {
   runTransformerTestInMemory,
   runTransformerTestSuite,
+  runUnitTransformerTests,
   transformerTestsDisplayResults,
 } from "../../src/4_services/TestTools";
+
 import transformerTestSuite_defaultValueForMLSchema from "../../src/assets/miroir_data/681be9ca-c593-45f5-b45a-5f1d4969e91e/753afec9-f786-4f51-8c46-bd022551a8dd.json";
 import { defaultMetaModelEnvironment } from '../../src/1_core/Model';
 import { MiroirActivityTracker } from "../../src/3_controllers/MiroirActivityTracker";
-
+import { MiroirEventService } from '../../src/3_controllers/MiroirEventService';
 
 // Access the test file pattern from Vitest's process arguments
 const vitestArgs = process.argv.slice(2);
 const filePattern = vitestArgs.find(arg => !arg.startsWith('-')) || '';
 console.log("@@@@@@@@@@@@@@@@@@ File Pattern:", filePattern);
 
-const eventTracker = new MiroirActivityTracker();
+const miroirActivityTracker = new MiroirActivityTracker();
+const miroirEventService = new MiroirEventService(miroirActivityTracker);
 
 // ################################################################################################
 const testSuiteName = transformerTestSuite_defaultValueForMLSchema.definition.transformerTestLabel;
@@ -42,20 +44,22 @@ if (!shouldRun) {
   console.log("################################ File pattern:", filePattern, "Current file:", currentFileName);
   vitest.test.skip(testSuiteName, () => {});
 } else {
-  await runTransformerTestSuite(
+  await runUnitTransformerTests._runTransformerTestSuite(
     vitest,
     [],
     transformerTestSuite_defaultValueForMLSchema.definition as TransformerTestSuite,
     undefined, // filter
-    runTransformerTestInMemory,
     defaultMetaModelEnvironment,
-    eventTracker
+    miroirActivityTracker,
+    undefined, // parentTrackingId,
+    true, // trackActionsBelow
+    runUnitTransformerTests,
   );
   transformerTestsDisplayResults(
     transformerTestSuite_defaultValueForMLSchema.definition as TransformerTestSuite,
     filePattern || "",
     transformerTestSuite_defaultValueForMLSchema.definition.transformerTestLabel,
-    eventTracker
+    miroirActivityTracker
   );
 }
 

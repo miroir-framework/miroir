@@ -3689,7 +3689,7 @@
                     "type": "number"
                   }
                 ],
-                "expandedReferences": []
+                "expandedReferences": "CAN NOT REPRESENT SETS IN JSON"
               },
               "resolvedSchema": {
                 "type": "number"

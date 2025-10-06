@@ -128,6 +128,7 @@ describe("transformerInterfaceFromDefinition", () => {
         },
         applyTo: {
           type: "schemaReference",
+          optional: true,
           definition: {
             relativePath: "transformerForRuntime",
             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
@@ -145,7 +146,7 @@ describe("transformerInterfaceFromDefinition", () => {
               attributeKey: {
                 type: "schemaReference",
                 definition: {
-                  relativePath: "transformerForRuntime_InnerReference",
+                  relativePath: "transformerForRuntime",
                 },
               },
               attributeValue: {
@@ -192,6 +193,7 @@ describe("transformerInterfaceFromDefinition", () => {
         },
         applyTo: {
           type: "schemaReference",
+          optional: true,
           definition: {
             relativePath: "transformerForBuild",
             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
@@ -209,7 +211,7 @@ describe("transformerInterfaceFromDefinition", () => {
               attributeKey: {
                 type: "schemaReference",
                 definition: {
-                  relativePath: "transformerForBuild_InnerReference",
+                  relativePath: "transformerForBuild",
                 },
               },
               attributeValue: {

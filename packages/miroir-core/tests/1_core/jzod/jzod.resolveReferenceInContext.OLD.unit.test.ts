@@ -5,6 +5,7 @@ import {
   EntityInstance,
   JzodElement,
   JzodReference,
+  jzodSchema,
   JzodSchema,
   Menu,
   MetaModel,
@@ -111,7 +112,10 @@ import transformerMenuV1 from "../../../src/assets/miroir_data/a557419d-a288-4fb
 
 import { getMiroirFundamentalJzodSchema} from "../../../src/0_interfaces/1_core/bootstrapJzodSchemas/getMiroirFundamentalJzodSchema"
 import { resolveJzodSchemaReferenceInContext } from '../../../src/1_core/jzod/jzodResolveSchemaReferenceInContext';
+import { defaultMiroirModelEnvironment } from '../../../src/1_core/Model';
+import { miroirFundamentalJzodSchema} from "../../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalJzodSchema";
 
+const castMiroirFundamentalJzodSchema = miroirFundamentalJzodSchema as JzodSchema;
 
 export const defaultMiroirMetaModel: MetaModel = {
   // configuration: [instanceConfigurationReference],
@@ -190,9 +194,10 @@ function testResolveReferenceInContext(
   const testResult = resolveJzodSchemaReferenceInContext(
     testSchema,
     testSchema.context,
-    miroirFundamentalJzodSchema,
-    defaultMiroirMetaModel,
-    defaultMiroirMetaModel,
+    defaultMiroirModelEnvironment,
+    // miroirFundamentalJzodSchema,
+    // defaultMiroirMetaModel,
+    // defaultMiroirMetaModel,
   )
     expect(testResult).toEqual(expectedResult);
 }
@@ -220,45 +225,45 @@ describe(
       'miroir entity definition object format',
       () => {
         // const miroirFundamentalJzodSchema: JzodSchema = getMiroirFundamentalJzodSchema(
-        const miroirFundamentalJzodSchema: any = getMiroirFundamentalJzodSchema(
-          entityDefinitionBundleV1 as EntityDefinition,
-          entityDefinitionCommit as EntityDefinition,
-          modelEndpointV1,
-          storeManagementEndpoint,
-          instanceEndpointVersionV1,
-          undoRedoEndpointVersionV1,
-          localCacheEndpointVersionV1,
-          domainEndpointVersionV1,
-          queryEndpointVersionV1,
-          persistenceEndpointVersionV1,
-          testEndpointVersionV1,
-          jzodSchemajzodMiroirBootstrapSchema as JzodSchema,
-          transformerJzodSchema as JzodSchema,
-          [transformerMenuV1],
-          entityDefinitionAdminApplication as EntityDefinition,
-          entityDefinitionSelfApplication as EntityDefinition,
-          entityDefinitionSelfApplicationVersion as EntityDefinition,
-          entityDefinitionDeployment as EntityDefinition,
-          entityDefinitionEntity as EntityDefinition,
-          entityDefinitionEntityDefinition as EntityDefinition,
-          entityDefinitionJzodSchema as EntityDefinition,
-          entityDefinitionMenu  as EntityDefinition,
-          entityDefinitionQueryVersionV1 as EntityDefinition,
-          entityDefinitionReport as EntityDefinition,
-          entityDefinitionSelfApplicationDeploymentConfiguration as EntityDefinition,
-          entityDefinitionTest as EntityDefinition,
-          entityDefinitionTransformerTest as EntityDefinition,
-          entityDefinitionTransformerDefinition as EntityDefinition,
-          entityDefinitionEndpoint as EntityDefinition,
-          // jzodSchemajzodMiroirBootstrapSchema as any,
-        );
+        // const miroirFundamentalJzodSchema: any = getMiroirFundamentalJzodSchema(
+        //   entityDefinitionBundleV1 as EntityDefinition,
+        //   entityDefinitionCommit as EntityDefinition,
+        //   modelEndpointV1,
+        //   storeManagementEndpoint,
+        //   instanceEndpointVersionV1,
+        //   undoRedoEndpointVersionV1,
+        //   localCacheEndpointVersionV1,
+        //   domainEndpointVersionV1,
+        //   queryEndpointVersionV1,
+        //   persistenceEndpointVersionV1,
+        //   testEndpointVersionV1,
+        //   jzodSchemajzodMiroirBootstrapSchema as JzodSchema,
+        //   transformerJzodSchema as JzodSchema,
+        //   [transformerMenuV1],
+        //   entityDefinitionAdminApplication as EntityDefinition,
+        //   entityDefinitionSelfApplication as EntityDefinition,
+        //   entityDefinitionSelfApplicationVersion as EntityDefinition,
+        //   entityDefinitionDeployment as EntityDefinition,
+        //   entityDefinitionEntity as EntityDefinition,
+        //   entityDefinitionEntityDefinition as EntityDefinition,
+        //   entityDefinitionJzodSchema as EntityDefinition,
+        //   entityDefinitionMenu  as EntityDefinition,
+        //   entityDefinitionQueryVersionV1 as EntityDefinition,
+        //   entityDefinitionReport as EntityDefinition,
+        //   entityDefinitionSelfApplicationDeploymentConfiguration as EntityDefinition,
+        //   entityDefinitionTest as EntityDefinition,
+        //   entityDefinitionTransformerTest as EntityDefinition,
+        //   entityDefinitionTransformerDefinition as EntityDefinition,
+        //   entityDefinitionEndpoint as EntityDefinition,
+        //   // jzodSchemajzodMiroirBootstrapSchema as any,
+        // );
         console.log(expect.getState().currentTestName, "called getMiroirFundamentalJzodSchema");
             
         
         const tests: { [k: string]: testFormat } = {
           // schemaReference (plain, simpleType, non-recursive)
           test030: {
-            miroirFundamentalJzodSchema,
+            miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
             testSchema: {
               type: "schemaReference",
               context: {
@@ -276,7 +281,7 @@ describe(
           },
           // schemaReference: object, recursive, 1-level valueObject
           test040: {
-            miroirFundamentalJzodSchema,
+            miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
             testSchema: {
               type: "schemaReference",
               context: {
@@ -322,7 +327,7 @@ describe(
           },
           // schemaReference: object, recursive, 2 members
           test050: {
-            miroirFundamentalJzodSchema,
+            miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
             testSchema: {
               type: "schemaReference",
               context: {
@@ -394,7 +399,7 @@ describe(
           },
           // schemaReference: 2-entries context, object, mutually-recursive
           test060: {
-            miroirFundamentalJzodSchema,
+            miroirFundamentalJzodSchema: castMiroirFundamentalJzodSchema,
             testSchema: {
               type: "schemaReference",
               context: {
@@ -462,5 +467,6 @@ describe(
         }
       }
     )
-  }
+  },
+  // 10_000 // timeout (ms)
 )

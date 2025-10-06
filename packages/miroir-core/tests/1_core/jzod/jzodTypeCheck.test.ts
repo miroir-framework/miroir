@@ -1,26 +1,17 @@
 import * as vitest from 'vitest';
-import {
-  describe as localDescribe,
-  expect as localExpect,
-} from "../../../src/1_core/test-expect";
 
 import {
-  type JzodSchema,
-  type TransformerTestSuite,
+  type TransformerTestSuite
 } from "../../../src//0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import {
-  miroirFundamentalJzodSchema
-} from "../../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalJzodSchema";
 
 import {
-  runTransformerTestInMemory,
-  runTransformerTestSuite,
-  transformerTestsDisplayResults,
+  runUnitTransformerTests,
+  transformerTestsDisplayResults
 } from "../../../src/4_services/TestTools";
 
+import { defaultMetaModelEnvironment } from '../../../src/1_core/Model';
+import { MiroirActivityTracker } from "../../../src/3_controllers/MiroirActivityTracker";
 import transformerTestSuite_jzodTypeCheck from "../../../src/assets/miroir_data/681be9ca-c593-45f5-b45a-5f1d4969e91e/f8e3c7a1-2b9d-4e6f-8c2a-5d7b9e4f1a8c.json";
-import { defaultMiroirMetaModel } from "../../../src/1_core/Model";
-import { MiroirActivityTracker } from '../../../src/3_controllers/MiroirActivityTracker';
 
 // Access the test file pattern from Vitest's process arguments
 const vitestArgs = process.argv.slice(2);
@@ -30,7 +21,7 @@ console.log("@@@@@@@@@@@@@@@@@@ File Pattern:", filePattern);
 const selectedTestName: string[] = [];
 const testSuiteName = transformerTestSuite_jzodTypeCheck.definition.transformerTestLabel;
 
-const eventTracker = new MiroirActivityTracker();
+const activityTracker = new MiroirActivityTracker();
 
 // ################################################################################################
 // Skip this test when running resolveConditionalSchema pattern
@@ -52,23 +43,22 @@ if (shouldSkip) {
     ...testSuite,
     transformerTests: selectedTests as any
   } as any;
-  await runTransformerTestSuite(
-    // { describe: localDescribe, expect: localExpected },
+
+  await runUnitTransformerTests._runTransformerTestSuite(
     vitest,
     [],
     effectiveTests,
     undefined, // filter
-    runTransformerTestInMemory,
-    {
-      miroirFundamentalJzodSchema: miroirFundamentalJzodSchema as JzodSchema,
-      currentModel: defaultMiroirMetaModel,
-    },
-    eventTracker,
+    defaultMetaModelEnvironment,
+    activityTracker,
+    undefined, // parentTrackingId,
+    true, // trackActionsBelow
+    runUnitTransformerTests,
   );
   transformerTestsDisplayResults(
     effectiveTests,
     filePattern || "",
     testSuiteName,
-    eventTracker
+    activityTracker
   );
 }

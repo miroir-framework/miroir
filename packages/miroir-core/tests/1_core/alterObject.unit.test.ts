@@ -2,17 +2,7 @@ import {
   JzodElement
 } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
-import { alterObjectAtPath } from "../../src/1_core/alterObjectAtPath";
-
-
-
-
-
-
-
-
-
-
+import { alterObjectAtPath } from "../../src/tools";
 
 function testResolve(
   testId: string,
