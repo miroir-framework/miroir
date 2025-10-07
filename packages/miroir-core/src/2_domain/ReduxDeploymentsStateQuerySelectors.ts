@@ -12,7 +12,7 @@ import {
   QueryByEntityUuidGetEntityDefinition
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { ReduxDeploymentsState } from "../0_interfaces/2_domain/ReduxDeploymentsStateInterface";
-import { Domain2ElementFailed, Domain2QueryReturnType } from "../0_interfaces/2_domain/DomainElement";
+import { Domain2ElementFailed, Domain2QueryReturnType, TransformerFailure } from "../0_interfaces/2_domain/DomainElement";
 import {
   ExtractorRunnerParamsForJzodSchema,
   QueryRunnerMapForJzodSchema,
@@ -161,9 +161,68 @@ export const selectEntityInstanceFromReduxDeploymentsState: SyncBoxedExtractorRu
       //   "######### contextResults",
       //   JSON.stringify(selectorParams.query.contextResults, undefined, 2)
       // );
-      return deploymentEntityState[index].entities[
-        referenceObject[querySelectorParams.AttributeOfObjectToCompareToReferenceUuid]
+      log.info("selectEntityInstanceFromReduxDeploymentsState combinerForObjectByRelation referenceObject:", referenceObject);
+      
+      // In ReduxDeploymentsStateQuerySelectors, referenceObject is the actual object, not a Domain2Element wrapper
+      const actualReferenceObject = referenceObject.elementValue || referenceObject;
+      if (!actualReferenceObject) {
+        log.error("selectEntityInstanceFromReduxDeploymentsState combinerForObjectByRelation actualReferenceObject is undefined");
+        return new Domain2ElementFailed({
+          queryFailure: "ReferenceNotFound",
+          queryContext: "selectEntityInstanceFromReduxDeploymentsState combinerForObjectByRelation actualReferenceObject is undefined, referenceObject=" + JSON.stringify(referenceObject),
+        });
+      }
+      
+      const foreignKeyObject = deploymentEntityState[index].entities[
+        actualReferenceObject[querySelectorParams.AttributeOfObjectToCompareToReferenceUuid]
       ];
+      
+      if (querySelectorParams.applyTransformer) {
+        // log.info(
+        //   "selectEntityInstanceFromReduxDeploymentsState combinerForObjectByRelation, applying transformer",
+        //   querySelectorParams.applyTransformer,
+        //   "referenceObject",
+        //   actualReferenceObject,
+        //   "foreignKeyObject",
+        //   foreignKeyObject
+        // );
+        
+        const transformedResult = transformer_extended_apply(
+          "runtime",
+          [], // transformerPath
+          "combinerForObjectByRelation",
+          querySelectorParams.applyTransformer,
+          "value",
+          {...modelEnvironment, ...selectorParams.extractor.queryParams},
+          {
+            ...selectorParams.extractor.contextResults,
+            referenceObject: actualReferenceObject,
+            foreignKeyObject: foreignKeyObject
+          }
+        );
+        
+        // log.info(
+        //   "selectEntityInstanceFromReduxDeploymentsState combinerForObjectByRelation, after applyTransformer",
+        //   querySelectorParams.applyTransformer,
+        //   "transformedResult",
+        //   JSON.stringify(transformedResult)
+        // );
+        
+        // Handle both Domain2Element wrapper and direct result cases
+        // TODO
+        // if (transformedResult instanceof TransformerFailure) {
+        if (transformedResult && typeof transformedResult === 'object' && transformedResult.elementType == "failure") {
+          return transformedResult;
+        }
+        
+        // Return the actual result (either direct value or elementValue if wrapped)
+        // return (transformedResult && typeof transformedResult === 'object' && transformedResult.elementValue !== undefined) 
+        return (transformedResult && typeof transformedResult === 'object' && transformedResult.elementValue !== undefined) 
+          ? transformedResult.elementValue 
+          : transformedResult;
+      }
+      
+      return foreignKeyObject;
       break;
     }
     case "extractorForObjectByDirectReference": {

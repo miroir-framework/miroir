@@ -308,6 +308,26 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncBoxedExtract
       log.info("selectEntityInstanceFromObjectQueryAndDomainState combinerForObjectByRelation attribute of reference", querySelectorParams.AttributeOfObjectToCompareToReferenceUuid);
       log.info("selectEntityInstanceFromObjectQueryAndDomainState combinerForObjectByRelation targetObject", targetObject);
       log.info("selectEntityInstanceFromObjectQueryAndDomainState combinerForObjectByRelation result", result);
+      
+      if (querySelectorParams.applyTransformer) {
+        const transformedResult = transformer_extended_apply(
+          "runtime",
+          [], // transformerPath
+          querySelectorParams.label??querySelectorParams.extractorOrCombinerType,
+          querySelectorParams.applyTransformer,
+          "value",
+          {...modelEnvironment,...selectorParams.extractor.queryParams},
+          {...selectorParams.extractor.contextResults, referenceObject, foreignKeyObject: result}
+        );
+        log.info(
+          "selectEntityInstanceFromObjectQueryAndDomainState combinerForObjectByRelation, after applyTransformer",
+          querySelectorParams.applyTransformer,
+          "transformedResult",
+          JSON.stringify(transformedResult, null, 2)
+        );
+        return transformedResult;
+      }
+      
       return result;
       break;
     }

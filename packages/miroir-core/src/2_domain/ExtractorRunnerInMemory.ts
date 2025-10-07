@@ -196,36 +196,36 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
             errorStack: [failureMessage, ...(result.returnedDomainElement.errorStack ?? [])],
           });
         }
-        // log.info(
-        //   "extractEntityInstance combinerForObjectByRelation, ############# reference",
-        //   querySelectorParams,
-        //   "######### context entityUuid",
-        //   entityUuidReference,
-        //   "######### referenceObject",
-        //   referenceObject,
-        //   "######### queryParams",
-        //   JSON.stringify(selectorParams.query.queryParams, undefined, 2),
-        //   "######### contextResults",
-        //   JSON.stringify(selectorParams.query.contextResults, undefined, 2)
-        // );
-        // if (querySelectorParams.applyTransformer) {
-        //   const transformedResult = transformer_extended_apply(
-        //     "runtime",
-        //     [], // transformerPath
-        //     querySelectorParams.label??querySelectorParams.extractorOrCombinerType,
-        //     querySelectorParams.applyTransformer,
-        //     result.returnedDomainElement,
-        //     {...modelEnvironment, ...selectorParams.extractor.queryParams},
-        //     selectorParams.extractor.contextResults
-        //   );
-        //   log.info(
-        //     "extractEntityInstance combinerForObjectByRelation, after applyTransformer",
-        //     querySelectorParams.applyTransformer,
-        //     "transformedResult",
-        //     JSON.stringify(transformedResult, null, 2)
-        //   );
-        //   return transformedResult;
-        // }
+        log.info(
+          "extractEntityInstance combinerForObjectByRelation, ############# reference",
+          querySelectorParams,
+          "######### context entityUuid",
+          entityUuidReference,
+          "######### referenceObject",
+          referenceObject,
+          "######### queryParams",
+          JSON.stringify(selectorParams.extractor.queryParams, undefined, 2),
+          "######### contextResults",
+          JSON.stringify(selectorParams.extractor.contextResults, undefined, 2)
+        );
+        if (querySelectorParams.applyTransformer) {
+          const transformedResult = transformer_extended_apply(
+            "runtime",
+            [], // transformerPath
+            querySelectorParams.label??querySelectorParams.extractorOrCombinerType,
+            querySelectorParams.applyTransformer,
+            "value",
+            {...modelEnvironment, ...selectorParams.extractor.queryParams},
+            {...selectorParams.extractor.contextResults, referenceObject, foreignKeyObject: result.returnedDomainElement}
+          );
+          log.info(
+            "extractEntityInstance combinerForObjectByRelation, after applyTransformer",
+            querySelectorParams.applyTransformer,
+            "transformedResult",
+            JSON.stringify(transformedResult, null, 2)
+          );
+          return transformedResult;
+        }
         return result.returnedDomainElement;
         break;
       }

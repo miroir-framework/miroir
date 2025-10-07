@@ -26,6 +26,43 @@
         }
       }
     },
+    "combinerTemplates": {
+      "BooksWithAuthor": {
+        "combinerTemplateType": "combinerByRelationReturningObjectList",
+        "applicationSection": "data",
+        "parentUuid": {
+          "transformerType": "constant",
+          "value": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+        },
+        "objectReference": {
+          "transformerType": "contextReference",
+          "interpolation": "runtime",
+          "referenceName": "author"
+        },
+        "relationAttribute": "author",
+        "targetEntity": {
+          "transformerType": "constant",
+          "value": "c1f3e2b6-2f3a-4d0c-9f1b-5e2b8f4c6d7e"
+        },
+        "targetExtractorTemplate": {
+          "transformerType": "contextReference",
+          "referenceName": "authors"
+        },
+        "applyTransformer": {
+          "transformerType": "freeObjectTemplate",
+          "definition": {
+            "authorName": {
+              "transformerType": "contextReference",
+              "referencePath": ["referenceObject", "name"]
+            },
+            "bookTitle": {
+              "transformerType": "contextReference",
+              "referencePath": ["foreignKeyObject", "name"]
+            }
+          }
+        }
+      }
+    },
     "runtimeTransformers": {
       "00_entityCount": {
         "transformerType": "count",
@@ -47,14 +84,6 @@
         "applyTo": {
           "transformerType": "contextReference",
           "referenceName": "01_firstEntityCountElt"
-        }
-      },
-      "03_AuthorIndex": {
-        "transformerType": "listReducerToIndexObject",
-        "indexAttribute": "uuid",
-        "applyTo": {
-          "transformerType": "contextReference",
-          "referenceName": "authors"
         }
       },
       "04_graphObject": {
@@ -100,7 +129,6 @@
         },
         "referenceToOuterObject": "mappedObject"
       }
-    },
-    "combinerTemplates": {}
+    }
   }
 }
