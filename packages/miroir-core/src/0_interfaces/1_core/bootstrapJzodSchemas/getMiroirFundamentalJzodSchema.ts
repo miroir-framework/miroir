@@ -685,16 +685,21 @@ export function getMiroirFundamentalJzodSchema(
   ): any /** JzodSchema, avoiding reference to ensure proper compilation */ {
   // TODO: not really a JzodReference!!
   log.info("getMiroirFundamentalJzodSchema called!");
-  log.info(
-    "getMiroirFundamentalJzodSchema entityDefinitionTransformerTest.jzodSchema.definition.definition.context",
-    entityDefinitionTransformerTest.jzodSchema.definition.definition.context
-  );
+  // log.info(
+  //   "getMiroirFundamentalJzodSchema entityDefinitionTransformerTest.jzodSchema.definition.definition.context",
+  //   entityDefinitionTransformerTest.jzodSchema.definition.definition.context
+  // );
   const entityDefinitionQueryVersionV1WithAbsoluteReferences = makeReferencesAbsolute(
     entityDefinitionQueryVersionV1.jzodSchema.definition.definition,
     miroirFundamentalJzodSchemaUuid
   ) as any;
 
 
+  log.info(
+    "getMiroirFundamentalJzodSchema entityDefinitionQueryVersionV1WithAbsoluteReferences",
+    Object.keys(entityDefinitionQueryVersionV1WithAbsoluteReferences.context ?? {}).length,
+    JSON.stringify(entityDefinitionQueryVersionV1WithAbsoluteReferences.context.combinerForObjectByRelation ?? {}, null, 2)
+  );
   // log.info("getMiroirFundamentalJzodSchema miroirTransformersJzodSchemas", JSON.stringify(miroirTransformersJzodSchemas.map(e=>e.name)), null, 2);
   // log.info("getMiroirFundamentalJzodSchema miroirTransformersForBuild", JSON.stringify(Object.keys(miroirTransformersForBuild), null, 2));
   // log.info("getMiroirFundamentalJzodSchema transformerForBuildNames", JSON.stringify(transformerForBuildNames, null, 2));

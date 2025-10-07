@@ -14158,6 +14158,15 @@ export const miroirFundamentalJzodSchema = {
           },
           "AttributeOfListObjectToCompareToReferenceUuid": {
             "type": "string"
+          },
+          "applyTransformer": {
+            "type": "schemaReference",
+            "optional": true,
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "transformerForBuildPlusRuntime"
+            },
+            "context": {}
           }
         }
       },
@@ -14534,6 +14543,15 @@ export const miroirFundamentalJzodSchema = {
           },
           "AttributeOfObjectToCompareToReferenceUuid": {
             "type": "string"
+          },
+          "applyTransformer": {
+            "type": "schemaReference",
+            "optional": true,
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "transformerForBuildPlusRuntime"
+            },
+            "context": {}
           }
         }
       },
@@ -14691,6 +14709,15 @@ export const miroirFundamentalJzodSchema = {
           },
           "AttributeOfListObjectToCompareToReferenceUuid": {
             "type": "string"
+          },
+          "applyTransformer": {
+            "type": "schemaReference",
+            "optional": true,
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "transformerForBuildPlusRuntime"
+            },
+            "context": {}
           }
         }
       },
@@ -47844,6 +47871,15 @@ export const miroirFundamentalJzodSchema = {
                     }
                   }
                 ]
+              },
+              "applyTransformer": {
+                "type": "schemaReference",
+                "optional": true,
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "transformerForBuildPlusRuntime"
+                },
+                "context": {}
               }
             }
           }
@@ -48117,6 +48153,15 @@ export const miroirFundamentalJzodSchema = {
                     }
                   }
                 ]
+              },
+              "applyTransformer": {
+                "type": "schemaReference",
+                "optional": true,
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "transformerForBuildPlusRuntime"
+                },
+                "context": {}
               }
             }
           }
@@ -51474,6 +51519,15 @@ export const miroirFundamentalJzodSchema = {
                     }
                   }
                 ]
+              },
+              "applyTransformer": {
+                "type": "schemaReference",
+                "optional": true,
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "transformerForBuildPlusRuntime"
+                },
+                "context": {}
               }
             }
           }
@@ -61711,6 +61765,15 @@ export const miroirFundamentalJzodSchema = {
           },
           "AttributeOfObjectToCompareToReferenceUuid": {
             "type": "string"
+          },
+          "applyTransformer": {
+            "type": "schemaReference",
+            "optional": true,
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "transformerForBuildPlusRuntime"
+            },
+            "context": {}
           }
         }
       },
@@ -61805,6 +61868,15 @@ export const miroirFundamentalJzodSchema = {
           },
           "AttributeOfListObjectToCompareToReferenceUuid": {
             "type": "string"
+          },
+          "applyTransformer": {
+            "type": "schemaReference",
+            "optional": true,
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "transformerForBuildPlusRuntime"
+            },
+            "context": {}
           }
         }
       },
@@ -70386,6 +70458,15 @@ export const miroirFundamentalJzodSchema = {
           },
           "AttributeOfObjectToCompareToReferenceUuid": {
             "type": "string"
+          },
+          "applyTransformer": {
+            "type": "schemaReference",
+            "optional": true,
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "transformerForBuildPlusRuntime"
+            },
+            "context": {}
           }
         }
       },
@@ -70480,6 +70561,15 @@ export const miroirFundamentalJzodSchema = {
           },
           "AttributeOfListObjectToCompareToReferenceUuid": {
             "type": "string"
+          },
+          "applyTransformer": {
+            "type": "schemaReference",
+            "optional": true,
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "transformerForBuildPlusRuntime"
+            },
+            "context": {}
           }
         }
       },
@@ -79103,6 +79193,15 @@ export const miroirFundamentalJzodSchema = {
           },
           "AttributeOfObjectToCompareToReferenceUuid": {
             "type": "string"
+          },
+          "applyTransformer": {
+            "type": "schemaReference",
+            "optional": true,
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "transformerForBuildPlusRuntime"
+            },
+            "context": {}
           }
         }
       },
@@ -79197,6 +79296,15 @@ export const miroirFundamentalJzodSchema = {
           },
           "AttributeOfListObjectToCompareToReferenceUuid": {
             "type": "string"
+          },
+          "applyTransformer": {
+            "type": "schemaReference",
+            "optional": true,
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "transformerForBuildPlusRuntime"
+            },
+            "context": {}
           }
         }
       },

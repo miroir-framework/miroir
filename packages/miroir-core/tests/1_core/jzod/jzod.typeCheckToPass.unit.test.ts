@@ -7435,7 +7435,6 @@ interface testFormat {
                       },
                       extend: {
                         type: "array",
-                        discriminator: "type",
                         optional: true,
                         definition: {
                           type: "object",
@@ -10967,7 +10966,7 @@ interface testFormat {
             tag: {
               value: {
                 unfoldSubLevels: 2,
-              },
+              } as any,
             },
           },
         },

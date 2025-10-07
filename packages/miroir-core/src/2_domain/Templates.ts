@@ -169,8 +169,7 @@ export function resolveExtractorTemplate(
         parentUuid:
           typeof extractorOrCombinerTemplate.parentUuid == "string"
             ? extractorOrCombinerTemplate.parentUuid
-            : // : transformer_InnerReference_resolve(
-              transformer_extended_apply(
+            : transformer_extended_apply(
                 "build",
                 [], // transformerPath
                 extractorOrCombinerTemplate.label ??
@@ -210,8 +209,8 @@ export function resolveExtractorTemplate(
         objectListReference:
           extractorOrCombinerTemplate.objectListReference.transformerType == "contextReference"
             ? extractorOrCombinerTemplate.objectListReference.referenceName ??
-              "ERROR CONVERTING OBJECT REFERENCE FOR combinerByRelationReturningObjectList extractor template: no referenceName"
-            : "ERROR CONVERTING OBJECT REFERENCE FOR combinerByRelationReturningObjectList extractor template: objectReference is not a contextReference",
+              "ERROR CONVERTING OBJECT REFERENCE FOR combinerByManyToManyRelationReturningObjectList extractor template: no referenceName"
+            : "ERROR CONVERTING OBJECT REFERENCE FOR combinerByManyToManyRelationReturningObjectList extractor template: objectReference is not a contextReference",
       };
       break;
     }

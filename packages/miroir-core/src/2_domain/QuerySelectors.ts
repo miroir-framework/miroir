@@ -50,7 +50,8 @@ import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
 import { resolveExtractorTemplate } from "./Templates";
 import { type MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
-import { applyTransformer, transformer_extended_apply_wrapper } from "./TransformersForRuntime";
+import { applyTransformer, transformer_extended_apply, transformer_extended_apply_wrapper } from "./TransformersForRuntime";
+import { defaultMiroirModelEnvironment } from "../1_core/Model";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -224,14 +225,15 @@ export const applyExtractorForSingleObjectListToSelectedInstancesListInMemory = 
     }
     case "combinerByRelationReturningObjectList": {
       const relationQuery: CombinerByRelationReturningObjectList = query.select;
+      log.info(
+        "applyExtractorForSingleObjectListToSelectedInstancesListInMemory combinerByRelationReturningObjectList selectedInstancesList",
+        selectedInstancesList
+      );
 
+      const referenceObject = query.contextResults[relationQuery.objectReference];
       let otherIndex:string | undefined = undefined
-      if (
-        query.contextResults[relationQuery.objectReference]
-      ) {
-        otherIndex = ((query.contextResults[
-          relationQuery.objectReference
-        ] as any) ?? {})[relationQuery.objectReferenceAttribute ?? "uuid"];
+      if (referenceObject) {
+        otherIndex = (referenceObject ?? {})[relationQuery.objectReferenceAttribute ?? "uuid"];
       } else {
         log.error(
           "applyExtractorForSingleObjectListToSelectedInstancesListInMemory combinerByRelationReturningObjectList could not find objectReference in contextResults, objectReference=",
@@ -241,12 +243,24 @@ export const applyExtractorForSingleObjectListToSelectedInstancesListInMemory = 
         );
       }
 
-      return selectedInstancesList.filter((i: EntityInstance) => {
+      const finalInstanceList = selectedInstancesList.filter((i: EntityInstance) => {
             const localIndex = relationQuery.AttributeOfListObjectToCompareToReferenceUuid ?? "dummy";
             // TODO: allow for runtime reference, with runtime trnasformer reference
             return (i as any)[localIndex] === otherIndex;
           }
         ) as EntityInstance[];
+
+      const transformedInstanceList = relationQuery.applyTransformer?finalInstanceList.map(e => transformer_extended_apply(
+        "runtime",
+        [], // transformerPath
+        relationQuery.label??relationQuery.extractorOrCombinerType,
+        relationQuery.applyTransformer,
+        "value",
+        defaultMiroirModelEnvironment, // queryParams. TODO: this is wrong, should be the actual modelEnvironment
+        {...query.contextResults, referenceObject, foreignKeyObject: e} // newFetchedData
+      )):finalInstanceList;
+
+      return transformedInstanceList;
     }
     case "combinerByManyToManyRelationReturningObjectList": {
       const relationQuery: CombinerByManyToManyRelationReturningObjectList = query.select;

@@ -208,6 +208,24 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
         //   "######### contextResults",
         //   JSON.stringify(selectorParams.query.contextResults, undefined, 2)
         // );
+        // if (querySelectorParams.applyTransformer) {
+        //   const transformedResult = transformer_extended_apply(
+        //     "runtime",
+        //     [], // transformerPath
+        //     querySelectorParams.label??querySelectorParams.extractorOrCombinerType,
+        //     querySelectorParams.applyTransformer,
+        //     result.returnedDomainElement,
+        //     {...modelEnvironment, ...selectorParams.extractor.queryParams},
+        //     selectorParams.extractor.contextResults
+        //   );
+        //   log.info(
+        //     "extractEntityInstance combinerForObjectByRelation, after applyTransformer",
+        //     querySelectorParams.applyTransformer,
+        //     "transformedResult",
+        //     JSON.stringify(transformedResult, null, 2)
+        //   );
+        //   return transformedResult;
+        // }
         return result.returnedDomainElement;
         break;
       }
