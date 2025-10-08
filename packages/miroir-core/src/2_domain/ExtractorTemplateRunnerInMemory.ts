@@ -47,7 +47,6 @@ export class ExtractorTemplateRunnerInMemory implements ExtractorTemplatePersist
     private extractorRunnerInMemory: ExtractorRunnerInMemory
   ) {
     this.logHeader = "PersistenceStoreController " + persistenceStoreController.getStoreName();
-    // this.extractorRunnerInMemory = new ExtractorRunnerInMemory(persistenceStoreController
     this.selectorMap = {
       extractorType: "async",
       extractEntityInstanceUuidIndex: this.extractorRunnerInMemory.extractEntityInstanceUuidIndex,

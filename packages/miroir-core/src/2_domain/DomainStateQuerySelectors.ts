@@ -196,6 +196,95 @@ export const selectEntityInstanceListFromDomainState: SyncBoxedExtractorRunner<
 /**
  * returns an Entity Instance (Object) from and selectObjectByParameterValue
  * @param domainState
+//  * @param selectorParams
+ * @returns
+ */
+function selectEntityInstanceDomainState (
+  domainState: DomainState,
+  // selectorParams: SyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObject, DomainState>,
+  deploymentUuid: Uuid,
+  applicationSection: ApplicationSection,
+  entityUuidReference: Uuid,
+  instanceUuidDomainElement: Uuid,
+  modelEnvironment: MiroirModelEnvironment
+): Domain2QueryReturnType<EntityInstance> {
+  // const querySelectorParams: ExtractorOrCombinerReturningObject = selectorParams.extractor.select as ExtractorOrCombinerReturningObject;
+  // const deploymentUuid = selectorParams.extractor.deploymentUuid;
+  // const applicationSection: ApplicationSection =
+  //   selectorParams.extractor.select.applicationSection ??
+  //   ((selectorParams.extractor.pageParams?.applicationSection ?? "data") as ApplicationSection);
+
+  log.info(
+    "selectEntityInstanceDomainState params",
+    "deploymentUuid",
+    deploymentUuid,
+    "applicationSection",
+    applicationSection
+  );
+  // const entityUuidReference: Uuid = querySelectorParams.parentUuid;
+  log.info("selectEntityInstanceDomainState entityUuidReference", entityUuidReference);
+
+  // const instanceUuidDomainElement = querySelectorParams.instanceUuid;
+
+  log.info(
+    "selectEntityInstanceDomainState found instanceUuid",
+    JSON.stringify(instanceUuidDomainElement)
+  );
+
+  // log.info("selectEntityInstanceFromObjectQueryAndDomainState resolved instanceUuid =", instanceUuid);
+  if (!domainState) {
+    return new Domain2ElementFailed({
+      queryFailure: "DomainStateNotLoaded",
+    });
+  }
+  if (!domainState[deploymentUuid]) {
+    return new Domain2ElementFailed({
+      queryFailure: "DeploymentNotFound",
+      deploymentUuid,
+    });
+  }
+  if (!domainState[deploymentUuid][applicationSection]) {
+    return new Domain2ElementFailed({
+      queryFailure: "ApplicationSectionNotFound",
+      deploymentUuid,
+      applicationSection,
+    });
+  }
+  if (!domainState[deploymentUuid][applicationSection][entityUuidReference]) {
+    log.error(
+      "selectEntityInstanceDomainState entityUuid not found EntityNotFound for",
+      "deploymentUuid",
+      deploymentUuid,
+      "applicationSection",
+      applicationSection,
+      "entityUuid",
+      entityUuidReference
+    );
+    return new Domain2ElementFailed({
+      queryFailure: "EntityNotFound",
+      deploymentUuid,
+      applicationSection,
+      entityUuid: entityUuidReference,
+    });
+  }
+  if (!domainState[deploymentUuid][applicationSection][entityUuidReference][instanceUuidDomainElement]) {
+    return new Domain2ElementFailed({
+      queryFailure: "InstanceNotFound",
+      deploymentUuid,
+      applicationSection,
+      entityUuid: entityUuidReference,
+      instanceUuid: instanceUuidDomainElement,
+    });
+  }
+
+  return domainState[deploymentUuid][applicationSection][entityUuidReference][instanceUuidDomainElement];
+};
+
+// ################################################################################################
+// ACCESSES DOMAIN STATE
+/**
+ * returns an Entity Instance (Object) from and selectObjectByParameterValue
+ * @param domainState
  * @param selectorParams
  * @returns
  */
@@ -334,71 +423,80 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncBoxedExtract
     case "extractorForObjectByDirectReference": {
       const instanceUuidDomainElement = querySelectorParams.instanceUuid;
 
-      log.info(
-        "selectEntityInstanceFromObjectQueryAndDomainState found instanceUuid",
-        JSON.stringify(instanceUuidDomainElement)
-      );
+      const currentObject = selectEntityInstanceDomainState(
+        domainState,
+        deploymentUuid,
+        applicationSection,
+        entityUuidReference,
+        instanceUuidDomainElement,
+        modelEnvironment
+      )
 
-      // log.info("selectEntityInstanceFromObjectQueryAndDomainState resolved instanceUuid =", instanceUuid);
-      if (!domainState) {
-        return new Domain2ElementFailed({
-          queryFailure: "DomainStateNotLoaded",
-        });
+      if (!querySelectorParams.applyTransformer || currentObject instanceof Domain2ElementFailed) {
+        return currentObject;
       }
-      if (!domainState[deploymentUuid]) {
-        return new Domain2ElementFailed({
-          queryFailure: "DeploymentNotFound",
-          deploymentUuid,
-        });
-      }
-      if (!domainState[deploymentUuid][applicationSection]) {
-        return new Domain2ElementFailed({
-          queryFailure: "ApplicationSectionNotFound",
-          deploymentUuid,
-          applicationSection,
-        });
-      }
-      if (!domainState[deploymentUuid][applicationSection][entityUuidReference]) {
-        log.error(
-          "selectEntityInstanceFromObjectQueryAndDomainState entityUuid not found EntityNotFound for",
-          "deploymentUuid",
-          deploymentUuid,
-          "applicationSection",
-          applicationSection,
-          "entityUuid",
-          entityUuidReference
-        );
+
+      const currentObjectEntityDefinition = Object.values(
+        domainState[deploymentUuid]["model"]?.[entityEntityDefinition.uuid]
+      ).find((e: EntityInstance) => (e as EntityDefinition).entityUuid == entityUuidReference) as EntityDefinition | undefined;
+
+      // const entityDefinition = Object.keys(domainState[deploymentUuid]["model"]);
+      log.info("selectEntityInstanceFromObjectQueryAndDomainState entityDefinition", JSON.stringify(currentObjectEntityDefinition, null, 2));
+      if (!currentObjectEntityDefinition) {
         return new Domain2ElementFailed({
           queryFailure: "EntityNotFound",
           deploymentUuid,
-          applicationSection,
           entityUuid: entityUuidReference,
-        });
-      }
-      if (!domainState[deploymentUuid][applicationSection][entityUuidReference][instanceUuidDomainElement]) {
-        return new Domain2ElementFailed({
-          queryFailure: "InstanceNotFound",
-          deploymentUuid,
-          applicationSection,
-          entityUuid: entityUuidReference,
-          instanceUuid: instanceUuidDomainElement,
         });
       }
 
-      // log.info("selectEntityInstanceFromObjectQueryAndDomainState extractorForObjectByDirectReference, ############# reference",
-      //   querySelectorParams,
-      //   "entityUuidReference",
-      //   entityUuidReference,
-      //   "######### context entityUuid",
-      //   entityUuidReference,
-      //   "######### queryParams",
-      //   JSON.stringify(selectorParams.query.queryParams, undefined, 2),
-      //   "######### contextResults",
-      //   JSON.stringify(selectorParams.query.contextResults, undefined, 2),
-      //   "domainState",
-      //   domainState
-      // );
-      return domainState[deploymentUuid][applicationSection][entityUuidReference][instanceUuidDomainElement];
+      let foreignKeyObjects: Record<string, any> = {};
+      for (const attribute of Object.entries(currentObjectEntityDefinition.jzodSchema.definition) ?? []) {
+        log.debug("selectEntityInstanceFromObjectQueryAndDomainState checking attribute", attribute);
+        if (attribute[1].type != "uuid" || !querySelectorParams.foreignKeysForTransformer?.includes(attribute[0])) continue;
+        if (!attribute[1].tag?.value?.targetEntity) {
+          return new Domain2ElementFailed({
+            queryFailure: "IncorrectParameters",
+            queryContext:
+              "DomainStateQuerySelectors extractorForObjectByDirectReference did not find targetEntity in attribute " +
+              attribute[0] +
+              " of entity " +
+              currentObjectEntityDefinition.name,
+          });
+        }
+        const attributeName = attribute[0];
+        const attributeValue = (currentObject as any)[attributeName];
+        const foreignKeyObject = selectEntityInstanceDomainState(
+          domainState,
+          deploymentUuid,
+          applicationSection,
+          attribute[1].tag?.value?.targetEntity,
+          attributeValue,
+          modelEnvironment
+        );
+        if (foreignKeyObject instanceof Domain2ElementFailed) {
+          return foreignKeyObject;
+        }
+        foreignKeyObjects[attributeName] = foreignKeyObject;
+      }
+      log.info("selectEntityInstanceFromObjectQueryAndDomainState foreignKeyObjects", foreignKeyObjects);
+
+      const transformedObject = transformer_extended_apply(
+        "runtime",
+        [], // transformerPath
+        querySelectorParams.label??querySelectorParams.extractorOrCombinerType,
+        querySelectorParams.applyTransformer,
+        "value",
+        {...modelEnvironment,...selectorParams.extractor.queryParams},
+        {...selectorParams.extractor.contextResults, foreignKeyObjects, referenceObject: currentObject}
+      );
+      log.info(
+        "selectEntityInstanceFromObjectQueryAndDomainState after applyTransformer",
+        querySelectorParams.applyTransformer,
+        "transformedObject",
+        JSON.stringify(transformedObject, null, 2)
+      );
+      return transformedObject;
       break;
     }
     default: {

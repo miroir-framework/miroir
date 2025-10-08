@@ -1514,7 +1514,7 @@ export function transformer_resolveReference(
         failureOrigin: ["transformer_resolveReference"],
         queryReference: JSON.stringify(transformerInnerReference.referencePath),
         failureMessage:
-          "no referencePath " + transformerInnerReference.referencePath + " found in queryContext",
+          "no referencePath " + transformerInnerReference.referencePath.join(".") + " found in queryContext",
         queryContext: JSON.stringify(Object.keys(bank)),
       });
     }

@@ -19,43 +19,36 @@
       "authors": {
         "extractorTemplateType": "extractorTemplateForObjectListByEntity",
         "applicationSection": "data",
-        "parentName": "Book",
+        "parentName": "Author",
         "parentUuid": {
           "transformerType": "constant",
-          "value": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+          "value": "d7a144ff-d1b9-4135-800c-a7cfc1f38733"
         }
       }
     },
     "combinerTemplates": {
       "BooksWithAuthor": {
-        "combinerTemplateType": "combinerByRelationReturningObjectList",
+        "extractorTemplateType": "combinerByRelationReturningObjectList",
         "applicationSection": "data",
+        "parentName": "Book",
         "parentUuid": {
           "transformerType": "constant",
           "value": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
         },
-        "objectReference": {
+        "objectListReference": {
           "transformerType": "contextReference",
           "interpolation": "runtime",
-          "referenceName": "author"
+          "referenceName": "books"
         },
-        "relationAttribute": "author",
-        "targetEntity": {
-          "transformerType": "constant",
-          "value": "c1f3e2b6-2f3a-4d0c-9f1b-5e2b8f4c6d7e"
-        },
-        "targetExtractorTemplate": {
-          "transformerType": "contextReference",
-          "referenceName": "authors"
-        },
+        "objectListReferenceAttribute": "author",
         "applyTransformer": {
           "transformerType": "freeObjectTemplate",
           "definition": {
-            "authorName": {
+            "bookTitle": {
               "transformerType": "contextReference",
               "referencePath": ["referenceObject", "name"]
             },
-            "bookTitle": {
+            "authorName": {
               "transformerType": "contextReference",
               "referencePath": ["foreignKeyObject", "name"]
             }
@@ -68,9 +61,9 @@
         "transformerType": "count",
         "applyTo": {
           "transformerType": "contextReference",
-          "referenceName": "books"
+          "referenceName": "BooksWithAuthor"
         },
-        "groupBy": "author"
+        "groupBy": "authorName"
       },
       "01_firstEntityCountElt": {
         "transformerType": "contextReference",

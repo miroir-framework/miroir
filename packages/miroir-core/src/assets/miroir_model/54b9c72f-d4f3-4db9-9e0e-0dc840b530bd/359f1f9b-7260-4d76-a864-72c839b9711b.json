@@ -291,6 +291,21 @@
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                   "relativePath": "transformerForBuildPlusRuntime"
                 }
+              },
+              "foreignKeysForTransformer": {
+                "type": "array",
+                "optional": true,
+                "definition": {
+                  "type": "string"
+                }
+              },
+              "applyTransformer": {
+                "type": "schemaReference",
+                "optional": true,
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "transformerForBuildPlusRuntime"
+                }
               }
             }
           },
@@ -779,6 +794,21 @@
               },
               "instanceUuid": {
                 "type": "uuid"
+              },
+              "foreignKeysForTransformer": {
+                "type": "array",
+                "optional": true,
+                "definition": {
+                  "type": "string"
+                }
+              },
+              "applyTransformer": {
+                "type": "schemaReference",
+                "optional": true,
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "transformerForBuildPlusRuntime"
+                }
               }
             }
           },

@@ -1256,11 +1256,15 @@ export class DomainController implements DomainControllerInterface {
     domainAction: DomainAction,
     currentModel?: MetaModel
   ): Promise<Action2VoidReturnType> {
-    return this.miroirContext.miroirActivityTracker.trackAction(
+    await this.miroirContext.miroirActivityTracker.trackAction(
       domainAction.actionType,
       (domainAction as any).actionLabel,
-      (async () => this.handleActionInternal(domainAction, currentModel)).bind(this)
+      (async () => {
+        await this.handleActionInternal(domainAction, currentModel);
+        return Promise.resolve();
+      }).bind(this)
     );
+    return Promise.resolve(ACTION_OK);
   }
 
   // ##############################################################################################

@@ -272,37 +272,90 @@ export const applyExtractorForSingleObjectListToSelectedInstancesListInMemory = 
         relationQuery.objectListReference
       ]) ?? {});
       if (otherList) {
-        return selectedInstancesList.filter(
-            (selectedInstance: EntityInstance) => {
-              const otherListAttribute = relationQuery.objectListReferenceAttribute ?? "uuid";
-              const rootListAttribute = relationQuery.AttributeOfRootListObjectToCompareToListReferenceUuid ?? "uuid";
-  
-              if (typeof otherList == "object") {
-                if (!Array.isArray(otherList)) {
-                  const result =
-                    Object.values(otherList).findIndex(
-                      (v: any) => v[otherListAttribute] == (selectedInstance as any)[rootListAttribute]
-                    ) >= 0;
-                  return result;
-                } else {
-                  const result =
-                    otherList.findIndex(
-                      (v: any) => v[otherListAttribute] == (selectedInstance as any)[rootListAttribute]
-                    ) >= 0;
-                  return result;
-                }
+        const finalInstanceList = selectedInstancesList.filter(
+          (selectedInstance: EntityInstance) => {
+            const otherListAttribute = relationQuery.objectListReferenceAttribute ?? "uuid";
+            const rootListAttribute =
+              relationQuery.AttributeOfRootListObjectToCompareToListReferenceUuid ?? "uuid";
+
+            if (typeof otherList == "object") {
+              if (!Array.isArray(otherList)) {
+                const result =
+                  Object.values(otherList).findIndex(
+                    (v: any) =>
+                      v[otherListAttribute] == (selectedInstance as any)[rootListAttribute]
+                  ) >= 0;
+                return result;
               } else {
-                throw new Error(
-                  "applyExtractorForSingleObjectListToSelectedInstancesListInMemory combinerByManyToManyRelationReturningObjectList can not use objectListReference, selectedInstances elementType=" +
-                    selectedInstancesList +
-                    " typeof otherList=" +
-                    typeof otherList +
-                    " other list=" +
-                    JSON.stringify(otherList, undefined, 2)
+                const result =
+                  otherList.findIndex(
+                    (v: any) =>
+                      v[otherListAttribute] == (selectedInstance as any)[rootListAttribute]
+                  ) >= 0;
+                return result;
+              }
+            } else {
+              throw new Error(
+                "applyExtractorForSingleObjectListToSelectedInstancesListInMemory combinerByManyToManyRelationReturningObjectList can not use objectListReference, selectedInstances elementType=" +
+                  selectedInstancesList +
+                  " typeof otherList=" +
+                  typeof otherList +
+                  " other list=" +
+                  JSON.stringify(otherList, undefined, 2)
+              );
+            }
+          }
+        ) as EntityInstance[];
+
+        const transformedInstanceList = relationQuery.applyTransformer ? finalInstanceList.map(selectedInstance => {
+          // For many-to-many relationships, we need to find the original reference object
+          // Since we don't have direct access to the query structure, we'll look for the
+          // most likely reference object in the context - typically a single object (not a list)
+          let referenceObject: any = undefined;
+          
+          // First, try to find a single object in the context that could be the original reference
+          for (const [key, value] of Object.entries(query.contextResults)) {
+            if (value && typeof value === 'object' && !Array.isArray(value) && !value.uuid) {
+              // Skip if it doesn't look like an entity instance
+              continue;
+            }
+            if (value && typeof value === 'object' && !Array.isArray(value) && value.uuid) {
+              // This looks like a single entity instance, likely the original reference
+              referenceObject = value;
+              break;
+            }
+          }
+          
+          // If we didn't find a single object, fall back to finding from the intermediate list
+          if (!referenceObject) {
+            const otherListAttribute = relationQuery.objectListReferenceAttribute ?? "uuid";
+            const rootListAttribute = relationQuery.AttributeOfRootListObjectToCompareToListReferenceUuid ?? "uuid";
+            
+            if (typeof otherList == "object") {
+              if (!Array.isArray(otherList)) {
+                referenceObject = Object.values(otherList).find(
+                  (v: any) => v[otherListAttribute] == (selectedInstance as any)[rootListAttribute]
+                );
+              } else {
+                referenceObject = otherList.find(
+                  (v: any) => v[otherListAttribute] == (selectedInstance as any)[rootListAttribute]
                 );
               }
             }
-          ) as EntityInstance[];
+          }
+
+          return transformer_extended_apply(
+            "runtime",
+            [], // transformerPath
+            relationQuery.label ?? relationQuery.extractorOrCombinerType,
+            relationQuery.applyTransformer,
+            "value",
+            defaultMiroirModelEnvironment, // queryParams. TODO: this is wrong, should be the actual modelEnvironment
+            {...query.contextResults, referenceObject, foreignKeyObject: selectedInstance} // newFetchedData
+          );
+        }) : finalInstanceList;
+
+        return transformedInstanceList;
       } else {
         throw new Error(
           "applyExtractorForSingleObjectListToSelectedInstancesListInMemory combinerByManyToManyRelationReturningObjectList could not find list for objectListReference, selectedInstances elementType=" +
@@ -416,44 +469,92 @@ export const applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemo
         relationQuery.objectListReference
       ]) ?? {});
       if (otherList) {
-        return Object.fromEntries(
-          Object.entries(selectedInstancesUuidIndex ?? {}).filter(
-            (selectedInstancesEntry: [string, EntityInstance]) => {
+        const filteredEntries = Object.entries(selectedInstancesUuidIndex ?? {}).filter(
+          (selectedInstancesEntry: [string, EntityInstance]) => {
+            const otherListAttribute = relationQuery.objectListReferenceAttribute ?? "uuid";
+            const rootListAttribute = relationQuery.AttributeOfRootListObjectToCompareToListReferenceUuid ?? "uuid";
+
+            if (typeof otherList == "object" && !Array.isArray(otherList)) {
+              // log.info(
+              //   "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory combinerByManyToManyRelationReturningObjectList search otherList for attribute",
+              //   otherListAttribute,
+              //   "on object",
+              //   selectedInstancesEntry[1],
+              //   "uuidToFind",
+              //   (selectedInstancesEntry[1] as any)[rootListAttribute],
+              //   "otherList",
+              //   otherList
+              // );
+              const result =
+              Object.values(otherList).findIndex(
+                (v: any) => v[otherListAttribute] == (selectedInstancesEntry[1] as any)[rootListAttribute]
+              ) >= 0;
+              // CAN NOT APPLY FILTER HERE, AS WE ARE WORKING ON AN INDEX
+              return result;
+            } else {
+              throw new Error(
+                "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory combinerByManyToManyRelationReturningObjectList can not use objectListReference, selectedInstances elementType=" +
+                  selectedInstancesUuidIndex.elementType +
+                  " typeof otherList=" +
+                  typeof otherList +
+                  " otherList is array " +
+                  Array.isArray(otherList) +
+                  " other list=" +
+                  JSON.stringify(otherList, undefined, 2)
+              );
+            }
+          }
+        );
+
+        if (relationQuery.applyTransformer) {
+          const transformedEntries = filteredEntries.map(([uuid, selectedInstance]) => {
+            // For many-to-many relationships, we need to find the original reference object
+            // Since we don't have direct access to the query structure, we'll look for the
+            // most likely reference object in the context - typically a single object (not a list)
+            let referenceObject: any = undefined;
+            
+            // First, try to find a single object in the context that could be the original reference
+            for (const [key, value] of Object.entries(query.contextResults)) {
+              if (value && typeof value === 'object' && !Array.isArray(value) && !value.uuid) {
+                // Skip if it doesn't look like an entity instance
+                continue;
+              }
+              if (value && typeof value === 'object' && !Array.isArray(value) && value.uuid) {
+                // This looks like a single entity instance, likely the original reference
+                referenceObject = value;
+                break;
+              }
+            }
+            
+            // If we didn't find a single object, fall back to finding from the intermediate list
+            if (!referenceObject) {
               const otherListAttribute = relationQuery.objectListReferenceAttribute ?? "uuid";
               const rootListAttribute = relationQuery.AttributeOfRootListObjectToCompareToListReferenceUuid ?? "uuid";
-  
+              
               if (typeof otherList == "object" && !Array.isArray(otherList)) {
-                // log.info(
-                //   "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory combinerByManyToManyRelationReturningObjectList search otherList for attribute",
-                //   otherListAttribute,
-                //   "on object",
-                //   selectedInstancesEntry[1],
-                //   "uuidToFind",
-                //   (selectedInstancesEntry[1] as any)[rootListAttribute],
-                //   "otherList",
-                //   otherList
-                // );
-                const result =
-                Object.values(otherList).findIndex(
-                  (v: any) => v[otherListAttribute] == (selectedInstancesEntry[1] as any)[rootListAttribute]
-                ) >= 0;
-                // CAN NOT APPLY FILTER HERE, AS WE ARE WORKING ON AN INDEX
-                return result;
-              } else {
-                throw new Error(
-                  "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory combinerByManyToManyRelationReturningObjectList can not use objectListReference, selectedInstances elementType=" +
-                    selectedInstancesUuidIndex.elementType +
-                    " typeof otherList=" +
-                    typeof otherList +
-                    " otherList is array " +
-                    Array.isArray(otherList) +
-                    " other list=" +
-                    JSON.stringify(otherList, undefined, 2)
+                referenceObject = Object.values(otherList).find(
+                  (v: any) => v[otherListAttribute] == (selectedInstance as any)[rootListAttribute]
                 );
               }
             }
-          )
-        )
+
+            const transformedResult = transformer_extended_apply(
+              "runtime",
+              [], // transformerPath
+              relationQuery.label ?? relationQuery.extractorOrCombinerType,
+              relationQuery.applyTransformer,
+              "value",
+              defaultMiroirModelEnvironment, // queryParams. TODO: this is wrong, should be the actual modelEnvironment
+              {...query.contextResults, referenceObject, foreignKeyObject: selectedInstance} // newFetchedData
+            );
+
+            return [uuid, transformedResult];
+          });
+          
+          return Object.fromEntries(transformedEntries);
+        } else {
+          return Object.fromEntries(filteredEntries);
+        }
       } else {
         throw new Error(
           "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory combinerByManyToManyRelationReturningObjectList could not find list for objectListReference, selectedInstances elementType=" +
