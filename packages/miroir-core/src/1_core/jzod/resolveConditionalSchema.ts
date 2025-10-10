@@ -18,8 +18,9 @@ import { cleanLevel } from "../constants";
 import { getEntityInstancesUuidIndexNonHook } from "../../2_domain/ReduxDeploymentsStateQueryExecutor";
 import type { ResolveBuildTransformersTo, Step } from "../../2_domain/Transformers";
 import type { MiroirModelEnvironment } from "../../0_interfaces/1_core/Transformer";
-import { transformer_extended_apply_wrapper } from "../../2_domain/TransformersForRuntime";
+import { transformer_extended_apply, transformer_extended_apply_wrapper } from "../../2_domain/TransformersForRuntime";
 import { transformer } from "zod";
+import type { MiroirActivityTrackerInterface } from "../../0_interfaces/3_controllers/MiroirActivityTrackerInterface";
 
 // Error value types for resolveConditionalSchema
 export type ResolveConditionalSchemaError =
@@ -37,6 +38,7 @@ MiroirLoggerFactory.registerLoggerToStart(
 
 // ################################################################################################
 export function resolveConditionalSchemaTransformer(
+  // activityTracker: MiroirActivityTrackerInterface | undefined,
   step: Step,
   transformerPath: string[],
   label: string | undefined,
@@ -45,30 +47,35 @@ export function resolveConditionalSchemaTransformer(
     | TransformerForRuntime_resolveConditionalSchema
     | TransformerForBuildPlusRuntime_resolveConditionalSchema,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
-  queryParams: MiroirModelEnvironment & Record<string, any>,
+  modelEnvironment: MiroirModelEnvironment,
+  queryParams: Record<string, any>,
   contextResults?: Record<string, any>
 ): ResolveConditionalSchemaResult {
   return resolveConditionalSchema(
+    // activityTracker,
     step,
     transformerPath,
     transformer.schema,
     transformer.valueObject, // Use rootObject from contextResults or an empty object
     transformer.valuePath || [], // Use currentValuePath from contextResults or an
-    queryParams, // modelEnvironment
+    modelEnvironment,
+    queryParams,
     contextResults, 
-    transformer?.reduxDeploymentsState, // Use reduxDeploymentsState from contextResults
+    contextResults?.reduxDeploymentsState, //transformer?.reduxDeploymentsState, // Use reduxDeploymentsState from contextResults
     transformer?.deploymentUuid, // Use deploymentUuid from contextResults
     transformer.context
   );
 }
 // ################################################################################################
 export function resolveConditionalSchema(
+  // activityTracker: MiroirActivityTrackerInterface | undefined,
   step: Step,
   transformerPath: string[],
   jzodSchema: JzodElement,
   rootObject: any, // Changed from currentDefaultValue to rootObject
   currentValuePath: string[],
-  modelEnvironment: MiroirModelEnvironment & Record<string, any>, // includes queryParams
+  modelEnvironment: MiroirModelEnvironment,
+  queryParams: Record<string, any>, // includes queryParams
   contextResults?: Record<string, any>,
   reduxDeploymentsState: ReduxDeploymentsState | undefined = undefined,
   deploymentUuid: Uuid | undefined = undefined,
@@ -156,15 +163,16 @@ export function resolveConditionalSchema(
 
       let parentUuidStr: Uuid;
       if (typeof parentUuid === "object" && "transformerType" in parentUuid) {
-        parentUuidStr = transformer_extended_apply_wrapper(
+        parentUuidStr = transformer_extended_apply(
+          // activityTracker,
           step,
           transformerPath,
           "resolveConditionalSchema - parentUuid",
           parentUuid,
-          // currentValuePath,
-          modelEnvironment,
-          contextResults,
           "value", // resolveBuildTransformersTo
+          modelEnvironment,
+          queryParams,
+          contextResults,
         ) as Uuid;
       }
       else {

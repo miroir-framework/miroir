@@ -4,6 +4,7 @@ import {
   MetaModel,
   TransformerForBuild
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import type { MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { defaultMetaModelEnvironment } from "../1_core/Model";
 import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
@@ -19,8 +20,8 @@ MiroirLoggerFactory.registerLoggerToStart(
 // ################################################################################################
 export function resolveCompositeActionTemplate(
   compositeActionTemplate: CompositeActionTemplate,
+  currentModel: MiroirModelEnvironment,
   actionParamValues: Record<string, any>,
-  currentModel?: MetaModel
 ): {
   resolvedCompositeActionDefinition: CompositeAction,
   resolvedCompositeActionTemplates: Record<string,any>
@@ -72,6 +73,7 @@ export function resolveCompositeActionTemplate(
         [],
         t[0],
         t[1] as any,
+        currentModel,
         {...defaultMetaModelEnvironment, ...actionParamValues}, // queryParams
         newLocalParameters, // contextResults
         "value",
@@ -96,6 +98,7 @@ export function resolveCompositeActionTemplate(
     [],
     compositeActionLabel,
     (compositeActionTemplate as any).definition as any as TransformerForBuild,
+    currentModel,
     actionParamsAndTemplates,
     undefined,// localContext,
     "value",

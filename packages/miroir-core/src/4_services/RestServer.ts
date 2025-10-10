@@ -29,7 +29,7 @@ import { cleanLevel } from "./constants";
 
 import { DomainControllerInterface, DomainState } from "../0_interfaces/2_domain/DomainControllerInterface";
 import { Action2Error, Action2ReturnType, Domain2ElementFailed, Domain2QueryReturnType } from "../0_interfaces/2_domain/DomainElement";
-import { defaultMiroirMetaModel } from "../1_core/Model";
+import { defaultMiroirMetaModel, defaultMiroirModelEnvironment } from "../1_core/Model";
 import {
   getExtractorTemplateRunnerParamsForDomainState,
   getQueryTemplateRunnerParamsForDomainState,
@@ -37,6 +37,7 @@ import {
 } from "../2_domain/DomainStateQueryTemplateSelector";
 import { extractWithBoxedExtractorTemplate, runQueryTemplateWithExtractorCombinerTransformer } from "../2_domain/QueryTemplateSelectors";
 import { miroirFundamentalJzodSchema } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalJzodSchema";
+import type { MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -117,7 +118,7 @@ export async function restMethodGetHandler
       ["section", "parentUuid"],
       [],
       async (section: ApplicationSection, parentUuid: string): Promise<HttpResponseBodyFormat> => {
-        const getInstancesFunction = targetPersistenceStoreController.getInstances.bind(targetPersistenceStoreController);
+        const getInstancesFunction = targetPersistenceStoreController.getInstances.bind(targetPersistenceStoreController); // TODO: is this bind useful? why not call targetPersistenceStoreController.getInstances(...) directly?
         const results: Action2ReturnType = await getInstancesFunction(section, parentUuid)
         if (results instanceof Action2Error) {
           throw new Error(
@@ -144,11 +145,10 @@ export async function restMethodGetHandler
               "returned" +
               results
           );
-          
         }
         return wrapResults(results.returnedDomainElement.instances);
       },
-      continuationFunction(responseHandler)
+      continuationFunction(responseHandler) // in server, value is response.json.bind(response)
     );
     // log.debug("restMethodGetHandler get CRUD/ result", JSON.stringify(result, undefined, 2));
     return Promise.resolve(result);
@@ -278,6 +278,7 @@ export async function restActionHandler(
     typeof params["actionType"] == "string" ? params["actionType"] : params["actionType"][0];
 
   // log.debug("restActionRunner params", params, "body", body);
+  // const currentModel: MiroirModelEnvironment = serverModelEnvironments[action.deploymentUuid]
 
   const action: StoreOrBundleAction | InstanceAction | ModelAction = body as
     | StoreOrBundleAction
@@ -293,7 +294,6 @@ export async function restActionHandler(
     //
     case "bundleAction": {
       const result = await storeActionOrBundleActionStoreRunner(
-        // actionName,
         actionType,
         body as StoreOrBundleAction,
         persistenceStoreControllerManager
@@ -337,7 +337,7 @@ export async function restActionHandler(
             "dropEntity",
           ].includes(action.actionType)
         ) {
-          const result = await domainController.handleAction(action, defaultMiroirMetaModel);
+          const result = await domainController.handleAction(action, defaultMiroirModelEnvironment); // TODO: get the right model for the app / deployment
           return continuationFunction(response)(result);
         } else {
           const result = await domainController.handleAction(action);
@@ -352,7 +352,7 @@ export async function restActionHandler(
       } else {
         /**
          * we are on the client:
-         * - the RestMswServerStub emulates the client,
+         * - the RestMswServerStub emulates the server,
          * - the client has direct access to the persistence store (which is emulated, too)
          *  */
         const localPersistenceStoreController =
@@ -396,18 +396,19 @@ export async function queryActionHandler(
 
   /**
    * shall a query be executed based on the state of the localCache, or fetching state from a PersistenceStore?
-   * 
+   *
    * go through the DomainController? (would be better, wouldn't it?)
-   * 
+   *
    * when the implementation accesses the localCache, the implementation is based on selectors
-   * 
+   *
    * when the implementation uses the persistenceStore, it could:
    * - load the required data in the localCache (select) then execute in the localCache (filter, aggregation)
    * - execute on the persistent store (sql)
-   * 
+   *
    */
   // const domainController = persistenceStoreControllerManager.getServerDomainControllerDEFUNCT();
-  const runBoxedExtractorOrQueryAction: RunBoxedExtractorOrQueryAction = body as RunBoxedExtractorOrQueryAction;
+  const runBoxedExtractorOrQueryAction: RunBoxedExtractorOrQueryAction =
+    body as RunBoxedExtractorOrQueryAction;
   log.info(
     "RestServer queryActionHandler",
     domainController.getPersistenceStoreAccessMode(),
@@ -416,14 +417,17 @@ export async function queryActionHandler(
     // useDomainControllerToHandleModelAndInstanceActions,
     JSON.stringify(runBoxedExtractorOrQueryAction, undefined, 2)
   );
-  // USING THE LOCAL CACHE OR THE LOCAL PERSISTENCE STORE 
+  // USING THE LOCAL CACHE OR THE LOCAL PERSISTENCE STORE
   // SHALL BE DETERMINED BY DOMAINCONTROLLER DEPENDING ON THE QUERY
-  const result = await domainController.handleBoxedExtractorOrQueryAction(runBoxedExtractorOrQueryAction)
+  const result = await domainController.handleBoxedExtractorOrQueryAction(
+    runBoxedExtractorOrQueryAction,
+    defaultMiroirModelEnvironment, // TODO: pass the current model
+  );
   // log.info(
   //   "RestServer queryActionHandler used domainController result=",
   //   JSON.stringify(result, undefined, 2)
   // );
-  return continuationFunction(response)(result)
+  return continuationFunction(response)(result);
 }
 
 // ################################################################################################
@@ -465,7 +469,8 @@ export async function queryTemplateActionHandler(
   if (useDomainControllerToHandleModelAndInstanceActions) {
     // we are on the server, the action has been received from remote client
     const result = await domainController.handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(
-      runBoxedQueryTemplateOrBoxedExtractorTemplateAction
+      runBoxedQueryTemplateOrBoxedExtractorTemplateAction, 
+      defaultMiroirModelEnvironment, // TODO: get the right model for the app / deployment
     );
     log.info(
       "RestServer queryTemplateActionHandler used adminConfigurationDeploymentMiroir domainController result=", result

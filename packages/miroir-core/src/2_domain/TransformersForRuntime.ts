@@ -114,6 +114,7 @@ import {
   type Step,
 } from "./Transformers";
 import type { MiroirActivityTrackerInterface } from '../0_interfaces/3_controllers/MiroirActivityTrackerInterface';
+import type { M, R } from 'vitest/dist/chunks/environment.d.cL3nLXbE';
 
 // Re-export types needed by other modules
 export type { ResolveBuildTransformersTo, Step } from "./Transformers";
@@ -148,7 +149,7 @@ export const defaultTransformers = {
 // ################################################################################################
 // Default value for Jzod Schema functions - moved here to avoid circular dependency
 // ################################################################################################
-export function getDefaultValueForJzodSchemaWithResolution<T extends MiroirModelEnvironment>(
+export function getDefaultValueForJzodSchemaWithResolution(
   step: Step,
   jzodSchema: JzodElement,
   rootObject: any | undefined, // Optional parameter for backward compatibility
@@ -158,7 +159,8 @@ export function getDefaultValueForJzodSchemaWithResolution<T extends MiroirModel
   reduxDeploymentsState: ReduxDeploymentsState | undefined = undefined,
   forceOptional: boolean = false,
   deploymentUuid: Uuid | undefined = undefined,
-  miroirEnvironment: T,
+  miroirEnvironment: MiroirModelEnvironment,
+  params: Record<string, any> = {},
   contextResults?: Record<string, any>,
   relativeReferenceJzodContext?: { [k: string]: JzodElement },
 ): any {
@@ -171,6 +173,7 @@ export function getDefaultValueForJzodSchemaWithResolution<T extends MiroirModel
     rootObject || currentDefaultValue, // Use rootObject if provided, fallback to currentDefaultValue
     currentValuePath,
     miroirEnvironment,
+    params,
     contextResults,
     reduxDeploymentsState,
     deploymentUuid,
@@ -246,8 +249,8 @@ export function getDefaultValueForJzodSchemaWithResolution<T extends MiroirModel
       [...currentValuePath, 'initializeTo'],
       undefined, // label
       effectiveSchema.tag.value.initializeTo.transformer,
+      miroirEnvironment,
       {
-        ...miroirEnvironment,
         deploymentUuid,
         rootObject
       }, // parameters
@@ -369,8 +372,8 @@ export function getDefaultValueForJzodSchemaWithResolution<T extends MiroirModel
           [...currentValuePath, 'initializeTo'],
           undefined,
           effectiveSchema.tag.value.initializeTo.transformer,
+          miroirEnvironment,
           {
-            ...miroirEnvironment,
             deploymentUuid
           }, // parameters
           {}, // runtimeContext
@@ -631,7 +634,7 @@ export function defaultValueForMLSchemaTransformer<T extends MiroirModelEnvironm
   return result;
 }
 
-const inMemoryTransformerImplementations: Record<string, ITransformerHandler<any, MiroirModelEnvironment>> = {
+const inMemoryTransformerImplementations: Record<string, ITransformerHandler<any>> = {
   handleTransformer_menu_AddItem: defaultTransformers.handleTransformer_menu_AddItem,
   // 
   handleCountTransformer,
@@ -709,7 +712,7 @@ export const applicationTransformerDefinitions: Record<string, TransformerDefini
 };
 
 // ################################################################################################
-function resolveApplyTo<T extends MiroirModelEnvironment>(
+function resolveApplyTo(
   step: Step,
   transformerPath: string[],
   label: string | undefined,
@@ -719,7 +722,8 @@ function resolveApplyTo<T extends MiroirModelEnvironment>(
     | TransformerForBuild_objectAlter
     | TransformerForRuntime_objectAlter,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
-  queryParams: T,
+  modelEnvironment: MiroirModelEnvironment,
+  queryParams: Record<string, any>,
   contextResults?: Record<string, any>
 ) {
   if (!transformer.applyTo) {
@@ -732,6 +736,7 @@ function resolveApplyTo<T extends MiroirModelEnvironment>(
         referenceName: defaultTransformerInput,
       },
       resolveBuildTransformersTo,
+      modelEnvironment,
       queryParams,
       contextResults
     );
@@ -767,6 +772,7 @@ function resolveApplyTo<T extends MiroirModelEnvironment>(
         label,
         transformer.applyTo,
         resolveBuildTransformersTo,
+        modelEnvironment,
         queryParams,
         contextResults
       );
@@ -830,7 +836,7 @@ function resolveApplyTo<T extends MiroirModelEnvironment>(
 
 // ################################################################################################
 // TODO: identical to resolveApplyTo, should be merged?
-export function resolveApplyTo_legacy<T extends MiroirModelEnvironment>(
+export function resolveApplyTo_legacy(
   transformer: 
   | TransformerForBuild_count
   | TransformerForBuild_mapperListToList
@@ -854,7 +860,8 @@ export function resolveApplyTo_legacy<T extends MiroirModelEnvironment>(
   transformerPath: string[],
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   // queryParams: Record<string, any>,
-  queryParams: T,
+  modelEnvironment: MiroirModelEnvironment,
+  queryParams: Record<string, any>,
   contextResults: Record<string, any> | undefined,
   label: string | undefined
 ) {
@@ -879,6 +886,7 @@ export function resolveApplyTo_legacy<T extends MiroirModelEnvironment>(
         referenceName: defaultTransformerInput,
       },
       resolveBuildTransformersTo,
+      modelEnvironment,
       queryParams,
       contextResults
     );
@@ -914,6 +922,7 @@ export function resolveApplyTo_legacy<T extends MiroirModelEnvironment>(
         label,
         transformer.applyTo,
         resolveBuildTransformersTo,
+        modelEnvironment,
         queryParams,
         contextResults
       );
@@ -948,14 +957,15 @@ export function resolveApplyTo_legacy<T extends MiroirModelEnvironment>(
 }
 
 // ################################################################################################
-function transformerForBuild_list_listMapperToList_apply<T extends MiroirModelEnvironment>(
+function transformerForBuild_list_listMapperToList_apply(
   step: Step,
   transformerPath: string[],
   label: string | undefined,
   transformer: TransformerForRuntime_mapperListToList | TransformerForBuild_mapperListToList,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   // queryParams: Record<string, any>,
-  queryParams: T,
+  modelEnvironment: MiroirModelEnvironment,
+  queryParams: Record<string, any>,
   contextResults?: Record<string, any>,
 ): TransformerReturnType<any[]> {
   const resolvedApplyTo = resolveApplyTo_legacy(
@@ -963,6 +973,7 @@ function transformerForBuild_list_listMapperToList_apply<T extends MiroirModelEn
     step,
     transformerPath,
     resolveBuildTransformersTo,
+    modelEnvironment,
     queryParams,
     contextResults,
     label
@@ -999,6 +1010,7 @@ function transformerForBuild_list_listMapperToList_apply<T extends MiroirModelEn
           (element as any).name ?? "No name for element",
           transformer.elementTransformer as any,
           resolveBuildTransformersTo,
+          modelEnvironment,
           queryParams,
           {
             ...contextResults,
@@ -1017,6 +1029,7 @@ function transformerForBuild_list_listMapperToList_apply<T extends MiroirModelEn
             element[0],
             transformer.elementTransformer as any,
             resolveBuildTransformersTo,
+            modelEnvironment,
             queryParams,
             {
               ...contextResults,
@@ -1050,14 +1063,15 @@ function transformerForBuild_list_listMapperToList_apply<T extends MiroirModelEn
 }
 
 // ################################################################################################
-function transformer_object_listReducerToSpreadObject_apply<T extends MiroirModelEnvironment>(
+function transformer_object_listReducerToSpreadObject_apply(
   step: Step,
   transformerPath: string[],
   label: string | undefined,
   transformer: TransformerForBuild_listReducerToSpreadObject | TransformerForRuntime_listReducerToSpreadObject,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   // queryParams: Record<string, any>,
-  queryParams: T,
+  modelEnvironment: MiroirModelEnvironment,
+  queryParams: Record<string, any>,
   contextResults?: Record<string, any>,
 ): TransformerReturnType<any> {
   // log.info(
@@ -1073,6 +1087,7 @@ function transformer_object_listReducerToSpreadObject_apply<T extends MiroirMode
     step,
     transformerPath,
     resolveBuildTransformersTo,
+    modelEnvironment,
     queryParams,
     contextResults,
     label
@@ -1118,7 +1133,7 @@ function transformer_object_listReducerToSpreadObject_apply<T extends MiroirMode
 }
 
 // ################################################################################################
-function transformer_object_listReducerToIndexObject_apply<T extends MiroirModelEnvironment>(
+function transformer_object_listReducerToIndexObject_apply(
   step: Step,
   transformerPath: string[],
   label: string | undefined,
@@ -1127,7 +1142,8 @@ function transformer_object_listReducerToIndexObject_apply<T extends MiroirModel
     | TransformerForRuntime_listReducerToIndexObject,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   // queryParams: Record<string, any>,
-  queryParams: T,
+  modelEnvironment: MiroirModelEnvironment,
+  queryParams: Record<string, any>,
   contextResults?: Record<string, any>
 ): TransformerReturnType<any> {
   // log.info(
@@ -1143,6 +1159,7 @@ function transformer_object_listReducerToIndexObject_apply<T extends MiroirModel
     step,
     transformerPath,
     resolveBuildTransformersTo,
+    modelEnvironment,
     queryParams,
     contextResults,
     label
@@ -1189,7 +1206,7 @@ function transformer_object_listReducerToIndexObject_apply<T extends MiroirModel
  * 
  */
 // ################################################################################################
-function handleTransformer_object_fullTemplate<T extends MiroirModelEnvironment>(
+function handleTransformer_object_fullTemplate(
   step: Step,
   transformerPath: string[],
   objectName: string | undefined,
@@ -1197,7 +1214,8 @@ function handleTransformer_object_fullTemplate<T extends MiroirModelEnvironment>
     | TransformerForRuntime_object_fullTemplate,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   // queryParams: Record<string, any>,
-  queryParams: T,
+  modelEnvironment: MiroirModelEnvironment,
+  queryParams: Record<string, any>,
   contextResults?: Record<string, any>
 ): TransformerReturnType<DomainElementString | DomainElementInstanceArray> {
   // log.info(
@@ -1215,6 +1233,7 @@ function handleTransformer_object_fullTemplate<T extends MiroirModelEnvironment>
     objectName,
     transformer,
     resolveBuildTransformersTo,
+    modelEnvironment,
     queryParams,
     contextResults
   );
@@ -1255,6 +1274,7 @@ function handleTransformer_object_fullTemplate<T extends MiroirModelEnvironment>
             objectName, // is this correct? or should it be undefined?
             innerEntry.attributeKey,
             resolveBuildTransformersTo,
+            modelEnvironment,
             queryParams,
             newContextResults
           )
@@ -1283,13 +1303,18 @@ function handleTransformer_object_fullTemplate<T extends MiroirModelEnvironment>
         leftValue.finalLeftValue as any as string,
         innerEntry.attributeValue as any, // TODO: wrong type in the case of runtime transformer
         resolveBuildTransformersTo,
+        modelEnvironment,
         queryParams,
         newContextResults
       ); // TODO: check for failure!
-      const rightValue: { renderedRightValue: TransformerReturnType<DomainElementSuccess>; finalRightValue: TransformerReturnType<DomainElementSuccess> } = {
+      const rightValue: {
+        renderedRightValue: TransformerReturnType<DomainElementSuccess>;
+        finalRightValue: TransformerReturnType<DomainElementSuccess>;
+      } = {
         renderedRightValue,
         finalRightValue:
-          renderedRightValue.elementType != "failure" && (innerEntry.attributeValue as any).applyFunction
+          renderedRightValue.elementType != "failure" &&
+          (innerEntry.attributeValue as any).applyFunction
             ? (innerEntry.attributeValue as any).applyFunction(renderedRightValue)
             : renderedRightValue,
       };
@@ -1342,11 +1367,20 @@ function handleTransformer_objectAlter<T extends MiroirModelEnvironment>(
   objectName: string | undefined,
   transformer: TransformerForBuild_objectAlter | TransformerForRuntime_objectAlter,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
-  // queryParams: Record<string, any>,
-  queryParams: T,
+  modelEnvironment: MiroirModelEnvironment,
+  queryParams: Record<string, any>,
   contextResults?: Record<string, any>,
 ): TransformerReturnType<any> {
-  const resolvedApplyTo = resolveApplyTo(step, transformerPath, objectName, transformer, resolveBuildTransformersTo, queryParams, contextResults);
+  const resolvedApplyTo = resolveApplyTo(
+    step,
+    transformerPath,
+    objectName,
+    transformer,
+    resolveBuildTransformersTo,
+    modelEnvironment,
+    queryParams,
+    contextResults
+  );
   if (resolvedApplyTo instanceof TransformerFailure) {
     log.error(
       "transformer_objectAlter can not apply to failed resolvedApplyTo",
@@ -1367,6 +1401,7 @@ function handleTransformer_objectAlter<T extends MiroirModelEnvironment>(
     "NO NAME",
     transformer.definition,
     resolveBuildTransformersTo,
+    modelEnvironment,
     queryParams,
     {
       ...contextResults,
@@ -1424,13 +1459,13 @@ export function transformer_resolveReference(
     ? "referencePath"
     : "no name";
 
-  // log.info(
-  //   "transformer_resolveReference called for",
-  //   JSON.stringify(transformerInnerReference, null, 2),
-  //   "bank",
-  //   JSON.stringify(Object.keys(bank), null, 2)
-  //   // JSON.stringify(bank, null, 2)
-  // );
+  log.info(
+    "transformer_resolveReference called for",
+    JSON.stringify(transformerInnerReference, null, 2),
+    "bank",
+    JSON.stringify(Object.keys(bank), null, 2)
+    // JSON.stringify(bank, null, 2)
+  );
   if (!bank) {
     log.error(
       "transformer_resolveReference failed, no contextResults for step",
@@ -1529,7 +1564,7 @@ export function transformer_resolveReference(
 // // parameterReference<A> -> A
 // // constantUuid -> Uuid
 // // constantString -> string
-export function transformer_InnerReference_resolve<T extends MiroirModelEnvironment>(
+export function transformer_InnerReference_resolve(
   step: Step,
   transformerPath: string[],
   transformerInnerReference:
@@ -1537,7 +1572,8 @@ export function transformer_InnerReference_resolve<T extends MiroirModelEnvironm
     | TransformerForBuild_InnerReference
     | TransformerForRuntime_InnerReference,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
-  transformerParams: T,
+  modelEnvironment: MiroirModelEnvironment,
+  transformerParams: Record<string, any>,
   // queryParams: Record<string, any>,
   contextResults?: Record<string, any>
 ): TransformerReturnType<any> {
@@ -1627,6 +1663,7 @@ export function transformer_InnerReference_resolve<T extends MiroirModelEnvironm
         "none",
         transformerInnerReference,
         resolveBuildTransformersTo,
+        modelEnvironment,
         localQueryParams,
         localContextResults
       );
@@ -1715,13 +1752,14 @@ export function transformer_mustacheStringTemplate_apply(
 }
 
 // ################################################################################################
-export function transformer_dynamicObjectAccess_apply<T extends MiroirModelEnvironment>(
+export function transformer_dynamicObjectAccess_apply(
   step: Step,
   transformerPath: string[],
   objectName: string | undefined,
   transformer: TransformerForRuntime_objectDynamicAccess | TransformerForBuild_objectDynamicAccess,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
-  transformerParams: T,
+  modelEnvironment: MiroirModelEnvironment,
+  transformerParams: Record<string, any>,
   contextResults?: Record<string, any>,
 ): TransformerReturnType<any> {
   const result = (transformer.objectAccessPath.reduce as any)( // triggers "error TS2349: This expression is not callable" in tsc. Not in eslint, though!
@@ -1779,6 +1817,7 @@ export function transformer_dynamicObjectAccess_apply<T extends MiroirModelEnvir
             "NO NAME",
             currentPathElement,
             resolveBuildTransformersTo,
+            modelEnvironment,
             transformerParams,
             contextResults
           );
@@ -1832,7 +1871,7 @@ export function transformer_dynamicObjectAccess_apply<T extends MiroirModelEnvir
 }
 
 // ################################################################################################
-export function handleCountTransformer<T extends MiroirModelEnvironment>(
+export function handleCountTransformer(
   step: Step,
   transformerPath: string[] = [],
   label: string | undefined,
@@ -1840,7 +1879,8 @@ export function handleCountTransformer<T extends MiroirModelEnvironment>(
   | TransformerForBuild_count
   | TransformerForRuntime_count,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
-  transformerParams: T,
+  modelEnvironment: MiroirModelEnvironment,
+  transformerParams: Record<string, any>,
   // queryParams: Record<string, any>,
   contextResults?: Record<string, any>
 ): TransformerReturnType<any> {
@@ -1849,6 +1889,7 @@ export function handleCountTransformer<T extends MiroirModelEnvironment>(
     step,
     transformerPath,
     resolveBuildTransformersTo,
+    modelEnvironment,
     transformerParams,
     contextResults,
     label
@@ -1921,7 +1962,7 @@ export function handleCountTransformer<T extends MiroirModelEnvironment>(
   // break;
 }
 // ################################################################################################
-export function handleUniqueTransformer<T extends MiroirModelEnvironment>(
+export function handleUniqueTransformer(
   step: Step,
   transformerPath: string[],
   label: string | undefined,
@@ -1929,7 +1970,8 @@ export function handleUniqueTransformer<T extends MiroirModelEnvironment>(
   | TransformerForBuild_unique
   | TransformerForRuntime_unique,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
-  transformerParams: T,
+  modelEnvironment: MiroirModelEnvironment,
+  transformerParams: Record<string, any>,
   // queryParams: Record<string, any>,
   contextResults?: Record<string, any>
 ): TransformerReturnType<any> {
@@ -1938,6 +1980,7 @@ export function handleUniqueTransformer<T extends MiroirModelEnvironment>(
     step,
     transformerPath,
     resolveBuildTransformersTo,
+    modelEnvironment,
     transformerParams,
     contextResults,
     label
@@ -2003,7 +2046,7 @@ export function handleUniqueTransformer<T extends MiroirModelEnvironment>(
 }
 
 // ################################################################################################
-export function handleListPickElementTransformer<T extends MiroirModelEnvironment>(
+export function handleListPickElementTransformer(
   step: Step,
   transformerPath: string[],
   label: string | undefined,
@@ -2011,7 +2054,8 @@ export function handleListPickElementTransformer<T extends MiroirModelEnvironmen
   | TransformerForBuild_listPickElement
   | TransformerForRuntime_listPickElement,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
-  transformerParams: T,
+  modelEnvironment: MiroirModelEnvironment,
+  transformerParams: Record<string, any>,
   contextResults?: Record<string, any>
 ): TransformerReturnType<any> {
   const resolvedReference = resolveApplyTo_legacy(
@@ -2019,6 +2063,7 @@ export function handleListPickElementTransformer<T extends MiroirModelEnvironmen
     step,
     transformerPath,
     resolveBuildTransformersTo,
+    modelEnvironment,
     transformerParams,
     contextResults,
     label
@@ -2107,7 +2152,7 @@ export function handleListPickElementTransformer<T extends MiroirModelEnvironmen
 }
 
 // ################################################################################################
-export function handleTransformer_FreeObjectTemplate<T extends MiroirModelEnvironment>(
+export function handleTransformer_FreeObjectTemplate(
   step: Step,
   transformerPath: string[] = [],
   label: string | undefined,
@@ -2115,7 +2160,8 @@ export function handleTransformer_FreeObjectTemplate<T extends MiroirModelEnviro
   | TransformerForBuild_freeObjectTemplate
   | TransformerForRuntime_freeObjectTemplate,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
-  transformerParams: T,
+  modelEnvironment: MiroirModelEnvironment,
+  transformerParams: Record<string, any>,
   // queryParams: Record<string, any>,
   contextResults?: Record<string, any>,
 ): TransformerReturnType<any> {
@@ -2130,6 +2176,7 @@ export function handleTransformer_FreeObjectTemplate<T extends MiroirModelEnviro
           objectTemplateEntry[0],
           objectTemplateEntry[1],
           resolveBuildTransformersTo,
+          modelEnvironment,
           transformerParams,
           contextResults,
         ),
@@ -2159,7 +2206,7 @@ export function handleTransformer_FreeObjectTemplate<T extends MiroirModelEnviro
 }
 
 // ################################################################################################
-export function handleTransformer_objectEntries<T extends MiroirModelEnvironment>(
+export function handleTransformer_objectEntries(
   step: Step,
   transformerPath: string[],
   label: string | undefined,
@@ -2167,7 +2214,8 @@ export function handleTransformer_objectEntries<T extends MiroirModelEnvironment
   | TransformerForBuild_objectEntries
   | TransformerForRuntime_objectEntries,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
-  transformerParams: T,
+  modelEnvironment: MiroirModelEnvironment,
+  transformerParams: Record<string, any>,
   // queryParams: Record<string, any>,
   contextResults?: Record<string, any>
 ): TransformerReturnType<any> {
@@ -2176,6 +2224,7 @@ export function handleTransformer_objectEntries<T extends MiroirModelEnvironment
     step,
     transformerPath,
     resolveBuildTransformersTo,
+    modelEnvironment,
     transformerParams,
     contextResults,
     label
@@ -2220,7 +2269,7 @@ export function handleTransformer_objectEntries<T extends MiroirModelEnvironment
 }
 
 // ################################################################################################
-export function handleTransformer_objectValues<T extends MiroirModelEnvironment>(
+export function handleTransformer_objectValues(
   step: Step,
   transformerPath: string[],
   label: string | undefined,
@@ -2228,7 +2277,8 @@ export function handleTransformer_objectValues<T extends MiroirModelEnvironment>
   | TransformerForBuild_objectValues
   | TransformerForRuntime_objectValues,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
-  transformerParams: T,
+  modelEnvironment: MiroirModelEnvironment,
+  transformerParams: Record<string, any>,
   // queryParams: Record<string, any>,
   contextResults?: Record<string, any>
 ): TransformerReturnType<any> {
@@ -2237,6 +2287,7 @@ export function handleTransformer_objectValues<T extends MiroirModelEnvironment>
     step,
     transformerPath,
     resolveBuildTransformersTo,
+    modelEnvironment,
     transformerParams,
     contextResults,
     label
@@ -2323,13 +2374,14 @@ export function handleTransformer_dataflowObject<T extends MiroirModelEnvironmen
 // ################################################################################################
 // ################################################################################################
 // ################################################################################################
-export function handleTransformer_conditional<T extends MiroirModelEnvironment>(
+export function handleTransformer_conditional(
   step: Step,
   transformerPath: string[],
   label: string | undefined,
   transformer: TransformerForRuntime_conditional,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
-  transformerParams: T,
+  modelEnvironment: MiroirModelEnvironment,
+  transformerParams: Record<string, any>,
   contextResults?: Record<string, any>
 ): TransformerReturnType<any> {
   
@@ -2340,6 +2392,7 @@ export function handleTransformer_conditional<T extends MiroirModelEnvironment>(
       transformer.label? transformer.label + "_left" : "left",
       transformer.left,
       resolveBuildTransformersTo,
+      modelEnvironment,
       transformerParams,
       contextResults,
     );
@@ -2349,6 +2402,7 @@ export function handleTransformer_conditional<T extends MiroirModelEnvironment>(
       transformer.label? transformer.label + "_right" : "right",
       transformer.right,
       resolveBuildTransformersTo,
+      modelEnvironment,
       transformerParams,
       contextResults,
     );
@@ -2361,6 +2415,7 @@ export function handleTransformer_conditional<T extends MiroirModelEnvironment>(
           transformer.label ? transformer.label + "_then" : "then",
           transformer.then,
           resolveBuildTransformersTo,
+          modelEnvironment,
           transformerParams,
           contextResults
         );
@@ -2371,6 +2426,7 @@ export function handleTransformer_conditional<T extends MiroirModelEnvironment>(
           transformer.label ? transformer.label + "_else" : "else",
           transformer.else,
           resolveBuildTransformersTo,
+          modelEnvironment,
           transformerParams,
           contextResults
         );
@@ -2385,6 +2441,7 @@ export function handleTransformer_conditional<T extends MiroirModelEnvironment>(
           transformer.label ? transformer.label + "_then" : "then",
           transformer.then,
           resolveBuildTransformersTo,
+          modelEnvironment,
           transformerParams,
           contextResults
         );
@@ -2395,6 +2452,7 @@ export function handleTransformer_conditional<T extends MiroirModelEnvironment>(
           transformer.label ? transformer.label + "_else" : "else",
           transformer.else,
           resolveBuildTransformersTo,
+          modelEnvironment,
           transformerParams,
           contextResults
         );
@@ -2408,6 +2466,7 @@ export function handleTransformer_conditional<T extends MiroirModelEnvironment>(
           transformer.label ? transformer.label + "_then" : "then",
           transformer.then,
           resolveBuildTransformersTo,
+          modelEnvironment,
           transformerParams,
           contextResults
         );
@@ -2418,6 +2477,7 @@ export function handleTransformer_conditional<T extends MiroirModelEnvironment>(
           transformer.label ? transformer.label + "_else" : "else",
           transformer.else,
           resolveBuildTransformersTo,
+          modelEnvironment,
           transformerParams,
           contextResults
         );
@@ -2431,6 +2491,7 @@ export function handleTransformer_conditional<T extends MiroirModelEnvironment>(
           transformer.label ? transformer.label + "_then" : "then",
           transformer.then,
           resolveBuildTransformersTo,
+          modelEnvironment,
           transformerParams,
           contextResults
         );
@@ -2441,6 +2502,7 @@ export function handleTransformer_conditional<T extends MiroirModelEnvironment>(
           transformer.label ? transformer.label + "_else" : "else",
           transformer.else,
           resolveBuildTransformersTo,
+          modelEnvironment,
           transformerParams,
           contextResults
         );
@@ -2454,6 +2516,7 @@ export function handleTransformer_conditional<T extends MiroirModelEnvironment>(
           transformer.label ? transformer.label + "_then" : "then",
           transformer.then,
           resolveBuildTransformersTo,
+          modelEnvironment,
           transformerParams,
           contextResults
         );
@@ -2464,6 +2527,7 @@ export function handleTransformer_conditional<T extends MiroirModelEnvironment>(
           transformer.label ? transformer.label + "_else" : "else",
           transformer.else,
           resolveBuildTransformersTo,
+          modelEnvironment,
           transformerParams,
           contextResults
         );
@@ -2477,6 +2541,7 @@ export function handleTransformer_conditional<T extends MiroirModelEnvironment>(
           transformer.label ? transformer.label + "_then" : "then",
           transformer.then,
           resolveBuildTransformersTo,
+          modelEnvironment,
           transformerParams,
           contextResults
         );
@@ -2487,6 +2552,7 @@ export function handleTransformer_conditional<T extends MiroirModelEnvironment>(
           transformer.label ? transformer.label + "_else" : "else",
           transformer.else,
           resolveBuildTransformersTo,
+          modelEnvironment,
           transformerParams,
           contextResults
         );
@@ -2607,14 +2673,14 @@ export function handleTransformer_constant(
 }
 
 // ################################################################################################
-export function handleTransformer_contextReference<T extends MiroirModelEnvironment>(
+export function handleTransformer_contextReference(
   step: Step,
   transformerPath: string[],
   label: string | undefined,
   transformer: TransformerForRuntime_contextReference,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
-  transformerParams: T,
-  // queryParams: Record<string, any>,
+  modelEnvironment: MiroirModelEnvironment,
+  transformerParams: Record<string, any>,
   contextResults?: Record<string, any>
 ): TransformerReturnType<any> {
   const rawValue = defaultTransformers.transformer_InnerReference_resolve(
@@ -2622,6 +2688,7 @@ export function handleTransformer_contextReference<T extends MiroirModelEnvironm
     transformerPath,
     transformer,
     resolveBuildTransformersTo,
+    modelEnvironment,
     transformerParams,
     contextResults
   );
@@ -2633,13 +2700,14 @@ export function handleTransformer_contextReference<T extends MiroirModelEnvironm
 }
 
 // ################################################################################################
-export function handleTransformer_parameterReference<T extends MiroirModelEnvironment>(
+export function handleTransformer_parameterReference(
   step: Step,
   transformerPath: string[],
   label: string | undefined,
   transformer: TransformerForBuild_parameterReference,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
-  transformerParams: T,
+  modelEnvironment: MiroirModelEnvironment,
+  transformerParams: Record<string, any>,
   // queryParams: Record<string, any>,
   contextResults?: Record<string, any>
 ): TransformerReturnType<any> {
@@ -2648,6 +2716,7 @@ export function handleTransformer_parameterReference<T extends MiroirModelEnviro
     transformerPath,
     transformer,
     resolveBuildTransformersTo,
+    modelEnvironment,
     transformerParams,
     contextResults
   );
@@ -2672,13 +2741,14 @@ export function handleTransformer_constantAsExtractor(
 }
 
 // ################################################################################################
-export function handleTransformer_newUuid<T extends MiroirModelEnvironment>(
+export function handleTransformer_newUuid(
   step: Step,
   transformerPath: string[],
   label: string | undefined,
   transformer: TransformerForBuild_newUuid | TransformerForRuntime_newUuid,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
-  transformerParams: T,
+  modelEnvironment: MiroirModelEnvironment,
+  transformerParams: Record<string, any>,
   // queryParams: Record<string, any>,
   contextResults?: Record<string, any>
 ): TransformerReturnType<any> {
@@ -2687,6 +2757,7 @@ export function handleTransformer_newUuid<T extends MiroirModelEnvironment>(
     transformerPath,
     transformer,
     resolveBuildTransformersTo,
+    modelEnvironment,
     transformerParams,
     contextResults
   );
@@ -2705,14 +2776,15 @@ export function handleTransformer_newUuid<T extends MiroirModelEnvironment>(
 // <A>[] -> <A>[]
 // object -> object
 // innerFullObjectTemplate { a: A, b: B } -> object 
-export function innerTransformer_plainObject_apply<T extends MiroirModelEnvironment>(
+export function innerTransformer_plainObject_apply(
   step: Step,
   transformerPath: string[],
   label: string | undefined,
   transformer: Record<string, any>,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   // queryParams: Record<string, any>,
-  transformerParams: T,
+  modelEnvironment: MiroirModelEnvironment,
+  transformerParams: Record<string, any>,
   contextResults?: Record<string, any>,
 ): TransformerReturnType<any> {
   // log.info(
@@ -2742,6 +2814,7 @@ export function innerTransformer_plainObject_apply<T extends MiroirModelEnvironm
           objectTemplateEntry[0],
           objectTemplateEntry[1],
           resolveBuildTransformersTo,
+          modelEnvironment,
           transformerParams,
           contextResults,
         ),
@@ -2790,14 +2863,15 @@ export function innerTransformer_plainObject_apply<T extends MiroirModelEnvironm
 // <A>[] -> <A>[]
 // object -> object
 // innerFullObjectTemplate { a: A, b: B } -> object 
-export function innerTransformer_array_apply<T extends MiroirModelEnvironment>(
+export function innerTransformer_array_apply(
   step: Step,
   transformerPath: string[] = [],
   objectName: string | undefined,
   transformer: any[],
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   // queryParams: Record<string, any>,
-  transformerParams: T,
+  modelEnvironment: MiroirModelEnvironment,
+  transformerParams: Record<string, any>,
   contextResults?: Record<string, any>,
 ): TransformerReturnType<any> {
   // log.info(
@@ -2823,6 +2897,7 @@ export function innerTransformer_array_apply<T extends MiroirModelEnvironment>(
       index.toString(),
       e,
       resolveBuildTransformersTo,
+      modelEnvironment,
       transformerParams,
       contextResults,
     )
@@ -2884,7 +2959,7 @@ export function innerTransformer_array_apply<T extends MiroirModelEnvironment>(
 // <A>[] -> <A>[]
 // object -> object
 // innerFullObjectTemplate { a: A, b: B } -> object 
-export function transformer_extended_apply<T extends MiroirModelEnvironment>(
+export function transformer_extended_apply(
   step: Step,
   transformerPath: string[] = [],
   label: string | undefined,
@@ -2895,7 +2970,8 @@ export function transformer_extended_apply<T extends MiroirModelEnvironment>(
     | TransformerForBuildPlusRuntime
     | undefined,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
-  transformerParams: T,
+  modelEnvironment: MiroirModelEnvironment,
+  transformerParams: Record<string, any>,
   contextResults?: Record<string, any>,
 ): TransformerReturnType<any> {
   log.info(
@@ -2910,11 +2986,11 @@ export function transformer_extended_apply<T extends MiroirModelEnvironment>(
     typeof transformer,
     "transformer",
     JSON.stringify(transformer, null, 2),
-    // "queryParams elements",
-    // Object.keys(transformerParams ?? {})
+    "queryParams elements",
+    Object.keys(transformerParams ?? {}),
     // // JSON.stringify(Object.keys(queryParams??{}), null, 2),
-    // "contextResults elements",
-    // Object.keys(contextResults??{})
+    "contextResults elements",
+    Object.keys(contextResults??{})
     // // JSON.stringify(Object.keys(contextResults??{}), null, 2)
   );
   let result: TransformerReturnType<any> = undefined as any;
@@ -2927,6 +3003,7 @@ export function transformer_extended_apply<T extends MiroirModelEnvironment>(
         label,
         transformer,
         resolveBuildTransformersTo,
+        modelEnvironment,
         transformerParams,
         contextResults,
       );
@@ -3008,7 +3085,7 @@ export function transformer_extended_apply<T extends MiroirModelEnvironment>(
               const transformerIndexName: string =
                 foundApplicationTransformer?.transformerImplementation
                   ?.inMemoryImplementationFunctionName;
-              const transformerFunction: ITransformerHandler<any, MiroirModelEnvironment> =
+              const transformerFunction: ITransformerHandler<any> =
                 inMemoryTransformerImplementations[transformerIndexName];
               // log.info(
               //   "transformer_extended_apply libraryImplementation for",
@@ -3081,6 +3158,7 @@ export function transformer_extended_apply<T extends MiroirModelEnvironment>(
                 label,
                 transformer,
                 newResolveBuildTransformersTo,
+                modelEnvironment,
                 transformerParams,
                 contextResults
               );
@@ -3138,6 +3216,7 @@ export function transformer_extended_apply<T extends MiroirModelEnvironment>(
                         label,
                         (transformer as any)[param],
                         resolveBuildTransformersTo,
+                        modelEnvironment,
                         transformerParams,
                         contextResults
                       ),
@@ -3150,6 +3229,7 @@ export function transformer_extended_apply<T extends MiroirModelEnvironment>(
                   label,
                   foundApplicationTransformer.transformerImplementation.definition,
                   newResolveBuildTransformersTo,
+                  modelEnvironment,
                   transformerParams,
                   { ...contextResults, ...evaluatedParams }
                 );
@@ -3223,6 +3303,7 @@ export function transformer_extended_apply<T extends MiroirModelEnvironment>(
             label,
             transformer,
             newResolveBuildTransformersTo,
+            modelEnvironment,
             transformerParams,
             contextResults,
           );
@@ -3241,6 +3322,7 @@ export function transformer_extended_apply<T extends MiroirModelEnvironment>(
           label,
           transformer,
           newResolveBuildTransformersTo,
+          modelEnvironment,
           transformerParams,
           contextResults,
         );
@@ -3298,13 +3380,14 @@ export function transformer_extended_apply<T extends MiroirModelEnvironment>(
 // // ################################################################################################
 
 // ################################################################################################
-export function transformer_extended_apply_wrapper<T extends MiroirModelEnvironment>(
+export function transformer_extended_apply_wrapper(
   activityTracker: MiroirActivityTrackerInterface | undefined,
   step: Step,
   transformerPath: string[] = [],
   label: string | undefined,
   transformer: TransformerForBuild | TransformerForRuntime | ExtendedTransformerForRuntime | TransformerForBuildPlusRuntime,
-  transformerParams: T, // includes queryParams
+  modelEnvironment: MiroirModelEnvironment,
+  transformerParams: Record<string, any>, // includes queryParams
   contextResults?: Record<string, any>,
   resolveBuildTransformersTo: ResolveBuildTransformersTo = "constantTransformer",
 ): TransformerReturnType<any> {
@@ -3343,6 +3426,7 @@ export function transformer_extended_apply_wrapper<T extends MiroirModelEnvironm
       label,
       transformer,
       resolveBuildTransformersTo,
+      modelEnvironment,
       transformerParams,
       contextResults,
     );

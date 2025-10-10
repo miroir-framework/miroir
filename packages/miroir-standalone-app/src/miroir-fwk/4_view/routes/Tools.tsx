@@ -23,6 +23,7 @@ import {
   TestCompositeActionParams,
   adminConfigurationDeploymentAdmin,
   adminConfigurationDeploymentMiroir,
+  defaultLibraryModelEnvironment,
   defaultMetaModelEnvironment,
   displayTestSuiteResultsDetails,
   entityApplicationForAdmin,
@@ -363,7 +364,7 @@ export const ToolsPage: React.FC<any> = (
               },
             }}, actionCreateSchemaParamValues.newDeploymentUuid),
           paramsForTemplates,
-          currentModel
+          defaultLibraryModelEnvironment // TODO: use real model environment for current deployment
         );
 
         log.info(

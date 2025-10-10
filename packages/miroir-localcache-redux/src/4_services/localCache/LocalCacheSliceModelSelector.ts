@@ -22,7 +22,8 @@ import {
   entityMenu,
   entityReport,
   entitySelfApplicationVersion,
-  entityStoreBasedConfiguration
+  entityStoreBasedConfiguration,
+  type MiroirModelEnvironment
 } from "miroir-core";
 import { packageName } from "../../constants.js";
 import { cleanLevel } from "../constants.js";
@@ -214,3 +215,16 @@ export const selectModelForDeploymentFromReduxState: () => (
       return result;
     }
   );
+
+  //#########################################################################################
+export const selectModelEnvironmentForDeploymentFromReduxState: () => (
+  state: ReduxStateWithUndoRedo,
+  params: MiroirQueryTemplate
+) => MiroirModelEnvironment = () =>
+  createSelector(
+    [selectModelForDeploymentFromReduxState,selectMiroirSelectorQueryParams],
+    (
+      model: MetaModel,
+      params: MiroirQueryTemplate
+    ) => {
+      const result: MiroirModelEnvironment = {

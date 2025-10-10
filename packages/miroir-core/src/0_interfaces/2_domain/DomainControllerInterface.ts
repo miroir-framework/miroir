@@ -20,6 +20,7 @@ import {
 import { LocalCacheInterface } from "../4-services/LocalCacheInterface";
 import { PersistenceStoreLocalOrRemoteInterface } from "../4-services/PersistenceInterface";
 import { Action2ReturnType, Action2VoidReturnType } from "./DomainElement";
+import type { MiroirModelEnvironment } from "../1_core/Transformer";
 
 
 // #############################################################################################
@@ -84,50 +85,50 @@ export interface DomainControllerInterface {
   // handleAction(deploymentUuid: Uuid, action: DomainAction, currentModel?: MetaModel): Promise<void>;
   handleBoxedExtractorOrQueryAction(
     action: RunBoxedExtractorOrQueryAction,
-    currentModel?: MetaModel
+    currentModel: MiroirModelEnvironment
   ): Promise<Action2ReturnType>;
   handleQueryTemplateActionForServerONLY(
     action: RunBoxedQueryTemplateAction,
-    currentModel?: MetaModel
+    currentModel: MiroirModelEnvironment
   ): Promise<Action2ReturnType>;
   handleBoxedExtractorTemplateActionForServerONLY(
     action: RunBoxedExtractorTemplateAction,
-    currentModel?: MetaModel
+    currentModel: MiroirModelEnvironment
   ): Promise<Action2ReturnType>;
   handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(
     action: RunBoxedQueryTemplateOrBoxedExtractorTemplateAction,
-    currentModel?: MetaModel
+    currentModel: MiroirModelEnvironment
   ): Promise<Action2ReturnType>;
   // handleCompositeActionTemplate(action: CompositeInstanceActionTemplate, actionParamValues: any, currentModel?: MetaModel): Promise<Action2VoidReturnType>;
   handleCompositeActionTemplate(
     action: CompositeActionTemplate,
+    currentModel: MiroirModelEnvironment,
     actionParamValues: any,
-    currentModel?: MetaModel
   ): Promise<Action2VoidReturnType>;
   handleCompositeAction(
     action: CompositeAction,
+    currentModel: MiroirModelEnvironment,
     actionParamValues: Record<string, any>,
-    currentModel?: MetaModel
   ): Promise<Action2VoidReturnType>;
   // ##############################################################################################
   handleTestCompositeAction(
     testAction: TestCompositeAction,
+    currentModel: MiroirModelEnvironment,
     actionParamValues: Record<string, any>,
-    currentModel: MetaModel
   ): Promise<Action2VoidReturnType>;
   handleTestCompositeActionSuite(
     testAction: TestCompositeActionSuite,
+    currentModel: MiroirModelEnvironment,
     actionParamValues: Record<string, any>,
-    currentModel: MetaModel
   // ): Promise<Action2VoidReturnType>;
   ): Promise<Action2ReturnType>;
   handleTestCompositeActionTemplateSuite(
     testAction: TestCompositeActionTemplateSuite,
+    currentModel: MiroirModelEnvironment,
     actionParamValues: Record<string, any>,
-    currentModel: MetaModel
   ): Promise<Action2VoidReturnType>;
 
-  handleAction(action: DomainAction, currentModel?: MetaModel): Promise<Action2VoidReturnType>;
+  handleAction(action: DomainAction, currentModel?: MiroirModelEnvironment): Promise<Action2VoidReturnType>;
   /**
    * data access must accomodate different styles of access
    * => compile-time dependency on types in miroir-core? Or use "any"?

@@ -220,9 +220,9 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
           "######### context entityUuid",
           entityUuidReference,
           "######### queryParams",
-          JSON.stringify(selectorParams.extractor.queryParams, undefined, 2),
+          JSON.stringify(Object.keys(selectorParams.extractor.queryParams), undefined, 2),
           "######### contextResults",
-          JSON.stringify(selectorParams.extractor.contextResults, undefined, 2),
+          JSON.stringify(Object.keys(selectorParams.extractor.contextResults), undefined, 2),
         );
         return result.returnedDomainElement;
         break;

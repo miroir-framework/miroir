@@ -34,6 +34,7 @@ import {
   defaultMetaModelEnvironment,
   defaultTransformerInput,
   type TransformerForBuildPlusRuntime_conditional,
+  type MiroirModelEnvironment,
 } from "miroir-core";
 import { RecursiveStringRecords } from "../4_services/SqlDbQueryTemplateRunner";
 import { cleanLevel } from "../4_services/constants";
@@ -382,9 +383,24 @@ export function sqlStringForCombiner /*BoxedExtractorTemplateRunner*/(
 }
 
 // ##############################################################################################
-export function sqlStringForExtractor(extractor: ExtractorOrCombiner, schema: string): RecursiveStringRecords {
+export function sqlStringForExtractor(
+  extractor: ExtractorOrCombiner,
+  schema: string,
+  modelEnvironment: MiroirModelEnvironment,
+): RecursiveStringRecords {
   switch (extractor.extractorOrCombinerType) {
     case "extractorForObjectByDirectReference": {
+      if (!extractor.applyTransformer) {
+        return `SELECT * FROM "${schema}"."${extractor.parentName}" WHERE "uuid" = '${extractor.instanceUuid}'`;
+      }
+      if (!modelEnvironment) {
+        throw new Error("sqlForExtractor extractorForObjectByDirectReference needs modelEnvironment if applyTransformer is set");
+      }
+      log.info(
+        "sqlForExtractor extractorForObjectByDirectReference with applyTransformer",
+        JSON.stringify(extractor.applyTransformer, null, 2),
+        Object.keys(modelEnvironment)
+      );
       return `SELECT * FROM "${schema}"."${extractor.parentName}" WHERE "uuid" = '${extractor.instanceUuid}'`;
       break;
     }
@@ -401,12 +417,15 @@ export function sqlStringForExtractor(extractor: ExtractorOrCombiner, schema: st
     case "combinerByRelationReturningObjectList":
     case "combinerByManyToManyRelationReturningObjectList": {
       throw new Error(
-        "sqlForExtractor not implemented for extractorOrCombinerType: " + extractor.extractorOrCombinerType
+        "sqlForExtractor not implemented for extractorOrCombinerType: " +
+          extractor.extractorOrCombinerType
       );
       break;
     }
     default: {
-      throw new Error("sqlForExtractor not implemented for extractorOrCombinerType of extractor: " + extractor);
+      throw new Error(
+        "sqlForExtractor not implemented for extractorOrCombinerType of extractor: " + extractor
+      );
       break;
     }
   }
@@ -1250,7 +1269,9 @@ function sqlStringForMapperListToListTransformer(
               [], // tranformerPath
               undefined,
               actionRuntimeTransformer.elementTransformer,
-              {...defaultMetaModelEnvironment, ...queryParams},
+              // {...defaultMetaModelEnvironment, ...queryParams},
+              defaultMetaModelEnvironment, // TODO: use actual model environment for current deployment
+              queryParams,
               {}, // contextResults, we are evaluating a build transformer here, not a runtime transformer
               "value"
             ),
@@ -3061,13 +3082,16 @@ export interface QueryParameterSqlWithClause {
 export function sqlStringForQuery(
   selectorParams: AsyncQueryRunnerParams,
   schema: string,
-  preparedStatementParameters: any[]
+  preparedStatementParameters: any[],
+  modelEnvironment: MiroirModelEnvironment,
 ): Domain2QueryReturnType<SqlStringForExtractorReturnType> {
-  const extractorRawQueries = Object.entries(selectorParams.extractor.extractors ?? {}).map(([key, value]) => {
-    return [key, sqlStringForExtractor(value, schema)];
-  });
+  const extractorRawQueries = Object.entries(selectorParams.extractor.extractors ?? {}).map(
+    ([key, value]) => {
+      return [key, sqlStringForExtractor(value, schema, modelEnvironment)];
+    }
+  );
 
-  log.info("sqlStringForQuery extractorRawQueries", extractorRawQueries);
+  log.info("sqlStringForQuery extractorRawQueries", extractorRawQueries, "for", selectorParams.extractor.extractors);
 
   const combinerRawQueries = Object.entries(selectorParams.extractor.combiners ?? {}).map(([key, value]) => {
     return [key, sqlStringForCombiner(value, schema)];
@@ -3128,7 +3152,8 @@ export function sqlStringForQuery(
   log.info("sqlStringForQuery found queryParamsWithClauses", JSON.stringify(queryParamsWithClauses, null, 2));
   log.info(
     "sqlStringForQuery found newPreparedStatementParameters for query parameters",
-    JSON.stringify(newPreparedStatementParameters, null, 2)
+    JSON.stringify(Object.keys(newPreparedStatementParameters), null, 2)
+    // JSON.stringify(newPreparedStatementParameters, null, 2)
   );
   const transformerRawQueries: [string, Domain2QueryReturnType<SqlStringForTransformerElementValue>][] = Object.entries(
     selectorParams.extractor.runtimeTransformers ?? {}
@@ -3151,6 +3176,7 @@ export function sqlStringForQuery(
   log.info(
     "sqlStringForQuery found newPreparedStatementParameters for runtime transformers",
     JSON.stringify(newPreparedStatementParameters, null, 2)
+    // JSON.stringify(newPreparedStatementParameters, null, 2)
   );
 
   if (foundError) {

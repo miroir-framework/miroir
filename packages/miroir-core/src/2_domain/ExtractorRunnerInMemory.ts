@@ -143,7 +143,9 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
             referenceName: querySelectorParams.objectReference,
           },
           "value", // TODO: this is inconsistent with "build" evaluation, "build" evaluation should always yield a runtime transformer.
-          {...modelEnvironment, ...selectorParams.extractor.queryParams},
+          // {...modelEnvironment, ...selectorParams.extractor.queryParams},
+          modelEnvironment,
+          selectorParams.extractor.queryParams,
           selectorParams.extractor.contextResults
         );
         log.info(
@@ -205,9 +207,9 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
           "######### referenceObject",
           referenceObject,
           "######### queryParams",
-          JSON.stringify(selectorParams.extractor.queryParams, undefined, 2),
+          JSON.stringify(Object.keys(selectorParams.extractor.queryParams), undefined, 2),
           "######### contextResults",
-          JSON.stringify(selectorParams.extractor.contextResults, undefined, 2)
+          JSON.stringify(Object.keys(selectorParams.extractor.contextResults), undefined, 2)
         );
         if (querySelectorParams.applyTransformer) {
           const transformedResult = transformer_extended_apply(
@@ -216,7 +218,9 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
             querySelectorParams.label??querySelectorParams.extractorOrCombinerType,
             querySelectorParams.applyTransformer,
             "value",
-            {...modelEnvironment, ...selectorParams.extractor.queryParams},
+            // {...modelEnvironment, ...selectorParams.extractor.queryParams},
+            modelEnvironment,
+            selectorParams.extractor.queryParams,
             {...selectorParams.extractor.contextResults, referenceObject, foreignKeyObject: result.returnedDomainElement}
           );
           log.info(
@@ -279,9 +283,9 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
           "######### context entityUuid",
           entityUuidReference,
           "######### queryParams",
-          JSON.stringify(selectorParams.extractor.queryParams, undefined, 2),
+          JSON.stringify(Object.keys(selectorParams.extractor.queryParams), undefined, 2),
           "######### contextResults",
-          JSON.stringify(selectorParams.extractor.contextResults, undefined, 2)
+          JSON.stringify(Object.keys(selectorParams.extractor.contextResults), undefined, 2)
         );
         const referenceObject = getInstanceResult.returnedDomainElement;
         if (!querySelectorParams.applyTransformer) {
@@ -333,7 +337,9 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
           querySelectorParams.label??querySelectorParams.extractorOrCombinerType,
           querySelectorParams.applyTransformer,
           "value",
-          {...modelEnvironment, ...selectorParams.extractor.queryParams},
+          // {...modelEnvironment, ...selectorParams.extractor.queryParams},
+          modelEnvironment,
+          selectorParams.extractor.queryParams,
           {...selectorParams.extractor.contextResults, referenceObject, foreignKeyObjects}
         );
         if (transformedResult instanceof TransformerFailure) {

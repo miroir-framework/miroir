@@ -15,7 +15,7 @@ export type ITransformerHandler<
   T extends
     | TransformerForBuild
     | TransformerForRuntime,
-  U extends MiroirModelEnvironment
+  // U extends MiroirModelEnvironment
     // | TransformerForRuntime_innerFullObjectTemplate
 > = (
   step: Step,
@@ -23,7 +23,8 @@ export type ITransformerHandler<
   label: string | undefined,
   transformer: T,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
-  transformerParams: U,
+  modelEnvironment: MiroirModelEnvironment,
+  transformerParams: Record<string, any>,
   // queryParams: Record<string, any>,
   contextResults?: Record<string, any>
 ) => Domain2QueryReturnType<any>;

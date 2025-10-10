@@ -737,6 +737,7 @@ export function jzodTypeCheck(
         rootObject || currentDefaultValue, // Use rootObject if provided, fallback to currentDefaultValue
         currentValuePath as string[],
         modelEnvironment,
+        {}, // queryParams
         {}, // contextResults
         reduxDeploymentsState,
         deploymentUuid,

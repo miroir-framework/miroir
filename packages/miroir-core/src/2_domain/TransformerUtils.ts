@@ -16,6 +16,7 @@ import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
+import { defaultMiroirModelEnvironment } from '../1_core/Model';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -54,6 +55,7 @@ export async function transformer_extended_apply_wrapper(
       label,
       transformer,
       resolveBuildTransformersTo,
+      defaultMiroirModelEnvironment, // TODO: this is wrong, should be the actual modelEnvironment
       queryParams,
       contextResults
     );

@@ -1,4 +1,5 @@
 import { compositeAction, MetaModel, TestCompositeAction, TestCompositeActionSuite, TestCompositeActionTemplate, TestCompositeActionTemplateSuite } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import type { MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
 import { packageName } from "../constants";
@@ -12,16 +13,16 @@ MiroirLoggerFactory.registerLoggerToStart(
 
 export function resolveTestCompositeActionTemplate(
   testCompositeActionTemplate: TestCompositeActionTemplate,
+  currentModelEnvironment: MiroirModelEnvironment,
   actionParamValues: Record<string, any>,
-  currentModel: MetaModel
 ): {
   resolvedTestCompositeActionDefinition: TestCompositeAction,
   resolvedCompositeActionTemplates: Record<string,any>
 } {
   const compositeActionTemplateResolved = resolveCompositeActionTemplate(
     testCompositeActionTemplate.compositeActionTemplate,
+    currentModelEnvironment,
     actionParamValues,
-    currentModel,
   );
   log.info(
     "resolveTestCompositeActionTemplate compositeActionTemplateResolved",
@@ -33,13 +34,13 @@ export function resolveTestCompositeActionTemplate(
       testType: "testCompositeAction",
       afterTestCleanupAction: testCompositeActionTemplate.afterTestCleanupAction?resolveCompositeActionTemplate(
         testCompositeActionTemplate.afterTestCleanupAction,
+        currentModelEnvironment,
         actionParamValues,
-        currentModel,
       ).resolvedCompositeActionDefinition: undefined,
       beforeTestSetupAction: testCompositeActionTemplate.beforeTestSetupAction?resolveCompositeActionTemplate(
         testCompositeActionTemplate.beforeTestSetupAction,
+        currentModelEnvironment,
         actionParamValues,
-        currentModel,
       ).resolvedCompositeActionDefinition: undefined,
       testCompositeActionAssertions: testCompositeActionTemplate.testCompositeActionAssertions,
       compositeAction: compositeActionTemplateResolved.resolvedCompositeActionDefinition,
@@ -52,8 +53,8 @@ export function resolveTestCompositeActionTemplate(
 // #################################################################################################
 export function resolveTestCompositeActionTemplateSuite(
   compositeActionTemplate: TestCompositeActionTemplateSuite,
+  currentModelEnvironment: MiroirModelEnvironment,
   actionParamValues: Record<string, any>,
-  currentModel: MetaModel
 ): {
   resolvedTestCompositeActionDefinition: TestCompositeActionSuite,
   resolvedCompositeActionTemplates: Record<string,any>
@@ -61,33 +62,33 @@ export function resolveTestCompositeActionTemplateSuite(
 
   const beforeAllResolved = compositeActionTemplate.beforeAll?resolveCompositeActionTemplate(
     compositeActionTemplate.beforeAll,
+    currentModelEnvironment,
     actionParamValues,
-    currentModel,
   ): undefined;
   
   const beforeEachResolved = compositeActionTemplate.beforeEach?resolveCompositeActionTemplate(
     compositeActionTemplate.beforeEach,
+    currentModelEnvironment,
     actionParamValues,
-    currentModel,
   ): undefined;
 
   const afterEachResolved = compositeActionTemplate.afterEach?resolveCompositeActionTemplate(
     compositeActionTemplate.afterEach,
+    currentModelEnvironment,
     actionParamValues,
-    currentModel,
   ): undefined;
 
   const afterAllResolved = compositeActionTemplate.afterAll?resolveCompositeActionTemplate(
     compositeActionTemplate.afterAll,
+    currentModelEnvironment,
     actionParamValues,
-    currentModel,
   ): undefined;
 
   const compositeActionResolved: {[k: string]: TestCompositeAction} = Object.fromEntries(
     Object.entries(compositeActionTemplate.testCompositeActions).map(([key, value]):[string, TestCompositeAction] => {
       return [
         key,
-        resolveTestCompositeActionTemplate(value, actionParamValues, currentModel)
+        resolveTestCompositeActionTemplate(value, currentModelEnvironment, actionParamValues, )
           .resolvedTestCompositeActionDefinition,
       ];
     }

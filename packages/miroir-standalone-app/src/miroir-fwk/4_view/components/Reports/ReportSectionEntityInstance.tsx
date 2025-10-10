@@ -17,6 +17,7 @@ import {
   SyncQueryRunnerParams,
   Uuid,
   adminConfigurationDeploymentMiroir,
+  defaultMiroirModelEnvironment,
   entityDefinitionQuery,
   entityQueryVersion,
   entityTransformerTest,
@@ -185,12 +186,14 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
 
   const instance: any = props.instance;
 
+  // const currentModel: MetaModel = useCurrentModel(
   const currentModel: MetaModel = useCurrentModel(
     context.applicationSection == "data"
       ? context.deploymentUuid
       : adminConfigurationDeploymentMiroir.uuid
   );
 
+  const currentModelEnvironment = defaultMiroirModelEnvironment;
   const domainController: DomainControllerInterface = useDomainControllerService();
 
   const currentReportDeploymentSectionEntities: Entity[] = currentModel.entities; // Entities are always defined in the 'model' section
@@ -321,7 +324,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                 },
               },
             },
-            currentModel
+            currentModelEnvironment // TODO: use correct model environment
           );
         } else {
           const updateAction: InstanceAction = {

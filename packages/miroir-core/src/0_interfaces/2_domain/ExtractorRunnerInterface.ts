@@ -214,7 +214,9 @@ export type AsyncQueryTemplateRunner<ResultType> = (
 // ################################################################################################
 // ################################################################################################
 // QUERY OR EXTRACTOR  ############################################################################
-export type ExtractorOrQueryRunnerMap<StateType> = AsyncBoxedExtractorOrQueryRunnerMap | SyncBoxedExtractorOrQueryRunnerMap<StateType>;
+export type ExtractorOrQueryRunnerMap<StateType> =
+  | AsyncBoxedExtractorOrQueryRunnerMap
+  | SyncBoxedExtractorOrQueryRunnerMap<StateType>;
 
 // ################################################################################################
 // ################################################################################################
@@ -250,6 +252,7 @@ export type AsyncBoxedExtractorOrQueryRunnerMap = {
   applyExtractorTransformer(
     // query: ExtendedTransformerForRuntime,
     query: ExtendedTransformerForRuntime | TransformerForBuildPlusRuntime,
+    modelEnvironment: MiroirModelEnvironment,
     queryParams: Record<string, any>,
     newFetchedData: Record<string, any>,
     extractors: Record<

@@ -25,7 +25,9 @@ import {
   RestClientCallReturnType,
   RestPersistenceClientAndRestClientInterface,
   StoreOrBundleAction,
-  storeActionOrBundleActionStoreRunner
+  storeActionOrBundleActionStoreRunner,
+  type MetaModel,
+  type MiroirModelEnvironment
 } from "miroir-core";
 import { handlePromiseActionForSaga } from 'src/sagaTools.js';
 import { packageName } from '../../constants.js';
@@ -111,7 +113,7 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
   }
 
   // ###############################################################################
-  public getSagaMiddleware()  {
+  public getSagaMiddleware() {
     return this.sagaMiddleware;
   }
 
@@ -143,7 +145,9 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
   }
 
   // ###############################################################################
-  async handlePersistenceActionForLocalCache(action: PersistenceAction): Promise<Action2ReturnType> {
+  async handlePersistenceActionForLocalCache(
+    action: PersistenceAction
+  ): Promise<Action2ReturnType> {
     if (!this.localCache) {
       throw new Error(
         "PersistenceReduxSaga handlePersistenceActionForLocalCache localCache not defined yet, please execute instance method PersistenceReduxSaga.run(LocalCache) before calling handlePersistenceAction!"
@@ -151,52 +155,55 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
     }
     switch (action.actionType) {
       // case 'modelAction':
-      case 'initModel':
-      case 'commit':
-      case 'rollback':
-      case 'remoteLocalCacheRollback':
-      case 'resetModel':
-      case 'resetData':
-      case 'alterEntityAttribute':
-      case 'renameEntity':
-      case 'createEntity':
-      case 'dropEntity':
+      case "initModel":
+      case "commit":
+      case "rollback":
+      case "remoteLocalCacheRollback":
+      case "resetModel":
+      case "resetData":
+      case "alterEntityAttribute":
+      case "renameEntity":
+      case "createEntity":
+      case "dropEntity":
       // case 'instanceAction':
-      case 'createInstance':
-      case 'deleteInstance':
-      case 'deleteInstanceWithCascade':
-      case 'updateInstance':
-      case 'loadNewInstancesInLocalCache':
-      case 'getInstance':
-      case 'getInstances':
-      // 
-      case 'LocalPersistenceAction':
-      case 'RestPersistenceAction':
-      case 'bundleAction':
-      // case 'storeManagementAction': 
+      case "createInstance":
+      case "deleteInstance":
+      case "deleteInstanceWithCascade":
+      case "updateInstance":
+      case "loadNewInstancesInLocalCache":
+      case "getInstance":
+      case "getInstances":
+      //
+      case "LocalPersistenceAction":
+      case "RestPersistenceAction":
+      case "bundleAction":
+      // case 'storeManagementAction':
       case "storeManagementAction_createStore":
       case "storeManagementAction_deleteStore":
       case "storeManagementAction_resetAndInitApplicationDeployment":
       case "storeManagementAction_openStore":
       case "storeManagementAction_closeStore": {
         throw new Error(
-          "PersistenceReduxSaga handlePersistenceActionForLocalCache should not be used to handle action " + JSON.stringify(action) + " please use handleStoreOrBundleActionForLocalStore instead!"
+          "PersistenceReduxSaga handlePersistenceActionForLocalCache should not be used to handle action " +
+            JSON.stringify(action) +
+            " please use handleStoreOrBundleActionForLocalStore instead!"
         );
       }
-      case 'runBoxedExtractorOrQueryAction': {
+      case "runBoxedExtractorOrQueryAction": {
         const result: Action2ReturnType = this.localCache.runBoxedExtractorOrQueryAction(action);
         // log.info("PersistenceReduxSaga handleLocalCacheAction", action, "returned", result)
         return result;
         break;
       }
-      case 'runBoxedExtractorAction':
-      case 'runBoxedQueryAction':
-      case 'runBoxedQueryTemplateAction':
-      case 'runBoxedExtractorTemplateAction':
-      case 'runBoxedQueryTemplateOrBoxedExtractorTemplateAction':
+      case "runBoxedExtractorAction":
+      case "runBoxedQueryAction":
+      case "runBoxedQueryTemplateAction":
+      case "runBoxedExtractorTemplateAction":
+      case "runBoxedQueryTemplateOrBoxedExtractorTemplateAction":
       default: {
         throw new Error(
-          "PersistenceReduxSaga handlePersistenceActionForLocalCache could not handle action " + JSON.stringify(action)
+          "PersistenceReduxSaga handlePersistenceActionForLocalCache could not handle action " +
+            JSON.stringify(action)
         );
         break;
       }
@@ -211,56 +218,66 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
       );
     }
     const result: Action2ReturnType = await this.localCache.dispatchToReduxStore(
-      this.persistenceActionReduxSaga.handlePersistenceAction.creator({action})
+      this.persistenceActionReduxSaga.handlePersistenceAction.creator({ action })
     );
-    log.info("handlePersistenceAction", action, "returned", result)
+    log.info("handlePersistenceAction", action, "returned", result);
     return Promise.resolve(result);
   }
-  
+
   // ###############################################################################
-  async handleStoreOrBundleActionForLocalStore(action: StoreOrBundleAction): Promise<Action2ReturnType> {
+  async handleStoreOrBundleActionForLocalStore(
+    action: StoreOrBundleAction
+  ): Promise<Action2ReturnType> {
     if (!this.localCache) {
       throw new Error(
         "PersistenceReduxSaga handlePersitentAction localCache not defined yet, please execute instance method PersistenceReduxSaga.run(LocalCache) before calling handlePersistenceAction!"
       );
     }
     const result: Action2ReturnType = await this.localCache.dispatchToReduxStore(
-      this.persistenceActionReduxSaga.handleStoreOrBundleActionForLocalStore.creator({action})
+      this.persistenceActionReduxSaga.handleStoreOrBundleActionForLocalStore.creator({ action })
     );
     // log.info("LocalCache handleStoreOrBundleActionForLocalStore", action, "returned", result)
     return Promise.resolve(result);
   }
-  
+
   // ###############################################################################
   // ###############################################################################
   // ###############################################################################
-  async handlePersistenceActionForRemoteStore(action: PersistenceAction): Promise<Action2ReturnType> {
+  async handlePersistenceActionForRemoteStore(
+    action: PersistenceAction
+  ): Promise<Action2ReturnType> {
     if (!this.localCache) {
       throw new Error(
         "PersistenceReduxSaga handlePersistenceActionForRemoteStore localCache not defined yet, please execute instance method PersistenceReduxSaga.run(LocalCache) before calling handlePersistenceAction!"
       );
     }
     const result: Action2ReturnType = await this.localCache.dispatchToReduxStore(
-      this.persistenceActionReduxSaga.handlePersistenceActionForRemoteStore.creator({action})
+      this.persistenceActionReduxSaga.handlePersistenceActionForRemoteStore.creator({ action })
     );
     // log.info("LocalCache handlePersistenceActionForRemoteStore", action, "returned", result)
     return Promise.resolve(result);
   }
-  
+
   // ###############################################################################
-  async handlePersistenceActionForLocalPersistenceStore(action: PersistenceAction): Promise<Action2ReturnType> {
+  async handlePersistenceActionForLocalPersistenceStore(
+    action: PersistenceAction,
+    currentModel?: MiroirModelEnvironment
+  ): Promise<Action2ReturnType> {
     if (!this.localCache) {
       throw new Error(
         "PersistenceReduxSaga handlePersistenceActionForLocalPersistenceStore localCache not defined yet, please execute instance method PersistenceReduxSaga.run(LocalCache) before calling handlePersistenceAction!"
       );
     }
     const result: Action2ReturnType = await this.localCache.dispatchToReduxStore(
-      this.persistenceActionReduxSaga.handlePersistenceActionForLocalPersistenceStore.creator({action})
+      this.persistenceActionReduxSaga.handlePersistenceActionForLocalPersistenceStore.creator({
+        action,
+        currentModel,
+      })
     );
     // log.info("LocalCache handlePersistenceActionForLocalPersistenceStore", action, "returned", result)
     return Promise.resolve(result);
   }
-  
+
   // ###############################################################################
   // ###############################################################################
   // ###############################################################################
@@ -269,11 +286,13 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
   // ###############################################################################
   // ###############################################################################
   // ###############################################################################
-  public* innerHandlePersistenceActionForLocalPersistenceStore(
+  public *innerHandlePersistenceActionForLocalPersistenceStore(
     action: PersistenceAction,
-    localPersistenceStoreController: PersistenceStoreControllerInterface | undefined,
-  // ): Generator<Action2ReturnType | CallEffect<Action2ReturnType> | CallEffect<RestClientCallReturnType>> {
-  ): Generator<Action2ReturnType | CallEffect<Action2ReturnType> | CallEffect<RestClientCallReturnType>> {
+    currentModel: MiroirModelEnvironment | undefined,
+    localPersistenceStoreController: PersistenceStoreControllerInterface | undefined
+  ): Generator<
+    Action2ReturnType | CallEffect<Action2ReturnType> | CallEffect<RestClientCallReturnType>
+  > {
     if (!this.localCache) {
       throw new Error(
         "PersistenceReduxSaga innerHandlePersistenceActionForLocalPersistenceStore localCache not defined yet, please execute instance method PersistenceReduxSaga.run(LocalCache) before calling handlePersistenceAction!"
@@ -283,8 +302,8 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
       "PersistenceReduxSaga innerHandlePersistenceActionForLocalPersistenceStore called",
       this.params.persistenceStoreAccessMode,
       "action",
-      action,
-    )
+      action
+    );
     if (this.params.persistenceStoreAccessMode != "local") {
       throw new Error(
         "PersistenceReduxSaga innerHandlePersistenceActionForLocalPersistenceStore called with persistenceStoreAccessMode = remote, this is not allowed!"
@@ -314,10 +333,12 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
       case "storeManagementAction_resetAndInitApplicationDeployment":
       case "storeManagementAction_openStore":
       case "storeManagementAction_closeStore":
-      // 
+      //
       case "bundleAction": {
         throw new Error(
-          "PersistenceActionReduxSaga innerHandlePersistenceActionForLocalPersistenceStore should not be used to handle action " + JSON.stringify(action) + " please use handleStoreOrBundleActionForLocalStore instead!"
+          "PersistenceActionReduxSaga innerHandlePersistenceActionForLocalPersistenceStore should not be used to handle action " +
+            JSON.stringify(action) +
+            " please use handleStoreOrBundleActionForLocalStore instead!"
         );
         // const result = yield* call(() =>
         //   storeActionOrBundleActionStoreRunner(
@@ -329,32 +350,31 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
         break;
       }
       // case "instanceAction":
-      case 'createInstance':
-      case 'deleteInstance':
-      case 'deleteInstanceWithCascade':
-      case 'updateInstance':
-      case 'loadNewInstancesInLocalCache':
-      case 'getInstance':
-      case 'getInstances':
+      case "createInstance":
+      case "deleteInstance":
+      case "deleteInstanceWithCascade":
+      case "updateInstance":
+      case "loadNewInstancesInLocalCache":
+      case "getInstance":
+      case "getInstances":
       // case "modelAction": {
-      case 'initModel':
-      case 'commit':
-      case 'rollback':
-      case 'remoteLocalCacheRollback':
-      case 'resetModel':
-      case 'resetData':
-      case 'alterEntityAttribute':
-      case 'renameEntity':
-      case 'createEntity':
-      case 'dropEntity': {
+      case "initModel":
+      case "commit":
+      case "rollback":
+      case "remoteLocalCacheRollback":
+      case "resetModel":
+      case "resetData":
+      case "alterEntityAttribute":
+      case "renameEntity":
+      case "createEntity":
+      case "dropEntity": {
         if (!localPersistenceStoreController) {
           throw new Error(
             // "innerHandlePersistenceActionForLocalPersistenceStore could not find controller for deployment: " + action.deploymentUuid
             "PersistenceActionReduxSaga could not find controller for deployment: " +
-            action.deploymentUuid
+              action.deploymentUuid
             // " available controllers: " +
             // this.persistenceStoreControllerManager.getPersistenceStoreControllers()
-
           );
         }
         log.info(
@@ -362,7 +382,9 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
           action
           // JSON.stringify(action, undefined, 2)
         );
-        const localStoreResult = yield* call(() => localPersistenceStoreController.handleAction(action));
+        const localStoreResult = yield* call(() =>
+          localPersistenceStoreController.handleAction(action)
+        );
         return localStoreResult;
         break;
       }
@@ -396,10 +418,12 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
                 parentName: action.parentName ?? "",
                 parentUuid: action.parentUuid ?? "",
                 applicationSection: action.section,
-                instances: (Array.isArray(action.objects) ? action.objects : []) as EntityInstance[],
+                instances: (Array.isArray(action.objects)
+                  ? action.objects
+                  : []) as EntityInstance[],
               },
             ],
-          }
+          },
         } as PersistenceStoreControllerAction;
         log.info(
           "PersistenceActionReduxSaga innerHandlePersistenceActionForLocalPersistenceStore handle LocalPersistenceAction",
@@ -427,11 +451,12 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
       case "runBoxedExtractorAction": {
         if (!localPersistenceStoreController) {
           throw new Error(
-            "innerHandlePersistenceActionForLocalPersistenceStore could not find controller for deployment: " + action.deploymentUuid
+            "innerHandlePersistenceActionForLocalPersistenceStore could not find controller for deployment: " +
+              action.deploymentUuid
           );
         }
         const localStoreResult = yield* call(() =>
-          localPersistenceStoreController.handleBoxedExtractorAction(action)
+          localPersistenceStoreController.handleBoxedExtractorAction(action, currentModel)
         );
         return localStoreResult;
         break;
@@ -439,11 +464,12 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
       case "runBoxedQueryAction": {
         if (!localPersistenceStoreController) {
           throw new Error(
-            "innerHandlePersistenceActionForLocalPersistenceStore could not find controller for deployment: " + action.deploymentUuid
+            "innerHandlePersistenceActionForLocalPersistenceStore could not find controller for deployment: " +
+              action.deploymentUuid
           );
         }
         const localStoreResult = yield* call(() =>
-          localPersistenceStoreController.handleBoxedQueryAction(action)
+          localPersistenceStoreController.handleBoxedQueryAction(action, currentModel)
         );
         return localStoreResult;
         break;
@@ -451,24 +477,29 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
       case "runBoxedExtractorOrQueryAction": {
         if (!localPersistenceStoreController) {
           throw new Error(
-            "innerHandlePersistenceActionForLocalPersistenceStore could not find controller for deployment: " + action.deploymentUuid
+            "innerHandlePersistenceActionForLocalPersistenceStore could not find controller for deployment: " +
+              action.deploymentUuid
           );
         }
         switch (action.payload.query.queryType) {
           case "boxedExtractorOrCombinerReturningObjectList":
           case "boxedExtractorOrCombinerReturningObject": {
-            const localQuery: BoxedExtractorOrCombinerReturningObjectOrObjectList = action.payload.query;
+            const localQuery: BoxedExtractorOrCombinerReturningObjectOrObjectList =
+              action.payload.query;
             const localStoreResult = yield* call(() =>
-              localPersistenceStoreController.handleBoxedExtractorAction({
-                actionType: "runBoxedExtractorAction",
-                actionName: action.actionName,
-                deploymentUuid: action.deploymentUuid,
-                endpoint: action.endpoint,
-                payload: {
-                  applicationSection: action.payload.applicationSection,
-                  query: localQuery,
-                }
-              })
+              localPersistenceStoreController.handleBoxedExtractorAction(
+                {
+                  actionType: "runBoxedExtractorAction",
+                  actionName: action.actionName,
+                  deploymentUuid: action.deploymentUuid,
+                  endpoint: action.endpoint,
+                  payload: {
+                    applicationSection: action.payload.applicationSection,
+                    query: localQuery,
+                  },
+                },
+                currentModel
+              )
             );
             return localStoreResult;
             break;
@@ -476,16 +507,19 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
           case "boxedQueryWithExtractorCombinerTransformer": {
             const localQuery: BoxedQueryWithExtractorCombinerTransformer = action.payload.query;
             const localStoreResult = yield* call(() =>
-              localPersistenceStoreController.handleBoxedQueryAction({
-                actionType: "runBoxedQueryAction",
-                actionName: action.actionName,
-                deploymentUuid: action.deploymentUuid,
-                endpoint: action.endpoint,
-                payload: {
-                  applicationSection: action.payload.applicationSection,
-                  query: localQuery,
-                }
-              })
+              localPersistenceStoreController.handleBoxedQueryAction(
+                {
+                  actionType: "runBoxedQueryAction",
+                  actionName: action.actionName,
+                  deploymentUuid: action.deploymentUuid,
+                  endpoint: action.endpoint,
+                  payload: {
+                    applicationSection: action.payload.applicationSection,
+                    query: localQuery,
+                  },
+                },
+                currentModel
+              )
             );
             return localStoreResult;
             break;
@@ -503,7 +537,8 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
       case "runBoxedQueryTemplateAction": {
         if (!localPersistenceStoreController) {
           throw new Error(
-            "innerHandlePersistenceActionForLocalPersistenceStore could not find controller for deployment: " + action.deploymentUuid
+            "innerHandlePersistenceActionForLocalPersistenceStore could not find controller for deployment: " +
+              action.deploymentUuid
           );
         }
         const localStoreResult = yield* call(() =>
@@ -515,7 +550,8 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
       case "runBoxedExtractorTemplateAction": {
         if (!localPersistenceStoreController) {
           throw new Error(
-            "innerHandlePersistenceActionForLocalPersistenceStore could not find controller for deployment: " + action.deploymentUuid
+            "innerHandlePersistenceActionForLocalPersistenceStore could not find controller for deployment: " +
+              action.deploymentUuid
           );
         }
         const localStoreResult = yield* call(() =>
@@ -525,14 +561,16 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
         break;
       }
       case "runBoxedQueryTemplateOrBoxedExtractorTemplateAction": {
-
         if (!localPersistenceStoreController) {
           throw new Error(
-            "innerHandlePersistenceActionForLocalPersistenceStore could not find controller for deployment: " + action.deploymentUuid
+            "innerHandlePersistenceActionForLocalPersistenceStore could not find controller for deployment: " +
+              action.deploymentUuid
           );
         }
         const localStoreResult = yield* call(() =>
-          localPersistenceStoreController.handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(action)
+          localPersistenceStoreController.handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(
+            action
+          )
         );
         return localStoreResult;
         break;
@@ -540,7 +578,8 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
       case "RestPersistenceAction":
       default: {
         throw new Error(
-          "PersistenceActionReduxSaga innerHandlePersistenceActionForLocalPersistenceStore could not handle action " + JSON.stringify(action)
+          "PersistenceActionReduxSaga innerHandlePersistenceActionForLocalPersistenceStore could not handle action " +
+            JSON.stringify(action)
         );
       }
     }
@@ -548,11 +587,13 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
   }
 
   // ###############################################################################
-  public* innerHandleLocalStoreOrBundleAction(
+  public *innerHandleLocalStoreOrBundleAction(
     action: StoreOrBundleAction,
-    localPersistenceStoreControllerManager: PersistenceStoreControllerManagerInterface, // used only in storeManagementAction and bundleAction cases
-  // ): Generator<Action2ReturnType | CallEffect<Action2ReturnType> | CallEffect<RestClientCallReturnType>> {
-  ): Generator<Action2ReturnType | CallEffect<Action2ReturnType> | CallEffect<RestClientCallReturnType>> {
+    localPersistenceStoreControllerManager: PersistenceStoreControllerManagerInterface // used only in storeManagementAction and bundleAction cases
+    // ): Generator<Action2ReturnType | CallEffect<Action2ReturnType> | CallEffect<RestClientCallReturnType>> {
+  ): Generator<
+    Action2ReturnType | CallEffect<Action2ReturnType> | CallEffect<RestClientCallReturnType>
+  > {
     if (!this.localCache) {
       throw new Error(
         "PersistenceReduxSaga innerHandleLocalStoreOrBundleAction localCache not defined yet, please execute instance method PersistenceReduxSaga.run(LocalCache) before calling handlePersistenceAction!"
@@ -576,10 +617,12 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
   }
 
   // ###############################################################################
-  public* innerHandlePersistenceActionForLocalCache(
+  public *innerHandlePersistenceActionForLocalCache(
     action: StoreOrBundleAction,
-    localPersistenceStoreControllerManager: PersistenceStoreControllerManagerInterface, // used only in storeManagementAction and bundleAction cases
-  ): Generator<Action2ReturnType | CallEffect<Action2ReturnType> | CallEffect<RestClientCallReturnType>> {
+    localPersistenceStoreControllerManager: PersistenceStoreControllerManagerInterface // used only in storeManagementAction and bundleAction cases
+  ): Generator<
+    Action2ReturnType | CallEffect<Action2ReturnType> | CallEffect<RestClientCallReturnType>
+  > {
     if (!this.localCache) {
       throw new Error(
         "PersistenceReduxSaga innerHandlePersistenceActionForLocalCache localCache not defined yet, please execute instance method PersistenceReduxSaga.run(LocalCache) before calling handlePersistenceAction!"
@@ -603,10 +646,12 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
   }
 
   // ###############################################################################
-  public* innerHandlePersistenceActionForRemoteStore(
+  public *innerHandlePersistenceActionForRemoteStore(
     action: PersistenceAction,
-    remotePersistenceStoreRestClient: RestPersistenceClientAndRestClientInterface,
-  ): Generator<Action2ReturnType | CallEffect<Action2ReturnType> | CallEffect<RestClientCallReturnType>> {
+    remotePersistenceStoreRestClient: RestPersistenceClientAndRestClientInterface
+  ): Generator<
+    Action2ReturnType | CallEffect<Action2ReturnType> | CallEffect<RestClientCallReturnType>
+  > {
     if (this.params.persistenceStoreAccessMode != "remote") {
       throw new Error(
         "PersistenceActionReduxSaga innerHandlePersistenceActionForRemoteStore called with persistenceStoreAccessMode = local, this is not allowed!" +
@@ -629,7 +674,10 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
     const clientResult: RestClientCallReturnType = yield* call(() =>
       remotePersistenceStoreRestClient.handleNetworkPersistenceAction(action)
     );
-    log.debug("innerHandlePersistenceActionForRemoteStore from remoteStoreNetworkClient received clientResult", clientResult);
+    log.debug(
+      "innerHandlePersistenceActionForRemoteStore from remoteStoreNetworkClient received clientResult",
+      clientResult
+    );
 
     switch (action.actionType) {
       case "RestPersistenceAction": {
@@ -641,7 +689,10 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
             instances: clientResult.data.instances,
           },
         };
-        log.debug("innerHandlePersistenceActionForRemoteStore remoteStoreNetworkClient received result", result.status);
+        log.debug(
+          "innerHandlePersistenceActionForRemoteStore remoteStoreNetworkClient received result",
+          result.status
+        );
         return result;
         break;
       }
@@ -684,39 +735,42 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
         return clientResult.data;
         break;
       }
-      case 'getInstance':
-      case 'getInstances':
-      case 'createInstance':
-      case 'deleteInstance':
-      case 'deleteInstanceWithCascade':
-      case 'updateInstance': {
+      case "getInstance":
+      case "getInstances":
+      case "createInstance":
+      case "deleteInstance":
+      case "deleteInstanceWithCascade":
+      case "updateInstance": {
         return clientResult.data as Action2ReturnType;
       }
       case "bundleAction":
       // case "instanceAction":
-      case 'loadNewInstancesInLocalCache':
-      // 
+      case "loadNewInstancesInLocalCache":
+      //
       // case "modelAction":
-      case 'initModel':
-      case 'commit':
-      case 'rollback':
-      case 'remoteLocalCacheRollback':
-      case 'resetModel':
-      case 'resetData':
-      case 'alterEntityAttribute':
-      case 'renameEntity':
-      case 'createEntity':
-      case 'dropEntity':
+      case "initModel":
+      case "commit":
+      case "rollback":
+      case "remoteLocalCacheRollback":
+      case "resetModel":
+      case "resetData":
+      case "alterEntityAttribute":
+      case "renameEntity":
+      case "createEntity":
+      case "dropEntity":
       // case "storeManagementAction":
       case "storeManagementAction_createStore":
       case "storeManagementAction_deleteStore":
       case "storeManagementAction_resetAndInitApplicationDeployment":
       case "storeManagementAction_openStore":
       case "storeManagementAction_closeStore":
-      // 
+      //
       case "LocalPersistenceAction":
       default: {
-        log.debug("innerHandlePersistenceActionForRemoteStore received result", clientResult.status);
+        log.debug(
+          "innerHandlePersistenceActionForRemoteStore received result",
+          clientResult.status
+        );
         return yield ACTION_OK;
         break;
       }
@@ -734,7 +788,7 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
         ActionCreatorWithPayload<any, "handlePersistenceAction">
       >;
       generator: (a: any) => PersistenceSagaGenReturnType;
-    },
+    };
     handleStoreOrBundleActionForLocalStore: {
       name: "handleStoreOrBundleActionForLocalStore";
       creator: SagaPromiseActionCreator<
@@ -779,31 +833,33 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
     handlePersistenceAction: {
       name: "handlePersistenceAction",
       creator: promiseActionFactory<Action2ReturnType>().create<
-        { action: PersistenceAction },
+        { action: PersistenceAction; currentModel?: MiroirModelEnvironment },
         "handlePersistenceAction"
       >("handlePersistenceAction"),
       generator: function* (
         this: PersistenceReduxSaga,
-        p: PayloadAction<{ action: PersistenceAction }>
-      ): Generator<Action2ReturnType | CallEffect<Action2ReturnType> | CallEffect<RestClientCallReturnType>> {
-        const { action } = p.payload;
+        p: PayloadAction<{ action: PersistenceAction; currentModel?: MiroirModelEnvironment }>
+      ): Generator<
+        Action2ReturnType | CallEffect<Action2ReturnType> | CallEffect<RestClientCallReturnType>
+      > {
+        const { action, currentModel } = p.payload;
         try {
           if (this.params.persistenceStoreAccessMode == "local") {
             const localPersistenceStoreController =
-              this.params.localPersistenceStoreControllerManager.getPersistenceStoreController(action.deploymentUuid);
+              this.params.localPersistenceStoreControllerManager.getPersistenceStoreController(
+                action.deploymentUuid
+              );
 
-            return (
-              yield *
-              this.innerHandlePersistenceActionForLocalPersistenceStore(
-                action,
-                localPersistenceStoreController
-              )
+            return yield* this.innerHandlePersistenceActionForLocalPersistenceStore(
+              action,
+              currentModel,
+              localPersistenceStoreController
             );
           }
           if (this.params.persistenceStoreAccessMode == "remote") {
-            return (
-              yield *
-              this.innerHandlePersistenceActionForRemoteStore(action, this.params.remotePersistenceStoreRestClient)
+            return yield* this.innerHandlePersistenceActionForRemoteStore(
+              action,
+              this.params.remotePersistenceStoreRestClient
             );
           }
 
@@ -812,8 +868,13 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
               JSON.stringify(action)
           );
         } catch (e: any) {
-          log.error("handlePersistenceAction exception", e, "for action", JSON.stringify(action, undefined, 2));
-          
+          log.error(
+            "handlePersistenceAction exception",
+            e,
+            "for action",
+            JSON.stringify(action, undefined, 2)
+          );
+
           // Handle structured errors from REST API
           if (e.isStructuredError && e.errorData) {
             log.info("Structured error received from server:", e.errorData);
@@ -824,24 +885,29 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
               e.errorData.error || "FailedToHandlePersistenceAction",
               e.errorData.message || e.message,
               e.errorData.error,
-              { 
-                status: "error", 
+              {
+                status: "error",
                 errorType: e.errorData.error,
                 errorMessage: "statuscode: " + e.statusCode + e.errorData.message,
                 // statusCode: e.statusCode,
                 errorStack: [e.errorData.message],
                 // isServerError: true
-              },
+              }
             );
             return result;
           }
-          
+
           const result: Action2ReturnType = new Action2Error(
             "FailedToHandlePersistenceAction", // TODO: correct errorType!
             e["message"],
             e["errorType"],
-            { status: "error", errorType: e["errorType"], errorMessage: e["message"], errorStack: [e["message"]] },
-          )
+            {
+              status: "error",
+              errorType: e["errorType"],
+              errorMessage: e["message"],
+              errorStack: [e["message"]],
+            }
+          );
           return result;
         }
       }.bind(this),
@@ -854,9 +920,11 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
       >("handlePersistenceActionForLocalPersistenceStore"),
       generator: function* (
         this: PersistenceReduxSaga,
-        p: PayloadAction<{ action: PersistenceAction }>
-      ): Generator<Action2ReturnType | CallEffect<Action2ReturnType> | CallEffect<RestClientCallReturnType>> {
-        const { action } = p.payload;
+        p: PayloadAction<{ action: PersistenceAction; currentModel?: MiroirModelEnvironment }>
+      ): Generator<
+        Action2ReturnType | CallEffect<Action2ReturnType> | CallEffect<RestClientCallReturnType>
+      > {
+        const { action, currentModel } = p.payload;
         try {
           if (this.params.persistenceStoreAccessMode !== "local") {
             throw new Error(
@@ -867,24 +935,29 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
             );
           }
           const localPersistenceStoreController =
-            this.params.localPersistenceStoreControllerManager.getPersistenceStoreController(action.deploymentUuid);
+            this.params.localPersistenceStoreControllerManager.getPersistenceStoreController(
+              action.deploymentUuid
+            );
 
-          return (
-            yield *
-            this.innerHandlePersistenceActionForLocalPersistenceStore(
-              action,
-              localPersistenceStoreController
-            )
+          return yield* this.innerHandlePersistenceActionForLocalPersistenceStore(
+            action,
+            currentModel,
+            localPersistenceStoreController
           );
         } catch (e: any) {
           log.error("handlePersistenceAction exception", e);
-          
+
           const result: Action2ReturnType = new Action2Error(
             "FailedToHandlePersistenceActionForLocalPersistenceStore", // TODO: correct errorType!
             e["message"],
             e["errorType"],
-            { status: "error", errorType: e["errorType"], errorMessage: e["message"], errorStack: [e["message"]] },
-          )
+            {
+              status: "error",
+              errorType: e["errorType"],
+              errorMessage: e["message"],
+              errorStack: [e["message"]],
+            }
+          );
           return result;
         }
       }.bind(this),
@@ -898,7 +971,9 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
       generator: function* (
         this: PersistenceReduxSaga,
         p: PayloadAction<{ action: PersistenceAction }>
-      ): Generator<Action2ReturnType | CallEffect<Action2ReturnType> | CallEffect<RestClientCallReturnType>> {
+      ): Generator<
+        Action2ReturnType | CallEffect<Action2ReturnType> | CallEffect<RestClientCallReturnType>
+      > {
         const { action } = p.payload;
         try {
           if (this.params.persistenceStoreAccessMode == "local") {
@@ -907,16 +982,24 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
                 JSON.stringify(action)
             );
           }
-          return yield* this.innerHandlePersistenceActionForRemoteStore(action, this.params.remotePersistenceStoreRestClient);
+          return yield* this.innerHandlePersistenceActionForRemoteStore(
+            action,
+            this.params.remotePersistenceStoreRestClient
+          );
         } catch (e: any) {
           log.error("handlePersistenceActionForRemoteStore exception", e);
-          
-          const result: Action2ReturnType =  new Action2Error(
+
+          const result: Action2ReturnType = new Action2Error(
             "FailedToDeployModule", // TODO: correct errorType!
             e["message"],
             e["errorType"],
-            { status: "error", errorType: e["errorType"], errorMessage: e["message"], errorStack: [e["message"]] },
-          )
+            {
+              status: "error",
+              errorType: e["errorType"],
+              errorMessage: e["message"],
+              errorStack: [e["message"]],
+            }
+          );
           return result;
         }
       }.bind(this),
@@ -930,15 +1013,14 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
       generator: function* (
         this: PersistenceReduxSaga,
         p: PayloadAction<{ action: StoreOrBundleAction }>
-      ): Generator<Action2ReturnType | CallEffect<Action2ReturnType> | CallEffect<RestClientCallReturnType>> {
+      ): Generator<
+        Action2ReturnType | CallEffect<Action2ReturnType> | CallEffect<RestClientCallReturnType>
+      > {
         const { action } = p.payload;
         try {
-          return (
-            yield *
-            this.innerHandleLocalStoreOrBundleAction(
-              action,
-              this.params.localPersistenceStoreControllerManager,
-            )
+          return yield* this.innerHandleLocalStoreOrBundleAction(
+            action,
+            this.params.localPersistenceStoreControllerManager
           );
         } catch (e: any) {
           log.error("handleStoreOrBundleActionForLocalStore exception", e);
@@ -946,8 +1028,13 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
             "FailedToDeployModule", // TODO: correct errorType!
             e["message"],
             e["errorType"],
-            { status: "error", errorType: e["errorType"], errorMessage: e["message"], errorStack: [e["message"]] },
-          )
+            {
+              status: "error",
+              errorType: e["errorType"],
+              errorMessage: e["message"],
+              errorStack: [e["message"]],
+            }
+          );
           return result;
         }
       }.bind(this),

@@ -18,7 +18,9 @@ import {
   RootReport,
   SyncBoxedExtractorOrQueryRunnerMap,
   SyncQueryRunnerParams,
-  Uuid
+  Uuid,
+  defaultLibraryModelEnvironment,
+  defaultMiroirModelEnvironment
 } from "miroir-core";
 
 
@@ -121,7 +123,8 @@ export const ReportView = (props: ReportViewProps) => {
   const resolvedTemplateQuery: BoxedQueryWithExtractorCombinerTransformer = useMemo(
     () =>
       resolveQueryTemplateWithExtractorCombinerTransformer(
-        deploymentEntityStateFetchQueryTemplate
+        deploymentEntityStateFetchQueryTemplate,
+        defaultMiroirModelEnvironment, // TODO: use correct model environment
       ),
     [deploymentEntityStateFetchQueryTemplate]
   );
@@ -180,7 +183,7 @@ export const ReportView = (props: ReportViewProps) => {
     deploymentEntityStateFetchQueryParams
   );
 
-  // log.info("deploymentEntityStateQueryResults", deploymentEntityStateQueryResults);
+  log.info("deploymentEntityStateQueryResults", deploymentEntityStateQueryResults);
 
 
   const jzodSchemaSelectorMap: QueryRunnerMapForJzodSchema<ReduxDeploymentsState> = useMemo(

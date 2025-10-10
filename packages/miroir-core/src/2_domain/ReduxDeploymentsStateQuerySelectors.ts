@@ -107,7 +107,9 @@ export const selectEntityInstanceFromReduxDeploymentsState: SyncBoxedExtractorRu
           referenceName: querySelectorParams.objectReference,
         },
         "value",
-        {...modelEnvironment, ...selectorParams.extractor.queryParams},
+        // {...modelEnvironment, ...selectorParams.extractor.queryParams},
+        modelEnvironment,
+        selectorParams.extractor.queryParams,
         selectorParams.extractor.contextResults
       );
 
@@ -126,9 +128,9 @@ export const selectEntityInstanceFromReduxDeploymentsState: SyncBoxedExtractorRu
           "referenceObject",
           referenceObject,
           "queryParams",
-          JSON.stringify(selectorParams.extractor.queryParams, undefined, 2),
+          JSON.stringify(Object.keys(selectorParams.extractor.queryParams), undefined, 2),
           "######### contextResults",
-          JSON.stringify(selectorParams.extractor.contextResults, undefined, 2)
+          JSON.stringify(Object.keys(selectorParams.extractor.contextResults), undefined, 2)
         );
         return new Domain2ElementFailed({
           queryFailure: "IncorrectParameters",
@@ -193,7 +195,9 @@ export const selectEntityInstanceFromReduxDeploymentsState: SyncBoxedExtractorRu
           "combinerForObjectByRelation",
           querySelectorParams.applyTransformer,
           "value",
-          {...modelEnvironment, ...selectorParams.extractor.queryParams},
+          // {...modelEnvironment, ...selectorParams.extractor.queryParams},
+          modelEnvironment,
+          selectorParams.extractor.queryParams,
           {
             ...selectorParams.extractor.contextResults,
             referenceObject: actualReferenceObject,

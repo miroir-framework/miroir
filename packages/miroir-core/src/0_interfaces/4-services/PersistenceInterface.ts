@@ -1,13 +1,14 @@
 import { HttpMethod } from "../1_core/Http";
 import {
   BoxedQueryTemplateWithExtractorCombinerTransformer,
+  BoxedQueryWithExtractorCombinerTransformer,
   EntityInstance,
   EntityInstanceCollection,
+  LocalCacheAction,
   PersistenceAction,
-  BoxedQueryWithExtractorCombinerTransformer,
-  StoreOrBundleAction,
-  LocalCacheAction
+  StoreOrBundleAction
 } from "../1_core/preprocessor-generated/miroirFundamentalType";
+import type { MiroirModelEnvironment } from "../1_core/Transformer";
 import { DomainControllerInterface } from "../2_domain/DomainControllerInterface";
 import { Action2ReturnType } from "../2_domain/DomainElement";
 import { MError } from "../3_controllers/ErrorLogServiceInterface";
@@ -93,14 +94,13 @@ export default {};
  * Decorator to the Redux Store, handing specific Miroir entity slices
  */
 export declare interface PersistenceStoreLocalOrRemoteInterface {
-  handlePersistenceAction(
-    action: PersistenceAction
-  ): Promise<Action2ReturnType>;
-  handleStoreOrBundleActionForLocalStore(
-    action: StoreOrBundleAction
-  ): Promise<Action2ReturnType>;
+  handlePersistenceAction(action: PersistenceAction): Promise<Action2ReturnType>;
+  handleStoreOrBundleActionForLocalStore(action: StoreOrBundleAction): Promise<Action2ReturnType>;
   handlePersistenceActionForLocalCache(action: PersistenceAction): Promise<Action2ReturnType>;
-  handlePersistenceActionForLocalPersistenceStore(action: PersistenceAction): Promise<Action2ReturnType>;
+  handlePersistenceActionForLocalPersistenceStore(
+    action: PersistenceAction,
+    currentModel?: MiroirModelEnvironment, // TODO: make non-optional
+  ): Promise<Action2ReturnType>;
   handlePersistenceActionForRemoteStore(action: PersistenceAction): Promise<Action2ReturnType>;
   handleLocalCacheAction(action: LocalCacheAction): Action2ReturnType;
 }

@@ -65,7 +65,8 @@ export async function handleQueryTemplateAction(
   //   JSON.stringify(queryTemplateAction, null, 2)
   // );
   const resolvedQuery = resolveQueryTemplateWithExtractorCombinerTransformer( // TODO: separate aas resolvedQueryTemplate and resolvedExtractorTemplate
-    queryTemplateAction.payload.query
+    queryTemplateAction.payload.query,
+    modelEnvironment,
   );
   log.info(
     "handleQueryTemplateAction for ",
@@ -108,6 +109,7 @@ export async function handleBoxedExtractorTemplateAction(
   );
   const resolvedQuery = resolveBoxedExtractorOrCombinerTemplateReturningObjectOrObjectList( // TODO: separate aas resolvedQueryTemplate and resolvedExtractorTemplate
     boxedExtractorTemplateAction.payload.query,
+    modelEnvironment,
   );
 
   const extractorAction: RunBoxedExtractorAction = {
@@ -158,7 +160,7 @@ export async function handleBoxedExtractorTemplateOrQueryTemplateAction(
   if ("queryType" in queryTemplateOrExtractorTemplateAction.payload.query) {
     const resolvedQuery = resolveQueryTemplateWithExtractorCombinerTransformer( // TODO: separate aas resolvedQueryTemplate and resolvedExtractorTemplate
       queryTemplateOrExtractorTemplateAction.payload.query as BoxedQueryTemplateWithExtractorCombinerTransformer,
-  
+      modelEnvironment,
     );
     log.info(
       "handleBoxedExtractorTemplateOrQueryTemplateAction for ",
@@ -187,6 +189,7 @@ export async function handleBoxedExtractorTemplateOrQueryTemplateAction(
     const localQuery = queryTemplateOrExtractorTemplateAction.payload.query as BoxedExtractorTemplateReturningObjectOrObjectList;
     const resolvedQuery = resolveBoxedExtractorOrCombinerTemplateReturningObjectOrObjectList( // TODO: separate aas resolvedQueryTemplate and resolvedExtractorTemplate
       localQuery,
+      modelEnvironment,
     );
     log.info(
       "handleBoxedExtractorTemplateOrQueryTemplateAction for",
@@ -236,7 +239,10 @@ export const extractWithBoxedExtractorTemplate /**: SyncBoxedExtractorTemplateRu
     throw new Error("extractWithBoxedExtractorTemplate requires extractorRunnerMap");
   }
   const resolvedExtractor: BoxedExtractorOrCombinerReturningObjectOrObjectList =
-    resolveBoxedExtractorOrCombinerTemplateReturningObjectOrObjectList(selectorParams.extractorOrCombinerTemplate);
+    resolveBoxedExtractorOrCombinerTemplateReturningObjectOrObjectList(
+      selectorParams.extractorOrCombinerTemplate,
+      modelEnvironment
+    );
 
   return extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList(
     state,
@@ -264,7 +270,10 @@ export const runQueryTemplateWithExtractorCombinerTransformer = <StateType>(
 ): Domain2QueryReturnType<Record<string,any>> => { 
 
   const resolvedExtractor: BoxedQueryWithExtractorCombinerTransformer =
-    resolveQueryTemplateWithExtractorCombinerTransformer(selectorParams.extractorOrCombinerTemplate); 
+    resolveQueryTemplateWithExtractorCombinerTransformer(
+      selectorParams.extractorOrCombinerTemplate,
+      modelEnvironment
+    ); 
 
   // log.info("runQueryTemplateWithExtractorCombinerTransformer called", selectorParams, "resolvedExtractor", resolvedExtractor);
 
@@ -310,7 +319,9 @@ export const extractzodSchemaForSingleSelectQueryTemplate = <StateType>(
           selectorParams.query.select.label??selectorParams.query.select.extractorTemplateType,
           selectorParams.query.select.parentUuid,
           "value",
-          {...modelEnvironment, ...selectorParams.query.queryParams},
+          // {...modelEnvironment, ...selectorParams.query.queryParams},
+          modelEnvironment,
+          selectorParams.query.queryParams,
           selectorParams.query.contextResults
         );
 

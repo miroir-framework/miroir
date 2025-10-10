@@ -27,9 +27,13 @@ import {
   circularReplacer,
   // adminConfigurationDeploymentTest1,
   defaultLevels,
+  defaultLibraryAppModel,
+  defaultMiroirMetaModel,
   miroirCoreStartup,
-  restServerDefaultHandlers
-} from "miroir-core";
+  miroirFundamentalJzodSchema,
+  restServerDefaultHandlers,
+  type JzodSchema,
+  type MiroirModelEnvironment} from "miroir-core";
 
 import { miroirFileSystemStoreSectionStartup } from 'miroir-store-filesystem';
 import { miroirIndexedDbStoreSectionStartup } from 'miroir-store-indexedDb';
@@ -113,6 +117,20 @@ miroirPostgresStoreSectionStartup();
 const miroirActivityTracker = new MiroirActivityTracker();
 const miroirEventService = new MiroirEventService(miroirActivityTracker);
 
+const serverModelEnvironments: Record<string, MiroirModelEnvironment> = {
+  [adminConfigurationDeploymentMiroir.uuid]: {
+    miroirFundamentalJzodSchema: miroirFundamentalJzodSchema as JzodSchema,
+    miroirMetaModel: defaultMiroirMetaModel,
+    currentModel: defaultMiroirMetaModel,
+    deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
+  },
+  [adminConfigurationDeploymentLibrary.uuid]: {
+    miroirFundamentalJzodSchema: miroirFundamentalJzodSchema as JzodSchema,
+    miroirMetaModel: defaultMiroirMetaModel,
+    currentModel: defaultLibraryAppModel,
+    deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+  }
+};
 await MiroirLoggerFactory.startRegisteredLoggers(
   miroirActivityTracker,
   miroirEventService,
@@ -161,63 +179,80 @@ for (const c of Object.entries(configurations)) {
 // ##############################################################################################
 // CREATING ENDPOINTS SERVICING CRUD HANDLERS
 for (const op of restServerDefaultHandlers) {
+  const operationHandler = async (request: CustomRequest, response: any, context: any) => {
+    const body = request.body;
+    myLogger.info(`[CONSOLE DEBUG] Request received: ${op.method} ${request.originalUrl}`);
+    myLogger.info(
+      `[REQUEST START] ${op.method} ${request.originalUrl} - params:`,
+      JSON.stringify(request.params)
+    );
+
+    try {
+      myLogger.info(`[CONSOLE DEBUG] About to call handler`);
+      myLogger.info(
+        `[BEFORE HANDLER] About to call handler for ${op.method} ${request.originalUrl}`
+      );
+
+      await op.handler(
+        true, // useDomainControllerToHandleModelAndInstanceActions: since we're on the server, we use the localCache as intermediate step, to access the persistenceStore
+        (response: any) => response.json.bind(response),
+        response,
+        persistenceStoreControllerManager,
+        domainController,
+        op.method,
+        request.originalUrl,
+        body,
+        request.params
+      );
+
+      myLogger.info(`[CONSOLE DEBUG] Handler completed successfully`);
+      myLogger.info(
+        `[AFTER HANDLER] Handler completed successfully for ${op.method} ${request.originalUrl}`
+      );
+      // Don't return anything - the handler should have already sent the response
+    } catch (error) {
+      myLogger.info(`[CONSOLE DEBUG] Error caught:`, error);
+      myLogger.error(
+        `[ERROR CAUGHT] server could not handle action: ${op.method} on URL: ${op.url} error: ${error}`
+      );
+
+      // Send proper error response to client
+      if (!response.headersSent) {
+        myLogger.info(`[CONSOLE DEBUG] Sending error response`);
+        myLogger.info(
+          `[SENDING ERROR RESPONSE] Headers not sent, sending 500 error response for ${request.originalUrl}`
+        );
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        try {
+          response.status(500).json({
+            status: "error",
+            errorType: "ServerError",
+            errorMessage: `Failed to handle ${op.method} request on ${request.originalUrl}: ${errorMessage}`,
+            timestamp: new Date().toISOString(),
+          });
+          myLogger.info(`[CONSOLE DEBUG] Error response sent successfully`);
+          myLogger.info(
+            `[ERROR RESPONSE SENT] Error response sent successfully for ${request.originalUrl}`
+          );
+        } catch (responseError) {
+          myLogger.info(`[CONSOLE DEBUG] Failed to send error response:`, responseError);
+          myLogger.error(
+            `[ERROR SENDING RESPONSE] Failed to send error response: ${responseError}`
+          );
+        }
+      } else {
+        myLogger.info(`[CONSOLE DEBUG] Headers already sent, cannot send error response`);
+        myLogger.warn(
+          `[HEADERS ALREADY SENT] Cannot send error response for ${request.originalUrl} - headers already sent`
+        );
+      }
+      // Don't return anything - we've already handled the response
+    }
+  };
+
   (app as any)[op.method](
     op.url,
-    // jsonParser,
-    // urlencodedParser,
-    async (request: CustomRequest, response: any, context: any) => {
-      const body = request.body;
-      myLogger.info(`[CONSOLE DEBUG] Request received: ${op.method} ${request.originalUrl}`);
-      myLogger.info(`[REQUEST START] ${op.method} ${request.originalUrl} - params:`, JSON.stringify(request.params));
-      
-      try {
-        myLogger.info(`[CONSOLE DEBUG] About to call handler`);
-        myLogger.info(`[BEFORE HANDLER] About to call handler for ${op.method} ${request.originalUrl}`);
-        
-        await op.handler(
-          true, // useDomainControllerToHandleModelAndInstanceActions: since we're on the server, we use the localCache as intermediate step, to access the persistenceStore
-          (response: any) => response.json.bind(response),
-          response,
-          persistenceStoreControllerManager,
-          domainController,
-          op.method,
-          request.originalUrl,
-          body,
-          request.params
-        );
-        
-        myLogger.info(`[CONSOLE DEBUG] Handler completed successfully`);
-        myLogger.info(`[AFTER HANDLER] Handler completed successfully for ${op.method} ${request.originalUrl}`);
-        // Don't return anything - the handler should have already sent the response
-      } catch (error) {
-        myLogger.info(`[CONSOLE DEBUG] Error caught:`, error);
-        myLogger.error(`[ERROR CAUGHT] server could not handle action: ${op.method} on URL: ${op.url} error: ${error}`);
-        
-        // Send proper error response to client
-        if (!response.headersSent) {
-          myLogger.info(`[CONSOLE DEBUG] Sending error response`);
-          myLogger.info(`[SENDING ERROR RESPONSE] Headers not sent, sending 500 error response for ${request.originalUrl}`);
-          const errorMessage = error instanceof Error ? error.message : String(error);
-          try {
-            response.status(500).json({
-              status: "error",
-              errorType: "ServerError",
-              errorMessage: `Failed to handle ${op.method} request on ${request.originalUrl}: ${errorMessage}`,
-              timestamp: new Date().toISOString()
-            });
-            myLogger.info(`[CONSOLE DEBUG] Error response sent successfully`);
-            myLogger.info(`[ERROR RESPONSE SENT] Error response sent successfully for ${request.originalUrl}`);
-          } catch (responseError) {
-            myLogger.info(`[CONSOLE DEBUG] Failed to send error response:`, responseError);
-            myLogger.error(`[ERROR SENDING RESPONSE] Failed to send error response: ${responseError}`);
-          }
-        } else {
-          myLogger.info(`[CONSOLE DEBUG] Headers already sent, cannot send error response`);
-          myLogger.warn(`[HEADERS ALREADY SENT] Cannot send error response for ${request.originalUrl} - headers already sent`);
-        }
-        // Don't return anything - we've already handled the response
-      }
-    }
+    operationHandler,
   );
 }
 

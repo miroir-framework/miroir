@@ -452,7 +452,9 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
                   ],
                 }
               }
-            },props.tableComponentReportType == "EntityInstance"?currentModel:undefined
+            },
+            // props.tableComponentReportType == "EntityInstance"?currentModel:undefined
+            currentMiroirModelEnvironment // TODO: use model environment for current deployment
           );
         } else {
           const createAction: InstanceAction = {
@@ -514,7 +516,8 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
                 },
               },
             },
-            props.tableComponentReportType == "EntityInstance" ? currentModel : undefined
+            // props.tableComponentReportType == "EntityInstance" ? currentModel : undefined
+            currentMiroirModelEnvironment // TODO: use model environment for current deployment
           );
         } else {
           const updateAction: InstanceAction = {

@@ -351,6 +351,7 @@ export const applyExtractorForSingleObjectListToSelectedInstancesListInMemory = 
             relationQuery.applyTransformer,
             "value",
             defaultMiroirModelEnvironment, // queryParams. TODO: this is wrong, should be the actual modelEnvironment
+            query.queryParams,
             {...query.contextResults, referenceObject, foreignKeyObject: selectedInstance} // newFetchedData
           );
         }) : finalInstanceList;
@@ -545,6 +546,7 @@ export const applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemo
               relationQuery.applyTransformer,
               "value",
               defaultMiroirModelEnvironment, // queryParams. TODO: this is wrong, should be the actual modelEnvironment
+              query.queryParams,
               {...query.contextResults, referenceObject, foreignKeyObject: selectedInstance} // newFetchedData
             );
 
@@ -631,11 +633,12 @@ export const extractEntityInstanceListWithObjectListExtractorInMemory
 };
 
 // ################################################################################################
-export const applyExtractorTransformerInMemory = <T extends MiroirModelEnvironment>(
+export const applyExtractorTransformerInMemory = (
   // actionRuntimeTransformer: ExtendedTransformerForRuntime,
   actionRuntimeTransformer: TransformerForBuildPlusRuntime| ExtendedTransformerForRuntime,
   // queryParams: Record<string, any>,
-  queryParams: T,
+  modelEnvironment: MiroirModelEnvironment,
+  queryParams: Record<string, any>,
   newFetchedData: Record<string, any>
 // ): Domain2QueryReturnType<DomainElementSuccess> => {
 ): Domain2QueryReturnType<any> => {
@@ -646,6 +649,7 @@ export const applyExtractorTransformerInMemory = <T extends MiroirModelEnvironme
     [],
     "ROOT" /**WHAT?? */,
     actionRuntimeTransformer,
+    modelEnvironment,
     queryParams,
     newFetchedData
   );
@@ -736,7 +740,8 @@ export function innerSelectDomainElementFromExtractorOrCombiner/*BoxedExtractorT
   state: StateType,
   context: Record<string, any>,
   pageParams: Record<string, any>,
-  queryParams: MiroirModelEnvironment & Record<string, any>,
+  modelEnvironment: MiroirModelEnvironment,
+  queryParams: Record<string, any>,
   extractorRunnerMap: SyncBoxedExtractorOrQueryRunnerMap<StateType>,
   deploymentUuid: Uuid,
   extractorOrCombiner: ExtractorOrCombiner
@@ -771,7 +776,7 @@ export function innerSelectDomainElementFromExtractorOrCombiner/*BoxedExtractorT
                 },
           },
         },
-        queryParams // modelEnvironment
+        modelEnvironment,// queryParams // modelEnvironment
       );
       break;
     }
@@ -795,7 +800,7 @@ export function innerSelectDomainElementFromExtractorOrCombiner/*BoxedExtractorT
                 },
           },
         },
-        queryParams, // modelEnvironment
+        modelEnvironment,// queryParams, // modelEnvironment
       );
       break;
     }
@@ -812,6 +817,7 @@ export function innerSelectDomainElementFromExtractorOrCombiner/*BoxedExtractorT
                   state,
                   context,
                   pageParams ?? {},
+                  modelEnvironment,
                   queryParams ?? {},
                   extractorRunnerMap,
                   deploymentUuid,
@@ -830,6 +836,7 @@ export function innerSelectDomainElementFromExtractorOrCombiner/*BoxedExtractorT
             state,
             context,
             pageParams ?? {},
+            modelEnvironment,
             queryParams ?? {},
             extractorRunnerMap,
             deploymentUuid,
@@ -846,6 +853,7 @@ export function innerSelectDomainElementFromExtractorOrCombiner/*BoxedExtractorT
               state,
               context,
               pageParams,
+              modelEnvironment,
               queryParams,
               extractorRunnerMap,
               deploymentUuid,
@@ -858,6 +866,7 @@ export function innerSelectDomainElementFromExtractorOrCombiner/*BoxedExtractorT
               state,
               context,
               pageParams,
+              modelEnvironment,
               queryParams,
               extractorRunnerMap,
               deploymentUuid,
@@ -893,6 +902,7 @@ export function innerSelectDomainElementFromExtractorOrCombiner/*BoxedExtractorT
             // TODO: faking context results here! Should we send empty contextResults instead?
             const resolvedQuery: ExtractorOrCombiner | QueryFailed = resolveExtractorTemplate(
               extractorOrCombiner.subQueryTemplate.query,
+              modelEnvironment,
               innerQueryParams,
               innerQueryParams
             );
@@ -908,6 +918,7 @@ export function innerSelectDomainElementFromExtractorOrCombiner/*BoxedExtractorT
               state,
               context,
               pageParams,
+              modelEnvironment,
               innerQueryParams,
               extractorRunnerMap,
               deploymentUuid,
@@ -993,7 +1004,9 @@ export const extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList /*: 
     state,
     selectorParams.extractor.contextResults,
     selectorParams.extractor.pageParams,
-    {...modelEnvironment, ...selectorParams.extractor.queryParams},
+    // {...modelEnvironment, ...selectorParams.extractor.queryParams},
+    modelEnvironment,
+    selectorParams.extractor.queryParams,
     localSelectorMap as any,
     selectorParams.extractor.deploymentUuid,
     selectorParams.extractor.select
@@ -1041,8 +1054,9 @@ export const runQuery = <StateType>(
       state,
       context,
       selectorParams.extractor.pageParams,
+      modelEnvironment,
       {
-        ...modelEnvironment,
+        // ...modelEnvironment,
         ...selectorParams.extractor.pageParams,
         ...selectorParams.extractor.queryParams,
       },
@@ -1084,8 +1098,9 @@ export const runQuery = <StateType>(
       state,
       context,
       selectorParams.extractor.pageParams,
+      modelEnvironment,
       {
-        ...modelEnvironment,
+        // ...modelEnvironment,
         ...selectorParams.extractor.pageParams,
         ...selectorParams.extractor.queryParams,
       },
@@ -1101,11 +1116,16 @@ export const runQuery = <StateType>(
     Object.entries(
     selectorParams.extractor.runtimeTransformers ?? {}
   )) {
-    let result = applyExtractorTransformerInMemory(transformerForRuntime[1], {
-      ...modelEnvironment,
-      ...selectorParams.extractor.pageParams,
-      ...selectorParams.extractor.queryParams,
-    }, context)
+    let result = applyExtractorTransformerInMemory(
+      transformerForRuntime[1],
+      modelEnvironment,
+      {
+        // ...modelEnvironment,
+        ...selectorParams.extractor.pageParams,
+        ...selectorParams.extractor.queryParams,
+      },
+      context
+    );
     if (result.elementType == "failure") {
       log.error(
         "extractWithManyExtractor failed for transformer",

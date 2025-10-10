@@ -126,7 +126,8 @@ export const asyncExtractEntityInstanceListWithObjectListExtractor
 export async function asyncApplyExtractorTransformerInMemory(
   // actionRuntimeTransformer: ExtendedTransformerForRuntime,
   actionRuntimeTransformer: TransformerForBuildPlusRuntime | ExtendedTransformerForRuntime,
-  queryParams: MiroirModelEnvironment & Record<string, any>,
+  modelEnvironment: MiroirModelEnvironment,
+  queryParams: Record<string, any>,
   newFetchedData: Record<string, any>,
   extractors: Record<
     string,
@@ -135,14 +136,17 @@ export async function asyncApplyExtractorTransformerInMemory(
     | BoxedQueryWithExtractorCombinerTransformer
   >
 ): Promise<Domain2QueryReturnType<DomainElementSuccess>> {
-  return Promise.resolve(applyExtractorTransformerInMemory(actionRuntimeTransformer, queryParams, newFetchedData));
+  return Promise.resolve(
+    applyExtractorTransformerInMemory(actionRuntimeTransformer, modelEnvironment, queryParams, newFetchedData)
+  );
 }
 
 // ################################################################################################
 export async function asyncInnerSelectElementFromQuery /*BoxedExtractorTemplateRunner*/(
   newFetchedData: Record<string, any>,
   pageParams: Record<string, any>,
-  queryParams: MiroirModelEnvironment & Record<string, any>,
+  modelEnvironment: MiroirModelEnvironment,
+  queryParams: Record<string, any>,
   extractorRunnerMap: AsyncBoxedExtractorOrQueryRunnerMap,
   deploymentUuid: Uuid,
   extractors: Record<
@@ -167,7 +171,8 @@ export async function asyncInnerSelectElementFromQuery /*BoxedExtractorTemplateR
       log.info(
         "############ asyncInnerSelectElementFromQuery",
         extractorOrCombiner.extractorOrCombinerType,
-        "start"
+        "start, extractorOrCombiner",
+        JSON.stringify(extractorOrCombiner, null, 2)
       );
       const result = await extractorRunnerMap.extractEntityInstanceListWithObjectListExtractor(
         {
@@ -186,7 +191,8 @@ export async function asyncInnerSelectElementFromQuery /*BoxedExtractorTemplateR
                 },
           },
         },
-        queryParams // modelEnvironment
+        // queryParams, //
+        modelEnvironment
       );
       log.info(
         "############ asyncInnerSelectElementFromQuery",
@@ -201,9 +207,13 @@ export async function asyncInnerSelectElementFromQuery /*BoxedExtractorTemplateR
       log.info(
         "############ asyncInnerSelectElementFromQuery",
         extractorOrCombiner.extractorOrCombinerType,
-        "start"
+        "start, extractorOrCombiner",
+        JSON.stringify(extractorOrCombiner, null, 2)
       );
       log.info("asyncInnerSelectElementFromQuery", JSON.stringify(extractorOrCombiner, null, 2));
+      // const result = await extractorRunnerMap.runQuery(
+
+      // )
       const result = await extractorRunnerMap.extractEntityInstance(
         {
           extractorRunnerMap,
@@ -221,12 +231,12 @@ export async function asyncInnerSelectElementFromQuery /*BoxedExtractorTemplateR
                 },
           },
         },
-        queryParams // modelEnvironment
+        modelEnvironment,
       ); 
       log.info(
         "############ asyncInnerSelectElementFromQuery",
         extractorOrCombiner.extractorOrCombinerType,
-        "done"
+        "done, result=", JSON.stringify(result, null, 2)
       );
       return Promise.resolve(result);
       break;
@@ -240,6 +250,7 @@ export async function asyncInnerSelectElementFromQuery /*BoxedExtractorTemplateR
         const result = await asyncInnerSelectElementFromQuery(
           newFetchedData,
           pageParams ?? {},
+          modelEnvironment,
           queryParams ?? {},
           extractorRunnerMap,
           deploymentUuid,
@@ -258,6 +269,7 @@ export async function asyncInnerSelectElementFromQuery /*BoxedExtractorTemplateR
         const result = await asyncInnerSelectElementFromQuery(
           newFetchedData,
           pageParams ?? {},
+          modelEnvironment,
           queryParams ?? {},
           extractorRunnerMap,
           deploymentUuid,
@@ -276,6 +288,7 @@ export async function asyncInnerSelectElementFromQuery /*BoxedExtractorTemplateR
           ? await asyncInnerSelectElementFromQuery(
               newFetchedData,
               pageParams,
+              modelEnvironment,
               queryParams,
               extractorRunnerMap,
               deploymentUuid,
@@ -288,6 +301,7 @@ export async function asyncInnerSelectElementFromQuery /*BoxedExtractorTemplateR
           : await asyncInnerSelectElementFromQuery(
               newFetchedData,
               pageParams,
+              modelEnvironment,
               queryParams,
               extractorRunnerMap,
               deploymentUuid,
@@ -313,6 +327,7 @@ export async function asyncInnerSelectElementFromQuery /*BoxedExtractorTemplateR
 
           const resolvedQuery: ExtractorOrCombiner | QueryFailed = resolveExtractorTemplate(
             extractorOrCombiner.subQueryTemplate.query,
+            modelEnvironment,
             innerQueryParams,
             innerQueryParams
           );
@@ -325,6 +340,7 @@ export async function asyncInnerSelectElementFromQuery /*BoxedExtractorTemplateR
             const result = await asyncInnerSelectElementFromQuery(
               newFetchedData,
               pageParams,
+              modelEnvironment,
               innerQueryParams,
               extractorRunnerMap,
               deploymentUuid,
@@ -393,8 +409,9 @@ export const asyncExtractWithExtractor: AsyncExtractWithBoxedExtractorOrCombiner
   const result = asyncInnerSelectElementFromQuery(
     selectorParams.extractor.contextResults,
     selectorParams.extractor.pageParams,
-    {...modelEnvironment, ...selectorParams.extractor.queryParams},
-    // selectorParams.extractor.queryParams,
+    // {...modelEnvironment, ...selectorParams.extractor.queryParams},
+    modelEnvironment,
+    selectorParams.extractor.queryParams,
     localSelectorMap as any,
     selectorParams.extractor.deploymentUuid,
     {},
@@ -436,7 +453,7 @@ export const asyncRunQuery = async (
 
 
   const context: Record<string, any> = {
-    ...selectorParams.extractor.contextResults ,
+    ...selectorParams.extractor.contextResults,
   };
   // log.info("########## DomainSelector asyncRunQuery will use context", context);
   const localSelectorMap: AsyncBoxedExtractorOrQueryRunnerMap =
@@ -447,8 +464,9 @@ export const asyncRunQuery = async (
     const result = await asyncInnerSelectElementFromQuery(
       context,
       selectorParams.extractor.pageParams,
+      modelEnvironment,
       {
-        ...modelEnvironment,
+        // ...modelEnvironment,
         ...selectorParams.extractor.pageParams,
         ...selectorParams.extractor.queryParams,
       },
@@ -474,8 +492,9 @@ export const asyncRunQuery = async (
     const result = await asyncInnerSelectElementFromQuery(
       context,
       selectorParams.extractor.pageParams,
+      modelEnvironment,
       {
-        ...modelEnvironment,
+        // ...modelEnvironment,
         ...selectorParams.extractor.pageParams,
         ...selectorParams.extractor.queryParams,
       },
@@ -493,6 +512,7 @@ export const asyncRunQuery = async (
     const result = await localSelectorMap
       .applyExtractorTransformer(
         transformer[1],
+        modelEnvironment,
         {
           ...selectorParams.extractor.pageParams,
           ...selectorParams.extractor.queryParams,

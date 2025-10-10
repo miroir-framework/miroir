@@ -327,7 +327,9 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncBoxedExtract
           referenceName: querySelectorParams.objectReference,
         },
         "value", // TODO: not consistent with "runtime" evaluation, this has no influence on the result of "runtime" evaluations.
-        {...modelEnvironment,...selectorParams.extractor.queryParams},
+        // {...modelEnvironment,...selectorParams.extractor.queryParams},
+        modelEnvironment,
+        selectorParams.extractor.queryParams,
         selectorParams.extractor.contextResults
       );
 
@@ -402,11 +404,13 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncBoxedExtract
         const transformedResult = transformer_extended_apply(
           "runtime",
           [], // transformerPath
-          querySelectorParams.label??querySelectorParams.extractorOrCombinerType,
+          querySelectorParams.label ?? querySelectorParams.extractorOrCombinerType,
           querySelectorParams.applyTransformer,
           "value",
-          {...modelEnvironment,...selectorParams.extractor.queryParams},
-          {...selectorParams.extractor.contextResults, referenceObject, foreignKeyObject: result}
+          // {...modelEnvironment,...selectorParams.extractor.queryParams},
+          modelEnvironment,
+          selectorParams.extractor.queryParams,
+          { ...selectorParams.extractor.contextResults, referenceObject, foreignKeyObject: result }
         );
         log.info(
           "selectEntityInstanceFromObjectQueryAndDomainState combinerForObjectByRelation, after applyTransformer",
@@ -484,11 +488,17 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncBoxedExtract
       const transformedObject = transformer_extended_apply(
         "runtime",
         [], // transformerPath
-        querySelectorParams.label??querySelectorParams.extractorOrCombinerType,
+        querySelectorParams.label ?? querySelectorParams.extractorOrCombinerType,
         querySelectorParams.applyTransformer,
         "value",
-        {...modelEnvironment,...selectorParams.extractor.queryParams},
-        {...selectorParams.extractor.contextResults, foreignKeyObjects, referenceObject: currentObject}
+        // {...modelEnvironment,...selectorParams.extractor.queryParams},
+        modelEnvironment,
+        selectorParams.extractor.queryParams,
+        {
+          ...selectorParams.extractor.contextResults,
+          foreignKeyObjects,
+          referenceObject: currentObject,
+        }
       );
       log.info(
         "selectEntityInstanceFromObjectQueryAndDomainState after applyTransformer",

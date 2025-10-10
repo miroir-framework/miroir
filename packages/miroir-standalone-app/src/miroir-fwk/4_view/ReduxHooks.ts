@@ -267,6 +267,24 @@ export function useCurrentModel(deploymentUuid: Uuid | undefined): MetaModel {
   );
 }
 
+
+// ################################################################################################
+export function useCurrentModelEnvironment(deploymentUuid: string | undefined): any {
+  const localSelectModelForDeployment = useMemo(selectModelForDeploymentFromReduxState, []);
+  const selectorParams: LocalCacheExtractor = useMemo(
+    () =>
+      ({
+        queryType: "localCacheEntityInstancesExtractor",
+        definition: {
+          deploymentUuid,
+        },
+      } as LocalCacheExtractor),
+    [deploymentUuid]
+  );
+  return useSelector((state: ReduxStateWithUndoRedo) =>
+    localSelectModelForDeployment(state, selectorParams).modelEnvironment
+  );
+}
 // ################################################################################################
 export function useEntityInstanceUuidIndexFromLocalCache(
   params: LocalCacheExtractor

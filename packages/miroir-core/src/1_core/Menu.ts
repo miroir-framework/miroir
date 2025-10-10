@@ -34,7 +34,8 @@ export function handleTransformer_menu_AddItem(
   // transformers: any,
   transformer: TransformerForBuild_menu_addItem | TransformerForRuntime_menu_addItem,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
-  queryParams: MiroirModelEnvironment & Record<string, any>,
+  modelEnvironment: MiroirModelEnvironment,
+  queryParams: Record<string, any>,
   contextResults?: Record<string, any>,
 ): TransformerReturnType<Menu> {
   // TODO: DO A COPY OF THE MENU, DO NOT UPDATE VIA REFERENCE, IT MODIFIES THE "OLD" MENU
@@ -65,6 +66,7 @@ export function handleTransformer_menu_AddItem(
             referenceName: transformer.menuReference,
           },
           "value",
+          modelEnvironment,
           queryParams,
           contextResults
         ) as Menu)
@@ -75,6 +77,7 @@ export function handleTransformer_menu_AddItem(
           transformer.label??transformer.transformerType,
           transformer.menuReference,
           "value",
+          modelEnvironment,
           queryParams,
           contextResults
         ) as Menu);
@@ -95,6 +98,7 @@ export function handleTransformer_menu_AddItem(
             referenceName: transformer.menuItemReference,
           },
           "value",
+          modelEnvironment,
           queryParams,
           contextResults
         ) as MiroirMenuItem)
@@ -105,6 +109,7 @@ export function handleTransformer_menu_AddItem(
           transformer.label??transformer.transformerType,
           transformer.menuItemReference,
           "value",
+          modelEnvironment,
           queryParams,
           contextResults
         ) as MiroirMenuItem);

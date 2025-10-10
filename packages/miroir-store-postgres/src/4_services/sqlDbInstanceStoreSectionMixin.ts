@@ -17,7 +17,9 @@ import {
   RunBoxedExtractorTemplateAction,
   RunBoxedQueryAction,
   RunBoxedQueryTemplateAction,
-  RunBoxedQueryTemplateOrBoxedExtractorTemplateAction
+  RunBoxedQueryTemplateOrBoxedExtractorTemplateAction,
+  type MetaModel,
+  type MiroirModelEnvironment
 } from "miroir-core";
 import { MixableSqlDbStoreSection, SqlDbStoreSection } from "./SqlDbStoreSection";
 
@@ -87,7 +89,8 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
     sqlForQuery(
       query:
         | BoxedExtractorOrCombinerReturningObjectOrObjectList
-        | BoxedQueryWithExtractorCombinerTransformer
+        | BoxedQueryWithExtractorCombinerTransformer,
+      modelEnvironment: MiroirModelEnvironment,
     ): RecursiveStringRecords {
       // log.info(this.logHeader, "sqlForExtractor called with parameter", "extractor", extractor);
       // log.info(this.logHeader, "sqlForExtractor called with sequelize", this.sequelize);
@@ -147,7 +150,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
           return Object.fromEntries(
             Object.entries(query.extractors ?? {}).map((e) => [
               e[0],
-              sqlStringForExtractor(e[1], this.schema),
+              sqlStringForExtractor(e[1], this.schema, modelEnvironment),
             ])
           );
           break;
@@ -262,10 +265,16 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
     }
 
     // #############################################################################################
-    async handleBoxedQueryAction(query: RunBoxedQueryAction): Promise<Action2ReturnType> {
+    async handleBoxedQueryAction(
+      query: RunBoxedQueryAction,
+      currentModelEnvironment: MiroirModelEnvironment
+    ): Promise<Action2ReturnType> {
       log.info(this.logHeader, "handleBoxedQueryAction called for query", query);
 
-      const result: Action2ReturnType = await this.extractorRunner.handleBoxedQueryAction(query);
+      const result: Action2ReturnType = await this.extractorRunner.handleBoxedQueryAction(
+        query,
+        currentModelEnvironment
+      );
 
       log.info(
         this.logHeader,

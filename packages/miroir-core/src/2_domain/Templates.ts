@@ -32,12 +32,14 @@ MiroirLoggerFactory.registerLoggerToStart(
 // ################################################################################################
 export function resolveExtractorTemplate(
   extractorOrCombinerTemplate: ExtractorOrCombinerTemplate,
-  queryParams: MiroirModelEnvironment & Record<string, any>,
+  modelEnvironment: MiroirModelEnvironment,
+  queryParams: Record<string, any>,
   contextResults: Record<string, any>
 ): ExtractorOrCombiner | QueryFailed {
   const cleanQueryTemplate: any = { ...extractorOrCombinerTemplate }
   delete cleanQueryTemplate.extractorTemplateType;
 
+  
   switch (extractorOrCombinerTemplate.extractorTemplateType) {
     case "literal": {
       return {
@@ -47,15 +49,16 @@ export function resolveExtractorTemplate(
     }
     case "extractorTemplateForObjectListByEntity": {
       if (extractorOrCombinerTemplate.filter) {
-        const filterValue = transformer_extended_apply_wrapper(
-          undefined, // activityTracker
+        // const filterValue = transformer_extended_apply_wrapper(
+        const filterValue = transformer_extended_apply(
           "build", // TODO: resolve for runtime transformer. Does it make sense?
           [], // transformerPath
           undefined,
           extractorOrCombinerTemplate.filter.value,
+          "value",
+          modelEnvironment,
           queryParams,
           contextResults ?? {},
-          "value"
         )
         // TODO: check for failure!
         return {
@@ -71,6 +74,7 @@ export function resolveExtractorTemplate(
                   extractorOrCombinerTemplate.label??extractorOrCombinerTemplate.extractorTemplateType,
                   extractorOrCombinerTemplate.parentUuid,
                   "value",
+                  modelEnvironment,
                   queryParams,
                   contextResults
                 ), // TODO: check for failure!
@@ -93,6 +97,7 @@ export function resolveExtractorTemplate(
                   extractorOrCombinerTemplate.label??extractorOrCombinerTemplate.extractorTemplateType,
                   extractorOrCombinerTemplate.parentUuid,
                   "value",
+                  modelEnvironment,
                   queryParams,
                   contextResults
                 ), // TODO: check for failure!
@@ -114,6 +119,7 @@ export function resolveExtractorTemplate(
                 extractorOrCombinerTemplate.label??extractorOrCombinerTemplate.extractorTemplateType,
                 extractorOrCombinerTemplate.parentUuid,
                 "value",
+                modelEnvironment,
                 queryParams,
                 contextResults
               ), // TODO: check for failure!
@@ -124,6 +130,7 @@ export function resolveExtractorTemplate(
           extractorOrCombinerTemplate.label??extractorOrCombinerTemplate.extractorTemplateType,
           extractorOrCombinerTemplate.instanceUuid,
           "value",
+          modelEnvironment,
           queryParams,
           contextResults
         ), // TODO: check for failure!
@@ -176,6 +183,7 @@ export function resolveExtractorTemplate(
                   extractorOrCombinerTemplate.extractorTemplateType,
                 extractorOrCombinerTemplate.parentUuid,
                 "value",
+                modelEnvironment,
                 queryParams,
                 contextResults
               ), // TODO: check for failure!
@@ -203,6 +211,7 @@ export function resolveExtractorTemplate(
                 extractorOrCombinerTemplate.label??extractorOrCombinerTemplate.extractorTemplateType,
                 extractorOrCombinerTemplate.parentUuid,
                 "value",
+                modelEnvironment,
                 queryParams,
                 contextResults
               ), // TODO: check for failure!
@@ -228,6 +237,7 @@ export function resolveExtractorTemplate(
                 extractorOrCombinerTemplate.label??extractorOrCombinerTemplate.extractorTemplateType,
                 extractorOrCombinerTemplate.parentUuid,
                 "value",
+                modelEnvironment,
                 queryParams,
                 contextResults
               ), // TODO: check for failure!
@@ -248,6 +258,7 @@ export function resolveExtractorTemplate(
             ? extractorOrCombinerTemplate.rootExtractorOrReference
             : (resolveExtractorTemplate(
                 extractorOrCombinerTemplate.rootExtractorOrReference,
+                modelEnvironment,
                 queryParams,
                 contextResults
               ) as Extractor), // TODO: check for failure!
@@ -268,10 +279,16 @@ export function resolveExtractorTemplate(
 // ################################################################################################
 export function resolveQueryTemplateSelectExtractorWrapper(
   queryTemplate: ExtractorTemplateByExtractorWrapper,
-  queryParams: MiroirModelEnvironment & Record<string, any>,
+  modelEnvironment: MiroirModelEnvironment,
+  queryParams: Record<string, any>,
   contextResults: Record<string, any>
 ): ExtractorWrapper {
-  const result = resolveExtractorTemplate(queryTemplate, queryParams, contextResults);
+  const result = resolveExtractorTemplate(
+    queryTemplate,
+    modelEnvironment,
+    queryParams,
+    contextResults
+  );
   if ((result as any).queryFailure) {
     throw new Error("QueryNotExecutable");
   }
@@ -281,10 +298,11 @@ export function resolveQueryTemplateSelectExtractorWrapper(
 // ################################################################################################
 export function resolveQueryTemplateWithExtractorCombinerTransformer(
   queryTemplate: BoxedQueryTemplateWithExtractorCombinerTransformer,
+  modelEnvironment: MiroirModelEnvironment,
 ): BoxedQueryWithExtractorCombinerTransformer {
 
-  const params: MiroirModelEnvironment & Record<string, any> = {
-    miroirFundamentalJzodSchema: miroirFundamentalJzodSchema as JzodSchema,
+  const params: Record<string, any> = {
+    // miroirFundamentalJzodSchema: miroirFundamentalJzodSchema as JzodSchema,
     ...queryTemplate.pageParams,
     ...queryTemplate.queryParams,
   };
@@ -301,7 +319,7 @@ export function resolveQueryTemplateWithExtractorCombinerTransformer(
     Object.entries(queryTemplate.extractorTemplates ?? {}).map(
       (e: [string, ExtractorOrCombinerTemplate]) => [
         e[0],
-        resolveExtractorTemplate(e[1], params, queryTemplate.contextResults), // TODO: generalize to ExtractorOrCombiner & check for failure!
+        resolveExtractorTemplate(e[1], modelEnvironment, params, queryTemplate.contextResults), // TODO: generalize to ExtractorOrCombiner & check for failure!
       ]
     )
   );
@@ -310,7 +328,10 @@ export function resolveQueryTemplateWithExtractorCombinerTransformer(
   // const failedQueries = Object.values(queries).filter((e) => (e as any).queryFailure);
   const failedQueries = Object.values(queries).filter((e) => (e as any).queryFailure);
   if (failedQueries.length > 0) {
-    throw new Error("resolveQueryTemplateWithExtractorCombinerTransformer QueryNotExecutable failedQueries: " + JSON.stringify(failedQueries));
+    throw new Error(
+      "resolveQueryTemplateWithExtractorCombinerTransformer QueryNotExecutable failedQueries: " +
+        JSON.stringify(failedQueries)
+    );
   }
 
   // log.info(
@@ -318,18 +339,26 @@ export function resolveQueryTemplateWithExtractorCombinerTransformer(
   //   queryTemplate.combinerTemplates
   // );
   const combiners = Object.fromEntries(
-    Object.entries(queryTemplate.combinerTemplates ?? {}).map((e: [string, ExtractorOrCombinerTemplate]) => [
-      e[0],
-      resolveExtractorTemplate(e[1], params, queryTemplate.contextResults), // TODO: generalize to ExtractorOrCombiner & check for failure!
-    ])
+    Object.entries(queryTemplate.combinerTemplates ?? {}).map(
+      (e: [string, ExtractorOrCombinerTemplate]) => [
+        e[0],
+        resolveExtractorTemplate(e[1], modelEnvironment, params, queryTemplate.contextResults), // TODO: generalize to ExtractorOrCombiner & check for failure!
+      ]
+    )
   );
 
   // log.info("resolveQueryTemplateWithExtractorCombinerTransformer converted combinerTemplates, result:", combiners);
   const failures = Object.values(combiners??{}).find((e) => (e as any).queryFailure);
   if (failures && Array.isArray(failures) && failures?.length > 0) {
-    throw new Error("resolveQueryTemplateWithExtractorCombinerTransformer QueryNotExecutable for combiners: " + JSON.stringify(failures));
+    throw new Error(
+      "resolveQueryTemplateWithExtractorCombinerTransformer QueryNotExecutable for combiners: " +
+        JSON.stringify(failures)
+    );
   } else {
-    log.info("resolveQueryTemplateWithExtractorCombinerTransformer no failure for combiners: " + JSON.stringify(failures));
+    log.info(
+      "resolveQueryTemplateWithExtractorCombinerTransformer no failure for combiners: " +
+        JSON.stringify(failures)
+    );
   }
   const result: BoxedQueryWithExtractorCombinerTransformer = {
     queryType: "boxedQueryWithExtractorCombinerTransformer",
@@ -351,7 +380,8 @@ export function resolveQueryTemplateWithExtractorCombinerTransformer(
 export function resolveExtractorTemplateForExtractorOrCombinerReturningObjectOrObjectList(
   extractorTemplateReturningObjectOrObjectList: ExtractorTemplateReturningObjectOrObjectList,
   pageParams: Record<string, any>,
-  queryParams: MiroirModelEnvironment & Record<string, any>,
+  modelEnvironment: MiroirModelEnvironment,
+  queryParams: Record<string, any>,
   contextResults: Record<string, any>,
   deploymentUuid: string //?
 ): ExtractorOrCombinerReturningObjectOrObjectList {
@@ -362,6 +392,7 @@ export function resolveExtractorTemplateForExtractorOrCombinerReturningObjectOrO
   
   const select = resolveExtractorTemplate(
     extractorTemplateReturningObjectOrObjectList,
+    modelEnvironment,
     params,
     contextResults
   ) as any;
@@ -372,10 +403,11 @@ export function resolveExtractorTemplateForExtractorOrCombinerReturningObjectOrO
 // ################################################################################################
 export function resolveBoxedExtractorOrCombinerTemplateReturningObjectOrObjectList(
   boxedExtractorTemplateReturningObjectOrObjectList: BoxedExtractorTemplateReturningObjectOrObjectList,
+  modelEnvironment: MiroirModelEnvironment,
 ): BoxedExtractorOrCombinerReturningObjectOrObjectList {
 
-  const params: MiroirModelEnvironment & Record<string, any> = {
-    miroirFundamentalJzodSchema: miroirFundamentalJzodSchema as JzodSchema,
+  const params: Record<string, any> = {
+    // miroirFundamentalJzodSchema: miroirFundamentalJzodSchema as JzodSchema,
     ...boxedExtractorTemplateReturningObjectOrObjectList.pageParams,
     ...boxedExtractorTemplateReturningObjectOrObjectList.queryParams,
   };
@@ -384,6 +416,7 @@ export function resolveBoxedExtractorOrCombinerTemplateReturningObjectOrObjectLi
   
   const select = resolveExtractorTemplate(
     boxedExtractorTemplateReturningObjectOrObjectList.select,
+    modelEnvironment,
     params,
     boxedExtractorTemplateReturningObjectOrObjectList.contextResults
   ) as any;
@@ -405,16 +438,21 @@ export function resolveBoxedExtractorOrCombinerTemplateReturningObjectOrObjectLi
 export function resolveExtractorOrQueryTemplate(
   extractorOrCombinerTemplate: ExtractorTemplateReturningObjectOrObjectList | BoxedQueryTemplateWithExtractorCombinerTransformer,
   pageParams: Record<string, any>,
-  queryParams: MiroirModelEnvironment & Record<string, any>,
+  modelEnvironment: MiroirModelEnvironment,
+  queryParams: Record<string, any>,
   contextResults: Record<string, any>,
   deploymentUuid: string //?
 ): ExtractorOrCombinerReturningObjectOrObjectList | BoxedQueryWithExtractorCombinerTransformer {
   if ("queryType" in extractorOrCombinerTemplate) { // TODO: implementation-specific, to be improved!
-    return resolveQueryTemplateWithExtractorCombinerTransformer(extractorOrCombinerTemplate as BoxedQueryTemplateWithExtractorCombinerTransformer);
+    return resolveQueryTemplateWithExtractorCombinerTransformer(
+      extractorOrCombinerTemplate as BoxedQueryTemplateWithExtractorCombinerTransformer,
+      modelEnvironment,
+    );
   } else {
     return resolveExtractorTemplateForExtractorOrCombinerReturningObjectOrObjectList(
       extractorOrCombinerTemplate,
       pageParams,
+      modelEnvironment,
       queryParams,
       contextResults,
       deploymentUuid
