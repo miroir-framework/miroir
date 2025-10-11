@@ -2768,6 +2768,7 @@ export function handleTransformer_newUuid(
   return returnedValue;
   // break;
 }
+
 // ################################################################################################
 // ################################################################################################
 // ################################################################################################
@@ -2974,25 +2975,25 @@ export function transformer_extended_apply(
   transformerParams: Record<string, any>,
   contextResults?: Record<string, any>,
 ): TransformerReturnType<any> {
-  log.info(
-    "transformer_extended_apply called for label",
-    label,
-    "step:",
-    step,
-    "transformer.interpolation:",
-    (transformer as any)?.interpolation ?? "build",
-    " step==transformer.interpolation ",
-    ((transformer as any)?.interpolation ?? "build") == step,
-    typeof transformer,
-    "transformer",
-    JSON.stringify(transformer, null, 2),
-    "queryParams elements",
-    Object.keys(transformerParams ?? {}),
-    // // JSON.stringify(Object.keys(queryParams??{}), null, 2),
-    "contextResults elements",
-    Object.keys(contextResults??{})
-    // // JSON.stringify(Object.keys(contextResults??{}), null, 2)
-  );
+  // log.info(
+  //   "transformer_extended_apply called for label",
+  //   label,
+  //   "step:",
+  //   step,
+  //   "transformer.interpolation:",
+  //   (transformer as any)?.interpolation ?? "build",
+  //   " step==transformer.interpolation ",
+  //   ((transformer as any)?.interpolation ?? "build") == step,
+  //   typeof transformer,
+  //   "transformer",
+  //   JSON.stringify(transformer, null, 2),
+  //   "queryParams elements",
+  //   Object.keys(transformerParams ?? {}),
+  //   // // JSON.stringify(Object.keys(queryParams??{}), null, 2),
+  //   "contextResults elements",
+  //   Object.keys(contextResults??{})
+  //   // // JSON.stringify(Object.keys(contextResults??{}), null, 2)
+  // );
   let result: TransformerReturnType<any> = undefined as any;
 
   if (typeof transformer == "object" && transformer != null) {

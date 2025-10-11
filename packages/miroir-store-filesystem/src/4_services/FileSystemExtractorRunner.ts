@@ -66,7 +66,12 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
 
   // ################################################################################################
   async handleBoxedExtractorAction(runBoxedExtractorAction: RunBoxedExtractorAction): Promise<Action2ReturnType> {
-    log.info(this.logHeader, "handleBoxedExtractorAction", "runBoxedExtractorAction", JSON.stringify(runBoxedExtractorAction, null, 2));
+    log.info(
+      this.logHeader,
+      "handleBoxedExtractorAction",
+      "runBoxedExtractorAction",
+      JSON.stringify(runBoxedExtractorAction, null, 2)
+    );
     let queryResult: Domain2QueryReturnType<DomainElementSuccess>;
     queryResult = await this.selectorMap.extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList(
       {
@@ -140,8 +145,8 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
           { transformerType: "contextReference", referenceName: querySelectorParams.objectReference },
           "value",
           defaultMiroirModelEnvironment,
-          // selectorParams.extractor.queryParams,
-          // selectorParams.extractor.contextResults
+          selectorParams.extractor.queryParams,
+          selectorParams.extractor.contextResults
         );
   
         if (

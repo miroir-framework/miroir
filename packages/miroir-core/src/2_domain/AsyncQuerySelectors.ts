@@ -212,8 +212,29 @@ export async function asyncInnerSelectElementFromQuery /*BoxedExtractorTemplateR
       );
       log.info("asyncInnerSelectElementFromQuery", JSON.stringify(extractorOrCombiner, null, 2));
       // const result = await extractorRunnerMap.runQuery(
-
-      // )
+      //   // extractorRunnerMap?: AsyncBoxedExtractorOrQueryRunnerMap
+      //   // extractor: BoxedQueryWithExtractorCombinerTransformer,
+      //   {
+      //     extractorRunnerMap,
+      //     extractor: {
+      //       // queryType: "boxedExtractorOrCombinerReturningObject",
+      //       queryType: "boxedQueryWithExtractorCombinerTransformer",
+      //       deploymentUuid: deploymentUuid,
+      //       contextResults: newFetchedData,
+      //       pageParams,
+      //       queryParams,
+      //       extractors: {
+      //         select: extractorOrCombiner.applicationSection // TODO: UGLY!!! WHERE IS THE APPLICATION SECTION PLACED?
+      //           ? extractorOrCombiner
+      //           : {
+      //               ...extractorOrCombiner,
+      //               applicationSection: pageParams?.applicationSection as ApplicationSection,
+      //             },
+      //       },
+      //     },
+      //   },
+      //   modelEnvironment
+      // );
       const result = await extractorRunnerMap.extractEntityInstance(
         {
           extractorRunnerMap,

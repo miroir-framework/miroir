@@ -10,6 +10,7 @@ import {
   BoxedExtractorOrCombinerReturningObjectOrObjectList,
   BoxedQueryWithExtractorCombinerTransformer,
   EntityInstance,
+  ExtractorRunnerInMemory,
   LoggerInterface,
   MiroirLoggerFactory,
   PersistenceStoreInstanceSectionAbstractInterface,
@@ -47,7 +48,8 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
     implements PersistenceStoreInstanceSectionAbstractInterface
   {
     public extractorTemplateRunner: SqlDbExtractTemplateRunner;
-    public extractorRunner: SqlDbQueryRunner;
+    public sqlDbQueryRunner: SqlDbQueryRunner;
+    public extractorRunnerInMemory: ExtractorRunnerInMemory;
 
     // ##############################################################################################
     constructor(
@@ -60,16 +62,19 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
       ...args: any[]
     ) {
       super(...args);
-      this.extractorRunner = new SqlDbQueryRunner(
+      this.extractorRunnerInMemory = new ExtractorRunnerInMemory(this);
+      this.sqlDbQueryRunner = new SqlDbQueryRunner(
         this.schema,
-        this as any /*SqlDbQueryRunner takes a concrete implementation*/
+        this as any, /*SqlDbQueryRunner takes a concrete implementation*/
+        this.extractorRunnerInMemory,
       );
       this.extractorTemplateRunner = new SqlDbExtractTemplateRunner(
         this as any /*SqlDbExtractTemplateRunner takes a concrete implementation*/,
-        this.extractorRunner
+        this.sqlDbQueryRunner
       );
     }
 
+    // ##############################################################################################
     async executeRawQuery(query: string, values?: any[]): Promise<Action2ReturnType> {
       log.info(this.logHeader, "######## executeRawQuery", "query", query, "values", values);
       // const rawResult = await this.sequelize.query({query, values: values??[]});
@@ -256,7 +261,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
     async handleBoxedExtractorAction(query: RunBoxedExtractorAction): Promise<Action2ReturnType> {
       log.info(this.logHeader, "handleBoxedExtractorAction", "query", query);
 
-      const result: Action2ReturnType = await this.extractorRunner.handleBoxedExtractorAction(
+      const result: Action2ReturnType = await this.sqlDbQueryRunner.handleBoxedExtractorAction(
         query
       );
 
@@ -271,7 +276,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
     ): Promise<Action2ReturnType> {
       log.info(this.logHeader, "handleBoxedQueryAction called for query", query);
 
-      const result: Action2ReturnType = await this.extractorRunner.handleBoxedQueryAction(
+      const result: Action2ReturnType = await this.sqlDbQueryRunner.handleBoxedQueryAction(
         query,
         currentModelEnvironment
       );
