@@ -30,8 +30,19 @@
             "optional": true
           },
           "groupBy": {
-            "type": "string",
-            "optional": true
+            "type": "union",
+            "optional": true,
+            "definition": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "array",
+                "definition": {
+                  "type": "string"
+                }
+              }
+            ]
           }
         }
       }

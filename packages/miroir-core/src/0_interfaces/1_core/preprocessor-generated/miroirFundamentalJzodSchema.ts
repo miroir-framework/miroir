@@ -3521,8 +3521,19 @@ export const miroirFundamentalJzodSchema = {
             "optional": true
           },
           "groupBy": {
-            "type": "string",
-            "optional": true
+            "type": "union",
+            "optional": true,
+            "definition": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "array",
+                "definition": {
+                  "type": "string"
+                }
+              }
+            ]
           }
         }
       },
@@ -5146,8 +5157,19 @@ export const miroirFundamentalJzodSchema = {
             "optional": true
           },
           "groupBy": {
-            "type": "string",
-            "optional": true
+            "type": "union",
+            "optional": true,
+            "definition": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "array",
+                "definition": {
+                  "type": "string"
+                }
+              }
+            ]
           }
         }
       },
@@ -6757,8 +6779,19 @@ export const miroirFundamentalJzodSchema = {
             "optional": true
           },
           "groupBy": {
-            "type": "string",
-            "optional": true
+            "type": "union",
+            "optional": true,
+            "definition": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "array",
+                "definition": {
+                  "type": "string"
+                }
+              }
+            ]
           }
         }
       },
@@ -39720,8 +39753,24 @@ export const miroirFundamentalJzodSchema = {
                 "optional": true,
                 "definition": [
                   {
-                    "type": "string",
-                    "optional": true
+                    "type": "string"
+                  },
+                  {
+                    "type": "array",
+                    "definition": {
+                      "type": "union",
+                      "definition": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "relativePath": "transformerForBuildCarryOnObject"
+                          }
+                        }
+                      ]
+                    }
                   },
                   {
                     "type": "schemaReference",
@@ -42756,8 +42805,24 @@ export const miroirFundamentalJzodSchema = {
                 "optional": true,
                 "definition": [
                   {
-                    "type": "string",
-                    "optional": true
+                    "type": "string"
+                  },
+                  {
+                    "type": "array",
+                    "definition": {
+                      "type": "union",
+                      "definition": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "relativePath": "transformerForBuildCarryOnObject"
+                          }
+                        }
+                      ]
+                    }
                   },
                   {
                     "type": "schemaReference",
@@ -53027,8 +53092,24 @@ export const miroirFundamentalJzodSchema = {
                 "optional": true,
                 "definition": [
                   {
-                    "type": "string",
-                    "optional": true
+                    "type": "string"
+                  },
+                  {
+                    "type": "array",
+                    "definition": {
+                      "type": "union",
+                      "definition": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "relativePath": "transformerForBuildCarryOnObject"
+                          }
+                        }
+                      ]
+                    }
                   },
                   {
                     "type": "schemaReference",

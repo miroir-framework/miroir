@@ -1934,32 +1934,47 @@ export function handleCountTransformer(
   //   "handleCountTransformer extractorTransformer count resolvedReference",
   //   resolvedReference.length
   // );
-  // const sortByAttribute = transformer.orderBy
-  //   ? (a: any[]) =>
-  //       a.sort((a, b) =>
-  //         a[transformer.orderBy ?? ""].localeCompare(b[transformer.orderBy ?? ""], "en", {
-  //           sensitivity: "base",
-  //         })
-  //       )
-  //   : (a: any[]) => a;
 
   if (transformer.groupBy) {
-    const groupByMap = new Map<string, number>();
+    // Handle both single string and string array groupBy
+    const groupByArray: string[] = Array.isArray(transformer.groupBy)
+      ? transformer.groupBy
+      : [transformer.groupBy];
+    
+    // Use a Map with composite key (JSON stringified) to track unique combinations
+    const groupByMap = new Map<string, { attributes: Record<string, any>; count: number }>();
+    
     for (const entry of resolvedReference) {
-      const key = (entry as any)[transformer.groupBy];
-      if (groupByMap.has(key)) {
-        groupByMap.set(key, (groupByMap.get(key) ?? 0) + 1);
+      // Build the grouping key from all groupBy attributes
+      const attributes: Record<string, any> = {};
+      for (const attr of groupByArray) {
+        attributes[attr] = (entry as any)[attr];
+      }
+      
+      // Create a composite key for this combination
+      const compositeKey = JSON.stringify(attributes);
+      
+      if (groupByMap.has(compositeKey)) {
+        const existing = groupByMap.get(compositeKey)!;
+        existing.count++;
       } else {
-        groupByMap.set(key, 1);
+        groupByMap.set(compositeKey, { attributes, count: 1 });
       }
     }
+    
     // log.info(
     //   "handleCountTransformer extractorTransformer count with groupBy resolvedReference",
     //   resolvedReference.length,
     //   "groupByMap",
     //   Array.from(groupByMap.entries())
     // );
-    const result = Array.from(groupByMap.entries()).map(e=>({[transformer.groupBy??""]: e[0], "count": e[1]}));
+    
+    // Convert map to result array with attributes spread and count
+    const result = Array.from(groupByMap.values()).map(({ attributes, count }) => ({
+      ...attributes,
+      count
+    }));
+    
     // log.info(
     //   "handleCountTransformer extractorTransformer count with groupBy result",
     //   result

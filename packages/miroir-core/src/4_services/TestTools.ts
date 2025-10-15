@@ -22,7 +22,7 @@ import {
 import type { MiroirActivityTrackerInterface, TestAssertionPath } from "../0_interfaces/3_controllers/MiroirActivityTrackerInterface";
 import type { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { jsonify } from "../1_core/test-expect";
-import { transformer_extended_apply_wrapper } from "../2_domain/TransformersForRuntime";
+import { transformer_extended_apply, transformer_extended_apply_wrapper } from "../2_domain/TransformersForRuntime";
 import { MiroirActivityTracker } from "../3_controllers/MiroirActivityTracker";
 import { packageName } from "../constants";
 import { circularReplacer } from '../tools';
@@ -314,7 +314,9 @@ export async function runTransformerTestInMemory(
       [], // transformerPath
       undefined,
       convertedTransformer,
-      {...modelEnvironment, ...transformerTest.transformerParams},
+      // {...modelEnvironment, ...transformerTest.transformerParams},
+      modelEnvironment,
+      transformerTest.transformerParams??{},
       transformerTest.transformerRuntimeContext ?? {}
     );
   } else {

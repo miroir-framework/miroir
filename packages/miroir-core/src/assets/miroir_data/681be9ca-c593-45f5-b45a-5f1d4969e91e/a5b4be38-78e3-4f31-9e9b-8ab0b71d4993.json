@@ -1993,6 +1993,56 @@
                   { "test": "testB", "count": 1},
                   { "test": "testC", "count": 1}
                 ]
+              },
+              {
+                "transformerTestType": "transformerTest",
+                "transformerTestLabel": "count returns number of elements in an object list with a multiple groupBy at runtime",
+                "transformerName": "countForObjectMultipleGroupBy",
+                "transformer": {
+                  "transformerType": "count",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "contextReference",
+                    "interpolation": "runtime",
+                    "referenceName": "testList"
+                  },
+                  "groupBy": ["test1", "test2"]
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "testList": [
+                    {
+                      "test1": "testA",
+                      "test2": 1
+                    },
+                    {
+                      "test1": "testB",
+                      "test2": 1
+                    },
+                    {
+                      "test1": "testA",
+                      "test2": 2
+                    },
+                    {
+                      "test1": "testC",
+                      "test2": 2
+                    },
+                    {
+                      "test1": "testB",
+                      "test2": 1
+                    },
+                    {
+                      "test1": "testC",
+                      "test2": 2
+                    }
+                  ]
+                },
+                "expectedValue": [
+                  { "test1": "testA", "test2": 1, "count": 1},
+                  { "test1": "testB", "test2": 1, "count": 2},
+                  { "test1": "testA", "test2": 2, "count": 1},
+                  { "test1": "testC", "test2": 2, "count": 2}
+                ]
               }
             ]
           },
