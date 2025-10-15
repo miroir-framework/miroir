@@ -2175,10 +2175,17 @@ export function handleTransformer_FreeObjectTemplate(
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   modelEnvironment: MiroirModelEnvironment,
   transformerParams: Record<string, any>,
-  // queryParams: Record<string, any>,
   contextResults?: Record<string, any>,
 ): TransformerReturnType<any> {
-  // log.info("innerTransformer_apply freeObjectTemplate", JSON.stringify(transformer, null, 2));
+  log.info(
+    "innerTransformer_apply freeObjectTemplate",
+    JSON.stringify(transformer, null, 2),
+    "step",
+    step,
+    "contextResults",
+    JSON.stringify(Object.keys(contextResults??{}), null, 2)
+    // JSON.stringify(contextResults, null, 2)
+  );
   const result = Object.fromEntries(
     Object.entries(transformer.definition).map((objectTemplateEntry: [string, any]) => {
       return [
@@ -2228,8 +2235,7 @@ export function handleTransformer_objectEntries(
   | TransformerForRuntime_objectEntries,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   modelEnvironment: MiroirModelEnvironment,
-  transformerParams: Record<string, any>,
-  // queryParams: Record<string, any>,
+  queryParams: Record<string, any>,
   contextResults?: Record<string, any>
 ): TransformerReturnType<any> {
   const resolvedReference = resolveApplyTo_legacy(
@@ -2238,7 +2244,7 @@ export function handleTransformer_objectEntries(
     transformerPath,
     resolveBuildTransformersTo,
     modelEnvironment,
-    transformerParams,
+    queryParams,
     contextResults,
     label
   );
@@ -2292,7 +2298,6 @@ export function handleTransformer_objectValues(
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   modelEnvironment: MiroirModelEnvironment,
   transformerParams: Record<string, any>,
-  // queryParams: Record<string, any>,
   contextResults?: Record<string, any>
 ): TransformerReturnType<any> {
   const resolvedReference = resolveApplyTo_legacy(

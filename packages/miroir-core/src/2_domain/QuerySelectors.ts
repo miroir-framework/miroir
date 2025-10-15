@@ -226,11 +226,26 @@ export const applyExtractorForSingleObjectListToSelectedInstancesListInMemory = 
     case "combinerByRelationReturningObjectList": {
       const relationQuery: CombinerByRelationReturningObjectList = query.select;
       log.info(
-        "applyExtractorForSingleObjectListToSelectedInstancesListInMemory combinerByRelationReturningObjectList selectedInstancesList",
+        "applyExtractorForSingleObjectListToSelectedInstancesListInMemory combinerByRelationReturningObjectList",
+        "query", JSON.stringify(query, undefined, 2),
+        "selectedInstancesList",
         selectedInstancesList
       );
 
-      const referenceObject = query.contextResults[relationQuery.objectReference];
+      const referenceObject =
+        typeof relationQuery.objectReference === "string"
+          ? query.contextResults[relationQuery.objectReference]
+          : transformer_extended_apply(
+              "runtime",
+              [], // transformerPath
+              (relationQuery.label ?? relationQuery.extractorOrCombinerType) + "_objectReference",
+              relationQuery.objectReference,
+              "value",
+              defaultMiroirModelEnvironment, // queryParams. TODO: this is wrong, should be the actual modelEnvironment
+              query.queryParams,
+              query.contextResults
+            );
+      ;
       let otherIndex:string | undefined = undefined
       if (referenceObject) {
         otherIndex = (referenceObject ?? {})[relationQuery.objectReferenceAttribute ?? "uuid"];
@@ -244,12 +259,18 @@ export const applyExtractorForSingleObjectListToSelectedInstancesListInMemory = 
       }
 
       const finalInstanceList = selectedInstancesList.filter((i: EntityInstance) => {
-            const localIndex = relationQuery.AttributeOfListObjectToCompareToReferenceUuid ?? "dummy";
-            // TODO: allow for runtime reference, with runtime trnasformer reference
-            return (i as any)[localIndex] === otherIndex;
-          }
-        ) as EntityInstance[];
+          const localIndex = relationQuery.AttributeOfListObjectToCompareToReferenceUuid ?? "dummy";
+          // TODO: allow for runtime reference, with runtime trnasformer reference
+          return (i as any)[localIndex] === otherIndex;
+        }
+      ) as EntityInstance[];
 
+      log.info(
+        "applyExtractorForSingleObjectListToSelectedInstancesListInMemory combinerByRelationReturningObjectList",
+        "referenceObject", referenceObject,
+        "otherIndex", otherIndex,
+        "finalInstanceList", finalInstanceList
+      );
       const transformedInstanceList = relationQuery.applyTransformer?finalInstanceList.map(e => transformer_extended_apply(
         "runtime",
         [], // transformerPath
@@ -257,6 +278,7 @@ export const applyExtractorForSingleObjectListToSelectedInstancesListInMemory = 
         relationQuery.applyTransformer,
         "value",
         defaultMiroirModelEnvironment, // queryParams. TODO: this is wrong, should be the actual modelEnvironment
+        query.queryParams,
         {...query.contextResults, referenceObject, foreignKeyObject: e} // newFetchedData
       )):finalInstanceList;
 
@@ -356,6 +378,12 @@ export const applyExtractorForSingleObjectListToSelectedInstancesListInMemory = 
           );
         }) : finalInstanceList;
 
+        log.info(
+          "applyExtractorForSingleObjectListToSelectedInstancesListInMemory combinerByManyToManyRelationReturningObjectList",
+          "otherList", otherList,
+          "finalInstanceList", finalInstanceList,
+          "transformedInstanceList", transformedInstanceList
+        );
         return transformedInstanceList;
       } else {
         throw new Error(
@@ -1080,17 +1108,17 @@ export const runQuery = <StateType>(
     } else {
       context[extractor[0]] = result; // does side effect!
     }
-    // log.info(
-    //   "runQuery done for extractors",
-    //   extractor[0],
-    //   "query",
-    //   extractor[1],
-    //   "result=",
-    //   result,
-    //   "context keys=",
-    //   Object.keys(context)
-    // );
   }
+  log.info(
+    "runQuery done for extractors,",
+    // extractor[0],
+    // "query",
+    // extractor[1],
+    // "result=",
+    // result,
+    "context keys=",
+    Object.keys(context)
+  );
   for (const combiner of Object.entries(
     selectorParams.extractor.combiners ?? {}
   )) {
@@ -1100,7 +1128,6 @@ export const runQuery = <StateType>(
       selectorParams.extractor.pageParams,
       modelEnvironment,
       {
-        // ...modelEnvironment,
         ...selectorParams.extractor.pageParams,
         ...selectorParams.extractor.queryParams,
       },
@@ -1109,8 +1136,18 @@ export const runQuery = <StateType>(
       combiner[1]
     );
     context[combiner[0]] = result; // does side effect!
-    // log.info("runQuery done for entry", entry[0], "query", entry[1], "result=", result);
+    log.info("runQuery done for entry", combiner[0], "query", combiner[1], "result=", result);
   }
+  log.info(
+    "runQuery done for combiners,",
+    // extractor[0],
+    // "query",
+    // extractor[1],
+    // "result=",
+    // result,
+    "context keys=",
+    Object.keys(context)
+  );
 
   for (const transformerForRuntime of 
     Object.entries(
@@ -1120,13 +1157,13 @@ export const runQuery = <StateType>(
       transformerForRuntime[1],
       modelEnvironment,
       {
-        // ...modelEnvironment,
         ...selectorParams.extractor.pageParams,
         ...selectorParams.extractor.queryParams,
       },
       context
     );
-    if (result.elementType == "failure") {
+    // if (result.elementType == "failure") {
+    if (result instanceof Domain2ElementFailed) {
       log.error(
         "extractWithManyExtractor failed for transformer",
         transformerForRuntime[0],

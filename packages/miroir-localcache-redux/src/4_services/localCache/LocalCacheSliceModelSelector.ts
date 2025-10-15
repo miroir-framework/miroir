@@ -215,16 +215,3 @@ export const selectModelForDeploymentFromReduxState: () => (
       return result;
     }
   );
-
-  //#########################################################################################
-export const selectModelEnvironmentForDeploymentFromReduxState: () => (
-  state: ReduxStateWithUndoRedo,
-  params: MiroirQueryTemplate
-) => MiroirModelEnvironment = () =>
-  createSelector(
-    [selectModelForDeploymentFromReduxState,selectMiroirSelectorQueryParams],
-    (
-      model: MetaModel,
-      params: MiroirQueryTemplate
-    ) => {
-      const result: MiroirModelEnvironment = {

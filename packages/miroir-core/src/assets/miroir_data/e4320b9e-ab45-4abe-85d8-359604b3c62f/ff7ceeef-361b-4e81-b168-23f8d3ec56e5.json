@@ -23,7 +23,8 @@
         "applyTo": {
           "transformerType": "contextReference",
           "referenceName": "entities"
-        }
+        },
+        "groupBy": "conceptLevel"
       }
     }
   }

@@ -275,7 +275,7 @@ export const runQueryTemplateWithExtractorCombinerTransformer = <StateType>(
       modelEnvironment
     ); 
 
-  // log.info("runQueryTemplateWithExtractorCombinerTransformer called", selectorParams, "resolvedExtractor", resolvedExtractor);
+  log.info("runQueryTemplateWithExtractorCombinerTransformer called", selectorParams, "resolvedExtractor", resolvedExtractor);
 
   return runQuery(
     state,
