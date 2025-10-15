@@ -963,7 +963,6 @@ function transformerForBuild_list_listMapperToList_apply(
   label: string | undefined,
   transformer: TransformerForRuntime_mapperListToList | TransformerForBuild_mapperListToList,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
-  // queryParams: Record<string, any>,
   modelEnvironment: MiroirModelEnvironment,
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>,
@@ -1069,7 +1068,6 @@ function transformer_object_listReducerToSpreadObject_apply(
   label: string | undefined,
   transformer: TransformerForBuild_listReducerToSpreadObject | TransformerForRuntime_listReducerToSpreadObject,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
-  // queryParams: Record<string, any>,
   modelEnvironment: MiroirModelEnvironment,
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>,
@@ -1141,7 +1139,6 @@ function transformer_object_listReducerToIndexObject_apply(
     | TransformerForBuild_listReducerToIndexObject
     | TransformerForRuntime_listReducerToIndexObject,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
-  // queryParams: Record<string, any>,
   modelEnvironment: MiroirModelEnvironment,
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>
@@ -1213,7 +1210,6 @@ function handleTransformer_object_fullTemplate(
   transformer: TransformerForBuild_object_fullTemplate
     | TransformerForRuntime_object_fullTemplate,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
-  // queryParams: Record<string, any>,
   modelEnvironment: MiroirModelEnvironment,
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>
@@ -1259,6 +1255,7 @@ function handleTransformer_object_fullTemplate(
     ...contextResults,
     [transformer.referenceToOuterObject??defaultTransformerInput]: resolvedApplyTo,
   }
+
   const attributeEntries = transformer.definition.map(
     (innerEntry: {
       attributeKey: TransformerForBuild | TransformerForRuntime | string;
@@ -1267,18 +1264,20 @@ function handleTransformer_object_fullTemplate(
       { rawLeftValue: TransformerReturnType<DomainElementSuccess>; finalLeftValue: TransformerReturnType<DomainElementSuccess> },
       { renderedRightValue: TransformerReturnType<DomainElementSuccess>; finalRightValue: TransformerReturnType<DomainElementSuccess> }
     ] => {
-      const rawLeftValue: TransformerReturnType<DomainElementSuccess> = typeof innerEntry.attributeKey == "object" && Object.hasOwn(innerEntry.attributeKey,"transformerType")
-        ? defaultTransformers.transformer_extended_apply(
-            step,
-            [...transformerPath, transformer.transformerType, "attributeKey" + index],
-            objectName, // is this correct? or should it be undefined?
-            innerEntry.attributeKey,
-            resolveBuildTransformersTo,
-            modelEnvironment,
-            queryParams,
-            newContextResults
-          )
-        : innerEntry.attributeKey;
+      const rawLeftValue: TransformerReturnType<DomainElementSuccess> =
+        typeof innerEntry.attributeKey == "object" &&
+        Object.hasOwn(innerEntry.attributeKey, "transformerType")
+          ? defaultTransformers.transformer_extended_apply(
+              step,
+              [...transformerPath, transformer.transformerType, "attributeKey" + index],
+              objectName, // is this correct? or should it be undefined?
+              innerEntry.attributeKey,
+              resolveBuildTransformersTo,
+              modelEnvironment,
+              queryParams,
+              newContextResults
+            )
+          : innerEntry.attributeKey;
       const leftValue: { rawLeftValue: TransformerReturnType<any>; finalLeftValue: TransformerReturnType<any> } = {
       // const leftValue: { rawLeftValue: TransformerReturnType<DomainElementSuccess>; finalLeftValue: TransformerReturnType<DomainElementSuccess> } = {
         rawLeftValue,
@@ -1616,6 +1615,7 @@ export function transformer_InnerReference_resolve(
         "NO NAME",
         transformerInnerReference,
         resolveBuildTransformersTo,
+        modelEnvironment,
         localQueryParams,
         localContextResults
       );
@@ -1711,22 +1711,24 @@ export function transformer_mustacheStringTemplate_apply(
   objectName: string | undefined,
   transformer: TransformerForBuild_mustacheStringTemplate | TransformerForRuntime_mustacheStringTemplate,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
+  modelEnvironment: MiroirModelEnvironment,
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>,
 ): TransformerReturnType<any> {
   try {
-    // log.info(
-    //   "transformer_mustacheStringTemplate_apply called for transformer",
-    //   transformer,
-    //   "queryParams",
-    //   JSON.stringify(queryParams, null, 2),
-    //   "contextResults",
-    //   JSON.stringify(contextResults, null, 2)
-    // );
+    log.info(
+      "transformer_mustacheStringTemplate_apply called for transformer",
+      transformer,
+      "queryParams",
+      JSON.stringify(Object.keys(queryParams), null, 2),
+      "contextResults",
+      JSON.stringify(Object.keys(contextResults??{}), null, 2)
+    );
     const result = mustache.render(
       transformer.definition,
       ((transformer as any)["interpolation"]??"build") == "runtime" ? contextResults : queryParams
     );
+    log.info("transformer_mustacheStringTemplate_apply result", result);
     return result;
   } catch (error: any) {
     // log.error(
@@ -1942,16 +1944,27 @@ export function handleCountTransformer(
   //   : (a: any[]) => a;
 
   if (transformer.groupBy) {
-    const result = new Map<string, number>();
+    const groupByMap = new Map<string, number>();
     for (const entry of resolvedReference) {
       const key = (entry as any)[transformer.groupBy];
-      if (result.has(key)) {
-        result.set(key, (result.get(key) ?? 0) + 1);
+      if (groupByMap.has(key)) {
+        groupByMap.set(key, (groupByMap.get(key) ?? 0) + 1);
       } else {
-        result.set(key, 1);
+        groupByMap.set(key, 1);
       }
     }
-    return [Object.fromEntries(result.entries())];
+    // log.info(
+    //   "handleCountTransformer extractorTransformer count with groupBy resolvedReference",
+    //   resolvedReference.length,
+    //   "groupByMap",
+    //   Array.from(groupByMap.entries())
+    // );
+    const result = Array.from(groupByMap.entries()).map(e=>({[transformer.groupBy??""]: e[0], "count": e[1]}));
+    // log.info(
+    //   "handleCountTransformer extractorTransformer count with groupBy result",
+    //   result
+    // );
+    return result;
   } else {
     // log.info(
     //   "handleCountTransformer extractorTransformer count without groupBy resolvedReference",
@@ -2327,7 +2340,7 @@ export function handleTransformer_objectValues(
 }
 
 // ################################################################################################
-export function handleTransformer_dataflowObject<T extends MiroirModelEnvironment>(
+export function handleTransformer_dataflowObject(
   step: Step,
   transformerPath: string[],
   label: string | undefined,
@@ -2335,8 +2348,8 @@ export function handleTransformer_dataflowObject<T extends MiroirModelEnvironmen
   | TransformerForBuild_dataflowObject
   | TransformerForRuntime_dataflowObject,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
-  transformerParams: T,
-  // queryParams: Record<string, any>,
+  modelEnvironment: MiroirModelEnvironment,
+  queryParams: Record<string, any>,
   contextResults?: Record<string, any>,
 ): TransformerReturnType<any> {
   const resultObject: Record<string, any> = {};
@@ -2359,7 +2372,8 @@ export function handleTransformer_dataflowObject<T extends MiroirModelEnvironmen
       key,
       value,
       resolveBuildTransformersTo,
-      transformerParams,
+      modelEnvironment,
+      queryParams,
       currentContext,
     );
   }
@@ -2628,6 +2642,7 @@ export function handleTransformer_constant(
   | TransformerForBuild_constant
   | TransformerForRuntime_constant,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
+  modelEnvironment: MiroirModelEnvironment,
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>
 ): TransformerReturnType<any> {
@@ -2734,6 +2749,7 @@ export function handleTransformer_constantAsExtractor(
   label: string | undefined,
   transformer: TransformerForBuild_constantAsExtractor,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
+  modelEnvironment: MiroirModelEnvironment,
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>
 ): TransformerReturnType<any> {
@@ -2783,7 +2799,6 @@ export function innerTransformer_plainObject_apply(
   label: string | undefined,
   transformer: Record<string, any>,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
-  // queryParams: Record<string, any>,
   modelEnvironment: MiroirModelEnvironment,
   transformerParams: Record<string, any>,
   contextResults?: Record<string, any>,
@@ -2870,7 +2885,6 @@ export function innerTransformer_array_apply(
   objectName: string | undefined,
   transformer: any[],
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
-  // queryParams: Record<string, any>,
   modelEnvironment: MiroirModelEnvironment,
   transformerParams: Record<string, any>,
   contextResults?: Record<string, any>,
@@ -2975,25 +2989,25 @@ export function transformer_extended_apply(
   transformerParams: Record<string, any>,
   contextResults?: Record<string, any>,
 ): TransformerReturnType<any> {
-  // log.info(
-  //   "transformer_extended_apply called for label",
-  //   label,
-  //   "step:",
-  //   step,
-  //   "transformer.interpolation:",
-  //   (transformer as any)?.interpolation ?? "build",
-  //   " step==transformer.interpolation ",
-  //   ((transformer as any)?.interpolation ?? "build") == step,
-  //   typeof transformer,
-  //   "transformer",
-  //   JSON.stringify(transformer, null, 2),
-  //   "queryParams elements",
-  //   Object.keys(transformerParams ?? {}),
-  //   // // JSON.stringify(Object.keys(queryParams??{}), null, 2),
-  //   "contextResults elements",
-  //   Object.keys(contextResults??{})
-  //   // // JSON.stringify(Object.keys(contextResults??{}), null, 2)
-  // );
+  log.info(
+    "transformer_extended_apply called for label",
+    label,
+    "step:",
+    step,
+    "transformer.interpolation:",
+    (transformer as any)?.interpolation ?? "build",
+    " step==transformer.interpolation ",
+    ((transformer as any)?.interpolation ?? "build") == step,
+    typeof transformer,
+    "transformer",
+    JSON.stringify(transformer, null, 2),
+    "queryParams elements",
+    Object.keys(transformerParams ?? {}),
+    // // JSON.stringify(Object.keys(queryParams??{}), null, 2),
+    "contextResults elements",
+    Object.keys(contextResults??{})
+    // // JSON.stringify(Object.keys(contextResults??{}), null, 2)
+  );
   let result: TransformerReturnType<any> = undefined as any;
 
   if (typeof transformer == "object" && transformer != null) {

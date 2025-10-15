@@ -6,7 +6,9 @@ import {
   EntityInstancesUuidIndex,
   ExtractorOrCombinerReturningObject,
   RunBoxedExtractorAction,
-  RunBoxedQueryAction
+  RunBoxedQueryAction,
+  type CombinerForObjectByRelation,
+  type ExtractorForObjectByDirectReference
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { DomainState } from "../0_interfaces/2_domain/DomainControllerInterface";
 import {
@@ -106,6 +108,251 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
   }
 
   // ################################################################################################
+  private async extractEntityInstanceByCombinerForObjectByRelation(
+    selectorParams: AsyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObject>,
+    modelEnvironment: MiroirModelEnvironment,
+    querySelectorParams: CombinerForObjectByRelation,
+    deploymentUuid: string,
+    applicationSection: ApplicationSection,
+    entityUuidReference: string
+  ): Promise<Domain2QueryReturnType<EntityInstance>> {
+    // TODO: we assume this ia a constant, get rid of resolution altogether (push it up)
+    // const referenceObject = transformer_InnerReference_resolve(
+    const referenceObject = transformer_extended_apply(
+      "runtime",
+      [], // transformerPath
+      querySelectorParams.label??querySelectorParams.extractorOrCombinerType,
+      {
+        transformerType: "contextReference",
+        interpolation: "runtime",
+        referenceName: querySelectorParams.objectReference,
+      },
+      "value", // TODO: this is inconsistent with "build" evaluation, "build" evaluation should always yield a runtime transformer.
+      // {...modelEnvironment, ...selectorParams.extractor.queryParams},
+      modelEnvironment,
+      selectorParams.extractor.queryParams,
+      selectorParams.extractor.contextResults
+    );
+    log.info(
+      "extractEntityInstance combinerForObjectByRelation found referenceObject",
+      JSON.stringify(referenceObject, null, 2)
+    );
+    if (!querySelectorParams.AttributeOfObjectToCompareToReferenceUuid) {
+      return new Domain2ElementFailed({
+        queryFailure: "IncorrectParameters",
+        queryParameters: JSON.stringify(selectorParams.extractor.pageParams),
+        queryContext:
+          "extractRunnerInMemory extractEntityInstance query has no AttributeOfObjectToCompareToReferenceUuid, query=" +
+          JSON.stringify(querySelectorParams),
+      });
+    }
+
+    const result = await this.persistenceStoreController.getInstance(
+      entityUuidReference,
+      referenceObject[querySelectorParams.AttributeOfObjectToCompareToReferenceUuid]
+    );
+
+    if (result instanceof Action2Error) {
+      const failureMessage = `could not find instance of Entity ${entityUuidReference} with uuid=${
+        referenceObject[querySelectorParams.AttributeOfObjectToCompareToReferenceUuid]
+      }`;
+      return new Domain2ElementFailed({
+        queryFailure: "InstanceNotFound",
+        deploymentUuid,
+        applicationSection,
+        entityUuid: entityUuidReference,
+        failureMessage: `could not find instance of Entity ${entityUuidReference} with uuid=${
+          referenceObject[querySelectorParams.AttributeOfObjectToCompareToReferenceUuid]
+        }`,
+        errorStack:
+          typeof result.errorStack == "string"
+            ? [failureMessage, result.errorStack]
+            : [failureMessage, ...((result.errorStack as any) ?? [])],
+      });
+    }
+
+    const failureMessage = `could not find instance of Entity ${entityUuidReference} with uuid=${
+      referenceObject[querySelectorParams.AttributeOfObjectToCompareToReferenceUuid]
+    }`;
+    if (result.returnedDomainElement instanceof Domain2ElementFailed) {
+      return new Domain2ElementFailed({
+        queryFailure: "InstanceNotFound",
+        deploymentUuid,
+        applicationSection,
+        entityUuid: entityUuidReference,
+        failureMessage: failureMessage,
+        errorStack: [failureMessage, ...(result.returnedDomainElement.errorStack ?? [])],
+      });
+    }
+    log.info(
+      "extractEntityInstance combinerForObjectByRelation, ############# reference",
+      querySelectorParams,
+      "######### context entityUuid",
+      entityUuidReference,
+      "######### referenceObject",
+      referenceObject,
+      "######### queryParams",
+      JSON.stringify(Object.keys(selectorParams.extractor.queryParams), undefined, 2),
+      "######### contextResults",
+      JSON.stringify(Object.keys(selectorParams.extractor.contextResults), undefined, 2)
+    );
+    if (querySelectorParams.applyTransformer) {
+      const transformedResult = transformer_extended_apply(
+        "runtime",
+        [], // transformerPath
+        querySelectorParams.label??querySelectorParams.extractorOrCombinerType,
+        querySelectorParams.applyTransformer,
+        "value",
+        // {...modelEnvironment, ...selectorParams.extractor.queryParams},
+        modelEnvironment,
+        selectorParams.extractor.queryParams,
+        {...selectorParams.extractor.contextResults, referenceObject, foreignKeyObject: result.returnedDomainElement}
+      );
+      log.info(
+        "extractEntityInstance combinerForObjectByRelation, after applyTransformer",
+        querySelectorParams.applyTransformer,
+        "transformedResult",
+        JSON.stringify(transformedResult, null, 2)
+      );
+      return transformedResult;
+    }
+    return result.returnedDomainElement;
+  }
+
+  // ################################################################################################
+  private async extractEntityInstanceByDirectReference(
+    selectorParams: AsyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObject>,
+    modelEnvironment: MiroirModelEnvironment,
+    querySelectorParams: ExtractorForObjectByDirectReference,
+    deploymentUuid: string,
+    applicationSection: ApplicationSection,
+    entityUuidReference: string
+  ): Promise<Domain2QueryReturnType<EntityInstance>> {
+    const instanceUuid = querySelectorParams.instanceUuid;
+    // log.info("extractEntityInstance extractorForObjectByDirectReference found domainState", JSON.stringify(domainState))
+
+    log.info(
+      "extractRunnerInMemory extractEntityInstance found instanceUuid",
+      JSON.stringify(instanceUuid)
+    );
+
+    const getInstanceResult = await this.persistenceStoreController.getInstance(
+      entityUuidReference,
+      instanceUuid
+    );
+
+    if (getInstanceResult instanceof Action2Error) {
+      const failureMessage = `extractRunnerInMemory could not find instance of Entity ${entityUuidReference} with uuid=${instanceUuid}`;
+      return new Domain2ElementFailed({
+        queryFailure: "InstanceNotFound",
+        deploymentUuid,
+        applicationSection,
+        entityUuid: entityUuidReference,
+        failureMessage: `extractRunnerInMemory could not find instance of Entity ${entityUuidReference} with uuid=${instanceUuid}`,
+        errorStack:
+          typeof getInstanceResult.errorStack == "string"
+            ? [failureMessage, getInstanceResult.errorStack]
+            : [failureMessage, ...((getInstanceResult.errorStack as any) ?? [])],
+        innerError: getInstanceResult as any, // TODO: fix type
+      });
+    }
+    const failureMessage = `could not find instance of Entity ${entityUuidReference} with uuid=${instanceUuid}`;
+    if (getInstanceResult.returnedDomainElement instanceof Domain2ElementFailed) {
+      return new Domain2ElementFailed({
+        queryFailure: "InstanceNotFound",
+        deploymentUuid,
+        applicationSection,
+        entityUuid: entityUuidReference,
+        failureMessage: failureMessage,
+        errorStack: [failureMessage, ...(getInstanceResult.returnedDomainElement.errorStack ?? [])],
+        innerError: getInstanceResult.returnedDomainElement as any, // todo: fix type
+      });
+    }
+    log.info(
+      "extractRunnerInMemory extractEntityInstance extractorForObjectByDirectReference, ############# reference",
+      querySelectorParams,
+      "entityUuidReference",
+      entityUuidReference,
+      "######### context entityUuid",
+      entityUuidReference,
+      "######### queryParams",
+      JSON.stringify(Object.keys(selectorParams.extractor.queryParams), undefined, 2),
+      "######### contextResults",
+      JSON.stringify(Object.keys(selectorParams.extractor.contextResults), undefined, 2)
+    );
+    const referenceObject = getInstanceResult.returnedDomainElement;
+    if (!querySelectorParams.applyTransformer) {
+      return referenceObject;
+    }
+    const currentEntityDefnition = modelEnvironment.currentModel?.entityDefinitions.find(
+      (e) => e.entityUuid == entityUuidReference
+    )
+
+    const foreignKeyObjects: Record<string, EntityInstance> = {};
+    if (querySelectorParams.foreignKeysForTransformer) {
+      for (const attribute of Object.entries(currentEntityDefnition?.jzodSchema.definition??{})) {
+        if (attribute[0] === "uuid") continue;
+        if (attribute[1]?.type !== "uuid" || !querySelectorParams.foreignKeysForTransformer?.includes(attribute[0])) continue;
+        if (!attribute[1].tag?.value?.targetEntity) {
+          return new Domain2ElementFailed({
+            queryFailure: "IncorrectParameters",
+            queryContext: `extractRunnerInMemory extractEntityInstance transformer foreignKeysForTransformer attribute ${attribute[0]} does not have targetEntity tag defined in the model for entity ${entityUuidReference}`,
+            queryParameters: JSON.stringify(selectorParams.extractor),
+          });
+        }
+        const attributeName = attribute[0];
+        const attributeValue = (referenceObject as any)[attributeName];
+        const foreignKeyObjectResult = await this.persistenceStoreController.getInstance(
+          attribute[1].tag?.value?.targetEntity,
+          attributeValue
+        );
+        if (foreignKeyObjectResult instanceof Action2Error) {
+          const failureMessage = `extractRunnerInMemory could not find foreignKeyObject of Entity ${attribute[1].tag?.value?.targetEntity} with uuid=${attributeValue} for attribute ${attributeName} of entity ${entityUuidReference}`;
+          return new Domain2ElementFailed({
+            queryFailure: "InstanceNotFound",
+            deploymentUuid,
+            applicationSection,
+            entityUuid: entityUuidReference,
+            failureMessage: failureMessage,
+            errorStack:
+              typeof foreignKeyObjectResult.errorStack == "string"
+                ? [failureMessage, foreignKeyObjectResult.errorStack]
+                : [failureMessage, ...(foreignKeyObjectResult.errorStack as any) ?? []],
+            innerError: foreignKeyObjectResult as any, // TODO: fix type
+          });
+        }
+        foreignKeyObjects[attributeName] = foreignKeyObjectResult.returnedDomainElement as EntityInstance;
+      }
+    }
+    const transformedResult = transformer_extended_apply(
+      "runtime",
+      [], // transformerPath
+      querySelectorParams.label??querySelectorParams.extractorOrCombinerType,
+      querySelectorParams.applyTransformer,
+      "value",
+      // {...modelEnvironment, ...selectorParams.extractor.queryParams},
+      modelEnvironment,
+      selectorParams.extractor.queryParams,
+      {...selectorParams.extractor.contextResults, referenceObject, foreignKeyObjects}
+    );
+    if (transformedResult instanceof TransformerFailure) {
+     return new Domain2ElementFailed({
+       queryFailure: transformedResult.queryFailure,
+       failureMessage: transformedResult.failureMessage,
+       errorStack: transformedResult.errorStack,
+       innerError: transformedResult as any,
+       queryContext: `extractRunnerInMemory extractEntityInstance transformer failure for entity ${entityUuidReference} with instance uuid=${instanceUuid}`,
+       queryParameters: JSON.stringify(selectorParams.extractor),
+       deploymentUuid,
+       applicationSection,
+       entityUuid: entityUuidReference,
+       instanceUuid,
+     });
+    }
+    return transformedResult;
+  }
+
+  // ################################################################################################
   public extractEntityInstance: AsyncBoxedExtractorRunner<
     BoxedExtractorOrCombinerReturningObject,
     Domain2QueryReturnType<EntityInstance>
@@ -131,240 +378,30 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
 
     switch (querySelectorParams?.extractorOrCombinerType) {
       case "combinerForObjectByRelation": {
-        // TODO: we assume this ia a constant, get rid of resolution altogether (push it up)
-        // const referenceObject = transformer_InnerReference_resolve(
-        const referenceObject = transformer_extended_apply(
-          "runtime",
-          [], // transformerPath
-          querySelectorParams.label??querySelectorParams.extractorOrCombinerType,
-          {
-            transformerType: "contextReference",
-            interpolation: "runtime",
-            referenceName: querySelectorParams.objectReference,
-          },
-          "value", // TODO: this is inconsistent with "build" evaluation, "build" evaluation should always yield a runtime transformer.
-          // {...modelEnvironment, ...selectorParams.extractor.queryParams},
+        return this.extractEntityInstanceByCombinerForObjectByRelation(
+          selectorParams,
           modelEnvironment,
-          selectorParams.extractor.queryParams,
-          selectorParams.extractor.contextResults
+          querySelectorParams as ExtractorOrCombinerReturningObject & { extractorOrCombinerType: "combinerForObjectByRelation" },
+          deploymentUuid,
+          applicationSection,
+          entityUuidReference
         );
-        log.info(
-          "extractEntityInstance combinerForObjectByRelation found referenceObject",
-          JSON.stringify(referenceObject, null, 2)
-        );
-        if (!querySelectorParams.AttributeOfObjectToCompareToReferenceUuid) {
-          return new Domain2ElementFailed({
-            queryFailure: "IncorrectParameters",
-            queryParameters: JSON.stringify(selectorParams.extractor.pageParams),
-            queryContext:
-              "extractRunnerInMemory extractEntityInstance query has no AttributeOfObjectToCompareToReferenceUuid, query=" +
-              JSON.stringify(querySelectorParams),
-          });
-        }
-
-        const result = await this.persistenceStoreController.getInstance(
-          entityUuidReference,
-          referenceObject[querySelectorParams.AttributeOfObjectToCompareToReferenceUuid]
-        );
-
-        if (result instanceof Action2Error) {
-          const failureMessage = `could not find instance of Entity ${entityUuidReference} with uuid=${
-            referenceObject[querySelectorParams.AttributeOfObjectToCompareToReferenceUuid]
-          }`;
-          return new Domain2ElementFailed({
-            queryFailure: "InstanceNotFound",
-            deploymentUuid,
-            applicationSection,
-            entityUuid: entityUuidReference,
-            failureMessage: `could not find instance of Entity ${entityUuidReference} with uuid=${
-              referenceObject[querySelectorParams.AttributeOfObjectToCompareToReferenceUuid]
-            }`,
-            errorStack:
-              typeof result.errorStack == "string"
-                ? [failureMessage, result.errorStack]
-                : [failureMessage, ...((result.errorStack as any) ?? [])],
-          });
-        }
-
-        const failureMessage = `could not find instance of Entity ${entityUuidReference} with uuid=${
-          referenceObject[querySelectorParams.AttributeOfObjectToCompareToReferenceUuid]
-        }`;
-        if (result.returnedDomainElement instanceof Domain2ElementFailed) {
-          return new Domain2ElementFailed({
-            queryFailure: "InstanceNotFound",
-            deploymentUuid,
-            applicationSection,
-            entityUuid: entityUuidReference,
-            failureMessage: failureMessage,
-            errorStack: [failureMessage, ...(result.returnedDomainElement.errorStack ?? [])],
-          });
-        }
-        log.info(
-          "extractEntityInstance combinerForObjectByRelation, ############# reference",
-          querySelectorParams,
-          "######### context entityUuid",
-          entityUuidReference,
-          "######### referenceObject",
-          referenceObject,
-          "######### queryParams",
-          JSON.stringify(Object.keys(selectorParams.extractor.queryParams), undefined, 2),
-          "######### contextResults",
-          JSON.stringify(Object.keys(selectorParams.extractor.contextResults), undefined, 2)
-        );
-        if (querySelectorParams.applyTransformer) {
-          const transformedResult = transformer_extended_apply(
-            "runtime",
-            [], // transformerPath
-            querySelectorParams.label??querySelectorParams.extractorOrCombinerType,
-            querySelectorParams.applyTransformer,
-            "value",
-            // {...modelEnvironment, ...selectorParams.extractor.queryParams},
-            modelEnvironment,
-            selectorParams.extractor.queryParams,
-            {...selectorParams.extractor.contextResults, referenceObject, foreignKeyObject: result.returnedDomainElement}
-          );
-          log.info(
-            "extractEntityInstance combinerForObjectByRelation, after applyTransformer",
-            querySelectorParams.applyTransformer,
-            "transformedResult",
-            JSON.stringify(transformedResult, null, 2)
-          );
-          return transformedResult;
-        }
-        return result.returnedDomainElement;
-        break;
       }
       case "extractorForObjectByDirectReference": {
-        const instanceUuid = querySelectorParams.instanceUuid;
-        // log.info("extractEntityInstance extractorForObjectByDirectReference found domainState", JSON.stringify(domainState))
-
-        log.info(
-          "extractRunnerInMemory extractEntityInstance found instanceUuid",
-          JSON.stringify(instanceUuid)
-        );
-
-        const getInstanceResult = await this.persistenceStoreController.getInstance(
-          entityUuidReference,
-          instanceUuid
-        );
-
-        if (getInstanceResult instanceof Action2Error) {
-          const failureMessage = `extractRunnerInMemory could not find instance of Entity ${entityUuidReference} with uuid=${instanceUuid}`;
-          return new Domain2ElementFailed({
-            queryFailure: "InstanceNotFound",
-            deploymentUuid,
-            applicationSection,
-            entityUuid: entityUuidReference,
-            failureMessage: `extractRunnerInMemory could not find instance of Entity ${entityUuidReference} with uuid=${instanceUuid}`,
-            errorStack:
-              typeof getInstanceResult.errorStack == "string"
-                ? [failureMessage, getInstanceResult.errorStack]
-                : [failureMessage, ...((getInstanceResult.errorStack as any) ?? [])],
-            innerError: getInstanceResult as any, // TODO: fix type
-          });
-        }
-        const failureMessage = `could not find instance of Entity ${entityUuidReference} with uuid=${instanceUuid}`;
-        if (getInstanceResult.returnedDomainElement instanceof Domain2ElementFailed) {
-          return new Domain2ElementFailed({
-            queryFailure: "InstanceNotFound",
-            deploymentUuid,
-            applicationSection,
-            entityUuid: entityUuidReference,
-            failureMessage: failureMessage,
-            errorStack: [failureMessage, ...(getInstanceResult.returnedDomainElement.errorStack ?? [])],
-            innerError: getInstanceResult.returnedDomainElement as any, // todo: fix type
-          });
-        }
-        log.info(
-          "extractRunnerInMemory extractEntityInstance extractorForObjectByDirectReference, ############# reference",
-          querySelectorParams,
-          "entityUuidReference",
-          entityUuidReference,
-          "######### context entityUuid",
-          entityUuidReference,
-          "######### queryParams",
-          JSON.stringify(Object.keys(selectorParams.extractor.queryParams), undefined, 2),
-          "######### contextResults",
-          JSON.stringify(Object.keys(selectorParams.extractor.contextResults), undefined, 2)
-        );
-        const referenceObject = getInstanceResult.returnedDomainElement;
-        if (!querySelectorParams.applyTransformer) {
-          return referenceObject;
-        }
-        const currentEntityDefnition = modelEnvironment.currentModel?.entityDefinitions.find(
-          (e) => e.entityUuid == entityUuidReference
-        )
-
-        const foreignKeyObjects: Record<string, EntityInstance> = {};
-        if (querySelectorParams.foreignKeysForTransformer) {
-          for (const attribute of Object.entries(currentEntityDefnition?.jzodSchema.definition??{})) {
-            if (attribute[0] === "uuid") continue;
-            if (attribute[1]?.type !== "uuid" || !querySelectorParams.foreignKeysForTransformer?.includes(attribute[0])) continue;
-            if (!attribute[1].tag?.value?.targetEntity) {
-              return new Domain2ElementFailed({
-                queryFailure: "IncorrectParameters",
-                queryContext: `extractRunnerInMemory extractEntityInstance transformer foreignKeysForTransformer attribute ${attribute[0]} does not have targetEntity tag defined in the model for entity ${entityUuidReference}`,
-                queryParameters: JSON.stringify(selectorParams.extractor),
-              });
-            }
-            const attributeName = attribute[0];
-            const attributeValue = (referenceObject as any)[attributeName];
-            const foreignKeyObjectResult = await this.persistenceStoreController.getInstance(
-              attribute[1].tag?.value?.targetEntity,
-              attributeValue
-            );
-            if (foreignKeyObjectResult instanceof Action2Error) {
-              const failureMessage = `extractRunnerInMemory could not find foreignKeyObject of Entity ${attribute[1].tag?.value?.targetEntity} with uuid=${attributeValue} for attribute ${attributeName} of entity ${entityUuidReference}`;
-              return new Domain2ElementFailed({
-                queryFailure: "InstanceNotFound",
-                deploymentUuid,
-                applicationSection,
-                entityUuid: entityUuidReference,
-                failureMessage: failureMessage,
-                errorStack:
-                  typeof foreignKeyObjectResult.errorStack == "string"
-                    ? [failureMessage, foreignKeyObjectResult.errorStack]
-                    : [failureMessage, ...(foreignKeyObjectResult.errorStack as any) ?? []],
-                innerError: foreignKeyObjectResult as any, // TODO: fix type
-              });
-            }
-            foreignKeyObjects[attributeName] = foreignKeyObjectResult.returnedDomainElement as EntityInstance;
-          }
-        }
-        const transformedResult = transformer_extended_apply(
-          "runtime",
-          [], // transformerPath
-          querySelectorParams.label??querySelectorParams.extractorOrCombinerType,
-          querySelectorParams.applyTransformer,
-          "value",
-          // {...modelEnvironment, ...selectorParams.extractor.queryParams},
+        return this.extractEntityInstanceByDirectReference(
+          selectorParams,
           modelEnvironment,
-          selectorParams.extractor.queryParams,
-          {...selectorParams.extractor.contextResults, referenceObject, foreignKeyObjects}
+          querySelectorParams as ExtractorOrCombinerReturningObject & { extractorOrCombinerType: "extractorForObjectByDirectReference" },
+          deploymentUuid,
+          applicationSection,
+          entityUuidReference
         );
-        if (transformedResult instanceof TransformerFailure) {
-         return new Domain2ElementFailed({
-           queryFailure: transformedResult.queryFailure,
-           failureMessage: transformedResult.failureMessage,
-           errorStack: transformedResult.errorStack,
-           innerError: transformedResult as any,
-           queryContext: `extractRunnerInMemory extractEntityInstance transformer failure for entity ${entityUuidReference} with instance uuid=${instanceUuid}`,
-           queryParameters: JSON.stringify(selectorParams.extractor),
-           deploymentUuid,
-           applicationSection,
-           entityUuid: entityUuidReference,
-           instanceUuid,
-         });
-        }
-        return transformedResult;
-        break;
       }
       default: {
         throw new Error(
           "extractRunnerInMemory extractEntityInstance can not handle ExtractorTemplateReturningObject query with extractorOrCombinerType=" +
             selectorParams.extractor.select.extractorOrCombinerType
         );
-        break;
       }
     }
   };

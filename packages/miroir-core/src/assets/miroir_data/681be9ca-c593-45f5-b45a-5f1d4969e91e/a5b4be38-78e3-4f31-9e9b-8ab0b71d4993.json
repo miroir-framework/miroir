@@ -1989,11 +1989,9 @@
                   ]
                 },
                 "expectedValue": [
-                  {
-                    "testA": 2,
-                    "testB": 1,
-                    "testC": 1
-                  }
+                  { "test": "testA", "count": 2},
+                  { "test": "testB", "count": 1},
+                  { "test": "testC", "count": 1}
                 ]
               }
             ]

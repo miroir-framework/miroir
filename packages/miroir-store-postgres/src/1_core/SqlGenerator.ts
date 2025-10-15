@@ -329,7 +329,8 @@ function sqlStringForConstantTransformer(
 export function sqlStringForCombiner /*BoxedExtractorTemplateRunner*/(
   query: ExtractorOrCombiner,
   schema: string
-): Domain2QueryReturnType<SqlStringForCombinerReturnType> {
+// ): Domain2QueryReturnType<SqlStringForCombinerReturnType> {
+): SqlStringForCombinerReturnType { // TODO: do not throw exceptions
   // TODO: fetch parentName from parentUuid in query!
   switch (query.extractorOrCombinerType) {
     case "extractorByEntityReturningObjectList":
@@ -409,7 +410,9 @@ export function sqlStringForExtractor(
       break;
     }
     case "extractorByEntityReturningObjectList": {
-      return `SELECT * FROM "${schema}"."${extractor.parentName}"`;
+      return `SELECT * FROM "${schema}"."${extractor.parentName}"` + (extractor.filter
+        ? ` WHERE "${extractor.filter?.attributeName}" ILIKE '%${extractor.filter?.value}%'`
+        : "");
       break;
     }
     case "extractorWrapperReturningObject":
@@ -623,7 +626,7 @@ FROM (${referenceQuery.sqlStringOrObject}) AS "count_applyTo",
     }
     case "table": {
       const transformerSqlQuery = actionRuntimeTransformer.groupBy
-        ? `SELECT "${actionRuntimeTransformer.groupBy}", COUNT(*)::int FROM ${referenceQuery.sqlStringOrObject}
+        ? `SELECT "${actionRuntimeTransformer.groupBy}", COUNT(*)::int FROM (${referenceQuery.sqlStringOrObject}) AS "count_applyTo"
             GROUP BY "${actionRuntimeTransformer.groupBy}"
 `
         : `SELECT COUNT(*)::int FROM (${referenceQuery.sqlStringOrObject}) AS "count_applyTo"
@@ -1483,7 +1486,6 @@ LATERAL jsonb_array_elements("listPickElement_applyTo"."${
 }") AS "listPickElement_applyTo_array"
 `;
         } else { // no orderBy
-          // SELECT ("listPickElement_applyTo_array" ->> ${limit})::"any" AS "listPickElement" 
           sqlResult = `
 SELECT "listPickElement_applyTo_array"."value" AS "listPickElement"
 FROM
@@ -1492,11 +1494,6 @@ LATERAL jsonb_array_elements("listPickElement_applyTo"."${
 (sqlForApplyTo as any).resultAccessPath[1]
 }") AS "listPickElement_applyTo_array" LIMIT 1 OFFSET ${limit}
 `;
-//               sqlResult = `SELECT ("listPickElement_applyTo"."${
-//                 (sqlForApplyTo as any).resultAccessPath[1]
-//               }" ->> ${limit}) AS "listPickElement" 
-// FROM (${sqlForApplyTo.sqlStringOrObject}) AS "listPickElement_applyTo"
-// `;
         }
         return {
           type: "json",
@@ -1518,7 +1515,8 @@ LATERAL jsonb_array_elements("listPickElement_applyTo"."${
           type: "json",
           sqlStringOrObject: sqlResult,
           preparedStatementParameters: sqlForApplyTo.preparedStatementParameters,
-          resultAccessPath: [0, ...(sqlForApplyTo.resultAccessPath ?? [])],
+          // resultAccessPath: [0, ...(sqlForApplyTo.resultAccessPath ?? [])],
+          resultAccessPath: [ 0 ],
           columnNameContainingJsonValue: "listPickElement",
         };
         break;
@@ -2961,10 +2959,10 @@ export function sqlStringForRuntimeTransformer(
   withClauseColumnName?: string,
   iterateOn?: string,
 ): Domain2QueryReturnType<SqlStringForTransformerElementValue> {
-  log.info(
-    "sqlStringForRuntimeTransformer called with actionRuntimeTransformer",
-    JSON.stringify(actionRuntimeTransformer, null, 2)
-  );
+  // log.info(
+  //   "sqlStringForRuntimeTransformer called with actionRuntimeTransformer",
+  //   JSON.stringify(actionRuntimeTransformer, null, 2)
+  // );
 
   const orderBy = (actionRuntimeTransformer as any).orderBy
     ? `ORDER BY "${(actionRuntimeTransformer as any).orderBy}"`
@@ -3091,12 +3089,20 @@ export function sqlStringForQuery(
     }
   );
 
-  log.info("sqlStringForQuery extractorRawQueries", extractorRawQueries, "for", selectorParams.extractor.extractors);
+  log.info(
+    "sqlStringForQuery extractorRawQueries",
+    JSON.stringify(extractorRawQueries, null, 2),
+    "for",
+    selectorParams.extractor.extractors
+  );
 
-  const combinerRawQueries = Object.entries(selectorParams.extractor.combiners ?? {}).map(([key, value]) => {
+  // const combinerRawQueries: [string, Domain2QueryReturnType<SqlStringForCombinerReturnType>][] = Object.entries(selectorParams.extractor.combiners ?? {}).map(
+  const combinerRawQueries: [string, SqlStringForCombinerReturnType][] = Object.entries(
+    selectorParams.extractor.combiners ?? {}
+  ).map(([key, value]) => {
     return [key, sqlStringForCombiner(value, schema)];
   });
-  log.info("sqlStringForQuery combinerRawQueries", combinerRawQueries);
+  log.info("sqlStringForQuery combinerRawQueries", JSON.stringify(combinerRawQueries, null, 2));
 
   let newPreparedStatementParameters: any[]= [...preparedStatementParameters];
   const queryParamsWithClauses: QueryParameterSqlWithClause[] = Object.entries(
@@ -3116,7 +3122,7 @@ export function sqlStringForQuery(
     if (convertedParam instanceof Domain2ElementFailed) {
       throw new Error("sqlStringForQuery queryParamsWithClauses convertedParam failed for key: " + key);
     }
-    newPreparedStatementParameters = [
+    newPreparedStatementParameters = [ // TODO: avoid side effects!
       ...newPreparedStatementParameters,
       ...(convertedParam.preparedStatementParameters ?? []),
     ];
@@ -3126,8 +3132,10 @@ export function sqlStringForQuery(
       convertedParam,
     };
   });
+  log.info("sqlStringForQuery queryParamsWithClauses", queryParamsWithClauses);
+  // log.info("sqlStringForQuery queryParamsWithClauses", JSON.stringify(queryParamsWithClauses, null, 2));
 
-  const convertedParams: Record<string, SqlContextEntry> = Object.fromEntries(
+  const paramsContextEntries: Record<string, SqlContextEntry> = Object.fromEntries(
     queryParamsWithClauses.map((q) => {
       const notMapResultAccessPath = q.convertedParam.resultAccessPath?.find(
         (e) => typeof e == "object"
@@ -3149,7 +3157,22 @@ export function sqlStringForQuery(
     })
   );
 
-  log.info("sqlStringForQuery found queryParamsWithClauses", JSON.stringify(queryParamsWithClauses, null, 2));
+  const paramsAndextractorAndCombinerContextEntries: Record<string, SqlContextEntry> = {
+    ...paramsContextEntries,
+    ...Object.fromEntries(
+      extractorRawQueries.map(([key, value]) => [
+        key,
+        {
+          type: "table",
+          // attributeResultAccessPath: (value.resultAccessPath as any)?.slice(1), // because resultAccessPath returns the path viewed from the end user, for which the result is always an array
+          renameTo: key,
+        },
+      ])
+    ),
+  }
+  // log.info("sqlStringForQuery found queryParamsWithClauses", JSON.stringify(queryParamsWithClauses, null, 2));
+  log.info("sqlStringForQuery found paramsAndextractorAndCombinerContextEntries", JSON.stringify(paramsAndextractorAndCombinerContextEntries, null, 2));
+  // log.info("sqlStringForQuery found convertedParams for query parameters", JSON.stringify(paramsContextEntries, null, 2));
   log.info(
     "sqlStringForQuery found newPreparedStatementParameters for query parameters",
     JSON.stringify(Object.keys(newPreparedStatementParameters), null, 2)
@@ -3163,10 +3186,9 @@ export function sqlStringForQuery(
       newPreparedStatementParameters.length,
       1, // indentLevel,
       selectorParams.extractor.queryParams,
-      convertedParams
+      paramsAndextractorAndCombinerContextEntries // definedContextEntries
     );
     if (!(transformerRawQuery instanceof Domain2ElementFailed) && transformerRawQuery.preparedStatementParameters) {
-      // newPreparedStatementParameters.push(...transformerRawQuery.preparedStatementParameters);
       newPreparedStatementParameters = [...newPreparedStatementParameters, ...transformerRawQuery.preparedStatementParameters];
     }
     return [key, transformerRawQuery]; // TODO: handle ExtendedExtractorForRuntime?
@@ -3190,11 +3212,13 @@ export function sqlStringForQuery(
   const combinerRawQueriesObject = Object.fromEntries(combinerRawQueries);
   const transformerRawQueriesObject: Record<string, SqlStringForTransformerElementValue> =
     Object.fromEntries(cleanTransformerRawQueries);
+
   const lastEntryIndex = selectorParams.extractor.runtimeTransformers
     ? transformerRawQueries.length - 1
     : selectorParams.extractor.combiners
     ? combinerRawQueries.length - 1
     : extractorRawQueries.length - 1;
+
   const endResultName =
     Object.keys(
       selectorParams.extractor.runtimeTransformers ??
@@ -3206,10 +3230,22 @@ export function sqlStringForQuery(
   const queryParts: string[] = [];
   const queryParameters: any[] = [];
   if (extractorRawQueries.length > 0) {
-    queryParts.push(extractorRawQueries.map((q) => '"' + q[0] + '" AS (' + flushAndIndent(1) + q[1] + flushAndIndent(0) + ")").join(tokenSeparatorForWithRtn));
+    queryParts.push(
+      extractorRawQueries
+        .map((q) => '"' + q[0] + '" AS (' + flushAndIndent(1) + q[1] + flushAndIndent(0) + ")")
+        .join(tokenSeparatorForWithRtn)
+    );
   }
   if (combinerRawQueries.length > 0) {
-    queryParts.push(combinerRawQueries.map((q) => '"' + q[0] + '" AS (' + flushAndIndent(1) + q[1] + flushAndIndent(0) + ")").join(tokenSeparatorForWithRtn));
+    // queryParts.push(combinerRawQueries.map((q) => '"' + q[0] + '" AS (' + flushAndIndent(1) + q[1] + flushAndIndent(0) + ")").join(tokenSeparatorForWithRtn));
+    queryParts.push(
+      combinerRawQueries
+        .map(
+          (q: [string, SqlStringForCombinerReturnType]) =>
+            '"' + q[0] + '" AS (' + flushAndIndent(1) + q[1].sqlString + flushAndIndent(0) + ")"
+        )
+        .join(tokenSeparatorForWithRtn)
+    );
   }
   if (queryParamsWithClauses.length > 0) {
     queryParts.push(
@@ -3256,6 +3292,6 @@ export function sqlStringForQuery(
     preparedStatementParameters: newPreparedStatementParameters,
     transformerRawQueriesObject,
     endResultName,
-    combinerRawQueriesObject,
+    combinerRawQueriesObject: combinerRawQueriesObject as any, // TODO: fix type
   };
 }

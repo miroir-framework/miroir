@@ -15,6 +15,7 @@ import {
   BoxedExtractorOrCombinerReturningObject,
   BoxedExtractorOrCombinerReturningObjectList,
   defaultMetaModelEnvironment,
+  defaultMiroirModelEnvironment,
   Domain2ElementFailed,
   Domain2QueryReturnType,
   DomainElementSuccess,
@@ -493,193 +494,197 @@ export class SqlDbQueryRunner {
   > = async (
     selectorParams: AsyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObject>
   ): Promise<Domain2QueryReturnType<Domain2QueryReturnType<EntityInstance>>> => {
-    const querySelectorParams: ExtractorOrCombinerReturningObject = selectorParams.extractor
-      .select as ExtractorOrCombinerReturningObject;
-    const deploymentUuid = selectorParams.extractor.deploymentUuid;
-    const applicationSection: ApplicationSection =
-      selectorParams.extractor.select.applicationSection ??
-      ((selectorParams.extractor.pageParams?.applicationSection ?? "data") as ApplicationSection);
+    return this.extractorRunnerInMemory.extractEntityInstance(
+      selectorParams,
+      defaultMiroirModelEnvironment,
+    );
+    // const querySelectorParams: ExtractorOrCombinerReturningObject = selectorParams.extractor
+    //   .select as ExtractorOrCombinerReturningObject;
+    // const deploymentUuid = selectorParams.extractor.deploymentUuid;
+    // const applicationSection: ApplicationSection =
+    //   selectorParams.extractor.select.applicationSection ??
+    //   ((selectorParams.extractor.pageParams?.applicationSection ?? "data") as ApplicationSection);
 
-    const entityUuidReference = querySelectorParams.parentUuid;
+    // const entityUuidReference = querySelectorParams.parentUuid;
 
-    // log.info(
-    //   "extractEntityInstance params",
-    //   querySelectorParams,
-    //   deploymentUuid,
-    //   applicationSection,
-    //   entityUuidReference
-    // );
+    // // log.info(
+    // //   "extractEntityInstance params",
+    // //   querySelectorParams,
+    // //   deploymentUuid,
+    // //   applicationSection,
+    // //   entityUuidReference
+    // // );
 
-    switch (querySelectorParams?.extractorOrCombinerType) {
-      case "combinerForObjectByRelation": {
-        const referenceObject = transformer_InnerReference_resolve(
-          "runtime",
-          [],
-          {
-            transformerType: "contextReference",
-            interpolation: "runtime",
-            referenceName: querySelectorParams.objectReference,
-          },
-          "value",
-          // { ...defaultMetaModelEnvironment, ...selectorParams.extractor.queryParams },
-          defaultMetaModelEnvironment, // TODO: use correct model environment
-          selectorParams.extractor.queryParams,
-          selectorParams.extractor.contextResults
-        );
+    // switch (querySelectorParams?.extractorOrCombinerType) {
+    //   case "combinerForObjectByRelation": {
+    //     const referenceObject = transformer_InnerReference_resolve(
+    //       "runtime",
+    //       [],
+    //       {
+    //         transformerType: "contextReference",
+    //         interpolation: "runtime",
+    //         referenceName: querySelectorParams.objectReference,
+    //       },
+    //       "value",
+    //       // { ...defaultMetaModelEnvironment, ...selectorParams.extractor.queryParams },
+    //       defaultMetaModelEnvironment, // TODO: use correct model environment
+    //       selectorParams.extractor.queryParams,
+    //       selectorParams.extractor.contextResults
+    //     );
 
-        if (
-          !querySelectorParams.AttributeOfObjectToCompareToReferenceUuid ||
-          referenceObject instanceof Domain2ElementFailed
-        ) {
-          return new Domain2ElementFailed({
-            queryFailure: "IncorrectParameters",
-            failureMessage:
-              "sqlDbExtractorRunner combinerForObjectByRelation objectReference not found:" +
-              JSON.stringify(querySelectorParams.objectReference),
-            query: JSON.stringify(querySelectorParams),
-            queryParameters: JSON.stringify(selectorParams.extractor.pageParams),
-            queryContext: JSON.stringify(selectorParams.extractor.contextResults),
-          });
-        }
+    //     if (
+    //       !querySelectorParams.AttributeOfObjectToCompareToReferenceUuid ||
+    //       referenceObject instanceof Domain2ElementFailed
+    //     ) {
+    //       return new Domain2ElementFailed({
+    //         queryFailure: "IncorrectParameters",
+    //         failureMessage:
+    //           "sqlDbExtractorRunner combinerForObjectByRelation objectReference not found:" +
+    //           JSON.stringify(querySelectorParams.objectReference),
+    //         query: JSON.stringify(querySelectorParams),
+    //         queryParameters: JSON.stringify(selectorParams.extractor.pageParams),
+    //         queryContext: JSON.stringify(selectorParams.extractor.contextResults),
+    //       });
+    //     }
 
-        const result = await this.persistenceStoreController.getInstance(
-          entityUuidReference,
-          referenceObject[querySelectorParams.AttributeOfObjectToCompareToReferenceUuid]
-        );
+    //     const result = await this.persistenceStoreController.getInstance(
+    //       entityUuidReference,
+    //       referenceObject[querySelectorParams.AttributeOfObjectToCompareToReferenceUuid]
+    //     );
 
-        if (
-          result instanceof Action2Error ||
-          result.returnedDomainElement instanceof Domain2ElementFailed
-        ) {
-          return new Domain2ElementFailed({
-            queryFailure: "InstanceNotFound",
-            deploymentUuid,
-            applicationSection,
-            entityUuid: entityUuidReference,
-          });
-        }
-        // log.info(
-        //   "extractEntityInstance combinerForObjectByRelation, ############# reference",
-        //   querySelectorParams,
-        //   "######### context entityUuid",
-        //   entityUuidReference,
-        //   "######### referenceObject",
-        //   referenceObject,
-        //   "######### queryParams",
-        //   JSON.stringify(selectorParams.extractor.queryParams, undefined, 2),
-        //   "######### contextResults",
-        //   JSON.stringify(selectorParams.extractor.contextResults, undefined, 2)
-        // );
-        return result.returnedDomainElement;
-        break;
-      }
-      case "extractorForObjectByDirectReference": {
-        const instanceDomainElement = querySelectorParams.instanceUuid;
-        // log.info("selectEntityInstanceFromReduxDeploymentsStateForTemplate extractorForObjectByDirectReference found domainState", JSON.stringify(domainState))
-        // const extractResult = await this.asyncExtractWithQuery(
-        //   // selectorParams,
-        //   {
-        //     extractor: {
-        //       queryType: "boxedQueryWithExtractorCombinerTransformer",
-        //       deploymentUuid: selectorParams.extractor.deploymentUuid,
-        //       contextResults: selectorParams.extractor.contextResults,
-        //       pageParams: selectorParams.extractor.pageParams,
-        //       queryParams: selectorParams.extractor.queryParams,
-        //       runAsSql: true,
-        //       extractors: {
-        //         select: querySelectorParams
-        //         // select: {
-        //         //   extractorOrCombinerType: "extractorByEntityReturningObject",
-        //         //   parentUuid: entityUuidReference,
-        //         //   applicationSection: selectorParams.extractor.select.applicationSection,
-        //         //   instanceUuid: querySelectorParams.instanceUuid,
-        //         // },
-        //       }
-        //     },
-        //     extractorRunnerMap: this.dbImplementationExtractorRunnerMap,
-        //   },
-        //   defaultMetaModelEnvironment
-        // );
-        // log.info("extractEntityInstance extractResult", JSON.stringify(extractResult));
+    //     if (
+    //       result instanceof Action2Error ||
+    //       result.returnedDomainElement instanceof Domain2ElementFailed
+    //     ) {
+    //       return new Domain2ElementFailed({
+    //         queryFailure: "InstanceNotFound",
+    //         deploymentUuid,
+    //         applicationSection,
+    //         entityUuid: entityUuidReference,
+    //       });
+    //     }
+    //     // log.info(
+    //     //   "extractEntityInstance combinerForObjectByRelation, ############# reference",
+    //     //   querySelectorParams,
+    //     //   "######### context entityUuid",
+    //     //   entityUuidReference,
+    //     //   "######### referenceObject",
+    //     //   referenceObject,
+    //     //   "######### queryParams",
+    //     //   JSON.stringify(selectorParams.extractor.queryParams, undefined, 2),
+    //     //   "######### contextResults",
+    //     //   JSON.stringify(selectorParams.extractor.contextResults, undefined, 2)
+    //     // );
+    //     return result.returnedDomainElement;
+    //     break;
+    //   }
+    //   case "extractorForObjectByDirectReference": {
+    //     const instanceDomainElement = querySelectorParams.instanceUuid;
+    //     // log.info("selectEntityInstanceFromReduxDeploymentsStateForTemplate extractorForObjectByDirectReference found domainState", JSON.stringify(domainState))
+    //     // const extractResult = await this.asyncExtractWithQuery(
+    //     //   // selectorParams,
+    //     //   {
+    //     //     extractor: {
+    //     //       queryType: "boxedQueryWithExtractorCombinerTransformer",
+    //     //       deploymentUuid: selectorParams.extractor.deploymentUuid,
+    //     //       contextResults: selectorParams.extractor.contextResults,
+    //     //       pageParams: selectorParams.extractor.pageParams,
+    //     //       queryParams: selectorParams.extractor.queryParams,
+    //     //       runAsSql: true,
+    //     //       extractors: {
+    //     //         select: querySelectorParams
+    //     //         // select: {
+    //     //         //   extractorOrCombinerType: "extractorByEntityReturningObject",
+    //     //         //   parentUuid: entityUuidReference,
+    //     //         //   applicationSection: selectorParams.extractor.select.applicationSection,
+    //     //         //   instanceUuid: querySelectorParams.instanceUuid,
+    //     //         // },
+    //     //       }
+    //     //     },
+    //     //     extractorRunnerMap: this.dbImplementationExtractorRunnerMap,
+    //     //   },
+    //     //   defaultMetaModelEnvironment
+    //     // );
+    //     // log.info("extractEntityInstance extractResult", JSON.stringify(extractResult));
 
 
-        // if (extractResult instanceof Domain2ElementFailed) {
-        //   return extractResult;
-        // }
-        // if (
-        //   !extractResult?.select ||
-        //   !Array.isArray(extractResult.select) ||
-        //   extractResult.select.length == 0
-        // ) {
-        //   return new Domain2ElementFailed({
-        //     queryFailure: "InstanceNotFound",
-        //     deploymentUuid,
-        //     applicationSection,
-        //     entityUuid: entityUuidReference,
-        //     instanceUuid: instanceDomainElement,
-        //   });
-        // }
-        // log.info(
-        //   "extractEntityInstance extractorForObjectByDirectReference, ############# reference",
-        //   querySelectorParams,
-        //   "entityUuidReference",
-        //   entityUuidReference,
-        //   "######### context entityUuid",
-        //   entityUuidReference,
-        //   "######### queryParams",
-        //   JSON.stringify(Object.keys(selectorParams.extractor.queryParams), undefined, 2),
-        //   "######### contextResults",
-        //   JSON.stringify(Object.keys(selectorParams.extractor.contextResults), undefined, 2),
-        //   "######### result",
-        //   JSON.stringify(extractResult.select[0], undefined, 2)
-        // );
-        // return extractResult.select[0];
+    //     // if (extractResult instanceof Domain2ElementFailed) {
+    //     //   return extractResult;
+    //     // }
+    //     // if (
+    //     //   !extractResult?.select ||
+    //     //   !Array.isArray(extractResult.select) ||
+    //     //   extractResult.select.length == 0
+    //     // ) {
+    //     //   return new Domain2ElementFailed({
+    //     //     queryFailure: "InstanceNotFound",
+    //     //     deploymentUuid,
+    //     //     applicationSection,
+    //     //     entityUuid: entityUuidReference,
+    //     //     instanceUuid: instanceDomainElement,
+    //     //   });
+    //     // }
+    //     // log.info(
+    //     //   "extractEntityInstance extractorForObjectByDirectReference, ############# reference",
+    //     //   querySelectorParams,
+    //     //   "entityUuidReference",
+    //     //   entityUuidReference,
+    //     //   "######### context entityUuid",
+    //     //   entityUuidReference,
+    //     //   "######### queryParams",
+    //     //   JSON.stringify(Object.keys(selectorParams.extractor.queryParams), undefined, 2),
+    //     //   "######### contextResults",
+    //     //   JSON.stringify(Object.keys(selectorParams.extractor.contextResults), undefined, 2),
+    //     //   "######### result",
+    //     //   JSON.stringify(extractResult.select[0], undefined, 2)
+    //     // );
+    //     // return extractResult.select[0];
 
-        log.info("extractEntityInstance found instanceUuid", JSON.stringify(instanceDomainElement));
+    //     log.info("extractEntityInstance found instanceUuid", JSON.stringify(instanceDomainElement));
 
-        log.info("extractEntityInstance resolved instanceUuid =", instanceDomainElement);
-        const result = await this.persistenceStoreController.getInstance(
-          entityUuidReference,
-          instanceDomainElement
-        );
+    //     log.info("extractEntityInstance resolved instanceUuid =", instanceDomainElement);
+    //     const result = await this.persistenceStoreController.getInstance(
+    //       entityUuidReference,
+    //       instanceDomainElement
+    //     );
 
-        if (
-          result instanceof Action2Error ||
-          result.returnedDomainElement instanceof Domain2ElementFailed
-        ) {
-          return new Domain2ElementFailed({
-            queryFailure: "InstanceNotFound",
-            deploymentUuid,
-            applicationSection,
-            entityUuid: entityUuidReference,
-            instanceUuid: instanceDomainElement,
-          });
-        }
-        log.info(
-          "extractEntityInstance extractorForObjectByDirectReference, ############# reference",
-          querySelectorParams,
-          "entityUuidReference",
-          entityUuidReference,
-          "######### context entityUuid",
-          entityUuidReference,
-          "######### queryParams",
-          JSON.stringify(Object.keys(selectorParams.extractor.queryParams), undefined, 2),
-          "######### contextResults",
-          JSON.stringify(Object.keys(selectorParams.extractor.contextResults), undefined, 2),
-          "######### result",
-          JSON.stringify(result, undefined, 2)
-        );
-        return result.returnedDomainElement;
-        break;
-      }
-      default: {
-        throw new Error(
-          "extractEntityInstance can not handle ExtractorTemplateReturningObject query with queryType=" +
-            selectorParams.extractor.select.extractorOrCombinerType
-        );
-        break;
-      }
-    }
+    //     if (
+    //       result instanceof Action2Error ||
+    //       result.returnedDomainElement instanceof Domain2ElementFailed
+    //     ) {
+    //       return new Domain2ElementFailed({
+    //         queryFailure: "InstanceNotFound",
+    //         deploymentUuid,
+    //         applicationSection,
+    //         entityUuid: entityUuidReference,
+    //         instanceUuid: instanceDomainElement,
+    //       });
+    //     }
+    //     log.info(
+    //       "extractEntityInstance extractorForObjectByDirectReference, ############# reference",
+    //       querySelectorParams,
+    //       "entityUuidReference",
+    //       entityUuidReference,
+    //       "######### context entityUuid",
+    //       entityUuidReference,
+    //       "######### queryParams",
+    //       JSON.stringify(Object.keys(selectorParams.extractor.queryParams), undefined, 2),
+    //       "######### contextResults",
+    //       JSON.stringify(Object.keys(selectorParams.extractor.contextResults), undefined, 2),
+    //       "######### result",
+    //       JSON.stringify(result, undefined, 2)
+    //     );
+    //     return result.returnedDomainElement;
+    //     break;
+    //   }
+    //   default: {
+    //     throw new Error(
+    //       "extractEntityInstance can not handle ExtractorTemplateReturningObject query with queryType=" +
+    //         selectorParams.extractor.select.extractorOrCombinerType
+    //     );
+    //     break;
+    //   }
+    // }
   };
 
   // ##############################################################################################
