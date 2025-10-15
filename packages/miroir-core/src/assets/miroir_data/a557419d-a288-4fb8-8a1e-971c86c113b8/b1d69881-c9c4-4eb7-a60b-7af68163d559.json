@@ -36,6 +36,6 @@
   "transformerImplementation": {
     "transformerImplementationType": "libraryImplementation",
     "inMemoryImplementationFunctionName": "transformer_mustacheStringTemplate_apply",
-    "sqlImplementationFunctionName": "sqlStringForConstantAnyTransformer"
+    "sqlImplementationFunctionName": "sqlStringForMustacheStringTemplateTransformer"
   }
 }

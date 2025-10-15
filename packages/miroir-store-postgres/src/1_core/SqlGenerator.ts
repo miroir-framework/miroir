@@ -24,6 +24,7 @@ import {
   TransformerForRuntime_listReducerToSpreadObject,
   // TransformerForRuntime_innerFullObjectTemplate,
   TransformerForRuntime_mapperListToList,
+  TransformerForRuntime_mustacheStringTemplate,
   TransformerForRuntime_newUuid,
   TransformerForRuntime_object_fullTemplate,
   TransformerForRuntime_objectAlter,
@@ -98,6 +99,7 @@ const sqlTransformerImplementations: Record<string, ITransformerHandler<any>> = 
   sqlStringForListReducerToIndexObjectTransformer,
   sqlStringForListReducerToSpreadObjectTransformer,
   sqlStringForMapperListToListTransformer,
+  sqlStringForMustacheStringTemplateTransformer,
   sqlStringForNewUuidTransformer,
   sqlStringForObjectFullTemplateTransformer,
   sqlStringForObjectAlterTransformer,
@@ -1600,12 +1602,17 @@ function sqlStringForObjectFullTemplateTransformer(
       "_" +
       actionRuntimeTransformer.referenceToOuterObject;
 
+    const contextEntryType = resolvedApplyTo.type == "tableOf1JsonColumn" ? "table" : (resolvedApplyTo.type ?? "json");
     newDefinedContextEntries[actionRuntimeTransformer.referenceToOuterObject??defaultTransformerInput] = {
-      type: "json",
+      type: contextEntryType,  // Use the type from resolvedApplyTo, treating tableOf1JsonColumn as table
       renameTo: applyToName,
-      attributeResultAccessPath: resolvedApplyTo.columnNameContainingJsonValue
-        ? [resolvedApplyTo.columnNameContainingJsonValue]
-        : (resolvedApplyTo.resultAccessPath?.slice(1) as any), // correct since resolvedApplyTo has no "map" (object) item
+      // For table types, don't use attributeResultAccessPath since we access columns directly
+      // For JSON types, use columnNameContainingJsonValue or resultAccessPath
+      attributeResultAccessPath: contextEntryType == "table" 
+        ? undefined 
+        : (resolvedApplyTo.columnNameContainingJsonValue
+            ? [resolvedApplyTo.columnNameContainingJsonValue]
+            : (resolvedApplyTo.resultAccessPath?.slice(1) as any)), // correct since resolvedApplyTo has no "map" (object) item
     };
     newPreparedStatementParametersCount += preparedStatementParameters.length;
     const extraWith: (
@@ -2941,10 +2948,203 @@ function sqlStringForNewUuidTransformer(
   withClauseColumnName?: string,
   iterateOn?: string,
 ): Domain2QueryReturnType<SqlStringForTransformerElementValue> {
+  const columnName = withClauseColumnName ?? 'newUuid';
   return {
     type: "scalar",
-    sqlStringOrObject: (topLevelTransformer ? "select " : "") + "gen_random_uuid()",
+    sqlStringOrObject: topLevelTransformer 
+      ? `select gen_random_uuid() AS "${columnName}"` 
+      : "gen_random_uuid()",
+    preparedStatementParameters: [],
+    resultAccessPath: topLevelTransformer ? [0, columnName] : undefined,
   };
+}
+
+// ################################################################################################
+/**
+ * TODO: WILL NOT WORK IN THE GENERAL CAS, NEEDS TO BE DONE AS EXPRESSION, NOT AS FULL SUBQUERY
+ * 
+ * Generates SQL string for a Mustache string template transformer.
+ * @param actionRuntimeTransformer 
+ * @param preparedStatementParametersCount 
+ * @param indentLevel 
+ * @param queryParams 
+ * @param definedContextEntries 
+ * @param useAccessPathForContextReference 
+ * @param topLevelTransformer 
+ * @param withClauseColumnName 
+ * @param iterateOn 
+ * @returns 
+ */
+function sqlStringForMustacheStringTemplateTransformer(
+  actionRuntimeTransformer: TransformerForRuntime_mustacheStringTemplate,
+  preparedStatementParametersCount: number,
+  indentLevel: number,
+  queryParams: Record<string, any>,
+  definedContextEntries: Record<string, SqlContextEntry>,
+  useAccessPathForContextReference: boolean,
+  topLevelTransformer: boolean,
+  withClauseColumnName?: string,
+  iterateOn?: string,
+): Domain2QueryReturnType<SqlStringForTransformerElementValue> {
+  log.info(
+    "sqlStringForMustacheStringTemplateTransformer called with",
+    JSON.stringify(actionRuntimeTransformer, null, 2),
+    "topLevelTransformer",
+    topLevelTransformer,
+    "definedContextEntries",
+    JSON.stringify(definedContextEntries, null, 2),
+    "queryParams",
+    JSON.stringify(queryParams, null, 2)
+  );
+  // Parse the Mustache template to extract placeholders
+  // Mustache syntax: {{variableName}} or {{{variableName}}} (unescaped)
+  const template = actionRuntimeTransformer.definition;
+  
+  // Find all mustache placeholders in the template
+  const mustacheRegex = /\{\{(\{?)([^}]+)\}?\}\}/g;
+  const placeholders: Array<{ name: string; position: number; length: number }> = [];
+  let match;
+  
+  while ((match = mustacheRegex.exec(template)) !== null) {
+    const name = match[2].trim();
+    placeholders.push({
+      name,
+      position: match.index,
+      length: match[0].length,
+    });
+  }
+  
+  log.info(
+    "sqlStringForMustacheStringTemplateTransformer found placeholders",
+    JSON.stringify(placeholders, null, 2),
+    "in template",
+    template
+  );
+  
+  // If no placeholders, return the template as a constant string
+  if (placeholders.length === 0) {
+    const paramIndex = preparedStatementParametersCount + 1;
+    return {
+      type: "scalar",
+      sqlStringOrObject: topLevelTransformer
+        ? `SELECT $${paramIndex}::text AS "mustacheStringTemplate"`
+        : `$${paramIndex}::text`,
+      preparedStatementParameters: [template],
+    };
+  }
+  
+  // Build SQL string concatenation expression
+  let newPreparedStatementParametersCount = preparedStatementParametersCount;
+  const preparedStatementParameters: any[] = [];
+  const sqlParts: string[] = [];
+  const usedContextEntries: string[] = [];
+  const dataSource = (actionRuntimeTransformer as any)["interpolation"] === "runtime" 
+    ? definedContextEntries 
+    : queryParams;
+  
+  let lastPosition = 0;
+  
+  for (const placeholder of placeholders) {
+    // Add literal text before the placeholder
+    if (placeholder.position > lastPosition) {
+      const literalText = template.substring(lastPosition, placeholder.position);
+      const paramIndex = newPreparedStatementParametersCount + 1;
+      sqlParts.push(`$${paramIndex}::text`);
+      preparedStatementParameters.push(literalText);
+      newPreparedStatementParametersCount++;
+    }
+    
+    // Resolve the placeholder value using sqlStringForRuntimeTransformer
+    // Handle dot notation in placeholder names (e.g., "book.name" -> ["book", "name"])
+    const placeholderPath = placeholder.name.split(".");
+    const isRuntimeInterpolation = (actionRuntimeTransformer as any)["interpolation"] === "runtime";
+    const placeholderTransformer: TransformerForRuntime_contextReference = isRuntimeInterpolation
+      ? {
+          transformerType: "contextReference",
+          interpolation: "runtime",
+          referenceName: placeholderPath[0],
+          referencePath: placeholderPath.length > 1 ? placeholderPath : undefined,  // Use full path including reference name (will be sliced in contextReferenceTransformer)
+        }
+      : {
+          transformerType: "parameterReference" as any, // Type cast needed for union type
+          interpolation: "runtime",
+          referenceName: placeholderPath[0],
+          referencePath: placeholderPath.length > 1 ? placeholderPath : undefined,  // Use full path including reference name (will be sliced in contextReferenceTransformer)
+        };
+    
+    const resolvedPlaceholder = sqlStringForRuntimeTransformer(
+      placeholderTransformer,
+      newPreparedStatementParametersCount,
+      indentLevel,
+      queryParams,
+      definedContextEntries,
+      useAccessPathForContextReference,
+      false // topLevelTransformer
+    );
+    
+    if (resolvedPlaceholder instanceof Domain2ElementFailed) {
+      return new Domain2ElementFailed({
+        queryFailure: "QueryNotExecutable",
+        query: actionRuntimeTransformer as any,
+        failureMessage: `sqlStringForMustacheStringTemplateTransformer failed to resolve placeholder '${placeholder.name}': ${resolvedPlaceholder.failureMessage}`,
+        innerError: resolvedPlaceholder,
+      });
+    }
+    
+    // Convert the resolved value to text and add to SQL parts
+    const castToText = resolvedPlaceholder.type === "json" || resolvedPlaceholder.type === "json_array"
+      ? `(${resolvedPlaceholder.sqlStringOrObject})::text`
+      : `(${resolvedPlaceholder.sqlStringOrObject})::text`;
+    
+    sqlParts.push(castToText);
+    
+    if (resolvedPlaceholder.preparedStatementParameters) {
+      preparedStatementParameters.push(...resolvedPlaceholder.preparedStatementParameters);
+      newPreparedStatementParametersCount += resolvedPlaceholder.preparedStatementParameters.length;
+    }
+    
+    // Collect used context entries for FROM clause
+    if (resolvedPlaceholder.usedContextEntries) {
+      usedContextEntries.push(...resolvedPlaceholder.usedContextEntries);
+    }
+    
+    lastPosition = placeholder.position + placeholder.length;
+  }
+  
+  // Add any remaining literal text after the last placeholder
+  if (lastPosition < template.length) {
+    const literalText = template.substring(lastPosition);
+    const paramIndex = newPreparedStatementParametersCount + 1;
+    sqlParts.push(`$${paramIndex}::text`);
+    preparedStatementParameters.push(literalText);
+    newPreparedStatementParametersCount++;
+  }
+  
+  // Concatenate all parts using PostgreSQL's || operator
+  const concatenatedSql = sqlParts.join(" || ");
+  
+  // Build FROM clause if we have used context entries
+  const fromClause = usedContextEntries.length > 0
+    ? flushAndIndent(indentLevel) + "FROM " + [...new Set(usedContextEntries)].map(e => `"${e}"`).join(", ")
+    : "";
+  
+  const columnName = withClauseColumnName ?? 'mustacheStringTemplate';
+  const result: SqlStringForTransformerElementValue = {
+    type: "scalar",
+    sqlStringOrObject: topLevelTransformer
+      ? `SELECT ${concatenatedSql} AS "${columnName}"${fromClause}`
+      : concatenatedSql,
+    preparedStatementParameters,
+    resultAccessPath: topLevelTransformer ? [0, columnName] : undefined,
+    usedContextEntries: usedContextEntries.length > 0 ? [...new Set(usedContextEntries)] : undefined,
+  };
+  
+  log.info(
+    "sqlStringForMustacheStringTemplateTransformer result",
+    JSON.stringify(result, null, 2)
+  );
+  
+  return result;
 }
 
 // ################################################################################################
