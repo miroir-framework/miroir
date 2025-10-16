@@ -1,0 +1,79 @@
+{
+  "uuid": "6ff19a7b-fdfc-4bf8-8026-a34447a5a073",
+  "parentName": "Query",
+  "parentUuid": "e4320b9e-ab45-4abe-85d8-359604b3c62f",
+  "name": "BooksByCountryCount",
+  "defaultLabel": "The count of Books By Country.",
+  "description": "This query produces a list of countries, with the count of Books for each author.",
+  "definition": {
+    "extractorTemplates": {
+      "books": {
+        "extractorTemplateType": "extractorTemplateForObjectListByEntity",
+        "applicationSection": "data",
+        "parentName": "Book",
+        "parentUuid": {
+          "transformerType": "constant",
+          "value": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+        }
+      },
+      "authors": {
+        "extractorTemplateType": "extractorTemplateForObjectListByEntity",
+        "applicationSection": "data",
+        "parentName": "Author",
+        "parentUuid": {
+          "transformerType": "constant",
+          "value": "d7a144ff-d1b9-4135-800c-a7cfc1f38733"
+        }
+      }
+    },
+    "combinerTemplates": {
+      "BooksWithAuthor": {
+        "extractorTemplateType": "combinerByManyToManyRelationReturningObjectList",
+        "applicationSection": "data",
+        "parentName": "Book",
+        "parentUuid": {
+          "transformerType": "constant",
+          "value": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+        },
+        "objectListReference": {
+          "transformerType": "contextReference",
+          "interpolation": "runtime",
+          "referenceName": "authors"
+        },
+        "AttributeOfRootListObjectToCompareToListReferenceUuid": "author",
+        "applyTransformer": {
+          "transformerType": "freeObjectTemplate",
+          "interpolation": "runtime",
+          "definition": {
+            "authorName": {
+              "transformerType": "contextReference",
+              "interpolation": "runtime",
+              "referencePath": ["referenceObject", "name"]
+            },
+            "authorUuid": {
+              "transformerType": "contextReference",
+              "interpolation": "runtime",
+              "referencePath": ["referenceObject", "uuid"]
+            },
+            "bookTitle": {
+              "transformerType": "contextReference",
+              "interpolation": "runtime",
+              "referencePath": ["foreignKeyObject", "name"]
+            }
+          }
+        }
+      }
+    },
+    "runtimeTransformers": {
+      "00_booksByAuthorCount": {
+        "transformerType": "count",
+        "applyTo": {
+          "transformerType": "contextReference",
+          "interpolation": "runtime",
+          "referenceName": "BooksWithAuthor"
+        },
+        "groupBy": ["authorName", "authorUuid"]
+      }
+    }
+  }
+}
