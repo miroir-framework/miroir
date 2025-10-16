@@ -68,7 +68,7 @@
           "interpolation": "runtime",
           "referenceName": "BooksWithAuthor"
         },
-        "groupBy": "authorName"
+        "groupBy": ["authorName", "authorUuid"]
       }
     }
   }

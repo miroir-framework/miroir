@@ -597,34 +597,86 @@ function sqlStringForCountTransformer(
   switch (referenceQuery.type) {
     case "json_array":
     case "json": {
-      return {
-        type: "json",
-        sqlStringOrObject: actionRuntimeTransformer.groupBy
-          ? `
-SELECT jsonb_object_agg(key, cnt) AS "count_object"
-FROM (
-  SELECT value ->> '${actionRuntimeTransformer.groupBy}' AS key, COUNT(value ->> '${
-                  actionRuntimeTransformer.groupBy
-                }')::int AS cnt
-  FROM (${referenceQuery.sqlStringOrObject}) AS "count_applyTo",
-      LATERAL jsonb_array_elements("count_applyTo"."${
-        (referenceQuery as any).resultAccessPath[1]
-      }") AS "count_applyTo_array"
-  GROUP BY value ->> '${actionRuntimeTransformer.groupBy}'
-) t
-`
-          : `
+      const groupBy = actionRuntimeTransformer.groupBy;
+      if (groupBy && (typeof actionRuntimeTransformer.groupBy === 'string' || groupBy.length > 0)) {
+        const groupByArray = (typeof groupBy === "string" ? [groupBy] : groupBy)
+        // const groupByArrayQuoted = groupByArray?.map(e=>`${tokenNameQuote}${e}${tokenNameQuote}`);
+        const groupBySelectors = groupByArray?.map(
+          (e) =>
+            "value" +
+            " ->> " +
+            tokenStringQuote +
+            e +
+            tokenStringQuote +
+            " AS " +
+            `${tokenNameQuote}${e}${tokenNameQuote}`
+        );
+        const groupByAccessors = groupByArray?.map(e=> `value ->> ${tokenStringQuote}${e}${tokenStringQuote}`);
+// (slow) example of extracting and auto-casting values from a JSONB array in PostgreSQL if no type is known for the input values
+// WITH j AS (
+//   SELECT jsonb_array_elements(
+//     '[{"test1":"testA","test2":1}, {"test1":"testB","test2":"1"},
+//       {"test1":"testA","test2":2.0}, {"test1":"testC","test2":"2020-01-01T00:00:00Z"}]'::jsonb
+//   ) AS v
+// )
+// SELECT
+//   v ->> 'test1' AS test1,
+//   CASE
+//     WHEN jsonb_typeof(v->'test2') = 'number'
+//          AND (v->>'test2') ~ '^\-?\d+$' THEN (v->>'test2')::int
+//     WHEN jsonb_typeof(v->'test2') = 'string'
+//          AND (v->>'test2') ~ '^\-?\d+$' THEN (v->>'test2')::int
+//     ELSE NULL
+//   END AS test2_int
+// FROM j;
+
+// proper example of counting grouped by values when the type of the input values is known
+// WITH
+// "testList" AS (
+//   select '[{"test1":"testA","test2":1},{"test1":"testB","test2":1},{"test1":"testA","test2":2},{"test1":"testC","test2":2},{"test1":"testB","test2":1},{"test1":"testC","test2":2}]'::jsonb AS "constantObject"
+// ),
+// "transformer" AS (
+// SELECT "X"."test1", "X"."test2", COUNT(*)::int AS "count"
+// FROM jsonb_to_recordset((SELECT "constantObject" FROM "testList")) AS "X"("test1" text, "test2" int)
+// GROUP BY "X"."test1", "X"."test2"
+// ORDER BY "X"."test1", "X"."test2"
+// )
+// SELECT * FROM "transformer"
+
+        return {
+          type: "json",
+          sqlStringOrObject: `
+SELECT ${groupBySelectors?.join(',')}, COUNT(*)::int AS "count"
+FROM (${referenceQuery.sqlStringOrObject}) AS "count_applyTo",
+    LATERAL jsonb_array_elements("count_applyTo"."${
+      (referenceQuery as any).resultAccessPath[1]
+    }") AS "count_applyTo_array"
+GROUP BY ${groupByAccessors?.join(", ")}
+ORDER BY ${groupByAccessors?.join(", ")}
+`,
+          preparedStatementParameters: referenceQuery.preparedStatementParameters,
+          resultAccessPath: [], // TODO: inconsistency between simple 'count' and groupBy count
+          extraWith: referenceQuery.extraWith,
+          encloseEndResultInArray: false,
+        };
+      } else {
+        return {
+          type: "json",
+          sqlStringOrObject: `
 SELECT json_build_object('count', COUNT(*)::int) AS "count_object"
 FROM (${referenceQuery.sqlStringOrObject}) AS "count_applyTo",
     LATERAL jsonb_array_elements("count_applyTo"."${
       (referenceQuery as any).resultAccessPath[1]
     }") AS "count_applyTo_array"
 `,
-        preparedStatementParameters: referenceQuery.preparedStatementParameters,
-        resultAccessPath: [0, "count_object"],
-        columnNameContainingJsonValue: "count_object",
-        encloseEndResultInArray: true,
-      };
+          preparedStatementParameters: referenceQuery.preparedStatementParameters,
+          resultAccessPath: [0, "count_object"],
+          extraWith: referenceQuery.extraWith,
+          columnNameContainingJsonValue: "count_object",
+          encloseEndResultInArray: true,
+        };
+
+      }
     }
     case "table": {
       const transformerSqlQuery = actionRuntimeTransformer.groupBy

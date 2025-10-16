@@ -2039,8 +2039,8 @@
                 },
                 "expectedValue": [
                   { "test1": "testA", "test2": 1, "count": 1},
-                  { "test1": "testB", "test2": 1, "count": 2},
                   { "test1": "testA", "test2": 2, "count": 1},
+                  { "test1": "testB", "test2": 1, "count": 2},
                   { "test1": "testC", "test2": 2, "count": 2}
                 ]
               }
