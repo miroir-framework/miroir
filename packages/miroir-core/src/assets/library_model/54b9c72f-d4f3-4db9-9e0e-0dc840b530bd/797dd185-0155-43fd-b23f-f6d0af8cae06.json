@@ -11,6 +11,7 @@
   "viewAttributes": [
     "name",
     "author",
+    "year",
     "publisher",
     "uuid"
   ],
@@ -74,12 +75,23 @@
           }
         }
       },
+      "year": {
+        "type": "number",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 5,
+            "defaultLabel": "Year of Publication",
+            "editable": true
+          }
+        }
+      },
       "author": {
         "type": "uuid",
         "optional": true,
         "tag": {
           "value": {
-            "id": 5,
+            "id": 6,
             "editable": true,
             "defaultLabel": "Author",
             "targetEntity": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
@@ -95,7 +107,7 @@
         "optional": true,
         "tag": {
           "value": {
-            "id": 5,
+            "id": 7,
             "editable": true,
             "defaultLabel": "Publisher",
             "targetEntity": "a027c379-8468-43a5-ba4d-bf618be25cab",
