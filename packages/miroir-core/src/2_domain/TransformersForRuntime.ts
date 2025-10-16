@@ -1458,13 +1458,13 @@ export function transformer_resolveReference(
     ? "referencePath"
     : "no name";
 
-  log.info(
-    "transformer_resolveReference called for",
-    JSON.stringify(transformerInnerReference, null, 2),
-    "bank",
-    JSON.stringify(Object.keys(bank), null, 2)
-    // JSON.stringify(bank, null, 2)
-  );
+  // log.info(
+  //   "transformer_resolveReference called for",
+  //   JSON.stringify(transformerInnerReference, null, 2),
+  //   "bank",
+  //   JSON.stringify(Object.keys(bank), null, 2)
+  //   // JSON.stringify(bank, null, 2)
+  // );
   if (!bank) {
     log.error(
       "transformer_resolveReference failed, no contextResults for step",
@@ -3026,6 +3026,7 @@ export function transformer_extended_apply(
     // // JSON.stringify(Object.keys(queryParams??{}), null, 2),
     "contextResults elements",
     Object.keys(contextResults??{})
+    // contextResults
     // // JSON.stringify(Object.keys(contextResults??{}), null, 2)
   );
   let result: TransformerReturnType<any> = undefined as any;

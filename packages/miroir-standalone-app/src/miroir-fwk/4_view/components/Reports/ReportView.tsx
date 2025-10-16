@@ -118,7 +118,7 @@ export const ReportView = (props: ReportViewProps) => {
 
   // log.info("deploymentEntityStateFetchQueryTemplateParams",deploymentEntityStateFetchQueryTemplateParams)
 
-  // log.info("################################################################ resolving query Template");
+  log.info("################################################################ resolving query Template");
 
   const resolvedTemplateQuery: BoxedQueryWithExtractorCombinerTransformer = useMemo(
     () =>
@@ -129,8 +129,8 @@ export const ReportView = (props: ReportViewProps) => {
     [deploymentEntityStateFetchQueryTemplate]
   );
 
-  // log.info("resolvedQuery", resolvedTemplateQuery);
-  // log.info("################################################################ resolved query Template DONE");
+  log.info("resolvedQuery", resolvedTemplateQuery);
+  log.info("################################################################ resolved query Template DONE");
 
   // fetching report data
   const usedQuery: BoxedQueryWithExtractorCombinerTransformer = useMemo(
@@ -160,7 +160,7 @@ export const ReportView = (props: ReportViewProps) => {
           },
     [props.reportDefinition, props.pageParams, resolvedTemplateQuery]
   );
-  resolvedTemplateQuery;
+  // resolvedTemplateQuery;
   const deploymentEntityStateFetchQueryParams: SyncQueryRunnerParams<
     ReduxDeploymentsState
   > = useMemo(
@@ -172,9 +172,9 @@ export const ReportView = (props: ReportViewProps) => {
     [deploymentEntityStateSelectorMap, usedQuery]
   );
 
-  // log.info("deploymentEntityStateQueryTemplateResults",deploymentEntityStateQueryTemplateResults)
+  log.info("deploymentEntityStateFetchQueryParams",deploymentEntityStateFetchQueryParams)
 
-  // log.info("################################################################ Fecth NON-Template report data", usedQuery);
+  log.info("################################################################ Fecth NON-Template report data", usedQuery);
 
   const deploymentEntityStateQueryResults: Domain2QueryReturnType<
     Domain2QueryReturnType<Record<string, any>>
@@ -191,7 +191,7 @@ export const ReportView = (props: ReportViewProps) => {
     []
   );
 
-  // log.info("################################################################ Fecth NON-Template report schema");
+  log.info("################################################################ Fecth NON-Template report schema");
 
   const fetchedDataJzodSchemaParams: ExtractorRunnerParamsForJzodSchema<
     QueryByQuery2GetParamJzodSchema,

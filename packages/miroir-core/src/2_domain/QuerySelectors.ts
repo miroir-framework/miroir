@@ -288,7 +288,7 @@ export const applyExtractorForSingleObjectListToSelectedInstancesListInMemory = 
       const relationQuery: CombinerByManyToManyRelationReturningObjectList = query.select;
 
       // relationQuery.objectListReference is a queryContextReference
-      // log.info("applyExtractorForSingleObjectListToSelectedInstancesListInMemory combinerByManyToManyRelationReturningObjectList", selectedInstances)
+      // log.info("applyExtractorForSingleObjectListToSelectedInstancesListInMemory combinerByManyToManyRelationReturningObjectList selectedInstancesList", selectedInstancesList)
       let otherList: Record<string, any> | undefined = undefined
       otherList = ((query.contextResults[
         relationQuery.objectListReference
@@ -329,61 +329,51 @@ export const applyExtractorForSingleObjectListToSelectedInstancesListInMemory = 
           }
         ) as EntityInstance[];
 
-        const transformedInstanceList = relationQuery.applyTransformer ? finalInstanceList.map(selectedInstance => {
-          // For many-to-many relationships, we need to find the original reference object
-          // Since we don't have direct access to the query structure, we'll look for the
-          // most likely reference object in the context - typically a single object (not a list)
-          let referenceObject: any = undefined;
-          
-          // First, try to find a single object in the context that could be the original reference
-          for (const [key, value] of Object.entries(query.contextResults)) {
-            if (value && typeof value === 'object' && !Array.isArray(value) && !value.uuid) {
-              // Skip if it doesn't look like an entity instance
-              continue;
-            }
-            if (value && typeof value === 'object' && !Array.isArray(value) && value.uuid) {
-              // This looks like a single entity instance, likely the original reference
-              referenceObject = value;
-              break;
-            }
-          }
-          
-          // If we didn't find a single object, fall back to finding from the intermediate list
-          if (!referenceObject) {
-            const otherListAttribute = relationQuery.objectListReferenceAttribute ?? "uuid";
-            const rootListAttribute = relationQuery.AttributeOfRootListObjectToCompareToListReferenceUuid ?? "uuid";
-            
-            if (typeof otherList == "object") {
-              if (!Array.isArray(otherList)) {
-                referenceObject = Object.values(otherList).find(
-                  (v: any) => v[otherListAttribute] == (selectedInstance as any)[rootListAttribute]
-                );
-              } else {
-                referenceObject = otherList.find(
-                  (v: any) => v[otherListAttribute] == (selectedInstance as any)[rootListAttribute]
-                );
+        const transformedInstanceList = relationQuery.applyTransformer
+          ? finalInstanceList.map((selectedInstance) => {
+              let referenceObject: any = undefined;
+              const otherListAttribute = relationQuery.objectListReferenceAttribute ?? "uuid";
+              const rootListAttribute =
+                relationQuery.AttributeOfRootListObjectToCompareToListReferenceUuid ?? "uuid";
+
+              if (typeof otherList == "object") {
+                if (!Array.isArray(otherList)) {
+                  referenceObject = Object.values(otherList).find(
+                    (v: any) =>
+                      v[otherListAttribute] == (selectedInstance as any)[rootListAttribute]
+                  );
+                } else {
+                  referenceObject = otherList.find(
+                    (v: any) =>
+                      v[otherListAttribute] == (selectedInstance as any)[rootListAttribute]
+                  );
+                }
               }
-            }
-          }
 
-          return transformer_extended_apply(
-            "runtime",
-            [], // transformerPath
-            relationQuery.label ?? relationQuery.extractorOrCombinerType,
-            relationQuery.applyTransformer,
-            "value",
-            defaultMiroirModelEnvironment, // queryParams. TODO: this is wrong, should be the actual modelEnvironment
-            query.queryParams,
-            {...query.contextResults, referenceObject, foreignKeyObject: selectedInstance} // newFetchedData
-          );
-        }) : finalInstanceList;
+              return transformer_extended_apply(
+                "runtime",
+                [], // transformerPath
+                relationQuery.label ?? relationQuery.extractorOrCombinerType,
+                relationQuery.applyTransformer,
+                "value",
+                defaultMiroirModelEnvironment, // queryParams. TODO: this is wrong, should be the actual modelEnvironment
+                query.queryParams,
+                { ...query.contextResults, referenceObject, foreignKeyObject: selectedInstance } // newFetchedData
+              );
+            })
+          : finalInstanceList;
 
-        log.info(
-          "applyExtractorForSingleObjectListToSelectedInstancesListInMemory combinerByManyToManyRelationReturningObjectList",
-          "otherList", otherList,
-          "finalInstanceList", finalInstanceList,
-          "transformedInstanceList", transformedInstanceList
-        );
+        // log.info(
+        //   "applyExtractorForSingleObjectListToSelectedInstancesListInMemory combinerByManyToManyRelationReturningObjectList",
+        //   "selectedInstancesList",
+        //   selectedInstancesList,
+        //   "otherList",
+        //   otherList,
+        //   "finalInstanceList",
+        //   finalInstanceList,
+        //   "transformedInstanceList",
+        //   transformedInstanceList
+        // );
         return transformedInstanceList;
       } else {
         throw new Error(
@@ -492,7 +482,7 @@ export const applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemo
       const relationQuery: CombinerByManyToManyRelationReturningObjectList = query.select;
 
       // relationQuery.objectListReference is a queryContextReference
-      // log.info("applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory combinerByManyToManyRelationReturningObjectList", selectedInstances)
+      // log.info("applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory combinerByManyToManyRelationReturningObjectList", selectedInstancesUuidIndex)
       let otherList: Record<string, any> | undefined = undefined
       otherList = ((query.contextResults[
         relationQuery.objectListReference
@@ -537,34 +527,14 @@ export const applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemo
 
         if (relationQuery.applyTransformer) {
           const transformedEntries = filteredEntries.map(([uuid, selectedInstance]) => {
-            // For many-to-many relationships, we need to find the original reference object
-            // Since we don't have direct access to the query structure, we'll look for the
-            // most likely reference object in the context - typically a single object (not a list)
             let referenceObject: any = undefined;
+            const otherListAttribute = relationQuery.objectListReferenceAttribute ?? "uuid";
+            const rootListAttribute = relationQuery.AttributeOfRootListObjectToCompareToListReferenceUuid ?? "uuid";
             
-            // First, try to find a single object in the context that could be the original reference
-            for (const [key, value] of Object.entries(query.contextResults)) {
-              if (value && typeof value === 'object' && !Array.isArray(value) && !value.uuid) {
-                // Skip if it doesn't look like an entity instance
-                continue;
-              }
-              if (value && typeof value === 'object' && !Array.isArray(value) && value.uuid) {
-                // This looks like a single entity instance, likely the original reference
-                referenceObject = value;
-                break;
-              }
-            }
-            
-            // If we didn't find a single object, fall back to finding from the intermediate list
-            if (!referenceObject) {
-              const otherListAttribute = relationQuery.objectListReferenceAttribute ?? "uuid";
-              const rootListAttribute = relationQuery.AttributeOfRootListObjectToCompareToListReferenceUuid ?? "uuid";
-              
-              if (typeof otherList == "object" && !Array.isArray(otherList)) {
-                referenceObject = Object.values(otherList).find(
-                  (v: any) => v[otherListAttribute] == (selectedInstance as any)[rootListAttribute]
-                );
-              }
+            if (typeof otherList == "object" && !Array.isArray(otherList)) {
+              referenceObject = Object.values(otherList).find(
+                (v: any) => v[otherListAttribute] == (selectedInstance as any)[rootListAttribute]
+              );
             }
 
             const transformedResult = transformer_extended_apply(
@@ -649,8 +619,10 @@ export const extractEntityInstanceListWithObjectListExtractorInMemory
     selectorParams?.extractorRunnerMap ?? emptySelectorMap
   ).extractEntityInstanceList(deploymentEntityState, selectorParams, modelEnvironment);
 
-  // log.info(
-  //   "extractEntityInstanceUuidIndexWithObjectListExtractorInMemory found selectedInstances", selectedInstancesUuidIndex
+  // log.trace(
+  //   "extractEntityInstanceUuidIndexWithObjectListExtractorInMemory for",
+  //   selectorParams,
+  //   "found selectedInstances", selectedInstancesUuidIndex,
   // );
 
   return applyExtractorForSingleObjectListToSelectedInstancesListInMemory(
@@ -785,7 +757,6 @@ export function innerSelectDomainElementFromExtractorOrCombiner/*BoxedExtractorT
     case "extractorByEntityReturningObjectList":
     case "combinerByRelationReturningObjectList":
     case "combinerByManyToManyRelationReturningObjectList": {
-      // return extractorRunnerMap.extractEntityInstanceUuidIndexWithObjectListExtractorInMemory(state, {
       return extractorRunnerMap.extractEntityInstanceListWithObjectListExtractor(
         state,
         {

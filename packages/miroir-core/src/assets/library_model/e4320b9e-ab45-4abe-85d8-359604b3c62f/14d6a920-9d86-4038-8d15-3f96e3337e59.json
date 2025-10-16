@@ -43,17 +43,21 @@
         "AttributeOfRootListObjectToCompareToListReferenceUuid": "author",
         "applyTransformer": {
           "transformerType": "freeObjectTemplate",
+          "interpolation": "runtime",
           "definition": {
             "authorName": {
               "transformerType": "contextReference",
+              "interpolation": "runtime",
               "referencePath": ["referenceObject", "name"]
             },
             "authorUuid": {
               "transformerType": "contextReference",
+              "interpolation": "runtime",
               "referencePath": ["referenceObject", "uuid"]
             },
             "bookTitle": {
               "transformerType": "contextReference",
+              "interpolation": "runtime",
               "referencePath": ["foreignKeyObject", "name"]
             }
           }
