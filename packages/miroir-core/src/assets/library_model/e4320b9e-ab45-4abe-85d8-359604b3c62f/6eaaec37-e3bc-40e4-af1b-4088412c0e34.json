@@ -56,7 +56,7 @@
       }
     },
     "runtimeTransformers": {
-      "00_booksByAuthorCount": {
+      "00_AuthorCountByCountry": {
         "transformerType": "count",
         "applyTo": {
           "transformerType": "contextReference",

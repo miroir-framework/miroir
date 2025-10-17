@@ -18,6 +18,9 @@ const menuDefaultLibrary = require("../assets/library_model/dde4c883-ae6d-47c3-b
 const reportAuthorDetails = require("../assets/library_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/6d9faa54-643c-4aec-87c3-32635ad95902.json");
 const reportBookDetails = require("../assets/library_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/c3503412-3d8a-43ef-a168-aa36e975e606.json");
 const reportCountryList = require("../assets/library_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/08176cc7-43ae-4fca-91b7-bf869d19e4b9.json");
+
+
+
 import { miroirFundamentalJzodSchema } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalJzodSchema";
 import { defaultMiroirMetaModel } from "./Model";
 import type { MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
@@ -52,6 +55,9 @@ export const defaultLibraryAppModel: MetaModel = {
   menus: [],
   applicationVersions: [],
   reports: Object.values(libraryAppReports).flat(),
+  storedQueries: [
+
+  ],
   applicationVersionCrossEntityDefinition: [
   ],
 };

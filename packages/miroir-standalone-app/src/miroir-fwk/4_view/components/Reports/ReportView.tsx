@@ -1,43 +1,34 @@
-import { useMemo, useEffect } from 'react';
-import { Params } from 'react-router-dom';
+import { useEffect, useMemo } from 'react';
 
 import {
-  ApplicationSection,
   BoxedQueryTemplateWithExtractorCombinerTransformer,
   BoxedQueryWithExtractorCombinerTransformer,
-  ReduxDeploymentsState,
+  Domain2ElementFailed,
   Domain2QueryReturnType,
   ExtractorRunnerParamsForJzodSchema,
-  getQueryRunnerParamsForReduxDeploymentsState,
   LoggerInterface,
   MiroirLoggerFactory,
   QueryByQuery2GetParamJzodSchema,
   QueryRunnerMapForJzodSchema,
   RecordOfJzodObject,
-  resolveQueryTemplateWithExtractorCombinerTransformer,
-  RootReport,
-  SyncBoxedExtractorOrQueryRunnerMap,
-  SyncQueryRunnerParams,
-  Uuid,
-  defaultLibraryModelEnvironment,
-  defaultMiroirModelEnvironment
+  ReduxDeploymentsState
 } from "miroir-core";
 
 
 
-import { useReduxDeploymentsStateJzodSchemaSelector, useReduxDeploymentsStateQuerySelector } from '../../ReduxHooks.js';
-import { ReportSectionView } from './ReportSectionView.js';
 import { useMiroirContextService } from "../../MiroirContextReactProvider.js";
-import { ThemedBox, ThemedSpan } from '../Themes/index.js';
+import { useReduxDeploymentsStateJzodSchemaSelector } from '../../ReduxHooks.js';
+import { ThemedSpan } from '../Themes/index.js';
+import { ReportSectionView } from './ReportSectionView.js';
 
 import {
-  getMemoizedReduxDeploymentsStateJzodSchemaSelectorMap,
-  getMemoizedReduxDeploymentsStateSelectorMap,
+  getMemoizedReduxDeploymentsStateJzodSchemaSelectorMap
 } from "miroir-localcache-redux";
-import { packageName, ReportUrlParamKeys } from '../../../../constants.js';
+import { packageName } from '../../../../constants.js';
 import { cleanLevel } from '../../constants.js';
 import { useRenderTracker } from '../../tools/renderCountTracker.js';
 import { useDocumentOutlineContext } from '../ValueObjectEditor/InstanceEditorOutlineContext.js';
+import { useQueryTemplateResults, type ReportViewProps } from './ReportHooks.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -45,15 +36,7 @@ MiroirLoggerFactory.registerLoggerToStart(
 ).then((logger: LoggerInterface) => {log = logger});
 
 
-export interface ReportViewProps {
-  applicationSection: ApplicationSection,
-  deploymentUuid: Uuid,
-  instanceUuid?: Uuid,
-  pageParams: Params<ReportUrlParamKeys>,
-  reportDefinition: RootReport,
-  showPerformanceDisplay?: boolean;
-}
-
+// ###############################################################################################################
 /**
  * It role is to gather the data that must be displayed by the potentially many sections of the report.
  * 
@@ -69,7 +52,7 @@ export const ReportView = (props: ReportViewProps) => {
   // Get outline context and update data when query results change
   const outlineContext = useDocumentOutlineContext();
 
-  const paramsAsdomainElements: Domain2QueryReturnType<Record<string,any>> = props.pageParams;
+  // const paramsAsdomainElements: Domain2QueryReturnType<Record<string,any>> = props.pageParams;
   // log.info("########################## ReportView rendering", "navigationCount", navigationCount, "totalCount", totalCount);
 
   // log.info(
@@ -82,63 +65,30 @@ export const ReportView = (props: ReportViewProps) => {
   //   props.reportSection.extractors
   // );
 
-  const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> = useMemo(
-    () => getMemoizedReduxDeploymentsStateSelectorMap(),
-    []
-  );
-
-  // fetching report definition
-  const deploymentEntityStateFetchQueryTemplate: BoxedQueryTemplateWithExtractorCombinerTransformer = useMemo(
-    () =>
-      props.reportDefinition.extractorTemplates &&
-      props.pageParams.deploymentUuid &&
-      props.pageParams.applicationSection &&
-      props.pageParams.reportUuid
-        ? {
-            queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
-            deploymentUuid: props.pageParams.deploymentUuid,
-            pageParams: props.pageParams,
-            queryParams: {},
-            contextResults: {},
-            extractorTemplates: props.reportDefinition.extractorTemplates,
-            combinerTemplates: props.reportDefinition.combinerTemplates,
-            runtimeTransformers: props.reportDefinition.runtimeTransformers,
-          }
-        : // dummy query
-          {
-            queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
-            deploymentUuid: "",
-            pageParams: paramsAsdomainElements,
-            queryParams: {},
-            contextResults: {},
-            extractorTemplates: {},
-          },
-    [props.pageParams, props.reportDefinition]
-  );
 
   // log.info("deploymentEntityStateFetchQueryTemplateParams",deploymentEntityStateFetchQueryTemplateParams)
 
-  log.info("################################################################ resolving query Template");
 
-  const resolvedTemplateQuery: BoxedQueryWithExtractorCombinerTransformer = useMemo(
-    () =>
-      resolveQueryTemplateWithExtractorCombinerTransformer(
-        deploymentEntityStateFetchQueryTemplate,
-        defaultMiroirModelEnvironment, // TODO: use correct model environment
-      ),
-    [deploymentEntityStateFetchQueryTemplate]
-  );
-
-  log.info("resolvedQuery", resolvedTemplateQuery);
-  log.info("################################################################ resolved query Template DONE");
-
-  // fetching report data
-  const reportDataQuery: BoxedQueryWithExtractorCombinerTransformer = useMemo(
+  const reportDataQueryBase:
+    | BoxedQueryWithExtractorCombinerTransformer
+    | BoxedQueryTemplateWithExtractorCombinerTransformer
+    | undefined = useMemo(
     () =>
       props.pageParams.deploymentUuid &&
       props.pageParams.applicationSection &&
       props.pageParams.reportUuid
-        ? props.reportDefinition.extractors
+        ? props.reportDefinition.extractorTemplates
+          ? {
+              queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
+              deploymentUuid: props.pageParams.deploymentUuid,
+              pageParams: props.pageParams,
+              queryParams: {},
+              contextResults: {},
+              extractorTemplates: props.reportDefinition.extractorTemplates,
+              combinerTemplates: props.reportDefinition.combinerTemplates,
+              runtimeTransformers: props.reportDefinition.runtimeTransformers,
+            }
+          : props.reportDefinition.extractors
           ? {
               queryType: "boxedQueryWithExtractorCombinerTransformer",
               deploymentUuid: props.pageParams.deploymentUuid,
@@ -149,49 +99,49 @@ export const ReportView = (props: ReportViewProps) => {
               combiners: props.reportDefinition.combiners,
               runtimeTransformers: props.reportDefinition.runtimeTransformers,
             }
-          : resolvedTemplateQuery
-        : {
-            queryType: "boxedQueryWithExtractorCombinerTransformer",
-            deploymentUuid: "",
-            pageParams: paramsAsdomainElements,
-            queryParams: {},
-            contextResults: {},
-            extractors: {},
-          },
-    [props.reportDefinition, props.pageParams, resolvedTemplateQuery]
-  );
-  // resolvedTemplateQuery;
-  const deploymentEntityStateFetchQueryParams: SyncQueryRunnerParams<
-    ReduxDeploymentsState
-  > = useMemo(
-    () =>
-    getQueryRunnerParamsForReduxDeploymentsState(
-        reportDataQuery,
-        deploymentEntityStateSelectorMap
-      ),
-    [deploymentEntityStateSelectorMap, reportDataQuery]
+          : {
+              queryType: "boxedQueryWithExtractorCombinerTransformer",
+              deploymentUuid: "",
+              pageParams: props.pageParams,
+              queryParams: {},
+              contextResults: {},
+              extractors: {},
+            }
+        : undefined,
+    // [props.reportDefinition, props.pageParams, resolvedTemplateQuery]
+    [props.reportDefinition, props.pageParams]
   );
 
-  log.info("deploymentEntityStateFetchQueryParams",deploymentEntityStateFetchQueryParams)
-
-  log.info("################################################################ Fecth NON-Template report data query", reportDataQuery);
-
-  const reportData: Domain2QueryReturnType<
+  // const reportData: Domain2QueryReturnType<
+  //   Domain2QueryReturnType<Record<string, any>>
+  // > = useQueryTemplateResults(props);
+  const reportDataQueryResults: Domain2QueryReturnType<
     Domain2QueryReturnType<Record<string, any>>
-  > = useReduxDeploymentsStateQuerySelector(
-    deploymentEntityStateSelectorMap.runQuery,
-    deploymentEntityStateFetchQueryParams
-  );
+  > = useQueryTemplateResults(props, reportDataQueryBase);
 
+  if (reportDataQueryResults instanceof Domain2ElementFailed) { // should never happen
+    throw new Error("ReportView: failed to get report data: " + JSON.stringify(reportDataQueryResults, null, 2));
+  }
+  const {reportData, resolvedQuery} = reportDataQueryResults;
   log.info("reportData", reportData);
 
+  const reportViewData = useMemo(() => ({
+    // return typeof reportData === "object" && !Array.isArray(reportData)
+    // ? 
+    // {
+      reportData,
+      storedQueryData: props.storedQueryData
+    // }
+    // }: reportData;
+  }), [reportData, props.storedQueryData]);
 
+  log.info("ReportView reportViewData", reportViewData);
+  log.info("################################################################ Fecth NON-Template report schema");
   const jzodSchemaSelectorMap: QueryRunnerMapForJzodSchema<ReduxDeploymentsState> = useMemo(
     () => getMemoizedReduxDeploymentsStateJzodSchemaSelectorMap(),
     []
   );
 
-  log.info("################################################################ Fecth NON-Template report schema");
 
   const fetchedDataJzodSchemaParams: ExtractorRunnerParamsForJzodSchema<
     QueryByQuery2GetParamJzodSchema,
@@ -203,7 +153,8 @@ export const ReportView = (props: ReportViewProps) => {
         props.pageParams.deploymentUuid &&
         props.pageParams.applicationSection &&
         props.pageParams.reportUuid &&
-        props.reportDefinition.extractors
+        props.reportDefinition.extractors &&
+        reportDataQueryBase
           ? {
             queryType: "queryByTemplateGetParamJzodSchema",
               deploymentUuid: props.pageParams.deploymentUuid,
@@ -214,7 +165,8 @@ export const ReportView = (props: ReportViewProps) => {
               },
               queryParams: {},
               contextResults: {},
-              fetchParams: deploymentEntityStateFetchQueryParams.extractor,
+              // fetchParams: deploymentEntityStateFetchQueryParams.extractor,
+              fetchParams: resolvedQuery,
             }
           : // dummy query
             {
@@ -230,7 +182,7 @@ export const ReportView = (props: ReportViewProps) => {
               fetchParams: {
                 queryType: "boxedQueryWithExtractorCombinerTransformer",
                 deploymentUuid: "DUMMY",
-                pageParams: paramsAsdomainElements,
+                pageParams: props.pageParams,
                 queryParams: {},
                 contextResults: {},
                 // extractorTemplates: {},
@@ -268,10 +220,6 @@ export const ReportView = (props: ReportViewProps) => {
       reportData.elementType !== "failure"
     ) {
       if (Object.keys(reportData).length > 0) {
-        // throw new Error(
-        //   "ReportView: No data found for the given query parameters: " +
-        //     JSON.stringify(deploymentEntityStateQueryResults)
-        // );
         const reportRootAttribute = (reportData as any)[
           Object.keys(reportData)[0]
         ];
@@ -280,10 +228,8 @@ export const ReportView = (props: ReportViewProps) => {
           [reportRootAttribute.name ?? Object.keys(reportData)[0]]:
             reportRootAttribute,
         }
-        // outlineContext.setOutlineData(outlineElement);
         return outlineElement;
       }
-      // outlineContext.setOutlineData(deploymentEntityStateQueryResults);
     }
   }, [reportData]);
   // Update outline data when query results change
@@ -307,13 +253,14 @@ export const ReportView = (props: ReportViewProps) => {
           </div>
         )}
         <ReportSectionView
-          reportData={reportData}
+          // reportData={reportData}
+          reportData={reportViewData}
           fetchedDataJzodSchema={fetchedDataJzodSchema}
           reportSection={props.reportDefinition?.section}
           rootReport={props.reportDefinition}
           applicationSection={props.applicationSection}
           deploymentUuid={props.deploymentUuid}
-          paramsAsdomainElements={paramsAsdomainElements}
+          paramsAsdomainElements={props.pageParams}
           // Pass outline state down from context
           isOutlineOpen={outlineContext.isOutlineOpen}
           onToggleOutline={outlineContext.onToggleOutline}

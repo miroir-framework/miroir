@@ -30,6 +30,24 @@
             "fetchedDataReference": "countries",
             "sortByAttribute": "name"
           }
+        },
+        {
+          "type": "graphReportSection",
+          "definition": {
+            "label": "Author Count by Country",
+            "fetchedDataReference": "00_AuthorCountByCountry",
+            "graphType": "bar",
+            "dataMapping": {
+              "labelField": "countryName",
+              "valueField": "count"
+            },
+            "config": {
+              "width": 600,
+              "height": 400,
+              "showTooltips": true,
+              "showLegend": true
+            }
+          }
         }
       ]
     },

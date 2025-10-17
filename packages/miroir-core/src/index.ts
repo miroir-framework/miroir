@@ -271,6 +271,10 @@ export {
   QueryFailed,
   QueryJzodSchemaParams,
   queryJzodSchemaParams,
+  QueryTemplateWithExtractorCombinerTransformer,
+  queryTemplateWithExtractorCombinerTransformer,
+  Query,
+  query,
   Report,
   report,
   ReportSection,
@@ -488,10 +492,10 @@ export {
   EntityInstanceWithName,
   EntityInstanceWithNameSchema,
 } from "./0_interfaces/1_core/Instance.js";
-export {
-  JzodSchemaDefinition,
-  jzodSchemaDefinitionSchema,
-} from "./0_interfaces/1_core/JzodSchemaDefinition.js";
+// export {
+//   JzodSchemaDefinition,
+//   jzodSchemaDefinitionSchema,
+// } from "./0_interfaces/1_core/JzodSchemaDefinition.js";
 export {
   // JzodUnion_RecursivelyUnfold_ReturnType,
   // JzodUnion_RecursivelyUnfold_ReturnTypeError,

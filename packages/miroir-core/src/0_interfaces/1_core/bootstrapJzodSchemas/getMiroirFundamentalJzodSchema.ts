@@ -1550,7 +1550,7 @@ export function getMiroirFundamentalJzodSchema(
           Object.entries(
             (entityDefinitionReportV1 as any).jzodSchema.definition.definition.context
           ).filter((e) =>
-            [
+            [ // TODO: remove this filter, this introduces unnecessary coupling
               "objectInstanceReportSection",
               "objectListReportSection",
               "gridReportSection",
@@ -1653,6 +1653,7 @@ export function getMiroirFundamentalJzodSchema(
                 type: "schemaReference",
                 definition: {
                   absolutePath: miroirFundamentalJzodSchemaUuid,
+                  // relativePath: "jzodSchema",
                   relativePath: "jzodSchema",
                 },
               },
@@ -1664,6 +1665,16 @@ export function getMiroirFundamentalJzodSchema(
                 definition: {
                   absolutePath: miroirFundamentalJzodSchemaUuid,
                   relativePath: "menu",
+                },
+              },
+            },
+            storedQueries: {
+              type: "array",
+              definition: {
+                type: "schemaReference",
+                definition: {
+                  absolutePath: miroirFundamentalJzodSchemaUuid,
+                  relativePath: "query",
                 },
               },
             },

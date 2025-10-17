@@ -45,7 +45,9 @@ import {
   getReduxDeploymentsStateIndex,
   getLocalCacheIndexDeploymentSection,
   getLocalCacheIndexDeploymentUuid,
-  getLocalCacheIndexEntityUuid
+  getLocalCacheIndexEntityUuid,
+  entityQueryVersion,
+  type Query
 } from "miroir-core";
 
 import { packageName } from "../../constants.js";
@@ -182,6 +184,15 @@ export function selectDomainStateFromlocalCacheEntityZone(localCacheEntityZone:R
 }
 
 //#########################################################################################
+/**
+ * TODO: simila to 
+ * miroir-core Model.ts getReportsAndEntitiesDefinitionsForDeploymentUuid, 
+ * miroir-core DomainDataAccess.ts selectCurrentDeploymentModel
+ * @param deploymentUuid 
+ * @param state 
+ * @returns 
+ */
+
 export function currentModel(deploymentUuid: string, state:LocalCacheSliceState): MetaModel {
   // log.info(
   //   "called currentModel(",
@@ -202,6 +213,7 @@ export function currentModel(deploymentUuid: string, state:LocalCacheSliceState)
       const jzodSchemas = state.current[getReduxDeploymentsStateIndex(deploymentUuid, modelSection, entityJzodSchema.uuid)];
       const menus = state.current[getReduxDeploymentsStateIndex(deploymentUuid, modelSection, entityMenu.uuid)];
       const reports = state.current[getReduxDeploymentsStateIndex(deploymentUuid, modelSection, entityReport.uuid)];
+      const queries = state.current[getReduxDeploymentsStateIndex(deploymentUuid, modelSection, entityQueryVersion.uuid)];
       const result = {
         applicationVersions: (applicationVersions && applicationVersions.entities
           ? Object.values(applicationVersions.entities)
@@ -215,6 +227,7 @@ export function currentModel(deploymentUuid: string, state:LocalCacheSliceState)
         jzodSchemas: (jzodSchemas && jzodSchemas.entities? Object.values(jzodSchemas.entities): []) as JzodSchema[],
         menus: (menus && menus.entities? Object.values(menus.entities): []) as Menu[],
         reports: (reports && reports.entities? Object.values(reports.entities):[]) as Report[],
+        storedQueries: (queries && queries.entities? Object.values(queries.entities):[]) as Query[],
       }
       // log.info("called currentModel(", deploymentUuid, ") found result:", JSON.stringify(result, null, 2));
       return result;

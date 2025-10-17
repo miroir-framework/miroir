@@ -1297,11 +1297,17 @@
                 }
               }
             }
+          },
+          "query": {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "queryTemplateWithExtractorCombinerTransformer"
+            }
           }
         },
         "definition": {
           "eager": true,
-          "relativePath": "queryTemplateWithExtractorCombinerTransformer"
+          "relativePath": "query"
         }
       }
     }

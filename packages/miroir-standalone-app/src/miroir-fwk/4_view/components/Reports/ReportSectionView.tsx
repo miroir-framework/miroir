@@ -11,7 +11,8 @@ import {
   ReportSection,
   RootReport,
   Uuid,
-  Domain2QueryReturnType
+  Domain2QueryReturnType,
+  Domain2ElementFailed
 } from "miroir-core";
 
 
@@ -38,7 +39,8 @@ log.info("graphReportSectionSchema:", JSON.stringify(graphReportSectionSchema, n
 export interface ReportSectionViewProps {
   applicationSection: ApplicationSection,
   deploymentUuid: Uuid,
-  reportData: Domain2QueryReturnType<Record<string,any>>,
+  // reportData: Domain2QueryReturnType<Record<string,any>>,
+  reportData: Domain2QueryReturnType<{reportData:Record<string,any>, storedQueryData?: any}>,
   fetchedDataJzodSchema: RecordOfJzodObject | undefined,
   paramsAsdomainElements: Domain2QueryReturnType<Record<string,any>>,
   reportSection: ReportSection,
@@ -94,7 +96,15 @@ export const ReportSectionView = (props: ReportSectionViewProps) => {
   const currentNavigationKey = `${props.deploymentUuid}-${props.applicationSection}`;
   const { navigationCount, totalCount } = useRenderTracker("ReportSectionView", currentNavigationKey);
 
-  // log.info("########################## ReportSectionView render", "navigationCount", navigationCount, "totalCount", totalCount, "props", props);
+  log.info(
+    "########################## ReportSectionView render",
+    "navigationCount",
+    navigationCount,
+    "totalCount",
+    totalCount,
+    "props",
+    props
+  );
 
 
   // ##############################################################################################
@@ -131,8 +141,12 @@ export const ReportSectionView = (props: ReportSectionViewProps) => {
       (e: EntityDefinition) => e?.entityUuid === currentListReportTargetEntity?.uuid
     );
 
+  if (props.reportData instanceof Domain2ElementFailed) { // never happens
+    throw new Error(`ReportSectionView: Error in report data: ${props.reportData}`);
+  }
+
   const entityInstance = props.reportData && props.reportSection.type == "objectInstanceReportSection"
-  ? (props.reportData as any)[
+  ? props.reportData.reportData[
       props.reportSection.definition.fetchedDataReference ?? ""
     ]
   : undefined
@@ -186,14 +200,14 @@ export const ReportSectionView = (props: ReportSectionViewProps) => {
               label={"EntityInstance-" + currentListReportTargetEntity?.name}
               defaultlabel={interpolateExpression(
                 props.reportSection.definition?.label,
-                props.reportData,
+                props.reportData.reportData,
                 "report label"
               )}
               // styles={styles}
               deploymentUuid={props.deploymentUuid}
               chosenApplicationSection={props.applicationSection as ApplicationSection}
               displayedDeploymentDefinition={displayedDeploymentDefinition}
-              domainElementObject={props.reportData}
+              domainElementObject={props.reportData.reportData}
               fetchedDataJzodSchema={props.fetchedDataJzodSchema}
               section={props.reportSection}
               paramsAsdomainElements={props.paramsAsdomainElements}
@@ -217,7 +231,7 @@ export const ReportSectionView = (props: ReportSectionViewProps) => {
           <GraphReportSectionView
             applicationSection={props.applicationSection}
             deploymentUuid={props.deploymentUuid}
-            queryResults={props.reportData}
+            queryResults={props.reportData?.storedQueryData??props.reportData.reportData}
             // queryResults={{
             //   entities: [
             //     { uuid: "1", name: "Entity A", value: 10, color: "blue" },

@@ -52,6 +52,7 @@ const adminConfigurationDeploymentMiroir = require("../assets/admin_data/7959d81
 // import { entityDefinitionQueryVersionV1, entityQueryVersion } from "..";
 // import { entityJzodSchema, entitySelfApplicationDeploymentConfiguration, entityStoreBasedConfiguration } from "..";
 import { MetaEntity, Uuid } from "../0_interfaces/1_core/EntityDefinition";
+import type { DeploymentUuidToReportsEntitiesDefinitions, DeploymentUuidToReportsEntitiesDefinitionsMapping } from "../0_interfaces/1_core/Model";
 import { miroirFundamentalJzodSchema } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalJzodSchema";
 
 import {
@@ -102,6 +103,7 @@ export const applicationModelEntities: MetaEntity[] = metaModelEntities.filter(
 
 export const defaultMiroirMetaModel: MetaModel = {
   // configuration: [instanceConfigurationReference],
+  storedQueries: [],
   entities: [
     // this is used in tests, the bootstrap entities have to come first
     entityEntity as Entity,
@@ -176,43 +178,57 @@ const metaModelReports = [
 ];
 
 // ################################################################################################
+/**
+ * just filters the model / meta-model reports in the Miroir app for now
+ * TODO: DEFUNCT? use useCurrentModel only?
+ * @param deploymentUuid 
+ * @param metaModel 
+ * @param appModel 
+ * @returns 
+ */
 export function getReportsAndEntitiesDefinitionsForDeploymentUuid(
   deploymentUuid: Uuid,
-  miroirMetaModel: MetaModel,
+  metaModel: MetaModel,
   appModel: MetaModel
-): {
-  model: {
-    availableReports: Report[];
-    entities: Entity[];
-    entityDefinitions: EntityDefinition[];
-  };
-  data: {
-    availableReports: Report[];
-    entities: Entity[];
-    entityDefinitions: EntityDefinition[];
-  };
-} {
+): DeploymentUuidToReportsEntitiesDefinitions
+// {
+//   model: {
+//     availableReports: Report[];
+//     entities: Entity[];
+//     entityDefinitions: EntityDefinition[];
+//   };
+//   data: {
+//     availableReports: Report[];
+//     entities: Entity[];
+//     entityDefinitions: EntityDefinition[];
+//   };
+// } 
+{
   if (deploymentUuid == adminConfigurationDeploymentMiroir.uuid) {
     return {
       model: {
-        availableReports: miroirMetaModel.reports.filter((r) => metaModelReports.includes(r.uuid)),
-        entities: miroirMetaModel.entities,
-        entityDefinitions: miroirMetaModel.entityDefinitions,
+        availableQueries: metaModel.storedQueries,
+        availableReports: metaModel.reports.filter((r:Report) => metaModelReports.includes(r.uuid)),
+        entities: metaModel.entities,
+        entityDefinitions: metaModel.entityDefinitions,
       },
       data: {
-        availableReports: miroirMetaModel.reports.filter((r) => !metaModelReports.includes(r.uuid)),
-        entities: miroirMetaModel.entities,
-        entityDefinitions: miroirMetaModel.entityDefinitions,
+        availableQueries: metaModel.storedQueries,
+        availableReports: metaModel.reports.filter((r) => !metaModelReports.includes(r.uuid)),
+        entities: metaModel.entities,
+        entityDefinitions: metaModel.entityDefinitions,
       },
     };
   } else {
     return {
       model: {
-        availableReports: miroirMetaModel.reports,
-        entities: miroirMetaModel.entities,
-        entityDefinitions: miroirMetaModel.entityDefinitions,
+        availableQueries: metaModel.storedQueries,
+        availableReports: metaModel.reports,
+        entities: metaModel.entities,
+        entityDefinitions: metaModel.entityDefinitions,
       },
       data: {
+        availableQueries: metaModel.storedQueries,
         availableReports: appModel.reports,
         entities: appModel.entities,
         entityDefinitions: appModel.entityDefinitions,

@@ -3,7 +3,7 @@ import { z } from "zod";
 import { EntityInstanceWithName } from "../../0_interfaces/1_core/Instance";
 
 
-import { Entity, EntityDefinition, EntityInstance, Report, entityInstance } from "./preprocessor-generated/miroirFundamentalType";
+import { Entity, EntityDefinition, EntityInstance, Report, entityInstance, type Query } from "./preprocessor-generated/miroirFundamentalType";
 
 export interface MiroirModelDefinition extends EntityInstanceWithName {
 
@@ -21,19 +21,22 @@ export const ApplicationVersionCrossEntityDefinitionSchema = entityInstance.exte
   entityDefinition: z.string().uuid(),
 });
 
+export type DeploymentUuidToReportsEntitiesDefinitions = {
+  model: {
+    availableQueries: Query[];
+    availableReports: Report[];
+    entities: Entity[];
+    entityDefinitions: EntityDefinition[];
+  };
+  data: {
+    availableQueries: Query[];
+    availableReports: Report[];
+    entities: Entity[];
+    entityDefinitions: EntityDefinition[];
+  };
+};
 export type DeploymentUuidToReportsEntitiesDefinitionsMapping = {
-  [x: string]: {
-      model: {
-          availableReports: Report[];
-          entities: Entity[];
-          entityDefinitions: EntityDefinition[];
-      };
-      data: {
-          availableReports: Report[];
-          entities: Entity[];
-          entityDefinitions: EntityDefinition[];
-      };
-  }
+  [x: string]: DeploymentUuidToReportsEntitiesDefinitions
 };
 
 export const foldableElementTypes = [ "array", "tuple", "object", "record" ]; // no union or reference since we use the resolved type!

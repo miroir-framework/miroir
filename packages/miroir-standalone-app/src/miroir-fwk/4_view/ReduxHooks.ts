@@ -269,7 +269,8 @@ export function useCurrentModel(deploymentUuid: Uuid | undefined): MetaModel {
 
 
 // ################################################################################################
-export function useCurrentModelEnvironment(deploymentUuid: string | undefined): any {
+// TODO
+export function useCurrentModelEnvironmentNOT_IMPLEMENTED(deploymentUuid: string | undefined): any {
   const localSelectModelForDeployment = useMemo(selectModelForDeploymentFromReduxState, []);
   const selectorParams: LocalCacheExtractor = useMemo(
     () =>
@@ -282,7 +283,7 @@ export function useCurrentModelEnvironment(deploymentUuid: string | undefined): 
     [deploymentUuid]
   );
   return useSelector((state: ReduxStateWithUndoRedo) =>
-    localSelectModelForDeployment(state, selectorParams).modelEnvironment
+    localSelectModelForDeployment(state, selectorParams)
   );
 }
 // ################################################################################################

@@ -30,12 +30,14 @@ import {
   MetaModel,
   Report,
   StoreBasedConfiguration,
+  type Query,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
 
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
+import { entityQueryVersion } from "..";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -97,6 +99,13 @@ export function selectCurrentDeploymentModel(
           domainState[deploymentUuid][deploymentUuid == adminConfigurationDeploymentMiroir.uuid?"data":"model"] &&
           domainState[deploymentUuid][deploymentUuid == adminConfigurationDeploymentMiroir.uuid?"data":"model"][entityReport.uuid]
           ? Object.values(domainState[deploymentUuid][deploymentUuid == adminConfigurationDeploymentMiroir.uuid?"data":"model"][entityReport.uuid]) as Report[]
+          : []
+        ),
+        storedQueries: (
+          domainState[deploymentUuid] &&
+          domainState[deploymentUuid][deploymentUuid == adminConfigurationDeploymentMiroir.uuid?"data":"model"] &&
+          domainState[deploymentUuid][deploymentUuid == adminConfigurationDeploymentMiroir.uuid?"data":"model"][entityQueryVersion.uuid]
+          ? Object.values(domainState[deploymentUuid][deploymentUuid == adminConfigurationDeploymentMiroir.uuid?"data":"model"][entityQueryVersion.uuid]) as Query[]
           : []
         ),
         // configuration: (

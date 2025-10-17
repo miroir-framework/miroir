@@ -12,7 +12,14 @@ import {
   LoggerInterface,
   MetaModel,
   MiroirLoggerFactory,
-  Report
+  Report,
+  type DeploymentUuidToReportsEntitiesDefinitionsMapping,
+  type Query,
+  type Uuid,
+  type BoxedQueryWithExtractorCombinerTransformer,
+  type BoxedQueryTemplateWithExtractorCombinerTransformer,
+  Domain2ElementFailed,
+  type Domain2QueryReturnType
 } from "miroir-core";
 import {
   useErrorLogService,
@@ -32,6 +39,7 @@ import { useMiroirTheme } from '../contexts/MiroirThemeContext.js';
 import { usePageConfiguration } from '../services/index.js';
 import { useDocumentOutlineContext } from '../components/ValueObjectEditor/InstanceEditorOutlineContext.js';
 import { ReportPageContextProvider } from '../components/Reports/ReportPageContext.js';
+import { useQueryTemplateResults } from '../components/Reports/ReportHooks.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -96,6 +104,8 @@ export const ReportPage = () => {
   // const test4AppModel: MetaModel = useCurrentModel(adminConfigurationDeploymentTest4.uuid);
   const parisAppModel: MetaModel = useCurrentModel(adminConfigurationDeploymentParis.uuid);
 
+  const currentModel: MetaModel = useCurrentModel(pageParams.deploymentUuid);
+
   // log.info("ReportPage currentModel", currentModel);
 
   const defaultReport: Report = useMemo(
@@ -110,7 +120,6 @@ export const ReportPage = () => {
         type: "list",
         definition: {
           extractorTemplates: {},
-          // extractorTemplates: {},
           section: {
             type: "objectListReportSection",
             definition: {
@@ -130,7 +139,7 @@ export const ReportPage = () => {
 
   // log.info("displayedDeploymentDefinition", displayedDeploymentDefinition);
 
-  const deploymentUuidToReportsEntitiesDefinitionsMapping = useMemo(
+  const deploymentUuidToReportsEntitiesDefinitionsMapping: DeploymentUuidToReportsEntitiesDefinitionsMapping = useMemo(
     () => (
       {
         [adminConfigurationDeploymentAdmin.uuid]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
@@ -193,6 +202,7 @@ export const ReportPage = () => {
 
   // log.info("context.deploymentUuidToReportsEntitiesDefinitionsMapping", context.deploymentUuidToReportsEntitiesDefinitionsMapping);
 
+  
   const { availableReports, entities, entityDefinitions } = useMemo(() => {
     return displayedDeploymentDefinition &&
       pageParams.applicationSection &&
@@ -212,8 +222,76 @@ export const ReportPage = () => {
 
   const currentMiroirReport: Report =
     availableReports?.find((r: Report) => r.uuid == pageParams.reportUuid) ?? defaultReport;
+  const availableStoredQueries = currentModel.storedQueries || [];
+  const currentReportQueries: Uuid[] = (currentMiroirReport.definition.runStoredQueries??[])
+    ?.filter((sq) => !!sq.storedQuery)
+    .map((sq) => sq.storedQuery) as Uuid[];
 
-  // log.info("currentMiroirReport", currentMiroirReport);
+  log.info(
+    "currentMiroirReport",
+    currentMiroirReport,
+    "currentReportQueries",
+    currentReportQueries,
+    "availableStoredQueries",
+    availableStoredQueries
+  );
+  const currentStoredQueries: {definition: Query}[] = availableStoredQueries.filter((q: any /* StoredQuery*/) =>
+    currentReportQueries.includes(q.uuid)
+  ) as any;
+  log.info("currentStoredQueries", currentStoredQueries);
+
+                  //   applicationSection={pageParams.applicationSection as ApplicationSection}
+                  // deploymentUuid={pageParams.deploymentUuid}
+                  // instanceUuid={pageParams.instanceUuid}
+                  // pageParams={pageParams}
+                  // reportDefinition={currentMiroirReport?.definition}
+
+  const currentStoredQuery:
+    | BoxedQueryWithExtractorCombinerTransformer
+    | BoxedQueryTemplateWithExtractorCombinerTransformer
+    | undefined = useMemo(
+    () =>
+      pageParams.deploymentUuid &&
+      pageParams.applicationSection &&
+      pageParams.reportUuid &&
+      currentStoredQueries.length > 0
+        ? {
+            queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
+            deploymentUuid: pageParams.deploymentUuid,
+            pageParams: pageParams,
+            queryParams: {},
+            contextResults: {},
+            extractorTemplates: currentStoredQueries[0].definition.extractorTemplates,
+            combinerTemplates: currentStoredQueries[0].definition.combinerTemplates,
+            runtimeTransformers: currentStoredQueries[0].definition.runtimeTransformers,
+          }
+        : undefined,
+    // [props.reportDefinition, props.pageParams, resolvedTemplateQuery]
+    [currentStoredQueries, pageParams]
+  );
+  
+    // const reportData: Domain2QueryReturnType<
+    //   Domain2QueryReturnType<Record<string, any>>
+    // > = useQueryTemplateResults(props);
+    const currentStoredQueryResults: Domain2QueryReturnType<
+      Domain2QueryReturnType<Record<string, any>>
+    > = useQueryTemplateResults(
+      {
+        applicationSection: pageParams.applicationSection as ApplicationSection,
+        deploymentUuid: pageParams.deploymentUuid!,
+        instanceUuid: pageParams.instanceUuid,
+        pageParams: pageParams,
+        reportDefinition: currentMiroirReport?.definition,
+      },
+      currentStoredQuery
+    );
+  
+    if (currentStoredQueryResults instanceof Domain2ElementFailed) { // should never happen
+      throw new Error("ReportView: failed to get report data: " + JSON.stringify(currentStoredQueryResults, null, 2));
+    }
+    const {reportData: currentStoredQueryData, resolvedQuery: currentResolvedStoredQuery} = currentStoredQueryResults;
+    log.info("currentStoredQueryData", currentStoredQueryData);
+  
 
   if (pageParams.applicationSection) {
     // log.info("ReportPage rendering", "navigationCount", navigationCount, "totalCount", totalCount, "params", pageParams);
@@ -257,6 +335,7 @@ export const ReportPage = () => {
                   deploymentUuid={pageParams.deploymentUuid}
                   instanceUuid={pageParams.instanceUuid}
                   pageParams={pageParams}
+                  storedQueryData={currentStoredQueryData}
                   reportDefinition={currentMiroirReport?.definition}
                 />
                 {context.showPerformanceDisplay && <PerformanceDisplayContainer />}

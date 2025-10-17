@@ -5,7 +5,7 @@ import {
   ReduxDeploymentsState,
   EntityDefinition,
   EntityInstancesUuidIndex,
-  JzodSchemaDefinition,
+  JzodSchema,
   LoggerInterface,
   Menu,
   MetaEntity,
@@ -23,7 +23,9 @@ import {
   entityReport,
   entitySelfApplicationVersion,
   entityStoreBasedConfiguration,
-  type MiroirModelEnvironment
+  type MiroirModelEnvironment,
+  entityQueryVersion,
+  type Query
 } from "miroir-core";
 import { packageName } from "../../constants.js";
 import { cleanLevel } from "../constants.js";
@@ -138,6 +140,23 @@ const selectReportsFromReduxState = createSelector(
 );
 
 // ################################################################################################
+const selectQueriesFromReduxState = createSelector(
+  [selectCurrentReduxDeploymentsStateFromReduxState,selectMiroirSelectorQueryParams],
+  (reduxState: ReduxDeploymentsState, params: MiroirQueryTemplate) => {
+    return selectEntityInstancesFromReduxDeploymentsState(
+      reduxState,
+      params.queryType == "localCacheEntityInstancesExtractor" ? params.definition.deploymentUuid??"undefined" : "undefined",
+      params.queryType == "localCacheEntityInstancesExtractor"
+            ? params.definition.deploymentUuid == adminConfigurationDeploymentMiroir.uuid
+              ? "data"
+              : "model"
+            : undefined,
+      entityQueryVersion.uuid
+    )
+  }
+);
+
+// ################################################################################################
 const selectConfigurationsFromReduxState = createSelector(
   [selectCurrentReduxDeploymentsStateFromReduxState,selectMiroirSelectorQueryParams],
   (reduxState: ReduxDeploymentsState, params: MiroirQueryTemplate) => {
@@ -186,6 +205,7 @@ export const selectModelForDeploymentFromReduxState: () => (
       selectJzodSchemasFromReduxState,
       selectMenusFromReduxState,
       selectReportsFromReduxState,
+      selectQueriesFromReduxState,
       // selectMiroirQueryTemplateSelectorParams,
     ],
     (
@@ -196,20 +216,23 @@ export const selectModelForDeploymentFromReduxState: () => (
       jzodSchemas: EntityInstancesUuidIndex,
       menus: EntityInstancesUuidIndex,
       reports: EntityInstancesUuidIndex,
+      queries: EntityInstancesUuidIndex,
       // params: MiroirQueryTemplate
     ) => {
-      const result = {
+      const result:MetaModel = {
         applicationVersions: (applicationVersions
           ? Object.values(applicationVersions)
           : []) as ApplicationVersion[],
         applicationVersionCrossEntityDefinition: [],
-        configuration: (configurations ? Object.values(configurations) : []) as StoreBasedConfiguration[],
+        // configuration: (configurations ? Object.values(configurations) : []) as StoreBasedConfiguration[],
         entities: (entities ? Object.values(entities) : []) as MetaEntity[],
         entityDefinitions: (entityDefinitions ? Object.values(entityDefinitions) : []) as EntityDefinition[],
-        jzodSchemas: (jzodSchemas ? Object.values(jzodSchemas) : []) as JzodSchemaDefinition[],
+        jzodSchemas: (jzodSchemas ? Object.values(jzodSchemas) : []) as JzodSchema[],
         menus: (menus ? Object.values(menus) : []) as Menu[],
         reports: (reports ? Object.values(reports) : []) as Report[],
-      } as MetaModel;
+        storedQueries: (queries ? Object.values(queries) : []) as Query[],
+      };
+      // } as MetaModel;
       // log.info("selectModelForDeploymentFromReduxState",result);
 
       return result;
