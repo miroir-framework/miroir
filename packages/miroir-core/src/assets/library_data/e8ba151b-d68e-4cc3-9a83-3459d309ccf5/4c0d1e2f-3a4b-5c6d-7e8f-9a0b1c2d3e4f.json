@@ -1,10 +1,10 @@
 {
-  "uuid": "4c0d1e2f-3a4b-5c6d-7e8f-9a0b1c2d3e4f",
+  "uuid": "4c0d1e2f-3a4b-4c6d-9e8f-9a0b1c2d3e4f",
   "parentName": "Book",
   "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
   "conceptLevel": "Data",
   "name": "American Tabloid",
   "author": "97ce4dc2-499a-4a66-b49f-4e6729e8869b",
-  "publisher": "8c4d5e6f-7a8b-9c0d-1e2f-3a4b5c6d7e8f",
+  "publisher": "8c4d5e6f-7a8b-4c0d-9e2f-3a4b5c6d7e8f",
   "year": 1995
 }
