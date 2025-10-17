@@ -38,7 +38,7 @@ log.info("graphReportSectionSchema:", JSON.stringify(graphReportSectionSchema, n
 export interface ReportSectionViewProps {
   applicationSection: ApplicationSection,
   deploymentUuid: Uuid,
-  reportQueriesResultsRecord: Domain2QueryReturnType<Record<string,any>>,
+  reportData: Domain2QueryReturnType<Record<string,any>>,
   fetchedDataJzodSchema: RecordOfJzodObject | undefined,
   paramsAsdomainElements: Domain2QueryReturnType<Record<string,any>>,
   reportSection: ReportSection,
@@ -131,8 +131,8 @@ export const ReportSectionView = (props: ReportSectionViewProps) => {
       (e: EntityDefinition) => e?.entityUuid === currentListReportTargetEntity?.uuid
     );
 
-  const entityInstance = props.reportQueriesResultsRecord && props.reportSection.type == "objectInstanceReportSection"
-  ? (props.reportQueriesResultsRecord as any)[
+  const entityInstance = props.reportData && props.reportSection.type == "objectInstanceReportSection"
+  ? (props.reportData as any)[
       props.reportSection.definition.fetchedDataReference ?? ""
     ]
   : undefined
@@ -166,7 +166,7 @@ export const ReportSectionView = (props: ReportSectionViewProps) => {
             <div key={index}>
               <ReportSectionView
                 applicationSection={props.applicationSection}
-                reportQueriesResultsRecord={props.reportQueriesResultsRecord}
+                reportData={props.reportData}
                 deploymentUuid={props.deploymentUuid}
                 fetchedDataJzodSchema={props.fetchedDataJzodSchema}
                 paramsAsdomainElements={props.paramsAsdomainElements}
@@ -180,20 +180,20 @@ export const ReportSectionView = (props: ReportSectionViewProps) => {
         <div>
           {/* {JSON.stringify(props.domainElementObject, circularReplacer(), 2)} */}
           {(currentListReportTargetEntity && currentListReportTargetEntityDefinition) ||
-          props.reportQueriesResultsRecord ? (
+          props.reportData ? (
             <ReportSectionListDisplay
               tableComponentReportType="EntityInstance"
               label={"EntityInstance-" + currentListReportTargetEntity?.name}
               defaultlabel={interpolateExpression(
                 props.reportSection.definition?.label,
-                props.reportQueriesResultsRecord,
+                props.reportData,
                 "report label"
               )}
               // styles={styles}
               deploymentUuid={props.deploymentUuid}
               chosenApplicationSection={props.applicationSection as ApplicationSection}
               displayedDeploymentDefinition={displayedDeploymentDefinition}
-              domainElementObject={props.reportQueriesResultsRecord}
+              domainElementObject={props.reportData}
               fetchedDataJzodSchema={props.fetchedDataJzodSchema}
               section={props.reportSection}
               paramsAsdomainElements={props.paramsAsdomainElements}
@@ -205,7 +205,7 @@ export const ReportSectionView = (props: ReportSectionViewProps) => {
       )}
       {props.reportSection.type == "objectInstanceReportSection" && (
         <ReportSectionEntityInstance
-          domainElement={props.reportQueriesResultsRecord}
+          domainElement={props.reportData}
           instance={entityInstance}
           applicationSection={props.applicationSection as ApplicationSection}
           deploymentUuid={props.deploymentUuid}
@@ -217,7 +217,7 @@ export const ReportSectionView = (props: ReportSectionViewProps) => {
           <GraphReportSectionView
             applicationSection={props.applicationSection}
             deploymentUuid={props.deploymentUuid}
-            queryResults={props.reportQueriesResultsRecord}
+            queryResults={props.reportData}
             // queryResults={{
             //   entities: [
             //     { uuid: "1", name: "Entity A", value: 10, color: "blue" },

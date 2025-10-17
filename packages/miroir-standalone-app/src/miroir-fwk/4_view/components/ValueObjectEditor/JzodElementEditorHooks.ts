@@ -185,38 +185,63 @@ export function useJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
 
   // ######################### foreignKeyObjects #########################
   const foreignKeyObjectsFetchQueryParams: SyncQueryRunnerParams<ReduxDeploymentsState> = useMemo(
-    () =>
-      getQueryRunnerParamsForReduxDeploymentsState(
+    () => {
+      if (
         currentDeploymentUuid &&
         currentTypecheckKeyMap &&
         currentTypecheckKeyMap.rawSchema &&
         currentTypecheckKeyMap.rawSchema.type == "uuid" &&
         currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetEntity
-          ? {
-              queryType: "boxedQueryWithExtractorCombinerTransformer",
-              deploymentUuid: currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetDeploymentUuid??currentDeploymentUuid,
-              pageParams: {},
-              queryParams: {},
-              contextResults: {},
-              extractors: {
-                [currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetEntity]: {
-                  extractorOrCombinerType: "extractorByEntityReturningObjectList",
-                  applicationSection: getApplicationSection(
-                    currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetDeploymentUuid??currentDeploymentUuid,
-                    currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetEntity
-                  ),
-                  parentName: "",
-                  parentUuid: currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetEntity,
-                  orderBy: {
-                    attributeName:
-                      currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetEntityOrderInstancesBy ?? "name",
-                  },
+      ) {
+        const applicationSection = getApplicationSection(
+          currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetDeploymentUuid ??
+            currentDeploymentUuid,
+          currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetEntity
+        );
+        log.info(
+          "useJzodElementEditorHooks foreignKeyObjectsFetchQueryParams",
+          "rawSchema",
+          currentTypecheckKeyMap.rawSchema,
+          "deploymentUuid",
+          currentDeploymentUuid,
+          "targetEntityUuid",
+          currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetEntity,
+          "applicationSection",
+          applicationSection
+        );
+        return getQueryRunnerParamsForReduxDeploymentsState(
+          {
+            queryType: "boxedQueryWithExtractorCombinerTransformer",
+            deploymentUuid:
+              currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetDeploymentUuid ??
+              currentDeploymentUuid,
+            pageParams: {},
+            queryParams: {},
+            contextResults: {},
+            extractors: {
+              [currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetEntity]: {
+                extractorOrCombinerType: "extractorByEntityReturningObjectList",
+                applicationSection,
+                parentName: "",
+                parentUuid:
+                  currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams?.targetEntity,
+                orderBy: {
+                  attributeName:
+                    currentTypecheckKeyMap.rawSchema.tag?.value?.selectorParams
+                      ?.targetEntityOrderInstancesBy ?? "name",
                 },
               },
-            }
-          : dummyDomainManyQueryWithDeploymentUuid,
-        deploymentEntityStateSelectorMap
-      ),
+            },
+          },
+          deploymentEntityStateSelectorMap
+        );
+      } else {
+        return getQueryRunnerParamsForReduxDeploymentsState(
+          dummyDomainManyQueryWithDeploymentUuid,
+          deploymentEntityStateSelectorMap
+        );
+      }
+    },
     [deploymentEntityStateSelectorMap, currentDeploymentUuid, currentTypecheckKeyMap?.rawSchema]
   );
 

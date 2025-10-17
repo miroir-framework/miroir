@@ -984,7 +984,8 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
                       [], // transformerPath
                       currentTypeCheckKeyMap.resolvedSchema.tag?.value?.editorButton?.label, // label
                       currentTypeCheckKeyMap.resolvedSchema.tag?.value?.editorButton?.transformer, // transformer
-                      currentMiroirModelEnvironment, // transformerParams
+                      currentMiroirModelEnvironment,
+                      {}, // queryParams
                       { originTransformer: currentValue }, // contextResults - pass the instance to transform
                       "value" // resolveBuildTransformersTo
                     );

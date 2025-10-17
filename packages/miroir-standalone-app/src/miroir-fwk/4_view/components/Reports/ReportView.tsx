@@ -133,7 +133,7 @@ export const ReportView = (props: ReportViewProps) => {
   log.info("################################################################ resolved query Template DONE");
 
   // fetching report data
-  const usedQuery: BoxedQueryWithExtractorCombinerTransformer = useMemo(
+  const reportDataQuery: BoxedQueryWithExtractorCombinerTransformer = useMemo(
     () =>
       props.pageParams.deploymentUuid &&
       props.pageParams.applicationSection &&
@@ -166,24 +166,24 @@ export const ReportView = (props: ReportViewProps) => {
   > = useMemo(
     () =>
     getQueryRunnerParamsForReduxDeploymentsState(
-        usedQuery,
+        reportDataQuery,
         deploymentEntityStateSelectorMap
       ),
-    [deploymentEntityStateSelectorMap, usedQuery]
+    [deploymentEntityStateSelectorMap, reportDataQuery]
   );
 
   log.info("deploymentEntityStateFetchQueryParams",deploymentEntityStateFetchQueryParams)
 
-  log.info("################################################################ Fecth NON-Template report data", usedQuery);
+  log.info("################################################################ Fecth NON-Template report data query", reportDataQuery);
 
-  const deploymentEntityStateQueryResults: Domain2QueryReturnType<
+  const reportData: Domain2QueryReturnType<
     Domain2QueryReturnType<Record<string, any>>
   > = useReduxDeploymentsStateQuerySelector(
     deploymentEntityStateSelectorMap.runQuery,
     deploymentEntityStateFetchQueryParams
   );
 
-  log.info("deploymentEntityStateQueryResults", deploymentEntityStateQueryResults);
+  log.info("reportData", reportData);
 
 
   const jzodSchemaSelectorMap: QueryRunnerMapForJzodSchema<ReduxDeploymentsState> = useMemo(
@@ -264,20 +264,20 @@ export const ReportView = (props: ReportViewProps) => {
 
   const outlineElement = useMemo(() => { // TODO: belongs to the outline!
     if (
-      deploymentEntityStateQueryResults &&
-      deploymentEntityStateQueryResults.elementType !== "failure"
+      reportData &&
+      reportData.elementType !== "failure"
     ) {
-      if (Object.keys(deploymentEntityStateQueryResults).length > 0) {
+      if (Object.keys(reportData).length > 0) {
         // throw new Error(
         //   "ReportView: No data found for the given query parameters: " +
         //     JSON.stringify(deploymentEntityStateQueryResults)
         // );
-        const reportRootAttribute = (deploymentEntityStateQueryResults as any)[
-          Object.keys(deploymentEntityStateQueryResults)[0]
+        const reportRootAttribute = (reportData as any)[
+          Object.keys(reportData)[0]
         ];
     
         const outlineElement = {
-          [reportRootAttribute.name ?? Object.keys(deploymentEntityStateQueryResults)[0]]:
+          [reportRootAttribute.name ?? Object.keys(reportData)[0]]:
             reportRootAttribute,
         }
         // outlineContext.setOutlineData(outlineElement);
@@ -285,7 +285,7 @@ export const ReportView = (props: ReportViewProps) => {
       }
       // outlineContext.setOutlineData(deploymentEntityStateQueryResults);
     }
-  }, [deploymentEntityStateQueryResults]);
+  }, [reportData]);
   // Update outline data when query results change
   useEffect(() => {
     if (outlineElement) {
@@ -297,8 +297,8 @@ export const ReportView = (props: ReportViewProps) => {
   const showPerformanceDisplay = context.showPerformanceDisplay;
 
   if (props.applicationSection) {
-    return deploymentEntityStateQueryResults.elementType == "failure" ? (
-      <div>found query failure! {JSON.stringify(deploymentEntityStateQueryResults, null, 2)}</div>
+    return reportData.elementType == "failure" ? (
+      <div>found query failure! {JSON.stringify(reportData, null, 2)}</div>
     ) : props.deploymentUuid ? (
       <>
         {showPerformanceDisplay && (
@@ -307,7 +307,7 @@ export const ReportView = (props: ReportViewProps) => {
           </div>
         )}
         <ReportSectionView
-          reportQueriesResultsRecord={deploymentEntityStateQueryResults}
+          reportData={reportData}
           fetchedDataJzodSchema={fetchedDataJzodSchema}
           reportSection={props.reportDefinition?.section}
           rootReport={props.reportDefinition}

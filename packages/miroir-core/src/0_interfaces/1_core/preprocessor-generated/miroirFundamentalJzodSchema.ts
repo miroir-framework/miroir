@@ -12471,6 +12471,36 @@ export const miroirFundamentalJzodSchema = {
           }
         ]
       },
+      "runStoredQuery": {
+        "type": "object",
+        "definition": {
+          "storedQuery": {
+            "type": "uuid",
+            "nullable": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Stored Query",
+                "editable": true,
+                "selectorParams": {
+                  "targetEntity": "e4320b9e-ab45-4abe-85d8-359604b3c62f",
+                  "targetEntityApplicationSection": "model",
+                  "targetEntityOrderInstancesBy": "name"
+                }
+              }
+            }
+          },
+          "label": {
+            "type": "string"
+          },
+          "args": {
+            "type": "record",
+            "optional": true,
+            "definition": {
+              "type": "any"
+            }
+          }
+        }
+      },
       "rootReport": {
         "type": "object",
         "definition": {
@@ -12486,6 +12516,17 @@ export const miroirFundamentalJzodSchema = {
             "optional": true,
             "definition": {
               "type": "any"
+            }
+          },
+          "runStoredQueries": {
+            "type": "array",
+            "optional": true,
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "runStoredQuery"
+              }
             }
           },
           "extractorTemplates": {
@@ -13231,6 +13272,36 @@ export const miroirFundamentalJzodSchema = {
               "parameterTransformer": {
                 "type": "string"
               },
+              "runStoredQuery": {
+                "type": "object",
+                "definition": {
+                  "storedQuery": {
+                    "type": "uuid",
+                    "nullable": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Stored Query",
+                        "editable": true,
+                        "selectorParams": {
+                          "targetEntity": "e4320b9e-ab45-4abe-85d8-359604b3c62f",
+                          "targetEntityApplicationSection": "model",
+                          "targetEntityOrderInstancesBy": "name"
+                        }
+                      }
+                    }
+                  },
+                  "label": {
+                    "type": "string"
+                  },
+                  "args": {
+                    "type": "record",
+                    "optional": true,
+                    "definition": {
+                      "type": "any"
+                    }
+                  }
+                }
+              },
               "rootReport": {
                 "type": "object",
                 "definition": {
@@ -13246,6 +13317,17 @@ export const miroirFundamentalJzodSchema = {
                     "optional": true,
                     "definition": {
                       "type": "any"
+                    }
+                  },
+                  "runStoredQueries": {
+                    "type": "array",
+                    "optional": true,
+                    "definition": {
+                      "type": "schemaReference",
+                      "definition": {
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        "relativePath": "runStoredQuery"
+                      }
                     }
                   },
                   "extractorTemplates": {
@@ -36823,6 +36905,36 @@ export const miroirFundamentalJzodSchema = {
                       "parameterTransformer": {
                         "type": "string"
                       },
+                      "runStoredQuery": {
+                        "type": "object",
+                        "definition": {
+                          "storedQuery": {
+                            "type": "uuid",
+                            "nullable": true,
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Stored Query",
+                                "editable": true,
+                                "selectorParams": {
+                                  "targetEntity": "e4320b9e-ab45-4abe-85d8-359604b3c62f",
+                                  "targetEntityApplicationSection": "model",
+                                  "targetEntityOrderInstancesBy": "name"
+                                }
+                              }
+                            }
+                          },
+                          "label": {
+                            "type": "string"
+                          },
+                          "args": {
+                            "type": "record",
+                            "optional": true,
+                            "definition": {
+                              "type": "any"
+                            }
+                          }
+                        }
+                      },
                       "rootReport": {
                         "type": "object",
                         "definition": {
@@ -36838,6 +36950,18 @@ export const miroirFundamentalJzodSchema = {
                             "optional": true,
                             "definition": {
                               "type": "any"
+                            }
+                          },
+                          "runStoredQueries": {
+                            "type": "array",
+                            "optional": true,
+                            "definition": {
+                              "type": "schemaReference",
+                              "definition": {
+                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                "relativePath": "runStoredQuery"
+                              },
+                              "context": {}
                             }
                           },
                           "extractorTemplates": {
@@ -45140,6 +45264,41 @@ export const miroirFundamentalJzodSchema = {
                   }
                 ]
               },
+              "runStoredQueries": {
+                "type": "union",
+                "optional": true,
+                "definition": [
+                  {
+                    "type": "array",
+                    "optional": true,
+                    "definition": {
+                      "type": "union",
+                      "definition": [
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runStoredQuery"
+                          },
+                          "context": {}
+                        },
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "relativePath": "transformerForBuildCarryOnObject"
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "transformerForBuildCarryOnObject"
+                    }
+                  }
+                ]
+              },
               "extractorTemplates": {
                 "type": "union",
                 "definition": [
@@ -48834,6 +48993,105 @@ export const miroirFundamentalJzodSchema = {
                             "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
                           },
                           "context": {}
+                        },
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "relativePath": "transformerForBuildCarryOnObject"
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "transformerForBuildCarryOnObject"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runStoredQuery": {
+        "type": "union",
+        "definition": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "transformerForBuildCarryOnObject"
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "storedQuery": {
+                "type": "union",
+                "nullable": true,
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Stored Query",
+                    "editable": true,
+                    "selectorParams": {
+                      "targetEntity": "e4320b9e-ab45-4abe-85d8-359604b3c62f",
+                      "targetEntityApplicationSection": "model",
+                      "targetEntityOrderInstancesBy": "name"
+                    },
+                    "isTemplate": true
+                  }
+                },
+                "definition": [
+                  {
+                    "type": "uuid",
+                    "nullable": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Stored Query",
+                        "editable": true,
+                        "selectorParams": {
+                          "targetEntity": "e4320b9e-ab45-4abe-85d8-359604b3c62f",
+                          "targetEntityApplicationSection": "model",
+                          "targetEntityOrderInstancesBy": "name"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "transformerForBuildCarryOnObject"
+                    }
+                  }
+                ]
+              },
+              "label": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "transformerForBuildCarryOnObject"
+                    }
+                  }
+                ]
+              },
+              "args": {
+                "type": "union",
+                "optional": true,
+                "definition": [
+                  {
+                    "type": "record",
+                    "optional": true,
+                    "definition": {
+                      "type": "union",
+                      "definition": [
+                        {
+                          "type": "any"
                         },
                         {
                           "type": "schemaReference",
@@ -59930,6 +60188,36 @@ export const miroirFundamentalJzodSchema = {
               "parameterTransformer": {
                 "type": "string"
               },
+              "runStoredQuery": {
+                "type": "object",
+                "definition": {
+                  "storedQuery": {
+                    "type": "uuid",
+                    "nullable": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Stored Query",
+                        "editable": true,
+                        "selectorParams": {
+                          "targetEntity": "e4320b9e-ab45-4abe-85d8-359604b3c62f",
+                          "targetEntityApplicationSection": "model",
+                          "targetEntityOrderInstancesBy": "name"
+                        }
+                      }
+                    }
+                  },
+                  "label": {
+                    "type": "string"
+                  },
+                  "args": {
+                    "type": "record",
+                    "optional": true,
+                    "definition": {
+                      "type": "any"
+                    }
+                  }
+                }
+              },
               "rootReport": {
                 "type": "object",
                 "definition": {
@@ -59945,6 +60233,17 @@ export const miroirFundamentalJzodSchema = {
                     "optional": true,
                     "definition": {
                       "type": "any"
+                    }
+                  },
+                  "runStoredQueries": {
+                    "type": "array",
+                    "optional": true,
+                    "definition": {
+                      "type": "schemaReference",
+                      "definition": {
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        "relativePath": "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runStoredQuery"
+                      }
                     }
                   },
                   "extractorTemplates": {
@@ -60813,6 +61112,17 @@ export const miroirFundamentalJzodSchema = {
             "optional": true,
             "definition": {
               "type": "any"
+            }
+          },
+          "runStoredQueries": {
+            "type": "array",
+            "optional": true,
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runStoredQuery"
+              }
             }
           },
           "extractorTemplates": {
@@ -61848,6 +62158,13 @@ export const miroirFundamentalJzodSchema = {
         "definition": {
           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
           "relativePath": "complexMenu"
+        }
+      },
+      "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runStoredQuery": {
+        "type": "schemaReference",
+        "definition": {
+          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          "relativePath": "runStoredQuery"
         }
       },
       "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombinerTemplateRecord": {
@@ -68649,6 +68966,36 @@ export const miroirFundamentalJzodSchema = {
               "parameterTransformer": {
                 "type": "string"
               },
+              "runStoredQuery": {
+                "type": "object",
+                "definition": {
+                  "storedQuery": {
+                    "type": "uuid",
+                    "nullable": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Stored Query",
+                        "editable": true,
+                        "selectorParams": {
+                          "targetEntity": "e4320b9e-ab45-4abe-85d8-359604b3c62f",
+                          "targetEntityApplicationSection": "model",
+                          "targetEntityOrderInstancesBy": "name"
+                        }
+                      }
+                    }
+                  },
+                  "label": {
+                    "type": "string"
+                  },
+                  "args": {
+                    "type": "record",
+                    "optional": true,
+                    "definition": {
+                      "type": "any"
+                    }
+                  }
+                }
+              },
               "rootReport": {
                 "type": "object",
                 "definition": {
@@ -68664,6 +69011,17 @@ export const miroirFundamentalJzodSchema = {
                     "optional": true,
                     "definition": {
                       "type": "any"
+                    }
+                  },
+                  "runStoredQueries": {
+                    "type": "array",
+                    "optional": true,
+                    "definition": {
+                      "type": "schemaReference",
+                      "definition": {
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runStoredQuery"
+                      }
                     }
                   },
                   "extractorTemplates": {
@@ -69531,6 +69889,17 @@ export const miroirFundamentalJzodSchema = {
             "optional": true,
             "definition": {
               "type": "any"
+            }
+          },
+          "runStoredQueries": {
+            "type": "array",
+            "optional": true,
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runStoredQuery"
+              }
             }
           },
           "extractorTemplates": {
@@ -70566,6 +70935,13 @@ export const miroirFundamentalJzodSchema = {
         "definition": {
           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
           "relativePath": "complexMenu"
+        }
+      },
+      "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runStoredQuery": {
+        "type": "schemaReference",
+        "definition": {
+          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          "relativePath": "runStoredQuery"
         }
       },
       "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombinerTemplateRecord": {
@@ -77408,6 +77784,36 @@ export const miroirFundamentalJzodSchema = {
               "parameterTransformer": {
                 "type": "string"
               },
+              "runStoredQuery": {
+                "type": "object",
+                "definition": {
+                  "storedQuery": {
+                    "type": "uuid",
+                    "nullable": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Stored Query",
+                        "editable": true,
+                        "selectorParams": {
+                          "targetEntity": "e4320b9e-ab45-4abe-85d8-359604b3c62f",
+                          "targetEntityApplicationSection": "model",
+                          "targetEntityOrderInstancesBy": "name"
+                        }
+                      }
+                    }
+                  },
+                  "label": {
+                    "type": "string"
+                  },
+                  "args": {
+                    "type": "record",
+                    "optional": true,
+                    "definition": {
+                      "type": "any"
+                    }
+                  }
+                }
+              },
               "rootReport": {
                 "type": "object",
                 "definition": {
@@ -77423,6 +77829,17 @@ export const miroirFundamentalJzodSchema = {
                     "optional": true,
                     "definition": {
                       "type": "any"
+                    }
+                  },
+                  "runStoredQueries": {
+                    "type": "array",
+                    "optional": true,
+                    "definition": {
+                      "type": "schemaReference",
+                      "definition": {
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runStoredQuery"
+                      }
                     }
                   },
                   "extractorTemplates": {
@@ -78291,6 +78708,17 @@ export const miroirFundamentalJzodSchema = {
             "optional": true,
             "definition": {
               "type": "any"
+            }
+          },
+          "runStoredQueries": {
+            "type": "array",
+            "optional": true,
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runStoredQuery"
+              }
             }
           },
           "extractorTemplates": {
@@ -79326,6 +79754,13 @@ export const miroirFundamentalJzodSchema = {
         "definition": {
           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
           "relativePath": "complexMenu"
+        }
+      },
+      "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runStoredQuery": {
+        "type": "schemaReference",
+        "definition": {
+          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          "relativePath": "runStoredQuery"
         }
       },
       "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombinerTemplateRecord": {

@@ -3,6 +3,7 @@ import {
   Action2ReturnType,
   ApplicationSection,
   BoxedQueryTemplateWithExtractorCombinerTransformer,
+  defaultMiroirModelEnvironment,
   Domain2QueryReturnType,
   DomainControllerInterface,
   EntityDefinition,
@@ -138,7 +139,8 @@ export const deleteCascade = async (p: {
             applicationSection: p.applicationSection,
             query: foreignKeyObjectsFetchQuery
           }
-        }
+        },
+        defaultMiroirModelEnvironment, // TODO: use actual current deployment environment
       )
   
     if (foreignKeyUnfilteredObjects instanceof Action2Error) {

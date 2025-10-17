@@ -372,7 +372,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
     []
   );
 
-  const queryForExecution =
+  const queryForTestRun =
     useMemo((): BoxedQueryTemplateWithExtractorCombinerTransformer => {
       // Convert the instance query to the expected format
       return isQueryEntity && currentQuery?.definition && !isResultsCollapsed
@@ -408,26 +408,26 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
       instance?.uuid,
     ]);
 
-  log.info("ReportSectionEntityInstance: queryForExecution:", queryForExecution);
+  log.info("ReportSectionEntityInstance: queryForExecution:", queryForTestRun);
   // const deploymentEntityStateFetchQueryParams: SyncQueryRunnerParams<ReduxDeploymentsState> | undefined = useMemo(
-  const deploymentEntityStateFetchQueryParams: SyncQueryTemplateRunnerParams<ReduxDeploymentsState> = useMemo(
+  const queryTestRunParams: SyncQueryTemplateRunnerParams<ReduxDeploymentsState> = useMemo(
     () => {
       // if (!queryForExecution) return undefined;
       // return getQueryRunnerParamsForReduxDeploymentsState(
       return getQueryTemplateRunnerParamsForReduxDeploymentsState(
-        queryForExecution,
+        queryForTestRun,
         deploymentEntityStateSelectorMap
       );
     },
-    [queryForExecution, deploymentEntityStateSelectorMap]
+    [queryForTestRun, deploymentEntityStateSelectorMap]
   );
 
-  const queryResults: Domain2QueryReturnType<Domain2QueryReturnType<Record<string, any>>> | undefined = 
+  const queryTestRunResults: Domain2QueryReturnType<Domain2QueryReturnType<Record<string, any>>> | undefined = 
     // Only execute query when results section is expanded
      useReduxDeploymentsStateQueryTemplateSelector(
     // (!isResultsCollapsed && deploymentEntityStateFetchQueryParams) ? runQueryTemplateFromReduxDeploymentsState(
       deploymentEntityStateSelectorMap.runQueryTemplateWithExtractorCombinerTransformer,
-      deploymentEntityStateFetchQueryParams
+      queryTestRunParams
     );
 
   // ##############################################################################################
@@ -524,12 +524,12 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
               
               {!isResultsCollapsed && (
                 <div style={{ padding: '16px' }}>
-                  {queryResults ? (
-                    queryResults.elementType === "failure" ? (
+                  {queryTestRunResults ? (
+                    queryTestRunResults.elementType === "failure" ? (
                       <div style={{ color: '#dc3545', padding: '8px' }}>
                         <strong>Query execution failed:</strong>
                         <ThemedCodeBlock style={{ marginTop: '8px' }}>
-                          {JSON.stringify(queryResults, null, 2)}
+                          {JSON.stringify(queryTestRunResults, null, 2)}
                         </ThemedCodeBlock>
                       </div>
                     ) : (
@@ -538,7 +538,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                           Query executed successfully. Results:
                         </div>
                         <ThemedCodeBlock>
-                          {JSON.stringify(queryResults, null, 2)}
+                          {JSON.stringify(queryTestRunResults, null, 2)}
                         </ThemedCodeBlock>
                       </div>
                     )
@@ -549,7 +549,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                       color: '#666',
                       fontStyle: 'italic'
                     }}>
-                      {queryForExecution ? 
+                      {queryForTestRun ? 
                         "Executing query..." : 
                         "No query definition found for this instance"
                       }

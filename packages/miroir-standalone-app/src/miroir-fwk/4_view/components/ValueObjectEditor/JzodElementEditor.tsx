@@ -776,7 +776,11 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
             // Convert stringSelectList to options format for ThemedSelect
             const selectOptions = stringSelectList.map((e: [string, EntityInstance]) => ({
               value: e[1].uuid,
-              label: (e[1] as any).description || (e[1] as any).defaultLabel || (e[1] as EntityInstanceWithName).name || e[1].uuid
+              label:
+                (e[1] as any).defaultLabel ||
+                (e[1] as EntityInstanceWithName).name ||
+                (e[1] as any).description ||
+                e[1].uuid,
             }));
 
             return (

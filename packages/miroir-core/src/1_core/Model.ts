@@ -64,14 +64,23 @@ import {
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import type { MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 
-// TODO: REMOVE THIS!!!
+/**
+ * TODO: REMOVE THIS, IDEALLY!!! (WAIT, NO, THIS IS OK AS LONG AS IT ALLOWS TO MANAGE DISCREPANCIES BETWEEN 
+ * META-APPLICATION AND OTHER APPLICATIONS, AND THIS CONCERNS MAINLY THE META-APPLICATION ITSELF)
+ * */
 // FIRST: CENTRALIZE LOGIC TO DETERMINE MODEL ENTITIES
+export const metaMetaModelEntities: MetaEntity[] = [
+  entityEntity,
+  entityEntityDefinition,
+];
+export const metaMetaModelEntityUuids: Uuid[] = metaMetaModelEntities.map((e) => e.uuid);
+
 export const metaModelEntities: MetaEntity[] = [
   entitySelfApplication,
   // entitySelfApplicationDeploymentConfiguration, // TODO: remove, deployments are not part of applications, they are external to them, belonging to a separate selfApplication, which contents is specific to each node (no transactions / historization)
   entitySelfApplicationModelBranch,
   entitySelfApplicationVersion,
-  entityEntity,
+  entityEntity, 
   entityEntityDefinition,
   entityMenu,
   entityQueryVersion,
@@ -79,6 +88,7 @@ export const metaModelEntities: MetaEntity[] = [
   // entityStoreBasedConfiguration,
 ] as MetaEntity[];
 
+export const metaModelEntityUuids: Uuid[] = metaModelEntities.map((e) => e.uuid);
 // console.log("metaModelEntities", metaModelEntities)
 
 export const miroirModelEntities: MetaEntity[] = metaModelEntities.filter((e: MetaEntity) => {
