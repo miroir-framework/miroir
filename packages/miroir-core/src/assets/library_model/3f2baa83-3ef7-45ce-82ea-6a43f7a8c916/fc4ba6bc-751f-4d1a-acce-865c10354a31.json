@@ -35,6 +35,34 @@
           "referenceName": "country"
         },
         "AttributeOfListObjectToCompareToReferenceUuid": "country"
+      },
+      "authorsOfCountry": {
+        "extractorTemplateType": "combinerByRelationReturningObjectList",
+        "parentName": "Author",
+        "parentUuid": {
+          "transformerType": "constant",
+          "value": "d7a144ff-d1b9-4135-800c-a7cfc1f38733"
+        },
+        "objectReference": {
+          "transformerType": "contextReference",
+          "interpolation": "runtime",
+          "referenceName": "country"
+        },
+        "AttributeOfListObjectToCompareToReferenceUuid": "country"
+      },
+      "booksOfAuthors": {
+        "extractorTemplateType": "combinerByManyToManyRelationReturningObjectList",
+        "parentName": "Book",
+        "parentUuid": {
+          "transformerType": "constant",
+          "value": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+        },
+        "objectListReference": {
+          "transformerType": "contextReference",
+          "interpolation": "runtime",
+          "referenceName": "authorsOfCountry"
+        },
+        "AttributeOfRootListObjectToCompareToListReferenceUuid": "author"
       }
     },
     "section": {
@@ -55,6 +83,26 @@
             "parentName": "Publisher",
             "parentUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
             "fetchedDataReference": "publishersOfCountry",
+            "sortByAttribute": "name"
+          }
+        },
+        {
+          "type":"objectListReportSection",
+          "definition": {
+            "label": "Country's (${country.name}) Authors",
+            "parentName": "Author",
+            "parentUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+            "fetchedDataReference": "authorsOfCountry",
+            "sortByAttribute": "name"
+          }
+        },
+        {
+          "type":"objectListReportSection",
+          "definition": {
+            "label": "Books from Country's (${country.name}) Authors",
+            "parentName": "Book",
+            "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+            "fetchedDataReference": "booksOfAuthors",
             "sortByAttribute": "name"
           }
         }
