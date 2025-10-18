@@ -171,7 +171,49 @@ export const ReportSectionView = (props: ReportSectionViewProps) => {
           ReportSectionView renders: {navigationCount} (total: {totalCount})
         </ThemedText>
       )}
-      {props.reportSection?.type === "grid" && <div>grid not supported yet!</div>}
+      {props.reportSection?.type === "grid" && (
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '16px',
+            width: '100%',
+          }}
+        >
+          {props.reportSection?.definition.map((row, rowIndex) => (
+            <div
+              key={`row-${rowIndex}`}
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 400px), 1fr))',
+                gap: '16px',
+                width: '100%',
+              }}
+            >
+              {row.map((innerReportSection, colIndex) => (
+                <div
+                  key={`${rowIndex}-${colIndex}`}
+                  style={{
+                    minWidth: 0,
+                    display: 'flex',
+                    flexDirection: 'column',
+                  }}
+                >
+                  <ReportSectionView
+                    applicationSection={props.applicationSection}
+                    reportData={props.reportData}
+                    deploymentUuid={props.deploymentUuid}
+                    fetchedDataJzodSchema={props.fetchedDataJzodSchema}
+                    paramsAsdomainElements={props.paramsAsdomainElements}
+                    reportSection={innerReportSection}
+                    rootReport={props.rootReport}
+                  />
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+      )}
       {props.reportSection?.type === "list" &&
         props.reportSection?.definition.map((innerReportSection, index) => {
           return (
