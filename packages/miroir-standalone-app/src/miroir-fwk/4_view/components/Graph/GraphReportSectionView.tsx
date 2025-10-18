@@ -5,7 +5,8 @@ import {
   Domain2QueryReturnType,
   LoggerInterface,
   MiroirLoggerFactory,
-  Uuid
+  Uuid,
+  type GraphReportSection
 } from "miroir-core";
 
 import { packageName } from '../../../../constants.js';
@@ -15,7 +16,6 @@ import { GraphComponent } from './GraphComponent.js';
 import { 
   GraphData, 
   GraphDataPoint, 
-  GraphReportSection
 } from './GraphInterfaces.js';
 import { ThemedBox } from '../Themes/LayoutComponents.js';
 import { ThemedText } from '../Themes/BasicComponents.js';

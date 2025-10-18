@@ -12048,6 +12048,53 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
+      "graphConfig": {
+        "type": "object",
+        "optional": true,
+        "definition": {
+          "width": {
+            "type": "number",
+            "optional": true
+          },
+          "height": {
+            "type": "number",
+            "optional": true
+          },
+          "margins": {
+            "type": "object",
+            "optional": true,
+            "definition": {
+              "top": {
+                "type": "number"
+              },
+              "right": {
+                "type": "number"
+              },
+              "bottom": {
+                "type": "number"
+              },
+              "left": {
+                "type": "number"
+              }
+            }
+          },
+          "colors": {
+            "type": "array",
+            "optional": true,
+            "definition": {
+              "type": "string"
+            }
+          },
+          "showLegend": {
+            "type": "boolean",
+            "optional": true
+          },
+          "showTooltips": {
+            "type": "boolean",
+            "optional": true
+          }
+        }
+      },
       "objectInstanceReportSection": {
         "type": "object",
         "tag": {

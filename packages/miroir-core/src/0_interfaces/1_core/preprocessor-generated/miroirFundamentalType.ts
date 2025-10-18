@@ -4485,6 +4485,19 @@ export type Menu = {
     description?: string | undefined;
     definition: MenuDefinition;
 };
+export type GraphConfig = {
+    width?: number | undefined;
+    height?: number | undefined;
+    margins?: {
+        top: number;
+        right: number;
+        bottom: number;
+        left: number;
+    } | undefined;
+    colors?: string[] | undefined;
+    showLegend?: boolean | undefined;
+    showTooltips?: boolean | undefined;
+} | undefined;
 export type ObjectInstanceReportSection = {
     type: "objectInstanceReportSection";
     combinerTemplates?: ExtractorOrCombinerTemplateRecord | undefined;
@@ -15261,6 +15274,7 @@ export const simpleMenu: z.ZodType<SimpleMenu> = z.object({menuType:z.literal("s
 export const complexMenu: z.ZodType<ComplexMenu> = z.object({menuType:z.literal("complexMenu"), definition:z.array(z.lazy(() =>sectionOfMenu))}).strict();
 export const menuDefinition: z.ZodType<MenuDefinition> = z.union([z.lazy(() =>simpleMenu), z.lazy(() =>complexMenu)]);
 export const menu: z.ZodType<Menu> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), name:z.string(), defaultLabel:z.string(), description:z.string().optional(), definition:z.lazy(() =>menuDefinition)}).strict();
+export const graphConfig: z.ZodType<GraphConfig> = z.object({width:z.number().optional(), height:z.number().optional(), margins:z.object({top:z.number(), right:z.number(), bottom:z.number(), left:z.number()}).strict().optional(), colors:z.array(z.string()).optional(), showLegend:z.boolean().optional(), showTooltips:z.boolean().optional()}).strict().optional();
 export const objectInstanceReportSection: z.ZodType<ObjectInstanceReportSection> = z.object({type:z.literal("objectInstanceReportSection"), combinerTemplates:z.lazy(() =>extractorOrCombinerTemplateRecord).optional(), runtimeTransformers:z.record(z.string(),z.lazy(() =>transformerForRuntime)).optional(), definition:z.object({label:z.string().optional(), parentUuid:z.string(), fetchedDataReference:z.string().optional(), query:z.lazy(() =>extractorTemplateReturningObject).optional()}).strict()}).strict();
 export const objectListReportSection: z.ZodType<ObjectListReportSection> = z.object({type:z.literal("objectListReportSection"), definition:z.object({label:z.string().optional(), parentName:z.string().optional(), parentUuid:z.string().uuid(), fetchedDataReference:z.string().optional(), query:z.lazy(() =>extractorTemplateReturningObject).optional(), sortByAttribute:z.string().optional()}).strict()}).strict();
 export const graphReportSection: z.ZodType<GraphReportSection> = z.object({type:z.literal("graphReportSection"), definition:z.object({label:z.string().optional(), fetchedDataReference:z.string(), graphType:z.enum(["bar","line","pie"]), dataMapping:z.object({labelField:z.string(), valueField:z.string(), colorField:z.string().optional()}).strict(), config:z.object({width:z.number().optional(), height:z.number().optional(), margins:z.object({top:z.number(), right:z.number(), bottom:z.number(), left:z.number()}).strict().optional(), colors:z.array(z.string()).optional(), showLegend:z.boolean().optional(), showTooltips:z.boolean().optional()}).strict().optional()}).strict()}).strict();

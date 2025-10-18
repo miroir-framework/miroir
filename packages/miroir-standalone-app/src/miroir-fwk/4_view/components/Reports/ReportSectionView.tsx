@@ -25,7 +25,6 @@ import { ReportSectionListDisplay } from './ReportSectionListDisplay.js';
 import { useRenderTracker } from '../../tools/renderCountTracker.js';
 import { ThemedBox, ThemedText } from '../Themes/index.js';
 import { GraphReportSectionView } from '../Graph/GraphReportSectionView.js';
-import { graphReportSectionSchema } from '../Graph/GraphInterfaces.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -33,7 +32,6 @@ MiroirLoggerFactory.registerLoggerToStart(
 ).then((logger: LoggerInterface) => {log = logger});
 
 
-log.info("graphReportSectionSchema:", JSON.stringify(graphReportSectionSchema, null, 2));
 
 
 export interface ReportSectionViewProps {

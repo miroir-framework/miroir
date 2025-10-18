@@ -472,6 +472,10 @@ export {
   // jzodUnion_RecursivelyUnfold_ReturnType,
   // jzodUnion_RecursivelyUnfold_ReturnTypeError,
   // jzodUnion_RecursivelyUnfold_ReturnTypeOK,
+  GraphReportSection,
+  graphReportSection,
+  GraphConfig,
+  graphConfig,
 } from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 export {

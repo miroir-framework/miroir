@@ -1,6 +1,7 @@
 import { JzodElement, JzodObject } from '@miroir-framework/jzod-ts';
+import { graphConfig } from 'miroir-core';
 import { z } from 'zod';
-
+export {GraphConfig} from 'miroir-core'
 // ################################################################################################
 // Graph Data Schema using Jzod
 // ################################################################################################
@@ -56,7 +57,8 @@ export const graphConfigSchema: JzodObject = {
       optional: true
     }
   }
-} as const;export const barChartDataSchema: JzodObject = {
+} as const;
+export const barChartDataSchema: JzodObject = {
   type: "object",
   definition: {
     type: {
@@ -123,7 +125,8 @@ export const pieChartDataSchema: JzodObject = {
       definition: graphConfigSchema.definition
     }
   }
-} as const;export const graphDataSchema: JzodElement = {
+} as const;
+export const graphDataSchema: JzodElement = {
   type: "union",
   definition: [
     barChartDataSchema,
@@ -142,39 +145,25 @@ export const GraphDataPointSchema = z.object({
   color: z.string().optional()
 });
 
-export const GraphConfigSchema = z.object({
-  width: z.number().optional(),
-  height: z.number().optional(),
-  margins: z.object({
-    top: z.number(),
-    right: z.number(), 
-    bottom: z.number(),
-    left: z.number()
-  }).optional(),
-  colors: z.array(z.string()).optional(),
-  showLegend: z.boolean().optional(),
-  showTooltips: z.boolean().optional()
-});
-
 export const BarChartDataSchema = z.object({
   type: z.literal("bar"),
   title: z.string().optional(),
   data: z.array(GraphDataPointSchema),
-  config: GraphConfigSchema.optional()
+  config: graphConfig.optional()
 });
 
 export const LineChartDataSchema = z.object({
   type: z.literal("line"),
   title: z.string().optional(),
   data: z.array(GraphDataPointSchema),
-  config: GraphConfigSchema.optional()
+  config: graphConfig.optional()
 });
 
 export const PieChartDataSchema = z.object({
   type: z.literal("pie"),
   title: z.string().optional(),
   data: z.array(GraphDataPointSchema),
-  config: GraphConfigSchema.optional()
+  config: graphConfig.optional()
 });
 
 export const GraphDataSchema = z.union([
@@ -188,7 +177,7 @@ export const GraphDataSchema = z.union([
 // ################################################################################################
 
 export type GraphDataPoint = z.infer<typeof GraphDataPointSchema>;
-export type GraphConfig = z.infer<typeof GraphConfigSchema>;
+// export type GraphConfig = z.infer<typeof GraphConfigSchema>;
 export type BarChartData = z.infer<typeof BarChartDataSchema>;
 export type LineChartData = z.infer<typeof LineChartDataSchema>;
 export type PieChartData = z.infer<typeof PieChartDataSchema>;
@@ -198,65 +187,66 @@ export type GraphData = z.infer<typeof GraphDataSchema>;
 // Graph Report Section Schema for integration with Miroir report system
 // ################################################################################################
 
-export const graphReportSectionSchema: JzodObject = {
-  type: "object",
-  definition: {
-    type: {
-      type: "literal",
-      definition: "graphReportSection"
-    },
-    definition: {
-      type: "object",
-      definition: {
-        label: {
-          type: "string",
-          optional: true
-        },
-        fetchedDataReference: {
-          type: "string"
-        },
-        graphType: {
-          type: "enum",
-          definition: ["bar", "line", "pie"]
-        },
-        dataMapping: {
-          type: "object",
-          definition: {
-            labelField: {
-              type: "string"
-            },
-            valueField: {
-              type: "string"
-            },
-            colorField: {
-              type: "string",
-              optional: true
-            }
-          }
-        },
-        config: {
-          type: "object",
-          optional: true,
-          definition: graphConfigSchema.definition
-        }
-      }
-    }
-  }
-} as const;
+// export const graphReportSectionSchema: JzodObject = {
+//   type: "object",
+//   definition: {
+//     type: {
+//       type: "literal",
+//       definition: "graphReportSection"
+//     },
+//     definition: {
+//       type: "object",
+//       definition: {
+//         label: {
+//           type: "string",
+//           optional: true
+//         },
+//         fetchedDataReference: {
+//           type: "string"
+//         },
+//         graphType: {
+//           type: "enum",
+//           definition: ["bar", "line", "pie"]
+//         },
+//         dataMapping: {
+//           type: "object",
+//           definition: {
+//             labelField: {
+//               type: "string"
+//             },
+//             valueField: {
+//               type: "string"
+//             },
+//             colorField: {
+//               type: "string",
+//               optional: true
+//             }
+//           }
+//         },
+//         config: {
+//           type: "object",
+//           optional: true,
+//           definition: graphConfigSchema.definition
+//         }
+//       }
+//     }
+//   }
+// } as const;
 
-export const GraphReportSectionSchema = z.object({
-  type: z.literal("graphReportSection"),
-  definition: z.object({
-    label: z.string().optional(),
-    fetchedDataReference: z.string(),
-    graphType: z.enum(["bar", "line", "pie"]),
-    dataMapping: z.object({
-      labelField: z.string(),
-      valueField: z.string(),
-      colorField: z.string().optional()
-    }),
-    config: GraphConfigSchema.optional()
-  })
-});
+// export const GraphReportSectionSchema = z.object({
+//   type: z.literal("graphReportSection"),
+//   definition: z.object({
+//     label: z.string().optional(),
+//     fetchedDataReference: z.string(),
+//     graphType: z.enum(["bar", "line", "pie"]),
+//     dataMapping: z.object({
+//       labelField: z.string(),
+//       valueField: z.string(),
+//       colorField: z.string().optional()
+//     }),
+//     config: GraphConfigSchema.optional()
+//   })
+// });
 
-export type GraphReportSection = z.infer<typeof GraphReportSectionSchema>;
+// export type GraphReportSection = z.infer<typeof GraphReportSectionSchema>;
+// // export { graphReportSection } from '';

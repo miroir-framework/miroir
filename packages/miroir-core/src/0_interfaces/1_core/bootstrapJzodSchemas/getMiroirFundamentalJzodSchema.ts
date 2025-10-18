@@ -686,6 +686,11 @@ export function getMiroirFundamentalJzodSchema(
   // TODO: not really a JzodReference!!
   log.info("getMiroirFundamentalJzodSchema called!");
   // log.info(
+  //   "graphConfig: (entityDefinitionReportV1 as any).jzodSchema.definition.definition.context.graphReportSection.definition.definition.definition.config",
+  //   JSON.stringify((entityDefinitionReportV1 as any).jzodSchema.definition.definition.context.graphReportSection.definition.definition.definition.config??{},null,2)
+  //   // JSON.stringify(entityDefinitionJzodSchemaV1.jzodSchema.definition.definition.context.miroirTransformersForBuild ?? {}, null, 2)
+  // );
+  // log.info(
   //   "getMiroirFundamentalJzodSchema entityDefinitionTransformerTest.jzodSchema.definition.definition.context",
   //   entityDefinitionTransformerTest.jzodSchema.definition.definition.context
   // );
@@ -1546,6 +1551,7 @@ export function getMiroirFundamentalJzodSchema(
         ...(entityDefinitionMenu.jzodSchema.definition.definition as any).context,
         menu: entityDefinitionMenu.jzodSchema as any,
         // menu: entityDefinitionMenu.jzodSchema as JzodObject,
+        graphConfig: (entityDefinitionReportV1 as any).jzodSchema.definition.definition.context.graphReportSection.definition.definition.definition.config,
         ...Object.fromEntries(
           Object.entries(
             (entityDefinitionReportV1 as any).jzodSchema.definition.definition.context
