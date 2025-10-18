@@ -20,14 +20,43 @@
       }
     },
     "section": {
-      "type":"objectListReportSection",
-      "definition": {
-        "parentName": "Publisher",
-        "parentUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
-        "label": "Publishers",
-        "fetchedDataReference": "publishers",
-        "sortByAttribute": "name"
+      "type": "list",
+      "definition": [
+        {
+        "type":"objectListReportSection",
+        "definition": {
+          "parentName": "Publisher",
+          "parentUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
+          "label": "Publishers",
+          "fetchedDataReference": "publishers",
+          "sortByAttribute": "name"
+        }
+      },
+      {
+        "type": "graphReportSection",
+        "definition": {
+          "label": "Book Count by Publisher",
+          "fetchedDataReference": "00_BookCountByPublisher",
+          "graphType": "bar",
+          "dataMapping": {
+            "labelField": "publisherName",
+            "valueField": "count"
+          },
+          "config": {
+            "width": 600,
+            "height": 400,
+            "showTooltips": true,
+            "showLegend": true
+          }
+        }
       }
-    }
+      ]
+    },
+    "runStoredQueries": [
+      {
+        "label": "BookCountByPublisher",
+        "storedQuery": "6176dcdf-39a6-4805-8dc5-3c2366a31a11"
+      }
+    ]
   }
 }

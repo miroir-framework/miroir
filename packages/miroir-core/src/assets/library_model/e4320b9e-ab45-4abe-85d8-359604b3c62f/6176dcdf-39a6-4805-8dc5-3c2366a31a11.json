@@ -1,42 +1,42 @@
 {
-  "uuid": "6eaaec37-e3bc-40e4-af1b-4088412c0e34",
+  "uuid": "6176dcdf-39a6-4805-8dc5-3c2366a31a11",
   "parentName": "Query",
   "parentUuid": "e4320b9e-ab45-4abe-85d8-359604b3c62f",
-  "name": "AuthorsCountByCountry",
-  "defaultLabel": "The count of Authors By Country.",
-  "description": "This query produces a list of countries, with the count of Authors for each country.",
+  "name": "BookCountByPublisher",
+  "defaultLabel": "The count of Books By Publisher.",
+  "description": "This query produces a list of publishers, with the count of Books for each publisher.",
   "definition": {
     "extractorTemplates": {
-      "countries": {
+      "publishers": {
         "extractorTemplateType": "extractorTemplateForObjectListByEntity",
         "applicationSection": "data",
-        "parentName": "Country",
+        "parentName": "Publisher",
         "parentUuid": {
           "transformerType": "constant",
-          "value": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4"
+          "value": "a027c379-8468-43a5-ba4d-bf618be25cab"
         }
       }
     },
     "combinerTemplates": {
-      "AuthorWithCountry": {
+      "BookWithPublisher": {
         "extractorTemplateType": "combinerByManyToManyRelationReturningObjectList",
         "applicationSection": "data",
-        "parentName": "Author",
+        "parentName": "Book",
         "parentUuid": {
           "transformerType": "constant",
-          "value": "d7a144ff-d1b9-4135-800c-a7cfc1f38733"
+          "value": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
         },
         "objectListReference": {
           "transformerType": "contextReference",
           "interpolation": "runtime",
-          "referenceName": "countries"
+          "referenceName": "publishers"
         },
-        "AttributeOfRootListObjectToCompareToListReferenceUuid": "country",
+        "AttributeOfRootListObjectToCompareToListReferenceUuid": "publisher",
         "applyTransformer": {
           "transformerType": "freeObjectTemplate",
           "interpolation": "runtime",
           "definition": {
-            "countryName": {
+            "publisherName": {
               "transformerType": "contextReference",
               "interpolation": "runtime",
               "referencePath": [
@@ -44,7 +44,7 @@
                 "name"
               ]
             },
-            "countryUuid": {
+            "publisherUuid": {
               "transformerType": "contextReference",
               "interpolation": "runtime",
               "referencePath": [
@@ -52,7 +52,7 @@
                 "uuid"
               ]
             },
-            "authorName": {
+            "bookName": {
               "transformerType": "contextReference",
               "interpolation": "runtime",
               "referencePath": [
@@ -65,16 +65,16 @@
       }
     },
     "runtimeTransformers": {
-      "00_AuthorCountByCountry": {
+      "00_BookCountByPublisher": {
         "transformerType": "count",
         "applyTo": {
           "transformerType": "contextReference",
           "interpolation": "runtime",
-          "referenceName": "AuthorWithCountry"
+          "referenceName": "BookWithPublisher"
         },
         "groupBy": [
-          "countryName",
-          "countryUuid"
+          "publisherName",
+          "publisherUuid"
         ]
       }
     }
