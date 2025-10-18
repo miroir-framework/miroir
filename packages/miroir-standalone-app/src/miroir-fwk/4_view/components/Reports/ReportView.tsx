@@ -129,6 +129,7 @@ export const ReportView = (props: ReportViewProps) => {
     // return typeof reportData === "object" && !Array.isArray(reportData)
     // ? 
     // {
+      ...reportData,
       reportData,
       storedQueryData: props.storedQueryData
     // }
