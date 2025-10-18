@@ -28,13 +28,123 @@ export interface GraphComponentProps {
 // Default configuration values
 // ################################################################################################
 
-const DEFAULT_CONFIG: Required<GraphConfig> = {
+// Type for fully resolved config (all fields required)
+type ResolvedGraphConfig = {
+  width: number;
+  height: number;
+  margins: { top: number; right: number; bottom: number; left: number };
+  colors: string[];
+  showLegend: boolean;
+  showTooltips: boolean;
+  labelPresentation: 'auto' | 'basic' | 'slanted' | 'separate';
+  legendPosition: 'top-left' | 'top-right';
+  slantAngle: number;
+  fontSize: number;
+};
+
+const DEFAULT_CONFIG: ResolvedGraphConfig = {
   width: 600,
   height: 400,
   margins: { top: 50, right: 20, bottom: 40, left: 60 },
   colors: ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b'],
   showLegend: true,
-  showTooltips: true
+  showTooltips: true,
+  labelPresentation: 'auto',
+  legendPosition: 'top-right',
+  slantAngle: 45,
+  fontSize: 12
+};
+
+// ################################################################################################
+// Helper function to determine label presentation mode
+// ################################################################################################
+
+const determineLabelPresentation = (
+  data: GraphDataPoint[],
+  chartWidth: number,
+  fontSize: number
+): 'basic' | 'slanted' | 'separate' => {
+  const dataLength = data.length;
+  const spacePerLabel = chartWidth / dataLength;
+  
+  // Find the longest label
+  const maxLabelLength = Math.max(...data.map(d => d.label.length));
+  
+  // Estimate label width (rough heuristic: 0.6 * fontSize per character)
+  const estimatedLabelWidth = maxLabelLength * fontSize * 0.6;
+  
+  // Decision logic
+  if (estimatedLabelWidth <= spacePerLabel) {
+    // Labels fit comfortably - use basic
+    return 'basic';
+  } else if (dataLength <= 20 && estimatedLabelWidth <= spacePerLabel * 1.5) {
+    // Medium number of items and labels almost fit - use slanted
+    return 'slanted';
+  } else {
+    // Too many items or labels too long - use separate legend
+    return 'separate';
+  }
+};
+
+// ################################################################################################
+// Helper function to render separate legend
+// ################################################################################################
+
+const renderSeparateLegend = (
+  svg: d3.Selection<SVGSVGElement, unknown, null, undefined>,
+  data: GraphDataPoint[],
+  colorScale: d3.ScaleOrdinal<string, string, never>,
+  width: number,
+  legendPosition: 'top-left' | 'top-right',
+  fontSize: number,
+  theme: any,
+  onBarHighlight: (label: string | null) => void
+) => {
+  const legendItemHeight = fontSize + 8;
+  const legendItemWidth = 150;
+  const legendPadding = 10;
+  
+  // Calculate multi-column layout (max 3 columns)
+  const maxColumns = Math.min(3, Math.ceil(width / legendItemWidth));
+  const columns = Math.min(maxColumns, Math.ceil(data.length / 10)); // ~10 items per column
+  const itemsPerColumn = Math.ceil(data.length / columns);
+  
+  // Position legend
+  const legendX = legendPosition === 'top-left' ? legendPadding : width - (columns * legendItemWidth) - legendPadding;
+  const legendY = 10;
+  
+  const legendGroup = svg.append('g')
+    .attr('class', 'legend')
+    .attr('transform', `translate(${legendX},${legendY})`);
+  
+  // Create legend items
+  data.forEach((d, i) => {
+    const column = Math.floor(i / itemsPerColumn);
+    const row = i % itemsPerColumn;
+    const x = column * legendItemWidth;
+    const y = row * legendItemHeight;
+    
+    const itemGroup = legendGroup.append('g')
+      .attr('class', 'legend-item')
+      .attr('transform', `translate(${x},${y})`)
+      .style('cursor', 'pointer')
+      .on('mouseenter', () => onBarHighlight(d.label))
+      .on('mouseleave', () => onBarHighlight(null));
+    
+    // Color rectangle
+    itemGroup.append('rect')
+      .attr('width', fontSize)
+      .attr('height', fontSize)
+      .attr('fill', d.color || colorScale(d.label) as string);
+    
+    // Label text
+    itemGroup.append('text')
+      .attr('x', fontSize + 5)
+      .attr('y', fontSize * 0.75)
+      .style('font-size', `${fontSize}px`)
+      .style('fill', theme.colors?.text || '#000')
+      .text(d.label);
+  });
 };
 
 // ################################################################################################
@@ -44,13 +154,34 @@ const DEFAULT_CONFIG: Required<GraphConfig> = {
 const renderBarChart = (
   svgElement: SVGSVGElement,
   data: BarChartData,
-  config: Required<GraphConfig>,
+  config: ResolvedGraphConfig,
   theme: any
 ) => {
   const svg = d3.select(svgElement);
   svg.selectAll("*").remove(); // Clear previous content
 
-  const { width, height, margins } = config;
+  // Determine actual label presentation mode
+  let actualLabelPresentation = config.labelPresentation;
+  if (actualLabelPresentation === 'auto') {
+    actualLabelPresentation = determineLabelPresentation(
+      data.data,
+      config.width - config.margins.left - config.margins.right,
+      config.fontSize
+    );
+  }
+
+  // Adjust margins for slanted labels if needed
+  let adjustedMargins = { ...config.margins };
+  if (actualLabelPresentation === 'slanted') {
+    const maxLabelLength = Math.max(...data.data.map(d => d.label.length));
+    const estimatedLabelWidth = maxLabelLength * config.fontSize * 0.6;
+    const angleRad = (config.slantAngle * Math.PI) / 180;
+    const requiredBottomMargin = Math.ceil(Math.abs(Math.sin(angleRad)) * estimatedLabelWidth) + 10;
+    adjustedMargins.bottom = Math.max(adjustedMargins.bottom, requiredBottomMargin);
+  }
+
+  const { width, height } = config;
+  const margins = adjustedMargins;
   const innerWidth = width - margins.left - margins.right;
   const innerHeight = height - margins.top - margins.bottom;
 
@@ -64,7 +195,7 @@ const renderBarChart = (
     .domain([0, d3.max(data.data, d => d.value) || 0])
     .range([innerHeight, 0]);
 
-  const colorScale = d3.scaleOrdinal()
+  const colorScale = d3.scaleOrdinal<string, string>()
     .domain(data.data.map(d => d.label))
     .range(config.colors);
 
@@ -100,6 +231,18 @@ const renderBarChart = (
       .style('z-index', 1000);
   }
 
+  // Track highlighted bar for legend interaction
+  let highlightedLabel: string | null = null;
+
+  const updateBarHighlight = (label: string | null) => {
+    highlightedLabel = label;
+    g.selectAll('.bar')
+      .style('opacity', (d: any) => {
+        if (highlightedLabel === null) return 1;
+        return d.label === highlightedLabel ? 1 : 0.3;
+      });
+  };
+
   // Add bars
   g.selectAll('.bar')
     .data(data.data)
@@ -122,17 +265,55 @@ const renderBarChart = (
     })
     .on('mouseout', function() {
       if (config.showTooltips && tooltip) {
-        d3.select(this).style('opacity', 1);
+        const opacity = highlightedLabel === null ? 1 : 
+          (d3.select(this).datum() as GraphDataPoint).label === highlightedLabel ? 1 : 0.3;
+        d3.select(this).style('opacity', opacity);
         tooltip.transition().duration(500).style('opacity', 0);
       }
     });
 
-  // Add x-axis
-  g.append('g')
-    .attr('transform', `translate(0,${innerHeight})`)
-    .call(d3.axisBottom(xScale))
-    .selectAll('text')
-    .style('fill', theme.colors?.text || '#000');
+  // Render x-axis based on label presentation mode
+  if (actualLabelPresentation === 'separate') {
+    // No x-axis labels for separate mode, just render the axis line
+    g.append('g')
+      .attr('transform', `translate(0,${innerHeight})`)
+      .call(d3.axisBottom(xScale).tickFormat(() => ''))
+      .selectAll('text')
+      .remove();
+    
+    // Render separate legend
+    renderSeparateLegend(
+      svg,
+      data.data,
+      colorScale,
+      width,
+      config.legendPosition,
+      config.fontSize,
+      theme,
+      updateBarHighlight
+    );
+  } else if (actualLabelPresentation === 'slanted') {
+    // Render slanted labels
+    const xAxis = g.append('g')
+      .attr('transform', `translate(0,${innerHeight})`)
+      .call(d3.axisBottom(xScale));
+    
+    xAxis.selectAll('text')
+      .style('text-anchor', 'end')
+      .style('font-size', `${config.fontSize}px`)
+      .style('fill', theme.colors?.text || '#000')
+      .attr('dx', '-.8em')
+      .attr('dy', '.15em')
+      .attr('transform', `rotate(-${config.slantAngle})`);
+  } else {
+    // Basic mode - standard horizontal labels
+    g.append('g')
+      .attr('transform', `translate(0,${innerHeight})`)
+      .call(d3.axisBottom(xScale))
+      .selectAll('text')
+      .style('font-size', `${config.fontSize}px`)
+      .style('fill', theme.colors?.text || '#000');
+  }
 
   // Add y-axis
   g.append('g')
@@ -152,7 +333,7 @@ const renderBarChart = (
 const renderLineChart = (
   svgElement: SVGSVGElement,
   data: LineChartData,
-  config: Required<GraphConfig>,
+  config: ResolvedGraphConfig,
   theme: any
 ) => {
   const svg = d3.select(svgElement);
@@ -268,7 +449,7 @@ const renderLineChart = (
 const renderPieChart = (
   svgElement: SVGSVGElement,
   data: PieChartData,
-  config: Required<GraphConfig>,
+  config: ResolvedGraphConfig,
   theme: any
 ) => {
   const svg = d3.select(svgElement);
@@ -405,7 +586,7 @@ export const GraphComponent: React.FC<GraphComponentProps> = ({
   const { currentTheme } = useMiroirTheme();
 
   // Merge default config with provided config
-  const config: Required<GraphConfig> = {
+  const config: ResolvedGraphConfig = {
     ...DEFAULT_CONFIG,
     ...graphData.config
   };

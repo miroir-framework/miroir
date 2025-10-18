@@ -12092,6 +12092,72 @@ export const miroirFundamentalJzodSchema = {
           "showTooltips": {
             "type": "boolean",
             "optional": true
+          },
+          "labelPresentation": {
+            "type": "enum",
+            "optional": true,
+            "definition": [
+              "auto",
+              "basic",
+              "slanted",
+              "separate"
+            ],
+            "tag": {
+              "value": {
+                "defaultLabel": "Label Presentation Mode",
+                "editable": true,
+                "initializeTo": {
+                  "initializeToType": "value",
+                  "value": "auto"
+                }
+              }
+            }
+          },
+          "legendPosition": {
+            "type": "enum",
+            "optional": true,
+            "definition": [
+              "top-left",
+              "top-right"
+            ],
+            "tag": {
+              "value": {
+                "defaultLabel": "Legend Position",
+                "editable": true,
+                "initializeTo": {
+                  "initializeToType": "value",
+                  "value": "top-right"
+                }
+              }
+            }
+          },
+          "slantAngle": {
+            "type": "number",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Slant Angle (degrees)",
+                "editable": true,
+                "initializeTo": {
+                  "initializeToType": "value",
+                  "value": 45
+                }
+              }
+            }
+          },
+          "fontSize": {
+            "type": "number",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Font Size (px)",
+                "editable": true,
+                "initializeTo": {
+                  "initializeToType": "value",
+                  "value": 12
+                }
+              }
+            }
           }
         }
       },
@@ -12355,6 +12421,72 @@ export const miroirFundamentalJzodSchema = {
                   "showTooltips": {
                     "type": "boolean",
                     "optional": true
+                  },
+                  "labelPresentation": {
+                    "type": "enum",
+                    "optional": true,
+                    "definition": [
+                      "auto",
+                      "basic",
+                      "slanted",
+                      "separate"
+                    ],
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Label Presentation Mode",
+                        "editable": true,
+                        "initializeTo": {
+                          "initializeToType": "value",
+                          "value": "auto"
+                        }
+                      }
+                    }
+                  },
+                  "legendPosition": {
+                    "type": "enum",
+                    "optional": true,
+                    "definition": [
+                      "top-left",
+                      "top-right"
+                    ],
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Legend Position",
+                        "editable": true,
+                        "initializeTo": {
+                          "initializeToType": "value",
+                          "value": "top-right"
+                        }
+                      }
+                    }
+                  },
+                  "slantAngle": {
+                    "type": "number",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Slant Angle (degrees)",
+                        "editable": true,
+                        "initializeTo": {
+                          "initializeToType": "value",
+                          "value": 45
+                        }
+                      }
+                    }
+                  },
+                  "fontSize": {
+                    "type": "number",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Font Size (px)",
+                        "editable": true,
+                        "initializeTo": {
+                          "initializeToType": "value",
+                          "value": 12
+                        }
+                      }
+                    }
                   }
                 }
               }
@@ -13152,6 +13284,72 @@ export const miroirFundamentalJzodSchema = {
                           "showTooltips": {
                             "type": "boolean",
                             "optional": true
+                          },
+                          "labelPresentation": {
+                            "type": "enum",
+                            "optional": true,
+                            "definition": [
+                              "auto",
+                              "basic",
+                              "slanted",
+                              "separate"
+                            ],
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Label Presentation Mode",
+                                "editable": true,
+                                "initializeTo": {
+                                  "initializeToType": "value",
+                                  "value": "auto"
+                                }
+                              }
+                            }
+                          },
+                          "legendPosition": {
+                            "type": "enum",
+                            "optional": true,
+                            "definition": [
+                              "top-left",
+                              "top-right"
+                            ],
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Legend Position",
+                                "editable": true,
+                                "initializeTo": {
+                                  "initializeToType": "value",
+                                  "value": "top-right"
+                                }
+                              }
+                            }
+                          },
+                          "slantAngle": {
+                            "type": "number",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Slant Angle (degrees)",
+                                "editable": true,
+                                "initializeTo": {
+                                  "initializeToType": "value",
+                                  "value": 45
+                                }
+                              }
+                            }
+                          },
+                          "fontSize": {
+                            "type": "number",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Font Size (px)",
+                                "editable": true,
+                                "initializeTo": {
+                                  "initializeToType": "value",
+                                  "value": 12
+                                }
+                              }
+                            }
                           }
                         }
                       }
@@ -36839,6 +37037,72 @@ export const miroirFundamentalJzodSchema = {
                                   "showTooltips": {
                                     "type": "boolean",
                                     "optional": true
+                                  },
+                                  "labelPresentation": {
+                                    "type": "enum",
+                                    "optional": true,
+                                    "definition": [
+                                      "auto",
+                                      "basic",
+                                      "slanted",
+                                      "separate"
+                                    ],
+                                    "tag": {
+                                      "value": {
+                                        "defaultLabel": "Label Presentation Mode",
+                                        "editable": true,
+                                        "initializeTo": {
+                                          "initializeToType": "value",
+                                          "value": "auto"
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "legendPosition": {
+                                    "type": "enum",
+                                    "optional": true,
+                                    "definition": [
+                                      "top-left",
+                                      "top-right"
+                                    ],
+                                    "tag": {
+                                      "value": {
+                                        "defaultLabel": "Legend Position",
+                                        "editable": true,
+                                        "initializeTo": {
+                                          "initializeToType": "value",
+                                          "value": "top-right"
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "slantAngle": {
+                                    "type": "number",
+                                    "optional": true,
+                                    "tag": {
+                                      "value": {
+                                        "defaultLabel": "Slant Angle (degrees)",
+                                        "editable": true,
+                                        "initializeTo": {
+                                          "initializeToType": "value",
+                                          "value": 45
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "fontSize": {
+                                    "type": "number",
+                                    "optional": true,
+                                    "tag": {
+                                      "value": {
+                                        "defaultLabel": "Font Size (px)",
+                                        "editable": true,
+                                        "initializeTo": {
+                                          "initializeToType": "value",
+                                          "value": 12
+                                        }
+                                      }
+                                    }
                                   }
                                 }
                               }
@@ -50298,6 +50562,164 @@ export const miroirFundamentalJzodSchema = {
                                     }
                                   }
                                 ]
+                              },
+                              "labelPresentation": {
+                                "type": "union",
+                                "optional": true,
+                                "definition": [
+                                  {
+                                    "type": "enum",
+                                    "optional": true,
+                                    "definition": [
+                                      "auto",
+                                      "basic",
+                                      "slanted",
+                                      "separate"
+                                    ],
+                                    "tag": {
+                                      "value": {
+                                        "defaultLabel": "Label Presentation Mode",
+                                        "editable": true,
+                                        "initializeTo": {
+                                          "initializeToType": "value",
+                                          "value": "auto"
+                                        }
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  }
+                                ],
+                                "tag": {
+                                  "value": {
+                                    "defaultLabel": "Label Presentation Mode",
+                                    "editable": true,
+                                    "initializeTo": {
+                                      "initializeToType": "value",
+                                      "value": "auto"
+                                    },
+                                    "isTemplate": true
+                                  }
+                                }
+                              },
+                              "legendPosition": {
+                                "type": "union",
+                                "optional": true,
+                                "definition": [
+                                  {
+                                    "type": "enum",
+                                    "optional": true,
+                                    "definition": [
+                                      "top-left",
+                                      "top-right"
+                                    ],
+                                    "tag": {
+                                      "value": {
+                                        "defaultLabel": "Legend Position",
+                                        "editable": true,
+                                        "initializeTo": {
+                                          "initializeToType": "value",
+                                          "value": "top-right"
+                                        }
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  }
+                                ],
+                                "tag": {
+                                  "value": {
+                                    "defaultLabel": "Legend Position",
+                                    "editable": true,
+                                    "initializeTo": {
+                                      "initializeToType": "value",
+                                      "value": "top-right"
+                                    },
+                                    "isTemplate": true
+                                  }
+                                }
+                              },
+                              "slantAngle": {
+                                "type": "union",
+                                "optional": true,
+                                "tag": {
+                                  "value": {
+                                    "defaultLabel": "Slant Angle (degrees)",
+                                    "editable": true,
+                                    "initializeTo": {
+                                      "initializeToType": "value",
+                                      "value": 45
+                                    },
+                                    "isTemplate": true
+                                  }
+                                },
+                                "definition": [
+                                  {
+                                    "type": "number",
+                                    "optional": true,
+                                    "tag": {
+                                      "value": {
+                                        "defaultLabel": "Slant Angle (degrees)",
+                                        "editable": true,
+                                        "initializeTo": {
+                                          "initializeToType": "value",
+                                          "value": 45
+                                        }
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  }
+                                ]
+                              },
+                              "fontSize": {
+                                "type": "union",
+                                "optional": true,
+                                "tag": {
+                                  "value": {
+                                    "defaultLabel": "Font Size (px)",
+                                    "editable": true,
+                                    "initializeTo": {
+                                      "initializeToType": "value",
+                                      "value": 12
+                                    },
+                                    "isTemplate": true
+                                  }
+                                },
+                                "definition": [
+                                  {
+                                    "type": "number",
+                                    "optional": true,
+                                    "tag": {
+                                      "value": {
+                                        "defaultLabel": "Font Size (px)",
+                                        "editable": true,
+                                        "initializeTo": {
+                                          "initializeToType": "value",
+                                          "value": 12
+                                        }
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  }
+                                ]
                               }
                             }
                           }
@@ -60229,6 +60651,72 @@ export const miroirFundamentalJzodSchema = {
                           "showTooltips": {
                             "type": "boolean",
                             "optional": true
+                          },
+                          "labelPresentation": {
+                            "type": "enum",
+                            "optional": true,
+                            "definition": [
+                              "auto",
+                              "basic",
+                              "slanted",
+                              "separate"
+                            ],
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Label Presentation Mode",
+                                "editable": true,
+                                "initializeTo": {
+                                  "initializeToType": "value",
+                                  "value": "auto"
+                                }
+                              }
+                            }
+                          },
+                          "legendPosition": {
+                            "type": "enum",
+                            "optional": true,
+                            "definition": [
+                              "top-left",
+                              "top-right"
+                            ],
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Legend Position",
+                                "editable": true,
+                                "initializeTo": {
+                                  "initializeToType": "value",
+                                  "value": "top-right"
+                                }
+                              }
+                            }
+                          },
+                          "slantAngle": {
+                            "type": "number",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Slant Angle (degrees)",
+                                "editable": true,
+                                "initializeTo": {
+                                  "initializeToType": "value",
+                                  "value": 45
+                                }
+                              }
+                            }
+                          },
+                          "fontSize": {
+                            "type": "number",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Font Size (px)",
+                                "editable": true,
+                                "initializeTo": {
+                                  "initializeToType": "value",
+                                  "value": 12
+                                }
+                              }
+                            }
                           }
                         }
                       }
@@ -69030,6 +69518,72 @@ export const miroirFundamentalJzodSchema = {
                           "showTooltips": {
                             "type": "boolean",
                             "optional": true
+                          },
+                          "labelPresentation": {
+                            "type": "enum",
+                            "optional": true,
+                            "definition": [
+                              "auto",
+                              "basic",
+                              "slanted",
+                              "separate"
+                            ],
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Label Presentation Mode",
+                                "editable": true,
+                                "initializeTo": {
+                                  "initializeToType": "value",
+                                  "value": "auto"
+                                }
+                              }
+                            }
+                          },
+                          "legendPosition": {
+                            "type": "enum",
+                            "optional": true,
+                            "definition": [
+                              "top-left",
+                              "top-right"
+                            ],
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Legend Position",
+                                "editable": true,
+                                "initializeTo": {
+                                  "initializeToType": "value",
+                                  "value": "top-right"
+                                }
+                              }
+                            }
+                          },
+                          "slantAngle": {
+                            "type": "number",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Slant Angle (degrees)",
+                                "editable": true,
+                                "initializeTo": {
+                                  "initializeToType": "value",
+                                  "value": 45
+                                }
+                              }
+                            }
+                          },
+                          "fontSize": {
+                            "type": "number",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Font Size (px)",
+                                "editable": true,
+                                "initializeTo": {
+                                  "initializeToType": "value",
+                                  "value": 12
+                                }
+                              }
+                            }
                           }
                         }
                       }
@@ -77871,6 +78425,72 @@ export const miroirFundamentalJzodSchema = {
                           "showTooltips": {
                             "type": "boolean",
                             "optional": true
+                          },
+                          "labelPresentation": {
+                            "type": "enum",
+                            "optional": true,
+                            "definition": [
+                              "auto",
+                              "basic",
+                              "slanted",
+                              "separate"
+                            ],
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Label Presentation Mode",
+                                "editable": true,
+                                "initializeTo": {
+                                  "initializeToType": "value",
+                                  "value": "auto"
+                                }
+                              }
+                            }
+                          },
+                          "legendPosition": {
+                            "type": "enum",
+                            "optional": true,
+                            "definition": [
+                              "top-left",
+                              "top-right"
+                            ],
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Legend Position",
+                                "editable": true,
+                                "initializeTo": {
+                                  "initializeToType": "value",
+                                  "value": "top-right"
+                                }
+                              }
+                            }
+                          },
+                          "slantAngle": {
+                            "type": "number",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Slant Angle (degrees)",
+                                "editable": true,
+                                "initializeTo": {
+                                  "initializeToType": "value",
+                                  "value": 45
+                                }
+                              }
+                            }
+                          },
+                          "fontSize": {
+                            "type": "number",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Font Size (px)",
+                                "editable": true,
+                                "initializeTo": {
+                                  "initializeToType": "value",
+                                  "value": 12
+                                }
+                              }
+                            }
                           }
                         }
                       }

@@ -55,6 +55,24 @@ export const graphConfigSchema: JzodObject = {
     showTooltips: {
       type: "boolean",
       optional: true
+    },
+    labelPresentation: {
+      type: "enum",
+      optional: true,
+      definition: ["auto", "basic", "slanted", "separate"]
+    },
+    legendPosition: {
+      type: "enum",
+      optional: true,
+      definition: ["top-left", "top-right"]
+    },
+    slantAngle: {
+      type: "number",
+      optional: true
+    },
+    fontSize: {
+      type: "number",
+      optional: true
     }
   }
 } as const;
