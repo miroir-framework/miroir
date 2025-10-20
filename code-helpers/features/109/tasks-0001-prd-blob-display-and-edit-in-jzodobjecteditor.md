@@ -7,11 +7,11 @@ Based on PRD: `0001-prd-blob-display-and-edit-in-jzodobjecteditor.md`
 - `packages/miroir-core/src/1_core/tools.ts` - Blob utility functions implemented (base64 conversion, MIME validation, file reading)
 - `packages/miroir-core/src/1_core/constants.ts` - MAX_BLOB_FILE_SIZE and BLOB_SIZE_WARNING_THRESHOLD constants added
 - `packages/miroir-core/tests/1_core/blobUtils.test.ts` - Unit tests for blob utility functions (created and passing)
-- `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/ValueObjectEditor/BlobEditorField.tsx` - **UPDATED** Component with validation logic and BlobValidationError component
+- `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/ValueObjectEditor/BlobEditorField.tsx` - **UPDATED** Complete display functionality with lightbox modal, icon display, download, and read-only mode
 - `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/ValueObjectEditor/JzodObjectEditor.tsx` - To be modified to detect `isBlob` tag and render BlobEditorField
-- `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Themes/DisplayComponents.tsx` - **UPDATED** Added 6 themed blob display components (ThemedBlobContainer, ThemedBlobPreview, ThemedBlobEmptyState, ThemedBlobMetadata, ThemedBlobIconDisplay, ThemedBlobDropZone)
+- `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Themes/DisplayComponents.tsx` - **UPDATED** Added 6 themed blob display components (ThemedBlobContainer, ThemedBlobPreview, ThemedBlobEmptyState, ThemedBlobMetadata, ThemedBlobIconDisplay, ThemedBlobDropZone) with responsive behavior
 - `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Themes/index.ts` - **UPDATED** Exported new themed blob components
-- `packages/miroir-standalone-app/tests/4_view/BlobEditorField.integ.test.tsx` - **UPDATED** Integration tests (21 tests passing) including comprehensive validation tests
+- `packages/miroir-standalone-app/tests/4_view/BlobEditorField.integ.test.tsx` - **UPDATED** Integration tests (32 tests passing) including validation tests and comprehensive display mode tests
 
 ### Notes
 
@@ -62,35 +62,35 @@ For each task, proceed in a "Test-driven"-like fashion, and create tests before 
   - [x] 3.7 Add tests in `BlobEditorField.integ.test.tsx` for each validation error case
   - [x] 3.8 Ensure validation errors don't crash Formik form or parent JzodObjectEditor
 
-- [ ] 4.0 Implement blob display functionality (preview, metadata, icons)
-  - [ ] 4.1 Implement empty state display using `ThemedBlobEmptyState` when `contents` is undefined/null:
+- [x] 4.0 Implement blob display functionality (preview, metadata, icons)
+  - [x] 4.1 Implement empty state display using `ThemedBlobEmptyState` when `contents` is undefined/null:
     - Show placeholder icon (CloudUpload or Image)
     - Display "Upload file" text
     - Make area visually interactive
-  - [ ] 4.2 Implement metadata display component:
+  - [x] 4.2 Implement metadata display component:
     - Show `filename` in regular weight above preview
     - Show `mimeType` in smaller, secondary style below filename
     - Hide `encoding` field (internal detail)
-  - [ ] 4.3 Implement image preview for MIME types starting with `image/`:
+  - [x] 4.3 Implement image preview for MIME types starting with `image/`:
     - Create base64 data URI from `mimeType` and `data` fields
     - Render in `ThemedBlobPreview` with max dimensions 200x200px
     - Maintain aspect ratio using CSS `object-fit: contain`
     - Add click handler to open lightbox (placeholder for now)
-  - [ ] 4.4 Implement non-image blob display for other MIME types:
+  - [x] 4.4 Implement non-image blob display for other MIME types:
     - Use `getBlobFileIcon` to get appropriate icon
     - Display icon in `ThemedBlobIconDisplay`
     - Show filename and MIME type
     - Add download button that creates temporary blob URL and triggers download
-  - [ ] 4.5 Create lightbox modal component based on `DraggableContainer`:
+  - [x] 4.5 Create lightbox modal component based on `DraggableContainer`:
     - `BlobLightboxModal` that shows full-size image
     - Close on ESC key or click outside
     - Show filename in title bar
-  - [ ] 4.6 Implement read-only mode:
+  - [x] 4.6 Implement read-only mode:
     - Show all previews and metadata normally
     - Disable upload interactions (no cursor change, no drag-drop)
     - Keep download functionality enabled
-  - [ ] 4.7 Add responsive behavior - reduce preview to 150x150px on narrow screens (< 768px)
-  - [ ] 4.8 Add tests for each display mode: empty state, image preview, non-image icon, read-only
+  - [x] 4.7 Add responsive behavior - reduce preview to 150x150px on narrow screens (< 768px)
+  - [x] 4.8 Add tests for each display mode: empty state, image preview, non-image icon, read-only
 
 - [ ] 5.0 Implement file upload functionality (drag-and-drop and click-to-upload)
   - [ ] 5.1 Implement click-to-upload:

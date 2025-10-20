@@ -154,7 +154,7 @@ describe("BlobEditorField - Basic Structure", () => {
       </TestWrapper>
     );
 
-    expect(screen.getByText(/Blob Editor Field/i)).toBeInTheDocument();
+    expect(screen.getByText(/Upload file/i)).toBeInTheDocument();
   });
 
   it("should render with image blob data", () => {
@@ -210,7 +210,7 @@ describe("BlobEditorField - Basic Structure", () => {
       </TestWrapper>
     );
 
-    expect(screen.getByText(/No contents/i)).toBeInTheDocument();
+    expect(screen.getByText(/Upload file/i)).toBeInTheDocument();
   });
 
   it("should render in read-only mode", () => {
@@ -251,7 +251,6 @@ describe("BlobEditorField - useMemo Hook", () => {
     // Verify that parsed values are displayed
     expect(screen.getByText(/test-image\.png/i)).toBeInTheDocument();
     expect(screen.getByText(/image\/png/i)).toBeInTheDocument();
-    expect(screen.getByText(/base64/i)).toBeInTheDocument();
   });
 
   it("should handle undefined currentValue", () => {
@@ -269,7 +268,7 @@ describe("BlobEditorField - useMemo Hook", () => {
       </TestWrapper>
     );
 
-    expect(screen.getByText(/No contents/i)).toBeInTheDocument();
+    expect(screen.getByText(/Upload file/i)).toBeInTheDocument();
   });
 
   it("should handle null currentValue", () => {
@@ -287,7 +286,7 @@ describe("BlobEditorField - useMemo Hook", () => {
       </TestWrapper>
     );
 
-    expect(screen.getByText(/No contents/i)).toBeInTheDocument();
+    expect(screen.getByText(/Upload file/i)).toBeInTheDocument();
   });
 });
 
@@ -312,7 +311,7 @@ describe("BlobEditorField - Logger Integration", () => {
       </TestWrapper>
     );
 
-    expect(screen.getByText(/Blob Editor Field/i)).toBeInTheDocument();
+    expect(screen.getByText(/test-image\.png/i)).toBeInTheDocument();
   });
 });
 
@@ -332,8 +331,8 @@ describe("BlobEditorField - Validation Logic", () => {
       </TestWrapper>
     );
 
-    // Should show "No contents" not an error
-    expect(screen.getByText(/No contents/i)).toBeInTheDocument();
+    // Should show "Upload file" not an error
+    expect(screen.getByText(/Upload file/i)).toBeInTheDocument();
     expect(screen.queryByText(/Blob Validation Error/i)).not.toBeInTheDocument();
   });
 
@@ -352,8 +351,8 @@ describe("BlobEditorField - Validation Logic", () => {
       </TestWrapper>
     );
 
-    // Should show "No contents" not an error
-    expect(screen.getByText(/No contents/i)).toBeInTheDocument();
+    // Should show "Upload file" not an error
+    expect(screen.getByText(/Upload file/i)).toBeInTheDocument();
     expect(screen.queryByText(/Blob Validation Error/i)).not.toBeInTheDocument();
   });
 
@@ -536,7 +535,245 @@ describe("BlobEditorField - Validation Logic", () => {
 
     // Should NOT show validation error
     expect(screen.queryByText(/Blob Validation Error/i)).not.toBeInTheDocument();
-    // Should show the blob editor
-    expect(screen.getByText(/Blob Editor Field/i)).toBeInTheDocument();
+  });
+});
+
+describe("BlobEditorField - Display Functionality", () => {
+  it("should display empty state with upload prompt when no contents", () => {
+    const props: Partial<BlobEditorFieldProps> = {
+      rootLessListKey: "testBlob",
+      rootLessListKeyArray: ["testBlob"],
+      currentValue: mockEmptyBlob,
+      readOnly: false,
+      allowedMimeTypes: [],
+    };
+
+    render(
+      <TestWrapper initialValues={{ testBlob: mockEmptyBlob }}>
+        <BlobEditorField {...props as BlobEditorFieldProps} />
+      </TestWrapper>
+    );
+
+    expect(screen.getByText(/Upload file/i)).toBeInTheDocument();
+  });
+
+  it("should display image preview for image MIME types", () => {
+    const props: Partial<BlobEditorFieldProps> = {
+      rootLessListKey: "testBlob",
+      rootLessListKeyArray: ["testBlob"],
+      currentValue: mockBlobWithImage,
+      readOnly: false,
+      allowedMimeTypes: ["image/png"],
+    };
+
+    render(
+      <TestWrapper initialValues={{ testBlob: mockBlobWithImage }}>
+        <BlobEditorField {...props as BlobEditorFieldProps} />
+      </TestWrapper>
+    );
+
+    // Should have image element
+    const images = screen.getAllByRole('img');
+    expect(images.length).toBeGreaterThan(0);
+    
+    // Should display metadata
+    expect(screen.getByText(/test-image\.png/i)).toBeInTheDocument();
+    expect(screen.getByText(/image\/png/i)).toBeInTheDocument();
+  });
+
+  it("should display file icon for non-image MIME types (PDF)", () => {
+    const props: Partial<BlobEditorFieldProps> = {
+      rootLessListKey: "testBlob",
+      rootLessListKeyArray: ["testBlob"],
+      currentValue: mockBlobWithPdf,
+      readOnly: false,
+      allowedMimeTypes: ["application/pdf"],
+    };
+
+    render(
+      <TestWrapper initialValues={{ testBlob: mockBlobWithPdf }}>
+        <BlobEditorField {...props as BlobEditorFieldProps} />
+      </TestWrapper>
+    );
+
+    // Should display filename and MIME type
+    expect(screen.getByText(/document\.pdf/i)).toBeInTheDocument();
+    expect(screen.getByText(/application\/pdf/i)).toBeInTheDocument();
+    
+    // Should have download button
+    expect(screen.getByText(/Download/i)).toBeInTheDocument();
+  });
+
+  it("should display metadata overlay on image preview", () => {
+    const props: Partial<BlobEditorFieldProps> = {
+      rootLessListKey: "testBlob",
+      rootLessListKeyArray: ["testBlob"],
+      currentValue: mockBlobWithImage,
+      readOnly: false,
+      allowedMimeTypes: [],
+    };
+
+    render(
+      <TestWrapper initialValues={{ testBlob: mockBlobWithImage }}>
+        <BlobEditorField {...props as BlobEditorFieldProps} />
+      </TestWrapper>
+    );
+
+    // Metadata should show filename
+    expect(screen.getByText(/test-image\.png/i)).toBeInTheDocument();
+    // Metadata should show MIME type
+    expect(screen.getByText(/image\/png/i)).toBeInTheDocument();
+    // Should NOT show encoding (internal detail)
+    expect(screen.queryByText(/base64/i)).not.toBeInTheDocument();
+  });
+
+  it("should hide encoding field (internal detail)", () => {
+    const props: Partial<BlobEditorFieldProps> = {
+      rootLessListKey: "testBlob",
+      rootLessListKeyArray: ["testBlob"],
+      currentValue: mockBlobWithImage,
+      readOnly: false,
+      allowedMimeTypes: [],
+    };
+
+    render(
+      <TestWrapper initialValues={{ testBlob: mockBlobWithImage }}>
+        <BlobEditorField {...props as BlobEditorFieldProps} />
+      </TestWrapper>
+    );
+
+    // Encoding should NOT be visible to user
+    expect(screen.queryByText(/encoding/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/base64/i)).not.toBeInTheDocument();
+  });
+
+  it("should render download button for non-image files", () => {
+    const props: Partial<BlobEditorFieldProps> = {
+      rootLessListKey: "testBlob",
+      rootLessListKeyArray: ["testBlob"],
+      currentValue: mockBlobWithPdf,
+      readOnly: false,
+      allowedMimeTypes: [],
+    };
+
+    render(
+      <TestWrapper initialValues={{ testBlob: mockBlobWithPdf }}>
+        <BlobEditorField {...props as BlobEditorFieldProps} />
+      </TestWrapper>
+    );
+
+    const downloadButton = screen.getByText(/Download/i);
+    expect(downloadButton).toBeInTheDocument();
+    expect(downloadButton.closest('button')).toBeInTheDocument();
+  });
+
+  it("should display empty state in read-only mode without upload interactions", () => {
+    const props: Partial<BlobEditorFieldProps> = {
+      rootLessListKey: "testBlob",
+      rootLessListKeyArray: ["testBlob"],
+      currentValue: mockEmptyBlob,
+      readOnly: true,
+      allowedMimeTypes: [],
+    };
+
+    render(
+      <TestWrapper initialValues={{ testBlob: mockEmptyBlob }}>
+        <BlobEditorField {...props as BlobEditorFieldProps} />
+      </TestWrapper>
+    );
+
+    // Should still show empty state message
+    expect(screen.getByText(/Upload file/i)).toBeInTheDocument();
+  });
+
+  it("should display image preview in read-only mode", () => {
+    const props: Partial<BlobEditorFieldProps> = {
+      rootLessListKey: "testBlob",
+      rootLessListKeyArray: ["testBlob"],
+      currentValue: mockBlobWithImage,
+      readOnly: true,
+      allowedMimeTypes: [],
+    };
+
+    render(
+      <TestWrapper initialValues={{ testBlob: mockBlobWithImage }}>
+        <BlobEditorField {...props as BlobEditorFieldProps} />
+      </TestWrapper>
+    );
+
+    // Should display image and metadata normally
+    const images = screen.getAllByRole('img');
+    expect(images.length).toBeGreaterThan(0);
+    expect(screen.getByText(/test-image\.png/i)).toBeInTheDocument();
+  });
+
+  it("should keep download functionality enabled in read-only mode", () => {
+    const props: Partial<BlobEditorFieldProps> = {
+      rootLessListKey: "testBlob",
+      rootLessListKeyArray: ["testBlob"],
+      currentValue: mockBlobWithPdf,
+      readOnly: true,
+      allowedMimeTypes: [],
+    };
+
+    render(
+      <TestWrapper initialValues={{ testBlob: mockBlobWithPdf }}>
+        <BlobEditorField {...props as BlobEditorFieldProps} />
+      </TestWrapper>
+    );
+
+    // Download button should still be present and functional
+    expect(screen.getByText(/Download/i)).toBeInTheDocument();
+  });
+
+  it("should create correct data URI for base64 encoded images", () => {
+    const props: Partial<BlobEditorFieldProps> = {
+      rootLessListKey: "testBlob",
+      rootLessListKeyArray: ["testBlob"],
+      currentValue: mockBlobWithImage,
+      readOnly: false,
+      allowedMimeTypes: [],
+    };
+
+    render(
+      <TestWrapper initialValues={{ testBlob: mockBlobWithImage }}>
+        <BlobEditorField {...props as BlobEditorFieldProps} />
+      </TestWrapper>
+    );
+
+    const images = screen.getAllByRole('img');
+    const previewImage = images.find(img => 
+      img.getAttribute('src')?.startsWith('data:image/png;base64,')
+    );
+    expect(previewImage).toBeDefined();
+  });
+
+  it("should handle data-uri encoding display correctly", () => {
+    const mockBlobWithDataUri = {
+      filename: "test.png",
+      contents: {
+        encoding: "data-uri",
+        mimeType: "image/png",
+        data: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==",
+      },
+    };
+
+    const props: Partial<BlobEditorFieldProps> = {
+      rootLessListKey: "testBlob",
+      rootLessListKeyArray: ["testBlob"],
+      currentValue: mockBlobWithDataUri,
+      readOnly: false,
+      allowedMimeTypes: [],
+    };
+
+    render(
+      <TestWrapper initialValues={{ testBlob: mockBlobWithDataUri }}>
+        <BlobEditorField {...props as BlobEditorFieldProps} />
+      </TestWrapper>
+    );
+
+    // Should render without errors
+    const images = screen.getAllByRole('img');
+    expect(images.length).toBeGreaterThan(0);
   });
 });
