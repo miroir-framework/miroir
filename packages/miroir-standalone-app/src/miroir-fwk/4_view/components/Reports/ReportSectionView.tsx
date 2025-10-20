@@ -217,7 +217,11 @@ export const ReportSectionView = (props: ReportSectionViewProps) => {
       {props.reportSection?.type === "list" &&
         props.reportSection?.definition.map((innerReportSection, index) => {
           return (
-            <div key={index}>
+            <div key={index}
+              style={{
+                marginBottom: '2em',
+              }}
+            >
               <ReportSectionView
                 applicationSection={props.applicationSection}
                 reportData={props.reportData}

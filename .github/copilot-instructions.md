@@ -21,7 +21,7 @@ The `miroir-core` and other packages follow a strict layered architecture in `sr
 4_views/         → UI layer
 ```
 
-**Key Principle**: Dependencies flow downwards only. Layer 3 can use 2 and 1, but layer 1 cannot reference layer 3.
+**Key Principle**: Interface dependencies may flow both ways, but implementation Dependencies flow downwards only. Layer 3 can use implementations from layers 2 and 1, but layer 1 cannot reference an implementation from layer 3. Layer 1 may freely reference interfaces from layer 2 or 3, however.
 
 ## Package Dependencies & Build Order
 
@@ -30,6 +30,8 @@ Core dependency graph (must be built in this order):
 2. `miroir-localcache-redux`, `miroir-store-*` packages  
 3. `miroir-react`, `miroir-server`
 4. `miroir-standalone-app`, `miroir-designer`
+
+**Note**: `miroir-core` has a `devBuild` step to generate TypeScript types (the files in `packages\miroir-core\src\0_interfaces\1_core\preprocessor-generated`) from Jzod schemas. It must be built every time some core schema in `packages\miroir-core\src\assets\miroir_data` or `packages\miroir-core\src\assets\miroir_model` is modified.
 
 **Note**: `miroir-runtime` and `miroir-query-jsonata` are additional packages in the ecosystem.
 
