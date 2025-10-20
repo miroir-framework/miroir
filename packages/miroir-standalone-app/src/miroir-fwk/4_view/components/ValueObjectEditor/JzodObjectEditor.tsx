@@ -24,6 +24,8 @@ import {
   type TransformerReturnType
 } from "miroir-core";
 
+import { BlobEditorField } from "./BlobEditorField";
+
 import { getMemoizedReduxDeploymentsStateSelectorMap, ReduxStateWithUndoRedo } from "miroir-localcache-redux";
 import { useSelector } from "react-redux";
 import { packageName } from "../../../../constants";
@@ -440,6 +442,53 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
   //   });
   // }
 
+  // ##############################################################################################
+  // Blob detection logic - check if this object should be rendered as a blob editor
+  const isBlob = useMemo(() => {
+    return currentTypeCheckKeyMap?.resolvedSchema?.tag?.value?.isBlob === true;
+  }, [currentTypeCheckKeyMap?.resolvedSchema?.tag?.value?.isBlob]);
+
+  // Extract allowed MIME types from schema definition for blob fields
+  const allowedMimeTypes = useMemo(() => {
+    if (!isBlob || !currentTypeCheckKeyMap?.resolvedSchema) {
+      return undefined;
+    }
+    
+    // The blob structure has a mimeType field with an enum definition
+    const blobSchema = currentTypeCheckKeyMap.resolvedSchema as JzodObject;
+    const mimeTypeField = blobSchema.definition?.mimeType;
+    
+    if (mimeTypeField && mimeTypeField.type === 'enum' && Array.isArray(mimeTypeField.definition)) {
+      return mimeTypeField.definition as string[];
+    }
+    
+    return undefined;
+  }, [isBlob, currentTypeCheckKeyMap?.resolvedSchema]);
+
+  // Construct blob value structure for BlobEditorField
+  // When isBlob is true, currentValue contains the blob contents {encoding, mimeType, data}
+  // but BlobEditorField needs the parent object with {filename, contents}
+  const blobValue = useMemo(() => {
+    if (!isBlob) {
+      return undefined;
+    }
+
+    // Get parent path by removing last element from rootLessListKeyArray
+    const parentPath = rootLessListKeyArray.slice(0, -1);
+    const parentKey = parentPath.join('.');
+    
+    // Get parent object from Formik values
+    const parentObject = parentKey ? 
+      parentPath.reduce((obj, key) => obj?.[key], formik.values) : 
+      formik.values;
+
+    // Construct the blob object structure that BlobEditorField expects
+    return {
+      filename: parentObject?.filename,
+      contents: currentValue, // This is the {encoding, mimeType, data} object
+    };
+  }, [isBlob, currentValue, rootLessListKeyArray, formik.values]);
+
   const currentMiroirFundamentalJzodSchema = context.miroirFundamentalJzodSchema;
   const usedIndentLevel: number = indentLevel ? indentLevel : 0;
 
@@ -785,6 +834,42 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
           {JSON.stringify(localResolvedElementJzodSchemaBasedOnValue, null, 2)}
         </span>
       </div>
+    );
+  }
+
+  // ##############################################################################################
+  // Render blob editor if this object has isBlob tag
+  if (isBlob) {
+    return (
+      <ErrorBoundary
+        FallbackComponent={({ error, resetErrorBoundary }) => (
+          <ErrorFallbackComponent
+            error={error}
+            resetErrorBoundary={resetErrorBoundary}
+            context={{
+              origin: "JzodObjectEditor - BlobEditorField",
+              objectType: "blob",
+              rootLessListKey,
+              rootLessListKeyArray,
+              currentValue: blobValue,
+              formikValues: formik.values,
+              localResolvedElementJzodSchemaBasedOnValue,
+            }}
+          />
+        )}
+      >
+        <BlobEditorField
+          rootLessListKey={rootLessListKey}
+          rootLessListKeyArray={rootLessListKeyArray}
+          currentValue={blobValue}
+          formik={formik}
+          readOnly={readOnly}
+          allowedMimeTypes={allowedMimeTypes}
+          onError={(error) => {
+            log.error("BlobEditorField error:", error);
+          }}
+        />
+      </ErrorBoundary>
     );
   }
 

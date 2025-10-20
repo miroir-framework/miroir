@@ -8,10 +8,11 @@ Based on PRD: `0001-prd-blob-display-and-edit-in-jzodobjecteditor.md`
 - `packages/miroir-core/src/1_core/constants.ts` - MAX_BLOB_FILE_SIZE and BLOB_SIZE_WARNING_THRESHOLD constants added
 - `packages/miroir-core/tests/1_core/blobUtils.test.ts` - Unit tests for blob utility functions (created and passing)
 - `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/ValueObjectEditor/BlobEditorField.tsx` - **UPDATED** Complete display functionality with lightbox modal, icon display, download, and read-only mode
-- `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/ValueObjectEditor/JzodObjectEditor.tsx` - To be modified to detect `isBlob` tag and render BlobEditorField
+- `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/ValueObjectEditor/JzodObjectEditor.tsx` - **UPDATED** Added blob detection logic (isBlob tag check), MIME type extraction, conditional rendering to use BlobEditorField for blob objects, error boundary integration
 - `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Themes/DisplayComponents.tsx` - **UPDATED** Added 6 themed blob display components (ThemedBlobContainer, ThemedBlobPreview, ThemedBlobEmptyState, ThemedBlobMetadata, ThemedBlobIconDisplay, ThemedBlobDropZone) with responsive behavior
 - `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Themes/index.ts` - **UPDATED** Exported new themed blob components
 - `packages/miroir-standalone-app/tests/4_view/BlobEditorField.integ.test.tsx` - **UPDATED** Integration tests (32 tests passing) including validation tests and comprehensive display mode tests
+- `packages/miroir-standalone-app/tests/4_view/JzodObjectEditor.BlobIntegration.integ.test.tsx` - **NEW** Integration tests for JzodObjectEditor blob integration (9 tests passing) covering blob detection, rendering, error handling, and Formik integration
 
 ### Notes
 
@@ -92,64 +93,65 @@ For each task, proceed in a "Test-driven"-like fashion, and create tests before 
   - [x] 4.7 Add responsive behavior - reduce preview to 150x150px on narrow screens (< 768px)
   - [x] 4.8 Add tests for each display mode: empty state, image preview, non-image icon, read-only
 
-- [ ] 5.0 Implement file upload functionality (drag-and-drop and click-to-upload)
-  - [ ] 5.1 Implement click-to-upload:
+- [x] 5.0 Integrate BlobEditorField into JzodObjectEditor
+  - [x] 5.1 Add blob detection logic in `JzodObjectEditor.tsx`:
+    - Check if `currentTypeCheckKeyMap?.resolvedSchema?.tag?.value?.isBlob === true`
+    - Extract allowed MIME types from `mimeType` enum in schema definition
+  - [x] 5.2 Import `BlobEditorField` component in `JzodObjectEditor.tsx`
+  - [x] 5.3 Add conditional rendering in `JzodObjectEditor`:
+    - When `isBlob` is true, render `BlobEditorField` instead of regular object attributes
+    - Pass all required props: `rootLessListKey`, `rootLessListKeyArray`, `currentValue`, `formik`, `readOnly`, `allowedMimeTypes`
+    - Ensure proper indentation level is maintained
+  - [x] 5.4 Handle the case where blob structure (`contents` object) should still show underlying fields when `isBlob` is false
+  - [x] 5.5 Add error boundary around `BlobEditorField` to prevent crashes
+  - [x] 5.6 Test integration with existing Blob EntityDefinition (`c3179f1d-10bd-4b0f-9a6b-f118d8eb2312.json`)
+  - [x] 5.7 Create integration test that loads full JzodObjectEditor with blob field and validates rendering
+  - [x] 5.8 Test with Library application or create test blob entity instance
+
+- [ ] 6.0 Implement file upload functionality (drag-and-drop and click-to-upload)
+  - [ ] 6.1 Implement click-to-upload:
     - Add hidden `<input type="file">` element with ref
     - Make entire `ThemedBlobContainer` clickable (except in read-only mode)
     - Trigger file input click on container click
     - Set `accept` attribute based on `allowedMimeTypes` from schema
-  - [ ] 5.2 Implement drag-and-drop:
+  - [ ] 6.2 Implement drag-and-drop:
     - Add `onDragEnter`, `onDragOver`, `onDragLeave`, `onDrop` handlers
     - Track drag state with `useState` hook
     - Show `ThemedBlobDropZone` overlay when dragging over
     - Prevent default browser behavior for drag events
-  - [ ] 5.3 Implement file processing after selection/drop:
+  - [ ] 6.3 Implement file processing after selection/drop:
     - Use `fileToBase64` utility to convert File to base64
     - Auto-detect MIME type from `file.type`
     - Extract filename from `file.name`
     - Set loading state during processing
-  - [ ] 5.4 Implement MIME type validation (FR9):
+  - [ ] 6.4 Implement MIME type validation (FR9):
     - Call `validateMimeType` with detected type and schema enum
     - If invalid, show error: "File type [type] is not allowed. Allowed types: [list]"
     - Reject upload and don't update Formik values
     - Auto-update `mimeType` field if valid
-  - [ ] 5.5 Implement file size validation (FR10):
+  - [ ] 6.5 Implement file size validation (FR10):
     - Check file size against `BLOB_SIZE_WARNING_THRESHOLD` (5MB)
     - If > 5MB, show warning dialog: "Warning: File size is [size]MB. Large files may impact performance. Continue?"
     - Require user confirmation to proceed
     - Check against `MAX_BLOB_FILE_SIZE` (10MB) hard limit
     - If > 10MB, reject with error: "File size exceeds maximum allowed size of 10MB"
-  - [ ] 5.6 Update Formik values on successful upload:
+  - [ ] 6.6 Update Formik values on successful upload:
     - `formik.setFieldValue([rootLessListKey].contents.data, base64String)`
     - `formik.setFieldValue([rootLessListKey].contents.encoding, "base64")`
     - `formik.setFieldValue([rootLessListKey].contents.mimeType, detectedMimeType)`
     - `formik.setFieldValue([rootLessListKey].filename, fileName)`
-  - [ ] 5.7 Implement loading state during file processing:
+  - [ ] 6.7 Implement loading state during file processing:
     - Show spinner overlay with "Processing..." text
     - Disable all interactions during upload
-  - [ ] 5.8 Implement error handling:
+  - [ ] 6.8 Implement error handling:
     - FileReader errors: "Failed to read file: [error]"
     - Multiple file drops: "Only one file at a time"
     - Display errors near blob field using themed error component
-  - [ ] 5.9 Handle data-uri encoding conversion:
+  - [ ] 6.9 Handle data-uri encoding conversion:
     - If existing blob has `encoding: "data-uri"`, display correctly
     - On any update, convert to base64
-  - [ ] 5.10 Add tests for upload scenarios: valid upload, invalid MIME type, oversized file, file read error, drag-and-drop, click-to-upload
+  - [ ] 6.10 Add tests for upload scenarios: valid upload, invalid MIME type, oversized file, file read error, drag-and-drop, click-to-upload
 
-- [ ] 6.0 Integrate BlobEditorField into JzodObjectEditor
-  - [ ] 6.1 Add blob detection logic in `JzodObjectEditor.tsx`:
-    - Check if `currentTypeCheckKeyMap?.resolvedSchema?.tag?.value?.isBlob === true`
-    - Extract allowed MIME types from `mimeType` enum in schema definition
-  - [ ] 6.2 Import `BlobEditorField` component in `JzodObjectEditor.tsx`
-  - [ ] 6.3 Add conditional rendering in `JzodObjectEditor`:
-    - When `isBlob` is true, render `BlobEditorField` instead of regular object attributes
-    - Pass all required props: `rootLessListKey`, `rootLessListKeyArray`, `currentValue`, `formik`, `readOnly`, `allowedMimeTypes`
-    - Ensure proper indentation level is maintained
-  - [ ] 6.4 Handle the case where blob structure (`contents` object) should still show underlying fields when `isBlob` is false
-  - [ ] 6.5 Add error boundary around `BlobEditorField` to prevent crashes
-  - [ ] 6.6 Test integration with existing Blob EntityDefinition (`c3179f1d-10bd-4b0f-9a6b-f118d8eb2312.json`)
-  - [ ] 6.7 Create integration test that loads full JzodObjectEditor with blob field and validates rendering
-  - [ ] 6.8 Test with Library application or create test blob entity instance
 
 - [ ] 7.0 Wrap-up: clean tests to ensure future non-regression and provide high-level documentation
   - [ ] 7.1 Review and consolidate all unit tests in `packages/miroir-core/tests/1_core/blobUtils.test.ts`:
