@@ -1,10 +1,12 @@
 ## Relevant Files
 
 ### Core Data Model
-- `packages/miroir-core/src/assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/952d2c65-4da2-45c2-9394-a0920ceedfb6.json` - Report EntityDefinition that defines all report section types. Needs addition of `markdownReportSection` type.
+- `packages/miroir-core/src/assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/952d2c65-4da2-45c2-9394-a0920ceedfb6.json` - Report EntityDefinition that defines all report section types. Added `markdownReportSection` type (✓ Task 1.0 complete).
+- `packages/miroir-core/src/0_interfaces/1_core/bootstrapJzodSchemas/getMiroirFundamentalJzodSchema.ts` - TypeScript schema generator. Added "markdownReportSection" to filter array (✓ Task 1.0 complete).
+- `packages/miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.ts` - Generated TypeScript types including `MarkdownReportSection` (✓ Task 1.0 complete).
 
-### New Components (to be created)
-- `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/ReportSectionMarkdown.tsx` - Main component for rendering Markdown in read-only mode with edit icon.
+### New Components (created)
+- `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/ReportSectionMarkdown.tsx` - Main component for rendering Markdown in read-only mode with optional edit icon. Includes ReactMarkdown with GFM and sanitization plugins, themed styling, render tracking, and logger setup (✓ Task 2.0 complete).
 - `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/MarkdownEditorModal.tsx` - Modal dialog component for editing Markdown with live preview.
 - `packages/miroir-standalone-app/tests/4_view/ReportSectionMarkdown.test.tsx` - Integration tests for Markdown report section.
 
@@ -35,16 +37,16 @@
   - [ ] 1.4 Run `npm run devBuild -w miroir-core` to regenerate TypeScript types from the updated Jzod schema
   - [ ] 1.5 Verify generated types in `packages/miroir-core/src/0_interfaces/1_core/preprocessor-generated/` include `MarkdownReportSection` type
 
-- [ ] 2.0 Create Markdown Report Section Renderer Component
-  - [ ] 2.1 Create `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/ReportSectionMarkdown.tsx`
-  - [ ] 2.2 Import required dependencies: `React`, `react-markdown`, `remark-gfm`, `rehype-sanitize`, `ApplicationSection`, `Uuid`, theming components from `../Themes/index`, logger setup
-  - [ ] 2.3 Define `ReportSectionMarkdownProps` interface with: `applicationSection: ApplicationSection`, `deploymentUuid: Uuid`, `markdownContent: string`, `label?: string`, `onEdit?: () => void`, `showPerformanceDisplay?: boolean`
-  - [ ] 2.4 Implement `ReportSectionMarkdown` functional component with render tracking (using `useRenderTracker` hook like other section components)
-  - [ ] 2.5 Add conditional rendering: if `onEdit` callback is provided (edit mode), display a pencil icon button (using `ThemedIconButton` or `ThemedSmallIconButton`) in top-right corner with hover tooltip "Edit Markdown"
-  - [ ] 2.6 Use `ReactMarkdown` component from `react-markdown` with `remarkPlugins={[remarkGfm]}` and `rehypePlugins={[rehypeSanitize]}` to render the markdown content safely
-  - [ ] 2.7 Wrap rendered markdown in `ThemedBox` or `ThemedContainer` for consistent theming and styling
-  - [ ] 2.8 Add optional label display at top if `label` prop is provided (using `ThemedLabel` or `ThemedTitle`)
-  - [ ] 2.9 Add logger setup following Miroir pattern (see reference components) with logger name "ReportSectionMarkdown"
+- [x] 2.0 Create Markdown Report Section Renderer Component
+  - [x] 2.1 Create `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/ReportSectionMarkdown.tsx`
+  - [x] 2.2 Import required dependencies: `React`, `react-markdown`, `remark-gfm`, `rehype-sanitize`, `ApplicationSection`, `Uuid`, theming components from `../Themes/index`, logger setup
+  - [x] 2.3 Define `ReportSectionMarkdownProps` interface with: `applicationSection: ApplicationSection`, `deploymentUuid: Uuid`, `markdownContent: string`, `label?: string`, `onEdit?: () => void`, `showPerformanceDisplay?: boolean`
+  - [x] 2.4 Implement `ReportSectionMarkdown` functional component with render tracking (using `useRenderTracker` hook like other section components)
+  - [x] 2.5 Add conditional rendering: if `onEdit` callback is provided (edit mode), display a pencil icon button (using `ThemedIconButton` or `ThemedSmallIconButton`) in top-right corner with hover tooltip "Edit Markdown"
+  - [x] 2.6 Use `ReactMarkdown` component from `react-markdown` with `remarkPlugins={[remarkGfm]}` and `rehypePlugins={[rehypeSanitize]}` to render the markdown content safely
+  - [x] 2.7 Wrap rendered markdown in `ThemedBox` or `ThemedContainer` for consistent theming and styling
+  - [x] 2.8 Add optional label display at top if `label` prop is provided (using `ThemedLabel` or `ThemedTitle`)
+  - [x] 2.9 Add logger setup following Miroir pattern (see reference components) with logger name "ReportSectionMarkdown"
 
 - [ ] 3.0 Integrate Markdown Section into Report Routing
   - [ ] 3.1 Open `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/ReportSectionView.tsx`

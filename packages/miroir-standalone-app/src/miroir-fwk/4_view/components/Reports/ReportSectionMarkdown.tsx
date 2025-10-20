@@ -1,0 +1,225 @@
+import { useMemo } from 'react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import rehypeSanitize from 'rehype-sanitize';
+import { Edit as EditIcon } from '@mui/icons-material';
+
+import {
+  ApplicationSection,
+  LoggerInterface,
+  MiroirLoggerFactory,
+  Uuid,
+} from "miroir-core";
+
+import { packageName } from '../../../../constants.js';
+import { cleanLevel } from '../../constants.js';
+import { useRenderTracker } from '../../tools/renderCountTracker.js';
+import { RenderPerformanceMetrics } from '../../tools/renderPerformanceMeasure.js';
+import {
+  ThemedBox,
+  ThemedContainer,
+  ThemedIconButton,
+  ThemedText,
+  ThemedTitle,
+  ThemedTooltip,
+} from "../Themes/index";
+
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ReportSectionMarkdown"), "UI",
+).then((logger: LoggerInterface) => {log = logger});
+
+export interface ReportSectionMarkdownProps {
+  applicationSection: ApplicationSection;
+  deploymentUuid: Uuid;
+  markdownContent: string;
+  label?: string;
+  onEdit?: () => void;
+  showPerformanceDisplay?: boolean;
+}
+
+export const ReportSectionMarkdown = (props: ReportSectionMarkdownProps) => {
+  const renderStartTime = performance.now();
+  
+  // Get navigation key for render tracking
+  const navigationKey = `${props.deploymentUuid}-${props.applicationSection}`;
+  
+  // Track render count for performance monitoring
+  const { navigationCount, totalCount } = useRenderTracker(
+    "ReportSectionMarkdown",
+    navigationKey
+  );
+  
+  log.debug(
+    () => "ReportSectionMarkdown render",
+    navigationCount,
+    "props:",
+    props
+  );
+
+  // Memoize the markdown content to avoid unnecessary re-renders
+  const sanitizedMarkdown = useMemo(() => {
+    return props.markdownContent || "";
+  }, [props.markdownContent]);
+
+  const renderEndTime = performance.now();
+  const renderDuration = renderEndTime - renderStartTime;
+  
+  // Track performance
+  const componentKey = `ReportSectionMarkdown-${props.deploymentUuid}`;
+  RenderPerformanceMetrics.trackRenderPerformance(componentKey, renderDuration);
+
+  return (
+    <ThemedContainer
+      style={{
+        position: 'relative',
+        padding: '16px',
+        marginBottom: '16px',
+      }}
+    >
+      {/* Performance display (optional) */}
+      {props.showPerformanceDisplay && (
+        <ThemedText>
+          ReportSectionMarkdown renders: {navigationCount} (total: {totalCount})
+        </ThemedText>
+      )}
+      
+      {/* Optional label at the top */}
+      {props.label && (
+        <ThemedTitle 
+          variant="h6" 
+          style={{ marginBottom: '16px' }}
+        >
+          {props.label}
+        </ThemedTitle>
+      )}
+
+      {/* Edit button in top-right corner if onEdit callback provided */}
+      {props.onEdit && (
+        <ThemedTooltip title="Edit Markdown">
+          <ThemedIconButton
+            onClick={props.onEdit}
+            style={{
+              position: 'absolute',
+              top: '8px',
+              right: '8px',
+              zIndex: 1,
+            }}
+            aria-label="Edit Markdown"
+          >
+            <EditIcon fontSize="small" />
+          </ThemedIconButton>
+        </ThemedTooltip>
+      )}
+
+      {/* Markdown content rendering with sanitization */}
+      <ThemedBox
+        style={{
+          padding: '8px',
+        }}
+      >
+        <div
+          style={{
+            lineHeight: '1.6',
+          }}
+          className="markdown-content"
+        >
+          <ReactMarkdown
+            remarkPlugins={[remarkGfm]}
+            rehypePlugins={[rehypeSanitize]}
+          >
+            {sanitizedMarkdown}
+          </ReactMarkdown>
+        </div>
+      </ThemedBox>
+
+      <style>{`
+        .markdown-content h1,
+        .markdown-content h2,
+        .markdown-content h3,
+        .markdown-content h4,
+        .markdown-content h5,
+        .markdown-content h6 {
+          margin-top: 16px;
+          margin-bottom: 8px;
+        }
+        
+        .markdown-content p {
+          margin-bottom: 8px;
+        }
+        
+        .markdown-content ul,
+        .markdown-content ol {
+          padding-left: 24px;
+          margin-bottom: 8px;
+        }
+        
+        .markdown-content li {
+          margin-bottom: 4px;
+        }
+        
+        .markdown-content table {
+          border-collapse: collapse;
+          width: 100%;
+          margin-bottom: 16px;
+        }
+        
+        .markdown-content th,
+        .markdown-content td {
+          border: 1px solid #ddd;
+          padding: 8px;
+        }
+        
+        .markdown-content th {
+          background-color: #f5f5f5;
+          font-weight: bold;
+        }
+        
+        .markdown-content code {
+          background-color: #f5f5f5;
+          padding: 2px 4px;
+          border-radius: 3px;
+          font-family: monospace;
+          font-size: 0.9em;
+        }
+        
+        .markdown-content pre {
+          background-color: #f5f5f5;
+          padding: 16px;
+          border-radius: 3px;
+          overflow: auto;
+          margin-bottom: 16px;
+        }
+        
+        .markdown-content pre code {
+          background-color: transparent;
+          padding: 0;
+        }
+        
+        .markdown-content blockquote {
+          border-left: 4px solid #1976d2;
+          padding-left: 16px;
+          margin-left: 0;
+          margin-bottom: 16px;
+          font-style: italic;
+        }
+        
+        .markdown-content hr {
+          border: none;
+          border-top: 1px solid #ddd;
+          margin: 16px 0;
+        }
+        
+        .markdown-content a {
+          color: #1976d2;
+          text-decoration: underline;
+        }
+        
+        .markdown-content img {
+          max-width: 100%;
+          height: auto;
+        }
+      `}</style>
+    </ThemedContainer>
+  );
+};
