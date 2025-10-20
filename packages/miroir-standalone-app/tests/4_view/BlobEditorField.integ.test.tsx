@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import '@testing-library/jest-dom';
 import { Formik } from "formik";
@@ -57,6 +57,51 @@ const mockInvalidBlob = {
     encoding: "invalid-encoding",
     mimeType: undefined,
     data: undefined,
+  },
+};
+
+const mockBlobInvalidEncoding = {
+  filename: "test.txt",
+  contents: {
+    encoding: "invalid-encoding",
+    mimeType: "text/plain",
+    data: "SGVsbG8gV29ybGQ=",
+  },
+};
+
+const mockBlobMissingMimeType = {
+  filename: "test.txt",
+  contents: {
+    encoding: "base64",
+    mimeType: undefined,
+    data: "SGVsbG8gV29ybGQ=",
+  },
+};
+
+const mockBlobMissingData = {
+  filename: "test.txt",
+  contents: {
+    encoding: "base64",
+    mimeType: "text/plain",
+    data: undefined,
+  },
+};
+
+const mockBlobEmptyData = {
+  filename: "test.txt",
+  contents: {
+    encoding: "base64",
+    mimeType: "text/plain",
+    data: "",
+  },
+};
+
+const mockBlobMissingEncoding = {
+  filename: "test.txt",
+  contents: {
+    encoding: undefined,
+    mimeType: "text/plain",
+    data: "SGVsbG8gV29ybGQ=",
   },
 };
 
@@ -267,6 +312,231 @@ describe("BlobEditorField - Logger Integration", () => {
       </TestWrapper>
     );
 
+    expect(screen.getByText(/Blob Editor Field/i)).toBeInTheDocument();
+  });
+});
+
+describe("BlobEditorField - Validation Logic", () => {
+  it("should NOT show error for empty blob (undefined contents)", () => {
+    const props: Partial<BlobEditorFieldProps> = {
+      rootLessListKey: "testBlob",
+      rootLessListKeyArray: ["testBlob"],
+      currentValue: mockEmptyBlob,
+      readOnly: false,
+      allowedMimeTypes: [],
+    };
+
+    render(
+      <TestWrapper initialValues={{ testBlob: mockEmptyBlob }}>
+        <BlobEditorField {...props as BlobEditorFieldProps} />
+      </TestWrapper>
+    );
+
+    // Should show "No contents" not an error
+    expect(screen.getByText(/No contents/i)).toBeInTheDocument();
+    expect(screen.queryByText(/Blob Validation Error/i)).not.toBeInTheDocument();
+  });
+
+  it("should NOT show error for null currentValue", () => {
+    const props: Partial<BlobEditorFieldProps> = {
+      rootLessListKey: "testBlob",
+      rootLessListKeyArray: ["testBlob"],
+      currentValue: null,
+      readOnly: false,
+      allowedMimeTypes: [],
+    };
+
+    render(
+      <TestWrapper initialValues={{ testBlob: null }}>
+        <BlobEditorField {...props as BlobEditorFieldProps} />
+      </TestWrapper>
+    );
+
+    // Should show "No contents" not an error
+    expect(screen.getByText(/No contents/i)).toBeInTheDocument();
+    expect(screen.queryByText(/Blob Validation Error/i)).not.toBeInTheDocument();
+  });
+
+  it("should display error for invalid encoding", () => {
+    const props: Partial<BlobEditorFieldProps> = {
+      rootLessListKey: "testBlob",
+      rootLessListKeyArray: ["testBlob"],
+      currentValue: mockBlobInvalidEncoding,
+      readOnly: false,
+      allowedMimeTypes: [],
+    };
+
+    render(
+      <TestWrapper initialValues={{ testBlob: mockBlobInvalidEncoding }}>
+        <BlobEditorField {...props as BlobEditorFieldProps} />
+      </TestWrapper>
+    );
+
+    expect(screen.getByText(/Blob Validation Error/i)).toBeInTheDocument();
+    expect(screen.getByText(/Invalid encoding: "invalid-encoding"/i)).toBeInTheDocument();
+    expect(screen.getByText(/Expected 'base64' or 'data-uri'/i)).toBeInTheDocument();
+  });
+
+  it("should display error for missing mimeType", () => {
+    const props: Partial<BlobEditorFieldProps> = {
+      rootLessListKey: "testBlob",
+      rootLessListKeyArray: ["testBlob"],
+      currentValue: mockBlobMissingMimeType,
+      readOnly: false,
+      allowedMimeTypes: [],
+    };
+
+    render(
+      <TestWrapper initialValues={{ testBlob: mockBlobMissingMimeType }}>
+        <BlobEditorField {...props as BlobEditorFieldProps} />
+      </TestWrapper>
+    );
+
+    expect(screen.getByText(/Blob Validation Error/i)).toBeInTheDocument();
+    expect(screen.getByText(/MIME type is required/i)).toBeInTheDocument();
+  });
+
+  it("should display error for missing data", () => {
+    const props: Partial<BlobEditorFieldProps> = {
+      rootLessListKey: "testBlob",
+      rootLessListKeyArray: ["testBlob"],
+      currentValue: mockBlobMissingData,
+      readOnly: false,
+      allowedMimeTypes: [],
+    };
+
+    render(
+      <TestWrapper initialValues={{ testBlob: mockBlobMissingData }}>
+        <BlobEditorField {...props as BlobEditorFieldProps} />
+      </TestWrapper>
+    );
+
+    expect(screen.getByText(/Blob Validation Error/i)).toBeInTheDocument();
+    expect(screen.getByText(/Blob data is missing/i)).toBeInTheDocument();
+  });
+
+  it("should display error for empty string data", () => {
+    const props: Partial<BlobEditorFieldProps> = {
+      rootLessListKey: "testBlob",
+      rootLessListKeyArray: ["testBlob"],
+      currentValue: mockBlobEmptyData,
+      readOnly: false,
+      allowedMimeTypes: [],
+    };
+
+    render(
+      <TestWrapper initialValues={{ testBlob: mockBlobEmptyData }}>
+        <BlobEditorField {...props as BlobEditorFieldProps} />
+      </TestWrapper>
+    );
+
+    expect(screen.getByText(/Blob Validation Error/i)).toBeInTheDocument();
+    expect(screen.getByText(/Blob data is missing/i)).toBeInTheDocument();
+  });
+
+  it("should display error for missing encoding when contents exist", () => {
+    const props: Partial<BlobEditorFieldProps> = {
+      rootLessListKey: "testBlob",
+      rootLessListKeyArray: ["testBlob"],
+      currentValue: mockBlobMissingEncoding,
+      readOnly: false,
+      allowedMimeTypes: [],
+    };
+
+    render(
+      <TestWrapper initialValues={{ testBlob: mockBlobMissingEncoding }}>
+        <BlobEditorField {...props as BlobEditorFieldProps} />
+      </TestWrapper>
+    );
+
+    expect(screen.getByText(/Blob Validation Error/i)).toBeInTheDocument();
+    expect(screen.getByText(/Encoding is required when contents are present/i)).toBeInTheDocument();
+  });
+
+  it("should display multiple errors when multiple fields are invalid", () => {
+    const props: Partial<BlobEditorFieldProps> = {
+      rootLessListKey: "testBlob",
+      rootLessListKeyArray: ["testBlob"],
+      currentValue: mockInvalidBlob,
+      readOnly: false,
+      allowedMimeTypes: [],
+    };
+
+    render(
+      <TestWrapper initialValues={{ testBlob: mockInvalidBlob }}>
+        <BlobEditorField {...props as BlobEditorFieldProps} />
+      </TestWrapper>
+    );
+
+    expect(screen.getByText(/Blob Validation Error/i)).toBeInTheDocument();
+    // Should contain all three error messages
+    const errorText = screen.getByText(/Invalid encoding/i).parentElement?.textContent || '';
+    expect(errorText).toContain('Invalid encoding');
+    expect(errorText).toContain('MIME type is required');
+    expect(errorText).toContain('Blob data is missing');
+  });
+
+  it("should call onError callback when validation fails", () => {
+    const onErrorMock = vi.fn();
+    const props: Partial<BlobEditorFieldProps> = {
+      rootLessListKey: "testBlob",
+      rootLessListKeyArray: ["testBlob"],
+      currentValue: mockBlobInvalidEncoding,
+      readOnly: false,
+      allowedMimeTypes: [],
+      onError: onErrorMock,
+    };
+
+    render(
+      <TestWrapper initialValues={{ testBlob: mockBlobInvalidEncoding }}>
+        <BlobEditorField {...props as BlobEditorFieldProps} />
+      </TestWrapper>
+    );
+
+    expect(onErrorMock).toHaveBeenCalled();
+    expect(onErrorMock).toHaveBeenCalledWith(expect.stringContaining('Invalid encoding'));
+  });
+
+  it("should NOT crash Formik form when validation error occurs", () => {
+    const props: Partial<BlobEditorFieldProps> = {
+      rootLessListKey: "testBlob",
+      rootLessListKeyArray: ["testBlob"],
+      currentValue: mockBlobInvalidEncoding,
+      readOnly: false,
+      allowedMimeTypes: [],
+    };
+
+    // Should render without throwing
+    expect(() => {
+      render(
+        <TestWrapper initialValues={{ testBlob: mockBlobInvalidEncoding }}>
+          <BlobEditorField {...props as BlobEditorFieldProps} />
+        </TestWrapper>
+      );
+    }).not.toThrow();
+
+    // Validation error should be displayed
+    expect(screen.getByText(/Blob Validation Error/i)).toBeInTheDocument();
+  });
+
+  it("should render valid blob without errors", () => {
+    const props: Partial<BlobEditorFieldProps> = {
+      rootLessListKey: "testBlob",
+      rootLessListKeyArray: ["testBlob"],
+      currentValue: mockBlobWithImage,
+      readOnly: false,
+      allowedMimeTypes: [],
+    };
+
+    render(
+      <TestWrapper initialValues={{ testBlob: mockBlobWithImage }}>
+        <BlobEditorField {...props as BlobEditorFieldProps} />
+      </TestWrapper>
+    );
+
+    // Should NOT show validation error
+    expect(screen.queryByText(/Blob Validation Error/i)).not.toBeInTheDocument();
+    // Should show the blob editor
     expect(screen.getByText(/Blob Editor Field/i)).toBeInTheDocument();
   });
 });

@@ -7,11 +7,11 @@ Based on PRD: `0001-prd-blob-display-and-edit-in-jzodobjecteditor.md`
 - `packages/miroir-core/src/1_core/tools.ts` - Blob utility functions implemented (base64 conversion, MIME validation, file reading)
 - `packages/miroir-core/src/1_core/constants.ts` - MAX_BLOB_FILE_SIZE and BLOB_SIZE_WARNING_THRESHOLD constants added
 - `packages/miroir-core/tests/1_core/blobUtils.test.ts` - Unit tests for blob utility functions (created and passing)
-- `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/ValueObjectEditor/BlobEditorField.tsx` - **NEW** Component for blob-specific rendering and interactions (basic structure implemented)
+- `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/ValueObjectEditor/BlobEditorField.tsx` - **UPDATED** Component with validation logic and BlobValidationError component
 - `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/ValueObjectEditor/JzodObjectEditor.tsx` - To be modified to detect `isBlob` tag and render BlobEditorField
 - `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Themes/DisplayComponents.tsx` - **UPDATED** Added 6 themed blob display components (ThemedBlobContainer, ThemedBlobPreview, ThemedBlobEmptyState, ThemedBlobMetadata, ThemedBlobIconDisplay, ThemedBlobDropZone)
 - `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Themes/index.ts` - **UPDATED** Exported new themed blob components
-- `packages/miroir-standalone-app/tests/4_view/BlobEditorField.integ.test.tsx` - **NEW** Integration tests for BlobEditorField component (10 tests passing)
+- `packages/miroir-standalone-app/tests/4_view/BlobEditorField.integ.test.tsx` - **UPDATED** Integration tests (21 tests passing) including comprehensive validation tests
 
 ### Notes
 
@@ -52,15 +52,15 @@ For each task, proceed in a "Test-driven"-like fashion, and create tests before 
   - [x] 2.4 Add `useMemo` hook to parse and validate blob structure from `currentValue?.contents`
   - [x] 2.5 Create basic integration test skeleton `packages/miroir-standalone-app/tests/4_view/BlobEditorField.integ.test.tsx` with test setup and mock data
 
-- [ ] 3.0 Add validation of given blob object and display graceful error when it fails
-  - [ ] 3.1 Add validation logic in `BlobEditorField` to check blob structure has required fields (`encoding`, `mimeType`, `data`)
-  - [ ] 3.2 Create `BlobValidationError` component to display validation errors with clear messaging
-  - [ ] 3.3 Handle missing `contents` field (undefined/null) - should not show error, just empty state
-  - [ ] 3.4 Handle invalid `encoding` field - display error: "Invalid encoding: [encoding]. Expected 'base64' or 'data-uri'"
-  - [ ] 3.5 Handle missing `mimeType` field - display error: "MIME type is required"
-  - [ ] 3.6 Handle missing `data` field - display error: "Blob data is missing"
-  - [ ] 3.7 Add tests in `BlobEditorField.integ.test.tsx` for each validation error case
-  - [ ] 3.8 Ensure validation errors don't crash Formik form or parent JzodObjectEditor
+- [x] 3.0 Add validation of given blob object and display graceful error when it fails
+  - [x] 3.1 Add validation logic in `BlobEditorField` to check blob structure has required fields (`encoding`, `mimeType`, `data`)
+  - [x] 3.2 Create `BlobValidationError` component to display validation errors with clear messaging
+  - [x] 3.3 Handle missing `contents` field (undefined/null) - should not show error, just empty state
+  - [x] 3.4 Handle invalid `encoding` field - display error: "Invalid encoding: [encoding]. Expected 'base64' or 'data-uri'"
+  - [x] 3.5 Handle missing `mimeType` field - display error: "MIME type is required"
+  - [x] 3.6 Handle missing `data` field - display error: "Blob data is missing"
+  - [x] 3.7 Add tests in `BlobEditorField.integ.test.tsx` for each validation error case
+  - [x] 3.8 Ensure validation errors don't crash Formik form or parent JzodObjectEditor
 
 - [ ] 4.0 Implement blob display functionality (preview, metadata, icons)
   - [ ] 4.1 Implement empty state display using `ThemedBlobEmptyState` when `contents` is undefined/null:
