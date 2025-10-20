@@ -25,15 +25,15 @@ Based on PRD: `0001-prd-blob-display-and-edit-in-jzodobjecteditor.md`
 For each task, proceed in a "Test-driven"-like fashion, and create tests before or conjointly with the implementation, so that I can validate the implementation after each step. Each step will update both the code and the tests as needed.
 
 - [ ] 1.0 Create blob utility functions and constants
-  - [ ] 1.1 Add `MAX_BLOB_FILE_SIZE` constant (10MB) and `BLOB_SIZE_WARNING_THRESHOLD` (5MB) to `packages/miroir-core/src/1_core/constants.ts`
-  - [ ] 1.2 Create test file `packages/miroir-core/tests/1_core/blobUtils.test.ts` with test cases for all utility functions
-  - [ ] 1.3 Add `fileToBase64` utility function in `packages/miroir-core/src/1_core/tools.ts` - converts File/Blob to base64 string using FileReader API
-  - [ ] 1.4 Add `base64ToBlob` utility function - converts base64 string and MIME type to Blob object
-  - [ ] 1.5 Add `validateMimeType` utility function - checks if detected MIME type matches allowed types from schema enum
-  - [ ] 1.6 Add `getBlobFileIcon` utility function - returns appropriate Material-UI icon name based on MIME type (Image, PictureAsPdf, Description, FolderZip, InsertDriveFile)
-  - [ ] 1.7 Add `formatFileSize` utility function - converts bytes to human-readable format (KB, MB)
-  - [ ] 1.8 Add TypeScript interfaces: `BlobContents`, `BlobValidationResult`, `BlobUploadResult` to `packages/miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.ts` or appropriate interface file
-  - [ ] 1.9 Run unit tests: `npm run test -w miroir-core -- blobUtils`
+  - [x] 1.1 Add `MAX_BLOB_FILE_SIZE` constant (10MB) and `BLOB_SIZE_WARNING_THRESHOLD` (5MB) to `packages/miroir-core/src/1_core/constants.ts`
+  - [x] 1.2 Create test file `packages/miroir-core/tests/1_core/blobUtils.test.ts` with test cases for all utility functions
+  - [x] 1.3 Add `fileToBase64` utility function in `packages/miroir-core/src/1_core/tools.ts` - converts File/Blob to base64 string using FileReader API
+  - [x] 1.4 Add `base64ToBlob` utility function - converts base64 string and MIME type to Blob object
+  - [x] 1.5 Add `validateMimeType` utility function - checks if detected MIME type matches allowed types from schema enum
+  - [x] 1.6 Add `getBlobFileIcon` utility function - returns appropriate Material-UI icon name based on MIME type (Image, PictureAsPdf, Description, FolderZip, InsertDriveFile)
+  - [x] 1.7 Add `formatFileSize` utility function - converts bytes to human-readable format (KB, MB)
+  - [x] 1.8 Add TypeScript interfaces: `BlobContents`, `BlobValidationResult`, `BlobUploadResult` to `packages/miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.ts` or appropriate interface file
+  - [x] 1.9 Run unit tests: `npm run testByFile -w miroir-core -- blobUtils`
 
 - [ ] 2.0 Create BlobEditorField component with basic structure and theming
   - [ ] 2.1 Create themed components in `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Themes/DisplayComponents.tsx`:

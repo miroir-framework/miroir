@@ -496,6 +496,11 @@ export {
   EntityInstanceWithName,
   EntityInstanceWithNameSchema,
 } from "./0_interfaces/1_core/Instance.js";
+export {
+  BlobContents,
+  BlobValidationResult,
+  BlobUploadResult,
+} from "./0_interfaces/1_core/Blob.js";
 // export {
 //   JzodSchemaDefinition,
 //   jzodSchemaDefinitionSchema,
@@ -718,7 +723,7 @@ export {
 } from "./0_interfaces/4-services/PersistenceStoreControllerInterface";
 export { PersistenceStoreControllerManagerInterface } from "./0_interfaces/4-services/PersistenceStoreControllerManagerInterface";
 export { getApplicationSection } from "./1_core/AdminApplication.js";
-export { ACTION_OK } from "./1_core/constants.js";
+export { ACTION_OK, MAX_BLOB_FILE_SIZE, BLOB_SIZE_WARNING_THRESHOLD } from "./1_core/constants.js";
 export { DomainInstanceUuidIndexToArray } from "./1_core/DomainState.js";
 // export { rootLessListKeyMapDEFUNCT } from "./1_core/jzod/rootLessListKeyMap";
 export {
@@ -771,6 +776,15 @@ export {
   expect,
   TestFramework,
 } from "./1_core/test-expect";
+export {
+  fileToBase64,
+  base64ToBlob,
+  validateMimeType,
+  getBlobFileIcon,
+  formatFileSize,
+  pushIfUnique,
+  mergeIfUnique,
+} from "./1_core/tools.js";
 export {} from "./1_core/Report";
 export {} from "./1_core/Report.js";
 export { zodErrorFirstIssueLeaf, zodErrorDeepestIssueLeaves } from "./1_core/zodParseErrorHandler";
