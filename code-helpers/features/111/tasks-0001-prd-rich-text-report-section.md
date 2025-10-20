@@ -6,15 +6,19 @@
 - `packages/miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.ts` - Generated TypeScript types including `MarkdownReportSection` (✓ Task 1.0 complete).
 
 ### New Components (created)
+
+
 - `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/ReportSectionMarkdown.tsx` - Main component for rendering Markdown in read-only mode with optional edit icon. Includes ReactMarkdown with GFM and sanitization plugins, themed styling, render tracking, and logger setup (✓ Task 2.0 complete).
 - `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/MarkdownEditorModal.tsx` - Modal dialog component for editing Markdown with live preview.
 - `packages/miroir-standalone-app/tests/4_view/ReportSectionMarkdown.test.tsx` - Integration tests for Markdown report section.
 
-### Files to Modify
-- `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/ReportSectionView.tsx` - Add routing for new `markdownReportSection` type.
+### Files Modified
+
+- `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/ReportSectionView.tsx` - Added routing for new `markdownReportSection` type. Imports ReportSectionMarkdown component and renders it when report section type is "markdownReportSection", extracting content from fetchedDataReference or direct content field (✓ Task 3.0 complete).
 - `packages/miroir-standalone-app/package.json` - Verify `react-markdown`, `remark-gfm`, and `rehype-sanitize` dependencies (already installed per PRD).
 
 ### Reference Files
+
 - `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/DraggableContainer.tsx` - Modal container pattern to follow.
 - `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Themes/index.ts` - Theming system exports.
 - `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Graph/GraphReportSectionView.tsx` - Example report section component.
@@ -48,13 +52,13 @@
   - [x] 2.8 Add optional label display at top if `label` prop is provided (using `ThemedLabel` or `ThemedTitle`)
   - [x] 2.9 Add logger setup following Miroir pattern (see reference components) with logger name "ReportSectionMarkdown"
 
-- [ ] 3.0 Integrate Markdown Section into Report Routing
-  - [ ] 3.1 Open `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/ReportSectionView.tsx`
-  - [ ] 3.2 Import the new `ReportSectionMarkdown` component at top of file
-  - [ ] 3.3 Add a new conditional block after the existing `graphReportSection` check (around line 273-295), checking `props.reportSection.type == "markdownReportSection"`
-  - [ ] 3.4 Inside the conditional, extract markdown content from `props.reportData.reportData[props.reportSection.definition.fetchedDataReference]` or use `props.reportSection.definition.content` directly if no fetch reference
-  - [ ] 3.5 Render `<ReportSectionMarkdown>` with appropriate props: `applicationSection`, `deploymentUuid`, `markdownContent`, `label`, `showPerformanceDisplay`
-  - [ ] 3.6 For now, omit the `onEdit` prop (read-only mode) - this will be added in Task 5
+- [x] 3.0 Integrate Markdown Section into Report Routing
+  - [x] 3.1 Open `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/ReportSectionView.tsx`
+  - [x] 3.2 Import the new `ReportSectionMarkdown` component at top of file
+  - [x] 3.3 Add a new conditional block after the existing `graphReportSection` check (around line 273-295), checking `props.reportSection.type == "markdownReportSection"`
+  - [x] 3.4 Inside the conditional, extract markdown content from `props.reportData.reportData[props.reportSection.definition.fetchedDataReference]` or use `props.reportSection.definition.content` directly if no fetch reference
+  - [x] 3.5 Render `<ReportSectionMarkdown>` with appropriate props: `applicationSection`, `deploymentUuid`, `markdownContent`, `label`, `showPerformanceDisplay`
+  - [x] 3.6 For now, omit the `onEdit` prop (read-only mode) - this will be added in Task 5
 
 - [ ] 4.0 Write Integration Tests for Markdown Report Section Display
   - [ ] 4.1 Create `packages/miroir-standalone-app/tests/4_view/ReportSectionMarkdown.test.tsx`
