@@ -384,10 +384,20 @@ export const ThemedTooltip: React.FC<ThemedComponentProps & {
 export const ThemedBlobContainer: React.FC<ThemedComponentProps & {
   isDragActive?: boolean;
   isClickable?: boolean;
+  onClick?: (e: React.MouseEvent) => void;
+  onDragEnter?: (e: React.DragEvent) => void;
+  onDragOver?: (e: React.DragEvent) => void;
+  onDragLeave?: (e: React.DragEvent) => void;
+  onDrop?: (e: React.DragEvent) => void;
 }> = ({ 
   children, 
   isDragActive = false,
   isClickable = false,
+  onClick,
+  onDragEnter,
+  onDragOver,
+  onDragLeave,
+  onDrop,
   className, 
   style 
 }) => {
@@ -417,7 +427,16 @@ export const ThemedBlobContainer: React.FC<ThemedComponentProps & {
   });
 
   return (
-    <div css={containerStyles} className={className} style={style}>
+    <div 
+      css={containerStyles} 
+      className={className} 
+      style={style}
+      onClick={onClick}
+      onDragEnter={onDragEnter}
+      onDragOver={onDragOver}
+      onDragLeave={onDragLeave}
+      onDrop={onDrop}
+    >
       {children}
     </div>
   );
@@ -426,7 +445,7 @@ export const ThemedBlobContainer: React.FC<ThemedComponentProps & {
 export const ThemedBlobPreview: React.FC<ThemedComponentProps & {
   src: string;
   alt?: string;
-  onClick?: () => void;
+  onClick?: (e: React.MouseEvent) => void;
 }> = ({ 
   src, 
   alt = 'Preview',

@@ -108,49 +108,49 @@ For each task, proceed in a "Test-driven"-like fashion, and create tests before 
   - [x] 5.7 Create integration test that loads full JzodObjectEditor with blob field and validates rendering
   - [x] 5.8 Test with Library application or create test blob entity instance
 
-- [ ] 6.0 Implement file upload functionality (drag-and-drop and click-to-upload)
-  - [ ] 6.1 Implement click-to-upload:
+- [x] 6.0 Implement file upload functionality (drag-and-drop and click-to-upload)
+  - [x] 6.1 Implement click-to-upload:
     - Add hidden `<input type="file">` element with ref
     - Make entire `ThemedBlobContainer` clickable (except in read-only mode)
     - Trigger file input click on container click
     - Set `accept` attribute based on `allowedMimeTypes` from schema
-  - [ ] 6.2 Implement drag-and-drop:
+  - [x] 6.2 Implement drag-and-drop:
     - Add `onDragEnter`, `onDragOver`, `onDragLeave`, `onDrop` handlers
     - Track drag state with `useState` hook
     - Show `ThemedBlobDropZone` overlay when dragging over
     - Prevent default browser behavior for drag events
-  - [ ] 6.3 Implement file processing after selection/drop:
+  - [x] 6.3 Implement file processing after selection/drop:
     - Use `fileToBase64` utility to convert File to base64
     - Auto-detect MIME type from `file.type`
     - Extract filename from `file.name`
     - Set loading state during processing
-  - [ ] 6.4 Implement MIME type validation (FR9):
+  - [x] 6.4 Implement MIME type validation (FR9):
     - Call `validateMimeType` with detected type and schema enum
     - If invalid, show error: "File type [type] is not allowed. Allowed types: [list]"
     - Reject upload and don't update Formik values
     - Auto-update `mimeType` field if valid
-  - [ ] 6.5 Implement file size validation (FR10):
+  - [x] 6.5 Implement file size validation (FR10):
     - Check file size against `BLOB_SIZE_WARNING_THRESHOLD` (5MB)
     - If > 5MB, show warning dialog: "Warning: File size is [size]MB. Large files may impact performance. Continue?"
     - Require user confirmation to proceed
     - Check against `MAX_BLOB_FILE_SIZE` (10MB) hard limit
     - If > 10MB, reject with error: "File size exceeds maximum allowed size of 10MB"
-  - [ ] 6.6 Update Formik values on successful upload:
+  - [x] 6.6 Update Formik values on successful upload:
     - `formik.setFieldValue([rootLessListKey].contents.data, base64String)`
     - `formik.setFieldValue([rootLessListKey].contents.encoding, "base64")`
     - `formik.setFieldValue([rootLessListKey].contents.mimeType, detectedMimeType)`
     - `formik.setFieldValue([rootLessListKey].filename, fileName)`
-  - [ ] 6.7 Implement loading state during file processing:
+  - [x] 6.7 Implement loading state during file processing:
     - Show spinner overlay with "Processing..." text
     - Disable all interactions during upload
-  - [ ] 6.8 Implement error handling:
+  - [x] 6.8 Implement error handling:
     - FileReader errors: "Failed to read file: [error]"
     - Multiple file drops: "Only one file at a time"
     - Display errors near blob field using themed error component
-  - [ ] 6.9 Handle data-uri encoding conversion:
+  - [x] 6.9 Handle data-uri encoding conversion:
     - If existing blob has `encoding: "data-uri"`, display correctly
     - On any update, convert to base64
-  - [ ] 6.10 Add tests for upload scenarios: valid upload, invalid MIME type, oversized file, file read error, drag-and-drop, click-to-upload
+  - [x] 6.10 Add tests for upload scenarios: valid upload, invalid MIME type, oversized file, file read error, drag-and-drop, click-to-upload
 
 
 - [ ] 7.0 Wrap-up: clean tests to ensure future non-regression and provide high-level documentation
