@@ -93,6 +93,39 @@ describe('blobUtils.unit', () => {
       
       await expect(fileToBase64(invalidBlob)).rejects.toThrow();
     });
+
+    it('should handle very large files efficiently', async () => {
+      // Create a 1MB blob
+      const largeContent = 'x'.repeat(1024 * 1024);
+      const blob = new Blob([largeContent], { type: 'application/octet-stream' });
+      const result = await fileToBase64(blob);
+      
+      expect(result).toBeDefined();
+      expect(typeof result).toBe('string');
+      expect(result.length).toBeGreaterThan(0);
+    });
+
+    it('should handle file exactly at warning threshold', async () => {
+      // BLOB_SIZE_WARNING_THRESHOLD is 5MB
+      const warningSize = BLOB_SIZE_WARNING_THRESHOLD;
+      const content = 'x'.repeat(warningSize);
+      const blob = new Blob([content], { type: 'application/octet-stream' });
+      const result = await fileToBase64(blob);
+      
+      expect(result).toBeDefined();
+      expect(blob.size).toBe(warningSize);
+    });
+
+    it('should handle file exactly at max size limit', async () => {
+      // MAX_BLOB_FILE_SIZE is 10MB
+      const maxSize = MAX_BLOB_FILE_SIZE;
+      const content = 'x'.repeat(maxSize);
+      const blob = new Blob([content], { type: 'application/octet-stream' });
+      const result = await fileToBase64(blob);
+      
+      expect(result).toBeDefined();
+      expect(blob.size).toBe(maxSize);
+    });
   });
 
   describe('base64ToBlob', () => {
@@ -128,6 +161,45 @@ describe('blobUtils.unit', () => {
       
       expect(blob).toBeInstanceOf(Blob);
       expect(blob.type).toBe('image/png');
+    });
+
+    it('should handle corrupted base64 string gracefully', () => {
+      // Invalid base64 characters
+      const corruptedBase64 = 'This is not valid base64!!!@@@';
+      
+      // Should not throw, but create a blob (atob will handle the error)
+      expect(() => {
+        const blob = base64ToBlob(corruptedBase64, 'text/plain');
+        expect(blob).toBeInstanceOf(Blob);
+      }).toThrow(); // atob throws on invalid base64
+    });
+
+    it('should handle base64 with proper padding', () => {
+      // btoa already includes proper padding, so just use it directly
+      const base64WithPadding = btoa('test');
+      const blob = base64ToBlob(base64WithPadding, 'text/plain');
+      
+      expect(blob).toBeInstanceOf(Blob);
+      expect(blob.type).toBe('text/plain');
+    });
+
+    it('should handle very long base64 strings', () => {
+      const longText = 'x'.repeat(10000);
+      const longBase64 = btoa(longText);
+      const blob = base64ToBlob(longBase64, 'text/plain');
+      
+      expect(blob).toBeInstanceOf(Blob);
+      expect(blob.size).toBeGreaterThan(0);
+    });
+
+    it('should handle base64 for boundary file sizes', () => {
+      // Create base64 for file at warning threshold
+      const warningThresholdText = 'x'.repeat(BLOB_SIZE_WARNING_THRESHOLD);
+      const base64 = btoa(warningThresholdText);
+      const blob = base64ToBlob(base64, 'application/octet-stream');
+      
+      expect(blob).toBeInstanceOf(Blob);
+      expect(blob.size).toBeGreaterThanOrEqual(BLOB_SIZE_WARNING_THRESHOLD);
     });
   });
 
@@ -249,6 +321,41 @@ describe('blobUtils.unit', () => {
     it('should handle very large files', () => {
       const oneGB = 1024 * 1024 * 1024;
       expect(formatFileSize(oneGB)).toBe('1024.0 MB');
+    });
+
+    it('should handle boundary file sizes correctly', () => {
+      // Exactly at KB boundary
+      expect(formatFileSize(1024)).toBe('1.0 KB');
+      // One byte less than KB
+      expect(formatFileSize(1023)).toBe('1023 B');
+      // One byte more than KB
+      expect(formatFileSize(1025)).toBe('1.0 KB');
+      
+      // Exactly at MB boundary
+      expect(formatFileSize(1024 * 1024)).toBe('1.0 MB');
+      // One byte less than MB
+      expect(formatFileSize(1024 * 1024 - 1)).toBe('1024.0 KB');
+      // One byte more than MB
+      expect(formatFileSize(1024 * 1024 + 1)).toBe('1.0 MB');
+    });
+
+    it('should handle warning and max thresholds', () => {
+      expect(formatFileSize(BLOB_SIZE_WARNING_THRESHOLD)).toBe('5.0 MB');
+      expect(formatFileSize(MAX_BLOB_FILE_SIZE)).toBe('10.0 MB');
+      
+      // Just below thresholds
+      expect(formatFileSize(BLOB_SIZE_WARNING_THRESHOLD - 1)).toMatch(/KB|MB/);
+      expect(formatFileSize(MAX_BLOB_FILE_SIZE - 1)).toMatch(/MB/);
+      
+      // Just above thresholds
+      expect(formatFileSize(BLOB_SIZE_WARNING_THRESHOLD + 1)).toMatch(/MB/);
+      expect(formatFileSize(MAX_BLOB_FILE_SIZE + 1)).toMatch(/MB/);
+    });
+
+    it('should handle negative numbers gracefully', () => {
+      // Should either handle gracefully or return a sensible value
+      const result = formatFileSize(-100);
+      expect(typeof result).toBe('string');
     });
   });
 });

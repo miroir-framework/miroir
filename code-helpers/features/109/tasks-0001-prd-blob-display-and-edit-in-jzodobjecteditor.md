@@ -154,28 +154,28 @@ For each task, proceed in a "Test-driven"-like fashion, and create tests before 
 
 
 - [ ] 7.0 Wrap-up: clean tests to ensure future non-regression and provide high-level documentation
-  - [ ] 7.1 Review and consolidate all unit tests in `packages/miroir-core/tests/1_core/blobUtils.test.ts`:
+  - [x] 7.1 Review and consolidate all unit tests in `packages/miroir-core/tests/1_core/blobUtils.test.ts`:
     - Ensure all utility functions have comprehensive test coverage
     - Add edge cases: empty files, corrupted base64, boundary file sizes
-  - [ ] 7.2 Review and consolidate integration tests in `packages/miroir-standalone-app/tests/4_view/BlobEditorField.integ.test.tsx`:
+  - [x] 7.2 Review and consolidate integration tests in `packages/miroir-standalone-app/tests/4_view/BlobEditorField.integ.test.tsx`:
     - Test all display modes (empty, image, non-image, read-only)
     - Test all upload scenarios (success, validation errors, size warnings)
     - Test error handling and recovery
-  - [ ] 7.3 Add end-to-end test using the actual Blob entity:
+  - [x] 7.3 Add end-to-end test using the actual Blob entity:
     - Create test Blob instance with image data
     - Load in JzodObjectEditor
     - Upload new image
     - Verify Formik state updates correctly
-  - [ ] 7.4 Create user-facing documentation in `packages/miroir-standalone-app/docs/BlobEditing.md`:
+  - [x] 7.4 Create user-facing documentation in `packages/miroir-standalone-app/docs/BlobEditing.md`:
     - How to use isBlob tag in entity definitions
     - Supported MIME types and file size limits
     - Screenshots of blob editor in action
-  - [ ] 7.5 Create developer documentation comment block in `BlobEditorField.tsx`:
+  - [x] 7.5 Create developer documentation comment block in `BlobEditorField.tsx`:
     - Component purpose and usage
     - Props documentation
     - Integration with JzodObjectEditor
     - Customization options
-  - [ ] 7.6 Update `rationale.md` or `works.md` with feature completion notes
+  - [x] 7.6 Update `rationale.md` or `works.md` with feature completion notes
   - [ ] 7.7 Run full test suite to ensure no regressions:
     - `npm run test -w miroir-core -- ''`
     - `npm run test -w miroir-standalone-app -- ''`

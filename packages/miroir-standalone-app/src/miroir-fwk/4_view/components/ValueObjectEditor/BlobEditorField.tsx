@@ -46,12 +46,202 @@ MiroirLoggerFactory.registerLoggerToStart(
 
 // ################################################################################################
 // BlobEditorField Component
-// 
-// A specialized editor for blob/file objects with the isBlob tag.
-// Provides preview, upload, and metadata display capabilities.
-// 
-// Integration: Used by JzodObjectEditor when schema has tag.value.isBlob === true
 // ################################################################################################
+/**
+ * BlobEditorField - A specialized React component for displaying and editing binary content (blobs)
+ * within the Miroir Framework's entity editor system.
+ * 
+ * @component
+ * 
+ * ## Purpose
+ * 
+ * This component provides a complete user interface for managing blob data (images, PDFs, documents, etc.)
+ * within Miroir's JzodObjectEditor. It automatically renders different UI modes based on the blob's
+ * MIME type and provides interactive upload capabilities via drag-and-drop or click-to-upload.
+ * 
+ * ## Key Features
+ * 
+ * - **Image Preview**: Displays images with a responsive preview and full-size lightbox modal
+ * - **File Icons**: Shows appropriate icons for non-image files (PDF, ZIP, text, etc.)
+ * - **Drag-and-Drop Upload**: Supports dragging files from the file system
+ * - **Click-to-Upload**: Click anywhere on the container to trigger file selection
+ * - **MIME Type Validation**: Validates uploaded files against allowed types from schema
+ * - **File Size Validation**: Enforces 5MB warning threshold and 10MB hard limit
+ * - **Read-Only Mode**: Disables uploads while maintaining preview and download functionality
+ * - **Error Handling**: Graceful error display for validation failures and corrupted data
+ * - **Metadata Display**: Shows filename and MIME type information
+ * - **Download**: Provides download button for non-image files
+ * 
+ * ## Integration with JzodObjectEditor
+ * 
+ * This component is automatically used by `JzodObjectEditor` when:
+ * 1. The schema has `tag.value.isBlob === true`
+ * 2. The object structure matches: `{ filename: string, contents: { encoding, mimeType, data } }`
+ * 
+ * The JzodObjectEditor detects the isBlob tag and renders BlobEditorField instead of
+ * regular object attribute editors.
+ * 
+ * ## Blob Data Structure
+ * 
+ * Expected blob object structure:
+ * ```typescript
+ * {
+ *   filename: string,              // User-visible filename
+ *   contents: {
+ *     encoding: 'base64' | 'data-uri',  // Encoding format
+ *     mimeType: string,                  // MIME type (e.g., 'image/png')
+ *     data: string                       // Base64-encoded blob data
+ *   }
+ * }
+ * ```
+ * 
+ * ## Props Documentation
+ * 
+ * @param {BlobEditorFieldProps} props
+ * 
+ * @prop {string} rootLessListKey - Formik field path to the blob object (e.g., "myBlob" or "myObject.myBlob")
+ * @prop {(string|number)[]} rootLessListKeyArray - Array representation of the field path for nested access
+ * @prop {any} currentValue - The blob object containing filename and contents
+ * @prop {FormikProps<any>} formik - Formik context for form state management and updates
+ * @prop {boolean} [readOnly=false] - If true, disables upload interactions but keeps preview/download
+ * @prop {string[]} [allowedMimeTypes=[]] - Array of allowed MIME types (e.g., ['image/png', 'application/pdf'])
+ *                                           Extracted from schema's mimeType enum definition
+ * @prop {(error: string) => void} [onError] - Callback function invoked when validation errors occur
+ * 
+ * ## Usage Example
+ * 
+ * ```tsx
+ * <BlobEditorField
+ *   rootLessListKey="myDocument"
+ *   rootLessListKeyArray={["myDocument"]}
+ *   currentValue={{
+ *     filename: "report.pdf",
+ *     contents: {
+ *       encoding: "base64",
+ *       mimeType: "application/pdf",
+ *       data: "JVBERi0xLjQKJeLjz9MKCg=="
+ *     }
+ *   }}
+ *   formik={formik}
+ *   readOnly={false}
+ *   allowedMimeTypes={["application/pdf", "image/png"]}
+ *   onError={(error) => console.error(error)}
+ * />
+ * ```
+ * 
+ * ## Display Modes
+ * 
+ * The component automatically selects the appropriate display mode:
+ * 
+ * 1. **Empty State**: When contents is undefined/null
+ *    - Shows upload prompt with cloud icon
+ *    - Click or drag-and-drop to upload
+ * 
+ * 2. **Image Preview**: When MIME type starts with "image/"
+ *    - Displays thumbnail preview (max 200x200px)
+ *    - Click preview to open lightbox modal
+ *    - Shows filename and MIME type
+ *    - Click container or drag-drop to replace
+ * 
+ * 3. **File Icon**: For all other MIME types
+ *    - Shows appropriate icon (PDF, ZIP, text, generic)
+ *    - Displays filename and MIME type
+ *    - Download button to save file
+ *    - Click container or drag-drop to replace
+ * 
+ * ## File Upload Workflow
+ * 
+ * 1. User triggers upload (click or drag-drop)
+ * 2. File size validation (warning at 5MB, reject at 10MB)
+ * 3. MIME type validation against allowedMimeTypes
+ * 4. Loading state displayed with spinner
+ * 5. File converted to base64 using FileReader API
+ * 6. Formik values updated atomically (filename, encoding, mimeType, data)
+ * 7. Preview updated or error displayed
+ * 
+ * ## Validation Rules
+ * 
+ * ### Blob Structure Validation
+ * - Encoding must be 'base64' or 'data-uri'
+ * - MIME type is required when contents exist
+ * - Data field must contain non-empty string
+ * - Missing contents field is valid (empty state)
+ * 
+ * ### Upload Validation
+ * - File must match one of the allowedMimeTypes (if specified)
+ * - File size must be ≤ 10 MB (hard limit)
+ * - Files > 5 MB show confirmation dialog
+ * - Only one file can be uploaded at a time
+ * 
+ * ## Error Handling
+ * 
+ * The component handles these error scenarios:
+ * - Invalid encoding in existing blob
+ * - Missing required fields (mimeType, data)
+ * - Upload file type mismatch
+ * - Upload file too large
+ * - File read errors
+ * - Multiple files dropped
+ * 
+ * All errors are displayed inline and optionally reported via onError callback.
+ * 
+ * ## Customization Options
+ * 
+ * ### Theming
+ * Uses Miroir's theme system via `useMiroirTheme()` hook. Themed components used:
+ * - ThemedBlobContainer
+ * - ThemedBlobPreview
+ * - ThemedBlobEmptyState
+ * - ThemedBlobMetadata
+ * - ThemedBlobIconDisplay
+ * - ThemedBlobDropZone
+ * 
+ * ### Allowed MIME Types
+ * Control which file types can be uploaded by setting the mimeType enum in your entity schema:
+ * ```json
+ * "mimeType": {
+ *   "type": "enum",
+ *   "definition": ["image/png", "image/jpeg", "application/pdf"]
+ * }
+ * ```
+ * 
+ * ### Size Limits
+ * File size limits are defined in constants:
+ * - `BLOB_SIZE_WARNING_THRESHOLD`: 5 MB (shows confirmation)
+ * - `MAX_BLOB_FILE_SIZE`: 10 MB (hard reject)
+ * 
+ * ## Accessibility
+ * 
+ * - Hidden file input with proper accept attribute
+ * - Alt text on images using filename
+ * - Keyboard navigation support
+ * - Clear error messages
+ * - ARIA labels on interactive elements
+ * 
+ * ## Performance Considerations
+ * 
+ * - Uses React.useMemo for blob data parsing
+ * - Uses React.useCallback for event handlers
+ * - Base64 conversion is async (doesn't block UI)
+ * - Large files may impact Formik validation performance
+ * 
+ * ## Dependencies
+ * 
+ * External:
+ * - Formik (form state management)
+ * - @emotion/react (styling)
+ * - @mui/icons-material (icons)
+ * 
+ * Internal (miroir-core):
+ * - fileToBase64: Converts File/Blob to base64
+ * - base64ToBlob: Converts base64 to Blob for download
+ * - validateMimeType: Validates file type
+ * - getBlobFileIcon: Returns icon name for MIME type
+ * - formatFileSize: Formats bytes to human-readable
+ * 
+ * @see JzodObjectEditor - Parent component that conditionally renders this
+ * @see packages/miroir-standalone-app/docs/BlobEditing.md - User-facing documentation
+ */
 
 export interface BlobEditorFieldProps {
   rootLessListKey: string;

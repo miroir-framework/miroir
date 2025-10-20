@@ -424,6 +424,35 @@ Practical issue: too many logs when running integration tests!
 - Optimized MAS execution for better performance in large workflows.
 - Updated documentation and provided new usage examples for MAS/Query features.
 
+## 2025-10
+
+### studies & design
+
+- Designed blob display and editing functionality for JzodObjectEditor component
+- Explored FileReader API and drag-and-drop patterns for file upload in React
+- Designed validation strategies for MIME types and file sizes in blob handling
+- Studied base64 encoding/decoding for binary content storage and display
+
+### development
+
+- **Implemented comprehensive blob/file editing support in JzodObjectEditor**
+  - Created `BlobEditorField` component for displaying and editing binary content (images, PDFs, documents)
+  - Added specialized UI components for blob display: preview containers, metadata overlays, file icons, drag-drop zones
+  - Implemented dual upload mechanisms: click-to-upload and drag-and-drop file selection
+  - Added blob utility functions: `fileToBase64`, `base64ToBlob`, `validateMimeType`, `getBlobFileIcon`, `formatFileSize`
+  - Implemented validation rules: MIME type checking, file size limits (5MB warning, 10MB maximum)
+  - Created lightbox modal for full-size image viewing using existing DraggableContainer
+  - Added comprehensive error handling for corrupted blobs, invalid encodings, and upload failures
+  - Implemented read-only mode with download functionality preserved
+  - Fixed atomic Formik value updates to prevent intermediate invalid states during file uploads
+- **Testing infrastructure for blob functionality**
+  - Created unit tests for blob utility functions (37 tests) including edge cases for empty files, corrupted base64, and boundary file sizes
+  - Created integration tests for BlobEditorField component (47 tests) covering display modes, upload scenarios, and error handling
+  - Created JzodObjectEditor blob integration tests (9 tests) for end-to-end validation
+- **Documentation**
+  - Created user-facing documentation (`docs/BlobEditing.md`) with usage guide, supported MIME types, and file size limits
+  - Added comprehensive developer documentation in BlobEditorField component with JSDoc comments covering purpose, props, integration, and customization
+
 # AI Analysis of the document, run 2025/08/08
 
 ## prompt (Claude Sonnet 6.7 Thinking)
