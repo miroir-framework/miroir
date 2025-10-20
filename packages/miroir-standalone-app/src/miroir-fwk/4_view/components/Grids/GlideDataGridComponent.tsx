@@ -1,48 +1,29 @@
-import React, { useCallback, useMemo, useState, useRef, useEffect } from 'react';
 import {
+  CellClickedEventArgs,
   DataEditor,
+  EditableGridCell,
   GridCell,
   GridCellKind,
   GridColumn,
-  Item,
-  DataEditorProps,
-  CellClickedEventArgs,
-  EditableGridCell,
+  Item
 } from '@glideapps/glide-data-grid';
 import "@glideapps/glide-data-grid/dist/index.css";
-import { 
-  Popover, 
-  Box, 
-  TextField, 
-  Select, 
-  MenuItem, 
-  FormControl, 
-  InputLabel, 
-  Button,
-  IconButton,
-  Typography 
-} from '@mui/material';
-import {
-  FilterList as FilterIcon,
-  Clear as ClearIcon,
-  Add as AddIcon,
-  Remove as RemoveIcon,
-} from "@mui/icons-material";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import { 
+import GlideDataGridFilterComponent from './GlideDataGridFilterComponent.js';
+
+import {
   EntityDefinition,
-  EntityInstance,
   LoggerInterface,
-  MiroirLoggerFactory 
+  MiroirLoggerFactory
 } from "miroir-core";
 
 import { packageName } from '../../../../constants.js';
+import { ColumnWidthSpec, ToolsColumnDefinition } from '../../adaptiveColumnWidths.js';
 import { cleanLevel } from '../../constants.js';
 import {
-  TableComponentRow,
-  TableComponentTypeSchema,
+  TableComponentRow
 } from "./EntityInstanceGridInterface.js";
-import { calculateAdaptiveColumnWidths, ColumnWidthSpec, ToolsColumnDefinition } from '../../adaptiveColumnWidths.js';
 import glideToolsCellRenderer, { ToolsCell, ToolsCellData } from './GlideToolsCellRenderer.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -50,6 +31,10 @@ MiroirLoggerFactory.registerLoggerToStart(
   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "GlideDataGridComponent"), "UI",
 ).then((logger: LoggerInterface) => {log = logger});
 
+// ##############################################################################################
+const maxHeight = 500;
+
+// ##############################################################################################
 // Sorting and filtering types
 type SortDirection = 'asc' | 'desc' | null;
 interface SortState {
@@ -84,8 +69,9 @@ interface GlideDataGridComponentProps {
   styles?: any;
   type: string;
   currentEntityDefinition?: EntityDefinition;
-  calculatedColumnWidths?: ColumnWidthSpec[];
+  // calculatedColumnWidths?: ColumnWidthSpec[];
   containerWidth?: number; // Container width from parent EntityInstanceGrid
+  containerHeight?: number; // Container width from parent EntityInstanceGrid
   toolsColumnDefinition: ToolsColumnDefinition;
   maxRows?: number; // Maximum number of rows to show (controls table height)
   theme?: any; // Table theme for unified styling
@@ -103,8 +89,9 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
   styles,
   type,
   currentEntityDefinition,
-  calculatedColumnWidths,
+  // calculatedColumnWidths,
   containerWidth: propContainerWidth,
+  containerHeight: propContainerHeight,
   toolsColumnDefinition,
   maxRows,
   theme,
@@ -117,9 +104,11 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
 }) => {
   const containerRef = React.useRef<HTMLDivElement>(null);
   const [internalContainerWidth, setInternalContainerWidth] = React.useState(1200);
+  const [internalContainerHeight, setInternalContainerHeight] = React.useState(900);
   
   // Use provided containerWidth from parent or fall back to internal measurement
   const containerWidth = propContainerWidth || internalContainerWidth;
+  const containerHeight = propContainerHeight || internalContainerHeight;
   
   // Sorting state
   const [sortState, setSortState] = useState<SortState>({ columnId: '', direction: null });
@@ -136,6 +125,7 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
   // Ref for the filter value input to enable focus
   const filterValueRef = useRef<HTMLInputElement>(null);
 
+  // ##############################################################################################
   // Focus the filter value input when a column is selected or condition is added
   useEffect(() => {
     const hasConditions = filterState.columnGroups.some(group => group.conditions.length > 0);
@@ -150,6 +140,7 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
   // Helper functions for managing filter conditions
   const generateFilterId = () => Math.random().toString(36).substr(2, 9);
 
+  // ##############################################################################################
   const addFilterCondition = useCallback((columnId: string) => {
     const newCondition: FilterCondition = {
       id: generateFilterId(),
@@ -181,6 +172,7 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
     });
   }, []);
 
+  // ##############################################################################################
   const updateFilterCondition = useCallback((conditionId: string, updates: Partial<FilterCondition>) => {
     setFilterState(prev => ({
       ...prev,
@@ -193,6 +185,7 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
     }));
   }, []);
 
+  // ##############################################################################################
   const removeFilterCondition = useCallback((conditionId: string) => {
     setFilterState(prev => ({
       ...prev,
@@ -205,6 +198,7 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
     }));
   }, []);
 
+  // ##############################################################################################
   const updateColumnGroupLogic = useCallback((columnId: string, logic: FilterLogic) => {
     setFilterState(prev => ({
       ...prev,
@@ -214,6 +208,7 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
     }));
   }, []);
 
+  // ##############################################################################################
   const removeColumnGroup = useCallback((columnId: string) => {
     setFilterState(prev => ({
       ...prev,
@@ -221,11 +216,13 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
     }));
   }, []);
 
+  // ##############################################################################################
   const clearAllFilters = useCallback(() => {
     setFilterState({ columnGroups: [], globalLogic: 'AND' });
     setSelectedColumnId(null);
   }, []);
 
+  // ##############################################################################################
   // Auto-add first condition when column is selected
   useEffect(() => {
     if (selectedColumnId) {
@@ -238,22 +235,26 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
 
   // Monitor container width changes (only if containerWidth not provided from parent)
   useEffect(() => {
-    if (propContainerWidth || (calculatedColumnWidths && calculatedColumnWidths.length > 0)) {
+    if (propContainerWidth && propContainerHeight) {
       // Skip internal width measurement if parent provides width OR we have pre-calculated widths
       return;
     }
 
-    const updateWidth = () => {
+    const updateDimensions = () => {
       if (containerRef.current) {
-        const width = containerRef.current.clientWidth;
-        setInternalContainerWidth(width);
+        if (!propContainerWidth) {
+          setInternalContainerWidth(containerRef.current.clientWidth);
+        }
+        if (!propContainerHeight) {
+          setInternalContainerHeight(containerRef.current.clientHeight);
+        }
       }
     };
 
-    updateWidth();
-    window.addEventListener('resize', updateWidth);
-    return () => window.removeEventListener('resize', updateWidth);
-  }, [propContainerWidth, calculatedColumnWidths]);
+    updateDimensions();
+    window.addEventListener('resize', updateDimensions);
+    return () => window.removeEventListener('resize', updateDimensions);
+  }, [propContainerWidth, propContainerHeight]);
 
   // Handle header clicks for sorting
   const handleHeaderClick = useCallback((columnIndex: number) => {
@@ -308,6 +309,7 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
     return (row.displayedValue?.[columnField] || row.rawValue?.[columnField] || '').toString();
   }, [columnDefs]);
 
+  // ##############################################################################################
   // Apply filtering and sorting to the data
   const sortedAndFilteredTableRows = useMemo(() => {
     let filteredRows = tableComponentRows.tableComponentRowUuidIndexSchema;
@@ -388,62 +390,47 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
     return sorted;
   }, [tableComponentRows, sortState, filterState, getFilterValue]);
 
+  // ##############################################################################################
   // Calculate height based on data
   const height = useMemo(() => {
     const rowCount = sortedAndFilteredTableRows.length;
     if (rowCount > 50) {
-      return Math.min(window.innerHeight * 0.5, 600); // 50vh but max 600px
+      return Math.min(window.innerHeight * 0.5, propContainerHeight??maxHeight); // 50vh but max 600px
     } else {
       // Calculate exact height to prevent extra empty rows
       const headerHeight = 36; // Grid header height
       const rowHeight = 34; // Height per row
       
-      // Calculate filter toolbar height more precisely
-      const filterPadding = 16; // 2 * 8px (padding: 1 in MUI theme)
-      const filterBorderBottom = 1; // Border bottom
-      const mainControlsRowHeight = 40; // Height of select controls (size="small")
-      const mainControlsMarginBottom = 8; // mb: 1 in MUI theme
-      
-      // Calculate dynamic height based on number of active filter groups
-      const columnGroupsHeight = filterState.columnGroups.length > 0 
-        ? filterState.columnGroups.reduce((total, group) => {
-            const groupBaseHeight = 60; // Base height for column group container
-            const conditionsHeight = group.conditions.length * 50; // Each condition row
-            return total + groupBaseHeight + conditionsHeight;
-          }, 0)
-        : 24; // "Select a column above to start filtering" text height
-      
-      const filterToolbarHeight = filterPadding + filterBorderBottom + mainControlsRowHeight + 
-                                  mainControlsMarginBottom + columnGroupsHeight;
-      
-      const calculatedHeight = rowCount * rowHeight + headerHeight + filterToolbarHeight;
+      const calculatedHeight = rowCount * rowHeight + headerHeight;
       
       // Log the calculation for debugging
       log.info("GlideDataGrid height calculation", {
         rowCount,
         rowHeight,
         headerHeight,
-        filterToolbarHeight,
+        // filterToolbarHeight,
         filterGroupsCount: filterState.columnGroups.length,
         totalCalculatedHeight: calculatedHeight
       });
       
       // Apply reasonable bounds but prioritize exact calculation for small datasets
-      return Math.min(calculatedHeight, 600);
+      return Math.min(calculatedHeight, propContainerHeight??maxHeight);
     }
   }, [sortedAndFilteredTableRows.length, filterState.columnGroups]);
 
+  // ##############################################################################################
   // Convert columnDefs to Glide format
   const glideColumns: GridColumn[] = useMemo(() => {
     let widthSpecs: ColumnWidthSpec[];
 
-    if (calculatedColumnWidths && calculatedColumnWidths.length > 0) {
-      // Use pre-calculated widths from EntityInstanceGrid
-      widthSpecs = calculatedColumnWidths;
-    } else {
+    // if (calculatedColumnWidths && calculatedColumnWidths.length > 0) {
+    //   // Use pre-calculated widths from EntityInstanceGrid
+    //   widthSpecs = calculatedColumnWidths;
+    // } else {
       // Defensive fallback: This should now rarely happen since EntityInstanceGrid always calculates widths
       console.warn("GlideDataGridComponent: No calculated column widths provided, using simple fallback");
       
+      const equalDistributionColumnWidth = Math.floor((containerWidth - toolsColumnDefinition.width) / columnDefs.columnDefs.length);
       widthSpecs = [
         // Tools column
         {
@@ -455,29 +442,31 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
           type: "tools" as const
         },
         // Data columns with equal distribution
-        ...columnDefs.columnDefs.map((colDef: any) => ({
-          field: colDef.field || "",
-          headerName: colDef.headerName || colDef.field,
-          minWidth: 100,
-          maxWidth: 300,
-          calculatedWidth: 150, // Simple fallback width
-          type: "text" as const
-        }))
+        ...columnDefs.columnDefs.map((colDef: any) => {
+          return {
+            field: colDef.field || "",
+            headerName: colDef.headerName || colDef.field,
+            minWidth: 100,
+            maxWidth: 300,
+            // calculatedWidth: 150, // Simple fallback width
+            calculatedWidth: equalDistributionColumnWidth,
+            type: "text" as const,
+          };})
       ];
-    }
+    // }
 
     // Debug logging for width distribution
-    const finalTotalWidth = widthSpecs.reduce((sum, spec) => sum + spec.calculatedWidth, 0);
-    log.info("GlideDataGrid column width distribution", {
-      containerWidth,
-      finalTotalWidth,
-      usingPreCalculatedWidths: calculatedColumnWidths && calculatedColumnWidths.length > 0,
-      columnWidths: widthSpecs.map((spec) => ({
-        field: spec.field || "tools",
-        type: spec.type,
-        width: Math.round(spec.calculatedWidth),
-      })),
-    });
+    // const finalTotalWidth = widthSpecs.reduce((sum, spec) => sum + spec.calculatedWidth, 0);
+    // log.info("GlideDataGrid column width distribution", {
+    //   containerWidth,
+    //   finalTotalWidth,
+    //   // usingPreCalculatedWidths: calculatedColumnWidths && calculatedColumnWidths.length > 0,
+    //   columnWidths: widthSpecs.map((spec) => ({
+    //     field: spec.field || "tools",
+    //     type: spec.type,
+    //     // width: Math.round(spec.calculatedWidth),
+    //   })),
+    // });
 
     const columns: GridColumn[] = [];
 
@@ -526,12 +515,6 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
     tableComponentRows,
     type,
     currentEntityDefinition,
-    calculatedColumnWidths,
-    // Only depend on containerWidth and height when we need to calculate widths locally
-    ...(calculatedColumnWidths && calculatedColumnWidths.length > 0 
-      ? [] 
-      : [containerWidth, height]
-    ),
     toolsColumnDefinition,
     sortState,
     filterState,
@@ -699,299 +682,147 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
 
   return (
     <div
-      ref={containerRef}
-      style={{
-        ...styles,
-        height: `${height}px`,
-        width: '100%',
-        maxWidth: '100%',
-        border: theme?.components?.table?.border || '1px solid #e0e0e0',
-        borderRadius: theme?.components?.table?.borderRadius || '4px',
-        overflow: 'hidden',
-        boxSizing: 'border-box',
-        fontFamily: theme?.typography?.fontFamily || 'inherit',
-        fontSize: theme?.typography?.fontSize || '14px',
-      }}
+      className="glide-data-grid-container"
+      // style={{
+      //   ...styles,
+      //   display: "flex",
+      //   flexDirection: "column",
+      //   flexGrow: 1,
+      //   position: "relative",
+      //   overflow: "hidden",
+      //   boxSizing: "border-box",
+      //   border: theme?.components?.table?.border || "1px solid #e0e0e0",
+      //   borderRadius: theme?.components?.table?.borderRadius || "4px",
+      //   fontFamily: theme?.typography?.fontFamily || "inherit",
+      //   fontSize: theme?.typography?.fontSize || "14px",
+      // }}
     >
+      {/* const containerWidth = propContainerWidth || internalContainerWidth; */}
       {/* Filter Toolbar */}
-      <Box sx={{ 
-        padding: 1, 
-        borderBottom: `1px solid ${theme?.colors?.border || '#e0e0e0'}`,
-        backgroundColor: theme?.components?.toolbar?.background || '#f8f8f8',
-        width: '100%',
-        maxWidth: '100%',
-        overflow: 'hidden',
-        boxSizing: 'border-box',
-      }}>
-        {/* Main Controls Row */}
-        <Box sx={{ 
-          display: 'flex', 
-          gap: 1, 
-          alignItems: 'center', 
-          mb: 1,
-          flexWrap: 'wrap', // Allow wrapping on small screens
-          width: '100%',
-          maxWidth: '100%',
-          overflow: 'hidden',
-        }}>
-          <FormControl size="small" sx={{ minWidth: 120 }}>
-            <InputLabel>Add Filter Column</InputLabel>
-            <Select
-              value={selectedColumnId || ''}
-              label="Add Filter Column"
-              onChange={(e) => {
-                const newColumnId = e.target.value || null;
-                setSelectedColumnId(newColumnId);
-              }}
-            >
-              <MenuItem value="">None</MenuItem>
-              {columnDefs.columnDefs
-                .filter((colDef: any) => colDef.filter !== false)
-                .map((colDef: any) => (
-                  <MenuItem key={colDef.field} value={colDef.field}>
-                    {colDef.headerName || colDef.field}
-                  </MenuItem>
-                ))
-              }
-            </Select>
-          </FormControl>
-          
-          {filterState.columnGroups.length > 1 && (
-            <FormControl size="small" sx={{ minWidth: 120 }}>
-              <InputLabel>Between Columns</InputLabel>
-              <Select
-                value={filterState.globalLogic}
-                label="Between Columns"
-                onChange={(e) => setFilterState(prev => ({ 
-                  ...prev, 
-                  globalLogic: e.target.value as FilterLogic 
-                }))}
-              >
-                <MenuItem value="AND">AND</MenuItem>
-                <MenuItem value="OR">OR</MenuItem>
-              </Select>
-            </FormControl>
-          )}
-          
-          {filterState.columnGroups.length > 0 && (
-            <IconButton
-              size="small"
-              onClick={clearAllFilters}
-              title="Clear All Filters"
-            >
-              <ClearIcon />
-            </IconButton>
-          )}
-        </Box>
+      <GlideDataGridFilterComponent
+        columnDefs={columnDefs}
+        filterState={filterState}
+        selectedColumnId={selectedColumnId}
+        setSelectedColumnId={setSelectedColumnId}
+        addFilterCondition={addFilterCondition}
+        updateColumnGroupLogic={updateColumnGroupLogic}
+        removeColumnGroup={removeColumnGroup}
+        updateFilterCondition={updateFilterCondition}
+        removeFilterCondition={removeFilterCondition}
+        clearAllFilters={clearAllFilters}
+        filterValueRef={filterValueRef}
+        theme={theme}
+      />
 
-        {/* Column Filter Groups */}
-        {filterState.columnGroups.length === 0 && (
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, py: 1 }}>
-            <Typography variant="body2" color="text.secondary">
-              Select a column above to start filtering
-            </Typography>
-          </Box>
-        )}
-        
-        {filterState.columnGroups.map((group, groupIndex) => (
-          <Box key={group.columnId} sx={{ 
-            border: '1px solid #e0e0e0', 
-            borderRadius: 1, 
-            padding: 1, 
-            mb: 1,
-            backgroundColor: theme?.colors?.background || '#ffffff',
+      {/* <div
+        style={
+          {
+            display: 'flex',
+            flexDirection: 'column',
             width: '100%',
-            maxWidth: '100%',
-            overflow: 'hidden',
-            boxSizing: 'border-box',
-          }}>
-            {/* Column Group Header */}
-            <Box sx={{ 
-              display: 'flex', 
-              gap: 1, 
-              alignItems: 'center', 
-              mb: 1,
-              flexWrap: 'wrap', // Allow wrapping on small screens
-              width: '100%',
-              maxWidth: '100%',
-            }}>
-              {groupIndex > 0 && (
-                <Typography variant="body2" sx={{ 
-                  minWidth: 60, 
-                  textAlign: 'center', 
-                  fontWeight: 'bold',
-                  color: 'primary.main',
-                  backgroundColor: 'primary.light',
-                  borderRadius: 1,
-                  px: 1,
-                  py: 0.5
-                }}>
-                  {filterState.globalLogic}
-                </Typography>
-              )}
-              
-              <Typography variant="subtitle2" sx={{ fontWeight: 'bold', flex: 1 }}>
-                {columnDefs.columnDefs.find((col: any) => col.field === group.columnId)?.headerName || group.columnId}
-              </Typography>
-              
-              {group.conditions.length > 1 && (
-                <FormControl size="small" sx={{ minWidth: 80 }}>
-                  <InputLabel>Logic</InputLabel>
-                  <Select
-                    value={group.logic}
-                    label="Logic"
-                    onChange={(e) => updateColumnGroupLogic(group.columnId, e.target.value as FilterLogic)}
-                  >
-                    <MenuItem value="AND">AND</MenuItem>
-                    <MenuItem value="OR">OR</MenuItem>
-                  </Select>
-                </FormControl>
-              )}
-              
-              <IconButton
-                size="small"
-                onClick={() => addFilterCondition(group.columnId)}
-                title="Add Condition"
-                color="primary"
-              >
-                <AddIcon />
-              </IconButton>
-              
-              <IconButton
-                size="small"
-                onClick={() => removeColumnGroup(group.columnId)}
-                title="Remove Column Filter"
-              >
-                <ClearIcon />
-              </IconButton>
-            </Box>
-
-            {/* Filter Conditions for this column */}
-            {group.conditions.map((condition, conditionIndex) => (
-              <Box key={condition.id} sx={{ 
-                display: 'flex', 
-                gap: 1, 
-                alignItems: 'center', 
-                mb: 1, 
-                ml: groupIndex > 0 ? 8 : 0,
-                flexWrap: 'wrap', // Allow wrapping on small screens
-                width: '100%',
-                maxWidth: '100%',
-              }}>
-                {conditionIndex > 0 && (
-                  <Typography variant="body2" sx={{ minWidth: 40, textAlign: 'center', fontWeight: 'bold' }}>
-                    {group.logic}
-                  </Typography>
-                )}
-                
-                <FormControl size="small" sx={{ minWidth: 120 }}>
-                  <InputLabel>Type</InputLabel>
-                  <Select
-                    value={condition.type}
-                    label="Type"
-                    onChange={(e) => updateFilterCondition(condition.id, { type: e.target.value as FilterType })}
-                  >
-                    <MenuItem value="contains">Contains</MenuItem>
-                    <MenuItem value="notContains">Not Contains</MenuItem>
-                    <MenuItem value="startsWith">Starts With</MenuItem>
-                    <MenuItem value="notStartsWith">Not Starts With</MenuItem>
-                    <MenuItem value="endsWith">Ends With</MenuItem>
-                    <MenuItem value="notEndsWith">Not Ends With</MenuItem>
-                    <MenuItem value="equals">Equals</MenuItem>
-                    <MenuItem value="notEqual">Not Equal</MenuItem>
-                  </Select>
-                </FormControl>
-                
-                <TextField
-                  inputRef={
-                    group.columnId === selectedColumnId && 
-                    conditionIndex === group.conditions.length - 1 ? 
-                    filterValueRef : undefined
-                  }
-                  size="small"
-                  label="Filter Value"
-                  value={condition.value}
-                  onChange={(e) => updateFilterCondition(condition.id, { value: e.target.value })}
-                  sx={{ minWidth: 120, maxWidth: 200, flex: 1 }} // More responsive sizing
-                />
-                
-                <IconButton
-                  size="small"
-                  onClick={() => removeFilterCondition(condition.id)}
-                  title="Remove Condition"
-                >
-                  <RemoveIcon />
-                </IconButton>
-              </Box>
-            ))}
-          </Box>
-        ))}
-      </Box>
-      
-      <div style={{ 
-        width: calculatedColumnWidths && calculatedColumnWidths.length > 0 
-          ? `${Math.max(Math.round(calculatedColumnWidths.reduce((sum, spec) => sum + spec.calculatedWidth, 0)), 300)}px`
-          : '100%',
-        height: `${height - 2}px`, // Subtract 2px for borders
-        maxWidth: calculatedColumnWidths && calculatedColumnWidths.length > 0 
-          ? `${Math.max(Math.round(calculatedColumnWidths.reduce((sum, spec) => sum + spec.calculatedWidth, 0)), 300)}px`
-          : '100%',
-        overflow: 'hidden',
-        position: 'relative',
-      }}>
+            // width: calculatedColumnWidths && calculatedColumnWidths.length > 0
+            //   ? `${Math.max(Math.round(calculatedColumnWidths.reduce((sum, spec) => sum + spec.calculatedWidth, 0)), 300)}px`
+            //   : '100%',
+            // height: `${height - 2}px`, // Subtract 2px for borders
+            // maxWidth: calculatedColumnWidths && calculatedColumnWidths.length > 0
+            //   ? `${Math.max(Math.round(calculatedColumnWidths.reduce((sum, spec) => sum + spec.calculatedWidth, 0)), 300)}px`
+            //   : '100%',
+            // overflow: 'hidden',
+            // position: 'relative',
+          }
+        }
+      > */}
+      <div
+        ref={containerRef} // Container ref for width / height measurement
+        className="glide-data-grid-grid-container"
+        style={{
+          ...styles,
+          display: "flex",
+          flexDirection: "column",
+          flexGrow: 1,
+          position: "relative",
+          overflow: "hidden",
+          boxSizing: "border-box",
+          border: theme?.components?.table?.border || "1px solid #e0e0e0",
+          borderRadius: theme?.components?.table?.borderRadius || "4px",
+          fontFamily: theme?.typography?.fontFamily || "inherit",
+          fontSize: theme?.typography?.fontSize || "14px",
+        }}
+        // class: "glide-data-grid-container",
+        // display: "flex",
+        // flexDirection: "column",
+        // flexGrow: 1,
+        // position: "relative",
+        // overflow: "hidden",
+        // boxSizing: "border-box",
+      >
+        <span>
+          {/* width: {width}, internalContainerHeight: {internalContainerHeight},  */}
+          GlideDataGridComponent containerWidth: {containerWidth},
+          {/* propContainerHeight: {propContainerHeight} */}
+        </span>
+        <span>
+          GlideDataGridComponent height: {height}, internalContainerHeight: {internalContainerHeight}, containerHeight: {containerHeight},
+          propContainerHeight: {propContainerHeight}
+        </span>
         <DataEditor
           columns={glideColumns}
+          width="100%"
+          // height="400px"
+          // height="100%"
+          // height={height || propContainerHeight || Math.max(Math.min(sortedAndFilteredTableRows.length, maxRows || 50) * 34 + 36, 100)} // DataEditor height = visible rows + header only
+          height={height} // DataEditor height = visible rows + header only
           rows={sortedAndFilteredTableRows.length}
           getCellContent={getCellContent}
           onCellClicked={handleCellClicked}
           onCellEdited={handleCellEdited}
           onHeaderClicked={handleHeaderClick}
           customRenderers={[glideToolsCellRenderer]}
-          smoothScrollX={true}
-          smoothScrollY={true}
           isDraggable={false}
           rangeSelect="none"
           columnSelect="none"
           rowSelect="none"
-          width={calculatedColumnWidths && calculatedColumnWidths.length > 0 
-            ? Math.max(Math.round(calculatedColumnWidths.reduce((sum, spec) => sum + spec.calculatedWidth, 0)), 300)
-            : Math.max(containerWidth - 2, 300)
-          } // Use calculated total width when available, otherwise respect container
-          height={Math.max(Math.min(sortedAndFilteredTableRows.length, maxRows || 50) * 34 + 36, 100)} // DataEditor height = visible rows + header only
           keybindings={{
             selectAll: false,
             selectRow: false,
             selectColumn: false,
           }}
-        theme={glideTheme || {
-          accentColor: theme?.colors?.primary || "#1976d2",
-          accentFg: "#ffffff",
-          accentLight: "rgba(25, 118, 210, 0.1)",
-          textDark: theme?.colors?.text || "#1a1a1a",
-          textMedium: theme?.colors?.textSecondary || "#333333",
-          textLight: theme?.colors?.textSecondary || "#666666",
-          textBubble: theme?.colors?.text || "#1a1a1a",
-          bgIconHeader: "#444444",
-          fgIconHeader: "#ffffff",
-          textHeader: theme?.colors?.text || "#1a1a1a",
-          textHeaderSelected: "#000000",
-          bgCell: theme?.colors?.background || "#ffffff",
-          bgCellMedium: theme?.colors?.surface || "#f8f8f8",
-          bgHeader: theme?.components?.header?.background || "#f0f0f0",
-          bgHeaderHasFocus: theme?.colors?.hover || "#e0e0e0",
-          bgHeaderHovered: theme?.colors?.hover || "#e8e8e8",
-          bgBubble: theme?.colors?.background || "#ffffff",
-          bgBubbleSelected: theme?.colors?.background || "#ffffff",
-          bgSearchResult: "#fff9c4",
-          borderColor: theme?.colors?.border || "rgba(0, 0, 0, 0.2)",
-          drilldownBorder: "rgba(0, 0, 0, 0)",
-          linkColor: theme?.colors?.primary || "#1976d2",
-          headerFontStyle: `${theme?.components?.header?.fontWeight || 600} ${theme?.components?.header?.fontSize || '13px'}`,
-          baseFontStyle: theme?.typography?.fontSize || "13px",
-          fontFamily: theme?.typography?.fontFamily || "Inter, Roboto, -apple-system, BlinkMacSystemFont, avenir next, avenir, segoe ui, helvetica neue, helvetica, Ubuntu, noto, arial, sans-serif",
-        }}
-      />
+          theme={
+            glideTheme || {
+              accentColor: theme?.colors?.primary || "#1976d2",
+              accentFg: "#ffffff",
+              accentLight: "rgba(25, 118, 210, 0.1)",
+              textDark: theme?.colors?.text || "#1a1a1a",
+              textMedium: theme?.colors?.textSecondary || "#333333",
+              textLight: theme?.colors?.textSecondary || "#666666",
+              textBubble: theme?.colors?.text || "#1a1a1a",
+              bgIconHeader: "#444444",
+              fgIconHeader: "#ffffff",
+              textHeader: theme?.colors?.text || "#1a1a1a",
+              textHeaderSelected: "#000000",
+              bgCell: theme?.colors?.background || "#ffffff",
+              bgCellMedium: theme?.colors?.surface || "#f8f8f8",
+              bgHeader: theme?.components?.header?.background || "#f0f0f0",
+              bgHeaderHasFocus: theme?.colors?.hover || "#e0e0e0",
+              bgHeaderHovered: theme?.colors?.hover || "#e8e8e8",
+              bgBubble: theme?.colors?.background || "#ffffff",
+              bgBubbleSelected: theme?.colors?.background || "#ffffff",
+              bgSearchResult: "#fff9c4",
+              borderColor: theme?.colors?.border || "rgba(0, 0, 0, 0.2)",
+              drilldownBorder: "rgba(0, 0, 0, 0)",
+              linkColor: theme?.colors?.primary || "#1976d2",
+              headerFontStyle: `${theme?.components?.header?.fontWeight || 600} ${
+                theme?.components?.header?.fontSize || "13px"
+              }`,
+              baseFontStyle: theme?.typography?.fontSize || "13px",
+              fontFamily:
+                theme?.typography?.fontFamily ||
+                "Inter, Roboto, -apple-system, BlinkMacSystemFont, avenir next, avenir, segoe ui, helvetica neue, helvetica, Ubuntu, noto, arial, sans-serif",
+            }
+          }
+        />
       </div>
     </div>
+    // </div>
   );
 };

@@ -12,7 +12,7 @@ import { EventTimelineContainer } from '../EventTimelineContainer';
 import {
   ThemedButton,
   ThemedGrid,
-  ThemedMain,
+  ThemedMainPanel,
   ThemedText
 } from '../Themes/index';
 import { ActionButton } from './ActionButton';
@@ -27,6 +27,7 @@ import {
   AppTheme,
   defaultAdminViewParams,
   defaultMiroirMetaModel,
+  defaultMiroirModelEnvironment,
   defaultViewParamsFromAdminStorageFetchQueryParams,
   Domain2QueryReturnType,
   DomainControllerInterface,
@@ -678,11 +679,9 @@ export const RootComponent = (props: RootComponentProps) => {
             >
               Bar!
             </AppBar>
-            {/* </ThemedGrid> */}
-            {/* <ThemedGrid item container style={{ flex: 1, minHeight: 0 }}> */}
-            <ThemedMain
-              open={drawerIsOpen}
-              width={sidebarWidth}
+            <ThemedMainPanel
+              sideBarOpen={drawerIsOpen}
+              sideBarWidth={sidebarWidth}
               outlineOpen={isOutlineOpen}
               outlineWidth={outlineWidth}
             >
@@ -826,7 +825,7 @@ export const RootComponent = (props: RootComponentProps) => {
                         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                         deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
                       },
-                      defaultMiroirMetaModel
+                      defaultMiroirModelEnvironment
                     );
                   }}
                   successMessage="Miroir committed successfully"
@@ -843,7 +842,7 @@ export const RootComponent = (props: RootComponentProps) => {
                         endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                         deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
                       },
-                      defaultMiroirMetaModel
+                      defaultMiroirModelEnvironment
                     );
                   }}
                   successMessage="Library app committed successfully"
@@ -854,7 +853,7 @@ export const RootComponent = (props: RootComponentProps) => {
               </span>
               {/* TODO: enclose the outlet in a PageContainer? (see ReportPage, Tools page) */}
               <Outlet></Outlet>
-            </ThemedMain>
+            </ThemedMainPanel>
           </ThemedGrid>
           {/* </ThemedGrid> */}
           {/* Document Outline - Full height on right side */}

@@ -35,7 +35,7 @@ export const PageContainer: React.FC<PageContainerProps> = ({
 }) => {
   const theme = useMiroirTheme();
   
-  // Simplified: Let RootComponent's ThemedMain handle all width/margin calculations
+  // Simplified: Let RootComponent's ThemedMainPanel handle all width/margin calculations
   // PageContainer just provides basic flex layout and theme styling
 
   return (

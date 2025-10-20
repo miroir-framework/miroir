@@ -1,12 +1,12 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { MiroirLoggerFactory, resolvePathOnObject, transformerTestDefinition, type JzodElement, type LoggerInterface, type TestSuiteListFilter, type TransformerReturnType, type TransformerTest, type TransformerTestDefinition, type TransformerTestSuite } from 'miroir-core';
+import { MiroirLoggerFactory, resolvePathOnObject, transformerTestDefinition, type JzodElement, type LoggerInterface, type TestSuiteListFilter, type TransformerReturnType, type TransformerTest, type TransformerTestDefinition, type TransformerTestSuite, type ViewParams } from 'miroir-core';
 import { ValueObjectGrid } from '../Grids/ValueObjectGrid.js';
 import { TestCellWithDetails } from './TestCellWithDetails.js';
 import { TestResultCellWithActualValue } from './TestResultCellWithActualValue.js';
 import { packageName } from '../../../../constants.js';
 import { cleanLevel } from '../../constants.js';
 import type { TransformerTestResultData } from '../Buttons/RunTransformerTestSuiteButton.js';
-import type { TestSelectionState } from './ReportSectionEntityInstance.js';
+import type { TestSelectionState } from './TransformerTestDisplay.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -39,6 +39,7 @@ export interface TransformerTestResultsProps {
   transformerTestSuite: TransformerTestSuite | TransformerTest | undefined;
   transformerTestResultsData: TestResultDataAndSelect[];
   testLabel?: string;
+  gridType: ViewParams["gridType"];
   // onTestFilterChange?: (filter: { testList?: TestSuiteListFilter } | undefined) => void;
   // onTestSelectionChange?: (testPath: string, selected: boolean) => void;
   // onSelectAllChange?: (selected: boolean) => void;
@@ -91,6 +92,7 @@ export const TransformerTestResults: React.FC<TransformerTestResultsProps> = ({
   // onTestFilterChange,
   testSelectionsState,
   setTestSelectionsState,
+  gridType,
   // onTestSelectionChange,
   // onSelectAllChange,
   // onResetSelections,
@@ -177,7 +179,7 @@ export const TransformerTestResults: React.FC<TransformerTestResultsProps> = ({
       <div
         style={{
           maxWidth: "200px",
-          overflow: "hidden",
+          // overflow: "hidden",
           textOverflow: "ellipsis",
           whiteSpace: "nowrap",
           cursor: "pointer",
@@ -294,7 +296,7 @@ export const TransformerTestResults: React.FC<TransformerTestResultsProps> = ({
   // SELECTION
     // Test Selection Handlers
   const handleSetTestSelection = useCallback((testPath: string, selected: boolean): void => {
-    setTestSelectionsState(prev => ({
+    setTestSelectionsState((prev:any) => ({
       ...prev,
       [testPath]: selected
     }));
@@ -311,7 +313,7 @@ export const TransformerTestResults: React.FC<TransformerTestResultsProps> = ({
       testPaths,
       "testSelectionsState=", testSelectionsState
     );
-    setTestSelectionsState(prev => {
+    setTestSelectionsState((prev:any) => {
       const pathsToUpdate = testPaths || Object.keys(prev??{});
       const updates: TestSelectionState = {};
       pathsToUpdate.forEach(path => {
@@ -573,7 +575,7 @@ export const TransformerTestResults: React.FC<TransformerTestResultsProps> = ({
           maxRows={50}
           sortByAttribute="testName"
           displayTools={false}
-          gridType="ag-grid"
+          gridType={gridType}
         />
       </div>
     </div>

@@ -7,7 +7,8 @@ import {
   alterObjectAtPathWithCreate,
   type TransformerTestDefinition,
   type TransformerTestSuite,
-  type TransformerReturnType
+  type TransformerReturnType,
+  type ViewParams
 } from "miroir-core";
 
 import { packageName } from '../../../../constants.js';
@@ -34,6 +35,7 @@ export interface TransformerTestSectionProps {
   testLabel: string;
   /** Optional custom styling for the container */
   style?: React.CSSProperties;
+  gridType: ViewParams["gridType"];
   /** Whether to use snackbar for notifications */
   useSnackBar?: boolean;
   /** Optional callback when tests complete */
@@ -96,6 +98,13 @@ const handleBuildTestFilter = (
   return filterResult;
 };
 
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
 /**
  * Reusable component for transformer test execution and results display
  */
@@ -175,6 +184,7 @@ export const TransformerTestDisplay = (props: TransformerTestSectionProps) => {
               testLabel={testLabel}
               testSelectionsState={testSelectionState}
               setTestSelectionsState={setTestSelectionsState}
+              gridType={props.gridType}
             />
           ) : (
             <span>No test results to display</span>

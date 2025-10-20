@@ -182,7 +182,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   const handleToggleOutline = outlineContext.onToggleOutline;
 
   // Removed redundant availableWidth calculation - parent components handle sizing
-  // Just use 100% width since RootComponent's ThemedMain handles sidebar/outline spacing
+  // Just use 100% width since RootComponent's ThemedMainPanel handles sidebar/outline spacing
 
   const instance: any = props.instance;
 
@@ -357,14 +357,15 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   const isTransformerTest =
     isTransformerTestEntity && instance?.parentUuid === entityTransformerTest.uuid;
 
+  // ##############################################################################################
+  // Query execution logic for Query entities
+  
   // Check if this is a Query entity instance
   // const QUERY_ENTITY_UUID = "e4320b9e-ab45-4abe-85d8-359604b3c62f";
   const isQueryEntity = instance?.parentUuid === entityQueryVersion.uuid;
 
   const currentQuery: any | undefined = isQueryEntity ? instance : undefined;
   log.info("ReportSectionEntityInstance: isQueryEntity", isQueryEntity, "currentQuery", currentQuery);
-  // ##############################################################################################
-  // Query execution logic for Query entities
   const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> = useMemo(
     () => getMemoizedReduxDeploymentsStateSelectorForTemplateMap(),
     // () => getMemoizedReduxDeploymentsStateSelectorMap(),
@@ -452,6 +453,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
               onTestComplete={(testSuiteKey, structuredResults) => {
                 log.info(`Test completed for ${testSuiteKey}:`, structuredResults);
               }}
+              gridType={viewParams.gridType}
             />
           )}
 

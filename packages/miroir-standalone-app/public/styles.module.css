@@ -9,12 +9,12 @@
 html, body {
   margin: 0;
   padding: 0;
-  overflow: auto; /* Allow scrolling when content overflows */
+  overflow-y: auto; /* Allow scrolling when content overflows */
 }
 
-#root {
-  overflow: auto; /* Allow scrolling when content overflows */
-}
+/* #root {
+  overflow-y: auto;
+} */
 
 /* Preserve functionality for form inputs */
 textarea, 
@@ -33,45 +33,43 @@ input[type="search"],
   display: inline-flex!important;
 }
 
-.MuiToolbar-gutters {
+/* .MuiToolbar-gutters {
   height: 0px!important;
-}
+} */
 
 /* AG-Grid smart scrollbar management */
-.ag-theme-alpine {
-  /* Allow the grid to determine its own overflow needs */
-  overflow: auto;
+/* .ag-theme-alpine {
+  overflow-y: auto;
   width: 100% !important;
   max-width: 100% !important;
   box-sizing: border-box !important;
-}
+} */
 
 /* Only hide AG-Grid's redundant scrollbar decorations, not functional scrollbars */
-.ag-theme-alpine .ag-body-horizontal-scroll,
+/* .ag-theme-alpine .ag-body-horizontal-scroll,
 .ag-theme-alpine .ag-body-vertical-scroll {
-  /* These are decorative scrollbar elements that AG-Grid adds - hide them */
   display: none !important;
-}
+} */
 
 /* Keep the functional viewport scrolling */
-.ag-theme-alpine .ag-body-viewport,
+/* .ag-theme-alpine .ag-body-viewport,
 .ag-theme-alpine .ag-center-cols-viewport {
-  overflow: auto; /* Keep functional scrolling */
-}
+  overflow-y: auto;
+} */
 
 /* Prevent unwanted scrollbars in dialog components */
-.MuiDialog-paper {
-  overflow: auto;
+/* .MuiDialog-paper {
+  overflow-y: auto;
   max-height: 90vh !important;
-}
+} */
 
 /* Ensure MUI containers work properly */
-.MuiContainer-root,
+/* .MuiContainer-root,
 .MuiGrid-container,
 .MuiGrid-item,
 .MuiBox-root {
-  overflow: visible; /* Let content flow naturally */
-}
+  overflow-y: auto;
+} */
 
 /* Custom scrollbar styling for better appearance */
 ::-webkit-scrollbar {

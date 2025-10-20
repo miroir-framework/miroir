@@ -438,17 +438,17 @@ export const ThemedScrollableContent: React.FC<ThemedComponentProps> = ({
   );
 };
 
-export const ThemedMain: React.FC<ThemedComponentProps & {
-  open?: boolean;
-  width?: number;
-  outlineOpen?: boolean;
-  outlineWidth?: number;
+export const ThemedMainPanel: React.FC<ThemedComponentProps & {
+  sideBarOpen: boolean;
+  sideBarWidth: number;
+  outlineOpen: boolean;
+  outlineWidth: number;
 }> = ({ 
   children, 
   className, 
   style,
-  open,
-  width = 200, // SidebarWidth default
+  sideBarOpen: open,
+  sideBarWidth: width = 200, // SidebarWidth default
   outlineOpen,
   outlineWidth = 300
 }) => {
@@ -456,20 +456,20 @@ export const ThemedMain: React.FC<ThemedComponentProps & {
   
   // Base styles for all conditions
   const baseStyles = {
-    flexGrow: 1,
-    padding: currentTheme.spacing.md,
-    boxSizing: 'border-box' as const,
-    minWidth: 0, // Allow shrinking
-    minHeight: 0, // Allow shrinking
-    height: '100%',
     display: 'flex',
     flexDirection: 'column' as const,
+    flexGrow: 1,
+    // overflow: 'hidden', // Prevent main panel from scrolling, let content handle it
+    minWidth: 0, // Allow shrinking
+    height: '100%',
+    padding: currentTheme.spacing.md,
+    boxSizing: 'border-box' as const,
+    // minHeight: 0, // Allow shrinking
     marginTop: 0, // Fix wide gap below the appbar
     paddingTop: currentTheme.spacing.md,
     // Simple transition for all properties
     transition: 'margin 300ms ease-out, width 300ms ease-out',
     // Handle overflow - let content determine scrolling behavior
-    overflow: 'hidden', // Prevent main panel from scrolling, let content handle it
   };
 
   // Calculate responsive layout based on sidebar and outline states
