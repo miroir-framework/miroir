@@ -374,3 +374,263 @@ export const ThemedTooltip: React.FC<ThemedComponentProps & {
     </div>
   );
 };
+
+// ################################################################################################
+// Blob Display Components
+// 
+// Components for displaying and editing blob/file content
+// ################################################################################################
+
+export const ThemedBlobContainer: React.FC<ThemedComponentProps & {
+  isDragActive?: boolean;
+  isClickable?: boolean;
+}> = ({ 
+  children, 
+  isDragActive = false,
+  isClickable = false,
+  className, 
+  style 
+}) => {
+  const { currentTheme } = useMiroirTheme();
+  
+  const containerStyles = css({
+    width: '200px',
+    height: '200px',
+    border: `2px solid ${isDragActive ? currentTheme.colors.primary : currentTheme.colors.border}`,
+    borderRadius: currentTheme.borderRadius.md,
+    backgroundColor: currentTheme.colors.surface,
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'relative',
+    overflow: 'hidden',
+    cursor: isClickable ? 'pointer' : 'default',
+    transition: 'border-color 0.2s ease',
+    '&:hover': isClickable ? {
+      borderColor: currentTheme.colors.primary,
+    } : {},
+    '@media (max-width: 768px)': {
+      width: '150px',
+      height: '150px',
+    },
+  });
+
+  return (
+    <div css={containerStyles} className={className} style={style}>
+      {children}
+    </div>
+  );
+};
+
+export const ThemedBlobPreview: React.FC<ThemedComponentProps & {
+  src: string;
+  alt?: string;
+  onClick?: () => void;
+}> = ({ 
+  src, 
+  alt = 'Preview',
+  onClick,
+  className, 
+  style 
+}) => {
+  const { currentTheme } = useMiroirTheme();
+  
+  const previewStyles = css({
+    maxWidth: '100%',
+    maxHeight: '100%',
+    objectFit: 'contain',
+    cursor: onClick ? 'pointer' : 'default',
+  });
+
+  return (
+    <img 
+      css={previewStyles} 
+      src={src} 
+      alt={alt}
+      onClick={onClick}
+      className={className} 
+      style={style}
+    />
+  );
+};
+
+export const ThemedBlobEmptyState: React.FC<ThemedComponentProps & {
+  icon?: React.ReactNode;
+  message?: string;
+}> = ({ 
+  icon,
+  message = 'Upload file',
+  className, 
+  style 
+}) => {
+  const { currentTheme } = useMiroirTheme();
+  
+  const emptyStateStyles = css({
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: currentTheme.spacing.sm,
+    color: currentTheme.colors.textSecondary,
+    border: `2px dashed ${currentTheme.colors.border}`,
+    borderRadius: currentTheme.borderRadius.md,
+    padding: currentTheme.spacing.lg,
+    width: '100%',
+    height: '100%',
+  });
+
+  const iconStyles = css({
+    fontSize: '48px',
+    color: currentTheme.colors.textSecondary,
+  });
+
+  const textStyles = css({
+    fontSize: currentTheme.typography.fontSize.sm,
+    textAlign: 'center',
+  });
+
+  return (
+    <div css={emptyStateStyles} className={className} style={style}>
+      {icon && <div css={iconStyles}>{icon}</div>}
+      <div css={textStyles}>{message}</div>
+    </div>
+  );
+};
+
+export const ThemedBlobMetadata: React.FC<ThemedComponentProps & {
+  filename?: string;
+  mimeType?: string;
+}> = ({ 
+  filename,
+  mimeType,
+  className, 
+  style 
+}) => {
+  const { currentTheme } = useMiroirTheme();
+  
+  const metadataStyles = css({
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    padding: currentTheme.spacing.xs,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    color: 'white',
+    fontSize: currentTheme.typography.fontSize.xs,
+    textAlign: 'center',
+    overflow: 'hidden',
+  });
+
+  const filenameStyles = css({
+    fontWeight: 'normal',
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  });
+
+  const mimeTypeStyles = css({
+    fontSize: currentTheme.typography.fontSize.xs,
+    color: 'rgba(255, 255, 255, 0.7)',
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  });
+
+  return (
+    <div css={metadataStyles} className={className} style={style}>
+      {filename && <div css={filenameStyles}>{filename}</div>}
+      {mimeType && <div css={mimeTypeStyles}>{mimeType}</div>}
+    </div>
+  );
+};
+
+export const ThemedBlobIconDisplay: React.FC<ThemedComponentProps & {
+  icon: React.ReactNode;
+  filename?: string;
+  mimeType?: string;
+}> = ({ 
+  icon,
+  filename,
+  mimeType,
+  className, 
+  style 
+}) => {
+  const { currentTheme } = useMiroirTheme();
+  
+  const displayStyles = css({
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: currentTheme.spacing.sm,
+    padding: currentTheme.spacing.md,
+    width: '100%',
+    height: '100%',
+  });
+
+  const iconStyles = css({
+    fontSize: '64px',
+    color: currentTheme.colors.textSecondary,
+  });
+
+  const filenameStyles = css({
+    fontSize: currentTheme.typography.fontSize.sm,
+    fontWeight: 'normal',
+    textAlign: 'center',
+    wordBreak: 'break-word',
+    maxWidth: '100%',
+  });
+
+  const mimeTypeStyles = css({
+    fontSize: currentTheme.typography.fontSize.xs,
+    color: currentTheme.colors.textSecondary,
+    textAlign: 'center',
+  });
+
+  return (
+    <div css={displayStyles} className={className} style={style}>
+      <div css={iconStyles}>{icon}</div>
+      {filename && <div css={filenameStyles}>{filename}</div>}
+      {mimeType && <div css={mimeTypeStyles}>{mimeType}</div>}
+    </div>
+  );
+};
+
+export const ThemedBlobDropZone: React.FC<ThemedComponentProps & {
+  message?: string;
+}> = ({ 
+  message = 'Drop file here',
+  className, 
+  style 
+}) => {
+  const { currentTheme } = useMiroirTheme();
+  
+  const dropZoneStyles = css({
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: `${currentTheme.colors.primary}20`,
+    border: `3px dashed ${currentTheme.colors.primary}`,
+    borderRadius: currentTheme.borderRadius.md,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 10,
+    pointerEvents: 'none',
+  });
+
+  const textStyles = css({
+    fontSize: currentTheme.typography.fontSize.md,
+    fontWeight: 'bold',
+    color: currentTheme.colors.primary,
+  });
+
+  return (
+    <div css={dropZoneStyles} className={className} style={style}>
+      <div css={textStyles}>{message}</div>
+    </div>
+  );
+};

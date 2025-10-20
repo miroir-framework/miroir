@@ -61,6 +61,12 @@ export {
   ThemedAttributeLabel,
   ThemedAttributeName,
   ThemedTooltip,
+  ThemedBlobContainer,
+  ThemedBlobPreview,
+  ThemedBlobEmptyState,
+  ThemedBlobMetadata,
+  ThemedBlobIconDisplay,
+  ThemedBlobDropZone,
 } from './DisplayComponents';
 
 // Drawer components

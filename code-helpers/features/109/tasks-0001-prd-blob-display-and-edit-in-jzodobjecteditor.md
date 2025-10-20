@@ -4,14 +4,14 @@ Based on PRD: `0001-prd-blob-display-and-edit-in-jzodobjecteditor.md`
 
 ## Relevant Files
 
-- `packages/miroir-core/src/1_core/tools.ts` - Add blob utility functions (base64 conversion, MIME validation, file reading)
-- `packages/miroir-core/src/1_core/constants.ts` - Add MAX_BLOB_FILE_SIZE constant
-- `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/ValueObjectEditor/BlobEditorField.tsx` - New component for blob-specific rendering and interactions
-- `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/ValueObjectEditor/JzodObjectEditor.tsx` - Modify to detect `isBlob` tag and render BlobEditorField
-- `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Themes/DisplayComponents.tsx` - Add themed blob display components
-- `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Themes/index.ts` - Export new themed blob components
-- `packages/miroir-core/tests/1_core/tools.test.ts` - Unit tests for blob utility functions
-- `packages/miroir-standalone-app/tests/4_view/BlobEditorField.integ.test.tsx` - Integration tests for BlobEditorField component
+- `packages/miroir-core/src/1_core/tools.ts` - Blob utility functions implemented (base64 conversion, MIME validation, file reading)
+- `packages/miroir-core/src/1_core/constants.ts` - MAX_BLOB_FILE_SIZE and BLOB_SIZE_WARNING_THRESHOLD constants added
+- `packages/miroir-core/tests/1_core/blobUtils.test.ts` - Unit tests for blob utility functions (created and passing)
+- `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/ValueObjectEditor/BlobEditorField.tsx` - **NEW** Component for blob-specific rendering and interactions (basic structure implemented)
+- `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/ValueObjectEditor/JzodObjectEditor.tsx` - To be modified to detect `isBlob` tag and render BlobEditorField
+- `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Themes/DisplayComponents.tsx` - **UPDATED** Added 6 themed blob display components (ThemedBlobContainer, ThemedBlobPreview, ThemedBlobEmptyState, ThemedBlobMetadata, ThemedBlobIconDisplay, ThemedBlobDropZone)
+- `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Themes/index.ts` - **UPDATED** Exported new themed blob components
+- `packages/miroir-standalone-app/tests/4_view/BlobEditorField.integ.test.tsx` - **NEW** Integration tests for BlobEditorField component (10 tests passing)
 
 ### Notes
 
@@ -35,22 +35,22 @@ For each task, proceed in a "Test-driven"-like fashion, and create tests before 
   - [x] 1.8 Add TypeScript interfaces: `BlobContents`, `BlobValidationResult`, `BlobUploadResult` to `packages/miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.ts` or appropriate interface file
   - [x] 1.9 Run unit tests: `npm run testByFile -w miroir-core -- blobUtils`
 
-- [ ] 2.0 Create BlobEditorField component with basic structure and theming
-  - [ ] 2.1 Create themed components in `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Themes/DisplayComponents.tsx`:
+- [x] 2.0 Create BlobEditorField component with basic structure and theming
+  - [x] 2.1 Create themed components in `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Themes/DisplayComponents.tsx`:
     - `ThemedBlobContainer` - main container for blob display (200x200px, themeable border)
     - `ThemedBlobPreview` - image preview container with aspect ratio preservation
     - `ThemedBlobEmptyState` - empty state with dashed border and upload prompt
     - `ThemedBlobMetadata` - container for filename and MIME type display
     - `ThemedBlobIconDisplay` - container for non-image file type icons
     - `ThemedBlobDropZone` - drag-and-drop active state overlay
-  - [ ] 2.2 Export new themed blob components in `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Themes/index.ts`
-  - [ ] 2.3 Create `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/ValueObjectEditor/BlobEditorField.tsx` with:
+  - [x] 2.2 Export new themed blob components in `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Themes/index.ts`
+  - [x] 2.3 Create `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/ValueObjectEditor/BlobEditorField.tsx` with:
     - Component interface `BlobEditorFieldProps` extending relevant JzodObjectEditor props
     - Logger setup following Miroir conventions
     - Basic component structure rendering `ThemedBlobContainer`
     - Props: `rootLessListKey`, `rootLessListKeyArray`, `currentValue`, `formik`, `readOnly`, `allowedMimeTypes`, `onError`
-  - [ ] 2.4 Add `useMemo` hook to parse and validate blob structure from `currentValue?.contents`
-  - [ ] 2.5 Create basic integration test skeleton `packages/miroir-standalone-app/tests/4_view/BlobEditorField.integ.test.tsx` with test setup and mock data
+  - [x] 2.4 Add `useMemo` hook to parse and validate blob structure from `currentValue?.contents`
+  - [x] 2.5 Create basic integration test skeleton `packages/miroir-standalone-app/tests/4_view/BlobEditorField.integ.test.tsx` with test setup and mock data
 
 - [ ] 3.0 Add validation of given blob object and display graceful error when it fails
   - [ ] 3.1 Add validation logic in `BlobEditorField` to check blob structure has required fields (`encoding`, `mimeType`, `data`)
