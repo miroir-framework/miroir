@@ -77,6 +77,13 @@
             "selfApplication": "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
             "reportUuid": "683ba925-835e-4f9d-845b-7fae500316ad",
             "icon": "list"
+          },
+          {
+            "label": "Miroir Blobs",
+            "section": "data",
+            "selfApplication": "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
+            "reportUuid": "be61481c-644a-4f09-8c4f-581044e98956",
+            "icon": "list"
           }
         ]
       }

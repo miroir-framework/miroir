@@ -132,6 +132,10 @@ export const miroirFundamentalJzodSchema = {
                     }
                   ]
                 },
+                "isBlob": {
+                  "type": "boolean",
+                  "optional": true
+                },
                 "selectorParams": {
                   "type": "object",
                   "optional": true,
@@ -366,6 +370,10 @@ export const miroirFundamentalJzodSchema = {
                         }
                       }
                     ]
+                  },
+                  "isBlob": {
+                    "type": "boolean",
+                    "optional": true
                   },
                   "selectorParams": {
                     "type": "object",
@@ -21515,6 +21523,22 @@ export const miroirFundamentalJzodSchema = {
                     }
                   ]
                 },
+                "isBlob": {
+                  "type": "union",
+                  "optional": true,
+                  "definition": [
+                    {
+                      "type": "boolean",
+                      "optional": true
+                    },
+                    {
+                      "type": "schemaReference",
+                      "definition": {
+                        "relativePath": "transformerForBuildCarryOnObject"
+                      }
+                    }
+                  ]
+                },
                 "selectorParams": {
                   "optional": true,
                   "type": "union",
@@ -22208,6 +22232,22 @@ export const miroirFundamentalJzodSchema = {
                                     ]
                                   }
                                 }
+                              },
+                              {
+                                "type": "schemaReference",
+                                "definition": {
+                                  "relativePath": "transformerForBuildCarryOnObject"
+                                }
+                              }
+                            ]
+                          },
+                          "isBlob": {
+                            "type": "union",
+                            "optional": true,
+                            "definition": [
+                              {
+                                "type": "boolean",
+                                "optional": true
                               },
                               {
                                 "type": "schemaReference",
@@ -46177,6 +46217,22 @@ export const miroirFundamentalJzodSchema = {
                     }
                   ]
                 },
+                "isBlob": {
+                  "type": "union",
+                  "optional": true,
+                  "definition": [
+                    {
+                      "type": "boolean",
+                      "optional": true
+                    },
+                    {
+                      "type": "schemaReference",
+                      "definition": {
+                        "relativePath": "transformerForBuildCarryOnObject"
+                      }
+                    }
+                  ]
+                },
                 "selectorParams": {
                   "optional": true,
                   "type": "union",
@@ -46839,6 +46895,22 @@ export const miroirFundamentalJzodSchema = {
                               ]
                             }
                           }
+                        },
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "relativePath": "transformerForBuildCarryOnObject"
+                          }
+                        }
+                      ]
+                    },
+                    "isBlob": {
+                      "type": "union",
+                      "optional": true,
+                      "definition": [
+                        {
+                          "type": "boolean",
+                          "optional": true
                         },
                         {
                           "type": "schemaReference",
@@ -47541,6 +47613,22 @@ export const miroirFundamentalJzodSchema = {
                                         ]
                                       }
                                     }
+                                  },
+                                  {
+                                    "type": "schemaReference",
+                                    "definition": {
+                                      "relativePath": "transformerForBuildCarryOnObject"
+                                    }
+                                  }
+                                ]
+                              },
+                              "isBlob": {
+                                "type": "union",
+                                "optional": true,
+                                "definition": [
+                                  {
+                                    "type": "boolean",
+                                    "optional": true
                                   },
                                   {
                                     "type": "schemaReference",
@@ -55029,6 +55117,10 @@ export const miroirFundamentalJzodSchema = {
                     }
                   ]
                 },
+                "isBlob": {
+                  "type": "boolean",
+                  "optional": true
+                },
                 "selectorParams": {
                   "type": "object",
                   "optional": true,
@@ -55263,6 +55355,10 @@ export const miroirFundamentalJzodSchema = {
                         }
                       }
                     ]
+                  },
+                  "isBlob": {
+                    "type": "boolean",
+                    "optional": true
                   },
                   "selectorParams": {
                     "type": "object",
@@ -63939,6 +64035,10 @@ export const miroirFundamentalJzodSchema = {
                     }
                   ]
                 },
+                "isBlob": {
+                  "type": "boolean",
+                  "optional": true
+                },
                 "selectorParams": {
                   "type": "object",
                   "optional": true,
@@ -64173,6 +64273,10 @@ export const miroirFundamentalJzodSchema = {
                         }
                       }
                     ]
+                  },
+                  "isBlob": {
+                    "type": "boolean",
+                    "optional": true
                   },
                   "selectorParams": {
                     "type": "object",
@@ -72803,6 +72907,10 @@ export const miroirFundamentalJzodSchema = {
                     }
                   ]
                 },
+                "isBlob": {
+                  "type": "boolean",
+                  "optional": true
+                },
                 "selectorParams": {
                   "type": "object",
                   "optional": true,
@@ -73037,6 +73145,10 @@ export const miroirFundamentalJzodSchema = {
                         }
                       }
                     ]
+                  },
+                  "isBlob": {
+                    "type": "boolean",
+                    "optional": true
                   },
                   "selectorParams": {
                     "type": "object",

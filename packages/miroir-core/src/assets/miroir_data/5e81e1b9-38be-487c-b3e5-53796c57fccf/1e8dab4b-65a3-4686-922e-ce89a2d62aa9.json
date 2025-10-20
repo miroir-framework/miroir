@@ -132,6 +132,10 @@
                     }
                   ]
                 },
+                "isBlob": {
+                  "type": "boolean",
+                  "optional": true
+                },
                 "selectorParams": {
                   "type": "object",
                   "optional": true,
@@ -356,6 +360,10 @@
                         }
                       }
                     ]
+                  },
+                  "isBlob": {
+                    "type": "boolean",
+                    "optional": true
                   },
                   "selectorParams": {
                     "type": "object",

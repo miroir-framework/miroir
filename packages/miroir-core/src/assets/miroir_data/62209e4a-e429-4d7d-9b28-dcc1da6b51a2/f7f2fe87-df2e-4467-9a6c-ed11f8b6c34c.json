@@ -1,0 +1,13 @@
+{
+  "uuid": "f7f2fe87-df2e-4467-9a6c-ed11f8b6c34c",
+  "parentName": "Blob",
+  "parentUuid": "62209e4a-e429-4d7d-9b28-dcc1da6b51a2",
+  "name": "MiroirLogo",
+  "defaultLabel": "Miroir Logo",
+  "filename": "miroir_logo.png",
+  "contents": {
+    "encoding": "base64",
+    "mimeType": "image/png",
+    "data": "iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAYAAABw4pVUAAAAOXRFWHRTb2Z0d2FyZQBNYXRwbG90bGliIHZlcnNpb24zLjguMCwgaHR0cHM6Ly9tYXRwbG90bGliLm9yZy81sbWrAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAFiUlEQVR4nO2cX2gcVx3HP7v"
+  }
+}
