@@ -10,7 +10,7 @@
 
 - `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/ReportSectionMarkdown.tsx` - Main component for rendering Markdown in read-only mode with optional edit icon. Includes ReactMarkdown with GFM and sanitization plugins, themed styling, render tracking, and logger setup (✓ Task 2.0 complete).
 - `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/MarkdownEditorModal.tsx` - Modal dialog component for editing Markdown with live preview.
-- `packages/miroir-standalone-app/tests/4_view/ReportSectionMarkdown.test.tsx` - Integration tests for Markdown report section.
+- `packages/miroir-standalone-app/tests/4_view/ReportSectionMarkdown.test.tsx` - Integration tests for Markdown report section. Tests simple markdown, GFM features, XSS prevention, edit icon display, and optional label. All 11 tests passing (✓ Task 4.0 complete).
 
 ### Files Modified
 
@@ -60,17 +60,17 @@
   - [x] 3.5 Render `<ReportSectionMarkdown>` with appropriate props: `applicationSection`, `deploymentUuid`, `markdownContent`, `label`, `showPerformanceDisplay`
   - [x] 3.6 For now, omit the `onEdit` prop (read-only mode) - this will be added in Task 5
 
-- [ ] 4.0 Write Integration Tests for Markdown Report Section Display
-  - [ ] 4.1 Create `packages/miroir-standalone-app/tests/4_view/ReportSectionMarkdown.test.tsx`
-  - [ ] 4.2 Set up test file structure: import dependencies (`vitest`, `@testing-library/react`, `@testing-library/jest-dom`, `MiroirThemeProvider`, logger setup), mock dependencies if needed
-  - [ ] 4.3 Create test suite `describe('ReportSectionMarkdown Integration Tests')`
-  - [ ] 4.4 Test 1: "renders simple markdown content" - render component with basic markdown (headings, paragraphs, lists), verify rendered HTML elements exist
-  - [ ] 4.5 Test 2: "renders GFM features (tables, code blocks, strikethrough)" - render markdown with table syntax, fenced code block, ~~strikethrough~~, verify correct rendering
-  - [ ] 4.6 Test 3: "sanitizes dangerous HTML/scripts (XSS prevention)" - render markdown containing `<script>alert('xss')</script>` and `<img src=x onerror=alert(1)>`, verify script tags are removed and dangerous attributes stripped
-  - [ ] 4.7 Test 4: "displays edit icon when onEdit callback provided" - render with `onEdit` prop, verify pencil icon button is visible and clickable
-  - [ ] 4.8 Test 5: "does not display edit icon when onEdit callback omitted (read-only mode)" - render without `onEdit` prop, verify no edit icon present
-  - [ ] 4.9 Test 6: "displays optional label when provided" - render with `label` prop, verify label text is displayed
-  - [ ] 4.10 Run tests: `npm run test -w miroir-standalone-app -- ReportSectionMarkdown`
+- [x] 4.0 Write Integration Tests for Markdown Report Section Display
+  - [x] 4.1 Create `packages/miroir-standalone-app/tests/4_view/ReportSectionMarkdown.test.tsx`
+  - [x] 4.2 Set up test file structure: import dependencies (`vitest`, `@testing-library/react`, `@testing-library/jest-dom`, `MiroirThemeProvider`, logger setup), mock dependencies if needed
+  - [x] 4.3 Create test suite `describe('ReportSectionMarkdown Integration Tests')`
+  - [x] 4.4 Test 1: "renders simple markdown content" - render component with basic markdown (headings, paragraphs, lists), verify rendered HTML elements exist
+  - [x] 4.5 Test 2: "renders GFM features (tables, code blocks, strikethrough)" - render markdown with table syntax, fenced code block, ~~strikethrough~~, verify correct rendering
+  - [x] 4.6 Test 3: "sanitizes dangerous HTML/scripts (XSS prevention)" - render markdown containing `<script>alert('xss')</script>` and `<img src=x onerror=alert(1)>`, verify script tags are removed and dangerous attributes stripped
+  - [x] 4.7 Test 4: "displays edit icon when onEdit callback provided" - render with `onEdit` prop, verify pencil icon button is visible and clickable
+  - [x] 4.8 Test 5: "does not display edit icon when onEdit callback omitted (read-only mode)" - render without `onEdit` prop, verify no edit icon present
+  - [x] 4.9 Test 6: "displays optional label when provided" - render with `label` prop, verify label text is displayed
+  - [x] 4.10 Run tests: `npm run test -w miroir-standalone-app -- ReportSectionMarkdown`
 
 - [ ] 5.0 Create Markdown Editor Modal Component
   - [ ] 5.1 Create `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/MarkdownEditorModal.tsx`
