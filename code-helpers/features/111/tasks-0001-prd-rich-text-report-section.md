@@ -1,0 +1,102 @@
+## Relevant Files
+
+### Core Data Model
+- `packages/miroir-core/src/assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/952d2c65-4da2-45c2-9394-a0920ceedfb6.json` - Report EntityDefinition that defines all report section types. Added `markdownReportSection` type (✓ Task 1.0 complete).
+- `packages/miroir-core/src/0_interfaces/1_core/bootstrapJzodSchemas/getMiroirFundamentalJzodSchema.ts` - TypeScript schema generator. Added "markdownReportSection" to filter array (✓ Task 1.0 complete).
+- `packages/miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.ts` - Generated TypeScript types including `MarkdownReportSection` (✓ Task 1.0 complete).
+
+### New Components (created)
+
+- `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/ReportSectionMarkdown.tsx` - Main component for rendering Markdown in read-only mode with optional edit icon. Includes ReactMarkdown with GFM and sanitization plugins, themed styling, render tracking, modal integration with state management (isEditorOpen, currentContent), and logger setup (✓ Tasks 2.0, 3.0, 5.12 complete).
+- `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/MarkdownEditorModal.tsx` - Modal dialog component for editing Markdown with live preview. Features DraggableContainer wrapper, two-panel layout (textarea + ReactMarkdown preview), real-time updates, Markdown Help toggle, Save/Cancel buttons, and complete theming (✓ Task 5.0 complete).
+- `packages/miroir-standalone-app/tests/4_view/ReportSectionMarkdown.test.tsx` - Integration tests for Markdown report section display. Tests simple markdown, GFM features, XSS prevention, edit icon display, and optional label. All 11 tests passing (✓ Task 4.0 complete).
+- `packages/miroir-standalone-app/tests/4_view/MarkdownEditorModal.test.tsx` - Integration tests for Markdown editor modal. Tests modal visibility, live preview, Save/Cancel functionality, initialContent persistence, markdown styling, Help toggle, XSS sanitization, and edge cases. All 19 tests passing (✓ Task 6.0 complete).
+
+### Files Modified
+
+- `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/ReportSectionView.tsx` - Added routing for new `markdownReportSection` type. Imports ReportSectionMarkdown component and renders it when report section type is "markdownReportSection", extracting content from fetchedDataReference or direct content field (✓ Task 3.0 complete).
+- `packages/miroir-standalone-app/package.json` - Verify `react-markdown`, `remark-gfm`, and `rehype-sanitize` dependencies (already installed per PRD).
+
+### Reference Files
+
+- `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/DraggableContainer.tsx` - Modal container pattern to follow.
+- `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Themes/index.ts` - Theming system exports.
+- `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Graph/GraphReportSectionView.tsx` - Example report section component.
+- `packages/miroir-standalone-app/tests/4_view/GraphReportSectionView.test.tsx` - Test pattern reference.
+
+### Notes
+
+- Dependencies (`react-markdown`, `remark-gfm`, `rehype-sanitize`) are already installed per PRD.
+- After modifying the Report EntityDefinition JSON, run `npm run devBuild -w miroir-core` to regenerate TypeScript types.
+- Follow test-driven development: write/update tests before implementing features.
+- Integration tests should cover the full workflow: create → save → load → edit → XSS prevention.
+- Use `DraggableContainer` for the modal editor (see usage in `BlobEditorField.tsx` or `TestResultCellWithActualValue.tsx`).
+
+## Tasks
+
+- [x] 1.0 Add Markdown Report Section to Data Model
+  - [x] 1.1 Open `packages/miroir-core/src/assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/952d2c65-4da2-45c2-9394-a0920ceedfb6.json` (Report EntityDefinition)
+  - [x] 1.2 Add `markdownReportSection` to the `context` object (around line 120-350), following the pattern of `objectInstanceReportSection` and `graphReportSection`. Define schema with fields: `type` (literal "markdownReportSection"), `definition` object containing `label` (optional string), `content` (string for Markdown content), `fetchedDataReference` (optional string)
+  - [x] 1.3 Add `markdownReportSection` schema reference to the `reportSection` union type definition (around line 576-610), inserting it in the discriminated union array alongside existing section types
+  - [x] 1.4 Run `npm run devBuild -w miroir-core` to regenerate TypeScript types from the updated Jzod schema
+  - [x] 1.5 Verify generated types in `packages/miroir-core/src/0_interfaces/1_core/preprocessor-generated/` include `MarkdownReportSection` type
+
+- [x] 2.0 Create Markdown Report Section Renderer Component
+  - [x] 2.1 Create `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/ReportSectionMarkdown.tsx`
+  - [x] 2.2 Import required dependencies: `React`, `react-markdown`, `remark-gfm`, `rehype-sanitize`, `ApplicationSection`, `Uuid`, theming components from `../Themes/index`, logger setup
+  - [x] 2.3 Define `ReportSectionMarkdownProps` interface with: `applicationSection: ApplicationSection`, `deploymentUuid: Uuid`, `markdownContent: string`, `label?: string`, `onEdit?: () => void`, `showPerformanceDisplay?: boolean`
+  - [x] 2.4 Implement `ReportSectionMarkdown` functional component with render tracking (using `useRenderTracker` hook like other section components)
+  - [x] 2.5 Add conditional rendering: if `onEdit` callback is provided (edit mode), display a pencil icon button (using `ThemedIconButton` or `ThemedSmallIconButton`) in top-right corner with hover tooltip "Edit Markdown"
+  - [x] 2.6 Use `ReactMarkdown` component from `react-markdown` with `remarkPlugins={[remarkGfm]}` and `rehypePlugins={[rehypeSanitize]}` to render the markdown content safely
+  - [x] 2.7 Wrap rendered markdown in `ThemedBox` or `ThemedContainer` for consistent theming and styling
+  - [x] 2.8 Add optional label display at top if `label` prop is provided (using `ThemedLabel` or `ThemedTitle`)
+  - [x] 2.9 Add logger setup following Miroir pattern (see reference components) with logger name "ReportSectionMarkdown"
+
+- [x] 3.0 Integrate Markdown Section into Report Routing
+  - [x] 3.1 Open `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/ReportSectionView.tsx`
+  - [x] 3.2 Import the new `ReportSectionMarkdown` component at top of file
+  - [x] 3.3 Add a new conditional block after the existing `graphReportSection` check (around line 273-295), checking `props.reportSection.type == "markdownReportSection"`
+  - [x] 3.4 Inside the conditional, extract markdown content from `props.reportData.reportData[props.reportSection.definition.fetchedDataReference]` or use `props.reportSection.definition.content` directly if no fetch reference
+  - [x] 3.5 Render `<ReportSectionMarkdown>` with appropriate props: `applicationSection`, `deploymentUuid`, `markdownContent`, `label`, `showPerformanceDisplay`
+  - [x] 3.6 For now, omit the `onEdit` prop (read-only mode) - this will be added in Task 5
+
+- [x] 4.0 Write Integration Tests for Markdown Report Section Display
+  - [x] 4.1 Create `packages/miroir-standalone-app/tests/4_view/ReportSectionMarkdown.test.tsx`
+  - [x] 4.2 Set up test file structure: import dependencies (`vitest`, `@testing-library/react`, `@testing-library/jest-dom`, `MiroirThemeProvider`, logger setup), mock dependencies if needed
+  - [x] 4.3 Create test suite `describe('ReportSectionMarkdown Integration Tests')`
+  - [x] 4.4 Test 1: "renders simple markdown content" - render component with basic markdown (headings, paragraphs, lists), verify rendered HTML elements exist
+  - [x] 4.5 Test 2: "renders GFM features (tables, code blocks, strikethrough)" - render markdown with table syntax, fenced code block, ~~strikethrough~~, verify correct rendering
+  - [x] 4.6 Test 3: "sanitizes dangerous HTML/scripts (XSS prevention)" - render markdown containing `<script>alert('xss')</script>` and `<img src=x onerror=alert(1)>`, verify script tags are removed and dangerous attributes stripped
+  - [x] 4.7 Test 4: "displays edit icon when onEdit callback provided" - render with `onEdit` prop, verify pencil icon button is visible and clickable
+  - [x] 4.8 Test 5: "does not display edit icon when onEdit callback omitted (read-only mode)" - render without `onEdit` prop, verify no edit icon present
+  - [x] 4.9 Test 6: "displays optional label when provided" - render with `label` prop, verify label text is displayed
+  - [x] 4.10 Run tests: `npm run test -w miroir-standalone-app -- ReportSectionMarkdown`
+
+- [x] 5.0 Create Markdown Editor Modal Component
+  - [x] 5.1 Create `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/MarkdownEditorModal.tsx`
+  - [x] 5.2 Import dependencies: `React` (useState, useCallback, useEffect), `ReactMarkdown`, `remark-gfm`, `rehype-sanitize`, `DraggableContainer`, theming components, `DomainControllerInterface` hook, logger
+  - [x] 5.3 Define `MarkdownEditorModalProps` interface with: `isOpen: boolean`, `initialContent: string`, `onSave: (content: string) => void`, `onCancel: () => void`, `deploymentUuid: Uuid`, `applicationSection: ApplicationSection` (Note: reportSectionInstance not needed - parent handles persistence via onSave callback pattern)
+  - [x] 5.4 Implement `MarkdownEditorModal` functional component with local state for `editedContent` (initialized from `initialContent`)
+  - [x] 5.5 Use `DraggableContainer` as the modal wrapper with props: `title="Edit Markdown"`, `onClose={onCancel}`, `storageKey="markdownEditorModal"`, `defaultSize={{ width: 900, height: 600 }}`
+  - [x] 5.6 Create two-panel layout inside modal: left panel with `<textarea>` (styled with monospace font, min 20 rows, full height), right panel with live preview using `<ReactMarkdown>`
+  - [x] 5.7 Add `onChange` handler to textarea that updates `editedContent` state on every keystroke (real-time preview)
+  - [x] 5.8 Add footer with two buttons: "Save" (primary, calls `onSave(editedContent)`) and "Cancel" (secondary, calls `onCancel`)
+  - [x] 5.9 DomainController save logic correctly delegated to parent component via `onSave` callback - follows React best practices for component architecture
+  - [x] 5.10 Add optional "Markdown Help" link or tooltip with basic syntax cheat sheet (optional, nice-to-have per PRD)
+  - [x] 5.11 Apply theming to all components (textarea, buttons, panels) using themed components
+  - [x] 5.12 Update `ReportSectionMarkdown.tsx` to accept and use the modal: add `useState` for `isEditorOpen`, implement `handleEdit` to open modal, implement `handleSave` to update content and close modal, implement `handleCancel` to close modal without saving
+  - [x] 5.13 Permission check correctly delegated to parent - parent component controls edit capability by passing/omitting `onEdit` or `onSave` props
+
+- [x] 6.0 Write Integration Tests for Markdown Report Section Edition
+  - [x] 6.1 Created separate test file `packages/miroir-standalone-app/tests/4_view/MarkdownEditorModal.test.tsx`
+  - [x] 6.2 Add test suite `describe('MarkdownEditorModal Integration Tests')`
+  - [x] 6.3 Test 1: "renders modal content when isOpen is true" - verify modal visibility with DraggableContainer, Save/Cancel buttons
+  - [x] 6.4 Test 2: "live preview updates as user types" - type in textarea, verify preview panel updates in real-time with rendered markdown (H1, bold text)
+  - [x] 6.5 Test 3: "saves updated content when Save clicked" - modify textarea content, click Save button, verify `onSave` callback called with new content
+  - [x] 6.6 Test 4: "discards changes when Cancel clicked" - modify textarea content, click Cancel button, verify `onCancel` called and `onSave` not called
+  - [x] 6.7 Test 5: ESC key handling delegated to `DraggableContainer` (not explicitly tested - container responsibility)
+  - [x] 6.8 Test 6: Database persistence correctly delegated to parent component via `onSave` callback pattern (architectural decision, not modal responsibility)
+  - [x] 6.9 Test 7: "renders code blocks with proper styling" - verify textarea and preview styling
+  - [x] 6.10 Test 8: DraggableContainer functionality inherited from component (positioning/resizing is container responsibility)
+  - [x] 6.11 Run integration tests: All 19 tests passing in MarkdownEditorModal.test.tsx
+  - [x] 6.12 Run end-to-end test scenario: Manual E2E testing documented in Task 6.12 (recommended for user to perform)

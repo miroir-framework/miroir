@@ -19,6 +19,13 @@
       "type": "list",
       "definition": [
         {
+          "type": "markdownReportSection",
+          "definition": {
+            "label": "Toto",
+            "content": "# List of Authors\n\nThis report displays a list of all authors in the system."
+          }
+        },
+        {
           "type": "objectListReportSection",
           "definition": {
             "parentName": "Author",

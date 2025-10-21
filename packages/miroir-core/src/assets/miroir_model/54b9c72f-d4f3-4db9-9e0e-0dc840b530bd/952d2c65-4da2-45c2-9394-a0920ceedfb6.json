@@ -451,6 +451,59 @@
               }
             }
           },
+          "markdownReportSection": {
+            "type": "object",
+            "tag": {
+              "value": {
+                "display": {
+                  "displayedAttributeValueWhenFolded": "definition.label"
+                }
+              }
+            },
+            "definition": {
+              "type": {
+                "type": "literal",
+                "definition": "markdownReportSection"
+              },
+              "definition": {
+                "type": "object",
+                "definition": {
+                  "label": {
+                    "type": "string",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "id": 1,
+                        "defaultLabel": "Label",
+                        "editable": true
+                      }
+                    }
+                  },
+                  "content": {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "id": 2,
+                        "defaultLabel": "Markdown Content",
+                        "editable": true
+                      }
+                    }
+                  },
+                  "fetchedDataReference": {
+                    "type": "string",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "id": 3,
+                        "defaultLabel": "Fetched Data Reference",
+                        "editable": false
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
           "gridReportSection": {
             "type": "object",
             "definition": {
@@ -551,6 +604,13 @@
                       "type": "schemaReference",
                       "definition": {
                         "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        "relativePath": "markdownReportSection"
+                      }
+                    },
+                    {
+                      "type": "schemaReference",
+                      "definition": {
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                         "relativePath": "objectInstanceReportSection"
                       }
                     },
@@ -589,6 +649,13 @@
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                   "relativePath": "listReportSection"
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "markdownReportSection"
                 }
               },
               {

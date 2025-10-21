@@ -22,6 +22,7 @@ import { useMiroirContextService } from '../../MiroirContextReactProvider.js';
 import { cleanLevel } from '../../constants.js';
 import { ReportSectionEntityInstance } from './ReportSectionEntityInstance.js';
 import { ReportSectionListDisplay } from './ReportSectionListDisplay.js';
+import { ReportSectionMarkdown } from './ReportSectionMarkdown.js';
 import { useRenderTracker } from '../../tools/renderCountTracker.js';
 import { ThemedBox, ThemedText } from '../Themes/index.js';
 import { GraphReportSectionView } from '../Graph/GraphReportSectionView.js';
@@ -270,7 +271,7 @@ export const ReportSectionView = (props: ReportSectionViewProps) => {
           entityUuid={props.reportSection.definition.parentUuid}
         />
       )}
-      {props.reportSection.type == "graphReportSection" ? (
+      {props.reportSection.type == "graphReportSection" && (
         <div>
           <GraphReportSectionView
             applicationSection={props.applicationSection}
@@ -288,8 +289,19 @@ export const ReportSectionView = (props: ReportSectionViewProps) => {
             showPerformanceDisplay={props.showPerformanceDisplay}
           />
         </div>
-      ) : (
-        <div></div>
+      )}
+      {props.reportSection.type == "markdownReportSection" && (
+        <ReportSectionMarkdown
+          applicationSection={props.applicationSection}
+          deploymentUuid={props.deploymentUuid}
+          markdownContent={
+            props.reportSection.definition.fetchedDataReference
+              ? props.reportData.reportData[props.reportSection.definition.fetchedDataReference] ?? props.reportSection.definition.content ?? ""
+              : props.reportSection.definition.content ?? ""
+          }
+          label={props.reportSection.definition.label}
+          showPerformanceDisplay={props.showPerformanceDisplay}
+        />
       )}
     </>
   ) : (
