@@ -65,13 +65,14 @@ export type TestModeStar = 'jzodElementEditor' | 'component' | '*';
 
 export const allTestModes: TestMode[] = ['jzodElementEditor', 'component'];
 
-export interface JzodElementEditorTestSuite<LocalEditorProps extends Record<string, any>> {
+export interface JzodElementEditorTestSuite<PropType extends Record<string, any>> {
   editor: React.FC<any>;
   performanceTests?: boolean;
   getJzodEditorTests: (
     // LocalEditor: React.FC<LocalEditorProps>,
-    jzodElementEditor: React.FC<JzodElementEditorProps_Test>
-  ) => JzodEditorTestSuites<LocalEditorProps>;
+    // jzodElementEditor: React.FC<JzodElementEditorProps_Test>
+    jzodElementEditor: React.FC<PropType>
+  ) => JzodEditorTestSuites<PropType>;
 }
 
 export type ModesType = TestModeStar | TestMode[];
@@ -245,8 +246,9 @@ export interface JzodElementEditorProps_Test {
 }
 
 
-export type JzodEditorTestCaseRenderer<LocalComponentProps> = {
-  renderAsJzodElementEditor?: React.FC<JzodElementEditorProps_Test>;
+export type JzodEditorTestCaseRenderer<PropType> = {
+  // renderAsJzodElementEditor?: React.FC<JzodElementEditorProps_Test>;
+  renderAsJzodElementEditor?: React.FC<PropType>;
 };
 
 export interface JzodEditorTestCase<PropType extends Record<string, any>> {
@@ -261,10 +263,10 @@ export interface JzodEditorTestCase<PropType extends Record<string, any>> {
 
 export type JzodEditorTest<PropType extends Record<string, any>> = Record<string, JzodEditorTestCase<PropType>>;
 
-export interface JzodEditorTestSuite<T extends Record<string, any>> {
-  suiteRenderComponent?: JzodEditorTestCaseRenderer<T>;
-  suiteProps?: T;
-  tests: JzodEditorTest<T>;
+export interface JzodEditorTestSuite<PropType extends Record<string, any>> {
+  suiteRenderComponent?: JzodEditorTestCaseRenderer<PropType>;
+  suiteProps?: PropType;
+  tests: JzodEditorTest<PropType>;
 };
 export type JzodEditorTestSuites<T extends Record<string, any>> = Record<string, JzodEditorTestSuite<T>>;
 

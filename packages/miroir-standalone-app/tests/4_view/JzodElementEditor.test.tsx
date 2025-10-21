@@ -71,12 +71,12 @@ MiroirLoggerFactory.registerLoggerToStart(MiroirLoggerFactory.getLoggerName(pack
 // ################################################################################################
 // ARRAY
 // ################################################################################################
-export interface LocalArrayEditorProps extends LocalEditorPropsRoot{
-  rawJzodSchema: JzodArray | JzodTuple | undefined;
-}
+// export interface LocalArrayEditorProps extends LocalEditorPropsRoot{
+//   rawJzodSchema: JzodArray | JzodTuple | undefined;
+// }
 
-export type JzodArrayEditorTest = JzodEditorTest<LocalArrayEditorProps>;
-export type JzodArrayEditorTestSuites = JzodEditorTestSuites<LocalArrayEditorProps>;
+export type JzodArrayEditorTest = JzodEditorTest<JzodElementEditorProps_Test>;
+export type JzodArrayEditorTestSuites = JzodEditorTestSuites<JzodElementEditorProps_Test>;
 
 export function getJzodArrayEditorTests(
   renderAsJzodElementEditor: React.FC<JzodElementEditorProps_Test>
@@ -374,12 +374,12 @@ export function getJzodArrayEditorTests(
 // ################################################################################################
 // ENUM
 // ################################################################################################
-export interface LocalEnumEditorProps extends LocalEditorPropsRoot {
-  rawJzodSchema: JzodEnum | undefined;
-}
+// export interface LocalEnumEditorProps extends LocalEditorPropsRoot {
+//   rawJzodSchema: JzodEnum | undefined;
+// }
 
-export type JzodEnumEditorTest = JzodEditorTest<LocalEnumEditorProps>;
-export type JzodEnumEditorTestSuites = JzodEditorTestSuites<LocalEnumEditorProps>;
+export type JzodEnumEditorTest = JzodEditorTest<JzodElementEditorProps_Test>;
+export type JzodEnumEditorTestSuites = JzodEditorTestSuites<JzodElementEditorProps_Test>;
 
 export function getJzodEnumEditorTests(
   renderAsJzodElementEditor: React.FC<JzodElementEditorProps_Test>
@@ -496,8 +496,8 @@ export function getJzodEnumEditorTests(
 // LITERAL
 // ################################################################################################
 
-export type JzodLiteralEditorTest = JzodEditorTest<LocalLiteralEditorProps>;
-export type JzodLiteralEditorTestSuites = JzodEditorTestSuites<LocalLiteralEditorProps>;
+export type JzodLiteralEditorTest = JzodEditorTest<JzodElementEditorProps_Test>;
+export type JzodLiteralEditorTestSuites = JzodEditorTestSuites<JzodElementEditorProps_Test>;
 
 // ################################################################################################
 export function getJzodLiteralEditorTests(
@@ -515,10 +515,11 @@ export function getJzodLiteralEditorTests(
         rootLessListKeyArray: ["testField"],
         initialFormState: "test-value",
         label: "Test Label",
-      } as LocalLiteralEditorProps,
+      } as JzodElementEditorProps_Test,
+      // } as LocalLiteralEditorProps,
       tests: {
         "renders Literal input with label when label prop is provided": {
-          jzodElementEditorProps: (props: LocalLiteralEditorProps) =>
+          jzodElementEditorProps: (props: JzodElementEditorProps_Test) =>
             ({
               ...props,
               rawJzodSchema: {
@@ -549,8 +550,9 @@ export function getJzodLiteralEditorTests(
             rootLessListKeyArray: ["testField"],
             initialFormState: "test-value",
             // label: "Test Label", // no label
-          },
-          jzodElementEditorProps: (props: LocalLiteralEditorProps) =>
+          } as JzodElementEditorProps_Test,
+          // jzodElementEditorProps: (props: LocalLiteralEditorProps) =>
+          jzodElementEditorProps: (props: JzodElementEditorProps_Test) =>
             ({
               ...props,
               rawJzodSchema: {
@@ -564,7 +566,8 @@ export function getJzodLiteralEditorTests(
           },
         },
         "setting new value": {
-          jzodElementEditorProps: (props: LocalLiteralEditorProps) =>
+          // jzodElementEditorProps: (props: LocalLiteralEditorProps) =>
+          jzodElementEditorProps: (props: JzodElementEditorProps_Test) =>
             ({
               ...props,
               rawJzodSchema: {
@@ -595,8 +598,8 @@ export interface LocalObjectEditorProps extends LocalEditorPropsRoot{
   rawJzodSchema: JzodObject | JzodRecord | undefined;
 }
 
-export type JzodObjectEditorTest = JzodEditorTest<LocalObjectEditorProps>;
-export type JzodObjectEditorTestSuites = JzodEditorTestSuites<LocalObjectEditorProps>;
+export type JzodObjectEditorTest = JzodEditorTest<JzodElementEditorProps_Test>;
+export type JzodObjectEditorTestSuites = JzodEditorTestSuites<JzodElementEditorProps_Test>;
 
 export function getJzodObjectEditorTests(
   renderAsJzodElementEditor: React.FC<JzodElementEditorProps_Test>
@@ -1105,8 +1108,8 @@ export interface LocalSimpleTypeEditorProps extends LocalEditorPropsRoot{
   rawJzodSchema: JzodSimpleTypes | undefined;
 }
 
-export type JzodSimpleTypeEditorTest = JzodEditorTest<LocalSimpleTypeEditorProps>;
-export type JzodSimpleTypeEditorTestSuites = JzodEditorTestSuites<LocalSimpleTypeEditorProps>;
+export type JzodSimpleTypeEditorTest = JzodEditorTest<JzodElementEditorProps_Test>;
+export type JzodSimpleTypeEditorTestSuites = JzodEditorTestSuites<JzodElementEditorProps_Test>;
 
 export function getJzodSimpleTypeEditorTests(
   renderAsJzodElementEditor: React.FC<JzodElementEditorProps_Test>
@@ -1437,8 +1440,8 @@ export interface LocalUnionEditorProps extends LocalEditorPropsRoot{
   rawJzodSchema: JzodUnion | undefined;
 }
 
-export type JzodUnionEditorTest = JzodEditorTest<LocalUnionEditorProps>;
-export type JzodUnionEditorTestSuites = JzodEditorTestSuites<LocalUnionEditorProps>;
+export type JzodUnionEditorTest = JzodEditorTest<JzodElementEditorProps_Test>;
+export type JzodUnionEditorTestSuites = JzodEditorTestSuites<JzodElementEditorProps_Test>;
 
 export function getJzodUnionEditorTests(
   renderAsJzodElementEditor: React.FC<JzodElementEditorProps_Test>
@@ -1654,8 +1657,8 @@ export interface LocalBookEditorProps extends LocalEditorPropsRoot{
   rawJzodSchema: JzodObject | undefined;
 }
 
-export type JzodBookEditorTest = JzodEditorTest<LocalBookEditorProps>;
-export type JzodBookEditorTestSuites = JzodEditorTestSuites<LocalBookEditorProps>;
+export type JzodBookEditorTest = JzodEditorTest<JzodElementEditorProps_Test>;
+export type JzodBookEditorTestSuites = JzodEditorTestSuites<JzodElementEditorProps_Test>;
 
 export function getJzodBookEditorTests(
   renderAsJzodElementEditor: React.FC<JzodElementEditorProps_Test>
@@ -1765,8 +1768,8 @@ export interface LocalEntityDefinitionEditorProps extends LocalEditorPropsRoot{
   rawJzodSchema: JzodObject | undefined;
 }
 
-export type JzodEntityDefinitionEditorTest = JzodEditorTest<LocalEntityDefinitionEditorProps>;
-export type JzodEntityDefinitionEditorTestSuites = JzodEditorTestSuites<LocalEntityDefinitionEditorProps>;
+export type JzodEntityDefinitionEditorTest = JzodEditorTest<JzodElementEditorProps_Test>;
+export type JzodEntityDefinitionEditorTestSuites = JzodEditorTestSuites<JzodElementEditorProps_Test>;
 
 export function getJzodEntityDefinitionEditorTests(
   renderAsJzodElementEditor: React.FC<JzodElementEditorProps_Test>
@@ -1914,8 +1917,8 @@ export interface LocalEndpointEditorProps extends LocalEditorPropsRoot{
   rawJzodSchema: JzodElement | undefined;
 }
 
-export type JzodEndpointEditorTest = JzodEditorTest<LocalEndpointEditorProps>;
-export type JzodEndpointEditorTestSuites = JzodEditorTestSuites<LocalEndpointEditorProps>;
+export type JzodEndpointEditorTest = JzodEditorTest<JzodElementEditorProps_Test>;
+export type JzodEndpointEditorTestSuites = JzodEditorTestSuites<JzodElementEditorProps_Test>;
 
 export function getJzodEndpointEditorTests(
   renderAsJzodElementEditor: React.FC<JzodElementEditorProps_Test>
@@ -2043,27 +2046,29 @@ export function getJzodEndpointEditorTests(
 // ################################################################################################
 // ################################################################################################
 // ################################################################################################
-// ##############################################################################################
+// ################################################################################################
+const editor = JzodElementEditor as any as React.FC<JzodElementEditorProps_Test>;
+
 const jzodElementEditorTests: Record<
   string,
   JzodElementEditorTestSuite<any> & { modes?: ModesType }
 > = {
   JzodArrayEditor: { 
-    editor: JzodElementEditor, 
+    editor, 
     getJzodEditorTests: getJzodArrayEditorTests,
     // modes: '*',
     // modes: ['jzodElementEditor', 'component'],
     modes: 'jzodElementEditor',
   },
   JzodEnumEditor: {
-    editor: JzodElementEditor,
+    editor,
     getJzodEditorTests: getJzodEnumEditorTests,
     // modes: '*',
     modes: "jzodElementEditor",
     // modes: "component",
   },
   JzodLiteralEditor: { 
-    editor: JzodElementEditor, 
+    editor, 
     getJzodEditorTests: getJzodLiteralEditorTests,
     // modes: "*",
     // modes: ['jzodElementEditor', 'component'],
@@ -2071,21 +2076,21 @@ const jzodElementEditorTests: Record<
     // modes: "component",
   },
   JzodObjectEditor: { 
-    editor: JzodElementEditor, 
+    editor, 
     getJzodEditorTests: getJzodObjectEditorTests,
     // modes: '*',
     // modes: ['jzodElementEditor', 'component'],
     modes: 'jzodElementEditor',
   },
   JzodSimpleTypeEditor: { 
-    editor: JzodElementEditor, 
+    editor, 
     getJzodEditorTests: getJzodSimpleTypeEditorTests,
     // modes: '*',
     // modes: ['jzodElementEditor', 'component'],
     modes: 'jzodElementEditor',
   },
   JzodUnionEditor: { 
-    editor: JzodElementEditor, 
+    editor, 
     getJzodEditorTests: getJzodUnionEditorTests,
     // modes: '*',
     // modes: ['jzodElementEditor', 'component'],
@@ -2102,7 +2107,7 @@ const jzodElementEditorTests: Record<
   // },
   // ################# INSTANCES
   JzodBookEditor: { 
-    editor: JzodElementEditor, 
+    editor, 
     getJzodEditorTests: getJzodBookEditorTests,
     performanceTests: true,
     // modes: '*',
@@ -2111,7 +2116,7 @@ const jzodElementEditorTests: Record<
   },
   // // ################# MODEL
   JzodEntityDefinitionEditor: { 
-    editor: JzodElementEditor, 
+    editor, 
     getJzodEditorTests: getJzodEntityDefinitionEditorTests,
     // modes: '*',
     // modes: ['jzodElementEditor', 'component'],
