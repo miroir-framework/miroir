@@ -277,14 +277,6 @@ export const ReportSectionView = (props: ReportSectionViewProps) => {
             applicationSection={props.applicationSection}
             deploymentUuid={props.deploymentUuid}
             queryResults={props.reportData?.storedQueryData??props.reportData.reportData}
-            // queryResults={{
-            //   entities: [
-            //     { uuid: "1", name: "Entity A", value: 10, color: "blue" },
-            //     { uuid: "2", name: "Entity B", value: 20, color: "red" },
-            //     { uuid: "3", name: "Entity C", value: 15, color: "yellow" },
-            //     { uuid: "4", name: "Entity D", value: 25, color: "green" },
-            //   ],
-            // }}
             reportSection={props.reportSection as any}
             showPerformanceDisplay={props.showPerformanceDisplay}
           />
@@ -294,11 +286,13 @@ export const ReportSectionView = (props: ReportSectionViewProps) => {
         <ReportSectionMarkdown
           applicationSection={props.applicationSection}
           deploymentUuid={props.deploymentUuid}
-          markdownContent={
-            props.reportSection.definition.fetchedDataReference
-              ? props.reportData.reportData[props.reportSection.definition.fetchedDataReference] ?? props.reportSection.definition.content ?? ""
-              : props.reportSection.definition.content ?? ""
-          }
+          reportSection={props.reportSection}
+          // markdownContent={
+          //   props.reportSection.definition.content
+          //   // props.reportSection.definition.fetchedDataReference
+          //   //   ? props.reportData.reportData[props.reportSection.definition.fetchedDataReference] ?? props.reportSection.definition.content ?? ""
+          //   //   : props.reportSection.definition.content ?? ""
+          // }
           label={props.reportSection.definition.label}
           showPerformanceDisplay={props.showPerformanceDisplay}
         />

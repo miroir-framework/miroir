@@ -24,6 +24,7 @@ import {
   ThemedTooltip,
 } from "../Themes/index";
 import { MarkdownEditorModal } from './MarkdownEditorModal.js';
+import type { MarkdownReportSection } from 'miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -33,7 +34,8 @@ MiroirLoggerFactory.registerLoggerToStart(
 export interface ReportSectionMarkdownProps {
   applicationSection: ApplicationSection;
   deploymentUuid: Uuid;
-  markdownContent: string;
+  // markdownContent: string;
+  reportSection: MarkdownReportSection;
   label?: string;
   onEdit?: () => void;
   onSave?: (newContent: string) => void;
@@ -45,7 +47,13 @@ export const ReportSectionMarkdown = (props: ReportSectionMarkdownProps) => {
   
   // Modal state management
   const [isEditorOpen, setIsEditorOpen] = useState(false);
-  const [currentContent, setCurrentContent] = useState(props.markdownContent);
+          // markdownContent={
+          //   props.reportSection.definition.content
+          //   // props.reportSection.definition.fetchedDataReference
+          //   //   ? props.reportData.reportData[props.reportSection.definition.fetchedDataReference] ?? props.reportSection.definition.content ?? ""
+          //   //   : props.reportSection.definition.content ?? ""
+          // }
+  const [currentContent, setCurrentContent] = useState(props.reportSection.definition.content || "");
   
   // Get navigation key for render tracking
   const navigationKey = `${props.deploymentUuid}-${props.applicationSection}`;
@@ -62,11 +70,6 @@ export const ReportSectionMarkdown = (props: ReportSectionMarkdownProps) => {
     "props:",
     props
   );
-
-  // Update current content when props change
-  useMemo(() => {
-    setCurrentContent(props.markdownContent);
-  }, [props.markdownContent]);
 
   // Handle opening the editor
   const handleEdit = useCallback(() => {
@@ -109,11 +112,12 @@ export const ReportSectionMarkdown = (props: ReportSectionMarkdownProps) => {
     <>
       <ThemedContainer
         style={{
-          position: 'relative',
-          padding: '16px',
+          // position: 'relative',
+          padding: '2em',
           marginBottom: '16px',
         }}
       >
+        <span>ReportSectionMarkdown! {JSON.stringify(currentContent)}</span>
       {/* Performance display (optional) */}
       {props.showPerformanceDisplay && (
         <ThemedText>
