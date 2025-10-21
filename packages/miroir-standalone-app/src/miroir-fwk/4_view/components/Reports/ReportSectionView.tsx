@@ -271,7 +271,7 @@ export const ReportSectionView = (props: ReportSectionViewProps) => {
           entityUuid={props.reportSection.definition.parentUuid}
         />
       )}
-      {props.reportSection.type == "graphReportSection" ? (
+      {props.reportSection.type == "graphReportSection" && (
         <div>
           <GraphReportSectionView
             applicationSection={props.applicationSection}
@@ -289,8 +289,6 @@ export const ReportSectionView = (props: ReportSectionViewProps) => {
             showPerformanceDisplay={props.showPerformanceDisplay}
           />
         </div>
-      ) : (
-        <div></div>
       )}
       {props.reportSection.type == "markdownReportSection" && (
         <ReportSectionMarkdown

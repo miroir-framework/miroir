@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState, useCallback } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeSanitize from 'rehype-sanitize';
@@ -23,6 +23,7 @@ import {
   ThemedTitle,
   ThemedTooltip,
 } from "../Themes/index";
+import { MarkdownEditorModal } from './MarkdownEditorModal.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -35,11 +36,16 @@ export interface ReportSectionMarkdownProps {
   markdownContent: string;
   label?: string;
   onEdit?: () => void;
+  onSave?: (newContent: string) => void;
   showPerformanceDisplay?: boolean;
 }
 
 export const ReportSectionMarkdown = (props: ReportSectionMarkdownProps) => {
   const renderStartTime = performance.now();
+  
+  // Modal state management
+  const [isEditorOpen, setIsEditorOpen] = useState(false);
+  const [currentContent, setCurrentContent] = useState(props.markdownContent);
   
   // Get navigation key for render tracking
   const navigationKey = `${props.deploymentUuid}-${props.applicationSection}`;
@@ -57,10 +63,40 @@ export const ReportSectionMarkdown = (props: ReportSectionMarkdownProps) => {
     props
   );
 
+  // Update current content when props change
+  useMemo(() => {
+    setCurrentContent(props.markdownContent);
+  }, [props.markdownContent]);
+
+  // Handle opening the editor
+  const handleEdit = useCallback(() => {
+    log.info("ReportSectionMarkdown handleEdit");
+    setIsEditorOpen(true);
+    if (props.onEdit) {
+      props.onEdit();
+    }
+  }, [props]);
+
+  // Handle saving edited content
+  const handleSave = useCallback((newContent: string) => {
+    log.info("ReportSectionMarkdown handleSave", "new content length", newContent.length);
+    setCurrentContent(newContent);
+    setIsEditorOpen(false);
+    if (props.onSave) {
+      props.onSave(newContent);
+    }
+  }, [props]);
+
+  // Handle canceling edit
+  const handleCancel = useCallback(() => {
+    log.info("ReportSectionMarkdown handleCancel");
+    setIsEditorOpen(false);
+  }, []);
+
   // Memoize the markdown content to avoid unnecessary re-renders
   const sanitizedMarkdown = useMemo(() => {
-    return props.markdownContent || "";
-  }, [props.markdownContent]);
+    return currentContent || "";
+  }, [currentContent]);
 
   const renderEndTime = performance.now();
   const renderDuration = renderEndTime - renderStartTime;
@@ -70,13 +106,14 @@ export const ReportSectionMarkdown = (props: ReportSectionMarkdownProps) => {
   RenderPerformanceMetrics.trackRenderPerformance(componentKey, renderDuration);
 
   return (
-    <ThemedContainer
-      style={{
-        position: 'relative',
-        padding: '16px',
-        marginBottom: '16px',
-      }}
-    >
+    <>
+      <ThemedContainer
+        style={{
+          position: 'relative',
+          padding: '16px',
+          marginBottom: '16px',
+        }}
+      >
       {/* Performance display (optional) */}
       {props.showPerformanceDisplay && (
         <ThemedText>
@@ -94,11 +131,11 @@ export const ReportSectionMarkdown = (props: ReportSectionMarkdownProps) => {
         </ThemedTitle>
       )}
 
-      {/* Edit button in top-right corner if onEdit callback provided */}
-      {props.onEdit && (
+      {/* Edit button in top-right corner if onEdit or onSave callback provided */}
+      {(props.onEdit || props.onSave) && (
         <ThemedTooltip title="Edit Markdown">
           <ThemedIconButton
-            onClick={props.onEdit}
+            onClick={handleEdit}
             style={{
               position: 'absolute',
               top: '8px',
@@ -220,6 +257,17 @@ export const ReportSectionMarkdown = (props: ReportSectionMarkdownProps) => {
           height: auto;
         }
       `}</style>
-    </ThemedContainer>
+      </ThemedContainer>
+
+      {/* Markdown Editor Modal */}
+      <MarkdownEditorModal
+        isOpen={isEditorOpen}
+        initialContent={currentContent}
+        onSave={handleSave}
+        onCancel={handleCancel}
+        deploymentUuid={props.deploymentUuid}
+        applicationSection={props.applicationSection}
+      />
+    </>
   );
 };
