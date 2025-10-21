@@ -1,0 +1,190 @@
+import { useState, useMemo, useCallback } from 'react';
+import { Box } from '@mui/material';
+import {
+  LoggerInterface,
+  MiroirLoggerFactory,
+  RootReport,
+} from "miroir-core";
+
+import { packageName } from '../../../../constants.js';
+import { cleanLevel } from '../../constants.js';
+import { useMiroirContextService } from "../../MiroirContextReactProvider.js";
+import { ReportView } from './ReportView.js';
+import { ReportViewProps } from './ReportHooks.js';
+import { ThemedButton } from '../Themes/index.js';
+
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ReportViewWithEditor"), "UI",
+).then((logger: LoggerInterface) => {log = logger});
+
+// Task 2.2: Define ReportViewWithEditorProps interface extending ReportViewProps
+export interface ReportViewWithEditorProps extends ReportViewProps {
+  // No additional props needed initially
+}
+
+// Task 2.3: Implement ReportViewWithEditor component
+export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
+  const context = useMiroirContextService();
+  
+  // Read editMode from ViewParams context
+  const editMode = context.viewParams.editMode;
+  
+  // Task 2.4: Add React useState hook to manage edited Report definition
+  const [editedReportDefinition, setEditedReportDefinition] = useState<RootReport | undefined>(undefined);
+  
+  // Task 2.5: Add React useState hook to track which sections have been modified
+  const [modifiedSections, setModifiedSections] = useState<Set<string>>(new Set());
+  
+  // Task 2.6: Create handleSectionEdit callback
+  const handleSectionEdit = useCallback((sectionPath: string, newDefinition: any) => {
+    log.info("handleSectionEdit called", { sectionPath, newDefinition });
+    
+    // Update the edited report definition
+    setEditedReportDefinition(prevReport => {
+      // If no previous edits, start with a copy of the original
+      const baseReport = prevReport ?? props.reportDefinition;
+      
+      // Deep clone to avoid mutating the original
+      const updatedReport = JSON.parse(JSON.stringify(baseReport)) as RootReport;
+      
+      // Parse the section path and update the appropriate part
+      // For now, we'll handle simple section updates
+      // Path format: "section.definition[0]" or "section"
+      const pathParts = sectionPath.split('.');
+      let current: any = updatedReport;
+      
+      for (let i = 0; i < pathParts.length - 1; i++) {
+        const part = pathParts[i];
+        const arrayMatch = part.match(/^(.+)\[(\d+)\]$/);
+        if (arrayMatch) {
+          const [, key, index] = arrayMatch;
+          current = current[key][parseInt(index)];
+        } else {
+          current = current[part];
+        }
+      }
+      
+      // Set the final value
+      const lastPart = pathParts[pathParts.length - 1];
+      const arrayMatch = lastPart.match(/^(.+)\[(\d+)\]$/);
+      if (arrayMatch) {
+        const [, key, index] = arrayMatch;
+        current[key][parseInt(index)] = newDefinition;
+      } else {
+        current[lastPart] = newDefinition;
+      }
+      
+      return updatedReport;
+    });
+    
+    // Add the section path to modified sections
+    setModifiedSections(prev => new Set([...prev, sectionPath]));
+  }, [props.reportDefinition]);
+  
+  // Task 2.7: Create handleSectionCancel callback
+  const handleSectionCancel = useCallback((sectionPath: string) => {
+    log.info("handleSectionCancel called", { sectionPath });
+    
+    // Remove the section from modified sections
+    setModifiedSections(prev => {
+      const newSet = new Set(prev);
+      newSet.delete(sectionPath);
+      return newSet;
+    });
+    
+    // If no more modified sections, clear the edited report definition
+    if (modifiedSections.size === 1 && modifiedSections.has(sectionPath)) {
+      setEditedReportDefinition(undefined);
+    } else {
+      // Revert just this section to original
+      setEditedReportDefinition(prevReport => {
+        if (!prevReport) return undefined;
+        
+        // Deep clone
+        const updatedReport = JSON.parse(JSON.stringify(prevReport)) as RootReport;
+        
+        // Parse the section path and revert to original value
+        const pathParts = sectionPath.split('.');
+        let current: any = updatedReport;
+        let originalCurrent: any = props.reportDefinition;
+        
+        for (let i = 0; i < pathParts.length - 1; i++) {
+          const part = pathParts[i];
+          const arrayMatch = part.match(/^(.+)\[(\d+)\]$/);
+          if (arrayMatch) {
+            const [, key, index] = arrayMatch;
+            current = current[key][parseInt(index)];
+            originalCurrent = originalCurrent[key][parseInt(index)];
+          } else {
+            current = current[part];
+            originalCurrent = originalCurrent[part];
+          }
+        }
+        
+        // Revert the final value
+        const lastPart = pathParts[pathParts.length - 1];
+        const arrayMatch = lastPart.match(/^(.+)\[(\d+)\]$/);
+        if (arrayMatch) {
+          const [, key, index] = arrayMatch;
+          current[key][parseInt(index)] = originalCurrent[key][parseInt(index)];
+        } else {
+          current[lastPart] = originalCurrent[lastPart];
+        }
+        
+        return updatedReport;
+      });
+    }
+  }, [props.reportDefinition, modifiedSections]);
+  
+  // Task 2.11: Ensure ReportView uses original Report definition for rendering
+  const reportToDisplay = editedReportDefinition ?? props.reportDefinition;
+  
+  return (
+    <Box sx={{ position: 'relative' }}>
+      {/* Task 2.8 & 2.9: Add Submit button at the top (only visible when editMode and modifications exist) */}
+      {editMode && modifiedSections.size > 0 && (
+        <Box 
+          sx={{ 
+            position: 'sticky',
+            top: 0,
+            zIndex: 1000,
+            backgroundColor: 'background.paper',
+            borderBottom: 1,
+            borderColor: 'divider',
+            padding: 2,
+            display: 'flex',
+            justifyContent: 'center',
+            gap: 2,
+          }}
+        >
+          <ThemedButton
+            variant="primary"
+            // color="success"
+            // size="large"
+            // sx={{
+            //   fontWeight: 'bold',
+            //   minWidth: 200,
+            //   boxShadow: 3,
+            //   '&:hover': {
+            //     boxShadow: 6,
+            //   }
+            // }}
+            onClick={() => {
+              log.info("Submit button clicked - to be implemented in task 5.0");
+              // Implementation will be done in task 5.0
+            }}
+          >
+            Submit Changes ({modifiedSections.size} section{modifiedSections.size > 1 ? 's' : ''})
+          </ThemedButton>
+        </Box>
+      )}
+      
+      {/* Task 2.10: Pass down editMode and callbacks as props - will be implemented in task 3.0 */}
+      <ReportView
+        {...props}
+        reportDefinition={reportToDisplay}
+      />
+    </Box>
+  );
+};
