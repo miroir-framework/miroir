@@ -92,7 +92,7 @@ This feature introduces an inline editing mode that allows users to edit Report 
 2. **Edit history/undo beyond cancel**: No multi-step undo/redo functionality beyond the cancel button
 3. **Permission granularity**: No per-section or per-Report permission system; `editMode` toggle availability is uniform
 4. **Real-time collaboration**: No live multi-user editing or presence indicators
-5. **Report structure changes**: No ability to add/remove sections, only edit existing sections
+5. **Report structure changes**: No ability to add/remove sections for now, only edit existing sections. Adding / removing sections will be done in an ulterior PRD. Using KISS for now.
 6. **Version control**: No built-in version history or rollback beyond the current session
 
 ## Design Considerations
@@ -114,19 +114,25 @@ This feature introduces an inline editing mode that allows users to edit Report 
 1. User enables edit mode via appBar toggle
 2. Pencil icons appear on all sections
 3. User clicks pencil on a specific section
-4. Editor opens inline, Report continues rendering with live updates
+4. Editor opens inline, Report continues rendering with live updates (potentially throttled / debounced to a couple of seconds for performance)
 5. User makes changes, clicks save icon to finalize locally
 6. User repeats for other sections as needed
 7. User clicks submit button to persist all changes to storage
 
 ## Technical Considerations
 
+In a general way, proceed in Test-driven way: a test shall be available for validation a the end of each Task. Favor integration tests compared to unit tests. Unit tests may be enough when mocking is not necessary or strictly limited to ancillary functions.
+
+Perform integration of new code early, do not wait to have fully implemented a feature to integrate it with existing functionality. Make the new functionality co-evolve with the legacy ones.
+
+Alter existing components as little as possible, reuse existing components as much as possible; in particular, create new components for Report View / Edition: `ReportViewWithEditor` and `ReportSectionViewWithEditor`.
+
 ### State Management
 - Use React `useState` for managing local edited Report definition
 - Store pending changes per section in component state
 - Track which sections have been modified to enable/disable submit button
 
-### Component Reuse
+### Implementation strategy / Component Reuse
 - Leverage `ReportSectionEntityInstance` for the editing interface
 - Follow the same validation patterns as `JzodElementEditor` (e.g., `codeMirrorIsValidJson`, inline error display)
 - Use existing Action submission pattern from `ReportSectionEntityInstance.onEditValueObjectFormSubmit`
@@ -155,6 +161,8 @@ User clicks submit → Send Action to update Report in storage
 ```
 
 ## Success Metrics
+
+the following are guidance-level indications, do not implement support code to enable actual monitoring of their values in the app
 
 - **Reduction in navigation**: Measure time/clicks required to edit and verify Report changes (target: 50% reduction)
 - **User adoption**: Track usage of inline editing feature vs. traditional navigation-based editing
