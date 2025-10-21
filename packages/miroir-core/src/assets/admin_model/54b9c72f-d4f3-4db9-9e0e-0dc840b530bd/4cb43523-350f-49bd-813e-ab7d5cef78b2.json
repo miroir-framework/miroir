@@ -38,7 +38,12 @@
         "tag": { "value": { "id": 7, "defaultLabel": "Description", "editable": true } }
       },
       "sidebarWidth": { "type": "number" },
-      "gridType": { "type": "enum", "definition": ["ag-grid", "glide-data-grid"] }
+      "gridType": { "type": "enum", "definition": ["ag-grid", "glide-data-grid"] },
+      "editMode": {
+        "type": "boolean",
+        "optional": true,
+        "tag": { "value": { "id": 8, "defaultLabel": "Edit Mode", "editable": true } }
+      }
     }
   }
 }

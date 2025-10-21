@@ -184,6 +184,11 @@ export function MiroirContextReactProvider(props: {
   const [sidebarIsopen, setSidebarIsOpen] = useState(true);
   const [sidebarWidth, setSidebarWidth] = useState(250);
   const [gridType, setGridType] = useState<GridType>("ag-grid");
+  const [editMode, setEditMode] = useState(() => {
+    // Persist editMode state across navigation
+    const saved = sessionStorage.getItem("editMode");
+    return saved ? JSON.parse(saved) : false;
+  });
   const [toolsPageState, setToolsPageState] = useState<ToolsPageState>(() => {
     // Persist ToolsPage state across navigation per deployment
     const saved = sessionStorage.getItem("toolsPageState");
@@ -207,13 +212,18 @@ export function MiroirContextReactProvider(props: {
   const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error" | "info">("info");
 
   const viewParams = useMemo(() => {
-    const params = new ViewParams(sidebarIsopen, sidebarWidth, gridType);
+    const params = new ViewParams(sidebarIsopen, sidebarWidth, gridType, 'default', {}, editMode);
     // Override setters to use React state
     params.updateSidebarIsOpen = (sidebarIsopen: boolean) => setSidebarIsOpen(sidebarIsopen);
     params.updateSidebarWidth = (width: number) => setSidebarWidth(width);
     params.setGridType = (type: GridType) => setGridType(type);
+    params.updateEditMode = (enabled: boolean) => {
+      setEditMode(enabled);
+      // Persist to sessionStorage
+      sessionStorage.setItem("editMode", JSON.stringify(enabled));
+    };
     return params;
-  }, [sidebarWidth, gridType]);
+  }, [sidebarWidth, gridType, editMode]);
 
   // Update functions for ToolsPage state with persistence
   const updateToolsPageState = useMemo(

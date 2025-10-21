@@ -17,6 +17,8 @@ import {
 import AdbIcon from '@mui/icons-material/Adb';
 import MenuIcon from '@mui/icons-material/Menu';
 import TocIcon from '@mui/icons-material/Toc';
+import Edit from '@mui/icons-material/Edit';
+import EditOff from '@mui/icons-material/EditOff';
 
 import { LoggerInterface, MiroirLoggerFactory, MiroirMenuItem } from 'miroir-core';
 
@@ -87,6 +89,9 @@ export interface AppBarProps extends MuiAppBarProps {
   // Grid type display and toggle
   gridType?: string,
   onGridTypeToggle?: () => void,
+  // Edit mode display and toggle
+  editMode?: boolean,
+  onEditModeToggle?: () => void,
   // theme: any
 }
 
@@ -440,6 +445,29 @@ export function AppBar(props:AppBarProps) {
                 </Button>
               </Tooltip>
             )}{" "}
+            {/* Edit Mode Toggle Button */}
+            {props.onEditModeToggle && (
+              <Tooltip
+                title={props.editMode ? "Edit Mode: ON (click to disable)" : "Edit Mode: OFF (click to enable)"}
+              >
+                <IconButton
+                  color="inherit"
+                  onClick={props.onEditModeToggle}
+                  sx={{
+                    mr: 1,
+                    color: props.editMode
+                      ? miroirTheme.currentTheme.colors.error || '#d32f2f'
+                      : miroirTheme.currentTheme.components.appBar.textColor,
+                    transition: "all 0.3s ease-in-out",
+                    "&:hover": {
+                      backgroundColor: miroirTheme.currentTheme.colors.hover,
+                    },
+                  }}
+                >
+                  {props.editMode ? <Edit /> : <EditOff />}
+                </IconButton>
+              </Tooltip>
+            )}
             {/* Document Outline Toggle Button */}
             {props.onOutlineToggle && (
               <Tooltip

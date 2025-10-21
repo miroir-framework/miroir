@@ -53,6 +53,7 @@ export interface ViewParamsData {
   gridType: GridType;
   appTheme: AppTheme;
   toolsPage?: ToolsPageState;
+  editMode?: boolean;
 }
 
 export class ViewParams {
@@ -61,19 +62,22 @@ export class ViewParams {
   private _gridType: GridType;
   private _appTheme: AppTheme;
   private _toolsPage: ToolsPageState;
+  private _editMode: boolean;
 
   constructor(
     initialSidebarIsOpen: boolean = true,
     initialSidebarWidth: number = 250, 
     initialGridType: GridType = 'ag-grid', 
     initialAppTheme: AppTheme = 'default',
-    initialToolsPage: ToolsPageState = {}
+    initialToolsPage: ToolsPageState = {},
+    initialEditMode: boolean = false
   ) {
     this._sidebarIsOpen = initialSidebarIsOpen;
     this._sidebarWidth = initialSidebarWidth;
     this._gridType = initialGridType;
     this._appTheme = initialAppTheme;
     this._toolsPage = initialToolsPage;
+    this._editMode = initialEditMode;
   }
 
   get sidebarIsOpen(): boolean {
@@ -129,5 +133,17 @@ export class ViewParams {
       ...this._toolsPage,
       transformerEditor: { ...this._toolsPage.transformerEditor, ...updates }
     };
+  }
+
+  get editMode(): boolean {
+    return this._editMode;
+  }
+
+  set editMode(enabled: boolean) {
+    this._editMode = enabled;
+  }
+
+  updateEditMode(enabled: boolean): void {
+    this._editMode = enabled;
   }
 }

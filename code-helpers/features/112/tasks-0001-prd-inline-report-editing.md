@@ -48,18 +48,18 @@ Generated from PRD: `0001-prd-inline-report-editing.md`
 
 Never commit after you've checked your work, just stop short of commiting, leave that to me.
 
-- [ ] 1.0 Add editMode to ViewParams and AppBar Toggle
-  - [ ] 1.1 Update ViewParams EntityDefinition Jzod schema to include `editMode` boolean field in `packages/miroir-core/src/assets/admin_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/4cb43523-350f-49bd-813e-ab7d5cef78b2.json`
-  - [ ] 1.2 Run `npm run devBuild -w miroir-core` to regenerate TypeScript types from updated Jzod schema
-  - [ ] 1.3 Add `editMode` boolean field to `ViewParamsData` interface in `packages/miroir-core/src/0_interfaces/4-views/ViewParams.ts`
-  - [ ] 1.4 Add `_editMode` private field and getter/setter to `ViewParams` class in `packages/miroir-core/src/0_interfaces/4-views/ViewParams.ts`
-  - [ ] 1.5 Update `ViewParams` constructor to accept `initialEditMode` parameter (default: false)
-  - [ ] 1.6 Add `updateEditMode(enabled: boolean)` method to `ViewParams` class following pattern of `updateSidebarIsOpen`
-  - [ ] 1.7 Add edit mode toggle button to AppBar component in `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Page/AppBar.tsx` (use Edit/EditOff Material-UI icons, grey when false, dark red when true)
-  - [ ] 1.8 Wire AppBar toggle to call `viewParams.updateEditMode()` and trigger ViewParams persistence via `ViewParamsUpdateQueue`
-  - [ ] 1.9 Update `MiroirContextReactProvider` in `packages/miroir-standalone-app/src/miroir-fwk/4_view/MiroirContextReactProvider.tsx` to include `editMode` in ViewParams initialization
-  - [ ] 1.10 Write integration test in `packages/miroir-core/tests/4_views/ViewParams.integ.test.ts` to verify editMode persistence and retrieval
-  - [ ] 1.11 Run test: `npm run testByFile -w miroir-core -- ViewParams.integ`
+- [x] 1.0 Add editMode to ViewParams and AppBar Toggle
+  - [x] 1.1 Update ViewParams EntityDefinition Jzod schema to include `editMode` boolean field in `packages/miroir-core/src/assets/admin_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/4cb43523-350f-49bd-813e-ab7d5cef78b2.json`
+  - [x] 1.2 Run `npm run devBuild -w miroir-core` to regenerate TypeScript types from updated Jzod schema
+  - [x] 1.3 Add `editMode` boolean field to `ViewParamsData` interface in `packages/miroir-core/src/0_interfaces/4-views/ViewParams.ts`
+  - [x] 1.4 Add `_editMode` private field and getter/setter to `ViewParams` class in `packages/miroir-core/src/0_interfaces/4-views/ViewParams.ts`
+  - [x] 1.5 Update `ViewParams` constructor to accept `initialEditMode` parameter (default: false)
+  - [x] 1.6 Add `updateEditMode(enabled: boolean)` method to `ViewParams` class following pattern of `updateSidebarIsOpen`
+  - [x] 1.7 Add edit mode toggle button to AppBar component in `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Page/AppBar.tsx` (use Edit/EditOff Material-UI icons, grey when false, dark red when true)
+  - [x] 1.8 Wire AppBar toggle to call `viewParams.updateEditMode()` and trigger ViewParams persistence via `ViewParamsUpdateQueue`
+  - [x] 1.9 Update `MiroirContextReactProvider` in `packages/miroir-standalone-app/src/miroir-fwk/4_view/MiroirContextReactProvider.tsx` to include `editMode` in ViewParams initialization
+  - [x] 1.10 Write integration test in `packages/miroir-core/tests/4_views/ViewParams.integ.test.ts` to verify editMode persistence and retrieval
+  - [x] 1.11 Run test: `npm run testByFile -w miroir-core -- ViewParams.integ`
 
 - [ ] 2.0 Create ReportViewWithEditor Component with State Management
   - [ ] 2.1 Create new file `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/ReportViewWithEditor.tsx`
