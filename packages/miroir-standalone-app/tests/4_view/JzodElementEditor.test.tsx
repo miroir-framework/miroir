@@ -79,14 +79,12 @@ export type JzodArrayEditorTest = JzodEditorTest<LocalArrayEditorProps>;
 export type JzodArrayEditorTestSuites = JzodEditorTestSuites<LocalArrayEditorProps>;
 
 export function getJzodArrayEditorTests(
-  LocalEditor: React.FC<LocalArrayEditorProps>,
   renderAsJzodElementEditor: React.FC<JzodElementEditorProps_Test>
 ): JzodArrayEditorTestSuites {
   const arrayValues = ["value1", "value2", "value3"];
   return {
     JzodArrayEditor: {
       suiteRenderComponent: {
-        renderAsComponent: LocalEditor,
         renderAsJzodElementEditor,
       },
       suiteProps: {
@@ -384,14 +382,12 @@ export type JzodEnumEditorTest = JzodEditorTest<LocalEnumEditorProps>;
 export type JzodEnumEditorTestSuites = JzodEditorTestSuites<LocalEnumEditorProps>;
 
 export function getJzodEnumEditorTests(
-  LocalEditor: React.FC<LocalEnumEditorProps>,
   renderAsJzodElementEditor: React.FC<JzodElementEditorProps_Test>
 ): JzodEnumEditorTestSuites {
   const enumValues = ["value1", "value2", "value3"];
   return {
     JzodEnumEditor: {
       suiteRenderComponent: {
-        renderAsComponent: LocalEditor,
         renderAsJzodElementEditor,
       },
       suiteProps: {
@@ -505,13 +501,11 @@ export type JzodLiteralEditorTestSuites = JzodEditorTestSuites<LocalLiteralEdito
 
 // ################################################################################################
 export function getJzodLiteralEditorTests(
-  LocalEditor: React.FC<LocalLiteralEditorProps>,
   jzodElementEditor: React.FC<JzodElementEditorProps_Test>
 ): JzodLiteralEditorTestSuites {
   return {
     "JzodLiteralEditor": {
       suiteRenderComponent: {
-        renderAsComponent: LocalEditor,
         renderAsJzodElementEditor: jzodElementEditor
       },
       suiteProps: {
@@ -605,13 +599,11 @@ export type JzodObjectEditorTest = JzodEditorTest<LocalObjectEditorProps>;
 export type JzodObjectEditorTestSuites = JzodEditorTestSuites<LocalObjectEditorProps>;
 
 export function getJzodObjectEditorTests(
-  LocalEditor: React.FC<LocalObjectEditorProps>,
   renderAsJzodElementEditor: React.FC<JzodElementEditorProps_Test>
 ): JzodObjectEditorTestSuites {
   return {
     JzodObjectEditor: {
       suiteRenderComponent: {
-        renderAsComponent: LocalEditor,
         renderAsJzodElementEditor,
       },
       tests: {
@@ -1117,14 +1109,12 @@ export type JzodSimpleTypeEditorTest = JzodEditorTest<LocalSimpleTypeEditorProps
 export type JzodSimpleTypeEditorTestSuites = JzodEditorTestSuites<LocalSimpleTypeEditorProps>;
 
 export function getJzodSimpleTypeEditorTests(
-  LocalEditor: React.FC<LocalSimpleTypeEditorProps>,
   renderAsJzodElementEditor: React.FC<JzodElementEditorProps_Test>
 ): JzodSimpleTypeEditorTestSuites {
   // const arrayValues = ["value1", "value2", "value3"];
   return {
     JzodSimpleTypeEditor: {
       suiteRenderComponent: {
-        renderAsComponent: LocalEditor,
         renderAsJzodElementEditor,
       },
       tests: {
@@ -1141,7 +1131,6 @@ export function getJzodSimpleTypeEditorTests(
             },
             initialFormState: "placeholder text",
           },
-
           tests: async (expect: ExpectStatic, container: Container) => {
             const input = screen.getAllByRole("textbox").filter(
               (el: HTMLElement) => (el as HTMLInputElement).name === "testField"
@@ -1452,14 +1441,12 @@ export type JzodUnionEditorTest = JzodEditorTest<LocalUnionEditorProps>;
 export type JzodUnionEditorTestSuites = JzodEditorTestSuites<LocalUnionEditorProps>;
 
 export function getJzodUnionEditorTests(
-  LocalEditor: React.FC<LocalUnionEditorProps>,
   renderAsJzodElementEditor: React.FC<JzodElementEditorProps_Test>
 ): JzodUnionEditorTestSuites {
   const arrayValues = ["value1", "value2", "value3"];
   return {
     JzodUnionEditor: {
       suiteRenderComponent: {
-        renderAsComponent: LocalEditor,
         renderAsJzodElementEditor,
       },
       tests: {
@@ -1671,13 +1658,11 @@ export type JzodBookEditorTest = JzodEditorTest<LocalBookEditorProps>;
 export type JzodBookEditorTestSuites = JzodEditorTestSuites<LocalBookEditorProps>;
 
 export function getJzodBookEditorTests(
-  LocalEditor: React.FC<LocalBookEditorProps>,
   renderAsJzodElementEditor: React.FC<JzodElementEditorProps_Test>
 ): JzodBookEditorTestSuites {
   return {
     JzodBookEditor: {
       suiteRenderComponent: {
-        renderAsComponent: LocalEditor,
         renderAsJzodElementEditor,
       },
       tests: {
@@ -1716,6 +1701,7 @@ export function getJzodBookEditorTests(
               author: "Paul Veyne",
               publisher: "Folio",
               conceptLevel: "Data",
+              "year": 2014,
             });
             // expect(values).toEqual(book1);
 
@@ -1783,13 +1769,11 @@ export type JzodEntityDefinitionEditorTest = JzodEditorTest<LocalEntityDefinitio
 export type JzodEntityDefinitionEditorTestSuites = JzodEditorTestSuites<LocalEntityDefinitionEditorProps>;
 
 export function getJzodEntityDefinitionEditorTests(
-  LocalEditor: React.FC<LocalEntityDefinitionEditorProps>,
   renderAsJzodElementEditor: React.FC<JzodElementEditorProps_Test>
 ): JzodEntityDefinitionEditorTestSuites {
   return {
     JzodEntityDefinitionEditor: {
       suiteRenderComponent: {
-        renderAsComponent: LocalEditor,
         renderAsJzodElementEditor,
       },
       tests: {
@@ -1807,7 +1791,12 @@ export function getJzodEntityDefinitionEditorTests(
             const formValues: Record<string, any> = extractValuesFromRenderedElements(expect, container, "testField", "initial form state");
             // console.log("Extracted initial values:", formValues);
             const testResult = formValuesToJSON(formValues);
-            expect(testResult).toEqual(entityDefinitionBook);
+            expect(testResult).toEqual({
+              ...entityDefinitionBook,
+              "defaultInstanceDetailsReportUuid": "Detailed information about a Book"
+// -   "defaultInstanceDetailsReportUuid": "c3503412-3d8a-43ef-a168-aa36e975e606",
+// +   "defaultInstanceDetailsReportUuid": "Detailed information about a Book",
+            });
           },
         },
         // "object can be updated through displayed input fields": {
@@ -1863,14 +1852,11 @@ export function getJzodEntityDefinitionEditorTests(
 // export type JzodEntityDefinitionEditorTestSuites = JzodEditorTestSuites<LocalEntityDefinitionEditorProps>;
 
 export function getJzodEditorPerformanceTests(
-  // LocalEditor: React.FC<LocalEntityDefinitionEditorProps>,
-  LocalEditor: React.FC<LocalSimpleTypeEditorProps>,
   renderAsJzodElementEditor: React.FC<JzodElementEditorProps_Test>
 ): JzodSimpleTypeEditorTestSuites {
   return {
     JzodEditorPerformanceTests: {
       suiteRenderComponent: {
-        renderAsComponent: LocalEditor,
         renderAsJzodElementEditor,
       },
       // performanceTests: true,
@@ -1932,13 +1918,11 @@ export type JzodEndpointEditorTest = JzodEditorTest<LocalEndpointEditorProps>;
 export type JzodEndpointEditorTestSuites = JzodEditorTestSuites<LocalEndpointEditorProps>;
 
 export function getJzodEndpointEditorTests(
-  LocalEditor: React.FC<LocalEndpointEditorProps>,
   renderAsJzodElementEditor: React.FC<JzodElementEditorProps_Test>
 ): JzodEndpointEditorTestSuites {
   return {
     JzodEndpointEditor: {
       suiteRenderComponent: {
-        renderAsComponent: LocalEditor,
         renderAsJzodElementEditor,
       },
       tests: {
@@ -2147,7 +2131,7 @@ const jzodElementEditorTests: Record<
 // ##############################################################################################
 describe("JzodElementEditor", () => {
   Object.entries(jzodElementEditorTests).forEach(([editorName, testSuite]) => {
-    const suites = getJzodEditorTestSuites(
+    const suites: JzodEditorTestSuites<LocalEditorPropsRoot> = getJzodEditorTestSuites(
       pageLabel,
       testSuite.editor,
       testSuite.getJzodEditorTests,

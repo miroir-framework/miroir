@@ -69,7 +69,7 @@ export interface JzodElementEditorTestSuite<LocalEditorProps extends Record<stri
   editor: React.FC<any>;
   performanceTests?: boolean;
   getJzodEditorTests: (
-    LocalEditor: React.FC<LocalEditorProps>,
+    // LocalEditor: React.FC<LocalEditorProps>,
     jzodElementEditor: React.FC<JzodElementEditorProps_Test>
   ) => JzodEditorTestSuites<LocalEditorProps>;
 }
@@ -77,6 +77,9 @@ export interface JzodElementEditorTestSuite<LocalEditorProps extends Record<stri
 export type ModesType = TestModeStar | TestMode[];
 
 
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
 export const testThemeParams = {
   palette: {
     primary: {
@@ -228,6 +231,7 @@ export const waitAfterUserInteraction = async () => {
   });
 };
 
+// ################################################################################################
 export interface JzodElementEditorProps_Test {
   // forceTestingMode?: boolean;
   name: string;
@@ -242,7 +246,6 @@ export interface JzodElementEditorProps_Test {
 
 
 export type JzodEditorTestCaseRenderer<LocalComponentProps> = {
-  renderAsComponent?: React.FC<LocalComponentProps>;
   renderAsJzodElementEditor?: React.FC<JzodElementEditorProps_Test>;
 };
 
@@ -253,12 +256,7 @@ export interface JzodEditorTestCase<PropType extends Record<string, any>> {
     | JzodElementEditorProps_Test
     | ((props: PropType) => JzodElementEditorProps_Test);
   renderComponent?: JzodEditorTestCaseRenderer<PropType>;
-  tests:
-    | ((expect: ExpectStatic, container: Container) => Promise<void>)
-    | {
-        testAsComponent?: (expect: any, container: Container) => Promise<void>;
-        testAsJzodElementEditor?: (expect: any, container: Container) => Promise<void>;
-      };
+  tests: ((expect: ExpectStatic, container: Container) => Promise<void>);
 }
 
 export type JzodEditorTest<PropType extends Record<string, any>> = Record<string, JzodEditorTestCase<PropType>>;
@@ -278,7 +276,7 @@ const handleAction = vi.fn();
 
 // ################################################################################################
 // ################################################################################################
-// LOCAL EDITOR
+// LOCAL EDITOR DEPRECATED
 // ################################################################################################
 // ################################################################################################
 export interface LocalEditorPropsRoot {
@@ -559,7 +557,7 @@ export const getJzodElementEditorForTest: (pageLabel: string) => React.FC<JzodEl
   };
 
   // ################################################################################################
-export function getWrapperForLocalJzodElementEditor(
+export function getWrapperLoadingLocalCache(
   isPerformanceTest: boolean = false,
 ): React.FC<any> {
   const miroirActivityTracker = new MiroirActivityTracker();
@@ -857,7 +855,6 @@ export async function runJzodEditorTest(
   testCase: JzodEditorTestCase<any>,
   testSuite: JzodEditorTestSuite<any>,
   testName: string,
-  // renderAs: "component" | "jzodElementEditor" = "jzodElementEditor"
   renderAs: TestMode 
 ) {
   console.log(
@@ -867,12 +864,17 @@ export async function runJzodEditorTest(
     "renderAs",
     renderAs,
   );
+  if (renderAs !== "jzodElementEditor") {
+    throw new Error(`runJzodEditorTest only supports renderAs "jzodElementEditor" currently`);
+  }
   const ComponentToRender: React.FC<any> | undefined =
-    renderAs == "jzodElementEditor"
-      ? testCase.renderComponent?.renderAsJzodElementEditor ??
+    // renderAs == 
+      // "jzodElementEditor"
+      // ? 
+      testCase.renderComponent?.renderAsJzodElementEditor ??
         testSuite.suiteRenderComponent?.renderAsJzodElementEditor
-      : testCase.renderComponent?.renderAsComponent ??
-        testSuite.suiteRenderComponent?.renderAsComponent;
+      // : testCase.renderComponent?.renderAsComponent ??
+      //   testSuite.suiteRenderComponent?.renderAsComponent;
   if (!ComponentToRender) {
     throw new Error(
       `Test case ${testName} does not have a renderAsJzodElementEditor or renderAsComponent function, skipping test: ${testName}`
@@ -918,14 +920,14 @@ export async function runJzodEditorTest(
     // Wait for progressive rendering to complete before running tests
     await waitForProgressiveRendering();
     
-    const tests =
-      typeof testCase.tests === "function"
-        ? testCase.tests
-        : (renderAs == "jzodElementEditor"
-            ? testCase.tests.testAsJzodElementEditor
-            : testCase.tests.testAsComponent) ?? ((expect: ExpectStatic) => {});
+    // const tests = 
+      // typeof testCase.tests === "function"
+      //   ? testCase.tests
+      //   : (renderAs == "jzodElementEditor"
+      //       ? testCase.tests.testAsJzodElementEditor
+      //       : testCase.tests.testAsComponent) ?? ((expect: ExpectStatic) => {});
             
-    return await tests(expect, container);
+    return await testCase.tests(expect, container);
   } else {
     console.warn(`Test case ${testName} does not have props defined, skipping test: ${testName}`);
   }
@@ -944,24 +946,18 @@ export function getJzodEditorTestSuites<
   pageLabel: string,
   JzodLiteralEditor: React.FC<JzodEditorProps>,
   getJzodEditorTests: (
-    LocalEditor: React.FC<LocalEditorProps>,
     jzodElementEditor: React.FC<JzodElementEditorProps_Test>
   ) => JzodEditorTestSuites<LocalEditorProps>,
   performanceTests: boolean = false,
 ): JzodEditorTestSuites<LocalEditorProps> {
   // const WrapperForJzodElementEditorPerformanceTest: React.FC<any> = getWrapperForLocalJzodElementEditor(true);
-  const WrapperForJzodElementEditor: React.FC<any> = getWrapperForLocalJzodElementEditor(performanceTests);
+  const WrapperForJzodElementEditor: React.FC<any> = getWrapperLoadingLocalCache(performanceTests);
 
-  const LocalEditor: React.FC<LocalEditorProps> = getLocalEditor<JzodEditorProps, LocalEditorProps>(
-    pageLabel,
-    JzodLiteralEditor
-  );
 
   const JzodElementEditorForTest: React.FC<JzodElementEditorProps_Test> =
     getJzodElementEditorForTest(pageLabel);
 
   const jzodEditorTest: JzodEditorTestSuites<LocalEditorProps> = getJzodEditorTests(
-    LocalEditor,
     (props: JzodElementEditorProps_Test) => (
       <WrapperForJzodElementEditor>
         <JzodElementEditorForTest {...props} />
@@ -971,6 +967,12 @@ export function getJzodEditorTestSuites<
   return jzodEditorTest;
 }
 
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
 // ################################################################################################
 export function extractValuesFromRenderedElements(
   expect: ExpectStatic,
