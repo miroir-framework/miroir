@@ -13,6 +13,8 @@ import {
   getApplicationSection,
   getInnermostTypeCheckError,
   getQueryRunnerParamsForReduxDeploymentsState,
+  getSchemaAtPath,
+  getValueAtPath,
   JzodElement,
   jzodTypeCheck,
   LoggerInterface,
@@ -21,6 +23,7 @@ import {
   MiroirLoggerFactory,
   ReduxDeploymentsState,
   ResolvedJzodSchemaReturnType,
+  setValueAtPath,
   SyncBoxedExtractorOrQueryRunnerMap,
   SyncQueryRunner,
   SyncQueryRunnerParams,
@@ -58,71 +61,6 @@ MiroirLoggerFactory.registerLoggerToStart(
 
 const codeMirrorExtensions = [javascript()];
 
-// Extract value at a given path from an object
-function getValueAtPath(obj: any, path: string): any {
-  if (!path || !obj) return obj;
-  
-  const pathParts = path.split('.');
-  let current = obj;
-  
-  for (const part of pathParts) {
-    if (current === null || current === undefined || typeof current !== 'object') {
-      return undefined;
-    }
-    current = current[part];
-  }
-  
-  return current;
-}
-
-// Set value at a given path in an object, creating intermediate objects as needed
-function setValueAtPath(obj: any, path: string, value: any): any {
-  if (!path) return value;
-  
-  const pathParts = path.split('.');
-  const result = { ...obj };
-  let current = result;
-  
-  for (let i = 0; i < pathParts.length - 1; i++) {
-    const part = pathParts[i];
-    if (current[part] === null || current[part] === undefined || typeof current[part] !== 'object') {
-      current[part] = {};
-    } else {
-      current[part] = { ...current[part] };
-    }
-    current = current[part];
-  }
-  
-  current[pathParts[pathParts.length - 1]] = value;
-  return result;
-}
-
-// Extract schema for a given path from a jzod schema
-function getSchemaAtPath(schema: any, path: string): any {
-  if (!path || !schema) return schema;
-  
-  const pathParts = path.split('.');
-  let current = schema;
-  
-  for (const part of pathParts) {
-    if (!current || typeof current !== 'object') {
-      return undefined;
-    }
-    
-    // Handle jzod schema structure
-    if (current.type === 'object' && current.definition) {
-      current = current.definition[part];
-    } else if (current.definition && current.definition[part]) {
-      current = current.definition[part];
-    } else if (current[part]) {
-      current = current[part];
-    } else {
-      return undefined;
-    }
-  }
-  
-  return current;
-}
 
 // ################################################################################################
 // ################################################################################################

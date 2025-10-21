@@ -3,6 +3,7 @@ import { DomainState } from "./0_interfaces/2_domain/DomainControllerInterface";
 import { ReduxDeploymentsState } from "./0_interfaces/2_domain/ReduxDeploymentsStateInterface";
 import { getReduxDeploymentsStateIndex } from "./2_domain/ReduxDeploymentsState";
 import { ApplicationSection } from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import type { Domain2QueryReturnType } from "./0_interfaces/2_domain/DomainElement";
 
 export function stringTuple<T extends [string] | string[]>(...data: T): T {
   return data;
@@ -380,4 +381,119 @@ export function deleteObjectAtPath(
     ...object,
     [path[0]]:deleteObjectAtPath(object[path[0]], path.slice(1))
   };
+}
+
+
+// ###############################################################################################################
+// ###############################################################################################################
+// For ReportSectionView
+// ###############################################################################################################
+// ###############################################################################################################
+// ###############################################################################################################
+export const evaluateExpression = (
+  expression: string | undefined,
+  domainElementObject: Domain2QueryReturnType<Record<string,any>>
+  ) => {
+  const parts = expression?.split(".");
+  const object =
+    // Array.isArray(parts) && parts.length > 0 && domainElementObject.elementValue
+    Array.isArray(parts) && parts.length > 0 && domainElementObject
+      ? (domainElementObject as any)[parts[0]]
+      : undefined;
+  const result = object && Array.isArray(parts) && parts.length > 1 ? (object as any)[parts[1]] : undefined;
+  // log.info("evaluateExpression", expression, parts, props.domainElementObject, "object", object, "result", result);
+  return result;
+};
+
+export const interpolateExpression = (
+  stringToInterpolate: string | undefined, 
+  domainElementObject: Domain2QueryReturnType<Record<string,any>>,
+  label?: string,
+) => {
+  const reg = /\$\{([^}]*)\}/g;
+  const result = stringToInterpolate
+    ? stringToInterpolate.replace(
+        reg,
+        (expression, ...args) => `${evaluateExpression(args[0], domainElementObject)}`
+      )
+    : "no " + label;
+  // log.info("interpolateExpression", "stringToInterpolate", stringToInterpolate, 
+  //   "domainElementObject", domainElementObject, "label", label,
+  //   "result", result);
+  // log.info("interpolateExpression result",result);
+  return result;
+};
+
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// FOR TypedValueObjectEditor
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// Extract value at a given path from an object
+export function getValueAtPath(obj: any, path: string): any {
+  if (!path || !obj) return obj;
+  
+  const pathParts = path.split('.');
+  let current = obj;
+  
+  for (const part of pathParts) {
+    if (current === null || current === undefined || typeof current !== 'object') {
+      return undefined;
+    }
+    current = current[part];
+  }
+  
+  return current;
+}
+
+// Set value at a given path in an object, creating intermediate objects as needed
+export function setValueAtPath(obj: any, path: string, value: any): any {
+  if (!path) return value;
+  
+  const pathParts = path.split('.');
+  const result = { ...obj };
+  let current = result;
+  
+  for (let i = 0; i < pathParts.length - 1; i++) {
+    const part = pathParts[i];
+    if (current[part] === null || current[part] === undefined || typeof current[part] !== 'object') {
+      current[part] = {};
+    } else {
+      current[part] = { ...current[part] };
+    }
+    current = current[part];
+  }
+  
+  current[pathParts[pathParts.length - 1]] = value;
+  return result;
+}
+
+// Extract schema for a given path from a jzod schema
+export function getSchemaAtPath(schema: any, path: string): any {
+  if (!path || !schema) return schema;
+  
+  const pathParts = path.split('.');
+  let current = schema;
+  
+  for (const part of pathParts) {
+    if (!current || typeof current !== 'object') {
+      return undefined;
+    }
+    
+    // Handle jzod schema structure
+    if (current.type === 'object' && current.definition) {
+      current = current.definition[part];
+    } else if (current.definition && current.definition[part]) {
+      current = current.definition[part];
+    } else if (current[part]) {
+      current = current[part];
+    } else {
+      return undefined;
+    }
+  }
+  
+  return current;
 }

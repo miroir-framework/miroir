@@ -34,7 +34,6 @@ MiroirLoggerFactory.registerLoggerToStart(
 export interface ReportSectionMarkdownProps {
   applicationSection: ApplicationSection;
   deploymentUuid: Uuid;
-  // markdownContent: string;
   reportSection: MarkdownReportSection;
   label?: string;
   onEdit?: () => void;

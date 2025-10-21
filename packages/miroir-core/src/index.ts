@@ -994,6 +994,8 @@ export {
 export { miroirCoreStartup } from "./startup.js";
 export {
   circularReplacer,
+  evaluateExpression,
+  interpolateExpression,
   domainStateToReduxDeploymentsState,
   resolvePathOnObject,
   AbsolutePath as ResultAccessPath,
@@ -1005,9 +1007,14 @@ export {
   cleanupObject,
   deleteObjectAtPath,
   resolveRelativePath,
+
   RelativePath,
   ResolveRelativePathError,
   ResolveRelativePathResult,
+  // 
+  getSchemaAtPath,
+  getValueAtPath,
+  setValueAtPath,
 } from "./tools";
 
 export {

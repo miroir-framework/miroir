@@ -2,7 +2,6 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import {
   ApplicationSection,
-  BoxedQueryWithExtractorCombinerTransformer,
   Domain2QueryReturnType,
   DomainControllerInterface,
   Entity,
@@ -14,22 +13,14 @@ import {
   MiroirLoggerFactory,
   ReduxDeploymentsState,
   SyncBoxedExtractorOrQueryRunnerMap,
-  SyncQueryRunnerParams,
   Uuid,
   adminConfigurationDeploymentMiroir,
   defaultMiroirModelEnvironment,
-  entityDefinitionQuery,
   entityQueryVersion,
   entityTransformerTest,
-  getQueryRunnerParamsForReduxDeploymentsState,
   getQueryTemplateRunnerParamsForReduxDeploymentsState,
-  miroirFundamentalJzodSchema,
-  runQueryTemplateFromReduxDeploymentsState,
   safeStringify,
   type BoxedQueryTemplateWithExtractorCombinerTransformer,
-  type JzodElement,
-  type MiroirQuery,
-  type SyncBoxedExtractorTemplateRunner,
   type SyncQueryTemplateRunnerParams
 } from "miroir-core";
 
@@ -40,23 +31,19 @@ import {
 } from "../../MiroirContextReactProvider.js";
 
 import { Toc } from '@mui/icons-material';
+import {
+  getMemoizedReduxDeploymentsStateSelectorForTemplateMap
+} from "miroir-localcache-redux";
 import { packageName } from '../../../../constants.js';
 import { cleanLevel } from '../../constants.js';
 import {
   useCurrentModel,
   useReduxDeploymentsStateQueryTemplateSelector
 } from "../../ReduxHooks.js";
-import { useReduxDeploymentsStateQuerySelector } from '../../ReduxHooks.js';
-import {
-  getMemoizedReduxDeploymentsStateSelectorForTemplateMap,
-  getMemoizedReduxDeploymentsStateSelectorMap,
-} from "miroir-localcache-redux";
 import { useRenderTracker } from '../../tools/renderCountTracker.js';
 import { RenderPerformanceMetrics } from '../../tools/renderPerformanceMeasure.js';
-import { ValueObjectGrid } from '../Grids/ValueObjectGrid.js';
 import {
   ThemedCodeBlock,
-  // ThemedCodeBlock,
   ThemedContainer,
   ThemedHeaderSection,
   ThemedIconButton,
@@ -67,13 +54,12 @@ import {
   ThemedText,
   ThemedTitle,
   ThemedTooltip
-} from "../Themes/index"
+} from "../Themes/index";
+import { useDocumentOutlineContext } from '../ValueObjectEditor/InstanceEditorOutlineContext.js';
+import type { FoldedStateTree } from './FoldedStateTreeUtils.js';
+import { useReportPageContext } from './ReportPageContext.js';
 import { TransformerTestDisplay } from './TransformerTestDisplay.js';
 import { TypedValueObjectEditor } from './TypedValueObjectEditor.js';
-import { useDocumentOutlineContext } from '../ValueObjectEditor/InstanceEditorOutlineContext.js';
-import { useReportPageContext } from './ReportPageContext.js';
-import type { FoldedStateTree } from './FoldedStateTreeUtils.js';
-import type { Query } from '@testing-library/dom';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -178,15 +164,9 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   // Use outline context for outline state management
   const outlineContext = useDocumentOutlineContext();
   const reportContext = useReportPageContext();
-  const isOutlineOpen = outlineContext.isOutlineOpen;
-  const handleToggleOutline = outlineContext.onToggleOutline;
-
-  // Removed redundant availableWidth calculation - parent components handle sizing
-  // Just use 100% width since RootComponent's ThemedMainPanel handles sidebar/outline spacing
 
   const instance: any = props.instance;
 
-  // const currentModel: MetaModel = useCurrentModel(
   const currentModel: MetaModel = useCurrentModel(
     context.applicationSection == "data"
       ? context.deploymentUuid
@@ -222,8 +202,11 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   // CALLS setFoldedObjectAttributeOrArrayItems
   useEffect(() => {
     const foldedStringPaths = currentReportTargetEntityDefinition?.display?.foldSubLevels
-    ? Object.entries(currentReportTargetEntityDefinition?.display?.foldSubLevels).filter(([key, value]) => value): [];
-    
+      ? Object.entries(currentReportTargetEntityDefinition?.display?.foldSubLevels).filter(
+          ([key, value]) => value
+        )
+      : [];
+
     // log.info("Setting initial folded paths foldedStringPaths:", foldedStringPaths);
     const foldedPaths = foldedStringPaths.map(([key, value]) => key.split("#"));
     // log.info("Setting initial folded paths foldedPaths:", foldedPaths);
@@ -241,23 +224,17 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
         }
       });
     });
-    log.info("Setting initial folded paths newFoldedObjectAttributeOrArrayItems:", newFoldedObjectAttributeOrArrayItems);
-
-    reportContext.setFoldedObjectAttributeOrArrayItems(
+    log.info(
+      "Setting initial folded paths newFoldedObjectAttributeOrArrayItems:",
       newFoldedObjectAttributeOrArrayItems
-  );
-  }, [currentReportTargetEntityDefinition?.display?.foldSubLevels, reportContext.setFoldedObjectAttributeOrArrayItems]);
+    );
 
-  // // Initialize test selections when test results are available
-  // useEffect(() => {
-  //   if (resolveConditionalSchemaResultsData && resolveConditionalSchemaResultsData.length > 0) {
-  //     reportContext.initializeTestSelections(resolveConditionalSchemaResultsData, (testPath) => {
-  //       // Don't select tests that were originally skipped
-  //       const test = resolveConditionalSchemaResultsData.find(t => t.testName === testPath);
-  //       return test ? test.testResult !== "skipped" : true;
-  //     });
-  //   }
-  // }, [resolveConditionalSchemaResultsData, reportContext.initializeTestSelections]);
+    reportContext.setFoldedObjectAttributeOrArrayItems(newFoldedObjectAttributeOrArrayItems);
+  }, [
+    currentReportTargetEntityDefinition?.display?.foldSubLevels,
+    reportContext.setFoldedObjectAttributeOrArrayItems,
+  ]);
+
 
   const formLabel: string =
     props.applicationSection +
@@ -279,8 +256,6 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
     return formLabel ? <ThemedLabel id={"label." + formLabel}>{formLabel}</ThemedLabel> : undefined;
   }, [formLabel]);
 
-  // const currentMiroirModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
-
   // log performance metrics at the end of render (conditional)
   if (context.showPerformanceDisplay) {
     const renderEndTime = performance.now();
@@ -299,7 +274,6 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   // ##############################################################################################
   const onEditValueObjectFormSubmit = useCallback(
     async (data: any) => {
-      // const newEntity:EntityInstance = Object.assign({...data as EntityInstance},{attributes:dialogFormObject?dialogFormObject['attributes']:[]});
       log.info("onEditValueObjectFormSubmit called with new object value", data);
 
       if (props.deploymentUuid) {
@@ -359,17 +333,12 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
 
   // ##############################################################################################
   // Query execution logic for Query entities
-  
-  // Check if this is a Query entity instance
-  // const QUERY_ENTITY_UUID = "e4320b9e-ab45-4abe-85d8-359604b3c62f";
   const isQueryEntity = instance?.parentUuid === entityQueryVersion.uuid;
 
   const currentQuery: any | undefined = isQueryEntity ? instance : undefined;
   log.info("ReportSectionEntityInstance: isQueryEntity", isQueryEntity, "currentQuery", currentQuery);
   const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> = useMemo(
     () => getMemoizedReduxDeploymentsStateSelectorForTemplateMap(),
-    // () => getMemoizedReduxDeploymentsStateSelectorMap(),
-    // () => getMemoizedReduxDeploymentsStateSelectorMap(),
     []
   );
 
@@ -382,7 +351,6 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
             deploymentUuid: props.deploymentUuid,
             pageParams: {
               deploymentUuid: props.deploymentUuid,
-              // applicationSection: props.applicationSection,
               applicationSection: "model",
               instanceUuid: instance.uuid,
             },
@@ -410,7 +378,6 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
     ]);
 
   log.info("ReportSectionEntityInstance: queryForExecution:", queryForTestRun);
-  // const deploymentEntityStateFetchQueryParams: SyncQueryRunnerParams<ReduxDeploymentsState> | undefined = useMemo(
   const queryTestRunParams: SyncQueryTemplateRunnerParams<ReduxDeploymentsState> = useMemo(
     () => {
       // if (!queryForExecution) return undefined;
@@ -483,10 +450,10 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
             </ThemedTitle>
             {displayEditor && (
               <ThemedTooltip
-                title={isOutlineOpen ? "Hide Document Outline" : "Show Document Outline"}
+                title={outlineContext.isOutlineOpen ? "Hide Document Outline" : "Show Document Outline"}
               >
                 <ThemedIconButton
-                  onClick={handleToggleOutline}
+                  onClick={outlineContext.onToggleOutline}
                   style={{
                     marginLeft: "16px",
                   }}
@@ -524,6 +491,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                 </span>
               </div>
               
+              {/* query test run results */}
               {!isResultsCollapsed && (
                 <div style={{ padding: '16px' }}>
                   {queryTestRunResults ? (

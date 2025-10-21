@@ -12,7 +12,8 @@ import {
   RootReport,
   Uuid,
   Domain2QueryReturnType,
-  Domain2ElementFailed
+  Domain2ElementFailed,
+  interpolateExpression
 } from "miroir-core";
 
 
@@ -48,41 +49,6 @@ export interface ReportSectionViewProps {
   onToggleOutline?: () => void,
   showPerformanceDisplay?: boolean;
 }
-
-// ###############################################################################################################
-const evaluateExpression = (
-  expression: string | undefined,
-  domainElementObject: Domain2QueryReturnType<Record<string,any>>
-  ) => {
-  const parts = expression?.split(".");
-  const object =
-    // Array.isArray(parts) && parts.length > 0 && domainElementObject.elementValue
-    Array.isArray(parts) && parts.length > 0 && domainElementObject
-      ? (domainElementObject as any)[parts[0]]
-      : undefined;
-  const result = object && Array.isArray(parts) && parts.length > 1 ? (object as any)[parts[1]] : undefined;
-  // log.info("evaluateExpression", expression, parts, props.domainElementObject, "object", object, "result", result);
-  return result;
-};
-
-const interpolateExpression = (
-  stringToInterpolate: string | undefined, 
-  domainElementObject: Domain2QueryReturnType<Record<string,any>>,
-  label?: string,
-) => {
-  const reg = /\$\{([^}]*)\}/g;
-  const result = stringToInterpolate
-    ? stringToInterpolate.replace(
-        reg,
-        (expression, ...args) => `${evaluateExpression(args[0], domainElementObject)}`
-      )
-    : "no " + label;
-  // log.info("interpolateExpression", "stringToInterpolate", stringToInterpolate, 
-  //   "domainElementObject", domainElementObject, "label", label,
-  //   "result", result);
-  // log.info("interpolateExpression result",result);
-  return result;
-};
 
 
 // ###############################################################################################################
