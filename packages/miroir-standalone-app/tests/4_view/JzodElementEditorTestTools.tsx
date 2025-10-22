@@ -65,16 +65,6 @@ export type TestModeStar = 'jzodElementEditor' | 'component' | '*';
 
 export const allTestModes: TestMode[] = ['jzodElementEditor', 'component'];
 
-export interface JzodElementEditorTestSuite<PropType extends Record<string, any>> {
-  editor: React.FC<any>;
-  performanceTests?: boolean;
-  getJzodEditorTests: (
-    // LocalEditor: React.FC<LocalEditorProps>,
-    // jzodElementEditor: React.FC<JzodElementEditorProps_Test>
-    jzodElementEditor: React.FC<PropType>
-  ) => JzodEditorTestSuites<PropType>;
-}
-
 export type ModesType = TestModeStar | TestMode[];
 
 
@@ -246,29 +236,42 @@ export interface JzodElementEditorProps_Test {
 }
 
 
-export type JzodEditorTestCaseRenderer<PropType> = {
-  // renderAsJzodElementEditor?: React.FC<JzodElementEditorProps_Test>;
-  renderAsJzodElementEditor?: React.FC<PropType>;
-};
+// export type JzodEditorTestCaseRenderer<PropType> = {
+//   // renderAsJzodElementEditor?: React.FC<JzodElementEditorProps_Test>;
+//   renderAsJzodElementEditor?: React.FC<PropType>;
+// };
 
-export interface JzodEditorTestCase<PropType extends Record<string, any>> {
+export interface ReactComponentTestSuitePrep<PropType extends Record<string, any>> {
+  editor: React.FC<any>;
+  performanceTests?: boolean;
+  getJzodEditorTests: (
+    jzodElementEditor: React.FC<PropType>
+  ) => ReactComponentTestSuites<PropType>;
+}
+
+
+export interface ReactComponentTestCase<PropType extends Record<string, any>> {
   props?: PropType | ((props: PropType) => PropType);
   componentProps?: PropType | ((props: PropType) => PropType);
   jzodElementEditorProps?:
-    | JzodElementEditorProps_Test
-    | ((props: PropType) => JzodElementEditorProps_Test);
-  renderComponent?: JzodEditorTestCaseRenderer<PropType>;
+    | PropType
+    | ((props: PropType) => PropType);
+    // | JzodElementEditorProps_Test
+    // | ((props: PropType) => JzodElementEditorProps_Test);
+  // renderComponent?: JzodEditorTestCaseRenderer<PropType>;
+  renderComponent?: React.FC<PropType>;
   tests: ((expect: ExpectStatic, container: Container) => Promise<void>);
 }
 
-export type JzodEditorTest<PropType extends Record<string, any>> = Record<string, JzodEditorTestCase<PropType>>;
+export type ReactComponentTest<PropType extends Record<string, any>> = Record<string, ReactComponentTestCase<PropType>>;
 
-export interface JzodEditorTestSuite<PropType extends Record<string, any>> {
-  suiteRenderComponent?: JzodEditorTestCaseRenderer<PropType>;
+export interface ReactComponentTestSuite<PropType extends Record<string, any>> {
+  // suiteRenderComponent?: JzodEditorTestCaseRenderer<PropType>;
+  suiteRenderComponent?: React.FC<PropType>;
   suiteProps?: PropType;
-  tests: JzodEditorTest<PropType>;
+  tests: ReactComponentTest<PropType>;
 };
-export type JzodEditorTestSuites<T extends Record<string, any>> = Record<string, JzodEditorTestSuite<T>>;
+export type ReactComponentTestSuites<T extends Record<string, any>> = Record<string, ReactComponentTestSuite<T>>;
 
 
 
@@ -381,7 +384,10 @@ let JzodElementEditorForTestRenderCount: number = 0;
 
 export const getJzodElementEditorForTest: (pageLabel: string) => React.FC<JzodElementEditorProps_Test> =
   (pageLabel: string) =>
-  ({
+  (
+    props: JzodElementEditorProps_Test
+) => {
+  const {
     name,
     label,
     listKey,
@@ -390,7 +396,7 @@ export const getJzodElementEditorForTest: (pageLabel: string) => React.FC<JzodEl
     // indentLevel?: number;
     initialFormState,
     rawJzodSchema,
-  }) => {
+  } = props;
     // const [formHelperState, setformHelperState] = useMiroirContextformHelperState();
     console.log("getJzodElementEditorForTest", "rawJzodSchema", rawJzodSchema);
     JzodElementEditorForTestRenderCount++;
@@ -854,8 +860,8 @@ export function getWrapperLoadingLocalCache(
   
 // ##############################################################################################
 export async function runJzodEditorTest(
-  testCase: JzodEditorTestCase<any>,
-  testSuite: JzodEditorTestSuite<any>,
+  testCase: ReactComponentTestCase<any>,
+  testSuite: ReactComponentTestSuite<any>,
   testName: string,
   renderAs: TestMode 
 ) {
@@ -870,13 +876,7 @@ export async function runJzodEditorTest(
     throw new Error(`runJzodEditorTest only supports renderAs "jzodElementEditor" currently`);
   }
   const ComponentToRender: React.FC<any> | undefined =
-    // renderAs == 
-      // "jzodElementEditor"
-      // ? 
-      testCase.renderComponent?.renderAsJzodElementEditor ??
-        testSuite.suiteRenderComponent?.renderAsJzodElementEditor
-      // : testCase.renderComponent?.renderAsComponent ??
-      //   testSuite.suiteRenderComponent?.renderAsComponent;
+      testCase.renderComponent ?? testSuite.suiteRenderComponent
   if (!ComponentToRender) {
     throw new Error(
       `Test case ${testName} does not have a renderAsJzodElementEditor or renderAsComponent function, skipping test: ${testName}`
@@ -943,24 +943,24 @@ export async function runJzodEditorTest(
 // ################################################################################################
 export function getJzodEditorTestSuites<
   JzodEditorProps extends JzodEditorPropsRoot,
-  LocalEditorProps extends LocalEditorPropsRoot,
+  // LocalEditorProps extends LocalEditorPropsRoot,
 >(
   pageLabel: string,
-  JzodLiteralEditor: React.FC<JzodEditorProps>,
+  reactComponentUnderTest: React.FC<JzodEditorProps>,
   getJzodEditorTests: (
-    jzodElementEditor: React.FC<JzodElementEditorProps_Test>
-  ) => JzodEditorTestSuites<LocalEditorProps>,
+    jzodElementEditor: React.FC<JzodEditorProps>
+  ) => ReactComponentTestSuites<JzodEditorProps>,
   performanceTests: boolean = false,
-): JzodEditorTestSuites<LocalEditorProps> {
-  // const WrapperForJzodElementEditorPerformanceTest: React.FC<any> = getWrapperForLocalJzodElementEditor(true);
+): ReactComponentTestSuites<JzodEditorProps> {
   const WrapperForJzodElementEditor: React.FC<any> = getWrapperLoadingLocalCache(performanceTests);
 
 
-  const JzodElementEditorForTest: React.FC<JzodElementEditorProps_Test> =
-    getJzodElementEditorForTest(pageLabel);
+  const JzodElementEditorForTest: React.FC<JzodEditorProps> = reactComponentUnderTest;
+    // getJzodElementEditorForTest(pageLabel);
 
-  const jzodEditorTest: JzodEditorTestSuites<LocalEditorProps> = getJzodEditorTests(
-    (props: JzodElementEditorProps_Test) => (
+  // const jzodEditorTest: ReactComponentTestSuites<LocalEditorProps> = getJzodEditorTests(
+  const jzodEditorTest: ReactComponentTestSuites<JzodEditorProps> = getJzodEditorTests(
+    (props: JzodEditorProps) => (
       <WrapperForJzodElementEditor>
         <JzodElementEditorForTest {...props} />
       </WrapperForJzodElementEditor>
@@ -969,6 +969,55 @@ export function getJzodEditorTestSuites<
   return jzodEditorTest;
 }
 
+
+
+// ################################################################################################
+export function prepareAndRunTestSuites(
+  pageLabel: string,
+  jzodElementEditorTests: Record<
+  string,
+  ReactComponentTestSuitePrep<any>
+  //  & { modes?: ModesType }
+>
+) {
+  Object.entries(jzodElementEditorTests).forEach(([editorName, testSuite]) => {
+      // const suites: ReactComponentTestSuites<LocalEditorPropsRoot> = getJzodEditorTestSuites(
+      const suites: ReactComponentTestSuites<JzodElementEditorProps_Test> = getJzodEditorTestSuites(
+        pageLabel,
+        testSuite.editor, //getJzodElementEditorForTest(pageLabel)
+        testSuite.getJzodEditorTests,
+        testSuite.performanceTests
+      );
+      let modes: TestMode[] = ['jzodElementEditor'];
+      // if (testSuite.modes === undefined) {
+      //   modes = allTestModes;
+      // } else if (Array.isArray(testSuite.modes)) {
+      //   modes = testSuite.modes;
+      // } else if (testSuite.modes === '*') {
+      //   // If the mode is '*', we run all test modes
+      //   modes = allTestModes;
+      // } else {
+      //   modes = [testSuite.modes];
+      // }
+  
+      console.log(`Running tests for ${editorName} with ${Object.keys(suites).length} suites and modes: ${modes.join(', ')}`);
+      console.log(`Running tests for ${editorName} with Test suites: ${JSON.stringify(Object.keys(suites), null, 2)}`);
+      // Run all testcases for the first mode, then all for the second, etc.
+      modes.forEach((mode: TestMode) => {
+        console.log(`Running tests for ${editorName} in mode: ${mode}`);
+        Object.entries(suites[editorName].tests).forEach(([testName, testCase]) => {
+          console.log(`Running test: ${editorName} - ${mode} - ${testName}`);
+          it(`${editorName} - ${mode} - ${testName}`, async () => {
+            console.log(`Running test: ${editorName} - ${mode} - ${testName}`);
+            await runJzodEditorTest(testCase, suites[editorName], testName, mode);
+            console.log(`Completed test: ${editorName} - ${mode} - ${testName}`);
+          });
+          console.log(`Completed test: ${editorName} - ${mode} - ${testName}`);
+        });
+        console.log(`Completed all tests for ${editorName} in mode: ${mode}`);
+      });
+    });
+}
 // ################################################################################################
 // ################################################################################################
 // ################################################################################################
@@ -978,6 +1027,7 @@ export function getJzodEditorTestSuites<
 // ################################################################################################
 export function extractValuesFromRenderedElements(
   expect: ExpectStatic,
+  filter: ("select" | "input" | "cell" | "checkbox" | "combobox")[] | undefined = undefined,
   container?: Container,
   label: string = "",
   step?: string,
@@ -1106,7 +1156,7 @@ export function extractValuesFromRenderedElements(
   const searchRoot = document; // otherwise comboboxes options are not found
   
   // Single DOM query to get all relevant elements at once
-  const allInputs = Array.from(searchRoot.querySelectorAll("input[name], input[id]")).filter(
+  const allInputs = !filter || filter.includes("input")?Array.from(searchRoot.querySelectorAll("input[name], input[id]")).filter(
     (el) =>
       !(el.id && el.id.startsWith("displayAsStructuredElementSwitch")) &&
       !(
@@ -1114,7 +1164,7 @@ export function extractValuesFromRenderedElements(
         (el as any).name.startsWith("meta") &&
         (el as any).name.endsWith("-NAME")
       )
-  );
+  ): [];
   // checkboxes are inputs! redundant?
   const allCheckboxes = Array.from(searchRoot.querySelectorAll('input[type="checkbox"]'))
     .filter((el) => !(el.id && el.id.startsWith("displayAsStructuredElementSwitch")));
@@ -1126,6 +1176,9 @@ export function extractValuesFromRenderedElements(
   const allSelects = Array.from(searchRoot.querySelectorAll("select[name], select[id]")).filter(
     (el) => !(el.id && el.id.startsWith("displayAsStructuredElementSwitch"))
   );
+  const allGridCells = !filter || filter.includes("cell")?Array.from(searchRoot.querySelectorAll('[role="presentation"]')).filter((el =>
+    el.id && el.id.startsWith("cell-")
+  )): [];
   
   console.log("extractValuesFromRenderedElements",
     "label", label,
@@ -1147,8 +1200,20 @@ export function extractValuesFromRenderedElements(
     "allCheckboxes.length", allCheckboxes.length,
     "allComboboxes.length", allComboboxes.length,
     "allOptions.length", allOptions.length,
+    "allPresentation.length", allGridCells.length,
     "allSelectOptions.length", allSelectOptions.length,
     "allSelects.length", allSelects.length,
+  );
+
+  console.log("extractValuesFromRenderedElements",
+    "label", label,
+    "step", step,
+    "allGridCells", Array.from(allGridCells).map((el) => ({
+      // id: (el as any)['col-id'] ,
+      id: el.getAttribute('col-id') ,
+      className: el.className,
+      textContent: el.textContent,
+    })),
   );
   // console.log("extractValuesFromRenderedElements",
   //   "label", label,
@@ -1678,6 +1743,20 @@ export function extractValuesFromRenderedElements(
     console.log("extractValuesFromRenderedElements: processed select", name, "=", select.value);
   });
 
+  allGridCells.forEach((element: Element) => {
+    const htmlElement = element as HTMLElement;
+    // const colId: string | null = htmlElement.getAttribute("col-id");
+    const colId: string | null = htmlElement.id;
+    console.log("extractValuesFromRenderedElements",label,": processing gridcell", colId, "=", htmlElement.textContent);
+    if (!label || !colId || !colId.startsWith(label)) return;
+    const cellValue = htmlElement.textContent;
+    const name = removeLabelPrefix(colId);
+    // const name = label;
+    if (name && cellValue !== null) {
+      values[name] = cellValue;
+      console.log("extractValuesFromRenderedElements: processed gridcell", name, "=", cellValue);
+    }
+  });
   // Clean up non-indexed duplicates when indexed versions exist
   const fieldsToRemove: string[] = [];
   for (const key in values) {

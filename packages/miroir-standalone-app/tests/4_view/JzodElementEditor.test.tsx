@@ -1,10 +1,10 @@
-import { describe, it } from "vitest";
+import { describe } from "vitest";
 
 import { act, fireEvent, screen, waitFor } from "@testing-library/react";
-import userEvent from '@testing-library/user-event';
+import userEvent from "@testing-library/user-event";
 import { ExpectStatic } from "vitest";
 
-import '@testing-library/jest-dom';
+import "@testing-library/jest-dom";
 import { Container } from "react-dom";
 
 import {
@@ -13,53 +13,45 @@ import {
   entityDefinitionBook,
   entityDefinitionEntityDefinition,
   entityDefinitionTest,
-  JzodArray,
   JzodAttributePlainDateWithValidations,
   JzodAttributePlainNumberWithValidations,
   JzodAttributePlainStringWithValidations,
   JzodElement,
-  JzodEnum,
   JzodObject,
   JzodPlainAttribute,
   JzodRecord,
-  JzodTuple,
   JzodUnion,
   LoggerInterface,
   MiroirLoggerFactory,
   queryEndpointVersionV1,
-  test_createEntityAndReportFromSpreadsheetAndUpdateMenu
+  test_createEntityAndReportFromSpreadsheetAndUpdateMenu,
 } from "miroir-core";
-
-
 
 import { JzodElementEditor } from "../../src/miroir-fwk/4_view/components/ValueObjectEditor/JzodElementEditor";
 import { cleanLevel, packageName } from "../3_controllers/constants";
 import {
-  allTestModes,
   extractValuesFromRenderedElements,
   formValuesToJSON,
-  getJzodEditorTestSuites,
-  JzodEditorTest,
-  JzodEditorTestSuites,
+  getJzodElementEditorForTest,
   JzodElementEditorProps_Test,
-  JzodElementEditorTestSuite,
   LocalEditorPropsRoot,
-  LocalLiteralEditorProps,
   ModesType,
-  runJzodEditorTest,
-  TestMode,
-  waitAfterUserInteraction
+  prepareAndRunTestSuites,
+  ReactComponentTest,
+  ReactComponentTestSuitePrep,
+  ReactComponentTestSuites,
+  waitAfterUserInteraction,
 } from "./JzodElementEditorTestTools";
 
 // ################################################################################################
 const pageLabel = "JzodElementEditor.test";
 
 let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.registerLoggerToStart(MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, pageLabel)).then(
-  (logger: LoggerInterface) => {
-    log = logger;
-  }
-);
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, pageLabel)
+).then((logger: LoggerInterface) => {
+  log = logger;
+});
 
 // ################################################################################################
 // ################################################################################################
@@ -75,18 +67,16 @@ MiroirLoggerFactory.registerLoggerToStart(MiroirLoggerFactory.getLoggerName(pack
 //   rawJzodSchema: JzodArray | JzodTuple | undefined;
 // }
 
-export type JzodArrayEditorTest = JzodEditorTest<JzodElementEditorProps_Test>;
-export type JzodArrayEditorTestSuites = JzodEditorTestSuites<JzodElementEditorProps_Test>;
+export type JzodArrayEditorTest = ReactComponentTest<JzodElementEditorProps_Test>;
+export type JzodArrayEditorTestSuites = ReactComponentTestSuites<JzodElementEditorProps_Test>;
 
 export function getJzodArrayEditorTests(
-  renderAsJzodElementEditor: React.FC<JzodElementEditorProps_Test>
+  componentUnderTest: React.FC<JzodElementEditorProps_Test>
 ): JzodArrayEditorTestSuites {
   const arrayValues = ["value1", "value2", "value3"];
   return {
     JzodArrayEditor: {
-      suiteRenderComponent: {
-        renderAsJzodElementEditor,
-      },
+      suiteRenderComponent: componentUnderTest,
       suiteProps: {
         label: "Test Label",
         name: "testField",
@@ -120,9 +110,11 @@ export function getJzodArrayEditorTests(
         },
         "form state is changed when selection changes": {
           tests: async (expect: ExpectStatic, container: Container) => {
-            const cell = screen.getAllByRole("textbox").filter((input: HTMLElement) =>
-              (input as HTMLInputElement).name.startsWith("testField.")
-            )[1] as HTMLInputElement;
+            const cell = screen
+              .getAllByRole("textbox")
+              .filter((input: HTMLElement) =>
+                (input as HTMLInputElement).name.startsWith("testField.")
+              )[1] as HTMLInputElement;
             await act(() => {
               fireEvent.change(cell, { target: { value: "new value" } });
             });
@@ -143,7 +135,7 @@ export function getJzodArrayEditorTests(
                 (input as HTMLInputElement).name.startsWith("testField.")
               );
             const values = cells.map((cell) => (cell as HTMLInputElement).value);
-            expect(values).toEqual(["value2", "value1", "value3" ]);
+            expect(values).toEqual(["value2", "value1", "value3"]);
           },
         },
         "changing order of array items when button ROOT.testField.2.up is clicked": {
@@ -173,85 +165,115 @@ export function getJzodArrayEditorTests(
                 (input as HTMLInputElement).name.startsWith("testField.")
               );
             const values = cells.map((cell) => (cell as HTMLInputElement).value);
-            expect(values).toEqual([ "value2", "value1", "value3"]);
+            expect(values).toEqual(["value2", "value1", "value3"]);
           },
         },
-        "changing order of heteronomous object array items from union when button ROOT.testField.0.down is clicked": {
-          props: {
-            label: "Test Label",
-            name: "testField",
-            listKey: "ROOT.testField",
-            rootLessListKey: "testField",
-            rootLessListKeyArray: ["testField"],
-            rawJzodSchema: {
-              type: "array",
-              definition: {
-                type: "union",
-                discriminator: "objectType",
-                definition: [
-                  { type: "object", definition: { objectType: { type: "literal", definition:"A"}, a: { type: "string" } } },
-                  { type: "object", definition: { objectType: { type: "literal", definition:"B"}, b: { type: "number" } } },
-                ],
+        "changing order of heteronomous object array items from union when button ROOT.testField.0.down is clicked":
+          {
+            props: {
+              label: "Test Label",
+              name: "testField",
+              listKey: "ROOT.testField",
+              rootLessListKey: "testField",
+              rootLessListKeyArray: ["testField"],
+              rawJzodSchema: {
+                type: "array",
+                definition: {
+                  type: "union",
+                  discriminator: "objectType",
+                  definition: [
+                    {
+                      type: "object",
+                      definition: {
+                        objectType: { type: "literal", definition: "A" },
+                        a: { type: "string" },
+                      },
+                    },
+                    {
+                      type: "object",
+                      definition: {
+                        objectType: { type: "literal", definition: "B" },
+                        b: { type: "number" },
+                      },
+                    },
+                  ],
+                },
               },
+              initialFormState: [
+                { objectType: "A", a: "value1" },
+                { objectType: "B", b: 2 },
+                { objectType: "A", a: "value3" },
+              ],
             },
-            initialFormState: [{ objectType: "A", a: "value1" }, { objectType: "B", b: 2 }, { objectType: "A", a: "value3" }],
-          },
-          tests: async (expect, container) => {
-            const formValuesBeforeTest = extractValuesFromRenderedElements(
-              expect,
-              container,
-              "testField",
-              "before up button click"
-            );
-            const beforeTestResult = formValuesToJSON(formValuesBeforeTest);
-            log.info(expect.getState().currentTestName, "beforeTestResult", beforeTestResult);
-            // screen.debug(undefined, Infinity); // Prints entire DOM with no size limit
-            expect(beforeTestResult, "before up button click").toEqual([{ objectType: "A", a: "value1" }, { objectType: "B", b: 2 }, { objectType: "A", a: "value3" }]);
+            tests: async (expect, container) => {
+              const formValuesBeforeTest = extractValuesFromRenderedElements(
+                expect,
+                undefined,
+                container,
+                "testField",
+                "before up button click"
+              );
+              const beforeTestResult = formValuesToJSON(formValuesBeforeTest);
+              log.info(expect.getState().currentTestName, "beforeTestResult", beforeTestResult);
+              // screen.debug(undefined, Infinity); // Prints entire DOM with no size limit
+              expect(beforeTestResult, "before up button click").toEqual([
+                { objectType: "A", a: "value1" },
+                { objectType: "B", b: 2 },
+                { objectType: "A", a: "value3" },
+              ]);
 
-            screen.debug(undefined, Infinity); // Prints entire DOM with no size limit
-            log.info(expect.getState().currentTestName, "clicking down button for first item");
-            const downButtons = screen.getAllByRole("ROOT.testField.button.down");
-            await act(() => {
-              fireEvent.click(downButtons[0]); // Click the down button for the first item
-            });
-            // Wait for progressive rendering after the button click
-            await waitAfterUserInteraction();
-            // screen.debug(undefined, Infinity); // Prints entire DOM with no size limit
-            log.info(expect.getState().currentTestName, "clicked up button for first item done");
-            const formValues = extractValuesFromRenderedElements(
-              expect,
-              container,
-              "testField",
-              "after up button click"
-            );
-            const testResult = formValuesToJSON(formValues);
-            log.info(expect.getState().currentTestName, "testResult", testResult);
-            expect(testResult, "after up button click").toEqual([{ objectType: "B", b: 2 }, { objectType: "A", a: "value1" }, { objectType: "A", a: "value3" }]);
-          },
-        },
-        "renders all array values of a plain 2-items tuple with a string and a number, in the right order": {
-          props: {
-            label: "Test Label",
-            name: "testField",
-            listKey: "ROOT.testField",
-            rootLessListKey: "testField",
-            rootLessListKeyArray: ["testField"],
-            rawJzodSchema: {
-              type: "tuple", definition: [{ type: "string" }, { type: "number" }],
+              screen.debug(undefined, Infinity); // Prints entire DOM with no size limit
+              log.info(expect.getState().currentTestName, "clicking down button for first item");
+              const downButtons = screen.getAllByRole("ROOT.testField.button.down");
+              await act(() => {
+                fireEvent.click(downButtons[0]); // Click the down button for the first item
+              });
+              // Wait for progressive rendering after the button click
+              await waitAfterUserInteraction();
+              // screen.debug(undefined, Infinity); // Prints entire DOM with no size limit
+              log.info(expect.getState().currentTestName, "clicked up button for first item done");
+              const formValues = extractValuesFromRenderedElements(
+                expect,
+                undefined,
+                container,
+                "testField",
+                "after up button click"
+              );
+              const testResult = formValuesToJSON(formValues);
+              log.info(expect.getState().currentTestName, "testResult", testResult);
+              expect(testResult, "after up button click").toEqual([
+                { objectType: "B", b: 2 },
+                { objectType: "A", a: "value1" },
+                { objectType: "A", a: "value3" },
+              ]);
             },
-            initialFormState: ["value1", 2],
           },
-          tests: async (expect, container) => {
-            const formValues: Record<string, any> = extractValuesFromRenderedElements(
-              expect,
-              container,
-              "testField",
-              "initial"
-            );
-            const testResult = formValuesToJSON(formValues);
-            expect(testResult).toEqual(["value1", 2]);
+        "renders all array values of a plain 2-items tuple with a string and a number, in the right order":
+          {
+            props: {
+              label: "Test Label",
+              name: "testField",
+              listKey: "ROOT.testField",
+              rootLessListKey: "testField",
+              rootLessListKeyArray: ["testField"],
+              rawJzodSchema: {
+                type: "tuple",
+                definition: [{ type: "string" }, { type: "number" }],
+              },
+              initialFormState: ["value1", 2],
+            },
+            tests: async (expect, container) => {
+              const formValues: Record<string, any> = extractValuesFromRenderedElements(
+                expect,
+                undefined,
+                container,
+                "testField",
+                "initial"
+              );
+              const testResult = formValuesToJSON(formValues);
+              expect(testResult).toEqual(["value1", 2]);
+            },
           },
-        },
         "renders all array values of a tuple inside an array, in the right order": {
           props: {
             label: "Test Label",
@@ -263,17 +285,26 @@ export function getJzodArrayEditorTests(
               type: "array",
               definition: { type: "tuple", definition: [{ type: "string" }, { type: "number" }] },
             },
-            initialFormState: [["value1", 1], ["value2", 2], ["value3", 3]],
+            initialFormState: [
+              ["value1", 1],
+              ["value2", 2],
+              ["value3", 3],
+            ],
           },
           tests: async (expect, container) => {
             const formValues: Record<string, any> = extractValuesFromRenderedElements(
               expect,
+              undefined,
               container,
               "testField",
               "initial"
             );
             const testResult = formValuesToJSON(formValues);
-            expect(testResult).toEqual([["value1", 1], ["value2", 2], ["value3", 3]]);
+            expect(testResult).toEqual([
+              ["value1", 1],
+              ["value2", 2],
+              ["value3", 3],
+            ]);
           },
         },
         "add an element to a string array when button ROOT.testField.add is clicked": {
@@ -286,6 +317,7 @@ export function getJzodArrayEditorTests(
             await waitAfterUserInteraction();
             const formValues: Record<string, any> = extractValuesFromRenderedElements(
               expect,
+              undefined,
               container,
               "testField",
               "after add button click"
@@ -338,6 +370,7 @@ export function getJzodArrayEditorTests(
             await waitAfterUserInteraction();
             const formValues: Record<string, any> = extractValuesFromRenderedElements(
               expect,
+              undefined,
               container,
               "testField",
               "after add button click"
@@ -368,8 +401,7 @@ export function getJzodArrayEditorTests(
       },
     },
   };
-};
-
+}
 
 // ################################################################################################
 // ENUM
@@ -378,18 +410,16 @@ export function getJzodArrayEditorTests(
 //   rawJzodSchema: JzodEnum | undefined;
 // }
 
-export type JzodEnumEditorTest = JzodEditorTest<JzodElementEditorProps_Test>;
-export type JzodEnumEditorTestSuites = JzodEditorTestSuites<JzodElementEditorProps_Test>;
+export type JzodEnumEditorTest = ReactComponentTest<JzodElementEditorProps_Test>;
+export type JzodEnumEditorTestSuites = ReactComponentTestSuites<JzodElementEditorProps_Test>;
 
 export function getJzodEnumEditorTests(
-  renderAsJzodElementEditor: React.FC<JzodElementEditorProps_Test>
+  componentUnderTest: React.FC<JzodElementEditorProps_Test>
 ): JzodEnumEditorTestSuites {
   const enumValues = ["value1", "value2", "value3"];
   return {
     JzodEnumEditor: {
-      suiteRenderComponent: {
-        renderAsJzodElementEditor,
-      },
+      suiteRenderComponent: componentUnderTest,
       suiteProps: {
         label: "Test Label",
         name: "testField",
@@ -430,22 +460,35 @@ export function getJzodEnumEditorTests(
         },
         "renders select with correct value": {
           tests: async (expect: ExpectStatic, container: Container) => {
-            const values: Record<string, any> = extractValuesFromRenderedElements(expect, container, "testField", "initial");
+            const values: Record<string, any> = extractValuesFromRenderedElements(
+              expect,
+              undefined,
+              container,
+              "testField",
+              "initial"
+            );
             console.log("########### ENUM VALUES", values);
             // console.log("=== FULL RENDERED DOM ===");
             // screen.debug(undefined, Infinity); // Prints entire DOM with no size limit
 
             expect(values).toEqual({
-              "testField": "value2",
+              testField: "value2",
             });
           },
         },
         "renders all enum options": {
           tests: async (expect: ExpectStatic, container: Container) => {
             const combobox = screen.getByRole("combobox");
-            const valuesInitial: Record<string, any> = extractValuesFromRenderedElements(expect, container, "testField", "initial", false);
+            const valuesInitial: Record<string, any> = extractValuesFromRenderedElements(
+              expect,
+              undefined,
+              container,
+              "testField",
+              "initial",
+              false
+            );
             expect(valuesInitial).toEqual({
-              "testField": "value2",
+              testField: "value2",
             });
             await act(() => {
               fireEvent.click(combobox);
@@ -453,7 +496,14 @@ export function getJzodEnumEditorTests(
             // Wait for progressive rendering after the button click
             await waitAfterUserInteraction();
             // screen.debug(undefined, Infinity); // Prints entire DOM with no size limit
-            const valuesAfterClick: Record<string, any> = extractValuesFromRenderedElements(expect, container, "testField", "after click", true);
+            const valuesAfterClick: Record<string, any> = extractValuesFromRenderedElements(
+              expect,
+              undefined,
+              container,
+              "testField",
+              "after click",
+              true
+            );
             // Merge initial values with values after click to preserve the selected value and get the options
             const valuesListDisplayed = { ...valuesAfterClick };
             // Preserve the original selected value from before the dropdown opened
@@ -461,7 +511,7 @@ export function getJzodEnumEditorTests(
               valuesListDisplayed.testField = valuesInitial.testField;
             }
             expect(valuesListDisplayed).toEqual({
-              "testField": "value2",
+              testField: "value2",
               "testField.options": ["value1", "value2", "value3"],
             });
           },
@@ -470,44 +520,43 @@ export function getJzodEnumEditorTests(
           tests: async (expect: ExpectStatic, container: Container) => {
             const select = screen.getByRole("combobox") as HTMLSelectElement;
             expect(select.value).toBe("value2"); // initial value
-            
+
             await act(() => {
               fireEvent.change(select, { target: { value: "value3" } });
             });
             await waitAfterUserInteraction();
-            
+
             const valuesFinal: Record<string, any> = extractValuesFromRenderedElements(
               expect,
+              undefined,
               container,
               "testField",
               "after selection change"
             );
             expect(valuesFinal).toEqual({
-              "testField": "value3",
+              testField: "value3",
             });
           },
         },
       },
     },
   };
-};
+}
 
 // ################################################################################################
 // LITERAL
 // ################################################################################################
 
-export type JzodLiteralEditorTest = JzodEditorTest<JzodElementEditorProps_Test>;
-export type JzodLiteralEditorTestSuites = JzodEditorTestSuites<JzodElementEditorProps_Test>;
+export type JzodLiteralEditorTest = ReactComponentTest<JzodElementEditorProps_Test>;
+export type JzodLiteralEditorTestSuites = ReactComponentTestSuites<JzodElementEditorProps_Test>;
 
 // ################################################################################################
 export function getJzodLiteralEditorTests(
-  jzodElementEditor: React.FC<JzodElementEditorProps_Test>
+  componentUnderTest: React.FC<JzodElementEditorProps_Test>
 ): JzodLiteralEditorTestSuites {
   return {
-    "JzodLiteralEditor": {
-      suiteRenderComponent: {
-        renderAsJzodElementEditor: jzodElementEditor
-      },
+    JzodLiteralEditor: {
+      suiteRenderComponent: componentUnderTest,
       suiteProps: {
         name: "testField",
         listKey: "root.testField",
@@ -575,40 +624,38 @@ export function getJzodLiteralEditorTests(
                 definition: "test-value",
               },
             } as JzodElementEditorProps_Test),
-            tests: async (expect, container) => {
-              expect(screen.getByDisplayValue("test-value")).toBeInTheDocument();
-              const input = screen.getByDisplayValue("test-value");
-              await act(() => {
-                console.log("##################### ACTION", );
-                fireEvent.change(input, { target: { value: "new value" } }) // React testing library does not throw error on editing disabled textbox, so we simulate it
-              });
-              await waitAfterUserInteraction();
-              expect(screen.getByDisplayValue(/test-value/)).toBeInTheDocument(); // value has not changed, because it is a literal
-            }
+          tests: async (expect, container) => {
+            expect(screen.getByDisplayValue("test-value")).toBeInTheDocument();
+            const input = screen.getByDisplayValue("test-value");
+            await act(() => {
+              console.log("##################### ACTION");
+              fireEvent.change(input, { target: { value: "new value" } }); // React testing library does not throw error on editing disabled textbox, so we simulate it
+            });
+            await waitAfterUserInteraction();
+            expect(screen.getByDisplayValue(/test-value/)).toBeInTheDocument(); // value has not changed, because it is a literal
+          },
         },
-      }
-    }
+      },
+    },
   };
-};
+}
 
 // ################################################################################################
 // OBJECT
 // ################################################################################################
-export interface LocalObjectEditorProps extends LocalEditorPropsRoot{
+export interface LocalObjectEditorProps extends LocalEditorPropsRoot {
   rawJzodSchema: JzodObject | JzodRecord | undefined;
 }
 
-export type JzodObjectEditorTest = JzodEditorTest<JzodElementEditorProps_Test>;
-export type JzodObjectEditorTestSuites = JzodEditorTestSuites<JzodElementEditorProps_Test>;
+export type JzodObjectEditorTest = ReactComponentTest<JzodElementEditorProps_Test>;
+export type JzodObjectEditorTestSuites = ReactComponentTestSuites<JzodElementEditorProps_Test>;
 
 export function getJzodObjectEditorTests(
-  renderAsJzodElementEditor: React.FC<JzodElementEditorProps_Test>
+  componentUnderTest: React.FC<JzodElementEditorProps_Test>
 ): JzodObjectEditorTestSuites {
   return {
     JzodObjectEditor: {
-      suiteRenderComponent: {
-        renderAsJzodElementEditor,
-      },
+      suiteRenderComponent: componentUnderTest,
       tests: {
         "object renders as json-like input fields with proper value": {
           props: {
@@ -641,6 +688,7 @@ export function getJzodObjectEditorTests(
             // });
             const values = extractValuesFromRenderedElements(
               expect,
+              undefined,
               container,
               "testField",
               "after delete button click"
@@ -669,6 +717,7 @@ export function getJzodObjectEditorTests(
           tests: async (expect: ExpectStatic, container: Container) => {
             const values = extractValuesFromRenderedElements(
               expect,
+              undefined,
               container,
               "testField",
               "initial"
@@ -712,6 +761,7 @@ export function getJzodObjectEditorTests(
             await waitAfterUserInteraction();
             const values: Record<string, any> = extractValuesFromRenderedElements(
               expect,
+              undefined,
               container,
               "testField",
               "after change"
@@ -752,11 +802,12 @@ export function getJzodObjectEditorTests(
               });
               // Wait for progressive rendering after the button click
               await waitAfterUserInteraction();
-              
+
               // expect(screen.getByLabelText("AAAAAAAAAAAAAAAAAAAA")).toBeInTheDocument();
               // screen.debug(undefined, Infinity); // Prints entire DOM with no size limit
               const screenValues: Record<string, any> = extractValuesFromRenderedElements(
                 expect,
+                undefined,
                 container,
                 "testField",
                 "after add button click"
@@ -796,9 +847,10 @@ export function getJzodObjectEditorTests(
               });
               // Wait for progressive rendering after the delete button click
               await waitAfterUserInteraction();
-              
+
               const screenValues = extractValuesFromRenderedElements(
                 expect,
+                undefined,
                 container,
                 "testField",
                 "after delete button click"
@@ -838,9 +890,10 @@ export function getJzodObjectEditorTests(
               });
               // Wait for progressive rendering after the delete button click
               await waitAfterUserInteraction();
-              
+
               const screenValues = extractValuesFromRenderedElements(
                 expect,
+                undefined,
                 container,
                 "testField",
                 "after delete button click"
@@ -877,6 +930,7 @@ export function getJzodObjectEditorTests(
             // expect(screen.getByText(/Test LabelAAAAAAAAAAAAAAAAAAAAAAAAAAAA/)).toBeInTheDocument();
             const values: Record<string, any> = extractValuesFromRenderedElements(
               expect,
+              undefined,
               container,
               "testField",
               "initial"
@@ -920,6 +974,7 @@ export function getJzodObjectEditorTests(
               await waitAfterUserInteraction();
               const values = extractValuesFromRenderedElements(
                 expect,
+                undefined,
                 container,
                 "testField",
                 "after add button click"
@@ -982,7 +1037,13 @@ export function getJzodObjectEditorTests(
               });
               await waitAfterUserInteraction();
               expect(input).toHaveValue("renamedRecord");
-              const values = extractValuesFromRenderedElements(expect, container, "testField", "after rename");
+              const values = extractValuesFromRenderedElements(
+                expect,
+                undefined,
+                container,
+                "testField",
+                "after rename"
+              );
               const testResult = formValuesToJSON(values);
               expect(testResult).toEqual({
                 renamedRecord: {
@@ -1023,6 +1084,7 @@ export function getJzodObjectEditorTests(
             });
             const values = extractValuesFromRenderedElements(
               expect,
+              undefined,
               container,
               "testField",
               "after delete button click"
@@ -1073,6 +1135,7 @@ export function getJzodObjectEditorTests(
               });
               const values = extractValuesFromRenderedElements(
                 expect,
+                undefined,
                 container,
                 "testField",
                 "after delete button click"
@@ -1093,8 +1156,7 @@ export function getJzodObjectEditorTests(
       },
     },
   };
-};
-
+}
 
 // ################################################################################################
 // SIMPLE TYPES
@@ -1104,22 +1166,20 @@ export type JzodSimpleTypes =
   | JzodAttributePlainDateWithValidations
   | JzodAttributePlainNumberWithValidations
   | JzodAttributePlainStringWithValidations;
-export interface LocalSimpleTypeEditorProps extends LocalEditorPropsRoot{
+export interface LocalSimpleTypeEditorProps extends LocalEditorPropsRoot {
   rawJzodSchema: JzodSimpleTypes | undefined;
 }
 
-export type JzodSimpleTypeEditorTest = JzodEditorTest<JzodElementEditorProps_Test>;
-export type JzodSimpleTypeEditorTestSuites = JzodEditorTestSuites<JzodElementEditorProps_Test>;
+export type JzodSimpleTypeEditorTest = ReactComponentTest<JzodElementEditorProps_Test>;
+export type JzodSimpleTypeEditorTestSuites = ReactComponentTestSuites<JzodElementEditorProps_Test>;
 
 export function getJzodSimpleTypeEditorTests(
-  renderAsJzodElementEditor: React.FC<JzodElementEditorProps_Test>
+  componentUnderTest: React.FC<JzodElementEditorProps_Test>
 ): JzodSimpleTypeEditorTestSuites {
   // const arrayValues = ["value1", "value2", "value3"];
   return {
     JzodSimpleTypeEditor: {
-      suiteRenderComponent: {
-        renderAsJzodElementEditor,
-      },
+      suiteRenderComponent: componentUnderTest,
       tests: {
         "string renders input with proper value": {
           props: {
@@ -1135,9 +1195,11 @@ export function getJzodSimpleTypeEditorTests(
             initialFormState: "placeholder text",
           },
           tests: async (expect: ExpectStatic, container: Container) => {
-            const input = screen.getAllByRole("textbox").filter(
-              (el: HTMLElement) => (el as HTMLInputElement).name === "testField"
-            )[0] as HTMLInputElement;
+            const input = screen
+              .getAllByRole("textbox")
+              .filter(
+                (el: HTMLElement) => (el as HTMLInputElement).name === "testField"
+              )[0] as HTMLInputElement;
             expect(input).toBeInTheDocument();
             expect(input).toHaveValue("placeholder text");
           },
@@ -1155,9 +1217,11 @@ export function getJzodSimpleTypeEditorTests(
             initialFormState: "placeholder text",
           },
           tests: async (expect: ExpectStatic, container: Container) => {
-            const input = screen.getAllByRole("textbox").filter(
-              (el: HTMLElement) => (el as HTMLInputElement).name === "testField"
-            )[0] as HTMLInputElement;
+            const input = screen
+              .getAllByRole("textbox")
+              .filter(
+                (el: HTMLElement) => (el as HTMLInputElement).name === "testField"
+              )[0] as HTMLInputElement;
             expect(input).toBeInTheDocument();
             expect(input).toHaveValue("placeholder text");
             await act(() => {
@@ -1180,9 +1244,11 @@ export function getJzodSimpleTypeEditorTests(
             initialFormState: "placeholder text",
           },
           tests: async (expect: ExpectStatic, container: Container) => {
-            const input = screen.getAllByRole("textbox").filter(
-              (el: HTMLElement) => (el as HTMLInputElement).name === "testField"
-            )[0] as HTMLInputElement;
+            const input = screen
+              .getAllByRole("textbox")
+              .filter(
+                (el: HTMLElement) => (el as HTMLInputElement).name === "testField"
+              )[0] as HTMLInputElement;
             expect(input).toBeInTheDocument();
             expect(input).toHaveValue("placeholder text");
             await act(() => {
@@ -1197,7 +1263,8 @@ export function getJzodSimpleTypeEditorTests(
             });
           },
         },
-        "number renders input with proper value": { // TODO: test for nullable / optional scenario
+        "number renders input with proper value": {
+          // TODO: test for nullable / optional scenario
           props: {
             label: "Test Label",
             name: "testField",
@@ -1212,9 +1279,11 @@ export function getJzodSimpleTypeEditorTests(
           tests: async (expect: ExpectStatic, container: Container) => {
             // expect(screen.getByText(/Test LabelAAAAAAAAAAAA/)).toBeInTheDocument();
             // screen.debug(undefined, Infinity); // Prints entire DOM with no size limit
-            const input = screen.getAllByDisplayValue(42).filter(
-              (el: HTMLElement) => (el as HTMLInputElement).id === "testField"
-            )[0] as HTMLInputElement;
+            const input = screen
+              .getAllByDisplayValue(42)
+              .filter(
+                (el: HTMLElement) => (el as HTMLInputElement).id === "testField"
+              )[0] as HTMLInputElement;
             expect(input).toBeInTheDocument();
             expect(input).toHaveValue(42);
           },
@@ -1232,9 +1301,11 @@ export function getJzodSimpleTypeEditorTests(
             initialFormState: 42,
           },
           tests: async (expect: ExpectStatic, container: Container) => {
-            const input = screen.getAllByDisplayValue(42).filter(
-              (el: HTMLElement) => (el as HTMLInputElement).id === "testField"
-            )[0] as HTMLInputElement;
+            const input = screen
+              .getAllByDisplayValue(42)
+              .filter(
+                (el: HTMLElement) => (el as HTMLInputElement).id === "testField"
+              )[0] as HTMLInputElement;
             expect(input).toBeInTheDocument();
             expect(input).toHaveValue(42);
             await act(() => {
@@ -1244,7 +1315,8 @@ export function getJzodSimpleTypeEditorTests(
             expect(input).toHaveValue(100);
           },
         },
-        "uuid renders input with proper value": { // TODO: test for nullable / optional scenario
+        "uuid renders input with proper value": {
+          // TODO: test for nullable / optional scenario
           props: {
             label: "Test Label",
             name: "testField",
@@ -1257,9 +1329,11 @@ export function getJzodSimpleTypeEditorTests(
             initialFormState: "c8e2cc98-b0ec-426a-8be0-2d526039f85a",
           },
           tests: async (expect: ExpectStatic, container: Container) => {
-            const input = screen.getAllByRole("textbox").filter(
-              (el: HTMLElement) => (el as HTMLInputElement).name === "testField"
-            )[0] as HTMLInputElement;
+            const input = screen
+              .getAllByRole("textbox")
+              .filter(
+                (el: HTMLElement) => (el as HTMLInputElement).name === "testField"
+              )[0] as HTMLInputElement;
             expect(input).toBeInTheDocument();
             expect(input).toHaveValue("c8e2cc98-b0ec-426a-8be0-2d526039f85a");
           },
@@ -1277,13 +1351,17 @@ export function getJzodSimpleTypeEditorTests(
             initialFormState: "c8e2cc98-b0ec-426a-8be0-2d526039f85a",
           },
           tests: async (expect: ExpectStatic, container: Container) => {
-            const input = screen.getAllByRole("textbox").filter(
-              (el: HTMLElement) => (el as HTMLInputElement).name === "testField"
-            )[0] as HTMLInputElement;
+            const input = screen
+              .getAllByRole("textbox")
+              .filter(
+                (el: HTMLElement) => (el as HTMLInputElement).name === "testField"
+              )[0] as HTMLInputElement;
             expect(input).toBeInTheDocument();
             expect(input).toHaveValue("c8e2cc98-b0ec-426a-8be0-2d526039f85a");
             await act(() => {
-              fireEvent.change(input, { target: { value: "3c659c65-35f4-40e5-acf3-28115f35affa" } });
+              fireEvent.change(input, {
+                target: { value: "3c659c65-35f4-40e5-acf3-28115f35affa" },
+              });
             });
             await waitAfterUserInteraction();
             expect(input).toHaveValue("3c659c65-35f4-40e5-acf3-28115f35affa");
@@ -1303,10 +1381,16 @@ export function getJzodSimpleTypeEditorTests(
           },
           tests: async (expect: ExpectStatic, container: Container) => {
             // screen.debug(undefined, Infinity); // Prints entire DOM with no size limit
-            const values: Record<string, any> = extractValuesFromRenderedElements(expect, container, "testField", "initial");
+            const values: Record<string, any> = extractValuesFromRenderedElements(
+              expect,
+              undefined,
+              container,
+              "testField",
+              "initial"
+            );
             const testResult = formValuesToJSON(values);
             expect(testResult).toEqual({
-              "testField": true,
+              testField: true,
             });
           },
         },
@@ -1323,13 +1407,19 @@ export function getJzodSimpleTypeEditorTests(
             initialFormState: false,
           },
           tests: async (expect: ExpectStatic, container: Container) => {
-            const values: Record<string, any> = extractValuesFromRenderedElements(expect, container, "testField", "initial");
+            const values: Record<string, any> = extractValuesFromRenderedElements(
+              expect,
+              undefined,
+              container,
+              "testField",
+              "initial"
+            );
             const testResult = formValuesToJSON(values);
             expect(testResult).toEqual({
-              "testField": false,
+              testField: false,
             });
             expect(values).toEqual({
-              "testField": false,
+              testField: false,
             });
           },
         },
@@ -1346,9 +1436,11 @@ export function getJzodSimpleTypeEditorTests(
             initialFormState: true,
           },
           tests: async (expect: ExpectStatic, container: Container) => {
-            const checkbox = screen.getAllByRole("checkbox").filter(
-              (el: HTMLElement) => (el as HTMLInputElement).name === "testField"
-            )[0] as HTMLInputElement;
+            const checkbox = screen
+              .getAllByRole("checkbox")
+              .filter(
+                (el: HTMLElement) => (el as HTMLInputElement).name === "testField"
+              )[0] as HTMLInputElement;
             expect(checkbox).toBeInTheDocument();
             expect(checkbox).toBeChecked();
             await act(() => {
@@ -1356,10 +1448,16 @@ export function getJzodSimpleTypeEditorTests(
             });
             await waitAfterUserInteraction();
             expect(checkbox).not.toBeChecked();
-            const values: Record<string, any> = extractValuesFromRenderedElements(expect, container, "testField", "after change");
+            const values: Record<string, any> = extractValuesFromRenderedElements(
+              expect,
+              undefined,
+              container,
+              "testField",
+              "after change"
+            );
             const testResult = formValuesToJSON(values);
-            expect(testResult).toEqual({  
-              "testField": false,
+            expect(testResult).toEqual({
+              testField: false,
             });
           },
         },
@@ -1376,9 +1474,11 @@ export function getJzodSimpleTypeEditorTests(
             initialFormState: BigInt("12345678901234567890"),
           },
           tests: async (expect: ExpectStatic, container: Container) => {
-            const input = screen.getAllByRole("textbox").filter(
-              (el: HTMLElement) => (el as HTMLInputElement).name === "testField"
-            )[0] as HTMLInputElement;
+            const input = screen
+              .getAllByRole("textbox")
+              .filter(
+                (el: HTMLElement) => (el as HTMLInputElement).name === "testField"
+              )[0] as HTMLInputElement;
             expect(input).toBeInTheDocument();
             expect(input).toHaveValue("12345678901234567890");
           },
@@ -1416,9 +1516,11 @@ export function getJzodSimpleTypeEditorTests(
             initialFormState: 12345678901234567890n,
           },
           tests: async (expect: ExpectStatic, container: Container) => {
-            const input = screen.getAllByRole("textbox").filter(
-              (el: HTMLElement) => (el as HTMLInputElement).name === "testField"
-            )[0] as HTMLInputElement;
+            const input = screen
+              .getAllByRole("textbox")
+              .filter(
+                (el: HTMLElement) => (el as HTMLInputElement).name === "testField"
+              )[0] as HTMLInputElement;
             expect(input).toBeInTheDocument();
             expect(input).toHaveValue("12345678901234567890");
             await act(() => {
@@ -1431,27 +1533,25 @@ export function getJzodSimpleTypeEditorTests(
       },
     },
   };
-};
+}
 
 // ################################################################################################
 // UNION
 // ################################################################################################
-export interface LocalUnionEditorProps extends LocalEditorPropsRoot{
+export interface LocalUnionEditorProps extends LocalEditorPropsRoot {
   rawJzodSchema: JzodUnion | undefined;
 }
 
-export type JzodUnionEditorTest = JzodEditorTest<JzodElementEditorProps_Test>;
-export type JzodUnionEditorTestSuites = JzodEditorTestSuites<JzodElementEditorProps_Test>;
+export type JzodUnionEditorTest = ReactComponentTest<JzodElementEditorProps_Test>;
+export type JzodUnionEditorTestSuites = ReactComponentTestSuites<JzodElementEditorProps_Test>;
 
 export function getJzodUnionEditorTests(
-  renderAsJzodElementEditor: React.FC<JzodElementEditorProps_Test>
+  componentUnderTest: React.FC<JzodElementEditorProps_Test>
 ): JzodUnionEditorTestSuites {
   const arrayValues = ["value1", "value2", "value3"];
   return {
     JzodUnionEditor: {
-      suiteRenderComponent: {
-        renderAsJzodElementEditor,
-      },
+      suiteRenderComponent: componentUnderTest,
       tests: {
         // "union between simple types renders input with proper value": {
         //   props: {
@@ -1473,7 +1573,8 @@ export function getJzodUnionEditorTests(
         //     // screen.debug(undefined, Infinity); // Prints entire DOM with no size limit
         //     const values: Record<string, any> = extractValuesFromRenderedElements(
         //       expect,
-        //       container,
+        //                   [],
+        // container,
         //       "testField",
         //       "initial form state"
         //     );
@@ -1504,7 +1605,8 @@ export function getJzodUnionEditorTests(
         //     // expect(input).toBeInTheDocument();
         //     const values: Record<string, any> = extractValuesFromRenderedElements(
         //       expect,
-        //       container,
+        //                  [],
+        //  container,
         //       "testField",
         //       "initial form state"
         //     );
@@ -1542,7 +1644,8 @@ export function getJzodUnionEditorTests(
         //     // });
         //     const values: Record<string, any> = extractValuesFromRenderedElements(
         //       expect,
-        //       container,
+        //                  [],
+        //  container,
         //       "testField",
         //       "initial form state"
         //     );
@@ -1550,98 +1653,145 @@ export function getJzodUnionEditorTests(
         //     expect(testResult).toEqual({ a: "test string", b: 42 });
         //   },
         // },
-        "union between 2 object types with a discriminator for value object renders input following the proper value type": {
-          props: {
-            label: "Test Label",
-            name: "testField",
-            listKey: "ROOT.testField",
-            rootLessListKey: "testField",
-            rootLessListKeyArray: ["testField"],
-            rawJzodSchema: {
-              type: "union",
-              discriminator: "testObjectType",
-              definition: [
-                { type: "object", definition: { testObjectType: { type: "literal", definition: "type1" }, type1Attribute: { type: "string" } } },
-                { type: "object", definition: { testObjectType: { type: "literal", definition: "type2" }, type2Attribute: { type: "number" } } },
-              ],
+        "union between 2 object types with a discriminator for value object renders input following the proper value type":
+          {
+            props: {
+              label: "Test Label",
+              name: "testField",
+              listKey: "ROOT.testField",
+              rootLessListKey: "testField",
+              rootLessListKeyArray: ["testField"],
+              rawJzodSchema: {
+                type: "union",
+                discriminator: "testObjectType",
+                definition: [
+                  {
+                    type: "object",
+                    definition: {
+                      testObjectType: { type: "literal", definition: "type1" },
+                      type1Attribute: { type: "string" },
+                    },
+                  },
+                  {
+                    type: "object",
+                    definition: {
+                      testObjectType: { type: "literal", definition: "type2" },
+                      type2Attribute: { type: "number" },
+                    },
+                  },
+                ],
+              },
+              initialFormState: {
+                testObjectType: "type1",
+                type1Attribute: "test string",
+              },
             },
-            initialFormState: {
-              testObjectType: "type1",
-              type1Attribute: "test string",
-            },
-          },
-          tests: async (expect: ExpectStatic, container: Container) => {
-            const values: Record<string, any> = extractValuesFromRenderedElements(
-              expect,
-              container,
-              "testField",
-              "initial form state"
-            );
-            expect(values).toEqual({ type1Attribute: "test string", "testObjectType": "type1" });
-            
-            // Find the discriminator select element and state tracker
-            const user = userEvent.setup();
-            const select = screen.getByDisplayValue("type1") as HTMLSelectElement;
-            const stateTracker = screen.getByTestId("themed-select-state-testObjectType");
-            
-            expect(select.value).toBe("type1"); // initial value
-            expect(stateTracker.getAttribute("data-test-selected-value"), "data-test-selected-value").toBe("type1");
-            expect(stateTracker.getAttribute("data-test-is-open"), "data-test-is-open").toBe("false");
-            
-            // Change the discriminator from "type1" to "type2"
-            await act(async () => {
-              // Click to open the dropdown
-              fireEvent.click(select);
-              
-              // Wait for dropdown to open
-              await waitFor(() => {
-                expect(stateTracker.getAttribute("data-test-is-open"), "data-test-is-open").toBe("true");
-              }, { timeout: 1000 });
-              
-              // Type "type2" to filter to the desired option
-              await user.clear(select);
-              await user.type(select, "type2");
-              
-              // Wait for filtering to complete
-              await waitFor(() => {
-                expect(stateTracker.getAttribute("data-test-filter-text"), "data-test-filter-text").toBe("type2");
-                expect(stateTracker.getAttribute("data-test-filtered-options-count"), "data-test-filtered-options-count").toBe("1");
-              }, { timeout: 1000 });
-              
-              // Press Enter to select the option
-              await user.keyboard('{Enter}');
-              
-              // Wait for selection to complete and dropdown to close
-              await waitFor(() => {
-                expect(stateTracker.getAttribute("data-test-is-open"), "data-test-is-open").toBe("false");
-                expect(stateTracker.getAttribute("data-test-selected-value"), "data-test-selected-value").toBe("type2");
-              }, { timeout: 2000 });
-            });
-            
-            // Verify that the form now shows type2 fields
-            // screen.debug(undefined, Infinity); // Prints entire DOM with no size limit
-            await waitFor(() => {
-              expect(screen.getAllByText("type2Attribute").length > 0).toBeTruthy();
-            }, { timeout: 5000 });
+            tests: async (expect: ExpectStatic, container: Container) => {
+              const values: Record<string, any> = extractValuesFromRenderedElements(
+                expect,
+                undefined,
+                container,
+                "testField",
+                "initial form state"
+              );
+              expect(values).toEqual({ type1Attribute: "test string", testObjectType: "type1" });
 
-            // Get final values after union form re-rendering
-            const valuesAfterChange: Record<string, any> = extractValuesFromRenderedElements(
-              expect,
-              container,
-              "testField",
-              "after change to type2"
-            );
-            const testResultAfterChange = formValuesToJSON(valuesAfterChange);
-            expect(testResultAfterChange).toEqual({
-              "testObjectType": "type2",
-              "type2Attribute": 0, // default value for number
-            });
+              // Find the discriminator select element and state tracker
+              const user = userEvent.setup();
+              const select = screen.getByDisplayValue("type1") as HTMLSelectElement;
+              const stateTracker = screen.getByTestId("themed-select-state-testObjectType");
+
+              expect(select.value).toBe("type1"); // initial value
+              expect(
+                stateTracker.getAttribute("data-test-selected-value"),
+                "data-test-selected-value"
+              ).toBe("type1");
+              expect(stateTracker.getAttribute("data-test-is-open"), "data-test-is-open").toBe(
+                "false"
+              );
+
+              // Change the discriminator from "type1" to "type2"
+              await act(async () => {
+                // Click to open the dropdown
+                fireEvent.click(select);
+
+                // Wait for dropdown to open
+                await waitFor(
+                  () => {
+                    expect(
+                      stateTracker.getAttribute("data-test-is-open"),
+                      "data-test-is-open"
+                    ).toBe("true");
+                  },
+                  { timeout: 1000 }
+                );
+
+                // Type "type2" to filter to the desired option
+                await user.clear(select);
+                await user.type(select, "type2");
+
+                // Wait for filtering to complete
+                await waitFor(
+                  () => {
+                    expect(
+                      stateTracker.getAttribute("data-test-filter-text"),
+                      "data-test-filter-text"
+                    ).toBe("type2");
+                    expect(
+                      stateTracker.getAttribute("data-test-filtered-options-count"),
+                      "data-test-filtered-options-count"
+                    ).toBe("1");
+                  },
+                  { timeout: 1000 }
+                );
+
+                // Press Enter to select the option
+                await user.keyboard("{Enter}");
+
+                // Wait for selection to complete and dropdown to close
+                await waitFor(
+                  () => {
+                    expect(
+                      stateTracker.getAttribute("data-test-is-open"),
+                      "data-test-is-open"
+                    ).toBe("false");
+                    expect(
+                      stateTracker.getAttribute("data-test-selected-value"),
+                      "data-test-selected-value"
+                    ).toBe("type2");
+                  },
+                  { timeout: 2000 }
+                );
+              });
+
+              // Verify that the form now shows type2 fields
+              // screen.debug(undefined, Infinity); // Prints entire DOM with no size limit
+              await waitFor(
+                () => {
+                  expect(screen.getAllByText("type2Attribute").length > 0).toBeTruthy();
+                },
+                { timeout: 5000 }
+              );
+
+              // Get final values after union form re-rendering
+              const valuesAfterChange: Record<string, any> = extractValuesFromRenderedElements(
+                expect,
+                undefined,
+                container,
+                "testField",
+                "after change to type2"
+              );
+              const testResultAfterChange = formValuesToJSON(valuesAfterChange);
+              expect(testResultAfterChange).toEqual({
+                testObjectType: "type2",
+                type2Attribute: 0, // default value for number
+              });
+            },
           },
-        },
       },
     },
   };
-};
+}
 
 // ################################################################################################
 // ################################################################################################
@@ -1652,22 +1802,20 @@ export function getJzodUnionEditorTests(
 // ################################################################################################
 // BOOK
 // ################################################################################################
-export interface LocalBookEditorProps extends LocalEditorPropsRoot{
+export interface LocalBookEditorProps extends LocalEditorPropsRoot {
   // rawJzodSchema: EntityDefinition | undefined;
   rawJzodSchema: JzodObject | undefined;
 }
 
-export type JzodBookEditorTest = JzodEditorTest<JzodElementEditorProps_Test>;
-export type JzodBookEditorTestSuites = JzodEditorTestSuites<JzodElementEditorProps_Test>;
+export type JzodBookEditorTest = ReactComponentTest<JzodElementEditorProps_Test>;
+export type JzodBookEditorTestSuites = ReactComponentTestSuites<JzodElementEditorProps_Test>;
 
 export function getJzodBookEditorTests(
-  renderAsJzodElementEditor: React.FC<JzodElementEditorProps_Test>
+  componentUnderTest: React.FC<JzodElementEditorProps_Test>
 ): JzodBookEditorTestSuites {
   return {
     JzodBookEditor: {
-      suiteRenderComponent: {
-        renderAsJzodElementEditor,
-      },
+      suiteRenderComponent: componentUnderTest,
       tests: {
         "Book is displayed as json-like input fields with proper value": {
           props: {
@@ -1681,7 +1829,7 @@ export function getJzodBookEditorTests(
             //   type: "object",
             //   definition: {a:{ type: "string" }, b:{ type: "number" }},
             // },
-            initialFormState: book1
+            initialFormState: book1,
             // initialFormState: {
             //   a: "test string",
             //   b: 42,
@@ -1691,9 +1839,15 @@ export function getJzodBookEditorTests(
             // Pretty-print the entire rendered DOM
             // console.log("=== FULL RENDERED DOM ===");
             // screen.debug(undefined, Infinity); // Prints entire DOM with no size limit
-  
+
             // expect(screen.getByText(/Test LabelAAAAAAAAAAAAAAAAAAAAAAAAAA/)).toBeInTheDocument();
-            const values: Record<string, any> = extractValuesFromRenderedElements(expect, container, "testField", "initial form state");
+            const values: Record<string, any> = extractValuesFromRenderedElements(
+              expect,
+              undefined,
+              container,
+              "testField",
+              "initial form state"
+            );
             // console.log("Extracted initial values:", values);
             const testResult = formValuesToJSON(values);
             expect(testResult).toEqual({
@@ -1704,7 +1858,7 @@ export function getJzodBookEditorTests(
               author: "Paul Veyne",
               publisher: "Folio",
               conceptLevel: "Data",
-              "year": 2014,
+              year: 2014,
             });
             // expect(values).toEqual(book1);
 
@@ -1759,26 +1913,25 @@ export function getJzodBookEditorTests(
       },
     },
   };
-};
+}
 // ################################################################################################
 // ENTITY DEFINITION
 // ################################################################################################
-export interface LocalEntityDefinitionEditorProps extends LocalEditorPropsRoot{
+export interface LocalEntityDefinitionEditorProps extends LocalEditorPropsRoot {
   // rawJzodSchema: EntityDefinition | undefined;
   rawJzodSchema: JzodObject | undefined;
 }
 
-export type JzodEntityDefinitionEditorTest = JzodEditorTest<JzodElementEditorProps_Test>;
-export type JzodEntityDefinitionEditorTestSuites = JzodEditorTestSuites<JzodElementEditorProps_Test>;
+export type JzodEntityDefinitionEditorTest = ReactComponentTest<JzodElementEditorProps_Test>;
+export type JzodEntityDefinitionEditorTestSuites =
+  ReactComponentTestSuites<JzodElementEditorProps_Test>;
 
 export function getJzodEntityDefinitionEditorTests(
-  renderAsJzodElementEditor: React.FC<JzodElementEditorProps_Test>
+  componentUnderTest: React.FC<JzodElementEditorProps_Test>
 ): JzodEntityDefinitionEditorTestSuites {
   return {
     JzodEntityDefinitionEditor: {
-      suiteRenderComponent: {
-        renderAsJzodElementEditor,
-      },
+      suiteRenderComponent: componentUnderTest,
       tests: {
         "entity definition for Book is displayed as json-like input fields with proper value": {
           props: {
@@ -1788,17 +1941,23 @@ export function getJzodEntityDefinitionEditorTests(
             rootLessListKey: "testField",
             rootLessListKeyArray: ["testField"],
             rawJzodSchema: (entityDefinitionEntityDefinition as EntityDefinition).jzodSchema,
-            initialFormState: entityDefinitionBook
+            initialFormState: entityDefinitionBook,
           },
           tests: async (expect: ExpectStatic, container: Container) => {
-            const formValues: Record<string, any> = extractValuesFromRenderedElements(expect, container, "testField", "initial form state");
+            const formValues: Record<string, any> = extractValuesFromRenderedElements(
+              expect,
+              undefined,
+              container,
+              "testField",
+              "initial form state"
+            );
             // console.log("Extracted initial values:", formValues);
             const testResult = formValuesToJSON(formValues);
             expect(testResult).toEqual({
               ...entityDefinitionBook,
-              "defaultInstanceDetailsReportUuid": "Detailed information about a Book"
-// -   "defaultInstanceDetailsReportUuid": "c3503412-3d8a-43ef-a168-aa36e975e606",
-// +   "defaultInstanceDetailsReportUuid": "Detailed information about a Book",
+              defaultInstanceDetailsReportUuid: "Detailed information about a Book",
+              // -   "defaultInstanceDetailsReportUuid": "c3503412-3d8a-43ef-a168-aa36e975e606",
+              // +   "defaultInstanceDetailsReportUuid": "Detailed information about a Book",
             });
           },
         },
@@ -1841,7 +2000,7 @@ export function getJzodEntityDefinitionEditorTests(
       },
     },
   };
-};
+}
 
 // ################################################################################################
 // PERFORMANCE TESTS
@@ -1855,13 +2014,11 @@ export function getJzodEntityDefinitionEditorTests(
 // export type JzodEntityDefinitionEditorTestSuites = JzodEditorTestSuites<LocalEntityDefinitionEditorProps>;
 
 export function getJzodEditorPerformanceTests(
-  renderAsJzodElementEditor: React.FC<JzodElementEditorProps_Test>
+  componentUnderTest: React.FC<JzodElementEditorProps_Test>
 ): JzodSimpleTypeEditorTestSuites {
   return {
     JzodEditorPerformanceTests: {
-      suiteRenderComponent: {
-        renderAsJzodElementEditor,
-      },
+      suiteRenderComponent: componentUnderTest,
       // performanceTests: true,
       tests: {
         "performance string renders input with proper value": {
@@ -1879,9 +2036,11 @@ export function getJzodEditorPerformanceTests(
           },
 
           tests: async (expect: ExpectStatic, container: Container) => {
-            const input = screen.getAllByRole("textbox").filter(
-              (el: HTMLElement) => (el as HTMLInputElement).name === "testField"
-            )[0] as HTMLInputElement;
+            const input = screen
+              .getAllByRole("textbox")
+              .filter(
+                (el: HTMLElement) => (el as HTMLInputElement).name === "testField"
+              )[0] as HTMLInputElement;
             expect(input).toBeInTheDocument();
             expect(input).toHaveValue("placeholder text");
           },
@@ -1898,7 +2057,8 @@ export function getJzodEditorPerformanceTests(
         //     initialFormState: entityDefinitionBook
         //   },
         //   tests: async (expect: ExpectStatic, container: Container) => {
-        //     const formValues: Record<string, any> = extractValuesFromRenderedElements(expect, container, "testField", "initial form state");
+        //     const formValues: Record<string, any> = extractValuesFromRenderedElements(expect,              undefined,
+        //  container, "testField", "initial form state");
         //     // console.log("Extracted initial values:", values);
         //     const testResult = formValuesToJSON(formValues);
         //     expect(testResult).toEqual(entityDefinitionBook);
@@ -1907,27 +2067,25 @@ export function getJzodEditorPerformanceTests(
       },
     },
   };
-};
+}
 
 // ################################################################################################
 // ENDPOINT
 // ################################################################################################
-export interface LocalEndpointEditorProps extends LocalEditorPropsRoot{
+export interface LocalEndpointEditorProps extends LocalEditorPropsRoot {
   // rawJzodSchema: EntityDefinition | undefined;
   rawJzodSchema: JzodElement | undefined;
 }
 
-export type JzodEndpointEditorTest = JzodEditorTest<JzodElementEditorProps_Test>;
-export type JzodEndpointEditorTestSuites = JzodEditorTestSuites<JzodElementEditorProps_Test>;
+export type JzodEndpointEditorTest = ReactComponentTest<JzodElementEditorProps_Test>;
+export type JzodEndpointEditorTestSuites = ReactComponentTestSuites<JzodElementEditorProps_Test>;
 
 export function getJzodEndpointEditorTests(
-  renderAsJzodElementEditor: React.FC<JzodElementEditorProps_Test>
+  componentUnderTest: React.FC<JzodElementEditorProps_Test>
 ): JzodEndpointEditorTestSuites {
   return {
     JzodEndpointEditor: {
-      suiteRenderComponent: {
-        renderAsJzodElementEditor,
-      },
+      suiteRenderComponent: componentUnderTest,
       tests: {
         // "Application Endpoint schema renders": {
         //   props: {
@@ -1943,7 +2101,8 @@ export function getJzodEndpointEditorTests(
         //     // console.log("=== FULL RENDERED DOM ===");
         //     // screen.debug(undefined, Infinity); // Prints entire DOM with no size limit
         //     const startTime = performance.now();
-        //     const values: Record<string, any> = extractValuesFromRenderedElements(expect, container, "testField", "initial form state");
+        //     const values: Record<string, any> = extractValuesFromRenderedElements(expect,              undefined,
+        //  container, "testField", "initial form state");
         //     const endTime = performance.now();
         //     console.log(`extracting values completed in ${endTime - startTime} ms`);
         //     const formatToValuesStartTime = performance.now();
@@ -1954,11 +2113,11 @@ export function getJzodEndpointEditorTests(
 
         //     // Basic test to ensure the component renders without crashing
         //     expect(container).toBeInTheDocument();
-            
+
         //     // Check that the form is rendered (look for any input)
         //     const inputs = container.querySelectorAll('input');
         //     expect(inputs.length).toBeGreaterThan(0);
-            
+
         //     // Check that the component has the expected structure
         //     const testElement = container.querySelector('[id*="testField"]');
         //     expect(testElement).toBeInTheDocument();
@@ -1978,7 +2137,8 @@ export function getJzodEndpointEditorTests(
         //     // console.log("=== FULL RENDERED DOM ===");
         //     // screen.debug(undefined, Infinity); // Prints entire DOM with no size limit
         //     const startTime = performance.now();
-        //     const values: Record<string, any> = extractValuesFromRenderedElements(expect, container, "testField", "initial form state");
+        //     const values: Record<string, any> = extractValuesFromRenderedElements(expect,              undefined,
+        //  container, "testField", "initial form state");
         //     const endTime = performance.now();
         //     console.log(`extracting values completed in ${endTime - startTime} ms`);
         //     const formatToValuesStartTime = performance.now();
@@ -1989,11 +2149,11 @@ export function getJzodEndpointEditorTests(
 
         //     // Basic test to ensure the component renders without crashing
         //     expect(container).toBeInTheDocument();
-            
+
         //     // Check that the form is rendered (look for any input)
         //     const inputs = container.querySelectorAll('input');
         //     expect(inputs.length).toBeGreaterThan(0);
-            
+
         //     // Check that the component has the expected structure
         //     const testElement = container.querySelector('[id*="testField"]');
         //     expect(testElement).toBeInTheDocument();
@@ -2007,28 +2167,36 @@ export function getJzodEndpointEditorTests(
             rootLessListKey: "testField",
             rootLessListKeyArray: ["testField"],
             rawJzodSchema: entityDefinitionTest.jzodSchema,
-            initialFormState: test_createEntityAndReportFromSpreadsheetAndUpdateMenu
+            initialFormState: test_createEntityAndReportFromSpreadsheetAndUpdateMenu,
           },
           tests: async (expect: ExpectStatic, container: Container) => {
             console.log("=== FULL RENDERED DOM ===");
             // screen.debug(undefined, Infinity); // Prints entire DOM with no size limit
             const startTime = performance.now();
-            const values: Record<string, any> = extractValuesFromRenderedElements(expect, container, "testField", "initial form state");
+            const values: Record<string, any> = extractValuesFromRenderedElements(
+              expect,
+              undefined,
+              container,
+              "testField",
+              "initial form state"
+            );
             const endTime = performance.now();
             console.log(`extracting values completed in ${endTime - startTime} ms`);
             const formatToValuesStartTime = performance.now();
             const testResult = formValuesToJSON(values);
             const formatToValuesEndTime = performance.now();
-            console.log(`formValuesToJSON completed in ${formatToValuesEndTime - formatToValuesStartTime} ms`);
+            console.log(
+              `formValuesToJSON completed in ${formatToValuesEndTime - formatToValuesStartTime} ms`
+            );
             expect(testResult).toEqual(queryEndpointVersionV1);
 
             // Basic test to ensure the component renders without crashing
             expect(container).toBeInTheDocument();
-            
+
             // Check that the form is rendered (look for any input)
-            const inputs = container.querySelectorAll('input');
+            const inputs = container.querySelectorAll("input");
             expect(inputs.length).toBeGreaterThan(0);
-            
+
             // Check that the component has the expected structure
             const testElement = container.querySelector('[id*="testField"]');
             expect(testElement).toBeInTheDocument();
@@ -2037,7 +2205,7 @@ export function getJzodEndpointEditorTests(
       },
     },
   };
-};
+}
 
 // ################################################################################################
 // ################################################################################################
@@ -2051,50 +2219,50 @@ const editor = JzodElementEditor as any as React.FC<JzodElementEditorProps_Test>
 
 const jzodElementEditorTests: Record<
   string,
-  JzodElementEditorTestSuite<any> & { modes?: ModesType }
+  ReactComponentTestSuitePrep<any> & { modes?: ModesType }
 > = {
-  JzodArrayEditor: { 
-    editor, 
+  JzodArrayEditor: {
+    editor: getJzodElementEditorForTest(pageLabel),
     getJzodEditorTests: getJzodArrayEditorTests,
     // modes: '*',
     // modes: ['jzodElementEditor', 'component'],
-    modes: 'jzodElementEditor',
+    modes: "jzodElementEditor",
   },
   JzodEnumEditor: {
-    editor,
+    editor: getJzodElementEditorForTest(pageLabel),
     getJzodEditorTests: getJzodEnumEditorTests,
     // modes: '*',
     modes: "jzodElementEditor",
     // modes: "component",
   },
-  JzodLiteralEditor: { 
-    editor, 
+  JzodLiteralEditor: {
+    editor: getJzodElementEditorForTest(pageLabel),
     getJzodEditorTests: getJzodLiteralEditorTests,
     // modes: "*",
     // modes: ['jzodElementEditor', 'component'],
     modes: "jzodElementEditor",
     // modes: "component",
   },
-  JzodObjectEditor: { 
-    editor, 
+  JzodObjectEditor: {
+    editor: getJzodElementEditorForTest(pageLabel),
     getJzodEditorTests: getJzodObjectEditorTests,
     // modes: '*',
     // modes: ['jzodElementEditor', 'component'],
-    modes: 'jzodElementEditor',
+    modes: "jzodElementEditor",
   },
-  JzodSimpleTypeEditor: { 
-    editor, 
+  JzodSimpleTypeEditor: {
+    editor: getJzodElementEditorForTest(pageLabel),
     getJzodEditorTests: getJzodSimpleTypeEditorTests,
     // modes: '*',
     // modes: ['jzodElementEditor', 'component'],
-    modes: 'jzodElementEditor',
+    modes: "jzodElementEditor",
   },
-  JzodUnionEditor: { 
-    editor, 
+  JzodUnionEditor: {
+    editor: getJzodElementEditorForTest(pageLabel),
     getJzodEditorTests: getJzodUnionEditorTests,
     // modes: '*',
     // modes: ['jzodElementEditor', 'component'],
-    modes: 'jzodElementEditor',
+    modes: "jzodElementEditor",
   },
   // // ################# PERFORMANCE
   // JzodEditorPerformanceTests: {
@@ -2106,25 +2274,25 @@ const jzodElementEditorTests: Record<
   //   modes: 'jzodElementEditor',
   // },
   // ################# INSTANCES
-  JzodBookEditor: { 
-    editor, 
+  JzodBookEditor: {
+    editor: getJzodElementEditorForTest(pageLabel),
     getJzodEditorTests: getJzodBookEditorTests,
     performanceTests: true,
     // modes: '*',
     // modes: ['jzodElementEditor', 'component'],
-    modes: 'jzodElementEditor',
+    modes: "jzodElementEditor",
   },
   // // ################# MODEL
-  JzodEntityDefinitionEditor: { 
-    editor, 
+  JzodEntityDefinitionEditor: {
+    editor: getJzodElementEditorForTest(pageLabel),
     getJzodEditorTests: getJzodEntityDefinitionEditorTests,
     // modes: '*',
     // modes: ['jzodElementEditor', 'component'],
-    modes: 'jzodElementEditor',
+    modes: "jzodElementEditor",
   },
   // // ################# ENDPOINTS
-  // JzodEndpointEditor: { 
-  //   editor: JzodElementEditor, 
+  // JzodEndpointEditor: {
+  //   editor: JzodElementEditor,
   //   getJzodEditorTests: getJzodEndpointEditorTests,
   //   performanceTests: true,
   //   // modes: '*',
@@ -2135,40 +2303,42 @@ const jzodElementEditorTests: Record<
 
 // ##############################################################################################
 describe("JzodElementEditor", () => {
-  Object.entries(jzodElementEditorTests).forEach(([editorName, testSuite]) => {
-    const suites: JzodEditorTestSuites<LocalEditorPropsRoot> = getJzodEditorTestSuites(
-      pageLabel,
-      testSuite.editor,
-      testSuite.getJzodEditorTests,
-      testSuite.performanceTests
-    );
-    let modes: TestMode[];
-    if (testSuite.modes === undefined) {
-      modes = allTestModes;
-    } else if (Array.isArray(testSuite.modes)) {
-      modes = testSuite.modes;
-    } else if (testSuite.modes === '*') {
-      // If the mode is '*', we run all test modes
-      modes = allTestModes;
-    } else {
-      modes = [testSuite.modes];
-    }
+  prepareAndRunTestSuites(pageLabel, jzodElementEditorTests);
+  // Object.entries(jzodElementEditorTests).forEach(([editorName, testSuite]) => {
+  //   // const suites: ReactComponentTestSuites<LocalEditorPropsRoot> = getJzodEditorTestSuites(
+  //   const suites: ReactComponentTestSuites<JzodElementEditorProps_Test> = getJzodEditorTestSuites(
+  //     pageLabel,
+  //     testSuite.editor,
+  //     testSuite.getJzodEditorTests,
+  //     testSuite.performanceTests
+  //   );
+  //   let modes: TestMode[];
+  //   if (testSuite.modes === undefined) {
+  //     modes = allTestModes;
+  //   } else if (Array.isArray(testSuite.modes)) {
+  //     modes = testSuite.modes;
+  //   } else if (testSuite.modes === '*') {
+  //     // If the mode is '*', we run all test modes
+  //     modes = allTestModes;
+  //   } else {
+  //     modes = [testSuite.modes];
+  //   }
 
-    console.log(`Running tests for ${editorName} with ${Object.keys(suites).length} suites and modes: ${modes.join(', ')}`);
-    // console.log(`Test suites: ${JSON.stringify(suites, null, 2)}`);
-    // Run all testcases for the first mode, then all for the second, etc.
-    modes.forEach((mode: TestMode) => {
-      console.log(`Running tests for ${editorName} in mode: ${mode}`);
-      Object.entries(suites[editorName].tests).forEach(([testName, testCase]) => {
-        console.log(`Running test: ${editorName} - ${mode} - ${testName}`);
-        it(`${editorName} - ${mode} - ${testName}`, async () => {
-          console.log(`Running test: ${editorName} - ${mode} - ${testName}`);
-          await runJzodEditorTest(testCase, suites[editorName], testName, mode);
-          console.log(`Completed test: ${editorName} - ${mode} - ${testName}`);
-        });
-        console.log(`Completed test: ${editorName} - ${mode} - ${testName}`);
-      });
-      console.log(`Completed all tests for ${editorName} in mode: ${mode}`);
-    });
-  });
+  //   console.log(`Running tests for ${editorName} with ${Object.keys(suites).length} suites and modes: ${modes.join(', ')}`);
+  //   // console.log(`Test suites: ${JSON.stringify(suites, null, 2)}`);
+  //   // Run all testcases for the first mode, then all for the second, etc.
+  //   modes.forEach((mode: TestMode) => {
+  //     console.log(`Running tests for ${editorName} in mode: ${mode}`);
+  //     Object.entries(suites[editorName].tests).forEach(([testName, testCase]) => {
+  //       console.log(`Running test: ${editorName} - ${mode} - ${testName}`);
+  //       it(`${editorName} - ${mode} - ${testName}`, async () => {
+  //         console.log(`Running test: ${editorName} - ${mode} - ${testName}`);
+  //         await runJzodEditorTest(testCase, suites[editorName], testName, mode);
+  //         console.log(`Completed test: ${editorName} - ${mode} - ${testName}`);
+  //       });
+  //       console.log(`Completed test: ${editorName} - ${mode} - ${testName}`);
+  //     });
+  //     console.log(`Completed all tests for ${editorName} in mode: ${mode}`);
+  //   });
+  // });
 });

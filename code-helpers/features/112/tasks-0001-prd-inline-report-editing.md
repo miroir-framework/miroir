@@ -61,34 +61,34 @@ Never commit after you've checked your work, just stop short of commiting, leave
   - [x] 1.10 Write integration test in `packages/miroir-core/tests/4_views/ViewParams.integ.test.ts` to verify editMode persistence and retrieval
   - [x] 1.11 Run test: `npm run testByFile -w miroir-core -- ViewParams.integ`
 
-- [ ] 2.0 Create ReportViewWithEditor Component with State Management
-  - [ ] 2.1 Create new file `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/ReportViewWithEditor.tsx`
-  - [ ] 2.2 Define `ReportViewWithEditorProps` interface extending `ReportViewProps` (no additional props needed initially)
-  - [ ] 2.3 Implement `ReportViewWithEditor` component that wraps `ReportView` and reads `editMode` from ViewParams context
-  - [ ] 2.4 Add React `useState` hook to manage edited Report definition (type: `Report | undefined`), initialized to `undefined` (no changes)
-  - [ ] 2.5 Add React `useState` hook to track which sections have been modified (type: `Set<string>`, where string is section path like "section.definition[0]")
-  - [ ] 2.6 Create `handleSectionEdit` callback that updates local Report definition state when a section is edited
-  - [ ] 2.7 Create `handleSectionCancel` callback that reverts a specific section to original definition
-  - [ ] 2.8 Add "Submit" button at the top of report (only visible when `editMode === true` and `modifiedSections.size > 0`)
-  - [ ] 2.9 Style Submit button to be prominent (use ThemedButton with success color from theme)
-  - [ ] 2.10 Pass down `editMode`, `editedReportDefinition`, `onSectionEdit`, and `onSectionCancel` as props to child components
-  - [ ] 2.11 Ensure ReportView continues to use original Report definition for rendering until section is explicitly saved locally
+- [x] 2.0 Create ReportViewWithEditor Component with State Management
+  - [x] 2.1 Create new file `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/ReportViewWithEditor.tsx`
+  - [x] 2.2 Define `ReportViewWithEditorProps` interface extending `ReportViewProps` (no additional props needed initially)
+  - [x] 2.3 Implement `ReportViewWithEditor` component that wraps `ReportView` and reads `editMode` from ViewParams context
+  - [x] 2.4 Add React `useState` hook to manage edited Report definition (type: `Report | undefined`), initialized to `undefined` (no changes)
+  - [x] 2.5 Add React `useState` hook to track which sections have been modified (type: `Set<string>`, where string is section path like "section.definition[0]")
+  - [x] 2.6 Create `handleSectionEdit` callback that updates local Report definition state when a section is edited
+  - [x] 2.7 Create `handleSectionCancel` callback that reverts a specific section to original definition
+  - [x] 2.8 Add "Submit" button at the top of report (only visible when `editMode === true` and `modifiedSections.size > 0`)
+  - [x] 2.9 Style Submit button to be prominent (use ThemedButton with success color from theme)
+  - [x] 2.10 Pass down `editMode`, `editedReportDefinition`, `onSectionEdit`, and `onSectionCancel` as props to child components
+  - [x] 2.11 Ensure ReportView continues to use original Report definition for rendering until section is explicitly saved locally
 
 - [ ] 3.0 Create ReportSectionViewWithEditor Component with Section-Level Controls
-  - [ ] 3.1 Create new file `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/ReportSectionViewWithEditor.tsx`
-  - [ ] 3.2 Define `ReportSectionViewWithEditorProps` interface extending `ReportSectionViewProps` with additional fields: `editMode: boolean`, `sectionPath: string`, `onSectionEdit: (path: string, newDefinition: any) => void`, `onSectionCancel: (path: string) => void`, `isSectionModified: boolean`
-  - [ ] 3.3 Implement `ReportSectionViewWithEditor` component that wraps `ReportSectionView`
-  - [ ] 3.4 Add React `useState` hook to track if current section is being edited (type: `boolean`)
-  - [ ] 3.5 When `editMode === true`, render pencil icon (Edit icon from Material-UI) in top-right corner of each section container (use absolute positioning)
-  - [ ] 3.6 Style pencil icon to be grey by default, dark red when `isSectionModified === true`
-  - [ ] 3.7 When pencil is clicked, set `isEditing` state to true and render section editor inline
-  - [ ] 3.8 When section is being edited, show save icon (Save icon from Material-UI) next to pencil icon
-  - [ ] 3.9 Wire save icon click to call `onSectionEdit` callback with updated section definition, then set `isEditing` to false
-  - [ ] 3.10 Add cancel button (Close icon) that calls `onSectionCancel` and sets `isEditing` to false
-  - [ ] 3.11 Recursively propagate editor props down to nested ReportSectionView components (for "list" and "grid" section types)
-  - [ ] 3.12 Ensure section continues rendering with current definition while being edited (live preview)
-  - [ ] 3.13 create non-regression test `ReportSectionViewWithEditor.integ.test` that checks that existing Reports can be properly displayed using `ReportSectionViewWithEditor` as they could be using `ReportSectionView`
-  - [ ] iterate running `npm run testByFile -w miroir-standalone-app -- ReportSectionViewWithEditor.integ.test` until non-regression is ensured.
+  - [x] 3.1 Create new file `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/ReportSectionViewWithEditor.tsx`
+  - [x] 3.2 Define `ReportSectionViewWithEditorProps` interface extending `ReportSectionViewProps` with additional fields: `editMode: boolean`, `sectionPath: string`, `onSectionEdit: (path: string, newDefinition: any) => void`, `onSectionCancel: (path: string) => void`, `isSectionModified: boolean`
+  - [x] 3.3 Implement `ReportSectionViewWithEditor` component that wraps `ReportSectionView`
+  - [x] 3.4 Add React `useState` hook to track if current section is being edited (type: `boolean`)
+  - [x] 3.5 When `editMode === true`, render pencil icon (Edit icon from Material-UI) in top-right corner of each section container (use absolute positioning)
+  - [x] 3.6 Style pencil icon to be grey by default, dark red when `isSectionModified === true`
+  - [x] 3.7 When pencil is clicked, set `isEditing` state to true and render section editor inline
+  - [x] 3.8 When section is being edited, show save icon (Save icon from Material-UI) next to pencil icon
+  - [x] 3.9 Wire save icon click to call `onSectionEdit` callback with updated section definition, then set `isEditing` to false
+  - [x] 3.10 Add cancel button (Close icon) that calls `onSectionCancel` and sets `isEditing` to false
+  - [x] 3.11 Recursively propagate editor props down to nested ReportSectionView components (for "list" and "grid" section types)
+  - [x] 3.12 Ensure section continues rendering with current definition while being edited (live preview)
+  - [x] 3.13 create non-regression test `ReportSectionViewWithEditor.integ.test` that checks that existing Reports can be properly displayed using `ReportSectionViewWithEditor` as they could be using `ReportSectionView`
+  - [x] iterate running `npm run testByFile -w miroir-standalone-app -- ReportSectionViewWithEditor.integ.test` until non-regression is ensured.
 
 - [ ] 4.0 Implement Section Editor with TypedValueObjectEditor Integration
   - [ ] 4.1 In `ReportSectionViewWithEditor`, when `isEditing === true`, render `TypedValueObjectEditor` component below the section content

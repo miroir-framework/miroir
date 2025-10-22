@@ -21,6 +21,7 @@ import {
   StoreUnitConfiguration,
   adminConfigurationDeploymentMiroir,
   adminConfigurationDeploymentLibrary,
+  defaultMiroirModelEnvironment,
 } from "miroir-core";
 import type { Deployment } from 'miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType';
 
@@ -90,7 +91,7 @@ export function fetchMiroirAndAppConfigurations(
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
     },
-    defaultMiroirMetaModel
+    defaultMiroirModelEnvironment
   ).then((rollbackResult) => {
     // Check if the rollback action failed
     if (rollbackResult && rollbackResult.status === 'error') {
@@ -119,16 +120,19 @@ export function fetchMiroirAndAppConfigurations(
       },
     };
 
-    return domainController.handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY({
-      actionType: "runBoxedQueryTemplateOrBoxedExtractorTemplateAction",
-      actionName: "runQuery",
-      deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
-      endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-      payload: {
-        applicationSection: "data",
-        query: adminDeploymentsQuery,
+    return domainController.handleQueryTemplateOrBoxedExtractorTemplateActionForServerONLY(
+      {
+        actionType: "runBoxedQueryTemplateOrBoxedExtractorTemplateAction",
+        actionName: "runQuery",
+        deploymentUuid: adminConfigurationDeploymentAdmin.uuid,
+        endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+        payload: {
+          applicationSection: "data",
+          query: adminDeploymentsQuery,
+        },
       },
-    });
+      defaultMiroirModelEnvironment
+    );
   }).then((adminDeployments: Action2ReturnType) => {
     // Validate query results with structured error handling
     if (adminDeployments instanceof Action2Error) {
@@ -200,7 +204,7 @@ export function fetchMiroirAndAppConfigurations(
             actionType: "rollback",
             endpoint: "7947ae40-eb34-4149-887b-15a9021e714e" as const,
             deploymentUuid: deploymentData.uuid,
-          }, defaultMiroirMetaModel)
+          }, defaultMiroirModelEnvironment)
         );
       }
 

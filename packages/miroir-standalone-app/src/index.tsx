@@ -275,7 +275,7 @@ async function startWebApp(root:Root) {
         remotePersistenceStoreRestClient: persistenceClientAndRestClient,
       }
     );
-  
+
     // ################################################
     if (currentMiroirConfig.client.emulateServer) {
       throw new Error("emulateServer must be re-implemented using RestClientStub");

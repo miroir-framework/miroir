@@ -50,7 +50,7 @@ MiroirLoggerFactory.registerLoggerToStart(
 export interface ReportViewProps {
   applicationSection: ApplicationSection,
   deploymentUuid: Uuid,
-  instanceUuid?: Uuid,
+  instanceUuid?: Uuid, // TODO: remove, this is specific to entity instance views
   pageParams: Params<ReportUrlParamKeys>,
   reportDefinition: RootReport,
   storedQueryData?: any,
