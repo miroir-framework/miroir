@@ -1,11 +1,6 @@
 import {
   useEffect,
-  useMemo,
-  useState,
-  useRef,
-  useCallback,
-  createContext,
-  useContext,
+  useMemo
 } from "react";
 import { Params, useParams } from "react-router-dom";
 
@@ -13,21 +8,21 @@ import {
   adminConfigurationDeploymentAdmin,
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
-  SelfApplicationDeploymentConfiguration,
   ApplicationSection,
+  Domain2ElementFailed,
   getReportsAndEntitiesDefinitionsForDeploymentUuid,
   JzodElement,
   LoggerInterface,
   MetaModel,
   MiroirLoggerFactory,
   Report,
+  SelfApplicationDeploymentConfiguration,
+  type BoxedQueryTemplateWithExtractorCombinerTransformer,
+  type BoxedQueryWithExtractorCombinerTransformer,
   type DeploymentUuidToReportsEntitiesDefinitionsMapping,
+  type Domain2QueryReturnType,
   type Query,
   type Uuid,
-  type BoxedQueryWithExtractorCombinerTransformer,
-  type BoxedQueryTemplateWithExtractorCombinerTransformer,
-  Domain2ElementFailed,
-  type Domain2QueryReturnType,
 } from "miroir-core";
 import {
   useErrorLogService,
@@ -41,18 +36,17 @@ import {
   ReportUrlParamKeys,
 } from "../../../constants.js";
 import { useCurrentModel } from "../ReduxHooks.js";
-import { ReportView } from "../components/Reports/ReportView.js";
-import { PerformanceDisplayContainer } from "../components/PerformanceDisplayContainer.js";
-import { cleanLevel } from "../constants.js";
-import { RenderPerformanceMetrics } from "../tools/renderPerformanceMeasure.js";
-import { useRenderTracker } from "../tools/renderCountTracker.js";
 import { PageContainer } from "../components/Page/PageContainer.js";
-import { ThemedBox, ThemedSpan } from "../components/Themes/index.js";
-import { useMiroirTheme } from "../contexts/MiroirThemeContext.js";
-import { usePageConfiguration } from "../services/index.js";
-import { useDocumentOutlineContext } from "../components/ValueObjectEditor/InstanceEditorOutlineContext.js";
-import { ReportPageContextProvider } from "../components/Reports/ReportPageContext.js";
+import { PerformanceDisplayContainer } from "../components/PerformanceDisplayContainer.js";
 import { useQueryTemplateResults } from "../components/Reports/ReportHooks.js";
+import { ReportPageContextProvider } from "../components/Reports/ReportPageContext.js";
+import { ReportView } from "../components/Reports/ReportView.js";
+import { ThemedBox, ThemedSpan } from "../components/Themes/index.js";
+import { cleanLevel } from "../constants.js";
+import { useMiroirTheme } from "../contexts/MiroirThemeContext.js";
+import { useRenderTracker } from "../tools/renderCountTracker.js";
+import { RenderPerformanceMetrics } from "../tools/renderPerformanceMeasure.js";
+import { ReportViewWithEditor } from "../components/Reports/ReportViewWithEditor.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -350,15 +344,32 @@ export const ReportPage = () => {
             pageParams.reportUuid &&
             pageParams.reportUuid != "undefined" ? (
               <>
-                <ReportView
-                  applicationSection={pageParams.applicationSection as ApplicationSection}
-                  deploymentUuid={pageParams.deploymentUuid}
-                  instanceUuid={pageParams.instanceUuid}
-                  pageParams={pageParams}
-                  storedQueryData={currentStoredQueryData}
-                  reportDefinition={currentMiroirReport?.definition}
-                />
-                {context.showPerformanceDisplay && <PerformanceDisplayContainer />}
+                {/* {pageParams.useReportViewWithEditor  === "true" ? ( */}
+                  <>
+                    <ReportViewWithEditor
+                      applicationSection={pageParams.applicationSection as ApplicationSection}
+                      deploymentUuid={pageParams.deploymentUuid}
+                      instanceUuid={pageParams.instanceUuid}
+                      pageParams={pageParams}
+                      storedQueryData={currentStoredQueryData}
+                      reportDefinition={currentMiroirReport?.definition}
+                    />
+                    {context.showPerformanceDisplay && <PerformanceDisplayContainer />}
+                  </>
+                 {/* ) : (
+                  <>
+                    <ReportView
+                      applicationSection={pageParams.applicationSection as ApplicationSection}
+                      deploymentUuid={pageParams.deploymentUuid}
+                      instanceUuid={pageParams.instanceUuid}
+                      pageParams={pageParams}
+                      storedQueryData={currentStoredQueryData}
+                      reportDefinition={currentMiroirReport?.definition}
+                    />
+                    {context.showPerformanceDisplay && <PerformanceDisplayContainer />}
+                  </>
+                )
+                } */}
               </>
             ) : (
               <ThemedSpan style={{ color: theme.currentTheme.colors.error }}>

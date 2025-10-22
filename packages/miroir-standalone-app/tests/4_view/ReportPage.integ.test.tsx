@@ -110,6 +110,7 @@ const jzodElementEditorTests: Record<
                   deploymentUuid: selfApplicationDeploymentLibrary.uuid,
                   instanceUuid: undefined, // TODO: remove, this is specific to entity instance views
                   reportUuid: reportCountryList.uuid,
+                  useReportViewWithEditor: "true",
                 },
                 reportDefinition: reportCountryList,
                 // storedQueryData?: any,

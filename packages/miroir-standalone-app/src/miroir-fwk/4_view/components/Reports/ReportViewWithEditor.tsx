@@ -141,6 +141,8 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
   const reportToDisplay = editedReportDefinition ?? props.reportDefinition;
   
   return (
+    <>
+    <span>ReportViewWithEditor</span>
     <Box sx={{ position: 'relative' }}>
       {/* Task 2.8 & 2.9: Add Submit button at the top (only visible when editMode and modifications exist) */}
       {editMode && modifiedSections.size > 0 && (
@@ -186,5 +188,6 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
         reportDefinition={reportToDisplay}
       />
     </Box>
+    </>
   );
 };
