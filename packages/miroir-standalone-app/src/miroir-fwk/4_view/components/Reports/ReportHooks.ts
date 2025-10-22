@@ -1,46 +1,32 @@
-import { useMemo, useEffect } from 'react';
+import { useMemo } from 'react';
 import { Params } from 'react-router-dom';
 
 import {
   ApplicationSection,
   BoxedQueryTemplateWithExtractorCombinerTransformer,
   BoxedQueryWithExtractorCombinerTransformer,
-  ReduxDeploymentsState,
+  defaultMiroirModelEnvironment,
   Domain2QueryReturnType,
-  ExtractorRunnerParamsForJzodSchema,
   getQueryRunnerParamsForReduxDeploymentsState,
   LoggerInterface,
   MiroirLoggerFactory,
-  QueryByQuery2GetParamJzodSchema,
-  QueryRunnerMapForJzodSchema,
-  RecordOfJzodObject,
+  ReduxDeploymentsState,
   resolveQueryTemplateWithExtractorCombinerTransformer,
-  RootReport,
   SyncBoxedExtractorOrQueryRunnerMap,
   SyncQueryRunnerParams,
   Uuid,
-  defaultLibraryModelEnvironment,
-  defaultMiroirModelEnvironment,
-  Domain2ElementFailed,
-  type Query,
-  type QueryTemplateWithExtractorCombinerTransformer
+  type Report
 } from "miroir-core";
 
 
 
-import { useReduxDeploymentsStateJzodSchemaSelector, useReduxDeploymentsStateQuerySelector } from '../../ReduxHooks.js';
-import { ReportSectionView } from './ReportSectionView.js';
-import { useMiroirContextService } from "../../MiroirContextReactProvider.js";
-import { ThemedBox, ThemedSpan } from '../Themes/index.js';
+import { useReduxDeploymentsStateQuerySelector } from '../../ReduxHooks.js';
 
 import {
-  getMemoizedReduxDeploymentsStateJzodSchemaSelectorMap,
-  getMemoizedReduxDeploymentsStateSelectorMap,
+  getMemoizedReduxDeploymentsStateSelectorMap
 } from "miroir-localcache-redux";
 import { packageName, ReportUrlParamKeys } from '../../../../constants.js';
 import { cleanLevel } from '../../constants.js';
-import { useRenderTracker } from '../../tools/renderCountTracker.js';
-import { useDocumentOutlineContext } from '../ValueObjectEditor/InstanceEditorOutlineContext.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -52,7 +38,8 @@ export interface ReportViewProps {
   deploymentUuid: Uuid,
   instanceUuid?: Uuid, // TODO: remove, this is specific to entity instance views
   pageParams: Params<ReportUrlParamKeys>,
-  reportDefinition: RootReport,
+  // reportDefinition: RootReport,
+  reportDefinition: Report,
   storedQueryData?: any,
   // reportDefinition: Query,
   showPerformanceDisplay?: boolean;

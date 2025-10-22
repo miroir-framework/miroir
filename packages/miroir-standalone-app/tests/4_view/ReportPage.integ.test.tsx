@@ -171,28 +171,12 @@ const jzodElementEditorTests: Record<
 // Integration-style smoke test using the shared test wrapper
 describe('ReportViewWithEditor integration', () => {
   prepareAndRunTestSuites("reportView.integ", jzodElementEditorTests);
-  // it('renders without crashing for a simple markdown section (wrapped)', async () => {
-  //   const props: any = {
-  //     applicationSection: 'application' as any,
-  //     deploymentUuid: 'dummy' as any,
-  //     pageParams: {},
-  //     // reportData: { reportData: {} },
-  //     reportdefinition: { type: 'markdownReportSection', definition: { content: 'hello', label: 'lbl' } },
-  //     fetchedDataJzodSchema: undefined,
-  //     paramsAsdomainElements: { reportData: {} },
-  //     rootReport: {},
-  //   };
-
-  //   const WrapperLoadingLocalCache = getWrapperLoadingLocalCache(false);
-  //   const { container, getAllByText } = render(
-  //     <WrapperLoadingLocalCache>
-  //       <ReportViewWithEditor {...props} />
-  //     </WrapperLoadingLocalCache>
-  //   );
-
-  //   await waitForProgressiveRendering();
-
-  //   const matches = getAllByText(/hello|Inline section editor/i);
-  //   expect(matches.length).toBeGreaterThan(0);
-  // });
+  
+  // Task 4.12: Additional editing tests will be added here
+  // These tests verify that section-level properties (extractors, combiners, 
+  // runtimeTransformers, extractorTemplates, combinerTemplates, runStoredQueries)
+  // can be edited through the TypedValueObjectEditor integration
+  
+  // Basic non-regression test already exists above through prepareAndRunTestSuites
+  // which verifies that reports render correctly with ReportSectionViewWithEditor
 });

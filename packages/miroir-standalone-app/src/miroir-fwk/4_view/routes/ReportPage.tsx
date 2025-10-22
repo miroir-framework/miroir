@@ -290,7 +290,7 @@ export const ReportPage = () => {
       deploymentUuid: pageParams.deploymentUuid!,
       instanceUuid: pageParams.instanceUuid,
       pageParams: pageParams,
-      reportDefinition: currentMiroirReport?.definition,
+      reportDefinition: currentMiroirReport,
     },
     currentStoredQuery
   );
@@ -352,7 +352,7 @@ export const ReportPage = () => {
                       instanceUuid={pageParams.instanceUuid}
                       pageParams={pageParams}
                       storedQueryData={currentStoredQueryData}
-                      reportDefinition={currentMiroirReport?.definition}
+                      reportDefinition={currentMiroirReport}
                     />
                     {context.showPerformanceDisplay && <PerformanceDisplayContainer />}
                   </>

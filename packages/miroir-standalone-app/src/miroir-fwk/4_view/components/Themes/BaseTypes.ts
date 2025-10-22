@@ -14,4 +14,5 @@ export interface ThemedComponentProps {
   'data-testid'?: string;
   'aria-label'?: string;
   title?: string;
+  disabled?: boolean;
 }

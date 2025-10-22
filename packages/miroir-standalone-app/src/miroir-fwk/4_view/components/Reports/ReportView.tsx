@@ -77,27 +77,27 @@ export const ReportView = (props: ReportViewProps) => {
       props.pageParams.deploymentUuid &&
       props.pageParams.applicationSection &&
       props.pageParams.reportUuid
-        ? props.reportDefinition.extractorTemplates
+        ? props.reportDefinition.definition.extractorTemplates
           ? {
               queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
               deploymentUuid: props.pageParams.deploymentUuid,
               pageParams: props.pageParams,
               queryParams: {},
               contextResults: {},
-              extractorTemplates: props.reportDefinition.extractorTemplates,
-              combinerTemplates: props.reportDefinition.combinerTemplates,
-              runtimeTransformers: props.reportDefinition.runtimeTransformers,
+              extractorTemplates: props.reportDefinition.definition.extractorTemplates,
+              combinerTemplates: props.reportDefinition.definition.combinerTemplates,
+              runtimeTransformers: props.reportDefinition.definition.runtimeTransformers,
             }
-          : props.reportDefinition.extractors
+          : props.reportDefinition.definition.extractors
           ? {
               queryType: "boxedQueryWithExtractorCombinerTransformer",
               deploymentUuid: props.pageParams.deploymentUuid,
               pageParams: props.pageParams,
               queryParams: {},
               contextResults: {},
-              extractors: props.reportDefinition.extractors,
-              combiners: props.reportDefinition.combiners,
-              runtimeTransformers: props.reportDefinition.runtimeTransformers,
+              extractors: props.reportDefinition.definition.extractors,
+              combiners: props.reportDefinition.definition.combiners,
+              runtimeTransformers: props.reportDefinition.definition.runtimeTransformers,
             }
           : {
               queryType: "boxedQueryWithExtractorCombinerTransformer",
@@ -112,9 +112,6 @@ export const ReportView = (props: ReportViewProps) => {
     [props.reportDefinition, props.pageParams]
   );
 
-  // const reportData: Domain2QueryReturnType<
-  //   Domain2QueryReturnType<Record<string, any>>
-  // > = useQueryTemplateResults(props);
   const reportDataQueryResults: Domain2QueryReturnType<
     Domain2QueryReturnType<Record<string, any>>
   > = useQueryTemplateResults(props, reportDataQueryBase);
@@ -154,7 +151,7 @@ export const ReportView = (props: ReportViewProps) => {
         props.pageParams.deploymentUuid &&
         props.pageParams.applicationSection &&
         props.pageParams.reportUuid &&
-        props.reportDefinition.extractors &&
+        props.reportDefinition.definition.extractors &&
         reportDataQueryBase
           ? {
             queryType: "queryByTemplateGetParamJzodSchema",
@@ -257,8 +254,8 @@ export const ReportView = (props: ReportViewProps) => {
           // reportData={reportData}
           reportData={reportViewData}
           fetchedDataJzodSchema={fetchedDataJzodSchema}
-          reportSection={props.reportDefinition?.section}
-          rootReport={props.reportDefinition}
+          reportSection={props.reportDefinition?.definition.section}
+          reportDefinition={props.reportDefinition}
           applicationSection={props.applicationSection}
           deploymentUuid={props.deploymentUuid}
           paramsAsdomainElements={props.pageParams}

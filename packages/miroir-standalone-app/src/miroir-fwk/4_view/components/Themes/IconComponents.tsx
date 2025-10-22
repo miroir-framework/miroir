@@ -211,7 +211,8 @@ export const ThemedIconButton: React.FC<ThemedComponentProps> = ({
   onClick,
   title,
   id,
-  'aria-label': ariaLabel
+  'aria-label': ariaLabel,
+  disabled = false
 }) => {
   const { currentTheme } = useMiroirTheme();
   
@@ -221,21 +222,22 @@ export const ThemedIconButton: React.FC<ThemedComponentProps> = ({
     border: 'none',
     borderRadius: currentTheme.borderRadius.sm,
     color: currentTheme.colors.text,
-    cursor: 'pointer',
+    cursor: disabled ? 'not-allowed' : 'pointer',
     display: 'inline-flex',
     alignItems: 'center',
     justifyContent: 'center',
     minWidth: '2.5em',
     minHeight: '2.5em',
+    opacity: disabled ? 0.5 : 1,
     transition: `all ${currentTheme.transitions.duration.short} ${currentTheme.transitions.easing.easeInOut}`,
     '&:hover': {
-      backgroundColor: currentTheme.colors.hover,
+      backgroundColor: disabled ? 'transparent' : currentTheme.colors.hover,
     },
     '&:active': {
-      backgroundColor: currentTheme.colors.selected || currentTheme.colors.primary + '20',
+      backgroundColor: disabled ? 'transparent' : (currentTheme.colors.selected || currentTheme.colors.primary + '20'),
     },
     '&:focus': {
-      outline: `2px solid ${currentTheme.colors.primary}`,
+      outline: disabled ? 'none' : `2px solid ${currentTheme.colors.primary}`,
       outlineOffset: '2px',
     },
   });
@@ -245,10 +247,11 @@ export const ThemedIconButton: React.FC<ThemedComponentProps> = ({
       css={buttonStyles} 
       className={className} 
       style={style} 
-      onClick={onClick}
+      onClick={disabled ? undefined : onClick}
       title={title}
       id={id}
       aria-label={ariaLabel}
+      disabled={disabled}
     >
       {children}
     </button>

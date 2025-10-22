@@ -13,7 +13,8 @@ import {
   Uuid,
   Domain2QueryReturnType,
   Domain2ElementFailed,
-  interpolateExpression
+  interpolateExpression,
+  type Report
 } from "miroir-core";
 
 
@@ -44,7 +45,7 @@ export interface ReportSectionViewProps {
   fetchedDataJzodSchema: RecordOfJzodObject | undefined,
   paramsAsdomainElements: Domain2QueryReturnType<Record<string,any>>,
   reportSection: ReportSection,
-  rootReport: RootReport,
+  reportDefinition: Report,
   isOutlineOpen?: boolean,
   onToggleOutline?: () => void,
   showPerformanceDisplay?: boolean;
@@ -173,7 +174,7 @@ export const ReportSectionView = (props: ReportSectionViewProps) => {
                     fetchedDataJzodSchema={props.fetchedDataJzodSchema}
                     paramsAsdomainElements={props.paramsAsdomainElements}
                     reportSection={innerReportSection}
-                    rootReport={props.rootReport}
+                    reportDefinition={props.reportDefinition}
                   />
                 </div>
               ))}
@@ -196,7 +197,7 @@ export const ReportSectionView = (props: ReportSectionViewProps) => {
                 fetchedDataJzodSchema={props.fetchedDataJzodSchema}
                 paramsAsdomainElements={props.paramsAsdomainElements}
                 reportSection={innerReportSection}
-                rootReport={props.rootReport}
+                reportDefinition={props.reportDefinition}
               />
             </div>
           );
