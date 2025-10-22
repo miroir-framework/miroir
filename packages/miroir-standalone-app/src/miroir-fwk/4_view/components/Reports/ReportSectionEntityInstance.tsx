@@ -107,7 +107,7 @@ MiroirLoggerFactory.registerLoggerToStart(
 
 export interface ReportSectionEntityInstanceProps {
   instance?: EntityInstance,
-  domainElement?: Record<string,any>,
+  // domainElement?: Record<string,any>,
   applicationSection: ApplicationSection,
   deploymentUuid: Uuid,
   entityUuid: Uuid,
@@ -118,7 +118,7 @@ export interface ReportSectionEntityInstanceProps {
 }
 
 // Test Selection Types are now in TransformerTestDisplay
-
+let count = 0;
 // ###############################################################################################################
 // ###############################################################################################################
 // ###############################################################################################################
@@ -131,6 +131,12 @@ export interface ReportSectionEntityInstanceProps {
 export const ReportSectionEntityInstance = (props: ReportSectionEntityInstanceProps) => {
   const renderStartTime = performance.now();
 
+  log.info(
+    "============================== ReportSectionEntityInstance render",
+    ++count,
+    "start with props:",
+    props
+  );
   // const errorLog = useErrorLogService();
   const context = useMiroirContextService();
   const viewParams = useViewParams();
@@ -167,33 +173,45 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
 
   const instance: any = props.instance;
 
-  const currentModel: MetaModel = useCurrentModel(
-    context.applicationSection == "data"
+  const currentDeploymentMetaModel: MetaModel = useCurrentModel(
+    // context.applicationSection == "data"
+    props.applicationSection == "data"
       ? context.deploymentUuid
       : adminConfigurationDeploymentMiroir.uuid
   );
 
+  const currentDeploymentReportsEntitiesDefinitionsMapping = context.deploymentUuidToReportsEntitiesDefinitionsMapping[context.deploymentUuid] || {};
+
+  log.info("ReportSectionEntityInstance: currentDeploymentReportsEntitiesDefinitionsMapping:", currentDeploymentReportsEntitiesDefinitionsMapping);
+
+
   const currentModelEnvironment = defaultMiroirModelEnvironment;
   const domainController: DomainControllerInterface = useDomainControllerService();
 
-  const currentReportDeploymentSectionEntities: Entity[] = currentModel.entities; // Entities are always defined in the 'model' section
+  const currentReportDeploymentSectionEntities: Entity[] = currentDeploymentMetaModel.entities; // Entities are always defined in the 'model' section
   const currentReportDeploymentSectionEntityDefinitions: EntityDefinition[] =
-    currentModel.entityDefinitions; // EntityDefinitions are always defined in the 'model' section
+    currentDeploymentMetaModel.entityDefinitions; // EntityDefinitions are always defined in the 'model' section
 
   const currentReportTargetEntity: Entity | undefined =
     currentReportDeploymentSectionEntities?.find((e) => e?.uuid === props.entityUuid);
 
   const currentReportTargetEntityDefinition: EntityDefinition | undefined =
-    currentReportDeploymentSectionEntityDefinitions?.find(
-      (e) => e?.entityUuid === currentReportTargetEntity?.uuid
-    );
+    // currentReportDeploymentSectionEntityDefinitions?.find(
+    //   (e) => e?.entityUuid === currentReportTargetEntity?.uuid
+    // );
+    currentDeploymentReportsEntitiesDefinitionsMapping?.[props.applicationSection??"data"]?.entityDefinitions?.find(
+        (e) => e?.entityUuid === props.entityUuid
+  );
 
-  // log.info(
-  //   "ReportSectionEntityInstance: currentReportTargetEntityDefinition:",
-  //   currentReportTargetEntityDefinition,
-  //   "miroirFundamentalJzodSchema",
-  //   miroirFundamentalJzodSchema
-  // );
+  log.info(
+    "ReportSectionEntityInstance",
+    "props.applicationSection",
+    props.applicationSection,
+    "currentDeploymentReportsEntitiesDefinitionsMapping?.[props.applicationSection??'data']?.entityDefinitions",
+    currentDeploymentReportsEntitiesDefinitionsMapping?.[props.applicationSection??"data"]?.entityDefinitions,
+    "currentReportTargetEntityDefinition:",
+    currentReportTargetEntityDefinition,
+  );
 
   // ##############################################################################################
   // ################################################################################################
@@ -530,7 +548,8 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
             </div>
           )}
 
-          {currentReportTargetEntityDefinition && context.applicationSection ? (
+          {/* {currentReportTargetEntityDefinition && context.applicationSection ? ( */}
+          {currentReportTargetEntityDefinition && props.applicationSection ? (
             displayEditor ? (
               <TypedValueObjectEditor
                 labelElement={labelElement}
@@ -588,8 +607,11 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
             <div>
               Oops, ReportSectionEntityInstance could not be displayed.
               <p />
+              <div>props deploymentUuid: {props.deploymentUuid}</div>
               <div>props selfApplication section: {props.applicationSection}</div>
               <div>context selfApplication section: {context.applicationSection}</div>
+              <div>instance entityUuid: {props.entityUuid}</div>
+              <div>instance uuid: {props.instance?.uuid}</div>
               <div>
                 target entity:{" "}
                 {currentReportTargetEntity?.name ?? "report target entity not found!"}

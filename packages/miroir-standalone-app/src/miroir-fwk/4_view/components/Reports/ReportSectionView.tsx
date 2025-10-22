@@ -231,7 +231,7 @@ export const ReportSectionView = (props: ReportSectionViewProps) => {
       )}
       {props.reportSection.type == "objectInstanceReportSection" && (
         <ReportSectionEntityInstance
-          domainElement={props.reportData}
+          // domainElement={props.reportData}
           instance={entityInstance}
           applicationSection={props.applicationSection as ApplicationSection}
           deploymentUuid={props.deploymentUuid}

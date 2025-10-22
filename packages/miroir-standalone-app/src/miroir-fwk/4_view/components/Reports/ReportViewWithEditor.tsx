@@ -5,6 +5,7 @@ import {
   LoggerInterface,
   MiroirLoggerFactory,
   RootReport,
+  selfApplicationDeploymentMiroir,
   type BoxedQueryTemplateWithExtractorCombinerTransformer,
   type BoxedQueryWithExtractorCombinerTransformer,
   type Domain2QueryReturnType,
@@ -25,6 +26,7 @@ import ReportSectionViewWithEditor from './ReportSectionViewWithEditor.js';
 import { getMemoizedReduxDeploymentsStateJzodSchemaSelectorMap } from 'miroir-localcache-redux';
 import { useReduxDeploymentsStateJzodSchemaSelector } from '../../ReduxHooks.js';
 import { useDocumentOutlineContext } from '../ValueObjectEditor/InstanceEditorOutlineContext.js';
+import { InlineReportEditor } from './InlineReportEditor.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -154,6 +156,8 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
   
   // Task 2.11: Ensure ReportView uses original Report definition for rendering
   const reportToDisplay = editedReportDefinition ?? props.reportDefinition;
+
+  const [hasValidationErrors, setHasValidationErrors] = useState(false);
   
   // ##############################################################################################
   // ##############################################################################################
@@ -294,7 +298,15 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
   // ##############################################################################################
   // ##############################################################################################
   // ##############################################################################################
+  // (meta-)information about the current report, to enable editing
+  const reportEntityDefinition = useMemo(() => {
+    const miroirMapping = context.deploymentUuidToReportsEntitiesDefinitionsMapping?.[selfApplicationDeploymentMiroir.uuid];
+    if (!miroirMapping) return undefined;
+    return miroirMapping["model"]?.entityDefinitions?.find((ed: any) => ed.name === "Report");
+  }, [context.deploymentUuidToReportsEntitiesDefinitionsMapping]);
 
+  const [localEditedDefinition, setLocalEditedDefinition] = useState<any | undefined>(reportEntityDefinition);
+  
   return (
     <>
       <span>ReportViewWithEditor editMode: {editMode ? "true" : "false"}</span>
@@ -348,6 +360,18 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
           ) : // (<>failure</>)
           props.deploymentUuid ? (
             <>
+              {editMode && reportEntityDefinition && (
+                <InlineReportEditor
+                  reportDefinition={props.reportDefinition}
+                  reportEntityDefinition={reportEntityDefinition}
+                  deploymentUuid={props.deploymentUuid}
+                  applicationSection={props.applicationSection}
+                  // sectionPath={props.sectionPath}
+                  hasValidationErrors={hasValidationErrors}
+                  onDefinitionChange={setLocalEditedDefinition}
+                  onValidationChange={setHasValidationErrors}
+                />
+              )}
               <ReportSectionViewWithEditor
                 reportData={reportViewData}
                 fetchedDataJzodSchema={fetchedDataJzodSchema}

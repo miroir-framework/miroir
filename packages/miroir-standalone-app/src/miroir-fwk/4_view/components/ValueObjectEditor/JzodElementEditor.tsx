@@ -283,17 +283,13 @@ FoldUnfoldAllObjectAttributesOrArrayItems.displayName = "FoldUnfoldAllObjectAttr
 // #####################################################################################################
 // #####################################################################################################
 // #####################################################################################################
-// let count = 0;
+let count = 0;
 
 export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
   const renderStartTime = performance.now();
   // const context = useMiroirContextService();
   
-  // count++;
-  const [count, setCount] = useState(0);
-  React.useEffect(() => {
-    setCount((prevCount) => prevCount + 1);
-  }, [props]);
+  count++;
 
   // Create a unique key for this component instance
   const componentKey = `JzodElementEditor-${props.rootLessListKey || 'ROOT'}`;
