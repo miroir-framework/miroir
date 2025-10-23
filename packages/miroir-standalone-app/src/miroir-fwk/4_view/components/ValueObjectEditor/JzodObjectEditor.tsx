@@ -160,6 +160,7 @@ const ProgressiveAttribute: FC<{
   listKey: string;
   rootLessListKey: string;
   rootLessListKeyArray: (string | number)[];
+  reportSectionPathAsString: string;
   localResolvedElementJzodSchemaBasedOnValue: JzodObject;
   // unfoldedRawSchema: any;
   typeCheckKeyMap?: Record<string, KeyMapEntry>;
@@ -191,6 +192,7 @@ const ProgressiveAttribute: FC<{
   listKey,
   rootLessListKey,
   rootLessListKeyArray,
+  reportSectionPathAsString,
   localResolvedElementJzodSchemaBasedOnValue,
   // unfoldedRawSchema,
   typeCheckKeyMap,
@@ -302,6 +304,7 @@ const ProgressiveAttribute: FC<{
             listKey={attributeListKey}
             rootLessListKey={attributeRootLessListKey}
             rootLessListKeyArray={[...rootLessListKeyArray, attribute[0]]}
+            reportSectionPathAsString={reportSectionPathAsString}
             indentLevel={usedIndentLevel + 1}
             currentDeploymentUuid={currentDeploymentUuid}
             typeCheckKeyMap={typeCheckKeyMap}
@@ -359,6 +362,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
     labelElement,
     rootLessListKey,
     rootLessListKeyArray,
+    reportSectionPathAsString,
     typeCheckKeyMap,
     currentDeploymentUuid,
     currentApplicationSection,
@@ -402,6 +406,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
   } = useJzodElementEditorHooks(
     rootLessListKey,
     rootLessListKeyArray,
+    reportSectionPathAsString,
     typeCheckKeyMap,
     currentDeploymentUuid,
     count,
@@ -893,15 +898,16 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
             .map((attribute: [string, JzodElement], attributeNumber: number) => (
               <ProgressiveAttribute
                 key={attribute[0]}
+                listKey={listKey}
+                rootLessListKey={rootLessListKey}
+                rootLessListKeyArray={rootLessListKeyArray}
+                reportSectionPathAsString={reportSectionPathAsString}
                 attribute={attribute}
                 attributeNumber={attributeNumber}
                 currentDeploymentUuid={currentDeploymentUuid}
                 currentApplicationSection={currentApplicationSection}
                 foreignKeyObjects={foreignKeyObjects || {}}
                 insideAny={insideAny}
-                listKey={listKey}
-                rootLessListKey={rootLessListKey}
-                rootLessListKeyArray={rootLessListKeyArray}
                 localResolvedElementJzodSchemaBasedOnValue={
                   localResolvedElementJzodSchemaBasedOnValue as JzodObject
                 }

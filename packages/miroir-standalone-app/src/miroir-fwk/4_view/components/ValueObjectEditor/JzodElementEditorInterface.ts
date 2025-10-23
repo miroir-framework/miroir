@@ -27,6 +27,7 @@ export interface JzodEditorPropsRoot {
   listKey: string;
   rootLessListKey: string;
   rootLessListKeyArray: (string | number)[];
+  reportSectionPathAsString: string;
   currentDeploymentUuid?: Uuid,
   currentApplicationSection?: ApplicationSection;
   initialFormState?: any;

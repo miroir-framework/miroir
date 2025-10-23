@@ -72,7 +72,8 @@ export interface TypedValueObjectEditorProps {
   // zoom functionality
   zoomInPath?: string; // Optional path like "x.y.z" to zoom into a subset of the instance
   // established on the basis of the report section target entity schema, does not take zoomInPath into account!
-  valueObjectMMLSchema: JzodElement | undefined; 
+  valueObjectMMLSchema: JzodElement | undefined;
+  reportSectionPathAsString?: string; 
   // 
   applicationSection: ApplicationSection,
   deploymentUuid: Uuid,
@@ -113,6 +114,7 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
   // zoom
   zoomInPath, // display only a subset of the valueObject, like "x.y.z"
   valueObjectMMLSchema,
+  reportSectionPathAsString,
   // 
   deploymentUuid,
   applicationSection,
@@ -144,7 +146,14 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
   //   // WRONG!! the value path is in general different from the type path! It may be true only after ReferenceSchema resolution
   //   ? getSchemaAtPath(valueObjectMMLSchema, zoomInPath) 
   //   : valueObjectMMLSchema;
-
+  log.info(
+    "TypedValueObjectEditor render",
+    "valueObjectMMLSchema", valueObjectMMLSchema,
+    "formik.values", formik.values,
+    // "zoomInPath", zoomInPath,
+    // "zoomedInValueObject_DEFUNCT", zoomedInValueObject_DEFUNCT,
+    // "zoomedInDisplaySchema", zoomedInDisplaySchema
+  );
   // Log zoom functionality usage
   // if (hasZoomPath) {
   //   log.info(
@@ -387,11 +396,17 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
             )}
           >
             <JzodElementEditor
-              name={"ROOT"}
+              name={"ROOT" + (reportSectionPathAsString?("." + reportSectionPathAsString):"")}
               isTopLevel={true}
-              listKey={"ROOT"}
-              rootLessListKey=""
-              rootLessListKeyArray={[]}
+              listKey={"ROOT" + (reportSectionPathAsString?("." + reportSectionPathAsString):"")}
+              rootLessListKey={reportSectionPathAsString??""}
+              rootLessListKeyArray={reportSectionPathAsString?[reportSectionPathAsString]:[]}
+              reportSectionPathAsString={reportSectionPathAsString??""}
+              // name={"ROOT"}
+              // isTopLevel={true}
+              // listKey={"ROOT"}
+              // rootLessListKey=""
+              // rootLessListKeyArray={[]}
               labelElement={labelElement}
               indentLevel={0}
               currentDeploymentUuid={deploymentUuid}
@@ -436,11 +451,17 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
               )}
             >
               <JzodElementEditor
-                name={"ROOT"}
+                name={"ROOT" + (reportSectionPathAsString?("." + reportSectionPathAsString):"")}
                 isTopLevel={true}
-                listKey={"ROOT"}
-                rootLessListKey=""
-                rootLessListKeyArray={[]}
+                listKey={"ROOT" + (reportSectionPathAsString?("." + reportSectionPathAsString):"")}
+                rootLessListKey={reportSectionPathAsString??""}
+                rootLessListKeyArray={reportSectionPathAsString?[reportSectionPathAsString]:[]}
+                reportSectionPathAsString={reportSectionPathAsString??""}
+                // name={"ROOT"}
+                // isTopLevel={true}
+                // listKey={"ROOT"}
+                // rootLessListKey=""
+                // rootLessListKeyArray={[]}
                 labelElement={labelElement}
                 indentLevel={0}
                 currentDeploymentUuid={deploymentUuid}

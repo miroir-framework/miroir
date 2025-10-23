@@ -21,6 +21,7 @@ import {
   getQueryTemplateRunnerParamsForReduxDeploymentsState,
   safeStringify,
   type BoxedQueryTemplateWithExtractorCombinerTransformer,
+  type JzodObject,
   type SyncQueryTemplateRunnerParams
 } from "miroir-core";
 
@@ -188,9 +189,12 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
 
   const instance: any = props.instance;
 
+  // DO NOT USE dot notation for reportSectionPath as it is interpreted by Formik as nested object paths!
+  const reportSectionPathAsString = props.reportSectionPath?.join("_") || "";
   const formInitialValue: any = useMemo(() => ({
-    [props.reportSectionPath?.join(".") || ""] : instance
+    [reportSectionPathAsString] : instance
   }), [instance]);
+
   const currentDeploymentMetaModel: MetaModel = useCurrentModel(
     // context.applicationSection == "data"
     props.applicationSection == "data"
@@ -220,6 +224,13 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
     currentDeploymentReportsEntitiesDefinitionsMapping?.[props.applicationSection??"data"]?.entityDefinitions?.find(
         (e) => e?.entityUuid === props.entityUuid
   );
+
+  const valueObjectMMLSchema = useMemo<JzodObject>(() => ({
+    type: "object",
+    definition: {
+      [reportSectionPathAsString]: currentReportSectionTargetEntityDefinition?.jzodSchema ?? { type: "any" },
+    }
+  }), [reportSectionPathAsString, currentReportSectionTargetEntityDefinition?.jzodSchema]);
 
   log.info(
     "ReportSectionEntityInstance",
@@ -328,7 +339,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                       parentName: data.name,
                       parentUuid: data.parentUuid,
                       applicationSection: props.applicationSection,
-                      instances: [data],
+                      instances: [data[reportSectionPathAsString]],
                     },
                   ],
                 },
@@ -348,7 +359,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                   parentName: data.name,
                   parentUuid: data.parentUuid,
                   applicationSection: props.applicationSection ? props.applicationSection : "data",
-                  instances: [data],
+                  instances: [data[reportSectionPathAsString]],
                 },
               ],
             },
@@ -583,7 +594,8 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
           displayEditor ? (
             <Formik
               enableReinitialize={true}
-              initialValues={instance}
+              // initialValues={instance}
+              initialValues={formInitialValue}
               onSubmit={async (values, { setSubmitting, setErrors }) => {
                 // if (readonly) {
                 //   setSubmitting(false);
@@ -610,7 +622,8 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
             >
               <TypedValueObjectEditor
                 labelElement={labelElement}
-                valueObjectMMLSchema={currentReportSectionTargetEntityDefinition.jzodSchema}
+                // valueObjectMMLSchema={currentReportSectionTargetEntityDefinition.jzodSchema}
+                valueObjectMMLSchema={valueObjectMMLSchema}
                 deploymentUuid={props.deploymentUuid}
                 applicationSection={props.applicationSection}
                 //

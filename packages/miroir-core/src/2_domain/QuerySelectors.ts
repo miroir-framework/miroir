@@ -1080,16 +1080,16 @@ export const runQuery = <StateType>(
       context[extractor[0]] = result; // does side effect!
     }
   }
-  log.info(
-    "runQuery done for extractors,",
-    // extractor[0],
-    // "query",
-    // extractor[1],
-    // "result=",
-    // result,
-    "context keys=",
-    Object.keys(context)
-  );
+  // log.info(
+  //   "runQuery done for extractors,",
+  //   // extractor[0],
+  //   // "query",
+  //   // extractor[1],
+  //   // "result=",
+  //   // result,
+  //   "context keys=",
+  //   Object.keys(context)
+  // );
   for (const combiner of Object.entries(
     selectorParams.extractor.combiners ?? {}
   )) {
@@ -1107,18 +1107,18 @@ export const runQuery = <StateType>(
       combiner[1]
     );
     context[combiner[0]] = result; // does side effect!
-    log.info("runQuery done for entry", combiner[0], "query", combiner[1], "result=", result);
+    // log.info("runQuery done for entry", combiner[0], "query", combiner[1], "result=", result);
   }
-  log.info(
-    "runQuery done for combiners,",
-    // extractor[0],
-    // "query",
-    // extractor[1],
-    // "result=",
-    // result,
-    "context keys=",
-    Object.keys(context)
-  );
+  // log.info(
+  //   "runQuery done for combiners,",
+  //   // extractor[0],
+  //   // "query",
+  //   // extractor[1],
+  //   // "result=",
+  //   // result,
+  //   "context keys=",
+  //   Object.keys(context)
+  // );
 
   for (const transformerForRuntime of 
     Object.entries(
@@ -1148,14 +1148,14 @@ export const runQuery = <StateType>(
     }
     context[transformerForRuntime[0]] = result; // does side effect!
     // context.elementValue[transformerForRuntime[0]] = result; // does side effect!
-    log.info(
-      "runQuery done for transformerForRuntime",
-      transformerForRuntime[0],
-      "transformerForRuntime",
-      transformerForRuntime[1],
-      "result=",
-      result
-    );
+    // log.info(
+    //   "runQuery done for transformerForRuntime",
+    //   transformerForRuntime[0],
+    //   "transformerForRuntime",
+    //   transformerForRuntime[1],
+    //   "result=",
+    //   result
+    // );
   }
 
   // log.info(

@@ -90,10 +90,12 @@ export function getItemsOrder(currentValue: any, jzodSchema: JzodElement | undef
 // ################################################################################################
 let count = 0;
 
-export function useJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
+// export function useJzodElementEditorHooks<P extends JzodEditorPropsRoot>(
+export function useJzodElementEditorHooks(
   // props: P,
   rootLessListKey: string,
   rootLessListKeyArray: (string | number)[],
+  reportSectionPathAsString: string,
   typeCheckKeyMap: Record<string, KeyMapEntry> | undefined,
   currentDeploymentUuid: Uuid | undefined,
   // {

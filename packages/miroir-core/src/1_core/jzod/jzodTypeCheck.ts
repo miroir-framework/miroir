@@ -761,7 +761,9 @@ export function jzodTypeCheck(
       rawSchema: jzodSchema,
       innerError: {
         status: "error",
-        error: `resolveConditionalSchema error: ${effectiveSchemaOrError.error}` + ("details" in effectiveSchemaOrError ? `: ${effectiveSchemaOrError.details}` : ""),
+        error:
+          `resolveConditionalSchema error: ${effectiveSchemaOrError.error}` +
+          ("details" in effectiveSchemaOrError ? `: ${effectiveSchemaOrError.details}` : ""),
         valuePath: currentValuePath,
         typePath: currentTypePath,
         value: effectiveSchemaOrError, // embed the original error object for debugging

@@ -42,6 +42,7 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
     listKey,
     rootLessListKey,
     rootLessListKeyArray,
+    reportSectionPathAsString,
     currentDeploymentUuid,
     currentApplicationSection,
     foreignKeyObjects,
@@ -54,6 +55,7 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
   const { formik, currentModel, miroirMetaModel } = useJzodElementEditorHooks(
     props.rootLessListKey,
     props.rootLessListKeyArray,
+    reportSectionPathAsString,
     props.typeCheckKeyMap,
     props.currentDeploymentUuid,
     JzodAnyEditorRenderCount,
@@ -112,6 +114,7 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
           listKey={listKey}
           rootLessListKey={rootLessListKey}
           rootLessListKeyArray={rootLessListKeyArray}
+          reportSectionPathAsString={reportSectionPathAsString}
           currentDeploymentUuid={currentDeploymentUuid}
           currentApplicationSection={currentApplicationSection}
           resolvedElementJzodSchema={resolvedElementJzodSchema}

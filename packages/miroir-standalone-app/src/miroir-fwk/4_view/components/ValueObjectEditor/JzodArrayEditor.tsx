@@ -127,6 +127,7 @@ interface ProgressiveArrayItemProps {
   listKey: string;
   rootLessListKey: string;
   rootLessListKeyArray: (string | number)[];
+  reportSectionPathAsString: string;
   currentArrayElementRawDefinition: JzodElement | undefined;
   resolvedElementJzodSchema: JzodElement | undefined;
   typeCheckKeyMap?: Record<string, KeyMapEntry>;
@@ -151,6 +152,7 @@ const ProgressiveArrayItem: React.FC<ProgressiveArrayItemProps> = ({
   listKey,
   rootLessListKey,
   rootLessListKeyArray,
+  reportSectionPathAsString,
   currentArrayElementRawDefinition,
   resolvedElementJzodSchema,
   typeCheckKeyMap,
@@ -251,6 +253,7 @@ const ProgressiveArrayItem: React.FC<ProgressiveArrayItemProps> = ({
                   rootLessListKey.length > 0 ? rootLessListKey + "." + index : "" + index
                 }
                 rootLessListKeyArray={[...rootLessListKeyArray, "" + index]}
+                reportSectionPathAsString={reportSectionPathAsString}
                 resolvedElementJzodSchema={
                   resolvedElementJzodSchema?.type == "array"
                     ? ((resolvedElementJzodSchema as JzodArray)?.definition as any)
@@ -286,6 +289,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
     listKey,
     rootLessListKey,
     rootLessListKeyArray,
+    reportSectionPathAsString,
     resolvedElementJzodSchema,
     typeCheckKeyMap,
     currentDeploymentUuid,
@@ -598,6 +602,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
                   listKey={listKey}
                   rootLessListKey={rootLessListKey}
                   rootLessListKeyArray={rootLessListKeyArray}
+                  reportSectionPathAsString={reportSectionPathAsString}
                   currentArrayElementRawDefinition={currentArrayElementRawDefinition}
                   resolvedElementJzodSchema={resolvedElementJzodSchema}
                   typeCheckKeyMap={typeCheckKeyMap}
