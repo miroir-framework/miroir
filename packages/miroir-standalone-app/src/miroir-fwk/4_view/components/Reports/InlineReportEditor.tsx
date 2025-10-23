@@ -28,7 +28,7 @@ export interface InlineReportEditorProps {
   reportEntityDefinition: EntityDefinition;
   deploymentUuid: Uuid;
   applicationSection: ApplicationSection;
-  sectionPath?: string;
+  reportSectionPath: ( string | number )[],
   hasValidationErrors: boolean;
   onDefinitionChange: (extractedSection: any) => void;
   onValidationChange: (hasErrors: boolean) => void;
@@ -39,8 +39,10 @@ export const InlineReportEditor: React.FC<InlineReportEditorProps> = ({
   reportEntityDefinition,
   deploymentUuid,
   applicationSection,
-  sectionPath,
+  // sectionPath,
   hasValidationErrors,
+  reportSectionPath,
+  // reportSectionPathAsString,
   onDefinitionChange,
   onValidationChange,
 }) => {
@@ -68,7 +70,8 @@ export const InlineReportEditor: React.FC<InlineReportEditorProps> = ({
               deploymentUuid={deploymentUuid}
               applicationSection="model"
               entityUuid={reportDefinition.parentUuid}
-              instance={reportDefinition}
+              initialInstanceValue={reportDefinition}
+              reportSectionPath={reportSectionPath}
             />
           </AccordionDetails>
         </Accordion>

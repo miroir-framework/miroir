@@ -109,11 +109,11 @@ MiroirLoggerFactory.registerLoggerToStart(
 // };
 
 export interface ReportSectionEntityInstanceProps {
-  instance?: EntityInstance,
+  initialInstanceValue: EntityInstance,
   applicationSection: ApplicationSection,
   deploymentUuid: Uuid,
   entityUuid: Uuid,
-  reportSectionPath?: ( string | number )[],
+  reportSectionPath: ( string | number )[],
   // Note: Outline props removed since using context now
   showPerformanceDisplay?: boolean;
   zoomInPath?: string; // Optional path like "x.y.z" to zoom into a subset of the instance
@@ -166,7 +166,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   );
 
   // Track performance immediately for initial render
-  const componentKey = `ReportSectionEntityInstance-${props.instance?.uuid || props.entityUuid}`;
+  const componentKey = `ReportSectionEntityInstance-${props.initialInstanceValue?.uuid || props.entityUuid}`;
 
   // log.info(
   //   "++++++++++++++++++++++++++++++++ render",
@@ -187,7 +187,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   const outlineContext = useDocumentOutlineContext();
   const reportContext = useReportPageContext();
 
-  const instance: any = props.instance;
+  const instance: any = props.initialInstanceValue;
 
   // DO NOT USE dot notation for reportSectionPath as it is interpreted by Formik as nested object paths!
   const reportSectionPathAsString = props.reportSectionPath?.join("_") || "";
@@ -336,8 +336,8 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                   applicationSection: "model",
                   objects: [
                     {
-                      parentName: data.name,
-                      parentUuid: data.parentUuid,
+                      parentName: data[reportSectionPathAsString].name,
+                      parentUuid: data[reportSectionPathAsString].parentUuid,
                       applicationSection: props.applicationSection,
                       instances: [data[reportSectionPathAsString]],
                     },
@@ -356,8 +356,8 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
               applicationSection: props.applicationSection ? props.applicationSection : "data",
               objects: [
                 {
-                  parentName: data.name,
-                  parentUuid: data.parentUuid,
+                  parentName: data[reportSectionPathAsString].name,
+                  parentUuid: data[reportSectionPathAsString].parentUuid,
                   applicationSection: props.applicationSection ? props.applicationSection : "data",
                   instances: [data[reportSectionPathAsString]],
                 },
@@ -373,6 +373,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
     [domainController, props]
   );
 
+  // ##############################################################################################
   // Check if this is a TransformerTest entity instance
   const isTransformerTestEntity = currentReportTargetEntity?.uuid === entityTransformerTest.uuid;
   const isTransformerTest =
@@ -602,7 +603,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                 //   return;
                 // }
                 try {
-                  log.info("onSubmit formik values", values);
+                  log.info("ReportSectionEntityInstance onSubmit formik values", values);
 
                   // Handle zoom case: merge changes back into the full object for submission
                   // const finalValues = hasZoomPath
@@ -622,10 +623,10 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
             >
               <TypedValueObjectEditor
                 labelElement={labelElement}
-                // valueObjectMMLSchema={currentReportSectionTargetEntityDefinition.jzodSchema}
                 valueObjectMMLSchema={valueObjectMMLSchema}
                 deploymentUuid={props.deploymentUuid}
                 applicationSection={props.applicationSection}
+                reportSectionPathAsString={reportSectionPathAsString}
                 //
                 formLabel={formLabel}
                 zoomInPath={props.zoomInPath}
@@ -680,7 +681,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
             <div>props selfApplication section: {props.applicationSection}</div>
             <div>context selfApplication section: {context.applicationSection}</div>
             <div>instance entityUuid: {props.entityUuid}</div>
-            <div>instance uuid: {props.instance?.uuid}</div>
+            <div>instance uuid: {props.initialInstanceValue?.uuid}</div>
             <div>
               target entity: {currentReportTargetEntity?.name ?? "report target entity not found!"}
             </div>

@@ -750,14 +750,14 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
           );
         }
         case "string": {
-          log.info(
-            "JzodElementEditor: Rendering string input for rootLessListKey",
-            props.rootLessListKey,
-            "formik",
-            formik,
-            "with value",
-            currentValue
-          );
+          // log.info(
+          //   "JzodElementEditor: Rendering string input for rootLessListKey",
+          //   props.rootLessListKey,
+          //   "formik",
+          //   formik,
+          //   "with value",
+          //   currentValue
+          // );
           return (
             <ThemedLabeledEditor
               labelElement={enhancedLabelElement}

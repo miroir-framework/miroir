@@ -232,7 +232,7 @@ export const ReportSectionView = (props: ReportSectionViewProps) => {
       {props.reportSection.type == "objectInstanceReportSection" && (
         <ReportSectionEntityInstance
           // domainElement={props.reportData}
-          instance={entityInstance}
+          initialInstanceValue={entityInstance}
           applicationSection={props.applicationSection as ApplicationSection}
           deploymentUuid={props.deploymentUuid}
           entityUuid={props.reportSection.definition.parentUuid}

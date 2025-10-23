@@ -150,6 +150,7 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
     "TypedValueObjectEditor render",
     "valueObjectMMLSchema", valueObjectMMLSchema,
     "formik.values", formik.values,
+    "reportSectionPathAsString", reportSectionPathAsString,
     // "zoomInPath", zoomInPath,
     // "zoomedInValueObject_DEFUNCT", zoomedInValueObject_DEFUNCT,
     // "zoomedInDisplaySchema", zoomedInDisplaySchema
@@ -279,14 +280,16 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
     reduxDeploymentsState,
     valueObject,
   ]);
-  // log.info(
-  //   "TypedValueObjectEditor jzodTypeCheck done for render",
-  //   navigationCount,
-  //   "formik.values",
-  //   formik.values,
-  //   "resolvedJzodSchema",
-  //   typeCheckKeyMap
-  // );
+  log.info(
+    "TypedValueObjectEditor jzodTypeCheck done for render",
+    navigationCount,
+    "formik.values",
+    formik.values,
+    "zoomedInDisplaySchema",
+    zoomedInDisplaySchema,
+    "jzodTypeCheckResult",
+    jzodTypeCheckResult
+  );
   // extruding typeCheckKeyMap to context for Outline usage
   useEffect(() => {
     if (

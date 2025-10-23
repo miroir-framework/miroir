@@ -357,6 +357,7 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
                   deploymentUuid={props.deploymentUuid}
                   applicationSection={props.applicationSection}
                   hasValidationErrors={hasValidationErrors}
+                  reportSectionPath={[reportEntityDefinition.name??"reportEntityDefinition_name"]}
                   onDefinitionChange={setLocalEditedDefinition}
                   onValidationChange={setHasValidationErrors}
                 />

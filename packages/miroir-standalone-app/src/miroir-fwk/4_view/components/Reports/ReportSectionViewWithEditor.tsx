@@ -54,7 +54,7 @@ export interface ReportSectionViewPropsBase {
 
 export interface ReportSectionViewWithEditorProps extends ReportSectionViewPropsBase {
   editMode?: boolean,
-  reportSectionPath?: ( string | number )[],
+  reportSectionPath: ( string | number )[],
   onSectionEdit?: (path: string, newDefinition: ReportSection) => void,
   onSectionCancel?: (path: string) => void,
   isSectionModified?: boolean,
@@ -230,6 +230,7 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
           {/* props.reportDefinition {JSON.stringify(props.reportDefinition)} */}
           {/* sectionDefinition {JSON.stringify(props.reportSection)} */}
           sectionDefinition2 {JSON.stringify(resolvePathOnObject(props.reportDefinition, props.reportSectionPath ?? []))}
+          <span>reportSectionPath: {JSON.stringify(props.reportSectionPath)}</span>
         </code>
       {/* </pre> */}
       <div style={{ position: "relative" }}>
@@ -265,14 +266,16 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
           </div>
         )}
         {props.reportSection.type == "objectInstanceReportSection" && (
+          <>
           <ReportSectionEntityInstance
             // domainElement={props.reportData}
-            instance={entityInstance}
+            initialInstanceValue={entityInstance}
             applicationSection={props.applicationSection as ApplicationSection}
             deploymentUuid={props.deploymentUuid}
             entityUuid={props.reportSection.definition.parentUuid}
             reportSectionPath={props.reportSectionPath}
           />
+          </>
         )}
         {props.reportSection.type == "graphReportSection" && (
           <div>
