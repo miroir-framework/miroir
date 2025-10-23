@@ -248,12 +248,6 @@ export const ReportPage = () => {
   ) as any;
   log.info("currentStoredQueries", currentStoredQueries);
 
-  //   applicationSection={pageParams.applicationSection as ApplicationSection}
-  // deploymentUuid={pageParams.deploymentUuid}
-  // instanceUuid={pageParams.instanceUuid}
-  // pageParams={pageParams}
-  // reportDefinition={currentMiroirReport?.definition}
-
   const currentStoredQuery:
     | BoxedQueryWithExtractorCombinerTransformer
     | BoxedQueryTemplateWithExtractorCombinerTransformer
@@ -274,13 +268,9 @@ export const ReportPage = () => {
             runtimeTransformers: currentStoredQueries[0].definition.runtimeTransformers,
           }
         : undefined,
-    // [props.reportDefinition, props.pageParams, resolvedTemplateQuery]
     [currentStoredQueries, pageParams]
   );
 
-  // const reportData: Domain2QueryReturnType<
-  //   Domain2QueryReturnType<Record<string, any>>
-  // > = useQueryTemplateResults(props);
   const currentStoredQueryResults: Domain2QueryReturnType<
     Domain2QueryReturnType<Record<string, any>>
   > = useQueryTemplateResults(
@@ -355,20 +345,6 @@ export const ReportPage = () => {
                     />
                     {context.showPerformanceDisplay && <PerformanceDisplayContainer />}
                   </>
-                 {/* ) : (
-                  <>
-                    <ReportView
-                      applicationSection={pageParams.applicationSection as ApplicationSection}
-                      deploymentUuid={pageParams.deploymentUuid}
-                      instanceUuid={pageParams.instanceUuid}
-                      pageParams={pageParams}
-                      storedQueryData={currentStoredQueryData}
-                      reportDefinition={currentMiroirReport?.definition}
-                    />
-                    {context.showPerformanceDisplay && <PerformanceDisplayContainer />}
-                  </>
-                )
-                } */}
               </>
             ) : (
               <ThemedSpan style={{ color: theme.currentTheme.colors.error }}>

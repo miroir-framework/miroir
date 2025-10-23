@@ -119,7 +119,7 @@ export const TransformationResultPanel: React.FC<{
       ) : transformationResult !== null ? (
         <TypedValueObjectEditorWithFormik
           labelElement={<div>target:</div>}
-          valueObject={transformationResult}
+          initialValueObject={transformationResult}
           valueObjectMMLSchema={transformationResultSchema ?? { type: "any" } as JzodElement}
           deploymentUuid={deploymentUuid}
           applicationSection={"data"}

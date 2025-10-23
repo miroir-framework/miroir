@@ -203,7 +203,7 @@ const DisplayTransformerEvent: React.FC<{
               </ThemedCodeBlock> */}
               <TypedValueObjectEditorWithFormik
                 labelElement={<div>target:</div>}
-                valueObject={displayedParameters}
+                initialValueObject={displayedParameters}
                 valueObjectMMLSchema={parametersSchema}
                 deploymentUuid={deploymentUuid}
                 applicationSection={"data"}

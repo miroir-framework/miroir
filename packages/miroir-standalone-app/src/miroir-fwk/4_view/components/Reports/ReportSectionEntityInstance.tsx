@@ -128,6 +128,19 @@ let count = 0;
 // ###############################################################################################################
 // ###############################################################################################################
 // ###############################################################################################################
+/**
+ * used hooks:
+ * useCurrentModel
+ * useDocumentOutlineContext
+ * useDomainControllerService
+ * useMiroirContextService
+ * useRenderTracker
+ * useReportPageContext
+ * useViewParams
+ * 
+ * @param props 
+ * @returns 
+ */
 export const ReportSectionEntityInstance = (props: ReportSectionEntityInstanceProps) => {
   const renderStartTime = performance.now();
 
@@ -195,7 +208,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   const currentReportTargetEntity: Entity | undefined =
     currentReportDeploymentSectionEntities?.find((e) => e?.uuid === props.entityUuid);
 
-  const currentReportTargetEntityDefinition: EntityDefinition | undefined =
+  const currentReportSectionTargetEntityDefinition: EntityDefinition | undefined =
     // currentReportDeploymentSectionEntityDefinitions?.find(
     //   (e) => e?.entityUuid === currentReportTargetEntity?.uuid
     // );
@@ -209,18 +222,18 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
     props.applicationSection,
     "currentDeploymentReportsEntitiesDefinitionsMapping?.[props.applicationSection??'data']?.entityDefinitions",
     currentDeploymentReportsEntitiesDefinitionsMapping?.[props.applicationSection??"data"]?.entityDefinitions,
-    "currentReportTargetEntityDefinition:",
-    currentReportTargetEntityDefinition,
+    "currentReportSectionTargetEntityDefinition:",
+    currentReportSectionTargetEntityDefinition,
   );
 
   // ##############################################################################################
-  // ################################################################################################
-  // ################################################################################################
-  // ################################################################################################
-  // CALLS setFoldedObjectAttributeOrArrayItems
+  // ##############################################################################################
+  // ##############################################################################################
+  // ##############################################################################################
+  // CALLS reportContext.setFoldedObjectAttributeOrArrayItems
   useEffect(() => {
-    const foldedStringPaths = currentReportTargetEntityDefinition?.display?.foldSubLevels
-      ? Object.entries(currentReportTargetEntityDefinition?.display?.foldSubLevels).filter(
+    const foldedStringPaths = currentReportSectionTargetEntityDefinition?.display?.foldSubLevels
+      ? Object.entries(currentReportSectionTargetEntityDefinition?.display?.foldSubLevels).filter(
           ([key, value]) => value
         )
       : [];
@@ -249,7 +262,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
 
     reportContext.setFoldedObjectAttributeOrArrayItems(newFoldedObjectAttributeOrArrayItems);
   }, [
-    currentReportTargetEntityDefinition?.display?.foldSubLevels,
+    currentReportSectionTargetEntityDefinition?.display?.foldSubLevels,
     reportContext.setFoldedObjectAttributeOrArrayItems,
   ]);
 
@@ -261,7 +274,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
     (props.zoomInPath ? ` (${props.zoomInPath})` : "");
 
 
-  // ###############################################################################################
+  // ##############################################################################################
   // CALLS setOutlineTitle and setReportInstance
   useEffect(() => {
     if (currentReportTargetEntity?.name) {
@@ -293,7 +306,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   const onEditValueObjectFormSubmit = useCallback(
     async (data: any) => {
       log.info("onEditValueObjectFormSubmit called with new object value", data);
-
+      // TODO: use action queue
       if (props.deploymentUuid) {
         if (props.applicationSection == "model") {
           await domainController.handleAction(
@@ -349,6 +362,10 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   const isTransformerTest =
     isTransformerTestEntity && instance?.parentUuid === entityTransformerTest.uuid;
 
+  // ##############################################################################################
+  // ##############################################################################################
+  // ##############################################################################################
+  // ##############################################################################################
   // ##############################################################################################
   // Query execution logic for Query entities
   const isQueryEntity = instance?.parentUuid === entityQueryVersion.uuid;
@@ -416,6 +433,11 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
       queryTestRunParams
     );
 
+  // ##############################################################################################
+  // ##############################################################################################
+  // ##############################################################################################
+  // ##############################################################################################
+  // ##############################################################################################
   // ##############################################################################################
   const testLabel = instance.transformerTestLabel || instance.name || "TransformerTest";
   
@@ -548,13 +570,13 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
             </div>
           )}
 
-          {/* {currentReportTargetEntityDefinition && context.applicationSection ? ( */}
-          {currentReportTargetEntityDefinition && props.applicationSection ? (
+          {/* {currentReportSectionTargetEntityDefinition && context.applicationSection ? ( */}
+          {currentReportSectionTargetEntityDefinition && props.applicationSection ? (
             displayEditor ? (
               <TypedValueObjectEditorWithFormik
                 labelElement={labelElement}
-                valueObject={instance}
-                valueObjectMMLSchema={currentReportTargetEntityDefinition.jzodSchema}
+                initialValueObject={instance}
+                valueObjectMMLSchema={currentReportSectionTargetEntityDefinition.jzodSchema}
                 deploymentUuid={props.deploymentUuid}
                 applicationSection={props.applicationSection}
                 //
@@ -620,7 +642,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
               {/* <div>resolved schema: {JSON.stringify(resolvedJzodSchema)}</div> */}
               <ThemedPreformattedText>
                 target entity definition:{" "}
-                {currentReportTargetEntityDefinition?.name ??
+                {currentReportSectionTargetEntityDefinition?.name ??
                   "report target entity definition not found!"}
               </ThemedPreformattedText>
               <div> ######################################## </div>

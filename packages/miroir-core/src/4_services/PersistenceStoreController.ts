@@ -805,16 +805,16 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
 
     // log.info(this.logHeader,'getInstances succeeded','section',section,'entity',entityUuid, "result", instances);
     // log.info(this.logHeader,'getInstances succeeded','section',section,'entity',entityUuid, "result", JSON.stringify(instances));
-    log.info(
-      this.logHeader,
-      "getInstances succeeded",
-      "section",
-      section,
-      "entity",
-      entityUuid,
-      "result",
-      JSON.stringify(instances)
-    );
+    // log.info(
+    //   this.logHeader,
+    //   "getInstances succeeded",
+    //   "section",
+    //   section,
+    //   "entity",
+    //   entityUuid,
+    //   "result",
+    //   JSON.stringify(instances)
+    // );
     return instances;
   }
 
