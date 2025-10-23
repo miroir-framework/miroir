@@ -139,7 +139,7 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
   const hasZoomPath = zoomInPath && zoomInPath.trim() !== '';
   const valueObject = formik.values;
   const zoomedInValueObject_DEFUNCT = hasZoomPath ? getValueAtPath(valueObject, zoomInPath) : valueObject;
-  const displaySchema = valueObjectMMLSchema 
+  const zoomedInDisplaySchema = valueObjectMMLSchema 
   // const displaySchema = hasZoomPath && valueObjectMMLSchema 
   //   // WRONG!! the value path is in general different from the type path! It may be true only after ReferenceSchema resolution
   //   ? getSchemaAtPath(valueObjectMMLSchema, zoomInPath) 
@@ -173,7 +173,7 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
   }
 
   // Handle error case where zoom path results in invalid schema
-  if (hasZoomPath && !displaySchema) {
+  if (hasZoomPath && !zoomedInDisplaySchema) {
     return (
       <div style={{ padding: '16px', border: '1px solid #ff9800', borderRadius: '4px', backgroundColor: '#fff3e0' }}>
         <div style={{ color: '#f57c00', fontWeight: 'bold', marginBottom: '8px' }}>
@@ -233,9 +233,9 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
     let result: ResolvedJzodSchemaReturnType | undefined = undefined;
     try {
       result =
-        context.miroirFundamentalJzodSchema && displaySchema && formik.values && currentModel
+        context.miroirFundamentalJzodSchema && zoomedInDisplaySchema && formik.values && currentModel
           ? jzodTypeCheck(
-              displaySchema,
+              zoomedInDisplaySchema,
               formik.values,
               [],
               [],
@@ -264,7 +264,7 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
     context,
     context.miroirFundamentalJzodSchema,
     deploymentUuid,
-    displaySchema,
+    zoomedInDisplaySchema,
     formik.values,
     hasZoomPath,
     reduxDeploymentsState,
@@ -377,7 +377,7 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
                   rootLessListKey: "ROOT",
                   currentValue: zoomedInValueObject_DEFUNCT,
                   formikValues: undefined,
-                  rawJzodSchema: displaySchema,
+                  rawJzodSchema: zoomedInDisplaySchema,
                   localResolvedElementJzodSchemaBasedOnValue:
                     jzodTypeCheckResult?.status == "ok"
                       ? jzodTypeCheckResult.resolvedSchema
@@ -404,7 +404,7 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
                 jzodTypeCheckResult?.status == "ok" ? jzodTypeCheckResult.keyMap : {}
               }
               foreignKeyObjects={foreignKeyObjects}
-              maxRenderDepth={maxRenderDepth}
+              maxRenderDepth={maxRenderDepth} // always 1
               readOnly={true}
               displayError={displayError}
             />
@@ -426,7 +426,7 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
                     rootLessListKeyArray: [],
                     currentValue: zoomedInValueObject_DEFUNCT,
                     formikValues: undefined,
-                    rawJzodSchema: displaySchema,
+                    rawJzodSchema: zoomedInDisplaySchema,
                     localResolvedElementJzodSchemaBasedOnValue:
                       jzodTypeCheckResult?.status == "ok"
                         ? jzodTypeCheckResult.resolvedSchema
@@ -455,7 +455,7 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
                   jzodTypeCheckResult?.status == "ok" ? jzodTypeCheckResult.keyMap : {}
                 }
                 foreignKeyObjects={foreignKeyObjects}
-                maxRenderDepth={maxRenderDepth}
+                maxRenderDepth={maxRenderDepth} // always 1
                 displayError={displayError}
                 submitButton={
                   <button type="submit" role="form" name={pageLabel} form={"form." + pageLabel}>

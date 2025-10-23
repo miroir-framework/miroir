@@ -41,12 +41,12 @@ export const TypedValueObjectEditorWithFormik: React.FC<TypedValueObjectEditorWi
 
   // Handle zoom functionality for initial values
   const hasZoomPath = zoomInPath && zoomInPath.trim() !== '';
-  const displayValueObject = hasZoomPath ? getValueAtPath(initialValueObject, zoomInPath) : initialValueObject;
+  // const displayValueObject = hasZoomPath ? getValueAtPath(initialValueObject, zoomInPath) : initialValueObject;
 
   return (
     <Formik
       enableReinitialize={true}
-      initialValues={displayValueObject}
+      initialValues={initialValueObject}
       onSubmit={async (values, { setSubmitting, setErrors }) => {
         if (readonly) {
           setSubmitting(false);
@@ -56,11 +56,11 @@ export const TypedValueObjectEditorWithFormik: React.FC<TypedValueObjectEditorWi
           log.info("onSubmit formik values", values);
           
           // Handle zoom case: merge changes back into the full object for submission
-          const finalValues = hasZoomPath 
-            ? setValueAtPath(initialValueObject, zoomInPath!, values)
-            : values;
+          // const finalValues = hasZoomPath 
+          //   ? setValueAtPath(initialValueObject, zoomInPath!, values)
+          //   : values;
             
-          await onSubmit(finalValues);
+          await onSubmit(values);
         } catch (e) {
           log.error(e);
         } finally {

@@ -60,6 +60,8 @@ import type { FoldedStateTree } from './FoldedStateTreeUtils.js';
 import { useReportPageContext } from './ReportPageContext.js';
 import { TransformerTestDisplay } from './TransformerTestDisplay.js';
 import { TypedValueObjectEditorWithFormik } from './TypedValueObjectEditorWithFormik.js';
+import { Formik } from 'formik';
+import { TypedValueObjectEditor } from './TypedValueObjectEditor.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -107,10 +109,10 @@ MiroirLoggerFactory.registerLoggerToStart(
 
 export interface ReportSectionEntityInstanceProps {
   instance?: EntityInstance,
-  // domainElement?: Record<string,any>,
   applicationSection: ApplicationSection,
   deploymentUuid: Uuid,
   entityUuid: Uuid,
+  reportSectionPath?: ( string | number )[],
   // Note: Outline props removed since using context now
   showPerformanceDisplay?: boolean;
   zoomInPath?: string; // Optional path like "x.y.z" to zoom into a subset of the instance
@@ -186,6 +188,9 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
 
   const instance: any = props.instance;
 
+  const formInitialValue: any = useMemo(() => ({
+    [props.reportSectionPath?.join(".") || ""] : instance
+  }), [instance]);
   const currentDeploymentMetaModel: MetaModel = useCurrentModel(
     // context.applicationSection == "data"
     props.applicationSection == "data"
@@ -445,212 +450,240 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
     return (
       // <ThemedContainer style={{ width: '100%' }}>
       <ThemedContainer>
-          {showPerformanceDisplay && (
-            <ThemedText>
-              ReportSectionEntityInstance renders: {navigationCount} (total: {totalCount})
-            </ThemedText>
-          )}
+        {showPerformanceDisplay && (
+          <ThemedText>
+            ReportSectionEntityInstance renders: {navigationCount} (total: {totalCount})
+          </ThemedText>
+        )}
 
-          {/* Show test button if this is a TransformerTest entity */}
-          {isTransformerTest && (
-            <TransformerTestDisplay
-              transformerTest={instance}
-              testLabel={testLabel}
-              useSnackBar={true}
-              onTestComplete={(testSuiteKey, structuredResults) => {
-                log.info(`Test completed for ${testSuiteKey}:`, structuredResults);
-              }}
-              gridType={viewParams.gridType}
-            />
-          )}
+        {/* Show test button if this is a TransformerTest entity */}
+        {isTransformerTest && (
+          <TransformerTestDisplay
+            transformerTest={instance}
+            testLabel={testLabel}
+            useSnackBar={true}
+            onTestComplete={(testSuiteKey, structuredResults) => {
+              log.info(`Test completed for ${testSuiteKey}:`, structuredResults);
+            }}
+            gridType={viewParams.gridType}
+          />
+        )}
 
-          <div>
-            <label htmlFor="displayEditorSwitch">Display editor:</label>
-            <ThemedSwitch
-              checked={displayEditor}
-              id="displayEditorSwitch"
-              onChange={handleDisplayEditorSwitchChange}
-            />
-          </div>
-          <div>
-            <ThemedStatusText>
-              displayAsStructuredElement: {displayAsStructuredElement ? "true" : "false"}{" "}
-              displayEditor: {displayEditor ? "true" : "false"} hasTypeError:{" "}
-              {/* {typeError ? "true" : "false"}{" "} */}
-            </ThemedStatusText>
-          </div>
-          <ThemedHeaderSection>
-            <ThemedTitle>
-              {currentReportTargetEntity?.name} details: {instance.name}{" "}
-              {props.zoomInPath && (
-                <span style={{ fontSize: "0.8em", fontStyle: "italic", color: "#666" }}>
-                  (viewing: {props.zoomInPath})
-                </span>
-              )}
-            </ThemedTitle>
-            {displayEditor && (
-              <ThemedTooltip
-                title={outlineContext.isOutlineOpen ? "Hide Document Outline" : "Show Document Outline"}
-              >
-                <ThemedIconButton
-                  onClick={outlineContext.onToggleOutline}
-                  style={{
-                    marginLeft: "16px",
-                  }}
-                >
-                  <Toc />
-                </ThemedIconButton>
-              </ThemedTooltip>
+        <div>
+          <label htmlFor="displayEditorSwitch">Display editor:</label>
+          <ThemedSwitch
+            checked={displayEditor}
+            id="displayEditorSwitch"
+            onChange={handleDisplayEditorSwitchChange}
+          />
+        </div>
+        <div>
+          <ThemedStatusText>
+            displayAsStructuredElement: {displayAsStructuredElement ? "true" : "false"}{" "}
+            displayEditor: {displayEditor ? "true" : "false"} hasTypeError:{" "}
+            {/* {typeError ? "true" : "false"}{" "} */}
+          </ThemedStatusText>
+        </div>
+        <ThemedHeaderSection>
+          <ThemedTitle>
+            {currentReportTargetEntity?.name} details: {instance.name}{" "}
+            {props.zoomInPath && (
+              <span style={{ fontSize: "0.8em", fontStyle: "italic", color: "#666" }}>
+                (viewing: {props.zoomInPath})
+              </span>
             )}
-          </ThemedHeaderSection>
-          
-          {/* Query Results Section - Collapsible */}
-          {isQueryEntity && (
-            <div style={{ 
-              marginBottom: '16px',
-              border: '1px solid #dee2e6',
-              borderRadius: '4px',
-              backgroundColor: '#f8f9fa'
-            }}>
-              <div 
-                style={{ 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  justifyContent: 'space-between',
-                  padding: '12px 16px',
-                  cursor: 'pointer',
-                  borderBottom: isResultsCollapsed ? 'none' : '1px solid #dee2e6'
+          </ThemedTitle>
+          {displayEditor && (
+            <ThemedTooltip
+              title={
+                outlineContext.isOutlineOpen ? "Hide Document Outline" : "Show Document Outline"
+              }
+            >
+              <ThemedIconButton
+                onClick={outlineContext.onToggleOutline}
+                style={{
+                  marginLeft: "16px",
                 }}
-                onClick={() => setIsResultsCollapsed(!isResultsCollapsed)}
               >
-                <ThemedTitle style={{ margin: 0, fontSize: '16px' }}>
-                  Query Results
-                </ThemedTitle>
-                <span style={{ color: '#666', fontSize: '14px' }}>
-                  {isResultsCollapsed ? '▶' : '▼'}
-                </span>
-              </div>
-              
-              {/* query test run results */}
-              {!isResultsCollapsed && (
-                <div style={{ padding: '16px' }}>
-                  {queryTestRunResults ? (
-                    queryTestRunResults.elementType === "failure" ? (
-                      <div style={{ color: '#dc3545', padding: '8px' }}>
-                        <strong>Query execution failed:</strong>
-                        <ThemedCodeBlock style={{ marginTop: '8px' }}>
-                          {JSON.stringify(queryTestRunResults, null, 2)}
-                        </ThemedCodeBlock>
-                      </div>
-                    ) : (
-                      <div>
-                        <div style={{ marginBottom: '8px', fontSize: '14px', color: '#666' }}>
-                          Query executed successfully. Results:
-                        </div>
-                        <ThemedCodeBlock>
-                          {JSON.stringify(queryTestRunResults, null, 2)}
-                        </ThemedCodeBlock>
-                      </div>
-                    )
-                  ) : (
-                    <div style={{ 
-                      textAlign: 'center', 
-                      padding: '16px',
-                      color: '#666',
-                      fontStyle: 'italic'
-                    }}>
-                      {queryForTestRun ? 
-                        "Executing query..." : 
-                        "No query definition found for this instance"
-                      }
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
+                <Toc />
+              </ThemedIconButton>
+            </ThemedTooltip>
           )}
+        </ThemedHeaderSection>
 
-          {/* {currentReportSectionTargetEntityDefinition && context.applicationSection ? ( */}
-          {currentReportSectionTargetEntityDefinition && props.applicationSection ? (
-            displayEditor ? (
-              <TypedValueObjectEditorWithFormik
+        {/* Query Results Section - Collapsible */}
+        {isQueryEntity && (
+          <div
+            style={{
+              marginBottom: "16px",
+              border: "1px solid #dee2e6",
+              borderRadius: "4px",
+              backgroundColor: "#f8f9fa",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                padding: "12px 16px",
+                cursor: "pointer",
+                borderBottom: isResultsCollapsed ? "none" : "1px solid #dee2e6",
+              }}
+              onClick={() => setIsResultsCollapsed(!isResultsCollapsed)}
+            >
+              <ThemedTitle style={{ margin: 0, fontSize: "16px" }}>Query Results</ThemedTitle>
+              <span style={{ color: "#666", fontSize: "14px" }}>
+                {isResultsCollapsed ? "▶" : "▼"}
+              </span>
+            </div>
+
+            {/* query test run results */}
+            {!isResultsCollapsed && (
+              <div style={{ padding: "16px" }}>
+                {queryTestRunResults ? (
+                  queryTestRunResults.elementType === "failure" ? (
+                    <div style={{ color: "#dc3545", padding: "8px" }}>
+                      <strong>Query execution failed:</strong>
+                      <ThemedCodeBlock style={{ marginTop: "8px" }}>
+                        {JSON.stringify(queryTestRunResults, null, 2)}
+                      </ThemedCodeBlock>
+                    </div>
+                  ) : (
+                    <div>
+                      <div style={{ marginBottom: "8px", fontSize: "14px", color: "#666" }}>
+                        Query executed successfully. Results:
+                      </div>
+                      <ThemedCodeBlock>
+                        {JSON.stringify(queryTestRunResults, null, 2)}
+                      </ThemedCodeBlock>
+                    </div>
+                  )
+                ) : (
+                  <div
+                    style={{
+                      textAlign: "center",
+                      padding: "16px",
+                      color: "#666",
+                      fontStyle: "italic",
+                    }}
+                  >
+                    {queryForTestRun
+                      ? "Executing query..."
+                      : "No query definition found for this instance"}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* {currentReportSectionTargetEntityDefinition && context.applicationSection ? ( */}
+        {currentReportSectionTargetEntityDefinition && props.applicationSection ? (
+          displayEditor ? (
+            <Formik
+              enableReinitialize={true}
+              initialValues={instance}
+              onSubmit={async (values, { setSubmitting, setErrors }) => {
+                // if (readonly) {
+                //   setSubmitting(false);
+                //   return;
+                // }
+                try {
+                  log.info("onSubmit formik values", values);
+
+                  // Handle zoom case: merge changes back into the full object for submission
+                  // const finalValues = hasZoomPath
+                  //   ? setValueAtPath(initialValueObject, zoomInPath!, values)
+                  //   : values;
+
+                  // await onSubmit(values);
+                  await onEditValueObjectFormSubmit(values);
+                } catch (e) {
+                  log.error(e);
+                } finally {
+                  setSubmitting(false);
+                }
+              }}
+              validateOnChange={false}
+              validateOnBlur={false}
+            >
+              <TypedValueObjectEditor
                 labelElement={labelElement}
-                initialValueObject={instance}
                 valueObjectMMLSchema={currentReportSectionTargetEntityDefinition.jzodSchema}
                 deploymentUuid={props.deploymentUuid}
                 applicationSection={props.applicationSection}
                 //
                 formLabel={formLabel}
-                onSubmit={onEditValueObjectFormSubmit}
                 zoomInPath={props.zoomInPath}
                 maxRenderDepth={Infinity} // Always render fully for editor
               />
-            ) : (
-              <div>
-                {displayAsStructuredElement ? (
-                  <div>Can not display non-editor as structured element</div>
-                ) : (
-                  <div>
-                    {props.zoomInPath && (
-                      <div
-                        style={{
-                          marginBottom: "8px",
-                          fontSize: "0.9em",
-                          color: "#666",
-                          fontStyle: "italic",
-                        }}
-                      >
-                        Viewing path: {props.zoomInPath}
-                      </div>
-                    )}
-                    <ThemedCodeBlock>
-                      {safeStringify(
-                        props.zoomInPath
-                          ? (() => {
-                              const pathParts = props.zoomInPath.split(".");
-                              let current = instance;
-                              for (const part of pathParts) {
-                                if (current && typeof current === "object") {
-                                  current = current[part];
-                                } else {
-                                  return `Path "${props.zoomInPath}" not found`;
-                                }
-                              }
-                              return current;
-                            })()
-                          : instance
-                      )}
-                    </ThemedCodeBlock>
-                  </div>
-                )}
-              </div>
-            )
+            </Formik>
           ) : (
             <div>
-              Oops, ReportSectionEntityInstance could not be displayed.
-              <p />
-              <div>props deploymentUuid: {props.deploymentUuid}</div>
-              <div>props selfApplication section: {props.applicationSection}</div>
-              <div>context selfApplication section: {context.applicationSection}</div>
-              <div>instance entityUuid: {props.entityUuid}</div>
-              <div>instance uuid: {props.instance?.uuid}</div>
-              <div>
-                target entity:{" "}
-                {currentReportTargetEntity?.name ?? "report target entity not found!"}
-              </div>
-              {props.zoomInPath && <div>zoom path: {props.zoomInPath}</div>}
-              {/* <div>resolved schema: {JSON.stringify(resolvedJzodSchema)}</div> */}
-              <ThemedPreformattedText>
-                target entity definition:{" "}
-                {currentReportSectionTargetEntityDefinition?.name ??
-                  "report target entity definition not found!"}
-              </ThemedPreformattedText>
-              <div> ######################################## </div>
-              <ThemedPreformattedText>
-                entity jzod schema: {safeStringify(instance?.jzodSchema)}
-              </ThemedPreformattedText>
+              {displayAsStructuredElement ? (
+                <div>Can not display non-editor as structured element</div>
+              ) : (
+                <div>
+                  {props.zoomInPath && (
+                    <div
+                      style={{
+                        marginBottom: "8px",
+                        fontSize: "0.9em",
+                        color: "#666",
+                        fontStyle: "italic",
+                      }}
+                    >
+                      Viewing path: {props.zoomInPath}
+                    </div>
+                  )}
+                  <ThemedCodeBlock>
+                    {safeStringify(
+                      props.zoomInPath
+                        ? (() => {
+                            const pathParts = props.zoomInPath.split(".");
+                            let current = instance;
+                            for (const part of pathParts) {
+                              if (current && typeof current === "object") {
+                                current = current[part];
+                              } else {
+                                return `Path "${props.zoomInPath}" not found`;
+                              }
+                            }
+                            return current;
+                          })()
+                        : instance
+                    )}
+                  </ThemedCodeBlock>
+                </div>
+              )}
             </div>
-          )}
+          )
+        ) : (
+          <div>
+            Oops, ReportSectionEntityInstance could not be displayed.
+            <p />
+            <div>props deploymentUuid: {props.deploymentUuid}</div>
+            <div>props selfApplication section: {props.applicationSection}</div>
+            <div>context selfApplication section: {context.applicationSection}</div>
+            <div>instance entityUuid: {props.entityUuid}</div>
+            <div>instance uuid: {props.instance?.uuid}</div>
+            <div>
+              target entity: {currentReportTargetEntity?.name ?? "report target entity not found!"}
+            </div>
+            {props.zoomInPath && <div>zoom path: {props.zoomInPath}</div>}
+            {/* <div>resolved schema: {JSON.stringify(resolvedJzodSchema)}</div> */}
+            <ThemedPreformattedText>
+              target entity definition:{" "}
+              {currentReportSectionTargetEntityDefinition?.name ??
+                "report target entity definition not found!"}
+            </ThemedPreformattedText>
+            <div> ######################################## </div>
+            <ThemedPreformattedText>
+              entity jzod schema: {safeStringify(instance?.jzodSchema)}
+            </ThemedPreformattedText>
+          </div>
+        )}
         {/* </div> */}
         {/* <PerformanceMetricsDisplay /> */}
       </ThemedContainer>

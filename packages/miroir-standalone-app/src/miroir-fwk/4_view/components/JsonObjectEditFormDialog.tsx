@@ -19,6 +19,7 @@ import {
   MiroirLoggerFactory,
   ResolvedJzodSchemaReturnType,
   Uuid,
+  defaultMetaModelEnvironment,
   jzodTypeCheck,
   selfApplicationDeploymentMiroir
 } from "miroir-core";
@@ -531,7 +532,7 @@ export function JsonObjectEditFormDialog(props: JsonObjectEditFormDialogProps) {
               },
             },
           },
-          currentAppModel
+          defaultMetaModelEnvironment
         );
       } else {
         const updateAction: InstanceAction = {

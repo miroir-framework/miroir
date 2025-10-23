@@ -218,14 +218,9 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
   log.info("reportData", reportData);
 
   const reportViewData = useMemo(() => ({
-    // return typeof reportData === "object" && !Array.isArray(reportData)
-    // ? 
-    // {
       ...reportData,
       reportData,
       storedQueryData: props.storedQueryData
-    // }
-    // }: reportData;
   }), [reportData, props.storedQueryData]);
 
   log.info("ReportView reportViewData", reportViewData);
@@ -349,11 +344,6 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
           </Box>
         )}
 
-        {/* Task 2.10: Pass down editMode and callbacks as props - will be implemented in task 3.0 */}
-        {/* <ReportView
-        {...props}
-        reportDefinition={reportToDisplay}
-      /> */}
         {props.applicationSection ? (
           reportData.elementType == "failure" ? (
             <div>found query failure! {JSON.stringify(reportData, null, 2)}</div>
@@ -366,7 +356,6 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
                   reportEntityDefinition={reportEntityDefinition}
                   deploymentUuid={props.deploymentUuid}
                   applicationSection={props.applicationSection}
-                  // sectionPath={props.sectionPath}
                   hasValidationErrors={hasValidationErrors}
                   onDefinitionChange={setLocalEditedDefinition}
                   onValidationChange={setHasValidationErrors}
@@ -376,7 +365,7 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
                 reportData={reportViewData}
                 fetchedDataJzodSchema={fetchedDataJzodSchema}
                 reportSection={props.reportDefinition?.definition.section}
-                sectionPath={["definition", "section"]}
+                reportSectionPath={["definition", "section"]}
                 reportDefinition={props.reportDefinition}
                 applicationSection={props.applicationSection}
                 deploymentUuid={props.deploymentUuid}

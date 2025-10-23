@@ -54,7 +54,7 @@ export interface ReportSectionViewPropsBase {
 
 export interface ReportSectionViewWithEditorProps extends ReportSectionViewPropsBase {
   editMode?: boolean,
-  sectionPath?: ( string | number )[],
+  reportSectionPath?: ( string | number )[],
   onSectionEdit?: (path: string, newDefinition: ReportSection) => void,
   onSectionCancel?: (path: string) => void,
   isSectionModified?: boolean,
@@ -65,7 +65,7 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
   const context = useMiroirContextService();
   const showPerformanceDisplay = context.showPerformanceDisplay;
 
-  const currentNavigationKey = `${props.deploymentUuid}-${props.applicationSection}-${props.sectionPath ?? 'root'}`;
+  const currentNavigationKey = `${props.deploymentUuid}-${props.applicationSection}-${props.reportSectionPath ?? 'root'}`;
   const { navigationCount, totalCount } = useRenderTracker("ReportSectionViewWithEditor", currentNavigationKey);
 
   log.info("ReportSectionViewWithEditor render", currentNavigationKey, "props", props);
@@ -141,7 +141,7 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
                 const newDef = localEditedDefinition ?? props.reportSection.definition;
                 props.onSectionEdit &&
                   // props.onSectionEdit(props.sectionPath ?? "", {
-                  props.onSectionEdit(props.sectionPath?.join(".") ?? "", {
+                  props.onSectionEdit(props.reportSectionPath?.join(".") ?? "", {
                     ...props.reportSection,
                     definition: newDef,
                   });
@@ -162,7 +162,7 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
               setIsEditing(false);
               setLocalEditedDefinition(undefined);
               setHasValidationErrors(false);
-              props.onSectionCancel && props.onSectionCancel(props.sectionPath?.join(".") ?? "");
+              props.onSectionCancel && props.onSectionCancel(props.reportSectionPath?.join(".") ?? "");
             }}
           >
             <CloseIcon />
@@ -186,7 +186,7 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
                     {...props}
                     reportSection={innerReportSection}
                     // sectionPath={(props.sectionPath ?? '') + `/definition[${rowIndex}][${colIndex}]`}
-                    sectionPath={[...(props.sectionPath ?? []),"definition",rowIndex,colIndex]}
+                    reportSectionPath={[...(props.reportSectionPath ?? []),"definition",rowIndex,colIndex]}
                   />
                 </div>
               ))}
@@ -209,7 +209,7 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
                 {...props}
                 reportSection={innerReportSection}
                 // sectionPath={(props.sectionPath ?? '') + `/definition[${index}]`}
-                sectionPath={[...(props.sectionPath ?? []),"definition", index]}
+                reportSectionPath={[...(props.reportSectionPath ?? []),"definition", index]}
               />
             </div>
           ))}
@@ -225,10 +225,11 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
         <code>
           ReportSectionViewEditor leaf: editMode {JSON.stringify(props.editMode)}, isEditing{" "}
           {JSON.stringify(isEditing)},
-          props.sectionPath {JSON.stringify(props.sectionPath)},
+          props.sectionPath {JSON.stringify(props.reportSectionPath)},
+          {/* reportEntityDefinition {JSON.stringify(reportEntityDefinition)} */}
           {/* props.reportDefinition {JSON.stringify(props.reportDefinition)} */}
           {/* sectionDefinition {JSON.stringify(props.reportSection)} */}
-          sectionDefinition2 {JSON.stringify(resolvePathOnObject(props.reportDefinition, props.sectionPath ?? []))}
+          sectionDefinition2 {JSON.stringify(resolvePathOnObject(props.reportDefinition, props.reportSectionPath ?? []))}
         </code>
       {/* </pre> */}
       <div style={{ position: "relative" }}>
@@ -238,18 +239,6 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
             ReportSectionViewWithEditor renders: {navigationCount} (total: {totalCount})
           </ThemedText>
         )}
-        {/* {isEditing && reportEntityDefinition && (
-          <InlineReportEditor
-            reportDefinition={props.reportDefinition}
-            reportEntityDefinition={reportEntityDefinition}
-            deploymentUuid={props.deploymentUuid}
-            applicationSection={props.applicationSection}
-            sectionPath={props.sectionPath}
-            hasValidationErrors={hasValidationErrors}
-            onDefinitionChange={setLocalEditedDefinition}
-            onValidationChange={setHasValidationErrors}
-          />
-        )} */}
         {props.reportSection.type == "objectListReportSection" && (
           <div>
             {(currentListReportTargetEntity && currentListReportTargetEntityDefinition) ||
@@ -282,6 +271,7 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
             applicationSection={props.applicationSection as ApplicationSection}
             deploymentUuid={props.deploymentUuid}
             entityUuid={props.reportSection.definition.parentUuid}
+            reportSectionPath={props.reportSectionPath}
           />
         )}
         {props.reportSection.type == "graphReportSection" && (
