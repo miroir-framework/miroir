@@ -59,7 +59,7 @@ import { useDocumentOutlineContext } from '../ValueObjectEditor/InstanceEditorOu
 import type { FoldedStateTree } from './FoldedStateTreeUtils.js';
 import { useReportPageContext } from './ReportPageContext.js';
 import { TransformerTestDisplay } from './TransformerTestDisplay.js';
-import { TypedValueObjectEditor } from './TypedValueObjectEditor.js';
+import { TypedValueObjectEditorWithFormik } from './TypedValueObjectEditorWithFormik.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -551,7 +551,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
           {/* {currentReportTargetEntityDefinition && context.applicationSection ? ( */}
           {currentReportTargetEntityDefinition && props.applicationSection ? (
             displayEditor ? (
-              <TypedValueObjectEditor
+              <TypedValueObjectEditorWithFormik
                 labelElement={labelElement}
                 valueObject={instance}
                 valueObjectMMLSchema={currentReportTargetEntityDefinition.jzodSchema}

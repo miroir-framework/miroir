@@ -2304,41 +2304,4 @@ const jzodElementEditorTests: Record<
 // ##############################################################################################
 describe("JzodElementEditor", () => {
   prepareAndRunTestSuites(pageLabel, jzodElementEditorTests);
-  // Object.entries(jzodElementEditorTests).forEach(([editorName, testSuite]) => {
-  //   // const suites: ReactComponentTestSuites<LocalEditorPropsRoot> = getJzodEditorTestSuites(
-  //   const suites: ReactComponentTestSuites<JzodElementEditorProps_Test> = getJzodEditorTestSuites(
-  //     pageLabel,
-  //     testSuite.editor,
-  //     testSuite.getJzodEditorTests,
-  //     testSuite.performanceTests
-  //   );
-  //   let modes: TestMode[];
-  //   if (testSuite.modes === undefined) {
-  //     modes = allTestModes;
-  //   } else if (Array.isArray(testSuite.modes)) {
-  //     modes = testSuite.modes;
-  //   } else if (testSuite.modes === '*') {
-  //     // If the mode is '*', we run all test modes
-  //     modes = allTestModes;
-  //   } else {
-  //     modes = [testSuite.modes];
-  //   }
-
-  //   console.log(`Running tests for ${editorName} with ${Object.keys(suites).length} suites and modes: ${modes.join(', ')}`);
-  //   // console.log(`Test suites: ${JSON.stringify(suites, null, 2)}`);
-  //   // Run all testcases for the first mode, then all for the second, etc.
-  //   modes.forEach((mode: TestMode) => {
-  //     console.log(`Running tests for ${editorName} in mode: ${mode}`);
-  //     Object.entries(suites[editorName].tests).forEach(([testName, testCase]) => {
-  //       console.log(`Running test: ${editorName} - ${mode} - ${testName}`);
-  //       it(`${editorName} - ${mode} - ${testName}`, async () => {
-  //         console.log(`Running test: ${editorName} - ${mode} - ${testName}`);
-  //         await runJzodEditorTest(testCase, suites[editorName], testName, mode);
-  //         console.log(`Completed test: ${editorName} - ${mode} - ${testName}`);
-  //       });
-  //       console.log(`Completed test: ${editorName} - ${mode} - ${testName}`);
-  //     });
-  //     console.log(`Completed all tests for ${editorName} in mode: ${mode}`);
-  //   });
-  // });
 });

@@ -13,6 +13,7 @@ import {
   adminConfigurationDeploymentAdmin,
   adminConfigurationDeploymentMiroir,
   defaultMiroirMetaModel,
+  defaultMiroirModelEnvironment,
   DomainControllerInterface,
   EndpointDefinition,
   getDefaultValueForJzodSchemaWithResolutionNonHook,
@@ -36,7 +37,7 @@ import { deployments, packageName } from '../../../constants.js';
 import { useDomainControllerService, useMiroirContextService, useSnackbar } from '../MiroirContextReactProvider.js';
 import { useCurrentModel } from '../ReduxHooks.js';
 import { cleanLevel } from '../constants.js';
-import { TypedValueObjectEditor } from './Reports/TypedValueObjectEditor.js';
+import { TypedValueObjectEditorWithFormik } from './Reports/TypedValueObjectEditorWithFormik.js';
 import { ThemedFormControl, ThemedInputLabel, ThemedMUISelect, ThemedPaper } from './Themes/index.js';
 import { useReportPageContext } from './Reports/ReportPageContext.js';
 
@@ -248,7 +249,7 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
       // Call the domain controller with the action
       const result = await domainController.handleAction(
         actionToSubmit as any, // Cast to any since we're dynamically constructing the action
-        defaultMiroirMetaModel
+        defaultMiroirModelEnvironment
       );
 
       log.info('EndpointActionCaller: Action result', result);
@@ -369,7 +370,7 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
             <Typography variant="h6" gutterBottom>
               Action Parameters
             </Typography>
-            <TypedValueObjectEditor
+            <TypedValueObjectEditorWithFormik
               labelElement={<ThemedInputLabel>Action Parameters</ThemedInputLabel>}
               valueObject={actionFormInitialValues}
               valueObjectMMLSchema={currentActionParametersMMLSchema}

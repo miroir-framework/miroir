@@ -23,7 +23,7 @@ import {
 } from "../Themes/index";
 import { EventLogComponent } from '../EventLogComponent';
 import { valueToJzod } from '@miroir-framework/jzod';
-import { TypedValueObjectEditor } from '../Reports/TypedValueObjectEditor';
+import { TypedValueObjectEditorWithFormik } from '../Reports/TypedValueObjectEditorWithFormik';
 
 // ################################################################################################
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -201,7 +201,7 @@ const DisplayTransformerEvent: React.FC<{
               {/* <ThemedCodeBlock>
                 {JSON.stringify(Object.keys(activity.transformerParams), null, 2)}
               </ThemedCodeBlock> */}
-              <TypedValueObjectEditor
+              <TypedValueObjectEditorWithFormik
                 labelElement={<div>target:</div>}
                 valueObject={displayedParameters}
                 valueObjectMMLSchema={parametersSchema}

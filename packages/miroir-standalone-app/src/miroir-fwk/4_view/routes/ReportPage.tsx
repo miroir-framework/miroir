@@ -40,13 +40,12 @@ import { PageContainer } from "../components/Page/PageContainer.js";
 import { PerformanceDisplayContainer } from "../components/PerformanceDisplayContainer.js";
 import { useQueryTemplateResults } from "../components/Reports/ReportHooks.js";
 import { ReportPageContextProvider } from "../components/Reports/ReportPageContext.js";
-import { ReportView } from "../components/Reports/ReportView.js";
+import { ReportViewWithEditor } from "../components/Reports/ReportViewWithEditor.js";
 import { ThemedBox, ThemedSpan } from "../components/Themes/index.js";
 import { cleanLevel } from "../constants.js";
 import { useMiroirTheme } from "../contexts/MiroirThemeContext.js";
 import { useRenderTracker } from "../tools/renderCountTracker.js";
 import { RenderPerformanceMetrics } from "../tools/renderPerformanceMeasure.js";
-import { ReportViewWithEditor } from "../components/Reports/ReportViewWithEditor.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

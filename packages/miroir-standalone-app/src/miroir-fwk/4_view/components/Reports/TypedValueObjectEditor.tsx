@@ -1,6 +1,6 @@
-import { Formik, FormikProps } from 'formik';
 import { useEffect, useMemo } from 'react';
 import { useSelector } from 'react-redux';
+import { useFormikValueObject } from './FormikValueObjectContext.js';
 
 import {
   adminConfigurationDeploymentMiroir,
@@ -66,7 +66,7 @@ const codeMirrorExtensions = [javascript()];
 // ################################################################################################
 // ################################################################################################
 // Extracted editor component for ReportSectionEntityInstance
-interface TypedValueObjectEditorProps {
+export interface TypedValueObjectEditorProps {
   labelElement: React.ReactElement | undefined;
   // 
   valueObject?: any,
@@ -215,36 +215,11 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
   //   displaySchema
   // );
   
-  const result = (
-    <Formik
-      enableReinitialize={true}
-      initialValues={displayValueObject}
-      onSubmit={async (values, { setSubmitting, setErrors }) => {
-        if (readonly) {
-          setSubmitting(false);
-          return;
-        }
-        try {
-          log.info("onSubmit formik values", values);
-          
-          // Handle zoom case: merge changes back into the full object for submission
-          const finalValues = hasZoomPath 
-            ? setValueAtPath(valueObject, zoomInPath!, values)
-            : values;
-            
-          await onSubmit(finalValues);
-        } catch (e) {
-          log.error(e);
-        } finally {
-          setSubmitting(false);
-        }
-      }}
-      validateOnChange={false}
-      validateOnBlur={false}
-    >
-      {(formik: FormikProps<Record<string, any>>) => {
-        let typeError: JSX.Element | undefined = undefined;
-        const jzodTypeCheckResult: ResolvedJzodSchemaReturnType | undefined = useMemo(() => {
+  // Access Formik from context (Formik is created in parent component)
+  const formik = useFormikValueObject();
+  
+  let typeError: JSX.Element | undefined = undefined;
+  const jzodTypeCheckResult: ResolvedJzodSchemaReturnType | undefined = useMemo(() => {
           let result: ResolvedJzodSchemaReturnType | undefined = undefined;
           try {
             result =
@@ -324,8 +299,6 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
           }
         }
 
-        const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> =
-          useMemo(() => getMemoizedReduxDeploymentsStateSelectorMap(), []);
         const foreignKeyObjectsFetchQueryParams: SyncQueryRunnerParams<ReduxDeploymentsState> =
           useMemo(
             () =>
@@ -368,7 +341,7 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
             foreignKeyObjectsFetchQueryParams
           ) || {};
 
-        return (
+        const result = (
           <>
             <div>
               {typeError ? "typeError: " : ""}{typeError}
@@ -490,9 +463,6 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
             )}
           </>
         );
-      }}
-    </Formik>
-  );
   
   // Track render performance at end of render (conditional)
   // if (context.showPerformanceDisplay) {

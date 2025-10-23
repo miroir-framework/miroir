@@ -33,7 +33,7 @@ import { cleanLevel } from '../../constants';
 import { useMiroirContextService } from '../../MiroirContextReactProvider';
 import { useCurrentModel } from '../../ReduxHooks';
 import { useReportPageContext } from '../Reports/ReportPageContext';
-import { TypedValueObjectEditor } from '../Reports/TypedValueObjectEditor';
+import { TypedValueObjectEditorWithFormik } from '../Reports/TypedValueObjectEditorWithFormik';
 import {
   ThemedContainer,
   ThemedHeaderSection,
@@ -216,7 +216,7 @@ const EntityInstancePanel = React.memo<{
       {showAllInstances ? (
         /* Show all instances */
         entityInstances.length > 0 ? (
-          <TypedValueObjectEditor
+          <TypedValueObjectEditorWithFormik
             labelElement={<></>}
             valueObject={entityInstances}
             valueObjectMMLSchema={{
@@ -238,7 +238,7 @@ const EntityInstancePanel = React.memo<{
         )
       ) : /* Show single instance */
       selectedEntityInstance ? (
-        <TypedValueObjectEditor
+        <TypedValueObjectEditorWithFormik
           labelElement={<></>}
           valueObject={selectedEntityInstance}
           // valueObjectMMLSchema={createGenericObjectSchema()}
@@ -743,6 +743,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
                   ["rootTransformer"], // transformerPath
                   "TransformerEditor", // label
                   currentTransformerDefinition, // transformer
+                  currentMiroirModelEnvironment,
                   transformerParams,
                   contextResults, // contextResults - pass the instance to transform
                   "value" // resolveBuildTransformersTo
@@ -901,7 +902,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
       {/* 3-Pane Layout */}
       <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
         {/* Top Pane: Transformer Definition Editor */}
-        <TypedValueObjectEditor
+        <TypedValueObjectEditorWithFormik
           labelElement={<>Transformer Definition</>}
           valueObject={currentTransformerDefinition}
           valueObjectMMLSchema={transformerDefinitionSchema}

@@ -49,7 +49,7 @@ import {
 import { ReportSectionEntityInstance } from '../Reports/ReportSectionEntityInstance';
 import { getMemoizedReduxDeploymentsStateSelectorMap, type ReduxStateWithUndoRedo } from 'miroir-localcache-redux';
 import { useSelector } from 'react-redux';
-import { TypedValueObjectEditor } from '../Reports/TypedValueObjectEditor';
+import { TypedValueObjectEditorWithFormik } from '../Reports/TypedValueObjectEditorWithFormik';
 import { TransformerEventsPanel } from './TransformerEventsPanel';
 import { useReportPageContext } from '../Reports/ReportPageContext';
 import type { FoldedStateTree } from '../Reports/FoldedStateTreeUtils';
@@ -117,7 +117,7 @@ export const TransformationResultPanel: React.FC<{
             : safeStringify(transformationResult)}
         </ThemedCodeBlock>
       ) : transformationResult !== null ? (
-        <TypedValueObjectEditor
+        <TypedValueObjectEditorWithFormik
           labelElement={<div>target:</div>}
           valueObject={transformationResult}
           valueObjectMMLSchema={transformationResultSchema ?? { type: "any" } as JzodElement}
