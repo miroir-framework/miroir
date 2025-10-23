@@ -1,143 +1,40 @@
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import {
-  SelfApplicationDeploymentConfiguration,
   ApplicationSection,
+  Domain2ElementFailed,
+  Domain2QueryReturnType,
   Entity,
   EntityDefinition,
+  interpolateExpression,
   LoggerInterface,
   MiroirLoggerFactory,
   RecordOfJzodObject,
-  ReportSection,
   Report,
-  Uuid,
-  Domain2QueryReturnType,
-  Domain2ElementFailed,
-  interpolateExpression,
-  entityReport,
-  selfApplicationDeploymentMiroir
+  ReportSection,
+  resolvePathOnObject,
+  SelfApplicationDeploymentConfiguration,
+  selfApplicationDeploymentMiroir,
+  Uuid
 } from "miroir-core";
 
+import CloseIcon from '@mui/icons-material/Close';
+import EditIcon from '@mui/icons-material/Edit';
+import SaveIcon from '@mui/icons-material/Save';
 import { deployments, packageName } from '../../../../constants.js';
 import { useMiroirContextService } from '../../MiroirContextReactProvider.js';
 import { cleanLevel } from '../../constants.js';
+import { useRenderTracker } from '../../tools/renderCountTracker.js';
+import GraphReportSectionView from '../Graph/GraphReportSectionView.js';
+import { ThemedIconButton, ThemedText } from '../Themes/index.js';
 import { ReportSectionEntityInstance } from './ReportSectionEntityInstance.js';
 import { ReportSectionListDisplay } from './ReportSectionListDisplay.js';
 import { ReportSectionMarkdown } from './ReportSectionMarkdown.js';
-import { useRenderTracker } from '../../tools/renderCountTracker.js';
-import { ThemedBox, ThemedText, ThemedIconButton } from '../Themes/index.js';
-import { TypedValueObjectEditor } from './TypedValueObjectEditor.js';
-import EditIcon from '@mui/icons-material/Edit';
-import SaveIcon from '@mui/icons-material/Save';
-import CloseIcon from '@mui/icons-material/Close';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
-import { InlineReportEditor } from './InlineReportEditor.js';
-import GraphReportSectionView from '../Graph/GraphReportSectionView.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ReportSectionViewWithEditor"), "UI",
 ).then((logger: LoggerInterface) => {log = logger});
-
-// // ################################################################################################
-// // InlineReportEditor Component
-// // ################################################################################################
-// interface InlineReportEditorProps {
-//   reportDefinition: Report;
-//   reportEntityDefinition: EntityDefinition;
-//   deploymentUuid: Uuid;
-//   applicationSection: ApplicationSection;
-//   sectionPath?: string;
-//   hasValidationErrors: boolean;
-//   onDefinitionChange: (extractedSection: any) => void;
-//   onValidationChange: (hasErrors: boolean) => void;
-// }
-
-// const InlineReportEditor: React.FC<InlineReportEditorProps> = ({
-//   reportDefinition,
-//   reportEntityDefinition,
-//   deploymentUuid,
-//   applicationSection,
-//   sectionPath,
-//   hasValidationErrors,
-//   onDefinitionChange,
-//   onValidationChange,
-// }) => {
-//   return (
-//     <div
-//       style={{
-//         marginTop: 12,
-//         border: "2px solid #1976d2",
-//         padding: 12,
-//         borderRadius: 4,
-//         backgroundColor: "#f5f5f5",
-//       }}
-//     >
-//       <div style={{ marginBottom: 12, fontWeight: 600, fontSize: "16px", color: "#1976d2" }}>
-//         Report Editor
-//       </div>
-
-//       {reportDefinition.definition && (
-//         <Accordion style={{ marginBottom: 12 }}>
-//           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-//             <div style={{ fontWeight: 500 }}>Runtime Environment (Read-Only)</div>
-//           </AccordionSummary>
-//           <AccordionDetails>
-//             <TypedValueObjectEditor
-//               labelElement={<span>Report Parameters</span>}
-//               valueObject={reportDefinition.definition}
-//               valueObjectMMLSchema={reportEntityDefinition?.jzodSchema?.definition?.definition}
-//               deploymentUuid={deploymentUuid}
-//               applicationSection={applicationSection}
-//               formLabel="reportParameters"
-//               onSubmit={async () => {}} // No-op for read-only
-//               readonly={true}
-//               maxRenderDepth={Infinity}
-//             />
-//           </AccordionDetails>
-//         </Accordion>
-//       )}
-
-//       {/* Task 4.1-4.7, 4.10-4.11: TypedValueObjectEditor for section definition */}
-//       <TypedValueObjectEditor
-//         labelElement={<span>Section Definition</span>}
-//         valueObject={reportDefinition}
-//         valueObjectMMLSchema={reportEntityDefinition.jzodSchema}
-//         deploymentUuid={deploymentUuid}
-//         applicationSection={applicationSection}
-//         formLabel="reportSection"
-//         onSubmit={async (data: any) => {
-//           log.info("TypedValueObjectEditor onSubmit called", data);
-//           // Extract the edited section from the full report
-//           // The zoomInPath points to the section being edited
-//           const pathParts = (sectionPath ?? "").split("/").filter((p) => p);
-//           let extractedSection = data;
-//           for (const part of pathParts) {
-//             const arrayMatch = part.match(/^(.+)\[(\d+)\]$/);
-//             if (arrayMatch) {
-//               const [, key, index] = arrayMatch;
-//               extractedSection = extractedSection?.[key]?.[parseInt(index)];
-//             } else {
-//               extractedSection = extractedSection?.[part];
-//             }
-//           }
-//           onDefinitionChange(extractedSection);
-//           onValidationChange(false);
-//         }}
-//         zoomInPath={`definition.section${sectionPath ? "/" + sectionPath : ""}`}
-//         maxRenderDepth={Infinity}
-//         readonly={false}
-//       />
-
-//       <div style={{ marginTop: 12, fontSize: "12px", color: "#666", fontStyle: "italic" }}>
-//         {hasValidationErrors
-//           ? "⚠️ Please fix validation errors before saving"
-//           : "✓ Valid - Click the save icon above to apply changes"}
-//       </div>
-//     </div>
-//   );
-// };
 
 // ################################################################################################
 // ReportSectionViewWithEditor Component
@@ -157,12 +54,13 @@ export interface ReportSectionViewPropsBase {
 
 export interface ReportSectionViewWithEditorProps extends ReportSectionViewPropsBase {
   editMode?: boolean,
-  sectionPath?: string,
+  sectionPath?: ( string | number )[],
   onSectionEdit?: (path: string, newDefinition: ReportSection) => void,
   onSectionCancel?: (path: string) => void,
   isSectionModified?: boolean,
 }
 
+// ################################################################################################
 export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorProps) => {
   const context = useMiroirContextService();
   const showPerformanceDisplay = context.showPerformanceDisplay;
@@ -242,7 +140,8 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
               try {
                 const newDef = localEditedDefinition ?? props.reportSection.definition;
                 props.onSectionEdit &&
-                  props.onSectionEdit(props.sectionPath ?? "", {
+                  // props.onSectionEdit(props.sectionPath ?? "", {
+                  props.onSectionEdit(props.sectionPath?.join(".") ?? "", {
                     ...props.reportSection,
                     definition: newDef,
                   });
@@ -263,7 +162,7 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
               setIsEditing(false);
               setLocalEditedDefinition(undefined);
               setHasValidationErrors(false);
-              props.onSectionCancel && props.onSectionCancel(props.sectionPath ?? "");
+              props.onSectionCancel && props.onSectionCancel(props.sectionPath?.join(".") ?? "");
             }}
           >
             <CloseIcon />
@@ -286,7 +185,8 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
                   <ReportSectionViewWithEditor
                     {...props}
                     reportSection={innerReportSection}
-                    sectionPath={(props.sectionPath ?? '') + `/definition[${rowIndex}][${colIndex}]`}
+                    // sectionPath={(props.sectionPath ?? '') + `/definition[${rowIndex}][${colIndex}]`}
+                    sectionPath={[...(props.sectionPath ?? []),"definition",rowIndex,colIndex]}
                   />
                 </div>
               ))}
@@ -308,7 +208,8 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
               <ReportSectionViewWithEditor
                 {...props}
                 reportSection={innerReportSection}
-                sectionPath={(props.sectionPath ?? '') + `/definition[${index}]`}
+                // sectionPath={(props.sectionPath ?? '') + `/definition[${index}]`}
+                sectionPath={[...(props.sectionPath ?? []),"definition", index]}
               />
             </div>
           ))}
@@ -320,12 +221,16 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
   // Leaf section types
   return (
     <>
-      <code>
-        ReportSectionViewEditor leaf: editMode {JSON.stringify(props.editMode)}, isEditing{" "}
-        {JSON.stringify(isEditing)},
-        {/* reportEntityDefinition {JSON.stringify(reportEntityDefinition)} */}
-        props.reportDefinition {JSON.stringify(props.reportDefinition)}
-      </code>
+      {/* <pre> */}
+        <code>
+          ReportSectionViewEditor leaf: editMode {JSON.stringify(props.editMode)}, isEditing{" "}
+          {JSON.stringify(isEditing)},
+          props.sectionPath {JSON.stringify(props.sectionPath)},
+          {/* props.reportDefinition {JSON.stringify(props.reportDefinition)} */}
+          {/* sectionDefinition {JSON.stringify(props.reportSection)} */}
+          sectionDefinition2 {JSON.stringify(resolvePathOnObject(props.reportDefinition, props.sectionPath ?? []))}
+        </code>
+      {/* </pre> */}
       <div style={{ position: "relative" }}>
         {props.editMode && <IconBar />}
         {showPerformanceDisplay && (

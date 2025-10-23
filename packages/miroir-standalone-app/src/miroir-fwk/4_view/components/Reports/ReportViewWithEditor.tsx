@@ -376,6 +376,7 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
                 reportData={reportViewData}
                 fetchedDataJzodSchema={fetchedDataJzodSchema}
                 reportSection={props.reportDefinition?.definition.section}
+                sectionPath={["definition", "section"]}
                 reportDefinition={props.reportDefinition}
                 applicationSection={props.applicationSection}
                 deploymentUuid={props.deploymentUuid}

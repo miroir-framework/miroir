@@ -13,7 +13,6 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { Accordion, AccordionDetails, AccordionSummary } from '@mui/material';
 import { packageName } from '../../../../constants.js';
 import { cleanLevel } from '../../constants.js';
-import { TypedValueObjectEditor } from './TypedValueObjectEditor.js';
 import { ReportSectionEntityInstance } from './ReportSectionEntityInstance.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -65,60 +64,15 @@ export const InlineReportEditor: React.FC<InlineReportEditorProps> = ({
             <div style={{ fontWeight: 500 }}>Runtime Environment (Read-Only)</div>
           </AccordionSummary>
           <AccordionDetails>
-            {/* <TypedValueObjectEditor
-              labelElement={<span>Report Parameters</span>}
-              valueObject={reportDefinition.definition}
-              valueObjectMMLSchema={reportEntityDefinition?.jzodSchema?.definition?.definition}
-              deploymentUuid={deploymentUuid}
-              applicationSection={applicationSection}
-              formLabel="reportParameters"
-              onSubmit={async () => {}} // No-op for read-only
-              readonly={true}
-              maxRenderDepth={Infinity}
-            /> */}
             <ReportSectionEntityInstance
               deploymentUuid={deploymentUuid}
               applicationSection="model"
               entityUuid={reportDefinition.parentUuid}
               instance={reportDefinition}
-              // entityDefinition={reportEntityDefinition}
-              // instanceData={reportDefinition.definition}
-              // readonly={true}
             />
           </AccordionDetails>
         </Accordion>
       )}
-
-      {/* <TypedValueObjectEditor
-        labelElement={<span>Section Definition</span>}
-        valueObject={reportDefinition}
-        valueObjectMMLSchema={reportEntityDefinition.jzodSchema}
-        deploymentUuid={deploymentUuid}
-        applicationSection={applicationSection}
-        formLabel="reportSection"
-        onSubmit={async (data: any) => {
-          log.info("TypedValueObjectEditor onSubmit called", data);
-          // Extract the edited section from the full report
-          // The zoomInPath points to the section being edited
-          const pathParts = (sectionPath ?? "").split("/").filter((p) => p);
-          let extractedSection = data;
-          for (const part of pathParts) {
-            const arrayMatch = part.match(/^(.+)\[(\d+)\]$/);
-            if (arrayMatch) {
-              const [, key, index] = arrayMatch;
-              extractedSection = extractedSection?.[key]?.[parseInt(index)];
-            } else {
-              extractedSection = extractedSection?.[part];
-            }
-          }
-          onDefinitionChange(extractedSection);
-          onValidationChange(false);
-        }}
-        zoomInPath={`definition.section${sectionPath ? "/" + sectionPath : ""}`}
-        maxRenderDepth={Infinity}
-        readonly={false}
-      /> */}
-
       <div style={{ marginTop: 12, fontSize: "12px", color: "#666", fontStyle: "italic" }}>
         {hasValidationErrors
           ? "⚠️ Please fix validation errors before saving"
