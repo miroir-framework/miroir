@@ -1,7 +1,8 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 import {
   ApplicationSection,
+  defaultMiroirModelEnvironment,
   Domain2ElementFailed,
   Domain2QueryReturnType,
   Entity,
@@ -15,14 +16,16 @@ import {
   resolvePathOnObject,
   SelfApplicationDeploymentConfiguration,
   selfApplicationDeploymentMiroir,
-  Uuid
+  Uuid,
+  type DomainControllerInterface,
+  type InstanceAction
 } from "miroir-core";
 
 import CloseIcon from '@mui/icons-material/Close';
 import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
 import { deployments, packageName } from '../../../../constants.js';
-import { useMiroirContextService } from '../../MiroirContextReactProvider.js';
+import { useDomainControllerService, useMiroirContextService } from '../../MiroirContextReactProvider.js';
 import { cleanLevel } from '../../constants.js';
 import { useRenderTracker } from '../../tools/renderCountTracker.js';
 import GraphReportSectionView from '../Graph/GraphReportSectionView.js';
@@ -30,6 +33,7 @@ import { ThemedIconButton, ThemedText } from '../Themes/index.js';
 import { ReportSectionEntityInstance } from './ReportSectionEntityInstance.js';
 import { ReportSectionListDisplay } from './ReportSectionListDisplay.js';
 import { ReportSectionMarkdown } from './ReportSectionMarkdown.js';
+import { Formik } from 'formik';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -172,6 +176,72 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
     </div>
   );
 
+  // ##############################################################################################
+  // FORMIK
+  const domainController: DomainControllerInterface = useDomainControllerService();
+  const currentModelEnvironment = defaultMiroirModelEnvironment;
+  const reportSectionPathAsString = props.reportSectionPath?.join("_") || "";
+  const formInitialValue: any = useMemo(() => ({
+    [reportSectionPathAsString] : entityInstance
+  }), [entityInstance, reportSectionPathAsString]);
+
+  const onEditValueObjectFormSubmit = useCallback(
+      async (data: any) => {
+        log.info("onEditValueObjectFormSubmit called with new object value", data);
+        // TODO: use action queue
+        if (props.deploymentUuid) {
+          if (props.applicationSection == "model") {
+            await domainController.handleAction(
+              {
+                actionType: "transactionalInstanceAction",
+                instanceAction: {
+                  actionType: "updateInstance",
+                  deploymentUuid: props.deploymentUuid,
+                  endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                  payload: {
+                    applicationSection: "model",
+                    objects: [
+                      {
+                        parentName: data[reportSectionPathAsString].name,
+                        parentUuid: data[reportSectionPathAsString].parentUuid,
+                        applicationSection: props.applicationSection,
+                        instances: [data[reportSectionPathAsString]],
+                      },
+                    ],
+                  },
+                },
+              },
+              currentModelEnvironment // TODO: use correct model environment
+            );
+          } else {
+            const updateAction: InstanceAction = {
+              actionType: "updateInstance",
+              deploymentUuid: props.deploymentUuid,
+              endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+              payload: {
+                applicationSection: props.applicationSection ? props.applicationSection : "data",
+                objects: [
+                  {
+                    parentName: data[reportSectionPathAsString].name,
+                    parentUuid: data[reportSectionPathAsString].parentUuid,
+                    applicationSection: props.applicationSection ? props.applicationSection : "data",
+                    instances: [data[reportSectionPathAsString]],
+                  },
+                ],
+              },
+            };
+            await domainController.handleAction(updateAction);
+          }
+        } else {
+          throw new Error("onEditValueObjectFormSubmit props.deploymentUuid is undefined.");
+        }
+      },
+      [domainController, props]
+    );
+
+  // ##############################################################################################
+  // ##############################################################################################
+  // ##############################################################################################
   // For grid/list sections, recurse using this wrapper so editor props propagate
   if (props.reportSection?.type === 'grid') {
     return (
@@ -218,20 +288,26 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
     );
   }
 
+    // ##############################################################################################
+  
   // Leaf section types
   return (
     <>
       {/* <pre> */}
+      {props.editMode && (
         <code>
           ReportSectionViewEditor leaf: editMode {JSON.stringify(props.editMode)}, isEditing{" "}
-          {JSON.stringify(isEditing)},
-          props.sectionPath {JSON.stringify(props.reportSectionPath)},
+          {JSON.stringify(isEditing)}, props.sectionPath {JSON.stringify(props.reportSectionPath)},
           {/* reportEntityDefinition {JSON.stringify(reportEntityDefinition)} */}
           {/* props.reportDefinition {JSON.stringify(props.reportDefinition)} */}
           {/* sectionDefinition {JSON.stringify(props.reportSection)} */}
-          sectionDefinition2 {JSON.stringify(resolvePathOnObject(props.reportDefinition, props.reportSectionPath ?? []))}
+          sectionDefinition2{" "}
+          {JSON.stringify(
+            resolvePathOnObject(props.reportDefinition, props.reportSectionPath ?? [])
+          )}
           <span>reportSectionPath: {JSON.stringify(props.reportSectionPath)}</span>
         </code>
+      )}
       {/* </pre> */}
       <div style={{ position: "relative" }}>
         {props.editMode && <IconBar />}
@@ -267,14 +343,39 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
         )}
         {props.reportSection.type == "objectInstanceReportSection" && (
           <>
-          <ReportSectionEntityInstance
-            // domainElement={props.reportData}
-            initialInstanceValue={entityInstance}
-            applicationSection={props.applicationSection as ApplicationSection}
-            deploymentUuid={props.deploymentUuid}
-            entityUuid={props.reportSection.definition.parentUuid}
-            reportSectionPath={props.reportSectionPath}
-          />
+            <Formik
+              enableReinitialize={true}
+              // initialValues={instance}
+              initialValues={formInitialValue}
+              onSubmit={async (values, { setSubmitting, setErrors }) => {
+                try {
+                  log.info("ReportSectionEntityInstance onSubmit formik values", values);
+                  // Handle zoom case: merge changes back into the full object for submission
+                  // const finalValues = hasZoomPath
+                  //   ? setValueAtPath(initialValueObject, zoomInPath!, values)
+                  //   : values;
+
+                  // await onSubmit(values);
+                  await onEditValueObjectFormSubmit(values);
+                } catch (e) {
+                  log.error(e);
+                } finally {
+                  setSubmitting(false);
+                }
+              }}
+              validateOnChange={false}
+              validateOnBlur={false}
+            >
+              <ReportSectionEntityInstance
+                // domainElement={props.reportData}
+                initialInstanceValue={entityInstance}
+                applicationSection={props.applicationSection as ApplicationSection}
+                deploymentUuid={props.deploymentUuid}
+                entityUuid={props.reportSection.definition.parentUuid}
+                reportSectionPath={props.reportSectionPath}
+                noFormik={true}
+              />
+            </Formik>
           </>
         )}
         {props.reportSection.type == "graphReportSection" && (

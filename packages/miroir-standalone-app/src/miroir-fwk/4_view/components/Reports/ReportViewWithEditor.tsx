@@ -304,9 +304,8 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
   
   return (
     <>
-      <span>ReportViewWithEditor editMode: {editMode ? "true" : "false"}</span>
+      {/* <span>ReportViewWithEditor editMode: {editMode ? "true" : "false"}</span> */}
       <Box sx={{ position: "relative" }}>
-        {/* Task 2.8 & 2.9: Add Submit button at the top (only visible when editMode and modifications exist) */}
         {editMode && modifiedSections.size > 0 && (
           <Box
             sx={{

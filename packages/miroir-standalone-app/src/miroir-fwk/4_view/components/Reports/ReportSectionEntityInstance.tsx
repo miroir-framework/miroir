@@ -114,6 +114,7 @@ export interface ReportSectionEntityInstanceProps {
   deploymentUuid: Uuid,
   entityUuid: Uuid,
   reportSectionPath: ( string | number )[],
+  noFormik?: boolean;
   // Note: Outline props removed since using context now
   showPerformanceDisplay?: boolean;
   zoomInPath?: string; // Optional path like "x.y.z" to zoom into a subset of the instance
@@ -590,21 +591,28 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
           </div>
         )}
 
-        {/* {currentReportSectionTargetEntityDefinition && context.applicationSection ? ( */}
         {currentReportSectionTargetEntityDefinition && props.applicationSection ? (
-          displayEditor ? (
+          displayEditor ? 
+          props.noFormik?(
+              <TypedValueObjectEditor
+                labelElement={labelElement}
+                valueObjectMMLSchema={valueObjectMMLSchema}
+                deploymentUuid={props.deploymentUuid}
+                applicationSection={props.applicationSection}
+                reportSectionPathAsString={reportSectionPathAsString}
+                //
+                formLabel={formLabel}
+                zoomInPath={props.zoomInPath}
+                maxRenderDepth={Infinity} // Always render fully for editor
+              />
+          ):(
             <Formik
               enableReinitialize={true}
               // initialValues={instance}
               initialValues={formInitialValue}
               onSubmit={async (values, { setSubmitting, setErrors }) => {
-                // if (readonly) {
-                //   setSubmitting(false);
-                //   return;
-                // }
                 try {
                   log.info("ReportSectionEntityInstance onSubmit formik values", values);
-
                   // Handle zoom case: merge changes back into the full object for submission
                   // const finalValues = hasZoomPath
                   //   ? setValueAtPath(initialValueObject, zoomInPath!, values)
