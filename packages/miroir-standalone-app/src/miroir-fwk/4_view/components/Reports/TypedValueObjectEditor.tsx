@@ -53,6 +53,7 @@ import { RenderPerformanceMetrics } from '../../tools/renderPerformanceMeasure.j
 import { ErrorFallbackComponent } from '../ErrorFallbackComponent.js';
 import { JzodElementEditor } from '../ValueObjectEditor/JzodElementEditor.js';
 import { CodeBlock_ReadOnly } from './CodeBlock_ReadOnly.js';
+import { lastSubmitButtonClicked } from '../../routes/ReportPage.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -482,7 +483,12 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
                 maxRenderDepth={maxRenderDepth} // always 1
                 displayError={displayError}
                 submitButton={
-                  <button type="submit" role="form" name={pageLabel} form={"form." + pageLabel}>
+                  <button type="submit" role="form" name={pageLabel} form={"form." + pageLabel}
+                  onClick={(e) => {
+                    log.info("TypedValueObjectEditor submit button clicked", e);
+                    formik.setFieldValue(lastSubmitButtonClicked, reportSectionPathAsString);
+                  }}
+                  >
                     submit form.{pageLabel}
                   </button>
                 }

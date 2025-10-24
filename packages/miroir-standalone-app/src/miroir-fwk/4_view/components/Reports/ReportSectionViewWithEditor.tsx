@@ -343,19 +343,12 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
         )}
         {props.reportSection.type == "objectInstanceReportSection" && (
           <>
-            <Formik
+            {/* <Formik
               enableReinitialize={true}
-              // initialValues={instance}
               initialValues={formInitialValue}
               onSubmit={async (values, { setSubmitting, setErrors }) => {
                 try {
                   log.info("ReportSectionEntityInstance onSubmit formik values", values);
-                  // Handle zoom case: merge changes back into the full object for submission
-                  // const finalValues = hasZoomPath
-                  //   ? setValueAtPath(initialValueObject, zoomInPath!, values)
-                  //   : values;
-
-                  // await onSubmit(values);
                   await onEditValueObjectFormSubmit(values);
                 } catch (e) {
                   log.error(e);
@@ -365,9 +358,8 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
               }}
               validateOnChange={false}
               validateOnBlur={false}
-            >
+            > */}
               <ReportSectionEntityInstance
-                // domainElement={props.reportData}
                 initialInstanceValue={entityInstance}
                 applicationSection={props.applicationSection as ApplicationSection}
                 deploymentUuid={props.deploymentUuid}
@@ -375,7 +367,7 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
                 reportSectionPath={props.reportSectionPath}
                 noFormik={true}
               />
-            </Formik>
+            {/* </Formik> */}
           </>
         )}
         {props.reportSection.type == "graphReportSection" && (

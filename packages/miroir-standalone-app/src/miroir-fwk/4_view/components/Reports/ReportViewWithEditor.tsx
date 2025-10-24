@@ -1,6 +1,7 @@
 import { useState, useMemo, useCallback } from 'react';
 import { Box } from '@mui/material';
 import {
+  defaultMiroirModelEnvironment,
   Domain2ElementFailed,
   LoggerInterface,
   MiroirLoggerFactory,
@@ -9,16 +10,19 @@ import {
   type BoxedQueryTemplateWithExtractorCombinerTransformer,
   type BoxedQueryWithExtractorCombinerTransformer,
   type Domain2QueryReturnType,
+  type DomainControllerInterface,
   type ExtractorRunnerParamsForJzodSchema,
+  type InstanceAction,
   type QueryByQuery2GetParamJzodSchema,
   type QueryRunnerMapForJzodSchema,
   type RecordOfJzodObject,
   type ReduxDeploymentsState,
+  type ReportSection,
 } from "miroir-core";
 
 import { packageName } from '../../../../constants.js';
 import { cleanLevel } from '../../constants.js';
-import { useMiroirContextService } from "../../MiroirContextReactProvider.js";
+import { useDomainControllerService, useMiroirContextService } from "../../MiroirContextReactProvider.js";
 import { ReportView } from './ReportView.js';
 import { ReportViewProps, useQueryTemplateResults } from './ReportHooks.js';
 import { ThemedButton, ThemedSpan } from '../Themes/index.js';
@@ -27,6 +31,8 @@ import { getMemoizedReduxDeploymentsStateJzodSchemaSelectorMap } from 'miroir-lo
 import { useReduxDeploymentsStateJzodSchemaSelector } from '../../ReduxHooks.js';
 import { useDocumentOutlineContext } from '../ValueObjectEditor/InstanceEditorOutlineContext.js';
 import { InlineReportEditor } from './InlineReportEditor.js';
+import { Formik } from 'formik';
+import { lastSubmitButtonClicked } from '../../routes/ReportPage.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -39,7 +45,59 @@ export interface ReportViewWithEditorProps extends ReportViewProps {
   // No additional props needed initially
 }
 
-// Task 2.3: Implement ReportViewWithEditor component
+const reportSectionsFormValue = 
+  (
+    reportSection: ReportSection,
+    reportData: Record<string, any>,
+    reportSectionPath: (string | number)[]
+  ): Record<string, any> => {
+    log.info("reportSectionsFormValue", reportSection, reportData, reportSectionPath);
+      switch (reportSection.type) {
+        case "list":
+          return reportSection.definition.reduce(
+            (acc: Record<string, any>, curr: ReportSection, index: number):Record<string, any> => {
+              return {
+                ...acc,
+                ...reportSectionsFormValue(curr, reportData, reportSectionPath.concat("definition",index)),
+              };
+            },
+            {}
+          );
+        case "grid":
+          case "grid":
+            return reportSection.definition.reduce(
+              (acc: Record<string, any>, row: ReportSection[], rowIndex: number) => {
+                const rowObj = row.reduce(
+            (rowAcc: Record<string, any>, subSection: ReportSection, colIndex: number) => ({
+              ...rowAcc,
+              ...reportSectionsFormValue(
+                subSection,
+                reportData,
+                reportSectionPath.concat("definition", rowIndex, colIndex)
+              ),
+            }),
+            {}
+                );
+                return { ...acc, ...rowObj };
+              },
+              {}
+            );
+        case "objectInstanceReportSection": {
+          return {
+            [reportSectionPath.join("_")]:
+              reportData[reportSection.definition.fetchedDataReference ?? ""],
+          };
+        }
+        case "objectListReportSection":
+        case "markdownReportSection":
+        case "graphReportSection":
+        default:
+          return {};
+      }
+    }
+  ;
+
+// ###############################################################################################
 export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
   const context = useMiroirContextService();
   const outlineContext = useDocumentOutlineContext();
@@ -302,6 +360,81 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
 
   const [localEditedDefinition, setLocalEditedDefinition] = useState<any | undefined>(reportEntityDefinition);
   
+  // ###############################################################################################
+  // ###############################################################################################
+  // ###############################################################################################
+  // ###############################################################################################
+  // ###############################################################################################
+  const initialReportSectionsFormValue = useMemo(() => {
+    log.info("############################################## reportSectionsFormValue", props.reportDefinition?.definition.section, reportData, []);
+    const r= reportSectionsFormValue(props.reportDefinition?.definition.section, reportData, ["definition", "section"]);
+    // const r= reportSectionsFormValue(props.reportDefinition?.definition.section, reportData, []);
+    log.info("reportSectionsFormValue initialReportSectionsFormValue", JSON.stringify(r,null,2));
+    return r;
+
+  }, [props.reportDefinition, reportData]);
+
+  // ##############################################################################################
+  const domainController: DomainControllerInterface = useDomainControllerService();
+  const currentModelEnvironment = defaultMiroirModelEnvironment;
+  // const reportSectionPathAsString = reportSectionPath?.join("_") || "";
+  const onEditValueObjectFormSubmit = useCallback(
+    async (data: any) => {
+      log.info("onEditValueObjectFormSubmit called with new object value", data);
+      // TODO: use action queue
+      if (props.deploymentUuid) {
+        if (props.applicationSection == "model") {
+          await domainController.handleAction(
+            {
+              actionType: "transactionalInstanceAction",
+              instanceAction: {
+                actionType: "updateInstance",
+                deploymentUuid: props.deploymentUuid,
+                endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                payload: {
+                  applicationSection: "model",
+                  objects: [
+                    {
+                      parentName: data[data[lastSubmitButtonClicked]].name,
+                      parentUuid: data[data[lastSubmitButtonClicked]].parentUuid,
+                      applicationSection: props.applicationSection,
+                      instances: [data[data[lastSubmitButtonClicked]]],
+                    },
+                  ],
+                },
+              },
+            },
+            currentModelEnvironment // TODO: use correct model environment
+          );
+        } else {
+          const updateAction: InstanceAction = {
+            actionType: "updateInstance",
+            deploymentUuid: props.deploymentUuid,
+            endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+            payload: {
+              applicationSection: props.applicationSection ? props.applicationSection : "data",
+              objects: [
+                {
+                  parentName: data[data[lastSubmitButtonClicked]].name,
+                  parentUuid: data[data[lastSubmitButtonClicked]].parentUuid,
+                  applicationSection: props.applicationSection ? props.applicationSection : "data",
+                  instances: [data[data[lastSubmitButtonClicked]]],
+                },
+              ],
+            },
+          };
+          await domainController.handleAction(updateAction);
+        }
+      } else {
+        throw new Error("onEditValueObjectFormSubmit props.deploymentUuid is undefined.");
+      }
+    },
+    [domainController, props]
+  );
+
+  // ##############################################################################################
+  // ##############################################################################################
+  // ##############################################################################################
   return (
     <>
       {/* <span>ReportViewWithEditor editMode: {editMode ? "true" : "false"}</span> */}
@@ -361,19 +494,43 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
                   onValidationChange={setHasValidationErrors}
                 />
               )}
-              <ReportSectionViewWithEditor
-                reportData={reportViewData}
-                fetchedDataJzodSchema={fetchedDataJzodSchema}
-                reportSection={props.reportDefinition?.definition.section}
-                reportSectionPath={["definition", "section"]}
-                reportDefinition={props.reportDefinition}
-                applicationSection={props.applicationSection}
-                deploymentUuid={props.deploymentUuid}
-                editMode={editMode}
-                paramsAsdomainElements={props.pageParams}
-                isOutlineOpen={outlineContext.isOutlineOpen}
-                onToggleOutline={outlineContext.onToggleOutline}
-              />
+              <Formik
+                enableReinitialize={true}
+                // initialValues={formInitialValue}
+                initialValues={initialReportSectionsFormValue}
+                onSubmit={async (values, { setSubmitting, setErrors }) => {
+                  try {
+                    log.info("ReportSectionEntityInstance onSubmit formik values", values);
+                    // Handle zoom case: merge changes back into the full object for submission
+                    // const finalValues = hasZoomPath
+                    //   ? setValueAtPath(initialValueObject, zoomInPath!, values)
+                    //   : values;
+  
+                    // await onSubmit(values);
+                    await onEditValueObjectFormSubmit(values); // TODO: make it return Promise, no await because handler should return immediately
+                  } catch (e) {
+                    log.error(e);
+                  } finally {
+                    setSubmitting(false);
+                  }
+                }}
+                validateOnChange={false}
+                validateOnBlur={false}
+              >
+                <ReportSectionViewWithEditor
+                  reportData={reportViewData}
+                  fetchedDataJzodSchema={fetchedDataJzodSchema}
+                  reportSection={props.reportDefinition?.definition.section}
+                  reportSectionPath={["definition", "section"]}
+                  reportDefinition={props.reportDefinition}
+                  applicationSection={props.applicationSection}
+                  deploymentUuid={props.deploymentUuid}
+                  editMode={editMode}
+                  paramsAsdomainElements={props.pageParams}
+                  isOutlineOpen={outlineContext.isOutlineOpen}
+                  onToggleOutline={outlineContext.onToggleOutline}
+                />
+              </Formik>
             </>
           ) : (
             <ThemedSpan style={{ color: "red" }}>no deployment found!</ThemedSpan>

@@ -63,6 +63,7 @@ import { TransformerTestDisplay } from './TransformerTestDisplay.js';
 import { TypedValueObjectEditorWithFormik } from './TypedValueObjectEditorWithFormik.js';
 import { Formik } from 'formik';
 import { TypedValueObjectEditor } from './TypedValueObjectEditor.js';
+import { lastSubmitButtonClicked } from '../../routes/ReportPage.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -230,6 +231,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
     type: "object",
     definition: {
       [reportSectionPathAsString]: currentReportSectionTargetEntityDefinition?.jzodSchema ?? { type: "any" },
+      [lastSubmitButtonClicked]: { type: "string", optional: true}
     }
   }), [reportSectionPathAsString, currentReportSectionTargetEntityDefinition?.jzodSchema]);
 
