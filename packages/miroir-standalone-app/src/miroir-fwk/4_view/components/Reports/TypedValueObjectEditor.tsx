@@ -28,6 +28,7 @@ import {
   SyncQueryRunner,
   SyncQueryRunnerParams,
   Uuid,
+  type JzodObject,
   type JzodSchema,
   type MiroirModelEnvironment
 } from "miroir-core";
@@ -73,8 +74,8 @@ export interface TypedValueObjectEditorProps {
   // zoom functionality
   zoomInPath?: string; // Optional path like "x.y.z" to zoom into a subset of the instance
   // established on the basis of the report section target entity schema, does not take zoomInPath into account!
-  valueObjectMMLSchema: JzodElement | undefined;
-  reportSectionPathAsString?: string; 
+  valueObjectMMLSchema: JzodObject;
+  reportSectionPathAsString: string; 
   // 
   applicationSection: ApplicationSection,
   deploymentUuid: Uuid,
@@ -245,17 +246,21 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
     try {
       result =
         context.miroirFundamentalJzodSchema && zoomedInDisplaySchema && formik.values && currentModel
-          ? jzodTypeCheck(
-              zoomedInDisplaySchema,
-              formik.values,
+          ? jzodTypeCheck( // TODO: typecheck only the value for the currently edited instance / object, not the whole formik.values
+              valueObjectMMLSchema, 
+              formik.values, // this leads to an error for now if there are multiple instances in the formik values
+              // valueObjectMMLSchema.definition[reportSectionPathAsString], 
+              // formik.values[reportSectionPathAsString], // this leads to an error for now if there are multiple instances in the formik values
               [],
               [],
               currentMiroirModelEnvironment,
               {}, // relativeReferenceJzodContext
-              formik.values, // currentDefaultValue
+              formik.values,// formik.values, // currentDefaultValue
+              // formik.values[reportSectionPathAsString], // currentDefaultValue
               reduxDeploymentsState,
               deploymentUuid, // Now passing the actual deploymentUuid
-              formik.values // rootObject - use full object for context, but validate the subset
+              formik.values,// rootObject - use full object for context, but validate the subset
+              // formik.values[reportSectionPathAsString], //formik.values // rootObject - use full object for context, but validate the subset
               // hasZoomPath ? valueObject : formik.values // rootObject - use full object for context, but validate the subset
             )
           : undefined;

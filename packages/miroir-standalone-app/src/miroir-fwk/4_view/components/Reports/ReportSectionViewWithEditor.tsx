@@ -18,7 +18,8 @@ import {
   selfApplicationDeploymentMiroir,
   Uuid,
   type DomainControllerInterface,
-  type InstanceAction
+  type InstanceAction,
+  type JzodObject
 } from "miroir-core";
 
 import CloseIcon from '@mui/icons-material/Close';
@@ -48,6 +49,7 @@ export interface ReportSectionViewPropsBase {
   deploymentUuid: Uuid,
   reportData: Domain2QueryReturnType<{reportData:Record<string,any>, storedQueryData?: any}>,
   fetchedDataJzodSchema: RecordOfJzodObject | undefined,
+  formValueMLSchema: JzodObject;
   paramsAsdomainElements: Domain2QueryReturnType<Record<string,any>>,
   reportSection: ReportSection,
   reportDefinition: Report,
@@ -186,58 +188,58 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
   }), [entityInstance, reportSectionPathAsString]);
 
   const onEditValueObjectFormSubmit = useCallback(
-      async (data: any) => {
-        log.info("onEditValueObjectFormSubmit called with new object value", data);
-        // TODO: use action queue
-        if (props.deploymentUuid) {
-          if (props.applicationSection == "model") {
-            await domainController.handleAction(
-              {
-                actionType: "transactionalInstanceAction",
-                instanceAction: {
-                  actionType: "updateInstance",
-                  deploymentUuid: props.deploymentUuid,
-                  endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-                  payload: {
-                    applicationSection: "model",
-                    objects: [
-                      {
-                        parentName: data[reportSectionPathAsString].name,
-                        parentUuid: data[reportSectionPathAsString].parentUuid,
-                        applicationSection: props.applicationSection,
-                        instances: [data[reportSectionPathAsString]],
-                      },
-                    ],
-                  },
+    async (data: any) => {
+      log.info("onEditValueObjectFormSubmit called with new object value", data);
+      // TODO: use action queue
+      if (props.deploymentUuid) {
+        if (props.applicationSection == "model") {
+          await domainController.handleAction(
+            {
+              actionType: "transactionalInstanceAction",
+              instanceAction: {
+                actionType: "updateInstance",
+                deploymentUuid: props.deploymentUuid,
+                endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                payload: {
+                  applicationSection: "model",
+                  objects: [
+                    {
+                      parentName: data[reportSectionPathAsString].name,
+                      parentUuid: data[reportSectionPathAsString].parentUuid,
+                      applicationSection: props.applicationSection,
+                      instances: [data[reportSectionPathAsString]],
+                    },
+                  ],
                 },
               },
-              currentModelEnvironment // TODO: use correct model environment
-            );
-          } else {
-            const updateAction: InstanceAction = {
-              actionType: "updateInstance",
-              deploymentUuid: props.deploymentUuid,
-              endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-              payload: {
-                applicationSection: props.applicationSection ? props.applicationSection : "data",
-                objects: [
-                  {
-                    parentName: data[reportSectionPathAsString].name,
-                    parentUuid: data[reportSectionPathAsString].parentUuid,
-                    applicationSection: props.applicationSection ? props.applicationSection : "data",
-                    instances: [data[reportSectionPathAsString]],
-                  },
-                ],
-              },
-            };
-            await domainController.handleAction(updateAction);
-          }
+            },
+            currentModelEnvironment // TODO: use correct model environment
+          );
         } else {
-          throw new Error("onEditValueObjectFormSubmit props.deploymentUuid is undefined.");
+          const updateAction: InstanceAction = {
+            actionType: "updateInstance",
+            deploymentUuid: props.deploymentUuid,
+            endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+            payload: {
+              applicationSection: props.applicationSection ? props.applicationSection : "data",
+              objects: [
+                {
+                  parentName: data[reportSectionPathAsString].name,
+                  parentUuid: data[reportSectionPathAsString].parentUuid,
+                  applicationSection: props.applicationSection ? props.applicationSection : "data",
+                  instances: [data[reportSectionPathAsString]],
+                },
+              ],
+            },
+          };
+          await domainController.handleAction(updateAction);
         }
-      },
-      [domainController, props]
-    );
+      } else {
+        throw new Error("onEditValueObjectFormSubmit props.deploymentUuid is undefined.");
+      }
+    },
+    [domainController, props]
+  );
 
   // ##############################################################################################
   // ##############################################################################################
@@ -365,7 +367,8 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
                 deploymentUuid={props.deploymentUuid}
                 entityUuid={props.reportSection.definition.parentUuid}
                 reportSectionPath={props.reportSectionPath}
-                noFormik={true}
+                formValueMLSchema={props.formValueMLSchema}
+                formikAlreadyAvailable={true}
               />
             {/* </Formik> */}
           </>

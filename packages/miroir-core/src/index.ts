@@ -515,6 +515,7 @@ export {
 } from "./0_interfaces/1_core/jzodUnion_RecursivelyUnfoldInterface";
 export { DeploymentMode } from "./0_interfaces/1_core/MiroirConfig.js";
 export {
+  DeploymentUuidToReportsEntitiesDefinitions,
   DeploymentUuidToReportsEntitiesDefinitionsMapping,
   foldableElementTypes,
 } from "./0_interfaces/1_core/Model.js";
@@ -722,7 +723,6 @@ export {
   StoreSectionFactoryRegister,
 } from "./0_interfaces/4-services/PersistenceStoreControllerInterface";
 export { PersistenceStoreControllerManagerInterface } from "./0_interfaces/4-services/PersistenceStoreControllerManagerInterface";
-export { getApplicationSection } from "./1_core/AdminApplication.js";
 export { ACTION_OK, MAX_BLOB_FILE_SIZE, BLOB_SIZE_WARNING_THRESHOLD } from "./1_core/constants.js";
 export { DomainInstanceUuidIndexToArray } from "./1_core/DomainState.js";
 // export { rootLessListKeyMapDEFUNCT } from "./1_core/jzod/rootLessListKeyMap";
@@ -767,6 +767,7 @@ export {
   defaultMetaModelEnvironment,
   defaultMiroirModelEnvironment,
   // getCurrentEntityDefinition,
+  getApplicationSection,
   getReportsAndEntitiesDefinitionsForDeploymentUuid,
   metaModelEntities,
   miroirModelEntities,

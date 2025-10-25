@@ -61,7 +61,7 @@ import type { FoldedStateTree } from './FoldedStateTreeUtils.js';
 import { useReportPageContext } from './ReportPageContext.js';
 import { TransformerTestDisplay } from './TransformerTestDisplay.js';
 import { TypedValueObjectEditorWithFormik } from './TypedValueObjectEditorWithFormik.js';
-import { Formik } from 'formik';
+import { Formik, useFormikContext } from 'formik';
 import { TypedValueObjectEditor } from './TypedValueObjectEditor.js';
 import { lastSubmitButtonClicked } from '../../routes/ReportPage.js';
 
@@ -115,7 +115,8 @@ export interface ReportSectionEntityInstanceProps {
   deploymentUuid: Uuid,
   entityUuid: Uuid,
   reportSectionPath: ( string | number )[],
-  noFormik?: boolean;
+  formValueMLSchema: JzodObject;
+  formikAlreadyAvailable?: boolean;
   // Note: Outline props removed since using context now
   showPerformanceDisplay?: boolean;
   zoomInPath?: string; // Optional path like "x.y.z" to zoom into a subset of the instance
@@ -188,8 +189,18 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   // Use outline context for outline state management
   const outlineContext = useDocumentOutlineContext();
   const reportContext = useReportPageContext();
+  const formikContext = useFormikContext<Record<string, any>>();
 
   const instance: any = props.initialInstanceValue;
+  // const instance: any = useMemo(() => {
+  //   if (props.formikAlreadyAvailable) {
+  //     formikContext.values[props.reportSectionPath?.join("_") || ""] as EntityInstance;
+  //   } else {
+  //     return props.initialInstanceValue;
+  //   }
+  // }, [props.initialInstanceValue, formikContext]) as EntityInstance;
+
+  log.info("ReportSectionEntityInstance: instance to display:", instance, "formik:", formikContext);
 
   // DO NOT USE dot notation for reportSectionPath as it is interpreted by Formik as nested object paths!
   const reportSectionPathAsString = props.reportSectionPath?.join("_") || "";
@@ -227,13 +238,13 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
         (e) => e?.entityUuid === props.entityUuid
   );
 
-  const valueObjectMMLSchema = useMemo<JzodObject>(() => ({
-    type: "object",
-    definition: {
-      [reportSectionPathAsString]: currentReportSectionTargetEntityDefinition?.jzodSchema ?? { type: "any" },
-      [lastSubmitButtonClicked]: { type: "string", optional: true}
-    }
-  }), [reportSectionPathAsString, currentReportSectionTargetEntityDefinition?.jzodSchema]);
+  // const valueObjectMMLSchema = useMemo<JzodObject>(() => ({
+  //   type: "object",
+  //   definition: {
+  //     [reportSectionPathAsString]: currentReportSectionTargetEntityDefinition?.jzodSchema ?? { type: "any" },
+  //     [lastSubmitButtonClicked]: { type: "string", optional: true}
+  //   }
+  // }), [reportSectionPathAsString, currentReportSectionTargetEntityDefinition?.jzodSchema]);
 
   log.info(
     "ReportSectionEntityInstance",
@@ -595,10 +606,11 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
 
         {currentReportSectionTargetEntityDefinition && props.applicationSection ? (
           displayEditor ? 
-          props.noFormik?(
+          props.formikAlreadyAvailable?(
               <TypedValueObjectEditor
                 labelElement={labelElement}
-                valueObjectMMLSchema={valueObjectMMLSchema}
+                // valueObjectMMLSchema={valueObjectMMLSchema}
+                valueObjectMMLSchema={props.formValueMLSchema}
                 deploymentUuid={props.deploymentUuid}
                 applicationSection={props.applicationSection}
                 reportSectionPathAsString={reportSectionPathAsString}
@@ -633,7 +645,8 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
             >
               <TypedValueObjectEditor
                 labelElement={labelElement}
-                valueObjectMMLSchema={valueObjectMMLSchema}
+                // valueObjectMMLSchema={valueObjectMMLSchema}
+                valueObjectMMLSchema={props.formValueMLSchema}
                 deploymentUuid={props.deploymentUuid}
                 applicationSection={props.applicationSection}
                 reportSectionPathAsString={reportSectionPathAsString}

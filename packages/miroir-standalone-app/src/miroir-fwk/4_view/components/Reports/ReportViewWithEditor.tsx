@@ -3,21 +3,29 @@ import { Box } from '@mui/material';
 import {
   defaultMiroirModelEnvironment,
   Domain2ElementFailed,
+  getApplicationSection,
   LoggerInterface,
   MiroirLoggerFactory,
   RootReport,
   selfApplicationDeploymentMiroir,
+  type ApplicationSection,
   type BoxedQueryTemplateWithExtractorCombinerTransformer,
   type BoxedQueryWithExtractorCombinerTransformer,
+  type DeploymentUuidToReportsEntitiesDefinitions,
+  type DeploymentUuidToReportsEntitiesDefinitionsMapping,
   type Domain2QueryReturnType,
   type DomainControllerInterface,
+  type EntityDefinition,
   type ExtractorRunnerParamsForJzodSchema,
   type InstanceAction,
+  type JzodElement,
+  type JzodObject,
   type QueryByQuery2GetParamJzodSchema,
   type QueryRunnerMapForJzodSchema,
   type RecordOfJzodObject,
   type ReduxDeploymentsState,
   type ReportSection,
+  type Uuid,
 } from "miroir-core";
 
 import { packageName } from '../../../../constants.js';
@@ -45,29 +53,104 @@ export interface ReportViewWithEditorProps extends ReportViewProps {
   // No additional props needed initially
 }
 
-const reportSectionsFormValue = 
-  (
-    reportSection: ReportSection,
-    reportData: Record<string, any>,
-    reportSectionPath: (string | number)[]
-  ): Record<string, any> => {
-    log.info("reportSectionsFormValue", reportSection, reportData, reportSectionPath);
-      switch (reportSection.type) {
-        case "list":
-          return reportSection.definition.reduce(
-            (acc: Record<string, any>, curr: ReportSection, index: number):Record<string, any> => {
-              return {
-                ...acc,
-                ...reportSectionsFormValue(curr, reportData, reportSectionPath.concat("definition",index)),
-              };
-            },
+const reportSectionsFormSchema = (
+  reportSection: ReportSection,
+  deploymentUuid: Uuid,
+  // applicationSection: ApplicationSection,
+  // entityUuid: Uuid,
+  currentDeploymentReportsEntitiesDefinitionsMapping: DeploymentUuidToReportsEntitiesDefinitions,
+  reportData: Record<string, any>,
+  reportSectionPath: (string | number)[]
+): Record<string, JzodElement> => {
+  log.info("reportSectionsFormValue", reportSection, reportData, reportSectionPath);
+  switch (reportSection.type) {
+    case "list":
+      return reportSection.definition.reduce(
+        (acc: Record<string, any>, curr: ReportSection, index: number): Record<string, any> => {
+          return {
+            ...acc,
+            ...reportSectionsFormSchema(
+              curr,
+              deploymentUuid,
+              // applicationSection,
+              // entityUuid,
+              currentDeploymentReportsEntitiesDefinitionsMapping,
+              reportData,
+              reportSectionPath.concat("definition", index)
+            ),
+          };
+        },
+        {}
+      );
+    case "grid":
+      return reportSection.definition.reduce(
+        (acc: Record<string, any>, row: ReportSection[], rowIndex: number) => {
+          const rowObj = row.reduce(
+            (rowAcc: Record<string, any>, subSection: ReportSection, colIndex: number) => ({
+              ...rowAcc,
+              ...reportSectionsFormSchema(
+                subSection,
+                deploymentUuid,
+                // applicationSection,
+                // entityUuid,
+                currentDeploymentReportsEntitiesDefinitionsMapping,
+                reportData,
+                reportSectionPath.concat("definition", rowIndex, colIndex)
+              ),
+            }),
             {}
           );
-        case "grid":
-          case "grid":
-            return reportSection.definition.reduce(
-              (acc: Record<string, any>, row: ReportSection[], rowIndex: number) => {
-                const rowObj = row.reduce(
+          return { ...acc, ...rowObj };
+        },
+        {}
+      );
+    case "objectInstanceReportSection": {
+      const entityUuid = reportSection.definition.parentUuid;
+      const applicationSection = getApplicationSection(deploymentUuid, entityUuid)
+      const targetEntityDefinition: EntityDefinition | undefined =
+        currentDeploymentReportsEntitiesDefinitionsMapping?.[
+          applicationSection
+        ]?.entityDefinitions?.find((e) => e?.entityUuid === entityUuid);
+      if (!targetEntityDefinition) {
+        throw new Error("reportSectionsFormSchema: cannot find target entity definition for entityUuid " + entityUuid + " in applicationSection " + applicationSection);
+      }
+      return {
+        [reportSectionPath.join("_")]:targetEntityDefinition.jzodSchema
+      };
+    }
+    case "objectListReportSection":
+    case "markdownReportSection":
+    case "graphReportSection":
+    default:
+      return {};
+  }
+};
+const reportSectionsFormValue = (
+  reportSection: ReportSection,
+  reportData: Record<string, any>,
+  reportSectionPath: (string | number)[]
+): Record<string, any> => {
+  log.info("reportSectionsFormValue", reportSection, reportData, reportSectionPath);
+  switch (reportSection.type) {
+    case "list":
+      return reportSection.definition.reduce(
+        (acc: Record<string, any>, curr: ReportSection, index: number): Record<string, any> => {
+          return {
+            ...acc,
+            ...reportSectionsFormValue(
+              curr,
+              reportData,
+              reportSectionPath.concat("definition", index)
+            ),
+          };
+        },
+        {}
+      );
+    case "grid":
+    case "grid":
+      return reportSection.definition.reduce(
+        (acc: Record<string, any>, row: ReportSection[], rowIndex: number) => {
+          const rowObj = row.reduce(
             (rowAcc: Record<string, any>, subSection: ReportSection, colIndex: number) => ({
               ...rowAcc,
               ...reportSectionsFormValue(
@@ -77,31 +160,33 @@ const reportSectionsFormValue =
               ),
             }),
             {}
-                );
-                return { ...acc, ...rowObj };
-              },
-              {}
-            );
-        case "objectInstanceReportSection": {
-          return {
-            [reportSectionPath.join("_")]:
-              reportData[reportSection.definition.fetchedDataReference ?? ""],
-          };
-        }
-        case "objectListReportSection":
-        case "markdownReportSection":
-        case "graphReportSection":
-        default:
-          return {};
-      }
+          );
+          return { ...acc, ...rowObj };
+        },
+        {}
+      );
+    case "objectInstanceReportSection": {
+      return {
+        [reportSectionPath.join("_")]:
+          reportData[reportSection.definition.fetchedDataReference ?? ""],
+      };
     }
-  ;
+    case "objectListReportSection":
+    case "markdownReportSection":
+    case "graphReportSection":
+    default:
+      return {};
+  }
+};
 
 // ###############################################################################################
 export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
   const context = useMiroirContextService();
   const outlineContext = useDocumentOutlineContext();
   
+  const currentDeploymentReportsEntitiesDefinitionsMapping =
+    context.deploymentUuidToReportsEntitiesDefinitionsMapping[context.deploymentUuid] || {};
+
   // Read editMode from ViewParams context
   const editMode = context.viewParams.editMode;
   
@@ -374,6 +459,43 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
 
   }, [props.reportDefinition, reportData]);
 
+  const formValueMLSchema: JzodObject = useMemo(() => {
+    log.info(
+      "############################################## reportSectionsFormSchema",
+      props.reportDefinition?.definition.section,
+      reportData,
+      []
+    );
+    if (!props.pageParams.deploymentUuid || !reportEntityDefinition?.entityUuid) {
+      return { type: "object", definition: {} };
+    }
+    const r = reportSectionsFormSchema(
+      props.reportDefinition?.definition.section,
+      props.pageParams.deploymentUuid,
+      // getApplicationSection(props.pageParams.deploymentUuid, reportEntityDefinition?.entityUuid),
+      // reportEntityDefinition?.entityUuid,
+      currentDeploymentReportsEntitiesDefinitionsMapping,
+      reportData,
+      ["definition", "section"]
+    );
+    const result: JzodObject = {
+      type: "object",
+      definition: {
+        ...r,
+        [lastSubmitButtonClicked]: { type: "string", optional: true}
+      }
+    };
+    // log.info("reportSectionsFormSchema formValueSchema", result);
+    // log.info("reportSectionsFormSchema formValueSchema", JSON.stringify(result, null, 2));
+    log.info("reportSectionsFormSchema formValueSchema", JSON.stringify(Object.keys(r), null, 2));
+    return result;
+  }, [
+    props.reportDefinition,
+    reportData,
+    reportEntityDefinition,
+    currentDeploymentReportsEntitiesDefinitionsMapping,
+    props.pageParams.applicationSection,
+  ]);
   // ##############################################################################################
   const domainController: DomainControllerInterface = useDomainControllerService();
   const currentModelEnvironment = defaultMiroirModelEnvironment;
@@ -483,16 +605,18 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
           props.deploymentUuid ? (
             <>
               {editMode && reportEntityDefinition && (
-                <InlineReportEditor
-                  reportDefinition={props.reportDefinition}
-                  reportEntityDefinition={reportEntityDefinition}
-                  deploymentUuid={props.deploymentUuid}
-                  applicationSection={props.applicationSection}
-                  hasValidationErrors={hasValidationErrors}
-                  reportSectionPath={[reportEntityDefinition.name??"reportEntityDefinition_name"]}
-                  onDefinitionChange={setLocalEditedDefinition}
-                  onValidationChange={setHasValidationErrors}
-                />
+                <></>
+                // <InlineReportEditor
+                //   reportDefinition={props.reportDefinition}
+                //   reportEntityDefinition={reportEntityDefinition}
+                //   formValueMLSchema={formValueMLSchema}
+                //   deploymentUuid={props.deploymentUuid}
+                //   applicationSection={props.applicationSection}
+                //   hasValidationErrors={hasValidationErrors}
+                //   reportSectionPath={[reportEntityDefinition.name??"reportEntityDefinition_name"]}
+                //   onDefinitionChange={setLocalEditedDefinition}
+                //   onValidationChange={setHasValidationErrors}
+                // />
               )}
               <Formik
                 enableReinitialize={true}
@@ -520,6 +644,7 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
                 <ReportSectionViewWithEditor
                   reportData={reportViewData}
                   fetchedDataJzodSchema={fetchedDataJzodSchema}
+                  formValueMLSchema={formValueMLSchema}
                   reportSection={props.reportDefinition?.definition.section}
                   reportSectionPath={["definition", "section"]}
                   reportDefinition={props.reportDefinition}

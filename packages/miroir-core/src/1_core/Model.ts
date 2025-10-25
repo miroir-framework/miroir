@@ -62,6 +62,7 @@ import {
   Menu,
   MetaModel,
   Report,
+  type ApplicationSection,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import type { MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 
@@ -177,6 +178,16 @@ const metaModelReports = [
   reportEntityDefinitionDetails.uuid,
 ];
 
+// ################################################################################################
+export function getApplicationSection(
+  deploymentUuid: Uuid,
+  entityUuid: Uuid,
+): ApplicationSection{
+  if (deploymentUuid == adminConfigurationDeploymentMiroir.uuid) {
+    return metaMetaModelEntityUuids.includes(entityUuid)?"model":"data";
+  }
+  return metaModelEntityUuids.includes(entityUuid)?"model":"data";
+}
 // ################################################################################################
 /**
  * just filters the model / meta-model reports in the Miroir app for now

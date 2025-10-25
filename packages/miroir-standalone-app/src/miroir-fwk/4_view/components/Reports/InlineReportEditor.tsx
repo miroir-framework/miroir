@@ -6,7 +6,8 @@ import {
   LoggerInterface,
   MiroirLoggerFactory,
   Report,
-  Uuid
+  Uuid,
+  type JzodObject
 } from "miroir-core";
 
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -26,6 +27,7 @@ MiroirLoggerFactory.registerLoggerToStart(
 export interface InlineReportEditorProps {
   reportDefinition: Report;
   reportEntityDefinition: EntityDefinition;
+  formValueMLSchema: JzodObject;
   deploymentUuid: Uuid;
   applicationSection: ApplicationSection;
   reportSectionPath: ( string | number )[],
@@ -37,6 +39,7 @@ export interface InlineReportEditorProps {
 export const InlineReportEditor: React.FC<InlineReportEditorProps> = ({
   reportDefinition,
   reportEntityDefinition,
+  formValueMLSchema,
   deploymentUuid,
   applicationSection,
   // sectionPath,
@@ -72,6 +75,7 @@ export const InlineReportEditor: React.FC<InlineReportEditorProps> = ({
               entityUuid={reportDefinition.parentUuid}
               initialInstanceValue={reportDefinition}
               reportSectionPath={reportSectionPath}
+              formValueMLSchema={formValueMLSchema}
             />
           </AccordionDetails>
         </Accordion>

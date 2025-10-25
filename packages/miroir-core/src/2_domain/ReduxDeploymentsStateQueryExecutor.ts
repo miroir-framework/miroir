@@ -41,13 +41,11 @@ import {
 
 
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
-import {
-  getApplicationSection
-} from "../1_core/AdminApplication";
 import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
 import type { MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
+import { getApplicationSection } from "../1_core/Model";
 
 
 let log: LoggerInterface = console as any as LoggerInterface;
