@@ -682,7 +682,7 @@ export function jzodTypeCheck(
   currentDefaultValue?: any,
   reduxDeploymentsState: ReduxDeploymentsState | undefined = undefined,
   deploymentUuid?: string,
-  rootObject?: any // Optional parameter for backward compatibility
+  rootObject?: any // Optional parameter for backward compatibility, NOT USED ANYMORE? TO BE REMOVED?
 ): ResolvedJzodSchemaReturnType {
   // log.info(
   //   "jzodTypeCheck called for valuePath=." + 
@@ -1272,23 +1272,35 @@ export function jzodTypeCheck(
               rawSchema: effectiveRawSchema,
             };
           }
-          // log.info(
-          //   "jzodTypeCheck object at",
-          //   currentValuePath.join("."),
-          //   "type:",
-          //   JSON.stringify(subResolvedSchemas.resolvedSchema, null, 2),
-          //   "validates",
-          //   JSON.stringify(valueObject, null, 2)
-          // );
           const objectUniondiscriminatorValues =
             subResolvedSchemas.resolvedSchema.type == "object" && effectiveRawSchema.discriminator
               ? getObjectUniondiscriminatorValuesFromResolvedSchema(
                   // subResolvedSchemas.resolvedSchema,
+                  currentValuePath.join("."),
                   effectiveRawSchema,
                   recursivelyUnfoldedUnionSchema?.result ?? [],
                   resolveUnionResult.objectUnionChoices
                 )
               : [];
+
+          // log.info(
+          //   "jzodTypeCheck object at",
+          //   currentValuePath.join("."),
+          //   "type:",
+          //   subResolvedSchemas.resolvedSchema,
+          //   // JSON.stringify(subResolvedSchemas.resolvedSchema, null, 2),
+          //   "effectiveRawSchema:",
+          //   effectiveRawSchema,
+          //   "recursivelyUnfoldedUnionSchema:",
+          //   recursivelyUnfoldedUnionSchema,
+          //   "validates",
+          //   valueObject,
+          //   "resolveUnionResult:",
+          //   resolveUnionResult,
+          //   "objectUniondiscriminatorValues:",
+          //   objectUniondiscriminatorValues,
+          //   // JSON.stringify(valueObject, null, 2)
+          // );
 
           return {
             status: "ok",

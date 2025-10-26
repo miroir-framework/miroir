@@ -322,6 +322,8 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
   const context = useMiroirContextService();
   
   const formik = useFormikContext<Record<string, any>>();
+  const formikRootLessListKeyArray = [reportSectionPathAsString, ...rootLessListKeyArray];
+  const formikRootLessListKey = formikRootLessListKeyArray.join(".");
   const currentValue = resolvePathOnObject(
     formik.values[reportSectionPathAsString],
     rootLessListKeyArray
@@ -442,7 +444,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
         ;
         const valueObjectReferencePath = rootLessListKeyArray.slice(0, rootLessListKeyArray.length - goUp);
         const newItemEntityUuid = resolvePathOnObject(
-          formik.values,
+          currentValue,// formik.values,
           valueObjectReferencePath
         )?.parentUuid;
   
@@ -509,7 +511,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
       const newItem = getDefaultValueForJzodSchemaWithResolutionNonHook(
         "build",
         newItemSchema, // TODO: not correct with runtimeTypes
-        formik.values,
+        currentValue, // formik.values,
         rootLessListKey,
         undefined, // currentDefaultValue is not known yet, this is what this call will determine
         [], // currentPath on value is root
@@ -539,8 +541,10 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
         "rawJzodSchema",
         currentTypeCheckKeyMap?.rawSchema,
         // JSON.stringify(currentTypeCheckKeyMap.rawSchema, null, 2),
-        "formik.values",
-        formik.values,
+        "currentValue",
+        currentValue,
+        // "formik.values",
+        // formik.values,
         // JSON.stringify(formik.values, null, 2),
         "newArrayValue",
         newArrayValue,
@@ -548,7 +552,8 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
       );
 
       // Update the specific field in Formik state
-      formik.setFieldValue(rootLessListKey, newArrayValue, true); // enable validation / refresh of formik component
+      // formik.setFieldValue(rootLessListKey, newArrayValue, true); // enable validation / refresh of formik component
+      formik.setFieldValue(formikRootLessListKey, newArrayValue, true); // enable validation / refresh of formik component
 
       // // Update the items order
       // setItemsOrder(getItemsOrder(newArrayValue, resolvedElementJzodSchema));
@@ -651,6 +656,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
     [
       rootLessListKey,
       formik.values,
+      formikRootLessListKey,
       resolvedElementJzodSchema,
       typeCheckKeyMap,
       currentDeploymentUuid,

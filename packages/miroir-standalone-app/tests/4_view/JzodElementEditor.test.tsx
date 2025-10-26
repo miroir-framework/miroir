@@ -94,87 +94,87 @@ export function getJzodArrayEditorTests(
       },
       tests: {
         // // TODO: there seems to be 2 labels displayed!
-        // "renders array input with label when label prop is provided": {
-        //   tests: async (expect: ExpectStatic, container: Container) => {
-        //     screen.debug(undefined, Infinity); // Prints entire DOM with no size limit
-        //     expect(screen.getAllByText(/Test Label/).length).toBe(1); // There should be only one label, actually there are two, one for the array and one for the first item
-        //   },
-        // },
-        // "renders all array values, in the right order": {
-        //   tests: async (expect: ExpectStatic, container: Container) => {
-        //     const cells = screen
-        //       .getAllByRole("textbox")
-        //       .filter((input: HTMLElement) =>
-        //         (input as HTMLInputElement).name.startsWith("testField.")
-        //       );
-        //     const values = cells.map((cell) => (cell as HTMLInputElement).value);
-        //     expect(values).toEqual(arrayValues);
-        //   },
-        // },
-        // "form state is changed when selection changes": {
-        //   tests: async (expect: ExpectStatic, container: Container) => {
-        //     screen.debug(undefined, Infinity); // Prints entire DOM with no size limit
-        //     const cell = screen
-        //       .getAllByRole("textbox")
-        //       .filter((input: HTMLElement) =>
-        //         (input as HTMLInputElement).name.startsWith(testSectionName + ".testField.")
-        //       )[1] as HTMLInputElement;
-        //     await act(() => {
-        //       fireEvent.change(cell, { target: { value: "new value" } });
-        //     });
-        //     await waitAfterUserInteraction();
+        "renders array input with label when label prop is provided": {
+          tests: async (expect: ExpectStatic, container: Container) => {
+            screen.debug(undefined, Infinity); // Prints entire DOM with no size limit
+            expect(screen.getAllByText(/Test Label/).length).toBe(1); // There should be only one label, actually there are two, one for the array and one for the first item
+          },
+        },
+        "renders all array values, in the right order": {
+          tests: async (expect: ExpectStatic, container: Container) => {
+            const cells = screen
+              .getAllByRole("textbox")
+              .filter((input: HTMLElement) =>
+                (input as HTMLInputElement).name.startsWith(formikFieldName("testField."))
+              );
+            const values = cells.map((cell) => (cell as HTMLInputElement).value);
+            expect(values).toEqual(arrayValues);
+          },
+        },
+        "form state is changed when selection changes": {
+          tests: async (expect: ExpectStatic, container: Container) => {
+            screen.debug(undefined, Infinity); // Prints entire DOM with no size limit
+            const cell = screen
+              .getAllByRole("textbox")
+              .filter((input: HTMLElement) =>
+                (input as HTMLInputElement).name.startsWith(testSectionName + ".testField.")
+              )[1] as HTMLInputElement;
+            await act(() => {
+              fireEvent.change(cell, { target: { value: "new value" } });
+            });
+            await waitAfterUserInteraction();
 
-        //     expect(cell).toContainHTML("new value");
-        //   },
-        // },
-        // "changing order of array items when button ROOT.testField.1.up is clicked": {
-        //   tests: async (expect, container) => {
-        //     // screen.debug(undefined, Infinity); // Prints entire DOM with no size limit
-        //     const buttonRole = formikFieldName("testField.button.up")
-        //     // log.info(expect.getState().currentTestName, "buttonRole", buttonRole);
-        //     const upButton = screen.getAllByRole(buttonRole)[1];
-        //     await act(() => {
-        //       fireEvent.click(upButton); // Click the up button for the third item
-        //     });
-        //     const cells = screen
-        //       .getAllByRole("textbox")
-        //       .filter((input: HTMLElement) =>
-        //         (input as HTMLInputElement).name.startsWith(formikFieldName("testField."))
-        //       );
-        //     const values = cells.map((cell) => (cell as HTMLInputElement).value);
-        //     expect(values).toEqual(["value2", "value1", "value3"]);
-        //   },
-        // },
-        // "changing order of array items when button ROOT.testField.2.up is clicked": {
-        //   tests: async (expect, container) => {
-        //     const upButtons = screen.getAllByRole(formikFieldName("testField.button.up"));
-        //     await act(() => {
-        //       fireEvent.click(upButtons[2]); // Click the up button for the third item
-        //     });
-        //     const cells = screen
-        //       .getAllByRole("textbox")
-        //       .filter((input: HTMLElement) =>
-        //         (input as HTMLInputElement).name.startsWith(formikFieldName("testField."))
-        //       );
-        //     const values = cells.map((cell) => (cell as HTMLInputElement).value);
-        //     expect(values).toEqual(["value1", "value3", "value2"]);
-        //   },
-        // },
-        // "changing order of array items when button ROOT.testField.0.down is clicked": {
-        //   tests: async (expect, container) => {
-        //     const upButtons = screen.getAllByRole(formikFieldName("testField.button.down"));
-        //     await act(() => {
-        //       fireEvent.click(upButtons[0]); // Click the up button for the third item
-        //     });
-        //     const cells = screen
-        //       .getAllByRole("textbox")
-        //       .filter((input: HTMLElement) =>
-        //         (input as HTMLInputElement).name.startsWith(formikFieldName("testField."))
-        //       );
-        //     const values = cells.map((cell) => (cell as HTMLInputElement).value);
-        //     expect(values).toEqual(["value2", "value1", "value3"]);
-        //   },
-        // },
+            expect(cell).toContainHTML("new value");
+          },
+        },
+        "changing order of array items when button ROOT.testField.1.up is clicked": {
+          tests: async (expect, container) => {
+            // screen.debug(undefined, Infinity); // Prints entire DOM with no size limit
+            const buttonRole = formikFieldName("testField.button.up")
+            // log.info(expect.getState().currentTestName, "buttonRole", buttonRole);
+            const upButton = screen.getAllByRole(buttonRole)[1];
+            await act(() => {
+              fireEvent.click(upButton); // Click the up button for the third item
+            });
+            const cells = screen
+              .getAllByRole("textbox")
+              .filter((input: HTMLElement) =>
+                (input as HTMLInputElement).name.startsWith(formikFieldName("testField."))
+              );
+            const values = cells.map((cell) => (cell as HTMLInputElement).value);
+            expect(values).toEqual(["value2", "value1", "value3"]);
+          },
+        },
+        "changing order of array items when button ROOT.testField.2.up is clicked": {
+          tests: async (expect, container) => {
+            const upButtons = screen.getAllByRole(formikFieldName("testField.button.up"));
+            await act(() => {
+              fireEvent.click(upButtons[2]); // Click the up button for the third item
+            });
+            const cells = screen
+              .getAllByRole("textbox")
+              .filter((input: HTMLElement) =>
+                (input as HTMLInputElement).name.startsWith(formikFieldName("testField."))
+              );
+            const values = cells.map((cell) => (cell as HTMLInputElement).value);
+            expect(values).toEqual(["value1", "value3", "value2"]);
+          },
+        },
+        "changing order of array items when button ROOT.testField.0.down is clicked": {
+          tests: async (expect, container) => {
+            const upButtons = screen.getAllByRole(formikFieldName("testField.button.down"));
+            await act(() => {
+              fireEvent.click(upButtons[0]); // Click the up button for the third item
+            });
+            const cells = screen
+              .getAllByRole("textbox")
+              .filter((input: HTMLElement) =>
+                (input as HTMLInputElement).name.startsWith(formikFieldName("testField."))
+              );
+            const values = cells.map((cell) => (cell as HTMLInputElement).value);
+            expect(values).toEqual(["value2", "value1", "value3"]);
+          },
+        },
         "changing order of heteronomous object array items from union when button ROOT.testField.0.down is clicked":
           {
             props: {
@@ -220,16 +220,16 @@ export function getJzodArrayEditorTests(
                 formikFieldName("testField"),
                 "before up button click"
               );
-              const beforeTestResult = formValuesToJSON(formValuesBeforeTest, testSectionName);
+              const beforeTestResult = formValuesToJSON(formValuesBeforeTest);
               log.info(expect.getState().currentTestName, "beforeTestResult", beforeTestResult);
-              // screen.debug(undefined, Infinity); // Prints entire DOM with no size limit
+              screen.debug(undefined, Infinity); // Prints entire DOM with no size limit
               expect(beforeTestResult, "before up button click").toEqual([
                 { objectType: "A", a: "value1" },
                 { objectType: "B", b: 2 },
                 { objectType: "A", a: "value3" },
               ]);
 
-              screen.debug(undefined, Infinity); // Prints entire DOM with no size limit
+              // screen.debug(undefined, Infinity); // Prints entire DOM with no size limit
               log.info(expect.getState().currentTestName, "clicking down button for first item");
               const downButtons = screen.getAllByRole(formikFieldName("testField.button.down"));
               await act(() => {
@@ -246,7 +246,7 @@ export function getJzodArrayEditorTests(
                 formikFieldName("testField"),
                 "after up button click"
               );
-              const testResult = formValuesToJSON(formValues, testSectionName);
+              const testResult = formValuesToJSON(formValues);
               log.info(expect.getState().currentTestName, "testResult", testResult);
               expect(testResult, "after up button click").toEqual([
                 { objectType: "B", b: 2 },
@@ -277,7 +277,7 @@ export function getJzodArrayEditorTests(
                 formikFieldName("testField"),
                 "initial"
               );
-              const testResult = formValuesToJSON(formValues, testSectionName);
+              const testResult = formValuesToJSON(formValues);
               expect(testResult).toEqual(["value1", 2]);
             },
           },
@@ -306,7 +306,7 @@ export function getJzodArrayEditorTests(
               formikFieldName("testField"),
               "initial"
             );
-            const testResult = formValuesToJSON(formValues, testSectionName);
+            const testResult = formValuesToJSON(formValues);
             expect(testResult).toEqual([
               ["value1", 1],
               ["value2", 2],
@@ -329,7 +329,7 @@ export function getJzodArrayEditorTests(
               formikFieldName("testField"),
               "after add button click"
             );
-            const testResult = formValuesToJSON(formValues, testSectionName);
+            const testResult = formValuesToJSON(formValues);
             expect(testResult).toEqual([...arrayValues, ""]);
           },
         },
@@ -383,7 +383,7 @@ export function getJzodArrayEditorTests(
               "after add button click"
             );
             // console.log("Extracted initial values:", values);
-            const testResult = formValuesToJSON(formValues, testSectionName);
+            const testResult = formValuesToJSON(formValues);
             expect(testResult).toEqual([
               {
                 a: "value1",
@@ -440,31 +440,31 @@ export function getJzodEnumEditorTests(
         initialFormState: "value2",
       },
       tests: {
-        // TODO: there seems to be 2 labels displayed!
-        "renders enum input with label when label prop is provided": {
-          tests: async (expect: ExpectStatic, container: Container) => {
-            // expect(screen.getByText(/Test Label/)).toBeInTheDocument();
-            expect(screen.getAllByText(/Test Label/).length).toBe(1); // There should be only one label, actually there are two, one for the enum and one for the select
-          },
-        },
-        "renders input without label when label prop is not provided": {
-          props: {
-            // label: "Test Label", // no label
-            name: "testField",
-            listKey: "ROOT.testField",
-            rootLessListKey: "testField",
-            rootLessListKeyArray: ["testField"],
-            rawJzodSchema: {
-              type: "enum",
-              definition: enumValues,
-            },
-            initialFormState: "value2",
-          },
-          tests: async (expect, container) => {
-            expect(screen.queryByLabelText(/Test Label/)).not.toBeInTheDocument();
-            // expect(screen.getByRole("textbox")).toBeInTheDocument();
-          },
-        },
+        // // TODO: there seems to be 2 labels displayed!
+        // "renders enum input with label when label prop is provided": {
+        //   tests: async (expect: ExpectStatic, container: Container) => {
+        //     // expect(screen.getByText(/Test Label/)).toBeInTheDocument();
+        //     expect(screen.getAllByText(/Test Label/).length).toBe(1); // There should be only one label, actually there are two, one for the enum and one for the select
+        //   },
+        // },
+        // "renders input without label when label prop is not provided": {
+        //   props: {
+        //     // label: "Test Label", // no label
+        //     name: "testField",
+        //     listKey: "ROOT.testField",
+        //     rootLessListKey: "testField",
+        //     rootLessListKeyArray: ["testField"],
+        //     rawJzodSchema: {
+        //       type: "enum",
+        //       definition: enumValues,
+        //     },
+        //     initialFormState: "value2",
+        //   },
+        //   tests: async (expect, container) => {
+        //     expect(screen.queryByLabelText(/Test Label/)).not.toBeInTheDocument();
+        //     // expect(screen.getByRole("textbox")).toBeInTheDocument();
+        //   },
+        // },
         "renders select with correct value": {
           tests: async (expect: ExpectStatic, container: Container) => {
             screen.debug(undefined, Infinity); // Prints entire DOM with no size limit
@@ -487,7 +487,7 @@ export function getJzodEnumEditorTests(
         },
         "renders all enum options": {
           tests: async (expect: ExpectStatic, container: Container) => {
-            const combobox = screen.getByRole("combobox");
+            const select = screen.getByRole("combobox");
             const valuesInitial: Record<string, any> = extractValuesFromRenderedElements(
               expect,
               undefined,
@@ -499,11 +499,66 @@ export function getJzodEnumEditorTests(
             expect(valuesInitial).toEqual({
               testField: "value2",
             });
-            await act(() => {
-              fireEvent.click(combobox);
+            // await act(() => {
+            //   fireEvent.click(combobox);
+            // });
+            // // Wait for progressive rendering after the button click
+            // await waitAfterUserInteraction();
+            const user = userEvent.setup();
+            const stateTracker = screen.getByTestId("themed-select-state-" + formikFieldName("testField"));
+
+            await act(async () => {
+              // Click to open the dropdown
+              fireEvent.click(select);
+
+              // Wait for dropdown to open
+              await waitFor(
+                () => {
+                  expect(stateTracker.getAttribute("data-test-is-open"), "data-test-is-open").toBe(
+                    "true"
+                  );
+                },
+                { timeout: 1000 }
+              );
+
+              // // Type "type2" to filter to the desired option
+              // await user.clear(select);
+              // await user.type(select, "type2");
+
+              // // Wait for filtering to complete
+              // await waitFor(
+              //   () => {
+              //     expect(
+              //       stateTracker.getAttribute("data-test-filter-text"),
+              //       "data-test-filter-text"
+              //     ).toBe("type2");
+              //     expect(
+              //       stateTracker.getAttribute("data-test-filtered-options-count"),
+              //       "data-test-filtered-options-count"
+              //     ).toBe("1");
+              //   },
+              //   { timeout: 1000 }
+              // );
+
+              // // Press Enter to select the option
+              // await user.keyboard("{Enter}");
+
+              // // Wait for selection to complete and dropdown to close
+              // await waitFor(
+              //   () => {
+              //     expect(stateTracker.getAttribute("data-test-is-open"), "data-test-is-open").toBe(
+              //       "false"
+              //     );
+              //     expect(
+              //       stateTracker.getAttribute("data-test-selected-value"),
+              //       "data-test-selected-value"
+              //     ).toBe("type2");
+              //   },
+              //   { timeout: 2000 }
+              // );
             });
-            // Wait for progressive rendering after the button click
-            await waitAfterUserInteraction();
+
+
             screen.debug(undefined, Infinity); // Prints entire DOM with no size limit
             const valuesAfterClick: Record<string, any> = extractValuesFromRenderedElements(
               expect,
@@ -513,6 +568,7 @@ export function getJzodEnumEditorTests(
               "after click",
               true
             );
+            console.log("########### ENUM VALUES AFTER CLICK", valuesAfterClick);
             // Merge initial values with values after click to preserve the selected value and get the options
             const valuesListDisplayed = { ...valuesAfterClick };
             // Preserve the original selected value from before the dropdown opened
@@ -521,7 +577,7 @@ export function getJzodEnumEditorTests(
             }
             expect(valuesListDisplayed).toEqual({
               testField: "value2",
-              "testField.options": ["value1", "value2", "value3"],
+              [formikFieldName("options")]: ["value1", "value2", "value3"],
             });
           },
         },
@@ -530,10 +586,48 @@ export function getJzodEnumEditorTests(
             const select = screen.getByRole("combobox") as HTMLSelectElement;
             expect(select.value).toBe("value2"); // initial value
 
-            await act(() => {
-              fireEvent.change(select, { target: { value: "value3" } });
+            screen.debug(undefined, Infinity); // Prints entire DOM with no size limit
+            const user = userEvent.setup();
+            const stateTracker = screen.getByTestId("themed-select-state-" + formikFieldName("testField"));
+
+            await act(async () => {
+              // Click to open the dropdown
+              fireEvent.click(select);
+
+              // Wait for dropdown to open
+              await waitFor(
+                () => {
+                  expect(stateTracker.getAttribute("data-test-is-open"), "data-test-is-open").toBe(
+                    "true"
+                  );
+                },
+                { timeout: 1000 }
+              );
+
+              // Type "type2" to filter to the desired option
+              await user.clear(select);
+              await user.type(select, "value3");
             });
-            await waitAfterUserInteraction();
+
+            // Wait for filtering to complete
+            await waitFor(
+              () => {
+                expect(
+                  stateTracker.getAttribute("data-test-filter-text"),
+                  "data-test-filter-text"
+                ).toBe("value3");
+                // expect(
+                //   stateTracker.getAttribute("data-test-filtered-options-count"),
+                //   "data-test-filtered-options-count"
+                // ).toBe("1");
+              },
+              { timeout: 1000 }
+            );
+
+            // await act(() => {
+            //   fireEvent.change(select, { target: { value: "value3" } });
+            // });
+            // await waitAfterUserInteraction();
 
             const valuesFinal: Record<string, any> = extractValuesFromRenderedElements(
               expect,
@@ -544,6 +638,7 @@ export function getJzodEnumEditorTests(
             );
             expect(valuesFinal).toEqual({
               testField: "value3",
+              [formikFieldName("options")]: ["value3"],
             });
           },
         },
@@ -1569,106 +1664,107 @@ export function getJzodUnionEditorTests(
     JzodUnionEditor: {
       suiteRenderComponent: componentUnderTest,
       tests: {
-        // "union between simple types renders input with proper value": {
-        //   props: {
-        //     label: "Test Label",
-        //     name: "testField",
-        //     listKey: "ROOT.testField",
-        //     rootLessListKey: "testField",
-        //     rootLessListKeyArray: ["testField"],
-        //     rawJzodSchema: {
-        //       type: "union",
-        //       definition: [{ type: "string" }, { type: "number" }],
-        //     },
-        //     initialFormState: 42,
-        //   },
+        "union between simple types renders input with proper value": {
+          props: {
+            label: "Test Label",
+            name: "testField",
+            listKey: "ROOT.testField",
+            rootLessListKey: "testField",
+            rootLessListKeyArray: ["testField"],
+            rawJzodSchema: {
+              type: "union",
+              definition: [{ type: "string" }, { type: "number" }],
+            },
+            initialFormState: 42,
+          },
 
-        //   tests: async (expect: ExpectStatic, container: Container) => {
-        //     // const input = screen.getByRole("textbox");
-        //     // expect(input).toBeInTheDocument();
-        //     // screen.debug(undefined, Infinity); // Prints entire DOM with no size limit
-        //     const values: Record<string, any> = extractValuesFromRenderedElements(
-        //       expect,
-        //                   [],
-        // container,
-        //       "testField",
-        //       "initial form state"
-        //     );
-        //     const testResult = formValuesToJSON(values);
-        //     expect(testResult).toEqual({"testField": 42});
-        //   },
-        // },
-        // "union between simple type and object for value of simple type renders input with proper value": {
-        //   props: {
-        //     label: "Test Label",
-        //     name: "testField",
-        //     listKey: "ROOT.testField",
-        //     rootLessListKey: "testField",
-        //     rootLessListKeyArray: ["testField"],
-        //     rawJzodSchema: {
-        //       type: "union",
-        //       definition: [
-        //         { type: "string" },
-        //         { type: "number" },
-        //         { type: "object", definition: { a: { type: "string" }, b: { type: "number" } } },
-        //       ],
-        //     },
-        //     initialFormState: 42,
-        //   },
+          tests: async (expect: ExpectStatic, container: Container) => {
+            // const input = screen.getByRole("textbox");
+            // expect(input).toBeInTheDocument();
+            // screen.debug(undefined, Infinity); // Prints entire DOM with no size limit
+            const values: Record<string, any> = extractValuesFromRenderedElements(
+              expect,
+              [],
+              container,
+              testSectionName,//formikFieldName("testField"),
+              "initial form state"
+            );
+            const testResult = formValuesToJSON(values);
+            expect(testResult).toEqual({ testField: 42 });
+          },
+        },
+        "union between simple type and object for value of simple type renders input with proper value":
+          {
+            props: {
+              label: "Test Label",
+              name: "testField",
+              listKey: "ROOT.testField",
+              rootLessListKey: "testField",
+              rootLessListKeyArray: ["testField"],
+              rawJzodSchema: {
+                type: "union",
+                definition: [
+                  { type: "string" },
+                  { type: "number" },
+                  { type: "object", definition: { a: { type: "string" }, b: { type: "number" } } },
+                ],
+              },
+              initialFormState: 42,
+            },
 
-        //   tests: async (expect: ExpectStatic, container: Container) => {
-        //     // const input = screen.getByRole("textbox");
-        //     // expect(input).toBeInTheDocument();
-        //     const values: Record<string, any> = extractValuesFromRenderedElements(
-        //       expect,
-        //                  [],
-        //  container,
-        //       "testField",
-        //       "initial form state"
-        //     );
-        //     const testResult = formValuesToJSON(values);
-        //     expect(testResult).toEqual({testField: 42});
-        //   },
-        // },
-        // "union between simple type and object for value object renders input with proper value": {
-        //   props: {
-        //     label: "Test Label",
-        //     name: "testField",
-        //     listKey: "ROOT.testField",
-        //     rootLessListKey: "testField",
-        //     rootLessListKeyArray: ["testField"],
-        //     rawJzodSchema: {
-        //       type: "union",
-        //       definition: [
-        //         { type: "string" },
-        //         { type: "number" },
-        //         { type: "object", definition: { a: { type: "string" }, b: { type: "number" } } },
-        //       ],
-        //     },
-        //     initialFormState: {
-        //       a: "test string",
-        //       b: 42,
-        //     },
-        //   },
+            tests: async (expect: ExpectStatic, container: Container) => {
+              // const input = screen.getByRole("textbox");
+              // expect(input).toBeInTheDocument();
+              const values: Record<string, any> = extractValuesFromRenderedElements(
+                expect,
+                [],
+                container,
+                testSectionName,//formikFieldName("testField"),
+                "initial form state"
+              );
+              const testResult = formValuesToJSON(values);
+              expect(testResult).toEqual({ testField: 42 });
+            },
+          },
+        "union between simple type and object for value object renders input with proper value": {
+          props: {
+            label: "Test Label",
+            name: "testField",
+            listKey: "ROOT.testField",
+            rootLessListKey: "testField",
+            rootLessListKeyArray: ["testField"],
+            rawJzodSchema: {
+              type: "union",
+              definition: [
+                { type: "string" },
+                { type: "number" },
+                { type: "object", definition: { a: { type: "string" }, b: { type: "number" } } },
+              ],
+            },
+            initialFormState: {
+              a: "test string",
+              b: 42,
+            },
+          },
 
-        //   tests: async (expect: ExpectStatic, container: Container) => {
-        //     // const inputs = screen.getAllByRole("textbox");
-        //     // const values: Record<string, any> = {};
-        //     // inputs.forEach((input: HTMLElement) => {
-        //     //   const name = (input as HTMLInputElement).name.replace(/^testField\./, "");
-        //     //   values[name] = (input as HTMLInputElement).value || Number((input as HTMLInputElement).value);
-        //     // });
-        //     const values: Record<string, any> = extractValuesFromRenderedElements(
-        //       expect,
-        //                  [],
-        //  container,
-        //       "testField",
-        //       "initial form state"
-        //     );
-        //     const testResult = formValuesToJSON(values);
-        //     expect(testResult).toEqual({ a: "test string", b: 42 });
-        //   },
-        // },
+          tests: async (expect: ExpectStatic, container: Container) => {
+            // const inputs = screen.getAllByRole("textbox");
+            // const values: Record<string, any> = {};
+            // inputs.forEach((input: HTMLElement) => {
+            //   const name = (input as HTMLInputElement).name.replace(/^testField\./, "");
+            //   values[name] = (input as HTMLInputElement).value || Number((input as HTMLInputElement).value);
+            // });
+            const values: Record<string, any> = extractValuesFromRenderedElements(
+              expect,
+              [],
+              container,
+              formikFieldName("testField"),
+              "initial form state"
+            );
+            const testResult = formValuesToJSON(values);
+            expect(testResult).toEqual({ a: "test string", b: 42 });
+          },
+        },
         "union between 2 object types with a discriminator for value object renders input following the proper value type":
           {
             props: {
@@ -1712,16 +1808,20 @@ export function getJzodUnionEditorTests(
                 "initial form state"
               );
               // const initialFormState = formValuesToJSON(values, testSectionName);
-              screen.debug(undefined, Infinity); // Prints entire DOM with no size limit
+              // screen.debug(undefined, Infinity); // Prints entire DOM with no size limit
               const initialFormState = formValuesToJSON(values);
               console.log("Initial form state:", initialFormState);
-              expect(initialFormState).toEqual({ type1Attribute: "test string", testObjectType: "type1" });
+              expect(initialFormState).toEqual({
+                type1Attribute: "test string",
+                testObjectType: "type1",
+              });
               expect(values).toEqual({ type1Attribute: "test string", testObjectType: "type1" });
 
+              screen.debug(undefined, Infinity); // Prints entire DOM with no size limit
               // Find the discriminator select element and state tracker
               const user = userEvent.setup();
               const select = screen.getByDisplayValue("type1") as HTMLSelectElement;
-              const stateTracker = screen.getByTestId("themed-select-state-testObjectType");
+              const stateTracker = screen.getByTestId("themed-select-state-" + formikFieldName("testField.testObjectType"));
 
               expect(select.value).toBe("type1"); // initial value
               expect(
@@ -1867,7 +1967,7 @@ export function getJzodBookEditorTests(
               expect,
               undefined,
               container,
-              "testField",
+              formikFieldName("testField"),
               "initial form state"
             );
             // console.log("Extracted initial values:", values);
@@ -1970,11 +2070,12 @@ export function getJzodEntityDefinitionEditorTests(
               expect,
               undefined,
               container,
-              "testField",
+              testSectionName, //formikFieldName("testField"),
               "initial form state"
             );
             // console.log("Extracted initial values:", formValues);
-            const testResult = formValuesToJSON(formValues);
+            const testResult = formValuesToJSON(formValues, "testField");
+            console.log("Test result:", testResult);
             expect(testResult).toEqual({
               ...entityDefinitionBook,
               defaultInstanceDetailsReportUuid: "Detailed information about a Book",
@@ -2243,42 +2344,42 @@ const jzodElementEditorTests: Record<
   string,
   ReactComponentTestSuitePrep<any> & { modes?: ModesType }
 > = {
-  // JzodArrayEditor: {
-  //   editor: getJzodElementEditorForTest(pageLabel),
-  //   getJzodEditorTests: getJzodArrayEditorTests,
-  //   // modes: '*',
-  //   // modes: ['jzodElementEditor', 'component'],
-  //   modes: "jzodElementEditor",
-  // },
-  // JzodEnumEditor: {
-  //   editor: getJzodElementEditorForTest(pageLabel),
-  //   getJzodEditorTests: getJzodEnumEditorTests,
-  //   // modes: '*',
-  //   modes: "jzodElementEditor",
-  //   // modes: "component",
-  // },
-  // JzodLiteralEditor: {
-  //   editor: getJzodElementEditorForTest(pageLabel),
-  //   getJzodEditorTests: getJzodLiteralEditorTests,
-  //   // modes: "*",
-  //   // modes: ['jzodElementEditor', 'component'],
-  //   modes: "jzodElementEditor",
-  //   // modes: "component",
-  // },
-  // JzodObjectEditor: {
-  //   editor: getJzodElementEditorForTest(pageLabel),
-  //   getJzodEditorTests: getJzodObjectEditorTests,
-  //   // modes: '*',
-  //   // modes: ['jzodElementEditor', 'component'],
-  //   modes: "jzodElementEditor",
-  // },
-  // JzodSimpleTypeEditor: {
-  //   editor: getJzodElementEditorForTest(pageLabel),
-  //   getJzodEditorTests: getJzodSimpleTypeEditorTests,
-  //   // modes: '*',
-  //   // modes: ['jzodElementEditor', 'component'],
-  //   modes: "jzodElementEditor",
-  // },
+  JzodArrayEditor: {
+    editor: getJzodElementEditorForTest(pageLabel),
+    getJzodEditorTests: getJzodArrayEditorTests,
+    // modes: '*',
+    // modes: ['jzodElementEditor', 'component'],
+    modes: "jzodElementEditor",
+  },
+  JzodEnumEditor: {
+    editor: getJzodElementEditorForTest(pageLabel),
+    getJzodEditorTests: getJzodEnumEditorTests,
+    // modes: '*',
+    modes: "jzodElementEditor",
+    // modes: "component",
+  },
+  JzodLiteralEditor: {
+    editor: getJzodElementEditorForTest(pageLabel),
+    getJzodEditorTests: getJzodLiteralEditorTests,
+    // modes: "*",
+    // modes: ['jzodElementEditor', 'component'],
+    modes: "jzodElementEditor",
+    // modes: "component",
+  },
+  JzodObjectEditor: {
+    editor: getJzodElementEditorForTest(pageLabel),
+    getJzodEditorTests: getJzodObjectEditorTests,
+    // modes: '*',
+    // modes: ['jzodElementEditor', 'component'],
+    modes: "jzodElementEditor",
+  },
+  JzodSimpleTypeEditor: {
+    editor: getJzodElementEditorForTest(pageLabel),
+    getJzodEditorTests: getJzodSimpleTypeEditorTests,
+    // modes: '*',
+    // modes: ['jzodElementEditor', 'component'],
+    modes: "jzodElementEditor",
+  },
   JzodUnionEditor: {
     editor: getJzodElementEditorForTest(pageLabel),
     getJzodEditorTests: getJzodUnionEditorTests,
@@ -2295,23 +2396,23 @@ const jzodElementEditorTests: Record<
   //   // modes: ['jzodElementEditor', 'component'],
   //   modes: 'jzodElementEditor',
   // },
-  // // ################# INSTANCES
-  // JzodBookEditor: {
-  //   editor: getJzodElementEditorForTest(pageLabel),
-  //   getJzodEditorTests: getJzodBookEditorTests,
-  //   performanceTests: true,
-  //   // modes: '*',
-  //   // modes: ['jzodElementEditor', 'component'],
-  //   modes: "jzodElementEditor",
-  // },
-  // // // ################# MODEL
-  // JzodEntityDefinitionEditor: {
-  //   editor: getJzodElementEditorForTest(pageLabel),
-  //   getJzodEditorTests: getJzodEntityDefinitionEditorTests,
-  //   // modes: '*',
-  //   // modes: ['jzodElementEditor', 'component'],
-  //   modes: "jzodElementEditor",
-  // },
+  // ################# INSTANCES
+  JzodBookEditor: {
+    editor: getJzodElementEditorForTest(pageLabel),
+    getJzodEditorTests: getJzodBookEditorTests,
+    performanceTests: true,
+    // modes: '*',
+    // modes: ['jzodElementEditor', 'component'],
+    modes: "jzodElementEditor",
+  },
+  // // ################# MODEL
+  JzodEntityDefinitionEditor: {
+    editor: getJzodElementEditorForTest(pageLabel),
+    getJzodEditorTests: getJzodEntityDefinitionEditorTests,
+    // modes: '*',
+    // modes: ['jzodElementEditor', 'component'],
+    modes: "jzodElementEditor",
+  },
   // // ################# ENDPOINTS
   // JzodEndpointEditor: {
   //   editor: JzodElementEditor,

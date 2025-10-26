@@ -8185,7 +8185,7 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "transformerType": {
                     "type": "union",
-                    "discriminator": "transformerType",
+                    "discriminator": "type",
                     "definition": [
                       {
                         "type": "schemaReference",

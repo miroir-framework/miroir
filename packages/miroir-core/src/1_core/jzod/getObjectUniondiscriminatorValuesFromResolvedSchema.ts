@@ -27,12 +27,14 @@ function safeStringify(obj: any, maxLength: number = 1000): string {
 // #####################################################################################################
 export function getObjectUniondiscriminatorValuesFromResolvedSchema(
   // resolvedElementJzodSchema: JzodElement | undefined, // is it needed?
+  currentValuePathString: string,
   unfoldedRawSchema: JzodElement | undefined, // is it needed?
   recursivelyUnfoldedRawSchemaList: JzodElement[],
   unionObjectChoices: (JzodObject | JzodRecord)[],
 ): string[][] {
   // log.info(
-  //   "getObjectUniondiscriminatorValuesFromResolvedSchema called with",
+  //   "getObjectUniondiscriminatorValuesFromResolvedSchema for jzodTypeCheck called with",
+  //   currentValuePathString,
   //   // "resolvedElementJzodSchema:",
   //   // resolvedElementJzodSchema,
   //   "unfoldedRawSchema:",

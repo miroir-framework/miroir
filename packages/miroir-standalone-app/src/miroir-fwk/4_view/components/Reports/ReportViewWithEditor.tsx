@@ -453,8 +453,7 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
   const initialReportSectionsFormValue = useMemo(() => {
     log.info("############################################## reportSectionsFormValue", props.reportDefinition?.definition.section, reportData, []);
     const r= reportSectionsFormValue(props.reportDefinition?.definition.section, reportData, ["definition", "section"]);
-    // const r= reportSectionsFormValue(props.reportDefinition?.definition.section, reportData, []);
-    log.info("reportSectionsFormValue initialReportSectionsFormValue", JSON.stringify(r,null,2));
+    // log.info("reportSectionsFormValue initialReportSectionsFormValue", JSON.stringify(r,null,2));
     return r;
 
   }, [props.reportDefinition, reportData]);

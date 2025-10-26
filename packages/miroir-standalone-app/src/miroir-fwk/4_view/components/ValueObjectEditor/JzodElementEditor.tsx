@@ -839,7 +839,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                       onChange={(e) => {
                         formik.setFieldValue(formikRootLessListKey, e.target.value);
                       }}
-                      // name={props.rootLessListKey}
+                      name={formikRootLessListKey}
                       // error={hasPathError}
                     />
                   )
@@ -874,7 +874,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                         }}
                         {...formik.getFieldProps(formikRootLessListKey)}
                         // value={currentValue} // TODO: get other formik.getFieldProps: name, value, onChange, onBlur
-                        // name={props.rootLessListKey}
+                        // name={formikRootLessListKey}
                         error={hasPathError}
                       />
                     )

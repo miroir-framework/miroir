@@ -260,7 +260,7 @@ const handleDiscriminatorChange = (
   //   );
   // } else {
     formik.setFieldValue(
-      [reportSectionPathAsString, ...targetRootLessListKey].join("."),
+      reportSectionPathAsString + "."+ targetRootLessListKey,
       defaultValue,
       false, // do not validate / refresh
     );
@@ -314,6 +314,11 @@ export const JzodLiteralEditor: FC<JzodLiteralEditorProps> =  (
   const parentKeyMap:KeyMapEntry | undefined = typeCheckKeyMap ? typeCheckKeyMap[parentKey] : undefined;
   const currentKeyMap: KeyMapEntry | undefined = typeCheckKeyMap ? typeCheckKeyMap[rootLessListKey] : undefined;
 
+    // Check if this literal is a discriminator
+  const isDiscriminator = 
+    !!parentKeyMap?.discriminator && 
+    !!parentKeyMap?.discriminatorValues;
+
   log.info(
     "JzodLiteralEditor render count",
     JzodLiteralEditorRenderCount,
@@ -325,13 +330,15 @@ export const JzodLiteralEditor: FC<JzodLiteralEditorProps> =  (
     parentKey,
     "parentKeyMap",
     parentKeyMap,
+    "isDiscriminator",
+    JSON.stringify(isDiscriminator),
+    "parentKeyMap?.discriminator",
+    JSON.stringify(parentKeyMap?.discriminator),
+    "parentKeyMap?.discriminatorValues",
+    JSON.stringify(parentKeyMap?.discriminatorValues),
     // "currentKeyMap",
     // currentKeyMap,
   );
-  // Check if this literal is a discriminator
-  const isDiscriminator = 
-    parentKeyMap?.discriminator && 
-    parentKeyMap?.discriminatorValues;
   
   const discriminatorIndex: number = !parentKeyMap?.discriminator
     ? -1
@@ -373,27 +380,15 @@ export const JzodLiteralEditor: FC<JzodLiteralEditorProps> =  (
     }
   }, [currentReportSectionFormikValues, rootLessListKeyArray]);
 
-  log.info
-    ("JzodLiteralEditor render",
-    JzodLiteralEditorRenderCount,
-    "rootLessListKey",
-    rootLessListKey,
-    "currentValue",
-    currentValue,
-    "formikRootLessListKey",
-    formikRootLessListKey,
-    "formik.values",
-    formik.values,
-  );
 
   // Handler for the new filterable select component
   const handleFilterableSelectChange = useCallback(
     (event: React.ChangeEvent<HTMLSelectElement>) => {
       log.info("handleFilterableSelectChange called with event:", event);
-      log.info("event.target.value:", event.target.value);
-      log.info("event.type:", event.type);
-      log.info("isDiscriminator:", isDiscriminator);
-      log.info("parentKeyMap:", parentKeyMap);
+      log.info("handleFilterableSelectChange event.target.value:", event.target.value);
+      log.info("handleFilterableSelectChange event.type:", event.type);
+      log.info("handleFilterableSelectChange isDiscriminator:", isDiscriminator);
+      log.info("handleFilterableSelectChange parentKeyMap:", parentKeyMap);
       // log.info("Stack trace:", new Error().stack);
       
       if (!isDiscriminator) {
@@ -429,7 +424,7 @@ export const JzodLiteralEditor: FC<JzodLiteralEditorProps> =  (
       currentMiroirModelEnvironment,
       formik
     ]
-  );
+  ); // end handleFilterableSelectChange
 
   // log.info(
   //   "JzodLiteralEditor render",
@@ -460,12 +455,6 @@ export const JzodLiteralEditor: FC<JzodLiteralEditorProps> =  (
     JSON.stringify(rootLessListKey),
     "currentValue",
     JSON.stringify(currentValue),
-    "isDiscriminator",
-    JSON.stringify(isDiscriminator),
-    "parentKeyMap?.discriminator",
-    JSON.stringify(parentKeyMap?.discriminator),
-    "parentKeyMap?.discriminatorValues",
-    JSON.stringify(parentKeyMap?.discriminatorValues),
     "currentDiscriminatorValues",
     JSON.stringify(currentDiscriminatorValues),
     "discriminatorSelectOptions",
@@ -487,6 +476,38 @@ export const JzodLiteralEditor: FC<JzodLiteralEditorProps> =  (
   //   "parentKeyMap.discriminatorValues",
   //   parentKeyMap?.discriminatorValues,
   // );
+  // const selectStyles = css`
+  //   min-height: 2.2em;
+  //   max-height: 2.5em;
+  //   height: auto;
+  // `;
+
+
+  //   <select 
+  //   style={{ minHeight: '2.2em', maxHeight: '2.5em', height: 'auto', width: 'auto' }}
+  //   // css={selectStyles} 
+  //   // className={className} 
+  //   // style={style} 
+  //   name={formikRootLessListKey}
+  //   id={rootLessListKey}
+  //   //
+  //   role="combobox"
+  //   value={currentValue} 
+  //   onChange={handleFilterableSelectChange} 
+  //   // data-testid={dataTestId}
+  //   // aria-label={ariaLabel}
+  //   // role={role}
+  //   // title={title}
+  //   // {...validSelectProps}
+  // >
+  //   {/* {children} */}
+  //   {discriminatorSelectOptions.map((option) => (
+  //     <option key={option.value} value={option.value}>
+  //       {option.label}
+  //     </option>
+  //   ))}
+  // </select>
+
   return (
     <ThemedLabeledEditor
       labelElement={labelElement ?? <></>}
@@ -510,6 +531,7 @@ export const JzodLiteralEditor: FC<JzodLiteralEditorProps> =  (
               minWidth="200px"
               // error={hasPathError}
             />
+            
             <span style={{ fontSize: '1.2em', color: '#87CEEB' }} title="Literal discriminator">★</span>
           </>
         ) : (

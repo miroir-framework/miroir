@@ -66,7 +66,7 @@ export const ThemedSelectWithPortal: React.FC<ThemedComponentProps & {
   minWidth,
   maxWidth,
   width,
-  filterable = true,
+  filterable = false,
   options = [],
   placeholder = 'Select an option...',
   filterPlaceholder = 'Type to filter...',
@@ -76,6 +76,20 @@ export const ThemedSelectWithPortal: React.FC<ThemedComponentProps & {
 }) => {
   const { currentTheme } = useMiroirTheme();
   
+
+    // Fall back to standard select for non-filterable or legacy usage
+  const {
+    id,
+    labelId,
+    variant,
+    label,
+    'data-testid': dataTestId,
+    'aria-label': ariaLabel,
+    role,
+    title,
+    ...validSelectProps
+  } = props;
+
   // If filterable is true and options are provided, use the filterable implementation
   if (filterable && options.length > 0) {
     const componentId = Math.random().toString(36).substring(7);
@@ -587,9 +601,13 @@ export const ThemedSelectWithPortal: React.FC<ThemedComponentProps & {
     return (
       <div ref={containerRef} css={containerStyles} className={className} style={style}>
         <input
+          id={id}
+          data-testid={dataTestId}
+          aria-label={ariaLabel}
           ref={inputRef}
           css={inputStyles}
           type="text"
+          role="combobox"
           value={isOpen ? filterText : displayText}
           onChange={handleInputChange}
           onFocus={handleInputFocus}
@@ -601,7 +619,6 @@ export const ThemedSelectWithPortal: React.FC<ThemedComponentProps & {
           spellCheck={false}
           autoCorrect="off"
           autoCapitalize="off"
-          role="combobox"
           aria-expanded={isOpen}
           aria-haspopup="listbox"
           {...props}
@@ -631,7 +648,9 @@ export const ThemedSelectWithPortal: React.FC<ThemedComponentProps & {
                 <div
                   key={option.value}
                   css={getOptionStyles(index === highlightedIndex)}
+                  aria-label={props.name + '-option-' + option.value}
                   data-dropdown-option="true"
+                  role="option"
                   onMouseDown={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
@@ -670,17 +689,6 @@ export const ThemedSelectWithPortal: React.FC<ThemedComponentProps & {
     );
   }
 
-  // Fall back to standard select for non-filterable or legacy usage
-  const {
-    labelId,
-    variant,
-    label,
-    'data-testid': dataTestId,
-    'aria-label': ariaLabel,
-    role,
-    title,
-    ...validSelectProps
-  } = props;
   
   const selectStyles = css`
     min-height: 2.2em;
@@ -742,6 +750,7 @@ export const ThemedSelectWithPortal: React.FC<ThemedComponentProps & {
   );
 };
 
+// ################################################################################################
 export const ThemedEditableInput: React.FC<ThemedComponentProps & {
   value?: string;
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
