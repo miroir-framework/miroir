@@ -13,6 +13,7 @@ import { ThemedComponentProps } from './BaseTypes';
 
 export const ThemedStyledButton: React.FC<ThemedComponentProps & {
   variant?: 'contained' | 'outlined' | 'text' | 'transparent';
+  type?: 'button' | 'submit' | 'reset';
   color?: 'primary' | 'secondary' | 'error' | 'warning' | 'info' | 'success';
   size?: 'small' | 'medium' | 'large';
   fullWidth?: boolean;
@@ -149,6 +150,7 @@ export const ThemedStyledButton: React.FC<ThemedComponentProps & {
   );
 };
 
+// ################################################################################################
 export const ThemedMenuItemOption: React.FC<ThemedComponentProps & {
   value?: any;
   disabled?: boolean;

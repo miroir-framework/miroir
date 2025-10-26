@@ -120,7 +120,7 @@ export const TransformationResultPanel: React.FC<{
         <TypedValueObjectEditorWithFormik
           labelElement={<div>target:</div>}
           initialValueObject={transformationResult}
-          valueObjectMMLSchema={transformationResultSchema ?? { type: "any" } as JzodElement}
+          formikValuesMMLSchema={transformationResultSchema ?? { type: "any" } as JzodElement} // TODO: ILL-TYPED!!
           deploymentUuid={deploymentUuid}
           applicationSection={"data"}
           formLabel={"Transformation Result Viewer"}

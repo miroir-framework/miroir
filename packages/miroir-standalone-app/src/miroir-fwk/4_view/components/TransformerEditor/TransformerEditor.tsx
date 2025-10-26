@@ -219,11 +219,11 @@ const EntityInstancePanel = React.memo<{
           <TypedValueObjectEditorWithFormik
             labelElement={<></>}
             initialValueObject={entityInstances}
-            valueObjectMMLSchema={{
+            formikValuesMMLSchema={{
               type: "array",
               definition:
                 selectedEntityInstanceDefinition?.jzodSchema ?? createGenericObjectSchema(),
-            }}
+            }} // TODO: ILL-TYPED!!
             deploymentUuid={deploymentUuid}
             applicationSection={"data"}
             formLabel={"All Entity Instances Viewer"}
@@ -242,7 +242,7 @@ const EntityInstancePanel = React.memo<{
           labelElement={<></>}
           initialValueObject={selectedEntityInstance}
           // valueObjectMMLSchema={createGenericObjectSchema()}
-          valueObjectMMLSchema={
+          formikValuesMMLSchema={
             selectedEntityInstanceDefinition?.jzodSchema ?? createGenericObjectSchema()
           }
           deploymentUuid={deploymentUuid}
@@ -905,7 +905,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
         <TypedValueObjectEditorWithFormik
           labelElement={<>Transformer Definition</>}
           initialValueObject={currentTransformerDefinition}
-          valueObjectMMLSchema={transformerDefinitionSchema}
+          formikValuesMMLSchema={transformerDefinitionSchema}
           deploymentUuid={deploymentUuid}
           applicationSection={"model"}
           formLabel={"Transformer Definition Editor"}

@@ -21,7 +21,7 @@ import { useCurrentModel } from "../../ReduxHooks";
 import { packageName } from "../../../../constants";
 import { cleanLevel } from "../../constants";
 import { 
-  ThemedSelect,
+  ThemedSelectWithPortal,
   ThemedLabeledEditor,
   ThemedDisplayValue
 } from "../Themes/index"
@@ -42,6 +42,7 @@ const handleDiscriminatorChange = (
   parentKeyMap: KeyMapEntry,
   rootLessListKey: string,
   rootLessListKeyArray: (string | number)[],
+  formikRootLessListKey: string,
   currentDeploymentUuid: string | undefined,
   modelEnvironment: MiroirModelEnvironment,
   formik: any,
@@ -184,20 +185,23 @@ const handleDiscriminatorChange = (
     // JSON.stringify(formik.values, null, 2)
     formik.values
   );
-  if (targetRootLessListKey.length === 0) {
-    // If the target key is empty, we set the value directly on formik.values
-    formik.setValues(
-      defaultValue,
-    );
-  } else {
+  // if (targetRootLessListKey.length === 0) {
+  //   // If the target key is empty, we set the value directly on formik.values
+  //   formik.setValues(
+  //     defaultValue,
+  //   );
+  // } else {
     formik.setFieldValue(
-      targetRootLessListKey,
+      formikRootLessListKey,
       defaultValue,
       false
     );
-  }
+  // }
 };
 
+// ################################################################################################
+// JzodEnumEditor Component
+// ################################################################################################
 export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
   name,
   labelElement,
@@ -205,6 +209,7 @@ export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
   listKey,
   rootLessListKey,
   rootLessListKeyArray,
+  reportSectionPathAsString,
   forceTestingMode,
   typeCheckKeyMap,
   currentDeploymentUuid,
@@ -225,6 +230,10 @@ export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
   const currentKeyMap = typeCheckKeyMap ? typeCheckKeyMap[rootLessListKey] : undefined;
   const rawJzodSchema = currentKeyMap?.rawSchema;
   const currentEnumSchema: JzodElement | undefined = currentKeyMap?.resolvedSchema;
+  const currentReportSectionFormikValues = formik.values[reportSectionPathAsString] ?? formik.values;
+  const formikRootLessListKeyArray = [reportSectionPathAsString, ...rootLessListKeyArray];
+  const formikRootLessListKey = formikRootLessListKeyArray.join(".");
+
   // const possibleEnumValues = (currentKeyMap?.resolvedSchema).;
   // Log only when component renders to track performance
   // log.info(
@@ -274,6 +283,7 @@ export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
         parentKeyMap,
         rootLessListKey,
         rootLessListKeyArray,
+        formikRootLessListKey,
         currentDeploymentUuid,
         currentMiroirModelEnvironment,
         formik,
@@ -284,6 +294,7 @@ export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
       parentKeyMap,
       rootLessListKey,
       rootLessListKeyArray,
+      formikRootLessListKey,
       currentDeploymentUuid,
       currentMiroirModelEnvironment,
       formik,
@@ -299,18 +310,20 @@ export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
   const menuItems = useMemo(() => {
     if (isDiscriminator && parentKeyMap?.discriminatorValues) {
       return currentDiscriminatorValues.sort().map((v, index) => (
-        <option key={v} value={v} aria-label={rootLessListKey + "." + index}>
+        // <option key={v} value={v} aria-label={rootLessListKey + "." + index}>
+        <option key={v} value={v} aria-label={formikRootLessListKey + "." + index}>
           {v}
         </option>
       ));
     } else {
       return (currentEnumSchema?.type == "enum"?currentEnumSchema.definition:[]).map((v, index) => (
-        <option key={v} value={v} aria-label={rootLessListKey + "." + index}>
+        // <option key={v} value={v} aria-label={rootLessListKey + "." + index}>
+        <option key={v} value={v} aria-label={formikRootLessListKey + "." + index}>
           {v}
         </option>
       ));
     }
-  }, [isDiscriminator, parentKeyMap, rawJzodSchema, rootLessListKey]);
+  }, [isDiscriminator, parentKeyMap, rawJzodSchema, formikRootLessListKey]);
 
   // Memoize the select options for the filterable select
   const selectOptions = useMemo(() => {
@@ -328,58 +341,78 @@ export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
   }, [isDiscriminator, parentKeyMap, currentEnumSchema, currentDiscriminatorValues]);
 
   // Handler for the new filterable select component
-  const handleFilterableSelectEnumChange = useCallback((event: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedValue = event.target.value;
-    if (isDiscriminator) {
-      if (!parentKeyMap) {
-        throw new Error("handleFilterableSelectEnumChange called but parentKeyMap is undefined!");
+  const handleFilterableSelectEnumChange = useCallback(
+    (event: React.ChangeEvent<HTMLSelectElement>) => {
+      const selectedValue = event.target.value;
+      if (isDiscriminator) {
+        if (!parentKeyMap) {
+          throw new Error("handleFilterableSelectEnumChange called but parentKeyMap is undefined!");
+        }
+        handleDiscriminatorChange(
+          selectedValue,
+          "enum",
+          parentKeyMap,
+          rootLessListKey,
+          rootLessListKeyArray,
+          formikRootLessListKey,
+          currentDeploymentUuid,
+          currentMiroirModelEnvironment,
+          formik,
+          log
+        );
+      } else {
+        // For non-discriminator enums, just set the field value
+        formik.setFieldValue(formikRootLessListKey, selectedValue);
+        // formik.setFieldValue(rootLessListKey, selectedValue);
       }
-      handleDiscriminatorChange(
-        selectedValue,
-        "enum",
-        parentKeyMap,
-        rootLessListKey,
-        rootLessListKeyArray,
-        currentDeploymentUuid,
-        currentMiroirModelEnvironment,
-        formik,
-        log
-      );
-    } else {
-      // For non-discriminator enums, just set the field value
-      formik.setFieldValue(rootLessListKey, selectedValue);
-    }
-  }, [isDiscriminator, parentKeyMap, rootLessListKey, rootLessListKeyArray, currentDeploymentUuid, currentMiroirModelEnvironment, formik]);
+    },
+    [
+      isDiscriminator,
+      parentKeyMap,
+      rootLessListKey,
+      rootLessListKeyArray,
+      formikRootLessListKey,
+      currentDeploymentUuid,
+      currentMiroirModelEnvironment,
+      formik,
+    ]
+  );
 
   const editor = useMemo(() => {
     if (readOnly) {
-      const currentValue = formik.getFieldProps(rootLessListKey).value;
+      // const currentValue = formik.getFieldProps(rootLessListKey).value;
+      const currentValue = formik.getFieldProps(formikRootLessListKey).value;
       return <ThemedDisplayValue value={currentValue} type="enum" />;
     }
-    
+
     if (currentEnumSchema?.type === "enum") {
-      const currentValue = formik.getFieldProps(rootLessListKey).value;
-      
+      // const currentValue = formik.getFieldProps(rootLessListKey).value;
+      const currentValue = formik.getFieldProps(formikRootLessListKey).value;
+
       return (
         <div>
           {isDiscriminator ? (
             <>
-              <ThemedSelect
+              <ThemedSelectWithPortal
                 filterable={true}
                 options={selectOptions}
                 value={currentValue}
+                name={formikRootLessListKey}
                 onChange={handleFilterableSelectEnumChange}
                 placeholder={`Select ${name}...`}
                 filterPlaceholder="Type to filter options..."
                 minWidth="200px"
               />
-              <span style={{ fontSize: '1.2em', color: '#696969' }} title="Enum discriminator">★</span>
+              <span style={{ fontSize: "1.2em", color: "#696969" }} title="Enum discriminator">
+                ★
+              </span>
             </>
           ) : (
-            <ThemedSelect
+            <ThemedSelectWithPortal
               filterable={true}
               options={selectOptions}
               value={currentValue}
+              name={formikRootLessListKey}
               onChange={handleFilterableSelectEnumChange}
               placeholder={`Select ${name}...`}
               filterPlaceholder="Type to filter options..."
@@ -394,9 +427,29 @@ export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
         </div>
       );
     } else {
-      return (<div>error on enum {rootLessListKey}: schema is not an enum {JSON.stringify(currentEnumSchema, undefined, 2)}</div>)
+      return (
+        <div>
+          error on enum {rootLessListKey}: schema is not an enum{" "}
+          {JSON.stringify(currentEnumSchema, undefined, 2)}
+        </div>
+      );
     }
-  }, [readOnly, currentEnumSchema, rootLessListKey, menuItems, formik, forceTestingMode, isDiscriminator, handleSelectEnumChange]);
+  }, [
+    readOnly,
+    currentEnumSchema,
+    rootLessListKey,
+    menuItems,
+    formik,
+    formikRootLessListKey,
+    isDiscriminator,
+    name,
+    selectOptions,
+    handleFilterableSelectEnumChange,
+    rawJzodSchema,
+    forceTestingMode,
+    isDiscriminator,
+    handleSelectEnumChange,
+  ]);
   return (
     <ThemedLabeledEditor
       labelElement={labelElement ?? <></>}

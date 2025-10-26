@@ -43,6 +43,7 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
     rootLessListKey,
     rootLessListKeyArray,
     reportSectionPathAsString,
+    
     currentDeploymentUuid,
     currentApplicationSection,
     foreignKeyObjects,
@@ -51,8 +52,15 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
     insideAny,
     typeCheckKeyMap,
   } = props;
-  // const { formik, currentModel, miroirMetaModel } = measuredUseJzodElementEditorHooks(
-  const { formik, currentModel, miroirMetaModel } = useJzodElementEditorHooks(
+  
+  const {
+    formik,
+    currentValueObject,
+    currentValueObjectAtKey: currentValue,
+    formikRootLessListKey,
+    currentModel,
+    miroirMetaModel,
+  } = useJzodElementEditorHooks(
     props.rootLessListKey,
     props.rootLessListKeyArray,
     reportSectionPathAsString,
@@ -71,7 +79,7 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
     };
   }, [context.miroirFundamentalJzodSchema, currentModel, miroirMetaModel]);
 
-  const currentValue = resolvePathOnObject(formik.values, rootLessListKeyArray);
+  // const currentValue = resolvePathOnObject(formik.values[reportSectionPathAsString], rootLessListKeyArray);
   const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> =
     getMemoizedReduxDeploymentsStateSelectorMap();
 
@@ -93,7 +101,8 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
             const defaultValue = getDefaultValueForJzodSchemaWithResolutionNonHook(
               "build",
               type,
-              formik.values,
+              // formik.values[reportSectionPathAsString],
+              currentValueObject,
               rootLessListKey,
               undefined, // currentDefaultValue is not known yet, this is what this call will determine
               [], // currentPath on value is root
@@ -102,7 +111,8 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
               currentDeploymentUuid,
               currentMiroirModelEnvironment
             );
-            formik.setFieldValue(rootLessListKey, defaultValue, false);
+            // formik.setFieldValue(rootLessListKey, defaultValue, false);
+            formik.setFieldValue(formikRootLessListKey, defaultValue, false);
           }}
         />
         {/* <label>{label || "Any Value"}</label> */}

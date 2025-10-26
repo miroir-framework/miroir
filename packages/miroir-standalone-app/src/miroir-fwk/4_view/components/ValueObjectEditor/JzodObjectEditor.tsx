@@ -96,14 +96,17 @@ const EditableAttributeName: FC<{
   initialValue: string;
   onCommit: (newValue: string) => void;
   rootLessListKey: string;
+  formikRootLessListKey: string;
 }> = ({
   initialValue,
   onCommit,
   rootLessListKey,
+  formikRootLessListKey,
 }: {
   initialValue: string;
   onCommit: (newValue: string) => void;
   rootLessListKey: string;
+  formikRootLessListKey: string;
 }) => {
   const [localValue, setLocalValue] = useState(initialValue);
   const [isEditing, setIsEditing] = useState(false);
@@ -141,8 +144,8 @@ const EditableAttributeName: FC<{
   return (
     <ThemedEditableInput
       value={localValue}
-      name={"meta-" + rootLessListKey + "-NAME"}
-      aria-label={"meta-" + rootLessListKey + "-NAME"}
+      name={formikRootLessListKey + "-NAME"}
+      aria-label={formikRootLessListKey + "-NAME"}
       onChange={(e) => setLocalValue(e.target.value)}
       onFocus={() => setIsEditing(true)}
       onBlur={handleCommit}
@@ -160,6 +163,7 @@ const ProgressiveAttribute: FC<{
   listKey: string;
   rootLessListKey: string;
   rootLessListKeyArray: (string | number)[];
+  formikRootLessListKey: string;
   reportSectionPathAsString: string;
   localResolvedElementJzodSchemaBasedOnValue: JzodObject;
   // unfoldedRawSchema: any;
@@ -192,6 +196,7 @@ const ProgressiveAttribute: FC<{
   listKey,
   rootLessListKey,
   rootLessListKeyArray,
+  formikRootLessListKey,
   reportSectionPathAsString,
   localResolvedElementJzodSchemaBasedOnValue,
   // unfoldedRawSchema,
@@ -235,11 +240,24 @@ const ProgressiveAttribute: FC<{
 
   const currentAttributeDefinition = localResolvedElementJzodSchemaBasedOnValue.definition[attribute[0]];
   const attributeListKey = listKey + "." + attribute[0];
+  const formikAttributeRootLessListKey = formikRootLessListKey.length > 0 ? formikRootLessListKey + "." + attribute[0] : attribute[0];
   const attributeRootLessListKey = rootLessListKey.length > 0 ? rootLessListKey + "." + attribute[0] : attribute[0];
   const attributeRootLessListKeyArray: (string | number)[] =
     rootLessListKeyArray.length > 0 ? [...rootLessListKeyArray, attribute[0]] : [attribute[0]];
 
   const currentKeyMap = typeCheckKeyMap ? typeCheckKeyMap[rootLessListKey] : undefined;
+
+  log.info(
+    "ProgressiveAttribute",
+    "attribute",
+    attribute,
+    "attributeRootLessListKey",
+    JSON.stringify(attributeRootLessListKey),
+    "attributeRootLessListKeyArray",
+    JSON.stringify(attributeRootLessListKeyArray),
+    "currentKeyMap", currentKeyMap,
+    "reportSectionPathAsString", reportSectionPathAsString
+  )
 
 
   if (!currentKeyMap?.rawSchema) {
@@ -260,6 +278,7 @@ const ProgressiveAttribute: FC<{
     <EditableAttributeName
       initialValue={attribute[0]}
       rootLessListKey={attributeRootLessListKey}
+      formikRootLessListKey={formikAttributeRootLessListKey}
       onCommit={(newValue) => handleAttributeNameChange(newValue, attributeRootLessListKeyArray)}
     />
   ) : (
@@ -320,8 +339,8 @@ const ProgressiveAttribute: FC<{
               !readOnly ? (
                 <>
                   <ThemedSmallIconButton
-                    id={attributeRootLessListKey + "-removeOptionalAttributeOrRecordEntry"}
-                    aria-label={attributeRootLessListKey + "-removeOptionalAttributeOrRecordEntry"}
+                    id={reportSectionPathAsString+ "." + attributeRootLessListKey + "-removeOptionalAttributeOrRecordEntry"}
+                    aria-label={reportSectionPathAsString+ "." + attributeRootLessListKey + "-removeOptionalAttributeOrRecordEntry"}
                     onClick={deleteElement(attributeRootLessListKeyArray)}
                     visible={isRecordType || definedOptionalAttributes.has(attribute[0])}
                   >
@@ -349,12 +368,13 @@ const ProgressiveAttribute: FC<{
 // ##############################################################################################
 // ##############################################################################################
 // ##############################################################################################
+let count = 0;
 export function JzodObjectEditor(props: JzodObjectEditorProps) {
-  const [count, setCount] = useState(0);
+  // const [count, setCount] = useState(0);
 
-  React.useEffect(() => {
-    setCount((prevCount) => prevCount + 1);
-  }, [props]);
+  // React.useEffect(() => {
+  //   setCount((prevCount) => prevCount + 1);
+  // }, [props]);
 
   const {
     name,
@@ -389,10 +409,12 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
   // );
   const {
     // general use
-    currentValue,
+    currentValueObjectAtKey,
     context,
     currentModel,
+    currentValueObject,
     formik,
+    formikRootLessListKey,
     localResolvedElementJzodSchemaBasedOnValue,
     miroirMetaModel,
     currentMiroirModelEnvironment,
@@ -415,16 +437,32 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
 
   const reportContext = useReportPageContext();
 
-  // log.info("JzodObjectEditor",
-  //   count,
-  //   "Rendering JzodObjectEditor for props.rootLessListKeyArray",
-  //   props.rootLessListKeyArray,
-  //   "typeCheckKeyMap[props.rootLessListKey]",
-  //   typeCheckKeyMap ? typeCheckKeyMap[props.rootLessListKey] : undefined,
-  //   // reportContext.isNodeFolded(props.rootLessListKeyArray),
-  //   // "reportContext.foldedObjectAttributeOrArrayItems",
-  //   // reportContext.foldedObjectAttributeOrArrayItems,
-  // );
+  log.info("JzodObjectEditor",
+    count,
+    "Rendering JzodObjectEditor for props.rootLessListKeyArray",
+    rootLessListKeyArray,
+    "rootLessListKey",
+    rootLessListKey,
+    "formik.values",
+    JSON.stringify(formik.values, null, 2),
+    "currentValueObject",
+    JSON.stringify(currentValueObject, null, 2),
+    "foreignKeyObjects",
+    foreignKeyObjects,
+    "itemsOrder",
+    itemsOrder,
+    // "typeCheckKeyMap[rootLessListKey]",
+    // typeCheckKeyMap ? typeCheckKeyMap[rootLessListKey] : undefined,
+    // "typeCheckKeyMap",
+    // typeCheckKeyMap,
+    // "currentReportSectionFormikValues",
+    // currentReportSectionFormikValues,
+    // "props",
+    // props,
+    // reportContext.isNodeFolded(props.rootLessListKeyArray),
+    // "reportContext.foldedObjectAttributeOrArrayItems",
+    // reportContext.foldedObjectAttributeOrArrayItems,
+  );
 
   const currentTypeCheckKeyMap = typeCheckKeyMap ? typeCheckKeyMap[rootLessListKey] : undefined;
 
@@ -481,18 +519,20 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
     // Get parent path by removing last element from rootLessListKeyArray
     const parentPath = rootLessListKeyArray.slice(0, -1);
     const parentKey = parentPath.join('.');
-    
+
     // Get parent object from Formik values
     const parentObject = parentKey ? 
-      parentPath.reduce((obj, key) => obj?.[key], formik.values) : 
-      formik.values;
+      // parentPath.reduce((obj, key) => obj?.[key], formik.values) : 
+      // formik.values;
+      parentPath.reduce((obj, key) => obj?.[key], currentValueObjectAtKey) : 
+      currentValueObjectAtKey;
 
     // Construct the blob object structure that BlobEditorField expects
     return {
       filename: parentObject?.filename,
-      contents: currentValue, // This is the {encoding, mimeType, data} object
+      contents: currentValueObjectAtKey, // This is the {encoding, mimeType, data} object
     };
-  }, [isBlob, currentValue, rootLessListKeyArray, formik.values]);
+  }, [isBlob, currentValueObjectAtKey, rootLessListKeyArray, currentValueObjectAtKey]);
 
   const currentMiroirFundamentalJzodSchema = context.miroirFundamentalJzodSchema;
   const usedIndentLevel: number = indentLevel ? indentLevel : 0;
@@ -508,10 +548,6 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
     return true;
   }, [localResolvedElementJzodSchemaBasedOnValue]);
 
-  // const currentValue = useMemo(
-  //   () => resolvePathOnObject(formik.values, rootLessListKeyArray),
-  //   [formik.values, rootLessListKeyArray]
-  // );
 
   const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> =
       getMemoizedReduxDeploymentsStateSelectorMap();
@@ -615,11 +651,11 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
       );
 
       // Get the value at the old attribute path
-      const subObject = resolvePathOnObject(formik.values, localAttributeRootLessListKeyArray);
+      const subObject = resolvePathOnObject(currentValueObject, localAttributeRootLessListKeyArray);
 
       // Delete the old attribute path
       const newFormState1: any = deleteObjectAtPath(
-        formik.values,
+        currentValueObject,
         localAttributeRootLessListKeyArray
       );
 
@@ -636,7 +672,8 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
       log.info("handleAttributeNameChange newFormState2", newFormState2);
 
       // Update formik values
-      formik.setValues(newFormState2);
+      // formik.setValues(newFormState2);
+      formik.setFieldValue(reportSectionPathAsString, newFormState2);
     },
     [formik.values, formik.setValues]
   );
@@ -667,7 +704,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
       ? getDefaultValueForJzodSchemaWithResolutionNonHook(
           "build",
           currentTypeCheckKeyMap?.rawSchema.definition,
-          formik.values, // rootObject
+          currentValueObject,//formik.values, // rootObject
           rootLessListKey,
           undefined, // currentDefaultValue is not known yet, this is what this call will determine
           [], // currentPath on value is root
@@ -684,14 +721,14 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
         )
       : undefined;
 
-    const currentValue = resolvePathOnObject(formik.values, rootLessListKeyArray);
-    const newRecordValue: any = { ["newRecordEntry"]: newAttributeValue, ...currentValue };
+    // const currentValue = resolvePathOnObject(formik.values, rootLessListKeyArray);
+    const newRecordValue: any = { ["newRecordEntry"]: newAttributeValue, ...currentValueObjectAtKey };
     // log.info("addExtraRecordEntry", "newValue", newRecordValue);
 
     // const newItemsOrder = getItemsOrder(newRecordValue, currentTypeCheckKeyMap.rawSchema);
     // log.info("addExtraRecordEntry", "itemsOrder", itemsOrder, "newItemsOrder", newItemsOrder);
 
-    formik.setFieldValue(rootLessListKey, newRecordValue);
+    formik.setFieldValue(formikRootLessListKey, newRecordValue);
     // log.info(
     //   "addExtraRecordEntry clicked2!",
     //   listKey,
@@ -731,16 +768,18 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
         "undefinedOptionalAttributes",
         undefinedOptionalAttributes,
       );
-      const currentObjectValue = resolvePathOnObject(formik.values, rootLessListKeyArray);
+      // const currentObjectValue = resolvePathOnObject(formik.values, rootLessListKeyArray);
       const newAttributeType: JzodElement = resolvePathOnObject(
-        currentTypeCheckKeyMap?.chosenUnionBranchRawSchema ?? currentTypeCheckKeyMap?.jzodObjectFlattenedSchema ?? currentTypeCheckKeyMap?.rawSchema,
+        currentTypeCheckKeyMap?.chosenUnionBranchRawSchema ??
+          currentTypeCheckKeyMap?.jzodObjectFlattenedSchema ??
+          currentTypeCheckKeyMap?.rawSchema,
         ["definition", attributeName]
       );
       const newAttributeValue = !!currentMiroirFundamentalJzodSchema
         ? getDefaultValueForJzodSchemaWithResolutionNonHook(
             "build",
             newAttributeType,
-            formik.values,
+            currentValueObject,
             rootLessListKey,
             undefined, // currentDefaultValue is not known yet, this is what this call will determine
             [], // currentPath on value is root
@@ -757,7 +796,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
         : undefined;
 
       const newObjectValue = {
-        ...currentObjectValue,
+        ...currentValueObjectAtKey,
         [attributeName]: newAttributeValue,
       };
       log.info(
@@ -788,11 +827,11 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
       //   "newItemsOrder",
       //   newItemsOrder
       // );
-      if (rootLessListKey) {
-        formik.setFieldValue(rootLessListKey, newObjectValue, false);
-      } else {
-        formik.setValues(newObjectValue, false);
-      }
+      // if (rootLessListKey) {
+        formik.setFieldValue(formikRootLessListKey, newObjectValue, false);
+      // } else {
+      //   formik.setValues(newObjectValue, false);
+      // }
       // log.info("addObjectOptionalAttribute clicked3 DONE!");
     },
     [
@@ -802,7 +841,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
       currentMiroirFundamentalJzodSchema,
       currentModel,
       miroirMetaModel,
-      formik.values,
+      currentValueObjectAtKey,
       formik.setFieldValue,
       undefinedOptionalAttributes,
     ]
@@ -811,14 +850,15 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
   // // ##############################################################################################
   // // Get displayed value when object is folded using the shared utility function
   const foldedDisplayValue = useMemo(() => {
-    return getFoldedDisplayValue(localResolvedElementJzodSchemaBasedOnValue, currentValue);
-  }, [localResolvedElementJzodSchemaBasedOnValue, currentValue]);
+    return getFoldedDisplayValue(localResolvedElementJzodSchemaBasedOnValue, currentValueObjectAtKey);
+  }, [localResolvedElementJzodSchemaBasedOnValue, currentValueObjectAtKey]);
 
   // ##############################################################################################
   const deleteElement = (rootLessListKeyArray: (string | number)[]) => () => {
+    log.info("deleteElement called for", rootLessListKeyArray.join("."));
     if (rootLessListKeyArray.length > 0) {
-      const newFormState: any = deleteObjectAtPath(formik.values, rootLessListKeyArray);
-      formik.setValues(newFormState);
+      const newFormState: any = deleteObjectAtPath(currentValueObject, rootLessListKeyArray);
+      formik.setFieldValue(reportSectionPathAsString, newFormState);
       log.info("Removed optional attribute:", rootLessListKeyArray.join("."));
     }
   };
@@ -894,12 +934,14 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
             .map((i): [string, JzodElement] => [
               i,
               formik.values[rootLessListKey.length > 0 ? rootLessListKey + "." + i[0] : i[0]],
+              // currentValueObjectAtKey[rootLessListKey.length > 0 ? rootLessListKey + "." + i[0] : i[0]],
             ])
             .map((attribute: [string, JzodElement], attributeNumber: number) => (
               <ProgressiveAttribute
                 key={attribute[0]}
                 listKey={listKey}
                 rootLessListKey={rootLessListKey}
+                formikRootLessListKey={formikRootLessListKey}
                 rootLessListKeyArray={rootLessListKeyArray}
                 reportSectionPathAsString={reportSectionPathAsString}
                 attribute={attribute}
@@ -912,7 +954,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
                   localResolvedElementJzodSchemaBasedOnValue as JzodObject
                 }
                 typeCheckKeyMap={typeCheckKeyMap}
-                currentValue={currentValue}
+                currentValue={currentValueObjectAtKey}
                 usedIndentLevel={usedIndentLevel}
                 definedOptionalAttributes={definedOptionalAttributes}
                 handleAttributeNameChange={handleAttributeNameChange}
@@ -941,7 +983,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
     foreignKeyObjects,
     insideAny,
     displayError,
-    currentValue,
+    currentValueObjectAtKey,
     usedIndentLevel,
     definedOptionalAttributes,
     handleAttributeNameChange,
@@ -980,13 +1022,13 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
             <FoldUnfoldObjectOrArray
               listKey={listKey}
               rootLessListKeyArray={rootLessListKeyArray}
-              currentValue={currentValue}
+              currentValue={currentValueObjectAtKey}
               unfoldingDepth={unfoldingDepth}
             ></FoldUnfoldObjectOrArray>
             <FoldUnfoldObjectOrArray
               listKey={listKey}
               rootLessListKeyArray={rootLessListKeyArray}
-              currentValue={currentValue}
+              currentValue={currentValueObjectAtKey}
               unfoldingDepth={Infinity}
             ></FoldUnfoldObjectOrArray>
             {!reportContext.isNodeFolded(rootLessListKeyArray) &&
@@ -1008,8 +1050,8 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
             currentTypeCheckKeyMap?.rawSchema.type == "record" &&
             !reportContext.isNodeFolded(rootLessListKeyArray) ? (
               <ThemedSizedButton
-                id={rootLessListKey + ".addRecordAttribute"}
-                aria-label={rootLessListKey + ".addRecordAttribute"}
+                id={formikRootLessListKey + ".addRecordAttribute"}
+                aria-label={formikRootLessListKey + ".addRecordAttribute"}
                 onClick={addExtraRecordEntry}
                 title="Add new record attribute"
               >
@@ -1031,7 +1073,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
                     <ThemedOptionalAttributeItem key={attributeName}>
                       <ThemedSizedButton
                         aria-label={
-                          rootLessListKey + ".addObjectOptionalAttribute." + attributeName
+                          formikRootLessListKey + ".addObjectOptionalAttribute." + attributeName
                         }
                         onClick={() => addObjectOptionalAttribute(attributeName)}
                         title={`Add optional attribute: ${attributeName}`}
@@ -1077,14 +1119,14 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
                       currentTypeCheckKeyMap.resolvedSchema.tag?.value?.editorButton?.transformer, // transformer
                       currentMiroirModelEnvironment,
                       {}, // queryParams
-                      { originTransformer: currentValue }, // contextResults - pass the instance to transform
+                      { originTransformer: currentValueObjectAtKey }, // contextResults - pass the instance to transform
                       "value" // resolveBuildTransformersTo
                     );
                     if (result.status === "error") {
                       log.error("editorButton transformer error:", result.message);
                       console.error("editorButton transformer error:", result.message);
                     } else {
-                      formik.setValues(result);
+                      formik.setFieldValue(reportSectionPathAsString,result);
                     }
                     log.info("editorButton transformer button clicked, result:", result);
                   }}

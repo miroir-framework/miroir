@@ -52,7 +52,10 @@ export interface JzodElementEditorHooks {
   deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState>;
   // state
   formik: FormikProps<Record<string, any>>;
-  currentValue: any; // current value of the jzod element
+  formikRootLessListKeyArray: (string | number)[];
+  formikRootLessListKey: string;
+  currentValueObject: any;
+  currentValueObjectAtKey: any; // current value of the jzod element
   codeMirrorValue: string;
   setCodeMirrorValue: React.Dispatch<React.SetStateAction<string>>;
   codeMirrorIsValidJson: boolean;
@@ -119,11 +122,15 @@ export function useJzodElementEditorHooks(
   // codeMirror state
   const formik = useFormikContext<Record<string, any>>();
   
-  const currentValue = useMemo(() => {
+  const currentReportSectionFormikValues = formik.values[reportSectionPathAsString] ?? formik.values;
+  const formikRootLessListKeyArray = [reportSectionPathAsString, ...rootLessListKeyArray];
+  const formikRootLessListKey = formikRootLessListKeyArray.join(".");
+
+  const currentValueObjectAtKey = useMemo(() => {
     try {
       return rootLessListKeyArray.length > 0
-        ? resolvePathOnObject(formik.values, rootLessListKeyArray)
-        : formik.values;
+        ? resolvePathOnObject(currentReportSectionFormikValues, rootLessListKeyArray)
+        : currentReportSectionFormikValues;
     } catch (e) {
       log.warn(
         "useJzodElementEditorHooks resolvePathOnObject error",
@@ -133,14 +140,17 @@ export function useJzodElementEditorHooks(
         count,
         "caller",
         caller,
+        "currentReportSectionFormikValues",
+        currentReportSectionFormikValues,
         "formik.values",
         formik.values,
         "error",
         e
       );
-      return formik.values; // fallback to formik.values if the path resolution fails
+      // return formik.values; // fallback to formik.values if the path resolution fails
+      return currentReportSectionFormikValues;
     }
-  }, [formik.values, rootLessListKeyArray]);
+  }, [formik.values, currentReportSectionFormikValues, rootLessListKeyArray]);
 
   const currentMiroirModelEnvironment: MiroirModelEnvironment = useMemo(() => {
     return {
@@ -173,13 +183,13 @@ export function useJzodElementEditorHooks(
   // value schema
   // const localResolvedElementJzodSchemaBasedOnValue: JzodElement | undefined = useMemo(() => {
     const localResolvedElementJzodSchemaBasedOnValue: JzodElement | undefined =
-    typeCheckKeyMap && typeCheckKeyMap[rootLessListKey]
-    ? typeCheckKeyMap[rootLessListKey]?.resolvedSchema
-    : undefined;
+      typeCheckKeyMap && typeCheckKeyMap[rootLessListKey]
+        ? typeCheckKeyMap[rootLessListKey]?.resolvedSchema
+        : undefined;
     // for objects, records
     const itemsOrder: any[] = useMemo(
-      () => getItemsOrder(currentValue, localResolvedElementJzodSchemaBasedOnValue),
-      [localResolvedElementJzodSchemaBasedOnValue, currentValue]
+      () => getItemsOrder(currentValueObjectAtKey, localResolvedElementJzodSchemaBasedOnValue),
+      [localResolvedElementJzodSchemaBasedOnValue, currentValueObjectAtKey]
     );
     
   const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> =
@@ -273,14 +283,14 @@ export function useJzodElementEditorHooks(
 
   const undefinedOptionalAttributes: string[] = useMemo(() => {
     if (typeCheckMapJzodObjectFlattenedSchema) {
-      const currentObjectAttributes = Object.keys(currentValue);
+      const currentObjectAttributes = Object.keys(currentValueObjectAtKey);
       return Object.entries(typeCheckMapJzodObjectFlattenedSchema.definition)
         .filter((a) => a[1].optional)
         .filter((a) => !currentObjectAttributes.includes(a[0]))
         .map((a) => a[0]);
     }
     if (typeCheckKeyMapChosenUnionBranchObjectSchema) {
-      const currentObjectAttributes = Object.keys(currentValue);
+      const currentObjectAttributes = Object.keys(currentValueObjectAtKey);
       return Object.entries(typeCheckKeyMapChosenUnionBranchObjectSchema.definition)
         .filter((a) => a[1].optional)
         .filter((a) => !currentObjectAttributes.includes(a[0]))
@@ -290,12 +300,12 @@ export function useJzodElementEditorHooks(
   }, [
     typeCheckKeyMapChosenUnionBranchObjectSchema,
     typeCheckMapJzodObjectFlattenedSchema,
-    currentValue,
+    currentValueObjectAtKey,
   ]);
 
   const definedOptionalAttributes: Set<string> = useMemo(() => {
     if (typeCheckMapJzodObjectFlattenedSchema) {
-      const currentObjectAttributes = Object.keys(currentValue);
+      const currentObjectAttributes = Object.keys(currentValueObjectAtKey);
       return new Set(
         Object.entries(typeCheckMapJzodObjectFlattenedSchema.definition)
           .filter((a) => a[1].optional)
@@ -304,7 +314,7 @@ export function useJzodElementEditorHooks(
       );
     }
     if (typeCheckKeyMapChosenUnionBranchObjectSchema) {
-      const currentObjectAttributes = Object.keys(currentValue);
+      const currentObjectAttributes = Object.keys(currentValueObjectAtKey);
       return new Set(
         Object.entries(typeCheckKeyMapChosenUnionBranchObjectSchema?.definition ?? [])
           .filter((a) => a[1].optional)
@@ -316,7 +326,7 @@ export function useJzodElementEditorHooks(
   }, [
     typeCheckMapJzodObjectFlattenedSchema,
     typeCheckKeyMapChosenUnionBranchObjectSchema,
-    currentValue,
+    currentValueObjectAtKey,
   ]);
 
   const stringSelectList = useMemo(() => {
@@ -340,9 +350,12 @@ export function useJzodElementEditorHooks(
     context,
     currentModel,
     miroirMetaModel,
-    currentValue,
+    currentValueObject: currentReportSectionFormikValues,
+    currentValueObjectAtKey,
     currentMiroirModelEnvironment,
     formik,
+    formikRootLessListKeyArray,
+    formikRootLessListKey,
     displayAsStructuredElement,
     setDisplayAsStructuredElement,
     codeMirrorValue,

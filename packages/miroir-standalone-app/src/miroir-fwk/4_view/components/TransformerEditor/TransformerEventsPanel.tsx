@@ -204,7 +204,7 @@ const DisplayTransformerEvent: React.FC<{
               <TypedValueObjectEditorWithFormik
                 labelElement={<div>target:</div>}
                 initialValueObject={displayedParameters}
-                valueObjectMMLSchema={parametersSchema}
+                formikValuesMMLSchema={parametersSchema} // TODO: ILL-TYPED!!
                 deploymentUuid={deploymentUuid}
                 applicationSection={"data"}
                 formLabel={"Transformation Result Viewer"}

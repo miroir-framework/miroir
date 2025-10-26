@@ -129,7 +129,7 @@ export const ThemedMenuItem: React.FC<MenuItemProps & ThemedComponentProps> = ({
   );
 };
 
-// Enhanced ThemedSelect that wraps Material-UI Select with proper theming
+// Enhanced ThemedSelectWithPortal that wraps Material-UI Select with proper theming
 export const ThemedMUISelect: React.FC<SelectProps<any> & ThemedComponentProps> = ({ 
   children, 
   className, 

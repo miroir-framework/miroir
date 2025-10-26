@@ -32,7 +32,7 @@ export interface TypedValueObjectEditorWithFormikProps extends TypedValueObjectE
 export const TypedValueObjectEditorWithFormik: React.FC<TypedValueObjectEditorWithFormikProps> = (props) => {
   const {
     initialValueObject,
-    valueObjectMMLSchema,
+    formikValuesMMLSchema: valueObjectMMLSchema,
     onSubmit,
     readonly,
     zoomInPath,
@@ -73,7 +73,7 @@ export const TypedValueObjectEditorWithFormik: React.FC<TypedValueObjectEditorWi
       {/* {(formik: FormikProps<Record<string, any>>) => ( */}
       <TypedValueObjectEditor
         {...editorProps}
-        valueObjectMMLSchema={valueObjectMMLSchema}
+        formikValuesMMLSchema={valueObjectMMLSchema}
         readonly={readonly}
         zoomInPath={zoomInPath}
       />

@@ -461,7 +461,7 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
 
   const formValueMLSchema: JzodObject = useMemo(() => {
     log.info(
-      "############################################## reportSectionsFormSchema",
+      "############################################## computing reportSectionsFormSchema",
       props.reportDefinition?.definition.section,
       reportData,
       []

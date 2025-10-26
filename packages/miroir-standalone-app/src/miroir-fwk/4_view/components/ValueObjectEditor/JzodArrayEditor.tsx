@@ -68,6 +68,7 @@ interface JzodArrayMoveButtonProps {
   itemsOrder: number[];
   listKey: string;
   rootLessListKey: string;
+  reportSectionPathAsString: string;
   formik: FormikContextType<Record<string, any>>; // useFormikContext<Record<string, any>>()
   currentValue: any;
 }
@@ -78,6 +79,7 @@ export const JzodArrayEditorMoveButton: React.FC<JzodArrayMoveButtonProps> = ({
   index,
   itemsOrder,
   listKey,
+  reportSectionPathAsString,
   formik,
   currentValue,
   rootLessListKey
@@ -104,13 +106,14 @@ export const JzodArrayEditorMoveButton: React.FC<JzodArrayMoveButtonProps> = ({
       JSON.stringify(formik.values, null, 2),
     );
 
-    formik.setFieldValue(rootLessListKey, newList, true); // validate to trigger re-renders
+    formik.setFieldValue(`${reportSectionPathAsString}.${rootLessListKey}`, newList, true); // validate to trigger re-renders
   };
 
   return (
     <ThemedStyledButton
       variant="transparent"
-      role={`${listKey}.button.${direction}`}
+      type="button"
+      role={`${reportSectionPathAsString}.${rootLessListKey}.button.${direction}`}
       disabled={isDisabled}
       onClick={handleClick}
     >
@@ -147,6 +150,12 @@ interface ProgressiveArrayItemProps {
   };
 }
 
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
 const ProgressiveArrayItem: React.FC<ProgressiveArrayItemProps> = ({
   index,
   listKey,
@@ -187,6 +196,9 @@ const ProgressiveArrayItem: React.FC<ProgressiveArrayItemProps> = ({
     }, []);
   }
 
+  const itemRootLessListKey = rootLessListKey.length > 0 ? rootLessListKey + "." + index : "" + index;
+  const itemListKey = listKey + "." + index;
+
   return (
     <div key={rootLessListKey + "." + index}>
       <div key={listKey + "." + index} style={{ marginLeft: `calc(${indentShift})` }}>
@@ -205,6 +217,7 @@ const ProgressiveArrayItem: React.FC<ProgressiveArrayItemProps> = ({
                   itemsOrder={itemsOrder as number[]}
                   listKey={listKey}
                   rootLessListKey={rootLessListKey}
+                  reportSectionPathAsString={reportSectionPathAsString}
                   formik={formik}
                   currentValue={currentValue}
                 />
@@ -214,6 +227,7 @@ const ProgressiveArrayItem: React.FC<ProgressiveArrayItemProps> = ({
                   itemsOrder={itemsOrder as number[]}
                   listKey={listKey}
                   rootLessListKey={rootLessListKey}
+                  reportSectionPathAsString={reportSectionPathAsString}
                   formik={formik}
                   currentValue={currentValue}
                 />
@@ -304,14 +318,24 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
     displayError,
   }
 ) => {
-  // log.info("############################################### JzodArrayEditor array rootLessListKey", props.rootLessListKey, "values", props.formik.values);
   jzodArrayEditorRenderCount++;
   const context = useMiroirContextService();
-
+  
   const formik = useFormikContext<Record<string, any>>();
   const currentValue = resolvePathOnObject(
-    formik.values,
+    formik.values[reportSectionPathAsString],
     rootLessListKeyArray
+  );
+  log.info(
+    "############################################### JzodArrayEditor",
+    "rootLessListKey",
+    JSON.stringify(rootLessListKey),
+    "reportSectionPathAsString",
+    JSON.stringify(reportSectionPathAsString),
+    "values",
+    JSON.stringify(formik.values),
+    "currentValue",
+    currentValue,
   );
 
   // log.info(
@@ -343,7 +367,8 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
   // ??
   const usedIndentLevel: number = indentLevel ?? 0;
 
-  const arrayValueObject = resolvePathOnObject(formik.values, rootLessListKeyArray);
+  // const arrayValueObject = resolvePathOnObject(formik.values, rootLessListKeyArray);
+  const arrayValueObject = currentValue;
 
   const currentTypeCheckKeyMap = typeCheckKeyMap ? typeCheckKeyMap[rootLessListKey] : undefined;
   // const parentKey = rootLessListKey.includes(".")
