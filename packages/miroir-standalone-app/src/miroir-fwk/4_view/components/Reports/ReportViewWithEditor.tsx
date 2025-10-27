@@ -56,8 +56,6 @@ export interface ReportViewWithEditorProps extends ReportViewProps {
 const reportSectionsFormSchema = (
   reportSection: ReportSection,
   deploymentUuid: Uuid,
-  // applicationSection: ApplicationSection,
-  // entityUuid: Uuid,
   currentDeploymentReportsEntitiesDefinitionsMapping: DeploymentUuidToReportsEntitiesDefinitions,
   reportData: Record<string, any>,
   reportSectionPath: (string | number)[]
@@ -125,6 +123,11 @@ const reportSectionsFormSchema = (
       return {};
   }
 };
+// ###############################################################################################
+// ###############################################################################################
+// ###############################################################################################
+// ###############################################################################################
+// ###############################################################################################
 const reportSectionsFormValue = (
   reportSection: ReportSection,
   reportData: Record<string, any>,
@@ -146,7 +149,6 @@ const reportSectionsFormValue = (
         },
         {}
       );
-    case "grid":
     case "grid":
       return reportSection.definition.reduce(
         (acc: Record<string, any>, row: ReportSection[], rowIndex: number) => {
@@ -179,8 +181,11 @@ const reportSectionsFormValue = (
   }
 };
 
+let count = 0;
 // ###############################################################################################
 export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
+  count += 1;
+  log.info(`ReportViewWithEditor Render Count: ${count}`);
   const context = useMiroirContextService();
   const outlineContext = useDocumentOutlineContext();
   
@@ -190,124 +195,124 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
   // Read editMode from ViewParams context
   const editMode = context.viewParams.editMode;
   
-  // Task 2.4: Add React useState hook to manage edited Report definition
-  const [editedReportDefinition, setEditedReportDefinition] = useState<RootReport | undefined>(undefined);
+  // // Task 2.4: Add React useState hook to manage edited Report definition
+  // const [editedReportDefinition, setEditedReportDefinition] = useState<RootReport | undefined>(undefined);
   
-  // Task 2.5: Add React useState hook to track which sections have been modified
-  const [modifiedSections, setModifiedSections] = useState<Set<string>>(new Set());
+  // // Task 2.5: Add React useState hook to track which sections have been modified
+  // const [modifiedSections, setModifiedSections] = useState<Set<string>>(new Set());
   
-  // Task 2.6: Create handleSectionEdit callback
-  const handleSectionEdit = useCallback((sectionPath: string, newDefinition: any) => {
-    log.info("handleSectionEdit called", { sectionPath, newDefinition });
+  // // Task 2.6: Create handleSectionEdit callback
+  // const handleSectionEdit = useCallback((sectionPath: string, newDefinition: any) => {
+  //   log.info("handleSectionEdit called", { sectionPath, newDefinition });
     
-    // Update the edited report definition
-    setEditedReportDefinition(prevReport => {
-      // If no previous edits, start with a copy of the original
-      const baseReport = prevReport ?? props.reportDefinition;
+  //   // Update the edited report definition
+  //   setEditedReportDefinition(prevReport => {
+  //     // If no previous edits, start with a copy of the original
+  //     const baseReport = prevReport ?? props.reportDefinition;
       
-      // Deep clone to avoid mutating the original
-      const updatedReport = JSON.parse(JSON.stringify(baseReport)) as RootReport;
+  //     // Deep clone to avoid mutating the original
+  //     const updatedReport = JSON.parse(JSON.stringify(baseReport)) as RootReport;
       
-      // Parse the section path and update the appropriate part
-      // For now, we'll handle simple section updates
-      // Path format: "section.definition[0]" or "section"
-      const pathParts = sectionPath.split('.');
-      let current: any = updatedReport;
+  //     // Parse the section path and update the appropriate part
+  //     // For now, we'll handle simple section updates
+  //     // Path format: "section.definition[0]" or "section"
+  //     const pathParts = sectionPath.split('.');
+  //     let current: any = updatedReport;
       
-      for (let i = 0; i < pathParts.length - 1; i++) {
-        const part = pathParts[i];
-        const arrayMatch = part.match(/^(.+)\[(\d+)\]$/);
-        if (arrayMatch) {
-          const [, key, index] = arrayMatch;
-          current = current[key][parseInt(index)];
-        } else {
-          current = current[part];
-        }
-      }
+  //     for (let i = 0; i < pathParts.length - 1; i++) {
+  //       const part = pathParts[i];
+  //       const arrayMatch = part.match(/^(.+)\[(\d+)\]$/);
+  //       if (arrayMatch) {
+  //         const [, key, index] = arrayMatch;
+  //         current = current[key][parseInt(index)];
+  //       } else {
+  //         current = current[part];
+  //       }
+  //     }
       
-      // Set the final value
-      const lastPart = pathParts[pathParts.length - 1];
-      const arrayMatch = lastPart.match(/^(.+)\[(\d+)\]$/);
-      if (arrayMatch) {
-        const [, key, index] = arrayMatch;
-        current[key][parseInt(index)] = newDefinition;
-      } else {
-        current[lastPart] = newDefinition;
-      }
+  //     // Set the final value
+  //     const lastPart = pathParts[pathParts.length - 1];
+  //     const arrayMatch = lastPart.match(/^(.+)\[(\d+)\]$/);
+  //     if (arrayMatch) {
+  //       const [, key, index] = arrayMatch;
+  //       current[key][parseInt(index)] = newDefinition;
+  //     } else {
+  //       current[lastPart] = newDefinition;
+  //     }
       
-      return updatedReport;
-    });
+  //     return updatedReport;
+  //   });
     
-    // Add the section path to modified sections
-    setModifiedSections(prev => new Set([...prev, sectionPath]));
-  }, [props.reportDefinition]);
+  //   // Add the section path to modified sections
+  //   setModifiedSections(prev => new Set([...prev, sectionPath]));
+  // }, [props.reportDefinition]);
   
-  // Task 2.7: Create handleSectionCancel callback
-  const handleSectionCancel = useCallback((sectionPath: string) => {
-    log.info("handleSectionCancel called", { sectionPath });
+  // // Task 2.7: Create handleSectionCancel callback
+  // const handleSectionCancel = useCallback((sectionPath: string) => {
+  //   log.info("handleSectionCancel called", { sectionPath });
     
-    // Remove the section from modified sections
-    setModifiedSections(prev => {
-      const newSet = new Set(prev);
-      newSet.delete(sectionPath);
-      return newSet;
-    });
+  //   // Remove the section from modified sections
+  //   setModifiedSections(prev => {
+  //     const newSet = new Set(prev);
+  //     newSet.delete(sectionPath);
+  //     return newSet;
+  //   });
     
-    // If no more modified sections, clear the edited report definition
-    if (modifiedSections.size === 1 && modifiedSections.has(sectionPath)) {
-      setEditedReportDefinition(undefined);
-    } else {
-      // Revert just this section to original
-      setEditedReportDefinition(prevReport => {
-        if (!prevReport) return undefined;
+  //   // If no more modified sections, clear the edited report definition
+  //   if (modifiedSections.size === 1 && modifiedSections.has(sectionPath)) {
+  //     setEditedReportDefinition(undefined);
+  //   } else {
+  //     // Revert just this section to original
+  //     setEditedReportDefinition(prevReport => {
+  //       if (!prevReport) return undefined;
         
-        // Deep clone
-        const updatedReport = JSON.parse(JSON.stringify(prevReport)) as RootReport;
+  //       // Deep clone
+  //       const updatedReport = JSON.parse(JSON.stringify(prevReport)) as RootReport;
         
-        // Parse the section path and revert to original value
-        const pathParts = sectionPath.split('.');
-        let current: any = updatedReport;
-        let originalCurrent: any = props.reportDefinition;
+  //       // Parse the section path and revert to original value
+  //       const pathParts = sectionPath.split('.');
+  //       let current: any = updatedReport;
+  //       let originalCurrent: any = props.reportDefinition;
         
-        for (let i = 0; i < pathParts.length - 1; i++) {
-          const part = pathParts[i];
-          const arrayMatch = part.match(/^(.+)\[(\d+)\]$/);
-          if (arrayMatch) {
-            const [, key, index] = arrayMatch;
-            current = current[key][parseInt(index)];
-            originalCurrent = originalCurrent[key][parseInt(index)];
-          } else {
-            current = current[part];
-            originalCurrent = originalCurrent[part];
-          }
-        }
+  //       for (let i = 0; i < pathParts.length - 1; i++) {
+  //         const part = pathParts[i];
+  //         const arrayMatch = part.match(/^(.+)\[(\d+)\]$/);
+  //         if (arrayMatch) {
+  //           const [, key, index] = arrayMatch;
+  //           current = current[key][parseInt(index)];
+  //           originalCurrent = originalCurrent[key][parseInt(index)];
+  //         } else {
+  //           current = current[part];
+  //           originalCurrent = originalCurrent[part];
+  //         }
+  //       }
         
-        // Revert the final value
-        const lastPart = pathParts[pathParts.length - 1];
-        const arrayMatch = lastPart.match(/^(.+)\[(\d+)\]$/);
-        if (arrayMatch) {
-          const [, key, index] = arrayMatch;
-          current[key][parseInt(index)] = originalCurrent[key][parseInt(index)];
-        } else {
-          current[lastPart] = originalCurrent[lastPart];
-        }
+  //       // Revert the final value
+  //       const lastPart = pathParts[pathParts.length - 1];
+  //       const arrayMatch = lastPart.match(/^(.+)\[(\d+)\]$/);
+  //       if (arrayMatch) {
+  //         const [, key, index] = arrayMatch;
+  //         current[key][parseInt(index)] = originalCurrent[key][parseInt(index)];
+  //       } else {
+  //         current[lastPart] = originalCurrent[lastPart];
+  //       }
         
-        return updatedReport;
-      });
-    }
-  }, [props.reportDefinition, modifiedSections]);
+  //       return updatedReport;
+  //     });
+  //   }
+  // }, [props.reportDefinition, modifiedSections]);
   
-  // Task 2.11: Ensure ReportView uses original Report definition for rendering
-  const reportToDisplay = editedReportDefinition ?? props.reportDefinition;
+  // // Task 2.11: Ensure ReportView uses original Report definition for rendering
+  // const reportToDisplay = editedReportDefinition ?? props.reportDefinition;
 
-  const [hasValidationErrors, setHasValidationErrors] = useState(false);
+  // const [hasValidationErrors, setHasValidationErrors] = useState(false);
   
   // ##############################################################################################
   // ##############################################################################################
   // ##############################################################################################
   // ##############################################################################################
   // ##############################################################################################
-    const reportDataQueryBase:
+  const reportDataQueryBase:
     | BoxedQueryWithExtractorCombinerTransformer
     | BoxedQueryTemplateWithExtractorCombinerTransformer
     | undefined = useMemo(
@@ -361,7 +366,7 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
   log.info("reportData", reportData);
 
   const reportViewData = useMemo(() => ({
-      ...reportData,
+      ...reportData, // TODO: choose between spreading reportData or including as reportData attribute
       reportData,
       storedQueryData: props.storedQueryData
   }), [reportData, props.storedQueryData]);
@@ -443,7 +448,9 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
     return miroirMapping["model"]?.entityDefinitions?.find((ed: any) => ed.name === "Report");
   }, [context.deploymentUuidToReportsEntitiesDefinitionsMapping]);
 
-  const [localEditedDefinition, setLocalEditedDefinition] = useState<any | undefined>(reportEntityDefinition);
+  const reportNamePath = [props.reportDefinition?.name??"reportEntityDefinition_name"];
+
+  // const [localEditedReportDefinitionDEFUNCT, setLocalEditedReportDefinitionDEFUNCT] = useState<any | undefined>(reportEntityDefinition);
   
   // ###############################################################################################
   // ###############################################################################################
@@ -451,28 +458,26 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
   // ###############################################################################################
   // ###############################################################################################
   const initialReportSectionsFormValue = useMemo(() => {
-    log.info("############################################## reportSectionsFormValue", props.reportDefinition?.definition.section, reportData, []);
-    const r= reportSectionsFormValue(props.reportDefinition?.definition.section, reportData, ["definition", "section"]);
-    // log.info("reportSectionsFormValue initialReportSectionsFormValue", JSON.stringify(r,null,2));
-    return r;
-
-  }, [props.reportDefinition, reportData]);
-
-  const formValueMLSchema: JzodObject = useMemo(() => {
     log.info(
-      "############################################## computing reportSectionsFormSchema",
+      "############################################## reportSectionsFormValue",
       props.reportDefinition?.definition.section,
       reportData,
       []
     );
+    const reportSectionsData= reportSectionsFormValue(props.reportDefinition?.definition.section, reportData, ["definition", "section"]);
+    const result = {...reportSectionsData, [reportNamePath.join("_")]: props.reportDefinition}
+    log.info("reportSectionsFormValue initialReportSectionsFormValue", result);
+    return result;
+
+  }, [props.reportDefinition, reportData]);
+
+  const formValueMLSchema: JzodObject = useMemo(() => {
     if (!props.pageParams.deploymentUuid || !reportEntityDefinition?.entityUuid) {
       return { type: "object", definition: {} };
     }
     const r = reportSectionsFormSchema(
       props.reportDefinition?.definition.section,
       props.pageParams.deploymentUuid,
-      // getApplicationSection(props.pageParams.deploymentUuid, reportEntityDefinition?.entityUuid),
-      // reportEntityDefinition?.entityUuid,
       currentDeploymentReportsEntitiesDefinitionsMapping,
       reportData,
       ["definition", "section"]
@@ -481,17 +486,30 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
       type: "object",
       definition: {
         ...r,
+        [reportNamePath.join("_")]: reportEntityDefinition.jzodSchema,
         [lastSubmitButtonClicked]: { type: "string", optional: true}
       }
     };
     // log.info("reportSectionsFormSchema formValueSchema", result);
+    log.info(
+      "############################################## computing formValueMLSchema",
+      "props.reportDefinition",
+      props.reportDefinition,
+      "initialReportSectionsFormValue",
+      initialReportSectionsFormValue,
+      "reportData",
+      reportData,
+      "formValueMLSchema",
+      result,
+      []
+    );
     // log.info("reportSectionsFormSchema formValueSchema", JSON.stringify(result, null, 2));
-    log.info("reportSectionsFormSchema formValueSchema", JSON.stringify(Object.keys(r), null, 2));
     return result;
   }, [
     props.reportDefinition,
     reportData,
     reportEntityDefinition,
+    // reportEditorEntitySectionPath,
     currentDeploymentReportsEntitiesDefinitionsMapping,
     props.pageParams.applicationSection,
   ]);
@@ -553,6 +571,7 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
     [domainController, props]
   );
 
+  
   // ##############################################################################################
   // ##############################################################################################
   // ##############################################################################################
@@ -560,7 +579,8 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
     <>
       {/* <span>ReportViewWithEditor editMode: {editMode ? "true" : "false"}</span> */}
       <Box sx={{ position: "relative" }}>
-        {editMode && modifiedSections.size > 0 && (
+        {/* {editMode && modifiedSections.size > 0 && ( */}
+        {editMode && (
           <Box
             sx={{
               position: "sticky",
@@ -592,7 +612,8 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
                 // Implementation will be done in task 5.0
               }}
             >
-              Submit Changes ({modifiedSections.size} section{modifiedSections.size > 1 ? "s" : ""})
+              {/* Submit Changes ({modifiedSections.size} section{modifiedSections.size > 1 ? "s" : ""}) */}
+              Submit Changes
             </ThemedButton>
           </Box>
         )}
@@ -603,20 +624,20 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
           ) : // (<>failure</>)
           props.deploymentUuid ? (
             <>
-              {editMode && reportEntityDefinition && (
-                <></>
-                // <InlineReportEditor
-                //   reportDefinition={props.reportDefinition}
-                //   reportEntityDefinition={reportEntityDefinition}
-                //   formValueMLSchema={formValueMLSchema}
-                //   deploymentUuid={props.deploymentUuid}
-                //   applicationSection={props.applicationSection}
-                //   hasValidationErrors={hasValidationErrors}
-                //   reportSectionPath={[reportEntityDefinition.name??"reportEntityDefinition_name"]}
-                //   onDefinitionChange={setLocalEditedDefinition}
-                //   onValidationChange={setHasValidationErrors}
-                // />
-              )}
+              {/* {editMode && reportEntityDefinition && (
+                // <></>
+                <InlineReportEditor
+                  reportDefinition={props.reportDefinition}
+                  reportEntityDefinition={reportEntityDefinition}
+                  formValueMLSchema={formValueMLSchema}
+                  deploymentUuid={props.deploymentUuid}
+                  applicationSection={props.applicationSection}
+                  // hasValidationErrors={hasValidationErrors}
+                  reportSectionPath={reportEditorEntitySectionPath}
+                  // onDefinitionChange={setLocalEditedReportDefinitionDEFUNCT}
+                  // onValidationChange={setHasValidationErrors}
+                />
+              )} */}
               <Formik
                 enableReinitialize={true}
                 // initialValues={formInitialValue}
@@ -628,7 +649,7 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
                     // const finalValues = hasZoomPath
                     //   ? setValueAtPath(initialValueObject, zoomInPath!, values)
                     //   : values;
-  
+
                     // await onSubmit(values);
                     await onEditValueObjectFormSubmit(values); // TODO: make it return Promise, no await because handler should return immediately
                   } catch (e) {
@@ -640,20 +661,41 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
                 validateOnChange={false}
                 validateOnBlur={false}
               >
-                <ReportSectionViewWithEditor
-                  reportData={reportViewData}
-                  fetchedDataJzodSchema={fetchedDataJzodSchema}
-                  formValueMLSchema={formValueMLSchema}
-                  reportSection={props.reportDefinition?.definition.section}
-                  reportSectionPath={["definition", "section"]}
-                  reportDefinition={props.reportDefinition}
-                  applicationSection={props.applicationSection}
-                  deploymentUuid={props.deploymentUuid}
-                  editMode={editMode}
-                  paramsAsdomainElements={props.pageParams}
-                  isOutlineOpen={outlineContext.isOutlineOpen}
-                  onToggleOutline={outlineContext.onToggleOutline}
-                />
+                <>
+                  {editMode && reportEntityDefinition && (
+                    // <></>
+                    <InlineReportEditor
+                      deploymentUuid={props.deploymentUuid}
+                      applicationSection={props.applicationSection}
+                      reportDefinitionDEFUNCT={reportViewData[reportNamePath.join("_")]} // DEFUNCT since InlineReportEditor uses formik context directly
+                      reportEntityDefinitionDEFUNCT={reportEntityDefinition}
+                      formValueMLSchema={formValueMLSchema}
+                      // hasValidationErrors={hasValidationErrors}
+                      formikValuePath={reportNamePath}
+                      formikReportDefinitionPathString={props.reportDefinition.name}
+                      // onDefinitionChange={setLocalEditedReportDefinitionDEFUNCT}
+                      // onValidationChange={setHasValidationErrors}
+                    />
+                  )}
+                  <ReportSectionViewWithEditor
+                    applicationSection={props.applicationSection}
+                    deploymentUuid={props.deploymentUuid}
+                    editMode={editMode}
+                    paramsAsdomainElements={props.pageParams}
+                    isOutlineOpen={outlineContext.isOutlineOpen}
+                    onToggleOutline={outlineContext.onToggleOutline}
+                    // data
+                    reportDataDEFUNCT={reportViewData}
+                    fetchedDataJzodSchemaDEFUNCT={fetchedDataJzodSchema}
+                    // formikValuePath={[]}
+                    // 
+                    reportSectionDEFUNCT={props.reportDefinition?.definition.section} // TODO: defunct, must use formik[reportName]?.definition.section
+                    reportDefinitionDEFUNCT={props.reportDefinition}
+                    formValueMLSchema={formValueMLSchema}
+                    formikReportDefinitionPathString={props.reportDefinition.name}
+                    reportSectionPath={["definition", "section"]}
+                  />
+                </>
               </Formik>
             </>
           ) : (

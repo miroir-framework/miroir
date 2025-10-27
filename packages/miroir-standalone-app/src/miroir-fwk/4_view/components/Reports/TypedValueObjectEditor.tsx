@@ -74,8 +74,8 @@ export interface TypedValueObjectEditorProps {
   // zoom functionality
   zoomInPath?: string; // Optional path like "x.y.z" to zoom into a subset of the instance
   // established on the basis of the report section target entity schema, does not take zoomInPath into account!
-  formikValuesMMLSchema: JzodObject;
-  reportSectionPathAsString: string; 
+  formValueMLSchema: JzodObject;
+  formikValuePathAsString: string; 
   // 
   applicationSection: ApplicationSection,
   deploymentUuid: Uuid,
@@ -115,8 +115,8 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
   // 
   // zoom
   zoomInPath, // display only a subset of the valueObject, like "x.y.z"
-  formikValuesMMLSchema,
-  reportSectionPathAsString,
+  formValueMLSchema,
+  formikValuePathAsString,
   // 
   deploymentUuid,
   applicationSection,
@@ -141,18 +141,18 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
 
   // Handle zoom functionality
   const hasZoomPath = zoomInPath && zoomInPath.trim() !== '';
-  const valueObject = formik.values[reportSectionPathAsString];
+  const valueObject = formik.values[formikValuePathAsString];
   const zoomedInValueObject_DEFUNCT = hasZoomPath ? getValueAtPath(valueObject, zoomInPath) : valueObject;
-  const zoomedInDisplaySchema = formikValuesMMLSchema.definition[reportSectionPathAsString]; 
+  const zoomedInDisplaySchema = formValueMLSchema.definition[formikValuePathAsString]; 
   // const displaySchema = hasZoomPath && valueObjectMMLSchema 
   //   // WRONG!! the value path is in general different from the type path! It may be true only after ReferenceSchema resolution
   //   ? getSchemaAtPath(valueObjectMMLSchema, zoomInPath) 
   //   : valueObjectMMLSchema;
   log.info(
     "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ TypedValueObjectEditor render", ++count,
-    "valueObjectMMLSchema", formikValuesMMLSchema,
+    "valueObjectMMLSchema", formValueMLSchema,
     "formik.values", formik.values,
-    "reportSectionPathAsString", reportSectionPathAsString,
+    "reportSectionPathAsString", formikValuePathAsString,
     // "zoomInPath", zoomInPath,
     // "zoomedInValueObject_DEFUNCT", zoomedInValueObject_DEFUNCT,
     // "zoomedInDisplaySchema", zoomedInDisplaySchema
@@ -249,7 +249,7 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
           ? jzodTypeCheck( // TODO: typecheck only the value for the currently edited instance / object, not the whole formik.values
               // valueObjectMMLSchema, 
               // formik.values, // this leads to an error for now if there are multiple instances in the formik values
-              formikValuesMMLSchema.definition[reportSectionPathAsString], 
+              formValueMLSchema.definition[formikValuePathAsString], 
               valueObject, // this leads to an error for now if there are multiple instances in the formik values
               [],
               [],
@@ -282,8 +282,8 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
     deploymentUuid,
     zoomedInDisplaySchema,
     formik.values,
-    formikValuesMMLSchema,
-    reportSectionPathAsString,
+    formValueMLSchema,
+    formikValuePathAsString,
     hasZoomPath,
     reduxDeploymentsState,
     valueObject,
@@ -412,7 +412,7 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
               // listKey={"ROOT" + (reportSectionPathAsString?("." + reportSectionPathAsString):"")}
               // rootLessListKey={reportSectionPathAsString??""}
               // rootLessListKeyArray={reportSectionPathAsString?[reportSectionPathAsString]:[]}
-              reportSectionPathAsString={reportSectionPathAsString??""}
+              reportSectionPathAsString={formikValuePathAsString??""}
               name={"ROOT"}
               isTopLevel={true}
               listKey={"ROOT"}
@@ -467,7 +467,7 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
                 // listKey={"ROOT" + (reportSectionPathAsString?("." + reportSectionPathAsString):"")}
                 // rootLessListKey={reportSectionPathAsString??""}
                 // rootLessListKeyArray={reportSectionPathAsString?[reportSectionPathAsString]:[]}
-                reportSectionPathAsString={reportSectionPathAsString??""}
+                reportSectionPathAsString={formikValuePathAsString??""}
                 name={"ROOT"}
                 isTopLevel={true}
                 listKey={"ROOT"}
@@ -493,7 +493,7 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
                   <button type="submit" role="form" name={pageLabel} form={"form." + pageLabel}
                   onClick={(e) => {
                     log.info("TypedValueObjectEditor submit button clicked", e);
-                    formik.setFieldValue(lastSubmitButtonClicked, reportSectionPathAsString);
+                    formik.setFieldValue(lastSubmitButtonClicked, formikValuePathAsString);
                   }}
                   >
                     submit form.{pageLabel}

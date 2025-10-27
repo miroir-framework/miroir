@@ -15,40 +15,49 @@ import { Accordion, AccordionDetails, AccordionSummary } from '@mui/material';
 import { packageName } from '../../../../constants.js';
 import { cleanLevel } from '../../constants.js';
 import { ReportSectionEntityInstance } from './ReportSectionEntityInstance.js';
+import { useFormikContext } from 'formik';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ReportSectionViewWithEditor"), "UI",
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "InlineReportEditor"), "UI",
 ).then((logger: LoggerInterface) => {log = logger});
 
 // ################################################################################################
 // InlineReportEditor Component
 // ################################################################################################
 export interface InlineReportEditorProps {
-  reportDefinition: Report;
-  reportEntityDefinition: EntityDefinition;
-  formValueMLSchema: JzodObject;
+  reportDefinitionDEFUNCT: Report;
+  reportEntityDefinitionDEFUNCT: EntityDefinition;
   deploymentUuid: Uuid;
   applicationSection: ApplicationSection;
-  reportSectionPath: ( string | number )[],
-  hasValidationErrors: boolean;
-  onDefinitionChange: (extractedSection: any) => void;
-  onValidationChange: (hasErrors: boolean) => void;
+  formValueMLSchema: JzodObject;
+  formikAlreadyAvailable?: boolean;
+  formikValuePath: ( string | number )[],
+  formikReportDefinitionPathString: string;
+  // hasValidationErrors: boolean;
+  // onDefinitionChange: (extractedSection: any) => void;
+  // onValidationChange: (hasErrors: boolean) => void;
 }
 
 export const InlineReportEditor: React.FC<InlineReportEditorProps> = ({
-  reportDefinition,
-  reportEntityDefinition,
+  reportDefinitionDEFUNCT: reportDefinition,
+  reportEntityDefinitionDEFUNCT: reportEntityDefinition,
   formValueMLSchema,
   deploymentUuid,
   applicationSection,
+  formikAlreadyAvailable,
+  formikReportDefinitionPathString,
+  formikValuePath,
   // sectionPath,
-  hasValidationErrors,
-  reportSectionPath,
+  // hasValidationErrors,
   // reportSectionPathAsString,
-  onDefinitionChange,
-  onValidationChange,
+  // onDefinitionChange,
+  // onValidationChange,
 }) => {
+  const formik = useFormikContext<any>();
+  // const formikReportDefinition: Report = formik.values[reportSectionPath.join("_")];
+  const formikReportDefinition: Report = formik.values[formikReportDefinitionPathString];
+  log.info("InlineReportEditor: formikReportDefinition =", formikReportDefinition);
   return (
     <div
       style={{
@@ -63,7 +72,7 @@ export const InlineReportEditor: React.FC<InlineReportEditorProps> = ({
         Report Editor
       </div>
 
-      {reportDefinition.definition && (
+      {/* {reportDefinition.definition && ( */}
         <Accordion style={{ marginBottom: 12 }}>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
             <div style={{ fontWeight: 500 }}>Runtime Environment (Read-Only)</div>
@@ -72,19 +81,23 @@ export const InlineReportEditor: React.FC<InlineReportEditorProps> = ({
             <ReportSectionEntityInstance
               deploymentUuid={deploymentUuid}
               applicationSection="model"
-              entityUuid={reportDefinition.parentUuid}
-              initialInstanceValue={reportDefinition}
-              reportSectionPath={reportSectionPath}
+              entityUuidDEFUNCT={formikReportDefinition?.parentUuid} // entityUuid-based display, not formikReportPath-based; type comes for formValueMLSchema
               formValueMLSchema={formValueMLSchema}
+              formikValuePath={formikValuePath}
+              // formikReportDefinitionPathString={formikReportDefinitionPathString}
+              // reportSectionPath={[]}
+              // formikAlreadyAvailable={false}
+              formikAlreadyAvailable={formikAlreadyAvailable}
+              initialInstanceValueDEFUNCT={formikReportDefinition} // DEFUNCT when formikAlreadyAvailable=true
             />
           </AccordionDetails>
         </Accordion>
-      )}
-      <div style={{ marginTop: 12, fontSize: "12px", color: "#666", fontStyle: "italic" }}>
+      {/* )} */}
+      {/* <div style={{ marginTop: 12, fontSize: "12px", color: "#666", fontStyle: "italic" }}>
         {hasValidationErrors
           ? "⚠️ Please fix validation errors before saving"
           : "✓ Valid - Click the save icon above to apply changes"}
-      </div>
+      </div> */}
     </div>
   );
 };

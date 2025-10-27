@@ -219,7 +219,7 @@ const EntityInstancePanel = React.memo<{
           <TypedValueObjectEditorWithFormik
             labelElement={<></>}
             initialValueObject={entityInstances}
-            formikValuesMMLSchema={{
+            formValueMLSchema={{
               type: "array",
               definition:
                 selectedEntityInstanceDefinition?.jzodSchema ?? createGenericObjectSchema(),
@@ -242,7 +242,7 @@ const EntityInstancePanel = React.memo<{
           labelElement={<></>}
           initialValueObject={selectedEntityInstance}
           // valueObjectMMLSchema={createGenericObjectSchema()}
-          formikValuesMMLSchema={
+          formValueMLSchema={
             selectedEntityInstanceDefinition?.jzodSchema ?? createGenericObjectSchema()
           }
           deploymentUuid={deploymentUuid}
@@ -905,7 +905,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
         <TypedValueObjectEditorWithFormik
           labelElement={<>Transformer Definition</>}
           initialValueObject={currentTransformerDefinition}
-          formikValuesMMLSchema={transformerDefinitionSchema}
+          formValueMLSchema={transformerDefinitionSchema}
           deploymentUuid={deploymentUuid}
           applicationSection={"model"}
           formLabel={"Transformer Definition Editor"}

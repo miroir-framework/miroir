@@ -219,9 +219,9 @@ export const ReportSectionView = (props: ReportSectionViewProps) => {
               deploymentUuid={props.deploymentUuid}
               chosenApplicationSection={props.applicationSection as ApplicationSection}
               displayedDeploymentDefinition={displayedDeploymentDefinition}
-              domainElementObject={props.reportData.reportData}
-              fetchedDataJzodSchema={props.fetchedDataJzodSchema}
-              section={props.reportSection}
+              domainElementObjectDEFUNCT={props.reportData.reportData}
+              fetchedDataJzodSchemaDEFUNCT={props.fetchedDataJzodSchema}
+              reportSectionDEFUNCT={props.reportSection}
               paramsAsdomainElements={props.paramsAsdomainElements}
             />
           ) : (
@@ -232,10 +232,10 @@ export const ReportSectionView = (props: ReportSectionViewProps) => {
       {props.reportSection.type == "objectInstanceReportSection" && (
         <ReportSectionEntityInstance
           // domainElement={props.reportData}
-          initialInstanceValue={entityInstance}
+          initialInstanceValueDEFUNCT={entityInstance}
           applicationSection={props.applicationSection as ApplicationSection}
           deploymentUuid={props.deploymentUuid}
-          entityUuid={props.reportSection.definition.parentUuid}
+          entityUuidDEFUNCT={props.reportSection.definition.parentUuid}
         />
       )}
       {props.reportSection.type == "graphReportSection" && (

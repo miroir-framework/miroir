@@ -373,7 +373,7 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
             <TypedValueObjectEditorWithFormik
               labelElement={<ThemedInputLabel>Action Parameters</ThemedInputLabel>}
               initialValueObject={actionFormInitialValues}
-              formikValuesMMLSchema={currentActionParametersMMLSchema}
+              formValueMLSchema={currentActionParametersMMLSchema}
               deploymentUuid={selectedDeploymentUuid}
               // applicationSection={applicationSection}
               applicationSection="data"
