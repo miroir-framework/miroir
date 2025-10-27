@@ -18,7 +18,9 @@ import {
   defaultMiroirModelEnvironment,
   entityQueryVersion,
   entityTransformerTest,
+  getApplicationSection,
   getQueryTemplateRunnerParamsForReduxDeploymentsState,
+  interpolateExpression,
   resolvePathOnObject,
   safeStringify,
   type BoxedQueryTemplateWithExtractorCombinerTransformer,
@@ -114,6 +116,7 @@ MiroirLoggerFactory.registerLoggerToStart(
 export interface ReportSectionEntityInstanceProps {
   applicationSection: ApplicationSection,
   deploymentUuid: Uuid,
+  defaultLabel?: string,
   // 
   initialInstanceValueDEFUNCT: EntityInstance,
   entityUuidDEFUNCT: Uuid,
@@ -171,13 +174,32 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
     props.reportSectionPath
   );
 
-  const localReportDefinition: Report | undefined = props.formikReportDefinitionPathString
-    ? formikContext.values[props.formikReportDefinitionPathString]
-    : undefined;
-  const localReportSectionDefinition: ReportSection | undefined =
-    props.reportSectionDefinition && props.reportSectionPath
-      ? resolvePathOnObject(localReportDefinition, props.reportSectionPath || [])
+  // const localReportDefinition: Report | undefined = props.formikReportDefinitionPathString
+  //   ? formikContext.values[props.formikReportDefinitionPathString]
+  //   : undefined;
+  // const localReportSectionDefinition: ReportSection | undefined =
+  //   localReportDefinition && props.reportSectionPath
+  //     ? resolvePathOnObject(localReportDefinition, props.reportSectionPath || [])
+  //     : undefined;
+  const reportDefinitionFromFormik: Report  | undefined =
+    formikContext.values &&
+    props.formikReportDefinitionPathString &&
+    formikContext.values[props.formikReportDefinitionPathString]
+      ? formikContext.values[props.formikReportDefinitionPathString]
+      // : props.reportDefinitionDEFUNCT;
       : undefined;
+  ;
+  
+  const reportSectionDefinitionFromFormik: ReportSection | undefined =
+      reportDefinitionFromFormik &&
+      props.reportSectionPath
+        ? resolvePathOnObject(
+            // props.reportDefinitionDEFUNCT, props.reportSectionPath ?? []
+            reportDefinitionFromFormik,
+            props.reportSectionPath ?? []
+          )
+        : undefined;
+  
   log.info(
     "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ReportSectionEntityInstance render",
     ++count,
@@ -188,16 +210,19 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
     props.formikAlreadyAvailable, 
     "formikContext:",
     formikContext.values,
-    "localReportDefinition:",
-    localReportDefinition,
-    "localReportSectionDefinition",
-    localReportSectionDefinition,
+    "reportDefinitionFromFormik:",
+    reportDefinitionFromFormik,
+    "reportSectionDefinitionFromFormik",
+    reportSectionDefinitionFromFormik,
     "with props:",
     props,
     // "formikContext:",
     // formikContext
   );
   // const errorLog = useErrorLogService();
+  if (reportSectionDefinitionFromFormik?.type && reportSectionDefinitionFromFormik?.type !== "objectInstanceReportSection") {
+    throw new Error("ReportSectionEntityInstance can only be used with objectInstanceReportSection types, got: " + reportSectionDefinitionFromFormik);
+  }
   const context = useMiroirContextService();
   const viewParams = useViewParams();
   const showPerformanceDisplay = context.showPerformanceDisplay;
@@ -233,7 +258,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
 
   // the TypeValueObjectEditor will get the instance value either from formikContext or from props.initialInstanceValueDEFUNCT depending on props.formikAlreadyAvailable
   // instanceDEFUNCT now serves only in the context of a Query entity instance to get the query definition for execution
-  const instanceDEFUNCT: any = useMemo(() => {
+  const instance: any = useMemo(() => {
     // log.info(
     //   "ReportSectionEntityInstance: computing instance value from props.initialInstanceValue and formikContext",
     //   props.formikAlreadyAvailable,
@@ -255,7 +280,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   log.info(
     "ReportSectionEntityInstance",
     "instance to display:",
-    instanceDEFUNCT,
+    instance,
     "formik:",
     formikContext,
     "props.formikAlreadyAvailable",
@@ -267,8 +292,8 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   // DO NOT USE dot notation for reportSectionPath as it is interpreted by Formik as nested object paths!
   // const reportSectionPathAsString = props.reportSectionPath?.join("_") || "";
   const formInitialValueDEFUNCT: any = useMemo(() => ({
-    [formikValuePathAsString] : instanceDEFUNCT
-  }), [instanceDEFUNCT]);
+    [formikValuePathAsString] : instance
+  }), [instance]);
 
   const currentDeploymentMetaModel: MetaModel = useCurrentModel(
     // context.applicationSection == "data"
@@ -363,7 +388,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   useEffect(() => {
     if (currentReportTargetEntity?.name) {
       outlineContext.setOutlineTitle(currentReportTargetEntity.name + " details");
-      outlineContext.setReportInstance(instanceDEFUNCT);
+      outlineContext.setReportInstance(instance);
     }
   }, [currentReportTargetEntity?.name, outlineContext.setOutlineTitle]);
 
@@ -387,12 +412,29 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   );
 
   // ##############################################################################################
-  const onEditValueObjectFormSubmit = useCallback(
+  const onEditValueObjectFormSubmitDEFUNCT = useCallback(
     async (data: any) => {
-      log.info("onEditValueObjectFormSubmit called with new object value", data);
+      log.info(
+        "onEditValueObjectFormSubmit called on formikValuePathAsString",
+        formikValuePathAsString,
+        "with new object value",
+        data
+      );
       // TODO: use action queue
       if (props.deploymentUuid) {
-        if (props.applicationSection == "model") {
+        if (!data || !data[formikValuePathAsString]) {
+          throw new Error(
+            "onEditValueObjectFormSubmit called with undefined data:" +
+              formikValuePathAsString +
+              " not found in data: " +
+              Object.keys(data)
+          );
+        }
+        if (!data[formikValuePathAsString].parentUuid) {
+          throw new Error("onEditValueObjectFormSubmit called with object missing parentUuid: " + Object.keys(data[formikValuePathAsString]));
+        }
+        const applicationSection = getApplicationSection(props.deploymentUuid, data[formikValuePathAsString].parentUuid);
+        if (applicationSection == "model") {
           await domainController.handleAction(
             {
               actionType: "transactionalInstanceAction",
@@ -445,7 +487,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   // Check if this is a TransformerTest entity instance
   const isTransformerTestEntity = currentReportTargetEntity?.uuid === entityTransformerTest.uuid;
   const isTransformerTest =
-    isTransformerTestEntity && instanceDEFUNCT?.parentUuid === entityTransformerTest.uuid;
+    isTransformerTestEntity && instance?.parentUuid === entityTransformerTest.uuid;
 
   // ##############################################################################################
   // ##############################################################################################
@@ -453,9 +495,9 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   // ##############################################################################################
   // ##############################################################################################
   // Query execution logic for Query entities
-  const isQueryEntity = instanceDEFUNCT?.parentUuid === entityQueryVersion.uuid;
+  const isQueryEntity = instance?.parentUuid === entityQueryVersion.uuid;
 
-  const currentQuery: any | undefined = isQueryEntity ? instanceDEFUNCT : undefined;
+  const currentQuery: any | undefined = isQueryEntity ? instance : undefined;
   log.info("ReportSectionEntityInstance: isQueryEntity", isQueryEntity, "currentQuery", currentQuery);
   const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> = useMemo(
     () => getMemoizedReduxDeploymentsStateSelectorForTemplateMap(),
@@ -472,7 +514,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
             pageParams: {
               deploymentUuid: props.deploymentUuid,
               applicationSection: "model",
-              instanceUuid: instanceDEFUNCT.uuid,
+              instanceUuid: instance.uuid,
             },
             queryParams: {},
             contextResults: {},
@@ -494,7 +536,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
       isResultsCollapsed,
       props.deploymentUuid,
       props.applicationSection,
-      instanceDEFUNCT?.uuid,
+      instance?.uuid,
     ]);
 
   log.info("ReportSectionEntityInstance: queryForExecution:", queryForTestRun);
@@ -524,9 +566,9 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   // ##############################################################################################
   // ##############################################################################################
   // ##############################################################################################
-  const testLabel = instanceDEFUNCT?.transformerTestLabel || instanceDEFUNCT?.name || "TransformerTest";
+  const testLabel = instance?.transformerTestLabel || instance?.name || "TransformerTest";
   
-  if (instanceDEFUNCT) {
+  if (instance) {
     return (
       // <ThemedContainer style={{ width: '100%' }}>
       <ThemedContainer>
@@ -539,7 +581,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
         {/* Show test button if this is a TransformerTest entity */}
         {isTransformerTest && (
           <TransformerTestDisplay
-            transformerTest={instanceDEFUNCT}
+            transformerTest={instance}
             testLabel={testLabel}
             useSnackBar={true}
             onTestComplete={(testSuiteKey, structuredResults) => {
@@ -567,7 +609,18 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
         <ThemedHeaderSection>
           <ThemedTitle>
             {/* {currentReportTargetEntity?.name} details: {instance.name}{" "} */}
-            {currentReportTargetEntity?.name} details: {instanceDEFUNCT.name}{" "}
+            {/* <span><pre>props.reportSectionPath: {JSON.stringify(props.reportSectionPath)}</pre></span>
+            <span><pre>reportDefinitionFromFormik: {JSON.stringify(reportDefinitionFromFormik)}</pre></span>
+            <span><pre>reportSectionDefinitionFromFormik: {JSON.stringify(reportSectionDefinitionFromFormik)}</pre></span> */}
+            {props.defaultLabel ??
+              (reportSectionDefinitionFromFormik?.definition?.label
+                ? interpolateExpression(
+                    reportSectionDefinitionFromFormik?.definition?.label,
+                    {instance},
+                    "report label"
+                  )
+                : undefined) ??
+              currentReportTargetEntity?.name + " details: " + instance.name}{" "}
             {props.zoomInPath && (
               <span style={{ fontSize: "0.8em", fontStyle: "italic", color: "#666" }}>
                 (viewing: {props.zoomInPath})
@@ -660,56 +713,56 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
         )}
 
         {currentReportSectionTargetEntityDefinition && props.applicationSection ? (
-          displayEditor ? 
-          props.formikAlreadyAvailable?(
+          displayEditor ? (
+            props.formikAlreadyAvailable ? (
               <TypedValueObjectEditor
                 labelElement={labelElement}
                 deploymentUuid={props.deploymentUuid}
                 applicationSection={props.applicationSection}
                 formValueMLSchema={props.formValueMLSchema}
                 formikValuePathAsString={formikValuePathAsString}
-                
                 //
                 formLabel={formLabel}
                 zoomInPath={props.zoomInPath}
                 maxRenderDepth={Infinity} // Always render fully for editor
               />
-          ):(
-            <Formik
-              enableReinitialize={true}
-              // initialValues={instance}
-              initialValues={formInitialValueDEFUNCT}
-              onSubmit={async (values, { setSubmitting, setErrors }) => {
-                try {
-                  log.info("ReportSectionEntityInstance onSubmit formik values", values);
-                  // Handle zoom case: merge changes back into the full object for submission
-                  // const finalValues = hasZoomPath
-                  //   ? setValueAtPath(initialValueObject, zoomInPath!, values)
-                  //   : values;
+            ) : (
+              <Formik
+                enableReinitialize={true}
+                // initialValues={instance}
+                initialValues={formInitialValueDEFUNCT}
+                onSubmit={async (values, { setSubmitting, setErrors }) => {
+                  try {
+                    log.info("ReportSectionEntityInstance onSubmit formik values", values);
+                    // Handle zoom case: merge changes back into the full object for submission
+                    // const finalValues = hasZoomPath
+                    //   ? setValueAtPath(initialValueObject, zoomInPath!, values)
+                    //   : values;
 
-                  // await onSubmit(values);
-                  await onEditValueObjectFormSubmit(values);
-                } catch (e) {
-                  log.error(e);
-                } finally {
-                  setSubmitting(false);
-                }
-              }}
-              validateOnChange={false}
-              validateOnBlur={false}
-            >
-              <TypedValueObjectEditor
-                labelElement={labelElement}
-                formValueMLSchema={props.formValueMLSchema}
-                deploymentUuid={props.deploymentUuid}
-                applicationSection={props.applicationSection}
-                formikValuePathAsString={formikValuePathAsString}
-                //
-                formLabel={formLabel}
-                zoomInPath={props.zoomInPath}
-                maxRenderDepth={Infinity} // Always render fully for editor
-              />
-            </Formik>
+                    // await onSubmit(values);
+                    await onEditValueObjectFormSubmitDEFUNCT(values);
+                  } catch (e) {
+                    log.error(e);
+                  } finally {
+                    setSubmitting(false);
+                  }
+                }}
+                validateOnChange={false}
+                validateOnBlur={false}
+              >
+                <TypedValueObjectEditor
+                  labelElement={labelElement}
+                  formValueMLSchema={props.formValueMLSchema}
+                  deploymentUuid={props.deploymentUuid}
+                  applicationSection={props.applicationSection}
+                  formikValuePathAsString={formikValuePathAsString}
+                  //
+                  formLabel={formLabel}
+                  zoomInPath={props.zoomInPath}
+                  maxRenderDepth={Infinity} // Always render fully for editor
+                />
+              </Formik>
+            )
           ) : (
             <div>
               {displayAsStructuredElement ? (
@@ -733,7 +786,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                       props.zoomInPath
                         ? (() => {
                             const pathParts = props.zoomInPath.split(".");
-                            let current = instanceDEFUNCT;
+                            let current = instance;
                             for (const part of pathParts) {
                               if (current && typeof current === "object") {
                                 current = current[part];
@@ -743,7 +796,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                             }
                             return current;
                           })()
-                        : instanceDEFUNCT
+                        : instance
                     )}
                   </ThemedCodeBlock>
                 </div>
@@ -771,7 +824,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
             </ThemedPreformattedText>
             <div> ######################################## </div>
             <ThemedPreformattedText>
-              entity jzod schema: {safeStringify(instanceDEFUNCT?.jzodSchema)}
+              entity jzod schema: {safeStringify(instance?.jzodSchema)}
             </ThemedPreformattedText>
           </div>
         )}

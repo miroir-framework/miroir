@@ -247,17 +247,17 @@ const ProgressiveAttribute: FC<{
 
   const currentKeyMap = typeCheckKeyMap ? typeCheckKeyMap[rootLessListKey] : undefined;
 
-  log.info(
-    "ProgressiveAttribute",
-    "attribute",
-    attribute,
-    "attributeRootLessListKey",
-    JSON.stringify(attributeRootLessListKey),
-    "attributeRootLessListKeyArray",
-    JSON.stringify(attributeRootLessListKeyArray),
-    "currentKeyMap", currentKeyMap,
-    "reportSectionPathAsString", reportSectionPathAsString
-  )
+  // log.info(
+  //   "ProgressiveAttribute",
+  //   "attribute",
+  //   attribute,
+  //   "attributeRootLessListKey",
+  //   JSON.stringify(attributeRootLessListKey),
+  //   "attributeRootLessListKeyArray",
+  //   JSON.stringify(attributeRootLessListKeyArray),
+  //   "currentKeyMap", currentKeyMap,
+  //   "reportSectionPathAsString", reportSectionPathAsString
+  // )
 
 
   if (!currentKeyMap?.rawSchema) {

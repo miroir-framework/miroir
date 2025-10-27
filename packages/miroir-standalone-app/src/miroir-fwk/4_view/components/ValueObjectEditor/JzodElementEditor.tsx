@@ -326,20 +326,20 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
 
   const formikRootLessListKey =
     props.reportSectionPathAsString + (props.rootLessListKey ? `.${props.rootLessListKey}` : "");
-  log.info(
-    "JzodElementEditor",
-    count,
-    "Rendering JzodElementEditor for listKey",
-    props.rootLessListKey,
-    "rootLessListKeyArray",
-    props.rootLessListKeyArray,
-    "formikRootLessListKey",
-    JSON.stringify(formikRootLessListKey),
-    "localResolvedElementJzodSchemaBasedOnValue",
-    localResolvedElementJzodSchemaBasedOnValue,
-    "props.typeCheckKeyMap", props.typeCheckKeyMap,
-    "currentKeyMap", currentKeyMap,
-  );
+  // log.info(
+  //   "JzodElementEditor",
+  //   count,
+  //   "Rendering JzodElementEditor for listKey",
+  //   props.rootLessListKey,
+  //   "rootLessListKeyArray",
+  //   props.rootLessListKeyArray,
+  //   "formikRootLessListKey",
+  //   JSON.stringify(formikRootLessListKey),
+  //   "localResolvedElementJzodSchemaBasedOnValue",
+  //   localResolvedElementJzodSchemaBasedOnValue,
+  //   "props.typeCheckKeyMap", props.typeCheckKeyMap,
+  //   "currentKeyMap", currentKeyMap,
+  // );
 
   // const defaultOnChange = useCallback(
   //   (e: any) => {

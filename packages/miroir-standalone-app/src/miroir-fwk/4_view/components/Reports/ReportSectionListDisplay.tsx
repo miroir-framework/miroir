@@ -221,26 +221,59 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   // const formikValuePathAsString = props.reportSectionPath?.join("_") || "";
   const formikValuePathAsString = props.formikValuePath?.join("_") || "";
 
-  log.info(
-    "ReportSectionListDisplay: formik values =",
-    formikContext.values,
-    "props.formikReportDefinitionPathString =",
-    props.formikReportDefinitionPathString,
-    "props.reportSectionPath =",
-    props.reportSectionPath
-  );
-  const localReportSectionDefinition: ReportSection | undefined =
+  // log.info(
+  //   "ReportSectionListDisplay: formik values =",
+  //   formikContext.values,
+  //   "props.formikValuePath =",
+  //   props.formikValuePath,
+  //   "props.formikReportDefinitionPathString =",
+  //   props.formikReportDefinitionPathString,
+  //   "props.reportSectionPath =",
+  //   props.reportSectionPath
+  // );
+  const reportDefinitionFromFormik: Report | undefined =
     formikContext.values &&
     props.formikReportDefinitionPathString &&
-    formikContext.values[props.formikReportDefinitionPathString] &&
+    formikContext.values[props.formikReportDefinitionPathString]
+      ? formikContext.values[props.formikReportDefinitionPathString]
+      : undefined;
+
+  const reportSectionDefinitionFromFormik: ReportSection | undefined =
+    reportDefinitionFromFormik &&
     props.reportSectionPath
       ? resolvePathOnObject(
           // props.reportDefinitionDEFUNCT, props.reportSectionPath ?? []
-          formikContext.values[props.formikReportDefinitionPathString],
+          reportDefinitionFromFormik,
           props.reportSectionPath ?? []
         )
       : undefined;
-  
+
+  // ##############################################################################################
+  const instancesToDisplay: EntityInstancesUuidIndex = useMemo(
+    () =>
+      formikValuePathAsString &&
+      formikContext.values &&
+      formikContext.values[formikValuePathAsString]
+        ? formikContext.values[formikValuePathAsString]
+        : props.domainElementObjectDEFUNCT &&
+          // props.domainElementObject.elementType == "object" &&
+          props.reportSectionDEFUNCT?.definition.fetchedDataReference &&
+          props.domainElementObjectDEFUNCT[
+            props.reportSectionDEFUNCT.definition.fetchedDataReference
+          ]
+        ? (props.domainElementObjectDEFUNCT[
+            props.reportSectionDEFUNCT.definition.fetchedDataReference
+          ] as any as EntityInstancesUuidIndex)
+        : {},
+    [
+      formikValuePathAsString,
+      formikContext.values,
+      props.domainElementObjectDEFUNCT,
+      props.reportSectionDEFUNCT?.definition.fetchedDataReference,
+    ]
+  );
+
+
   // log.info('@@@@@@@@@@@@@@@@@@@@@@@ ReportSectionListDisplay',count,props === prevProps, equal(props,prevProps));
   log.info(
     "@@@@@@@@@@@@@@@@@@@@@@@ ReportSectionListDisplay",
@@ -248,8 +281,14 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
     navigationCount,
     "totalCount",
     totalCount,
+    "instancesToDisplay",
+    instancesToDisplay,
+    "localReportDefinition",
+    reportDefinitionFromFormik,
     "localReportSectionDefinition",
-    localReportSectionDefinition,
+    reportSectionDefinitionFromFormik,
+    "formikContext.values",
+    formikContext.values,
     // "props === prevProps",
     // props === prevProps
   );
@@ -325,21 +364,16 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   // log.info("ReportSectionListDisplay availableReports",availableReports);
 
   const currentReportTargetEntity: Entity | undefined =
-    props.reportSectionDEFUNCT?.type === "objectListReportSection" 
+    reportSectionDefinitionFromFormik?.type === "objectListReportSection" 
+    // props.reportSectionDEFUNCT?.type === "objectListReportSection" 
       ? entities?.find(
           (e:Entity) =>
-            e?.uuid === (props.reportSectionDEFUNCT?.definition as any)["parentUuid"]
+            e?.uuid === reportSectionDefinitionFromFormik?.definition.parentUuid
         )
       : undefined;
   const currentReportTargetEntityDefinition: EntityDefinition | undefined =
     entityDefinitions?.find((e:EntityDefinition) => e?.entityUuid === currentReportTargetEntity?.uuid);
 
-  log.info(
-    "ReportSectionListDisplay currentReportTargetEntity",
-    currentReportTargetEntity,
-    "currentReportTargetEntityDefinition",
-    currentReportTargetEntityDefinition
-  );
   // TODO: AMBIGUOUS!! APPEARS ALSO IN THE Report DEFINITION. PROVIDE A DIRECT WAY TO DETERMINE THIS?
   // const currentApplicationSection = (props.section?.definition as any)["applicationSection"]??"data";
   const currentApplicationSection = props.chosenApplicationSection??"data";
@@ -356,10 +390,20 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
           ]
         : currentReportTargetEntityDefinition?.jzodSchema,
     [
+      currentReportTargetEntityDefinition,
+      currentReportTargetEntityDefinition?.jzodSchema,
       props.fetchedDataJzodSchemaDEFUNCT,
       props.reportSectionDEFUNCT,
-      currentReportTargetEntityDefinition?.jzodSchema,
     ]
+  );
+
+  log.info(
+    "ReportSectionListDisplay currentReportTargetEntity",
+    currentReportTargetEntity,
+    "currentReportTargetEntityDefinition",
+    currentReportTargetEntityDefinition,
+    "instancesToDisplayJzodSchema",
+    instancesToDisplayJzodSchema
   );
 
   // const instancesToDisplayViewAttributes: string[] | undefined = useMemo(()=>
@@ -626,31 +670,6 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
 
   
   // ##############################################################################################
-  const instancesToDisplay: EntityInstancesUuidIndex = useMemo(
-    () =>
-      formikValuePathAsString &&
-      formikContext.values &&
-      formikContext.values[formikValuePathAsString]
-        ? formikContext.values[formikValuePathAsString]
-        : props.domainElementObjectDEFUNCT &&
-          // props.domainElementObject.elementType == "object" &&
-          props.reportSectionDEFUNCT?.definition.fetchedDataReference &&
-          props.domainElementObjectDEFUNCT[
-            props.reportSectionDEFUNCT.definition.fetchedDataReference
-          ]
-        ? (props.domainElementObjectDEFUNCT[
-            props.reportSectionDEFUNCT.definition.fetchedDataReference
-          ] as any as EntityInstancesUuidIndex)
-        : {},
-    [
-      formikValuePathAsString,
-      formikContext.values,
-      props.domainElementObjectDEFUNCT,
-      props.reportSectionDEFUNCT?.definition.fetchedDataReference,
-    ]
-  );
-
-  // ##############################################################################################
   const onSubmitOuterDialog: (data: JsonObjectEditFormDialogInputs)=>void = useCallback(
     async (data) => {
       log.info('ReportComponent onSubmitOuterDialog','data',data);
@@ -757,7 +776,50 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
       currentReportTargetEntityDefinition,
     ]
   );
-
+  // forcing global rerender of grid whenever the reportSectionDefinitionFromFormik changes
+  // const entityInstanceGrid = useMemo(() => {
+  //   return props.displayedDeploymentDefinition && reportSectionDefinitionFromFormik &&
+  //     reportSectionDefinitionFromFormik.type == "objectListReportSection" &&
+  //     currentReportTargetEntity &&
+  //     currentReportTargetEntityDefinition?(
+  //     <EntityInstanceGrid
+  //       key={JSON.stringify(reportSectionDefinitionFromFormik)}
+  //       type={props.tableComponentReportType}
+  //       displayedDeploymentDefinition={props.displayedDeploymentDefinition}
+  //       styles={props.styles}
+  //       currentEntity={currentReportTargetEntity}
+  //       currentEntityDefinition={currentReportTargetEntityDefinition}
+  //       foreignKeyObjects={foreignKeyObjects}
+  //       currentModel={currentModel}
+  //       columnDefs={tableColumnDefs}
+  //       instancesToDisplay={instancesToDisplay}
+  //       deploymentUuid={props.deploymentUuid}
+  //       displayTools={true}
+  //       maxRows={50}
+  //       onRowEdit={onEditFormObject}
+  //       onRowDelete={onDeleteFormObject}
+  //       // sortByAttribute={props.reportSectionDEFUNCT.definition.sortByAttribute}
+  //       sortByAttribute={reportSectionDefinitionFromFormik.definition?.sortByAttribute}
+  //       paramsAsdomainElements={props.paramsAsdomainElements as any} // TODO: which is right? DomainElementObject or record<string, any>?
+  //     ></EntityInstanceGrid>
+  //   ): (<></>);
+  // }, [
+  //   reportSectionDefinitionFromFormik,
+  //   reportSectionDefinitionFromFormik?.definition,
+  //   props.tableComponentReportType,
+  //   props.displayedDeploymentDefinition,
+  //   props.styles,
+  //   currentReportTargetEntity,
+  //   currentReportTargetEntityDefinition,
+  //   foreignKeyObjects,
+  //   currentModel,
+  //   tableColumnDefs,
+  //   instancesToDisplay,
+  //   props.deploymentUuid,
+  //   onEditFormObject,
+  //   onDeleteFormObject,
+  //   props.paramsAsdomainElements,
+  // ]);
   return (
     <ThemedBox className="MiroirReport-global" display="block">
       {context.showPerformanceDisplay && (
@@ -767,12 +829,17 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
         </div>
       )}
       {/* labelll:{props.select?.label?<span>{props.select?.label}</span>:<></>} */}
-      {currentReportTargetEntity && currentReportTargetEntityDefinition ? (
+      {reportSectionDefinitionFromFormik &&
+      reportSectionDefinitionFromFormik.type == "objectListReportSection" &&
+      currentReportTargetEntity &&
+      currentReportTargetEntityDefinition ? (
         !!tableColumnDefs ? (
           // columnDefs?.length > 0
           // <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
           <div>
-            <div style={{ display: "flex", alignItems: "baseline", gap: "10px", marginBottom: "10px" }}>
+            <div
+              style={{ display: "flex", alignItems: "baseline", gap: "10px", marginBottom: "10px" }}
+            >
               <h3 style={{ margin: 0 }}>
                 {props.defaultlabel ??
                   currentReportTargetEntityDefinition?.name ??
@@ -820,6 +887,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
             {props.displayedDeploymentDefinition ? (
               <div>
                 {/* <div>instancesToDisplay: {JSON.stringify(instancesToDisplay)}</div> */}
+                {/* {entityInstanceGrid} */}
                 <EntityInstanceGrid
                   type={props.tableComponentReportType}
                   displayedDeploymentDefinition={props.displayedDeploymentDefinition}
@@ -835,7 +903,8 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
                   maxRows={50}
                   onRowEdit={onEditFormObject}
                   onRowDelete={onDeleteFormObject}
-                  sortByAttribute={props.reportSectionDEFUNCT.definition.sortByAttribute}
+                  // sortByAttribute={props.reportSectionDEFUNCT.definition.sortByAttribute}
+                  sortByAttribute={reportSectionDefinitionFromFormik.definition?.sortByAttribute}
                   paramsAsdomainElements={props.paramsAsdomainElements as any} // TODO: which is right? DomainElementObject or record<string, any>?
                 ></EntityInstanceGrid>
               </div>
@@ -848,7 +917,9 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
         )
       ) : (
         <ThemedSpan style={{ color: "red" }}>
-          ReportSectionListDisplay, no report to display: {JSON.stringify(props.reportSectionDEFUNCT)}
+          ReportSectionListDisplay, no report or incorrect report to display:{" "}
+          {/* {JSON.stringify(props.reportSectionDEFUNCT)} */}
+          {JSON.stringify(reportSectionDefinitionFromFormik)}
         </ThemedSpan>
       )}
     </ThemedBox>

@@ -1,10 +1,10 @@
 {
   "uuid": "ef57aada-6b77-4384-8007-12f13eddd337",
   "selfApplication": "21840247-b5b1-4344-baec-f818f4797d92",
-  "parentName":"Report",
-  "parentUuid":"3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
-  "conceptLevel":"Model",
-  "name":"ReportDetails",
+  "parentName": "Report",
+  "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+  "conceptLevel": "Model",
+  "name": "ReportDetails",
   "defaultLabel": "Detailed information about a Report",
   "definition": {
     "extractorTemplates": {
@@ -25,9 +25,9 @@
       "type": "list",
       "definition": [
         {
-          "type":"objectInstanceReportSection",
+          "type": "objectInstanceReportSection",
           "definition": {
-            "label": "My Report",
+            "label": "Report Details: ${instance.name}",
             "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
             "fetchedDataReference": "report"
           }

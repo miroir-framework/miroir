@@ -98,7 +98,16 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
     "props.reportSectionPath =",
     props.reportSectionPath
   );
-  const localReportSectionDefinition: ReportSection | undefined =
+  const reportDefinitionFromFormik: Report  | undefined =
+    formik.values &&
+    props.formikReportDefinitionPathString &&
+    formik.values[props.formikReportDefinitionPathString]
+      ? formik.values[props.formikReportDefinitionPathString]
+      // : props.reportDefinitionDEFUNCT;
+      : undefined;
+  ;
+
+  const reportSectionDefinitionFromFormik: ReportSection | undefined =
     formik.values &&
     props.formikReportDefinitionPathString &&
     formik.values[props.formikReportDefinitionPathString] &&
@@ -116,8 +125,8 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
   log.info(
     "ReportSectionViewWithEditor render",
     currentNavigationKey,
-    "localReportSectionDefinition",
-    localReportSectionDefinition,
+    "reportSectionDefinitionFromFormik",
+    reportSectionDefinitionFromFormik,
     "props",
     props
   );
@@ -232,63 +241,63 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
   const domainController: DomainControllerInterface = useDomainControllerService();
   const currentModelEnvironment = defaultMiroirModelEnvironment;
   const reportSectionPathAsString = props.reportSectionPath?.join("_") || "";
-  const formInitialValue: any = useMemo(() => ({
-    [reportSectionPathAsString] : objectInstanceReportSectionEntityInstanceDEFUNCT
-  }), [objectInstanceReportSectionEntityInstanceDEFUNCT, reportSectionPathAsString]);
+  // const formInitialValue: any = useMemo(() => ({
+  //   [reportSectionPathAsString] : objectInstanceReportSectionEntityInstanceDEFUNCT
+  // }), [objectInstanceReportSectionEntityInstanceDEFUNCT, reportSectionPathAsString]);
 
-  const onEditValueObjectFormSubmit = useCallback(
-    async (data: any) => {
-      log.info("onEditValueObjectFormSubmit called with new object value", data);
-      // TODO: use action queue
-      if (props.deploymentUuid) {
-        if (props.applicationSection == "model") {
-          await domainController.handleAction(
-            {
-              actionType: "transactionalInstanceAction",
-              instanceAction: {
-                actionType: "updateInstance",
-                deploymentUuid: props.deploymentUuid,
-                endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-                payload: {
-                  applicationSection: "model",
-                  objects: [
-                    {
-                      parentName: data[reportSectionPathAsString].name,
-                      parentUuid: data[reportSectionPathAsString].parentUuid,
-                      applicationSection: props.applicationSection,
-                      instances: [data[reportSectionPathAsString]],
-                    },
-                  ],
-                },
-              },
-            },
-            currentModelEnvironment // TODO: use correct model environment
-          );
-        } else {
-          const updateAction: InstanceAction = {
-            actionType: "updateInstance",
-            deploymentUuid: props.deploymentUuid,
-            endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-            payload: {
-              applicationSection: props.applicationSection ? props.applicationSection : "data",
-              objects: [
-                {
-                  parentName: data[reportSectionPathAsString].name,
-                  parentUuid: data[reportSectionPathAsString].parentUuid,
-                  applicationSection: props.applicationSection ? props.applicationSection : "data",
-                  instances: [data[reportSectionPathAsString]],
-                },
-              ],
-            },
-          };
-          await domainController.handleAction(updateAction);
-        }
-      } else {
-        throw new Error("onEditValueObjectFormSubmit props.deploymentUuid is undefined.");
-      }
-    },
-    [domainController, props]
-  );
+  // const onEditValueObjectFormSubmit = useCallback(
+  //   async (data: any) => {
+  //     log.info("onEditValueObjectFormSubmit called with new object value", data);
+  //     // TODO: use action queue
+  //     if (props.deploymentUuid) {
+  //       if (props.applicationSection == "model") {
+  //         await domainController.handleAction(
+  //           {
+  //             actionType: "transactionalInstanceAction",
+  //             instanceAction: {
+  //               actionType: "updateInstance",
+  //               deploymentUuid: props.deploymentUuid,
+  //               endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+  //               payload: {
+  //                 applicationSection: "model",
+  //                 objects: [
+  //                   {
+  //                     parentName: data[reportSectionPathAsString].name,
+  //                     parentUuid: data[reportSectionPathAsString].parentUuid,
+  //                     applicationSection: props.applicationSection,
+  //                     instances: [data[reportSectionPathAsString]],
+  //                   },
+  //                 ],
+  //               },
+  //             },
+  //           },
+  //           currentModelEnvironment // TODO: use correct model environment
+  //         );
+  //       } else {
+  //         const updateAction: InstanceAction = {
+  //           actionType: "updateInstance",
+  //           deploymentUuid: props.deploymentUuid,
+  //           endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+  //           payload: {
+  //             applicationSection: props.applicationSection ? props.applicationSection : "data",
+  //             objects: [
+  //               {
+  //                 parentName: data[reportSectionPathAsString].name,
+  //                 parentUuid: data[reportSectionPathAsString].parentUuid,
+  //                 applicationSection: props.applicationSection ? props.applicationSection : "data",
+  //                 instances: [data[reportSectionPathAsString]],
+  //               },
+  //             ],
+  //           },
+  //         };
+  //         await domainController.handleAction(updateAction);
+  //       }
+  //     } else {
+  //       throw new Error("onEditValueObjectFormSubmit props.deploymentUuid is undefined.");
+  //     }
+  //   },
+  //   [domainController, props]
+  // );
 
   // ##############################################################################################
   // ##############################################################################################
@@ -367,7 +376,8 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
             ReportSectionViewWithEditor renders: {navigationCount} (total: {totalCount})
           </ThemedText>
         )}
-        {props.reportSectionDEFUNCT.type == "objectListReportSection" && (
+        {/* {props.reportSectionDEFUNCT.type == "objectListReportSection" && ( */}
+        {reportSectionDefinitionFromFormik?.type == "objectListReportSection" && (
           <div>
             {(currentListReportTargetEntity && currentListReportTargetEntityDefinition) ||
             props.reportDataDEFUNCT ? (
@@ -375,7 +385,7 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
                 tableComponentReportType="EntityInstance"
                 label={"EntityInstance-" + currentListReportTargetEntity?.name}
                 defaultlabel={interpolateExpression(
-                  props.reportSectionDEFUNCT.definition?.label,
+                  reportSectionDefinitionFromFormik?.definition?.label,
                   props.reportDataDEFUNCT.reportData,
                   "report label"
                 )}
@@ -386,7 +396,8 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
                 // 
                 domainElementObjectDEFUNCT={props.reportDataDEFUNCT.reportData}
                 fetchedDataJzodSchemaDEFUNCT={props.fetchedDataJzodSchemaDEFUNCT}
-                reportSectionDEFUNCT={props.reportSectionDEFUNCT}
+                // reportSectionDEFUNCT={props.reportSectionDEFUNCT}
+                reportSectionDEFUNCT={reportSectionDefinitionFromFormik}
                 // 
                 formikValuePath={props.reportSectionPath}
                 formikReportDefinitionPathString={props.formikReportDefinitionPathString}
@@ -397,7 +408,7 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
             )}
           </div>
         )}
-        {props.reportSectionDEFUNCT.type == "objectInstanceReportSection" && (
+        {reportSectionDefinitionFromFormik?.type == "objectInstanceReportSection" && (
           <>
             {/* <Formik
               enableReinitialize={true}
@@ -418,24 +429,34 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
               <ReportSectionEntityInstance
                 applicationSection={props.applicationSection as ApplicationSection}
                 deploymentUuid={props.deploymentUuid}
+                // defaultLabel={interpolateExpression(
+                //   reportSectionDefinitionFromFormik?.definition?.label,
+                //   instance,
+                //   "report label"
+                // )}
+
                 // 
                 initialInstanceValueDEFUNCT={objectInstanceReportSectionEntityInstanceDEFUNCT}
-                entityUuidDEFUNCT={props.reportSectionDEFUNCT.definition.parentUuid} // entityUuid-based section display, independent of report section definition
+                entityUuidDEFUNCT={reportSectionDefinitionFromFormik.definition.parentUuid} // entityUuid-based section display, independent of report section definition
                 // 
                 formikValuePath={props.reportSectionPath}
                 formValueMLSchema={props.formValueMLSchema}
+                formikReportDefinitionPathString={props.formikReportDefinitionPathString}
+                reportSectionPath={props.reportSectionPath}
                 formikAlreadyAvailable={true}
               />
             {/* </Formik> */}
           </>
         )}
-        {props.reportSectionDEFUNCT.type == "graphReportSection" && (
+        {reportSectionDefinitionFromFormik?.type == "graphReportSection" && (
           <div>
             <GraphReportSectionView
               applicationSection={props.applicationSection}
               deploymentUuid={props.deploymentUuid}
-              queryResults={props.reportDataDEFUNCT?.storedQueryData ?? props.reportDataDEFUNCT.reportData}
-              reportSection={props.reportSectionDEFUNCT as any}
+              queryResults={formik.values?.storedQueryData ?? formik.values}
+              // queryResults={props.reportDataDEFUNCT?.storedQueryData ?? props.reportDataDEFUNCT.reportData}
+              // reportSection={props.reportSectionDEFUNCT as any}
+              reportSection={reportSectionDefinitionFromFormik as any}
               showPerformanceDisplay={props.showPerformanceDisplay}
             />
           </div>

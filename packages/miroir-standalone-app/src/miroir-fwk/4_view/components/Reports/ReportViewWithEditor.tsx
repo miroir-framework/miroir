@@ -167,13 +167,13 @@ const reportSectionsFormValue = (
         },
         {}
       );
+    case "objectListReportSection":
     case "objectInstanceReportSection": {
       return {
         [reportSectionPath.join("_")]:
           reportData[reportSection.definition.fetchedDataReference ?? ""],
       };
     }
-    case "objectListReportSection":
     case "markdownReportSection":
     case "graphReportSection":
     default:
@@ -465,7 +465,11 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
       []
     );
     const reportSectionsData= reportSectionsFormValue(props.reportDefinition?.definition.section, reportData, ["definition", "section"]);
-    const result = {...reportSectionsData, [reportNamePath.join("_")]: props.reportDefinition}
+    const result = {
+      ...reportSectionsData,
+      storedQueryData: props.storedQueryData,
+      [reportNamePath.join("_")]: props.reportDefinition,
+    };
     log.info("reportSectionsFormValue initialReportSectionsFormValue", result);
     return result;
 
@@ -522,7 +526,30 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
       log.info("onEditValueObjectFormSubmit called with new object value", data);
       // TODO: use action queue
       if (props.deploymentUuid) {
-        if (props.applicationSection == "model") {
+        if (!data || !data[lastSubmitButtonClicked]) {
+          throw new Error(
+            "onEditValueObjectFormSubmit called with undefined data:" +
+              lastSubmitButtonClicked +
+              " not found in data: " +
+              Object.keys(data)
+          );
+        }
+        if (!data[data[lastSubmitButtonClicked]]) {
+          throw new Error(
+            "onEditValueObjectFormSubmit called with undefined object at path: " +
+              data[lastSubmitButtonClicked] +
+              " in data: " +
+              Object.keys(data)
+          );
+        }
+
+        if (!data[data[lastSubmitButtonClicked]].parentUuid) {
+          throw new Error("onEditValueObjectFormSubmit called with object missing parentUuid: " + Object.keys(data[data[lastSubmitButtonClicked]]));
+        }
+        const currentInstance = data[data[lastSubmitButtonClicked]];
+        const applicationSection = getApplicationSection(props.deploymentUuid, currentInstance.parentUuid);
+
+        if (applicationSection == "model") {
           await domainController.handleAction(
             {
               actionType: "transactionalInstanceAction",
@@ -534,10 +561,10 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
                   applicationSection: "model",
                   objects: [
                     {
-                      parentName: data[data[lastSubmitButtonClicked]].name,
-                      parentUuid: data[data[lastSubmitButtonClicked]].parentUuid,
+                      parentName: currentInstance.name,
+                      parentUuid: currentInstance.parentUuid,
                       applicationSection: props.applicationSection,
-                      instances: [data[data[lastSubmitButtonClicked]]],
+                      instances: [currentInstance],
                     },
                   ],
                 },
@@ -551,13 +578,13 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
             deploymentUuid: props.deploymentUuid,
             endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
             payload: {
-              applicationSection: props.applicationSection ? props.applicationSection : "data",
+              applicationSection: "data",
               objects: [
                 {
-                  parentName: data[data[lastSubmitButtonClicked]].name,
-                  parentUuid: data[data[lastSubmitButtonClicked]].parentUuid,
-                  applicationSection: props.applicationSection ? props.applicationSection : "data",
-                  instances: [data[data[lastSubmitButtonClicked]]],
+                  parentName: currentInstance.name,
+                  parentUuid: currentInstance.parentUuid,
+                  applicationSection: "data",
+                  instances: [currentInstance],
                 },
               ],
             },
@@ -673,6 +700,7 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
                       // hasValidationErrors={hasValidationErrors}
                       formikValuePath={reportNamePath}
                       formikReportDefinitionPathString={props.reportDefinition.name}
+                      formikAlreadyAvailable={true}
                       // onDefinitionChange={setLocalEditedReportDefinitionDEFUNCT}
                       // onValidationChange={setHasValidationErrors}
                     />
