@@ -66,17 +66,26 @@
             "authorName": {
               "transformerType": "contextReference",
               "interpolation": "runtime",
-              "referencePath": ["referenceObject", "name"]
+              "referencePath": [
+                "referenceObject",
+                "name"
+              ]
             },
             "authorUuid": {
               "transformerType": "contextReference",
               "interpolation": "runtime",
-              "referencePath": ["referenceObject", "uuid"]
+              "referencePath": [
+                "referenceObject",
+                "uuid"
+              ]
             },
             "bookTitle": {
               "transformerType": "contextReference",
               "interpolation": "runtime",
-              "referencePath": ["foreignKeyObject", "name"]
+              "referencePath": [
+                "foreignKeyObject",
+                "name"
+              ]
             }
           }
         }
@@ -131,7 +140,10 @@
           "interpolation": "runtime",
           "referenceName": "BooksWithAuthor"
         },
-        "groupBy": ["authorName", "authorUuid"]
+        "groupBy": [
+          "authorName",
+          "authorUuid"
+        ]
       },
       "booksOfPublisherCount": {
         "interpolation": "runtime",

@@ -607,44 +607,6 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
       {/* <span>ReportViewWithEditor editMode: {editMode ? "true" : "false"}</span> */}
       <Box sx={{ position: "relative" }}>
         {/* {editMode && modifiedSections.size > 0 && ( */}
-        {editMode && (
-          <Box
-            sx={{
-              position: "sticky",
-              top: 0,
-              zIndex: 1000,
-              backgroundColor: "background.paper",
-              borderBottom: 1,
-              borderColor: "divider",
-              padding: 2,
-              display: "flex",
-              justifyContent: "center",
-              gap: 2,
-            }}
-          >
-            <ThemedButton
-              variant="primary"
-              // color="success"
-              // size="large"
-              // sx={{
-              //   fontWeight: 'bold',
-              //   minWidth: 200,
-              //   boxShadow: 3,
-              //   '&:hover': {
-              //     boxShadow: 6,
-              //   }
-              // }}
-              onClick={() => {
-                log.info("Submit button clicked - to be implemented in task 5.0");
-                // Implementation will be done in task 5.0
-              }}
-            >
-              {/* Submit Changes ({modifiedSections.size} section{modifiedSections.size > 1 ? "s" : ""}) */}
-              Submit Changes
-            </ThemedButton>
-          </Box>
-        )}
-
         {props.applicationSection ? (
           reportData.elementType == "failure" ? (
             <div>found query failure! {JSON.stringify(reportData, null, 2)}</div>

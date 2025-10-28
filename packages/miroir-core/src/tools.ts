@@ -359,6 +359,12 @@ export function alterObjectAtPathWithCreate(
 // ################################################################################################
 /**
  * 
+ * TODO: unit tests!
+ * TODO: use 
+ * - https://www.npmjs.com/package/immutable 
+ * - https://www.npmjs.com/package/object-path-immutable
+ * - https://www.npmjs.com/package/immer
+ * instead?
  * @param object 
  * @param path 
  * @param value 
@@ -368,19 +374,63 @@ export function alterObjectAtPathWithCreate(
 export function deleteObjectAtPath(
   object: any,
   path: (string | number)[],
-):any { // terminal recursion
-  if (path.length == 0) {
+): any { // terminal recursion, returns a new object/array (non-mutating)
+  if (path.length === 0) return object;
+
+  const head = path[0];
+  const rest = path.slice(1);
+
+  // Helper to remove a key from an object immutably
+  const removeKeyFromObject = (obj: any, key: string | number) => {
+    if (obj == null || typeof obj !== "object" || Array.isArray(obj)) return obj;
+    if (!Object.hasOwn(obj, String(key))) return obj;
+    const { [String(key)]: _, ...restObj } = obj;
+    return restObj;
+  };
+
+  // Terminal case: delete at this level
+  if (rest.length === 0) {
+    if (Array.isArray(object)) {
+      const idx = Number(head);
+      if (!Number.isInteger(idx) || idx < 0 || idx >= object.length) return object;
+      return [...object.slice(0, idx), ...object.slice(idx + 1)];
+    }
+    if (object && typeof object === "object") {
+      return removeKeyFromObject(object, head);
+    }
     return object;
   }
-  if (path.length == 1) {
-    return Object.fromEntries(
-      Object.entries(object).filter(a => a[0] != path[0])
-    )
+
+  // Non-terminal: descend preserving structure (handle arrays and objects)
+  if (Array.isArray(object)) {
+    const idx = Number(head);
+    if (!Number.isInteger(idx) || idx < 0 || idx >= object.length) return object;
+    const current = object[idx];
+    const mutated = deleteObjectAtPath(current, rest);
+    // if no change, return original
+    if (mutated === current) return object;
+    const newArr = object.slice();
+    newArr[idx] = mutated;
+    return newArr;
   }
-  return {
-    ...object,
-    [path[0]]:deleteObjectAtPath(object[path[0]], path.slice(1))
-  };
+
+  if (object && typeof object === "object") {
+    const key = String(head);
+    const hasKey = Object.hasOwn(object, key);
+    const current = hasKey ? object[key] : undefined;
+    const mutated = deleteObjectAtPath(current, rest);
+    // no change
+    if (mutated === current) return object;
+    // if mutated is undefined and original had the key, remove the key
+    if (mutated === undefined && hasKey) {
+      return removeKeyFromObject(object, key);
+    }
+    // otherwise set the new value (may create the key if it didn't exist)
+    return { ...object, [key]: mutated };
+  }
+
+  // primitive or non-object encountered, cannot descend: return original
+  return object;
 }
 
 

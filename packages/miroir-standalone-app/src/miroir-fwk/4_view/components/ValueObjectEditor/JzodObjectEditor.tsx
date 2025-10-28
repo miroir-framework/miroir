@@ -164,6 +164,7 @@ const ProgressiveAttribute: FC<{
   rootLessListKey: string;
   rootLessListKeyArray: (string | number)[];
   formikRootLessListKey: string;
+  formikRootLessListKeyArray: (string | number)[];
   reportSectionPathAsString: string;
   localResolvedElementJzodSchemaBasedOnValue: JzodObject;
   // unfoldedRawSchema: any;
@@ -172,7 +173,7 @@ const ProgressiveAttribute: FC<{
   usedIndentLevel: number;
   definedOptionalAttributes: Set<string>;
   handleAttributeNameChange: (newValue: string, attributeRootLessListKeyArray: (string | number)[]) => void;
-  deleteElement: (rootLessListKeyArray: (string | number)[]) => () => void;
+  deleteElement: (formikRootLessListKeyArray: (string | number)[]) => () => void;
   formik: any;
   currentMiroirFundamentalJzodSchema: any;
   currentModel: any;
@@ -197,6 +198,7 @@ const ProgressiveAttribute: FC<{
   rootLessListKey,
   rootLessListKeyArray,
   formikRootLessListKey,
+  formikRootLessListKeyArray,
   reportSectionPathAsString,
   localResolvedElementJzodSchemaBasedOnValue,
   // unfoldedRawSchema,
@@ -244,6 +246,8 @@ const ProgressiveAttribute: FC<{
   const attributeRootLessListKey = rootLessListKey.length > 0 ? rootLessListKey + "." + attribute[0] : attribute[0];
   const attributeRootLessListKeyArray: (string | number)[] =
     rootLessListKeyArray.length > 0 ? [...rootLessListKeyArray, attribute[0]] : [attribute[0]];
+  const formikAttributeRootLessListKeyArray: (string | number)[] =
+    formikRootLessListKeyArray.length > 0 ? [...formikRootLessListKeyArray, attribute[0]] : [attribute[0]];
 
   const currentKeyMap = typeCheckKeyMap ? typeCheckKeyMap[rootLessListKey] : undefined;
 
@@ -279,7 +283,7 @@ const ProgressiveAttribute: FC<{
       initialValue={attribute[0]}
       rootLessListKey={attributeRootLessListKey}
       formikRootLessListKey={formikAttributeRootLessListKey}
-      onCommit={(newValue) => handleAttributeNameChange(newValue, attributeRootLessListKeyArray)}
+      onCommit={(newValue) => handleAttributeNameChange(newValue, formikAttributeRootLessListKeyArray)}
     />
   ) : (
     <ThemedAttributeLabel
@@ -415,6 +419,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
     currentValueObject,
     formik,
     formikRootLessListKey,
+    formikRootLessListKeyArray,
     localResolvedElementJzodSchemaBasedOnValue,
     miroirMetaModel,
     currentMiroirModelEnvironment,
@@ -634,8 +639,8 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
   // ##############################################################################################
   // Handle attribute name changes for Record objects
   const handleAttributeNameChange = useCallback(
-    (newAttributeName: string, attributeRootLessListKeyArray: (string | number)[]) => {
-      const localAttributeRootLessListKeyArray: (string | number)[] = attributeRootLessListKeyArray.slice();
+    (newAttributeName: string, formikAttributeRootLessListKeyArray: (string | number)[]) => {
+      const localAttributeRootLessListKeyArray: (string | number)[] = formikAttributeRootLessListKeyArray.slice();
       const oldAttributeName =
         localAttributeRootLessListKeyArray[localAttributeRootLessListKeyArray.length - 1];
 
@@ -646,8 +651,8 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
         newAttributeName,
         "current Value",
         formik.values,
-        "attributeRootLessListKeyArray",
-        attributeRootLessListKeyArray
+        "formikAttributeRootLessListKeyArray",
+        formikAttributeRootLessListKeyArray
       );
 
       // Get the value at the old attribute path
@@ -855,11 +860,25 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
 
   // ##############################################################################################
   const deleteElement = (rootLessListKeyArray: (string | number)[]) => () => {
-    log.info("deleteElement called for", rootLessListKeyArray.join("."));
     if (rootLessListKeyArray.length > 0) {
       const newFormState: any = deleteObjectAtPath(currentValueObject, rootLessListKeyArray);
+      log.info(
+        "deleteElement called for",
+        "reportSectionPathAsString",
+        reportSectionPathAsString,
+        "rootLessListKeyArray",
+        rootLessListKeyArray.join("."),
+        "currentValueObject",
+        currentValueObject,
+        "formik.values",
+        formik.values,
+        "newFormState",
+        newFormState
+      );
       formik.setFieldValue(reportSectionPathAsString, newFormState);
       log.info("Removed optional attribute:", rootLessListKeyArray.join("."));
+    } else {
+      log.warn("deleteElement called with empty rootLessListKeyArray, cannot delete root object");
     }
   };
 
@@ -942,6 +961,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
                 listKey={listKey}
                 rootLessListKey={rootLessListKey}
                 formikRootLessListKey={formikRootLessListKey}
+                formikRootLessListKeyArray={formikRootLessListKeyArray}
                 rootLessListKeyArray={rootLessListKeyArray}
                 reportSectionPathAsString={reportSectionPathAsString}
                 attribute={attribute}

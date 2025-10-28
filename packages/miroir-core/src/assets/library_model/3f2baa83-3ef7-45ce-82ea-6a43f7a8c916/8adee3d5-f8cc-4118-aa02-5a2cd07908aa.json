@@ -1,10 +1,10 @@
 {
   "uuid": "8adee3d5-f8cc-4118-aa02-5a2cd07908aa",
   "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
-  "parentName":"Report",
-  "parentUuid":"3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
-  "conceptLevel":"Model",
-  "name":"UserDetails",
+  "parentName": "Report",
+  "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+  "conceptLevel": "Model",
+  "name": "UserDetails",
   "defaultLabel": "Detailed information about a User",
   "definition": {
     "extractorTemplates": {
@@ -25,9 +25,8 @@
       "type": "list",
       "definition": [
         {
-          "type":"objectInstanceReportSection",
+          "type": "objectInstanceReportSection",
           "definition": {
-            "label": "My User",
             "parentUuid": "ca794e28-b2dc-45b3-8137-00151557eea8",
             "fetchedDataReference": "user"
           }
