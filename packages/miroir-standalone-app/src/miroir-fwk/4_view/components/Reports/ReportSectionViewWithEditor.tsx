@@ -308,12 +308,12 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
   // ##############################################################################################
   // ##############################################################################################
   // For grid/list sections, recurse using this wrapper so editor props propagate
-  if (props.reportSectionDEFUNCT?.type === 'grid') {
+  if (reportSectionDefinitionFromFormik?.type === 'grid') {
     return (
       <div style={{ position: 'relative' }}>
         {/* {props.editMode && <IconBar />} */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', width: '100%' }}>
-          {props.reportSectionDEFUNCT?.definition.map((row, rowIndex) => (
+          {reportSectionDefinitionFromFormik?.definition.map((row, rowIndex) => (
             <div key={`row-${rowIndex}`} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 400px), 1fr))', gap: '16px', width: '100%' }}>
               {row.map((innerReportSection, colIndex) => (
                 <div key={`${rowIndex}-${colIndex}`} style={{ minWidth: 0, display: 'flex', flexDirection: 'column', position: 'relative' }}>
@@ -332,13 +332,13 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
     );
   }
 
-  if (props.reportSectionDEFUNCT?.type === 'list') {
+  if (reportSectionDefinitionFromFormik?.type === 'list') {
     return (
       <>
-      <span>ReportSectionViewEditor list</span>
+      {/* <span>ReportSectionViewEditor list</span> */}
         <div style={{ position: 'relative' }}>
           {/* {props.editMode && <IconBar />} */}
-          {props.reportSectionDEFUNCT?.definition.map((innerReportSection, index) => (
+          {reportSectionDefinitionFromFormik?.definition.map((innerReportSection, index) => (
             <div key={index} style={{ marginBottom: '2em', position: 'relative' }}>
               <ReportSectionViewWithEditor
                 {...props}
@@ -358,24 +358,6 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
   // Leaf section types
   return (
     <>
-      {/* <pre> */}
-      {/* {props.editMode && ( */}
-      <code>
-        ReportSectionViewEditor leaf: editMode {JSON.stringify(props.editMode)}, isEditing{" "}
-        {JSON.stringify(isEditing)},
-        {/* props.sectionPath {JSON.stringify(props.reportSectionPath)}, */}
-        {/* reportEntityDefinition {JSON.stringify(reportEntityDefinition)} */}
-        {/* props.reportDefinition {JSON.stringify(props.reportDefinition)} */}
-        {/* sectionDefinition {JSON.stringify(props.reportSection)} */}
-        sectionDefinition2{" "}
-        {/* {JSON.stringify(
-          resolvePathOnObject(reportSectionDefinitionFromFormik, props.reportSectionPath ?? [])
-        )} */}
-        <span>reportSectionPath: {JSON.stringify(props.reportSectionPath)}</span>
-        reportSectionDefinitionFromFormik?.type: {JSON.stringify(reportSectionDefinitionFromFormik?.type)}
-      </code>
-      {/* )} */}
-      {/* </pre> */}
       <div style={{ position: "relative" }}>
         {props.editMode && <IconBar />}
         {showPerformanceDisplay && (
@@ -387,7 +369,6 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
         {reportSectionDefinitionFromFormik?.type == "objectListReportSection" && (
           <div>
             {currentListReportTargetEntity && currentListReportTargetEntityDefinition ? (
-              // props.reportDataDEFUNCT
               <ReportSectionListDisplay
                 tableComponentReportType="EntityInstance"
                 label={"EntityInstance-" + currentListReportTargetEntity?.name}
@@ -411,7 +392,8 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
                 reportSectionPath={props.reportSectionPath}
               />
             ) : (
-              <div>error on object list {JSON.stringify(currentListReportTargetEntity)}</div>
+              <></>
+              // <div>error on object list {JSON.stringify(currentListReportTargetEntity)}</div>
             )}
           </div>
         )}
@@ -437,8 +419,6 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
               applicationSection={props.applicationSection}
               deploymentUuid={props.deploymentUuid}
               queryResults={formik.values?.storedQueryData ?? formik.values}
-              // queryResults={props.reportDataDEFUNCT?.storedQueryData ?? props.reportDataDEFUNCT.reportData}
-              // reportSection={props.reportSectionDEFUNCT as any}
               reportSection={reportSectionDefinitionFromFormik as any}
               showPerformanceDisplay={props.showPerformanceDisplay}
             />

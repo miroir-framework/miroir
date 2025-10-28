@@ -52,6 +52,7 @@ import {
 import { useRenderTracker } from '../../tools/renderCountTracker.js';
 import { RenderPerformanceMetrics } from '../../tools/renderPerformanceMeasure.js';
 import { ErrorFallbackComponent } from '../ErrorFallbackComponent.js';
+import { ThemedStyledButton } from '../Themes/index.js';
 import { JzodElementEditor } from '../ValueObjectEditor/JzodElementEditor.js';
 import { CodeBlock_ReadOnly } from './CodeBlock_ReadOnly.js';
 import { lastSubmitButtonClicked } from '../../routes/ReportPage.js';
@@ -491,14 +492,17 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
                 maxRenderDepth={maxRenderDepth} // always 1
                 displayError={displayError}
                 submitButton={
-                  <button type="submit" role="form" name={pageLabel} form={"form." + pageLabel}
-                  onClick={(e) => {
-                    log.info("TypedValueObjectEditor submit button clicked", e);
-                    formik.setFieldValue(lastSubmitButtonClicked, formikValuePathAsString);
-                  }}
+                  <ThemedStyledButton
+                    type="submit"
+                    variant="contained"
+                    style={{maxWidth: "300px"}}
+                    onClick={(e) => {
+                      log.info("TypedValueObjectEditor submit button clicked", e);
+                      formik.setFieldValue(lastSubmitButtonClicked, formikValuePathAsString);
+                    }}
                   >
-                    submit form.{pageLabel}
-                  </button>
+                    Submit {pageLabel}
+                  </ThemedStyledButton>
                 }
               />
             </ErrorBoundary>

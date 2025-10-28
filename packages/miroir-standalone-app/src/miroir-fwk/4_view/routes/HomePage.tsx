@@ -56,9 +56,9 @@ import {
   ReportUrlParamKeys,
   selfApplicationParis,
 } from "../../../constants.js";
-import { ReportView } from "../components/Reports/ReportView.js";
 import { cleanLevel } from "../constants.js";
 import { EndpointActionCaller } from "../components/EndpointActionCaller.js";
+import { ReportViewWithEditor } from "../components/Reports/ReportViewWithEditor.js";
 
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -586,13 +586,9 @@ export const HomePage = (props: RootComponentProps) => {
           </Select>
         </FormControl>
       </div>
-      {currentMiroirReport && displayedDeploymentUuid && displayedApplicationSection ? (
+      {/* {currentMiroirReport && displayedDeploymentUuid && displayedApplicationSection ? (
         <div>
-          {/* <div>HomePage reportSection: {JSON.stringify(currentMiroirReport?.definition)}</div> */}
-          {/* <div>
-              reportUuid: {displayedReportUuid}
-            </div> */}
-          <ReportView
+          <ReportViewWithEditor
             reportDefinition={currentMiroirReport?.definition}
             applicationSection={displayedApplicationSection}
             deploymentUuid={displayedDeploymentUuid}
@@ -605,14 +601,8 @@ export const HomePage = (props: RootComponentProps) => {
           <p>
             currentMiroirReport: {currentMiroirReport?.name}, {currentMiroirReport?.uuid}
           </p>
-          {/* <p>
-              report section: {JSON.stringify(currentMiroirReportSectionObjectList)}
-            </p> */}
-          {/* <p>
-              currentReportTargetEntity: {currentReportTargetEntity?.name}, {currentReportTargetEntity?.uuid}
-            </p> */}
         </div>
-      )}
+      )} */}
       {/* </Box> */}
     </PageContainer>
   );

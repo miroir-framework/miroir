@@ -599,19 +599,16 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
             onChange={handleDisplayEditorSwitchChange}
           />
         </div> */}
-        <div>
+        {/* <div>
           <ThemedStatusText>
             <pre>
-              displayAsStructuredElement: {displayAsStructuredElement ? "true" : "false"}{" "}
-              {/* displayEditor: {displayEditor ? "true" : "false"} hasTypeError:{" "} */}
               currentReportSectionTargetEntityDefinition:{" "}
               {currentReportSectionTargetEntityDefinition ? "true" : "false"}{" "}
               props.applicationSection: {props.applicationSection} instance.uuid: {instance?.uuid}{" "}
               instance.parentUuid: {instance?.parentUuid}{" "}
-              {/* {typeError ? "true" : "false"}{" "} */}
             </pre>
           </ThemedStatusText>
-        </div>
+        </div> */}
         <ThemedHeaderSection>
           <ThemedTitle>
             {/* {currentReportTargetEntity?.name} details: {instance.name}{" "} */}

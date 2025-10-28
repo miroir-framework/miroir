@@ -1126,7 +1126,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
 
   return (
     <>
-      {props.isTopLevel && (
+      {/* {props.isTopLevel && (
         <span>
           <pre>
             shouldShowCodeEditor: {JSON.stringify(shouldShowCodeEditor)} displayAsCodeEditor:{" "}
@@ -1135,7 +1135,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
             {JSON.stringify(objectOrArrayOrAny)}{" "}
           </pre>
         </span>
-      )}
+      )} */}
       <div>
         {props.rootLessListKey === "" && (
           <RenderPerformanceMetrics.RenderPerformanceDisplay
@@ -1175,12 +1175,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                 // padding: "5px",
               }}
             >
-              {/* objectOrArrayOrAny */}
-              {props.submitButton && (
-                // <div style={{maxWidth: "200px"}}>
-                <ThemedButton>{props.submitButton}</ThemedButton>
-                // </div>
-              )}
+              {props.submitButton}
               {/* <span
                 style={{
                   display: !displayAsCodeEditor ? "none" : "inline-block",

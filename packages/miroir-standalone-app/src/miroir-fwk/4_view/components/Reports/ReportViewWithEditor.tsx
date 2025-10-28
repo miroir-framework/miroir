@@ -1,4 +1,3 @@
-import { useState, useMemo, useCallback } from 'react';
 import { Box } from '@mui/material';
 import {
   defaultMiroirModelEnvironment,
@@ -6,13 +5,10 @@ import {
   getApplicationSection,
   LoggerInterface,
   MiroirLoggerFactory,
-  RootReport,
   selfApplicationDeploymentMiroir,
-  type ApplicationSection,
   type BoxedQueryTemplateWithExtractorCombinerTransformer,
   type BoxedQueryWithExtractorCombinerTransformer,
   type DeploymentUuidToReportsEntitiesDefinitions,
-  type DeploymentUuidToReportsEntitiesDefinitionsMapping,
   type Domain2QueryReturnType,
   type DomainControllerInterface,
   type EntityDefinition,
@@ -25,22 +21,22 @@ import {
   type RecordOfJzodObject,
   type ReduxDeploymentsState,
   type ReportSection,
-  type Uuid,
+  type Uuid
 } from "miroir-core";
+import { useCallback, useMemo } from 'react';
 
+import { Formik } from 'formik';
+import { getMemoizedReduxDeploymentsStateJzodSchemaSelectorMap } from 'miroir-localcache-redux';
 import { packageName } from '../../../../constants.js';
 import { cleanLevel } from '../../constants.js';
 import { useDomainControllerService, useMiroirContextService } from "../../MiroirContextReactProvider.js";
-import { ReportView } from './ReportView.js';
-import { ReportViewProps, useQueryTemplateResults } from './ReportHooks.js';
-import { ThemedButton, ThemedSpan } from '../Themes/index.js';
-import ReportSectionViewWithEditor from './ReportSectionViewWithEditor.js';
-import { getMemoizedReduxDeploymentsStateJzodSchemaSelectorMap } from 'miroir-localcache-redux';
 import { useReduxDeploymentsStateJzodSchemaSelector } from '../../ReduxHooks.js';
+import { lastSubmitButtonClicked } from '../../routes/ReportPage.js';
+import { ThemedSpan } from '../Themes/index.js';
 import { useDocumentOutlineContext } from '../ValueObjectEditor/InstanceEditorOutlineContext.js';
 import { InlineReportEditor } from './InlineReportEditor.js';
-import { Formik } from 'formik';
-import { lastSubmitButtonClicked } from '../../routes/ReportPage.js';
+import { ReportViewProps, useQueryTemplateResults } from './ReportHooks.js';
+import ReportSectionViewWithEditor from './ReportSectionViewWithEditor.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -652,12 +648,12 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
                       // onValidationChange={setHasValidationErrors}
                     />
                   )}
-                  <span>
+                  {/* <span>
                     <pre>
                       ReportViewEditor editMode: {JSON.stringify(editMode)}, reportEntityDefinition:{" "}
                       {JSON.stringify(!!reportEntityDefinition)}
                     </pre>
-                  </span>
+                  </span> */}
                   <ReportSectionViewWithEditor
                     applicationSection={props.applicationSection}
                     deploymentUuid={props.deploymentUuid}
