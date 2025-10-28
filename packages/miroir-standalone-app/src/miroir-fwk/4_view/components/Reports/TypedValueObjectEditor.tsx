@@ -381,7 +381,7 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
     <>
       <div>
         {typeError ? "typeError: " : ""}
-        {typeError}
+        {typeError}_
       </div>
       {readonly ? (
         // Readonly mode: just display the editor without form
@@ -438,6 +438,7 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
         </div>
       ) : (
         // Editable mode: wrap in form
+        // TODO: is form actually needed here, since we have formik context already?
         <form id={"form." + pageLabel} onSubmit={formik.handleSubmit}>
           <div>
             <ErrorBoundary

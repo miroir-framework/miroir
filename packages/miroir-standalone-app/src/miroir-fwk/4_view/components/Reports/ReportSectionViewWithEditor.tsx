@@ -119,6 +119,11 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
         )
       : undefined;
 
+  // const reportSectionCurrentValueFromFormik: any = formik.values && props.reportSectionPath
+  const reportSectionCurrentValueFromFormik: any = formik.values && props.formikReportDefinitionPathString
+    ? formik.values[props.formikReportDefinitionPathString]
+    : undefined;
+  
   const currentNavigationKey = `${props.deploymentUuid}-${props.applicationSection}-${props.reportSectionPath ?? 'root'}`;
   const { navigationCount, totalCount } = useRenderTracker("ReportSectionViewWithEditor", currentNavigationKey);
 
@@ -354,20 +359,22 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
   return (
     <>
       {/* <pre> */}
-      {props.editMode && (
-        <code>
-          ReportSectionViewEditor leaf: editMode {JSON.stringify(props.editMode)}, isEditing{" "}
-          {JSON.stringify(isEditing)}, props.sectionPath {JSON.stringify(props.reportSectionPath)},
-          {/* reportEntityDefinition {JSON.stringify(reportEntityDefinition)} */}
-          {/* props.reportDefinition {JSON.stringify(props.reportDefinition)} */}
-          {/* sectionDefinition {JSON.stringify(props.reportSection)} */}
-          sectionDefinition2{" "}
-          {JSON.stringify(
-            resolvePathOnObject(props.reportDefinitionDEFUNCT, props.reportSectionPath ?? [])
-          )}
-          <span>reportSectionPath: {JSON.stringify(props.reportSectionPath)}</span>
-        </code>
-      )}
+      {/* {props.editMode && ( */}
+      <code>
+        ReportSectionViewEditor leaf: editMode {JSON.stringify(props.editMode)}, isEditing{" "}
+        {JSON.stringify(isEditing)},
+        {/* props.sectionPath {JSON.stringify(props.reportSectionPath)}, */}
+        {/* reportEntityDefinition {JSON.stringify(reportEntityDefinition)} */}
+        {/* props.reportDefinition {JSON.stringify(props.reportDefinition)} */}
+        {/* sectionDefinition {JSON.stringify(props.reportSection)} */}
+        sectionDefinition2{" "}
+        {/* {JSON.stringify(
+          resolvePathOnObject(reportSectionDefinitionFromFormik, props.reportSectionPath ?? [])
+        )} */}
+        <span>reportSectionPath: {JSON.stringify(props.reportSectionPath)}</span>
+        reportSectionDefinitionFromFormik?.type: {JSON.stringify(reportSectionDefinitionFromFormik?.type)}
+      </code>
+      {/* )} */}
       {/* </pre> */}
       <div style={{ position: "relative" }}>
         {props.editMode && <IconBar />}
@@ -379,8 +386,8 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
         {/* {props.reportSectionDEFUNCT.type == "objectListReportSection" && ( */}
         {reportSectionDefinitionFromFormik?.type == "objectListReportSection" && (
           <div>
-            {(currentListReportTargetEntity && currentListReportTargetEntityDefinition) ||
-            props.reportDataDEFUNCT ? (
+            {currentListReportTargetEntity && currentListReportTargetEntityDefinition ? (
+              // props.reportDataDEFUNCT
               <ReportSectionListDisplay
                 tableComponentReportType="EntityInstance"
                 label={"EntityInstance-" + currentListReportTargetEntity?.name}
@@ -393,12 +400,12 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
                 chosenApplicationSection={props.applicationSection as ApplicationSection}
                 paramsAsdomainElements={props.paramsAsdomainElements}
                 displayedDeploymentDefinition={displayedDeploymentDefinition} // ??
-                // 
+                //
                 domainElementObjectDEFUNCT={props.reportDataDEFUNCT.reportData}
                 fetchedDataJzodSchemaDEFUNCT={props.fetchedDataJzodSchemaDEFUNCT}
                 // reportSectionDEFUNCT={props.reportSectionDEFUNCT}
                 reportSectionDEFUNCT={reportSectionDefinitionFromFormik}
-                // 
+                //
                 formikValuePath={props.reportSectionPath}
                 formikReportDefinitionPathString={props.formikReportDefinitionPathString}
                 reportSectionPath={props.reportSectionPath}
@@ -410,42 +417,18 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
         )}
         {reportSectionDefinitionFromFormik?.type == "objectInstanceReportSection" && (
           <>
-            {/* <Formik
-              enableReinitialize={true}
-              initialValues={formInitialValue}
-              onSubmit={async (values, { setSubmitting, setErrors }) => {
-                try {
-                  log.info("ReportSectionEntityInstance onSubmit formik values", values);
-                  await onEditValueObjectFormSubmit(values);
-                } catch (e) {
-                  log.error(e);
-                } finally {
-                  setSubmitting(false);
-                }
-              }}
-              validateOnChange={false}
-              validateOnBlur={false}
-            > */}
-              <ReportSectionEntityInstance
-                applicationSection={props.applicationSection as ApplicationSection}
-                deploymentUuid={props.deploymentUuid}
-                // defaultLabel={interpolateExpression(
-                //   reportSectionDefinitionFromFormik?.definition?.label,
-                //   instance,
-                //   "report label"
-                // )}
-
-                // 
-                initialInstanceValueDEFUNCT={objectInstanceReportSectionEntityInstanceDEFUNCT}
-                entityUuidDEFUNCT={reportSectionDefinitionFromFormik.definition.parentUuid} // entityUuid-based section display, independent of report section definition
-                // 
-                formikValuePath={props.reportSectionPath}
-                formValueMLSchema={props.formValueMLSchema}
-                formikReportDefinitionPathString={props.formikReportDefinitionPathString}
-                reportSectionPath={props.reportSectionPath}
-                formikAlreadyAvailable={true}
-              />
-            {/* </Formik> */}
+            <ReportSectionEntityInstance
+              applicationSection={props.applicationSection as ApplicationSection}
+              deploymentUuid={props.deploymentUuid}
+              initialInstanceValueDEFUNCT={objectInstanceReportSectionEntityInstanceDEFUNCT}
+              entityUuidDEFUNCT={reportSectionDefinitionFromFormik.definition.parentUuid} // entityUuid-based section display, independent of report section definition
+              //
+              formikValuePath={props.reportSectionPath}
+              formValueMLSchema={props.formValueMLSchema}
+              formikReportDefinitionPathString={props.formikReportDefinitionPathString}
+              reportSectionPath={props.reportSectionPath}
+              formikAlreadyAvailable={true}
+            />
           </>
         )}
         {reportSectionDefinitionFromFormik?.type == "graphReportSection" && (
@@ -461,12 +444,13 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
             />
           </div>
         )}
-        {props.reportSectionDEFUNCT.type == "markdownReportSection" && (
+        {/* {props.reportSectionDEFUNCT.type == "markdownReportSection" && ( */}
+        {reportSectionDefinitionFromFormik?.type == "markdownReportSection" && (
           <ReportSectionMarkdown
             applicationSection={props.applicationSection}
             deploymentUuid={props.deploymentUuid}
-            reportSection={{ ...props.reportSectionDEFUNCT, definition: activeDefinition }}
-            label={props.reportSectionDEFUNCT.definition.label}
+            reportSection={{ ...reportSectionCurrentValueFromFormik, definition: activeDefinition }}
+            label={reportSectionCurrentValueFromFormik.definition.label}
             showPerformanceDisplay={props.showPerformanceDisplay}
           />
         )}

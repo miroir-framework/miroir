@@ -134,6 +134,7 @@
     },
     "runtimeTransformers": {
       "00_booksByAuthorCount": {
+        "interpolation": "runtime",
         "transformerType": "count",
         "applyTo": {
           "transformerType": "contextReference",

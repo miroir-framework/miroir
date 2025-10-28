@@ -613,20 +613,6 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
           ) : // (<>failure</>)
           props.deploymentUuid ? (
             <>
-              {/* {editMode && reportEntityDefinition && (
-                // <></>
-                <InlineReportEditor
-                  reportDefinition={props.reportDefinition}
-                  reportEntityDefinition={reportEntityDefinition}
-                  formValueMLSchema={formValueMLSchema}
-                  deploymentUuid={props.deploymentUuid}
-                  applicationSection={props.applicationSection}
-                  // hasValidationErrors={hasValidationErrors}
-                  reportSectionPath={reportEditorEntitySectionPath}
-                  // onDefinitionChange={setLocalEditedReportDefinitionDEFUNCT}
-                  // onValidationChange={setHasValidationErrors}
-                />
-              )} */}
               <Formik
                 enableReinitialize={true}
                 // initialValues={formInitialValue}
@@ -652,7 +638,6 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
               >
                 <>
                   {editMode && reportEntityDefinition && (
-                    // <></>
                     <InlineReportEditor
                       deploymentUuid={props.deploymentUuid}
                       applicationSection={props.applicationSection}
@@ -667,6 +652,12 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
                       // onValidationChange={setHasValidationErrors}
                     />
                   )}
+                  <span>
+                    <pre>
+                      ReportViewEditor editMode: {JSON.stringify(editMode)}, reportEntityDefinition:{" "}
+                      {JSON.stringify(!!reportEntityDefinition)}
+                    </pre>
+                  </span>
                   <ReportSectionViewWithEditor
                     applicationSection={props.applicationSection}
                     deploymentUuid={props.deploymentUuid}
@@ -678,7 +669,7 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
                     reportDataDEFUNCT={reportViewData}
                     fetchedDataJzodSchemaDEFUNCT={fetchedDataJzodSchema}
                     // formikValuePath={[]}
-                    // 
+                    //
                     reportSectionDEFUNCT={props.reportDefinition?.definition.section} // TODO: defunct, must use formik[reportName]?.definition.section
                     reportDefinitionDEFUNCT={props.reportDefinition}
                     formValueMLSchema={formValueMLSchema}
@@ -695,7 +686,7 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
           // : (
           //   <>ReportViewWithEditor Invalid props! {JSON.stringify(props)}</>;
           // )
-          <>no application section!</>
+          <ThemedSpan style={{ color: "red" }}>no application section found!</ThemedSpan>
         )}
       </Box>
     </>

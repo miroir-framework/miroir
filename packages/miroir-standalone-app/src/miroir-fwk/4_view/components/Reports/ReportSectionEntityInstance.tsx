@@ -248,7 +248,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   // );
 
   const [displayAsStructuredElement, setDisplayAsStructuredElement] = useState(true);
-  const [displayEditor, setDisplayEditor] = useState(true);
+  // const [displayEditor, setDisplayEditor] = useState(true);
   const [isResultsCollapsed, setIsResultsCollapsed] = useState(true);
   // const [maxRenderDepth, setMaxRenderDepth] = useState<number>(props.maxRenderDepth ?? 1);
 
@@ -403,13 +403,13 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
     RenderPerformanceMetrics.trackRenderPerformance(componentKey, renderDuration);
   }
 
-  // ##############################################################################################
-  const handleDisplayEditorSwitchChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      setDisplayEditor(event.target.checked);
-    },
-    [setDisplayEditor]
-  );
+  // // ##############################################################################################
+  // const handleDisplayEditorSwitchChange = useCallback(
+  //   (event: React.ChangeEvent<HTMLInputElement>) => {
+  //     setDisplayEditor(event.target.checked);
+  //   },
+  //   [setDisplayEditor]
+  // );
 
   // ##############################################################################################
   const onEditValueObjectFormSubmitDEFUNCT = useCallback(
@@ -591,19 +591,25 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
           />
         )}
 
-        <div>
+        {/* <div>
           <label htmlFor="displayEditorSwitch">Display editor:</label>
           <ThemedSwitch
             checked={displayEditor}
             id="displayEditorSwitch"
             onChange={handleDisplayEditorSwitchChange}
           />
-        </div>
+        </div> */}
         <div>
           <ThemedStatusText>
-            displayAsStructuredElement: {displayAsStructuredElement ? "true" : "false"}{" "}
-            displayEditor: {displayEditor ? "true" : "false"} hasTypeError:{" "}
-            {/* {typeError ? "true" : "false"}{" "} */}
+            <pre>
+              displayAsStructuredElement: {displayAsStructuredElement ? "true" : "false"}{" "}
+              {/* displayEditor: {displayEditor ? "true" : "false"} hasTypeError:{" "} */}
+              currentReportSectionTargetEntityDefinition:{" "}
+              {currentReportSectionTargetEntityDefinition ? "true" : "false"}{" "}
+              props.applicationSection: {props.applicationSection} instance.uuid: {instance?.uuid}{" "}
+              instance.parentUuid: {instance?.parentUuid}{" "}
+              {/* {typeError ? "true" : "false"}{" "} */}
+            </pre>
           </ThemedStatusText>
         </div>
         <ThemedHeaderSection>
@@ -616,7 +622,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
               (reportSectionDefinitionFromFormik?.definition?.label
                 ? interpolateExpression(
                     reportSectionDefinitionFromFormik?.definition?.label,
-                    {instance},
+                    { instance },
                     "report label"
                   )
                 : undefined) ??
@@ -627,22 +633,18 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
               </span>
             )}
           </ThemedTitle>
-          {displayEditor && (
-            <ThemedTooltip
-              title={
-                outlineContext.isOutlineOpen ? "Hide Document Outline" : "Show Document Outline"
-              }
+          <ThemedTooltip
+            title={outlineContext.isOutlineOpen ? "Hide Document Outline" : "Show Document Outline"}
+          >
+            <ThemedIconButton
+              onClick={outlineContext.onToggleOutline}
+              style={{
+                marginLeft: "16px",
+              }}
             >
-              <ThemedIconButton
-                onClick={outlineContext.onToggleOutline}
-                style={{
-                  marginLeft: "16px",
-                }}
-              >
-                <Toc />
-              </ThemedIconButton>
-            </ThemedTooltip>
-          )}
+              <Toc />
+            </ThemedIconButton>
+          </ThemedTooltip>
         </ThemedHeaderSection>
 
         {/* Query Results Section - Collapsible */}
@@ -713,96 +715,58 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
         )}
 
         {currentReportSectionTargetEntityDefinition && props.applicationSection ? (
-          displayEditor ? (
-            props.formikAlreadyAvailable ? (
-              <TypedValueObjectEditor
-                labelElement={labelElement}
-                deploymentUuid={props.deploymentUuid}
-                applicationSection={props.applicationSection}
-                formValueMLSchema={props.formValueMLSchema}
-                formikValuePathAsString={formikValuePathAsString}
-                //
-                formLabel={formLabel}
-                zoomInPath={props.zoomInPath}
-                maxRenderDepth={Infinity} // Always render fully for editor
-              />
-            ) : (
-              <Formik
-                enableReinitialize={true}
-                // initialValues={instance}
-                initialValues={formInitialValueDEFUNCT}
-                onSubmit={async (values, { setSubmitting, setErrors }) => {
-                  try {
-                    log.info("ReportSectionEntityInstance onSubmit formik values", values);
-                    // Handle zoom case: merge changes back into the full object for submission
-                    // const finalValues = hasZoomPath
-                    //   ? setValueAtPath(initialValueObject, zoomInPath!, values)
-                    //   : values;
-
-                    // await onSubmit(values);
-                    await onEditValueObjectFormSubmitDEFUNCT(values);
-                  } catch (e) {
-                    log.error(e);
-                  } finally {
-                    setSubmitting(false);
-                  }
-                }}
-                validateOnChange={false}
-                validateOnBlur={false}
-              >
-                <TypedValueObjectEditor
-                  labelElement={labelElement}
-                  formValueMLSchema={props.formValueMLSchema}
-                  deploymentUuid={props.deploymentUuid}
-                  applicationSection={props.applicationSection}
-                  formikValuePathAsString={formikValuePathAsString}
-                  //
-                  formLabel={formLabel}
-                  zoomInPath={props.zoomInPath}
-                  maxRenderDepth={Infinity} // Always render fully for editor
-                />
-              </Formik>
-            )
-          ) : (
-            <div>
-              {displayAsStructuredElement ? (
-                <div>Can not display non-editor as structured element</div>
-              ) : (
-                <div>
-                  {props.zoomInPath && (
-                    <div
-                      style={{
-                        marginBottom: "8px",
-                        fontSize: "0.9em",
-                        color: "#666",
-                        fontStyle: "italic",
-                      }}
-                    >
-                      Viewing path: {props.zoomInPath}
-                    </div>
-                  )}
-                  <ThemedCodeBlock>
-                    {safeStringify(
-                      props.zoomInPath
-                        ? (() => {
-                            const pathParts = props.zoomInPath.split(".");
-                            let current = instance;
-                            for (const part of pathParts) {
-                              if (current && typeof current === "object") {
-                                current = current[part];
-                              } else {
-                                return `Path "${props.zoomInPath}" not found`;
-                              }
-                            }
-                            return current;
-                          })()
-                        : instance
-                    )}
-                  </ThemedCodeBlock>
-                </div>
-              )}
-            </div>
-          )
+          // displayEditor ? (
+          <TypedValueObjectEditor
+            labelElement={labelElement}
+            deploymentUuid={props.deploymentUuid}
+            applicationSection={props.applicationSection}
+            formValueMLSchema={props.formValueMLSchema}
+            formikValuePathAsString={formikValuePathAsString}
+            //
+            formLabel={formLabel}
+            zoomInPath={props.zoomInPath}
+            maxRenderDepth={Infinity} // Always render fully for editor
+          />
+          // ) : (
+          //   <div>
+          //     {displayAsStructuredElement ? (
+          //       <div>Can not display non-editor as structured element</div>
+          //     ) : (
+          //       <div>
+          //         {props.zoomInPath && (
+          //           <div
+          //             style={{
+          //               marginBottom: "8px",
+          //               fontSize: "0.9em",
+          //               color: "#666",
+          //               fontStyle: "italic",
+          //             }}
+          //           >
+          //             Viewing path: {props.zoomInPath}
+          //           </div>
+          //         )}
+          //         <ThemedCodeBlock>
+          //           {safeStringify(
+          //             props.zoomInPath
+          //               ? (() => {
+          //                   const pathParts = props.zoomInPath.split(".");
+          //                   let current = instance;
+          //                   for (const part of pathParts) {
+          //                     if (current && typeof current === "object") {
+          //                       current = current[part];
+          //                     } else {
+          //                       return `Path "${props.zoomInPath}" not found`;
+          //                     }
+          //                   }
+          //                   return current;
+          //                 })()
+          //               : instance
+          //           )}
+          //         </ThemedCodeBlock>
+          //       </div>
+          //     )}
+          //   </div>
+          // )
         ) : (
           <div>
             Oops, ReportSectionEntityInstance could not be displayed.
