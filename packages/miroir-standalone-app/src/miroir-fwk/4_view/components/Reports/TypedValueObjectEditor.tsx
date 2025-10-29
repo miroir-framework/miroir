@@ -382,7 +382,7 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
     <>
       <div>
         {typeError ? "typeError: " : ""}
-        {typeError}_
+        {typeError}
       </div>
       {readonly ? (
         // Readonly mode: just display the editor without form

@@ -444,7 +444,8 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
     return miroirMapping["model"]?.entityDefinitions?.find((ed: any) => ed.name === "Report");
   }, [context.deploymentUuidToReportsEntitiesDefinitionsMapping]);
 
-  const reportNamePath = [props.reportDefinition?.name??"reportEntityDefinition_name"];
+  const reportName = props.reportDefinition?.name??"reportEntityDefinition_name";
+  const reportNamePath = [reportName];
 
   // const [localEditedReportDefinitionDEFUNCT, setLocalEditedReportDefinitionDEFUNCT] = useState<any | undefined>(reportEntityDefinition);
   
@@ -671,6 +672,7 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
                     formValueMLSchema={formValueMLSchema}
                     formikReportDefinitionPathString={props.reportDefinition.name}
                     reportSectionPath={["definition", "section"]}
+                    reportName={reportName}
                   />
                 </>
               </Formik>

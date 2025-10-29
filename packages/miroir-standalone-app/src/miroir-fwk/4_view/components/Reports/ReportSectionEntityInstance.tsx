@@ -122,11 +122,11 @@ export interface ReportSectionEntityInstanceProps {
   entityUuidDEFUNCT: Uuid,
   // 
   formikAlreadyAvailable?: boolean;
-  formValueMLSchema: JzodObject;
   formikValuePath: ( string | number )[],
-  formikReportDefinitionPathString?: string;
-  reportSectionDefinition?: ReportSection;
   reportSectionPath?: ( string | number )[],
+  formikReportDefinitionPathString?: string;
+  formValueMLSchema: JzodObject;
+  reportSectionDefinition?: ReportSection;
   // 
   // Note: Outline props removed since using context now
   showPerformanceDisplay?: boolean;
@@ -590,7 +590,6 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
             gridType={viewParams.gridType}
           />
         )}
-
         {/* <div>
           <label htmlFor="displayEditorSwitch">Display editor:</label>
           <ThemedSwitch
@@ -623,12 +622,12 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                     "report label"
                   )
                 : undefined) ??
-              currentReportTargetEntity?.name + " details: " + instance.name}{" "}
-            {props.zoomInPath && (
+              currentReportTargetEntity?.name + " details: " + instance.name}
+            {/* {props.zoomInPath && (
               <span style={{ fontSize: "0.8em", fontStyle: "italic", color: "#666" }}>
                 (viewing: {props.zoomInPath})
               </span>
-            )}
+            )} */}
           </ThemedTitle>
           <ThemedTooltip
             title={outlineContext.isOutlineOpen ? "Hide Document Outline" : "Show Document Outline"}
@@ -643,7 +642,6 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
             </ThemedIconButton>
           </ThemedTooltip>
         </ThemedHeaderSection>
-
         {/* Query Results Section - Collapsible */}
         {isQueryEntity && (
           <div
@@ -724,6 +722,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
             zoomInPath={props.zoomInPath}
             maxRenderDepth={Infinity} // Always render fully for editor
           />
+        ) : (
           // ) : (
           //   <div>
           //     {displayAsStructuredElement ? (
@@ -764,7 +763,6 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
           //     )}
           //   </div>
           // )
-        ) : (
           <div>
             Oops, ReportSectionEntityInstance could not be displayed.
             <p />

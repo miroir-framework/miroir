@@ -59,6 +59,7 @@ export interface ReportSectionViewPropsBase {
   formValueMLSchema: JzodObject;
   formikReportDefinitionPathString: string;
   reportSectionPath: ( string | number )[],
+  reportName: string,
   // 
   isOutlineOpen?: boolean,
   onToggleOutline?: () => void,
@@ -310,18 +311,39 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
   // For grid/list sections, recurse using this wrapper so editor props propagate
   if (reportSectionDefinitionFromFormik?.type === 'grid') {
     return (
-      <div style={{ position: 'relative' }}>
+      <div style={{ position: "relative" }}>
         {/* {props.editMode && <IconBar />} */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', width: '100%' }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "16px", width: "100%" }}>
           {reportSectionDefinitionFromFormik?.definition.map((row, rowIndex) => (
-            <div key={`row-${rowIndex}`} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 400px), 1fr))', gap: '16px', width: '100%' }}>
+            <div
+              key={`row-${rowIndex}`}
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 400px), 1fr))",
+                gap: "16px",
+                width: "100%",
+              }}
+            >
               {row.map((innerReportSection, colIndex) => (
-                <div key={`${rowIndex}-${colIndex}`} style={{ minWidth: 0, display: 'flex', flexDirection: 'column', position: 'relative' }}>
+                <div
+                  key={`${rowIndex}-${colIndex}`}
+                  style={{
+                    minWidth: 0,
+                    display: "flex",
+                    flexDirection: "column",
+                    position: "relative",
+                  }}
+                >
                   <ReportSectionViewWithEditor
                     {...props}
                     reportSectionDEFUNCT={innerReportSection}
                     // sectionPath={(props.sectionPath ?? '') + `/definition[${rowIndex}][${colIndex}]`}
-                    reportSectionPath={[...(props.reportSectionPath ?? []),"definition",rowIndex,colIndex]}
+                    reportSectionPath={[
+                      ...(props.reportSectionPath ?? []),
+                      "definition",
+                      rowIndex,
+                      colIndex,
+                    ]}
                   />
                 </div>
               ))}
@@ -332,19 +354,19 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
     );
   }
 
-  if (reportSectionDefinitionFromFormik?.type === 'list') {
+  if (reportSectionDefinitionFromFormik?.type === "list") {
     return (
       <>
-      {/* <span>ReportSectionViewEditor list</span> */}
-        <div style={{ position: 'relative' }}>
+        {/* <span>ReportSectionViewEditor list</span> */}
+        <div style={{ position: "relative" }}>
           {/* {props.editMode && <IconBar />} */}
           {reportSectionDefinitionFromFormik?.definition.map((innerReportSection, index) => (
-            <div key={index} style={{ marginBottom: '2em', position: 'relative' }}>
+            <div key={index} style={{ marginBottom: "2em", position: "relative" }}>
               <ReportSectionViewWithEditor
                 {...props}
                 reportSectionDEFUNCT={innerReportSection}
                 // sectionPath={(props.sectionPath ?? '') + `/definition[${index}]`}
-                reportSectionPath={[...(props.reportSectionPath ?? []),"definition", index]}
+                reportSectionPath={[...(props.reportSectionPath ?? []), "definition", index]}
               />
             </div>
           ))}
@@ -406,9 +428,9 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
               entityUuidDEFUNCT={reportSectionDefinitionFromFormik.definition.parentUuid} // entityUuid-based section display, independent of report section definition
               //
               formikValuePath={props.reportSectionPath}
-              formValueMLSchema={props.formValueMLSchema}
               formikReportDefinitionPathString={props.formikReportDefinitionPathString}
               reportSectionPath={props.reportSectionPath}
+              formValueMLSchema={props.formValueMLSchema}
               formikAlreadyAvailable={true}
             />
           </>
@@ -427,6 +449,10 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
         {/* {props.reportSectionDEFUNCT.type == "markdownReportSection" && ( */}
         {reportSectionDefinitionFromFormik?.type == "markdownReportSection" && (
           <ReportSectionMarkdown
+            reportName={props.reportName}
+            formikValuePath={props.reportSectionPath}
+            formikReportDefinitionPathString={props.formikReportDefinitionPathString}
+            reportSectionPath={props.reportSectionPath}
             applicationSection={props.applicationSection}
             deploymentUuid={props.deploymentUuid}
             reportSection={{ ...reportSectionCurrentValueFromFormik, definition: activeDefinition }}

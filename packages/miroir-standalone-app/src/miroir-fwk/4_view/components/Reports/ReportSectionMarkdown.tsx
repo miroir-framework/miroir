@@ -8,6 +8,7 @@ import {
   ApplicationSection,
   LoggerInterface,
   MiroirLoggerFactory,
+  resolvePathOnObject,
   Uuid,
 } from "miroir-core";
 
@@ -25,6 +26,7 @@ import {
 } from "../Themes/index";
 import { MarkdownEditorModal } from './MarkdownEditorModal.js';
 import type { MarkdownReportSection } from 'miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js';
+import { useFormikContext } from 'formik';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -34,6 +36,11 @@ MiroirLoggerFactory.registerLoggerToStart(
 export interface ReportSectionMarkdownProps {
   applicationSection: ApplicationSection;
   deploymentUuid: Uuid;
+  reportName: string,
+  formikValuePath: ( string | number )[],
+  reportSectionPath?: ( string | number )[],
+  formikReportDefinitionPathString?: string;
+
   reportSection: MarkdownReportSection;
   label?: string;
   onEdit?: () => void;
@@ -43,16 +50,25 @@ export interface ReportSectionMarkdownProps {
 
 export const ReportSectionMarkdown = (props: ReportSectionMarkdownProps) => {
   const renderStartTime = performance.now();
-  
+  const formikContext = useFormikContext<any>();
+  const formikValuePathAsString = props.formikValuePath?.join("_") || "";
+
   // Modal state management
   const [isEditorOpen, setIsEditorOpen] = useState(false);
-          // markdownContent={
-          //   props.reportSection.definition.content
-          //   // props.reportSection.definition.fetchedDataReference
-          //   //   ? props.reportData.reportData[props.reportSection.definition.fetchedDataReference] ?? props.reportSection.definition.content ?? ""
-          //   //   : props.reportSection.definition.content ?? ""
-          // }
-  const [currentContent, setCurrentContent] = useState(props.reportSection.definition.content || "");
+  const reportDefinitionFromFormik = useMemo(() => {
+      return formikContext.values[props.reportName];
+  }, [formikContext.values, props.formikReportDefinitionPathString]);
+
+  const reportSectionDefinitionFromFormik = useMemo(() => {
+    if (reportDefinitionFromFormik && props.reportSectionPath) {
+      return resolvePathOnObject(
+        reportDefinitionFromFormik,
+        props.reportSectionPath
+      ) as MarkdownReportSection;
+    }
+    return undefined;
+  }, [reportDefinitionFromFormik, props.reportSectionPath]);
+  const [currentContent, setCurrentContent] = useState(reportSectionDefinitionFromFormik?.definition?.content || "");
   
   // Get navigation key for render tracking
   const navigationKey = `${props.deploymentUuid}-${props.applicationSection}`;
@@ -116,7 +132,8 @@ export const ReportSectionMarkdown = (props: ReportSectionMarkdownProps) => {
           marginBottom: '16px',
         }}
       >
-        <span>ReportSectionMarkdown! {JSON.stringify(currentContent)}</span>
+        {/* <span>ReportSectionMarkdown! {JSON.stringify(currentContent)}</span> */}
+        <span>reportSectionDefinitionFromFormik! {JSON.stringify(reportSectionDefinitionFromFormik)}</span>
       {/* Performance display (optional) */}
       {props.showPerformanceDisplay && (
         <ThemedText>
@@ -164,6 +181,10 @@ export const ReportSectionMarkdown = (props: ReportSectionMarkdownProps) => {
           }}
           className="markdown-content"
         >
+          props.onEdit: {props.onEdit ? "true" : "false"} <br/>
+          props.onSave: {props.onSave ? "true" : "false"} <br/>
+          isEditorOpen: {isEditorOpen ? "true" : "false"} <br/>
+          formikValuePathAsString: {formikValuePathAsString} <br/>
           <ReactMarkdown
             remarkPlugins={[remarkGfm]}
             rehypePlugins={[rehypeSanitize]}
