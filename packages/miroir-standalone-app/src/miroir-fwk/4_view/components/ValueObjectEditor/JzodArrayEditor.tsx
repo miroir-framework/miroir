@@ -328,17 +328,17 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
     formik.values[reportSectionPathAsString],
     rootLessListKeyArray
   );
-  log.info(
-    "############################################### JzodArrayEditor",
-    "rootLessListKey",
-    JSON.stringify(rootLessListKey),
-    "reportSectionPathAsString",
-    JSON.stringify(reportSectionPathAsString),
-    "values",
-    JSON.stringify(formik.values),
-    "currentValue",
-    currentValue,
-  );
+  // log.info(
+  //   "############################################### JzodArrayEditor",
+  //   "rootLessListKey",
+  //   JSON.stringify(rootLessListKey),
+  //   "reportSectionPathAsString",
+  //   JSON.stringify(reportSectionPathAsString),
+  //   "values",
+  //   JSON.stringify(formik.values),
+  //   "currentValue",
+  //   currentValue,
+  // );
 
   // log.info(
   //   "JzodArrayEditor render",

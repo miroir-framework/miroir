@@ -315,45 +315,46 @@ export const RootComponent = (props: RootComponentProps) => {
       }
     }
 
-    // Strategy 6: Fuzzy search through all IDs
-    if (!targetElement) {
-      console.log("Trying fuzzy search...");
-      const allElementsWithIds = document.querySelectorAll("[id]");
-      const ids = Array.from(allElementsWithIds)
-        .map((el) => ({
-          element: el as HTMLElement,
-          id: el.id,
-        }))
-        .filter((item) => item.id);
+    // // Strategy 6: Fuzzy search through all IDs
+    // if (!targetElement) {
+    //   console.log("Trying fuzzy search...");
+    //   const allElementsWithIds = document.querySelectorAll("[id]");
+    //   const ids = Array.from(allElementsWithIds)
+    //     .map((el) => ({
+    //       element: el as HTMLElement,
+    //       id: el.id,
+    //     }))
+    //     .filter((item) => item.id);
 
-      // Look for elements that contain most of the path parts
-      const pathWords = path.join(" ").toLowerCase().split(/\s+/);
-      let bestMatch: { element: HTMLElement; score: number } | null = null;
+    //   // Look for elements that contain most of the path parts
+    //   const pathWords = path.join(" ").toLowerCase().split(/\s+/);
+    //   let bestMatch: { element: HTMLElement; score: number } | null = null;
 
-      for (const { element, id } of ids) {
-        const idWords = id.toLowerCase().replace(/[._-]/g, " ").split(/\s+/);
-        let score = 0;
+    //   for (const { element, id } of ids) {
+    //     const idWords = id.toLowerCase().replace(/[._-]/g, " ").split(/\s+/);
+    //     let score = 0;
 
-        for (const pathWord of pathWords) {
-          if (pathWord.length > 2) {
-            // Only consider meaningful words
-            for (const idWord of idWords) {
-              if (idWord.includes(pathWord) || pathWord.includes(idWord)) {
-                score++;
-              }
-            }
-          }
+    //     for (const pathWord of pathWords) {
+    //       if (pathWord.length > 2) {
+    //         // Only consider meaningful words
+    //         for (const idWord of idWords) {
+    //           if (idWord.includes(pathWord) || pathWord.includes(idWord)) {
+    //             score++;
+    //           }
+    //         }
+    //       }
 
-          if (score > 0 && (!bestMatch || score > bestMatch.score)) {
-            bestMatch = { element, score };
-          }
-        }
+    //       if (score > 0 && (!bestMatch || score > bestMatch.score)) {
+    //         bestMatch = { element, score };
+    //       }
+    //     }
 
-        if (bestMatch && bestMatch.score >= 2)
-          // Require at least 2 word matches
-          targetElement = bestMatch.element;
-      }
-    }
+    //     if (bestMatch && bestMatch.score >= 2)
+    //       // Require at least 2 word matches
+    //       targetElement = bestMatch.element;
+    //   }
+    // }
+
     if (targetElement) {
       // Clear any existing highlight and timeout
       if (highlightTimeoutRef.current) {

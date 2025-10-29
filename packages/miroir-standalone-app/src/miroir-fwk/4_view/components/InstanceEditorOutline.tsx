@@ -28,12 +28,10 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { packageName } from '../../../constants.js';
 import { cleanLevel } from '../constants.js';
 import { useMiroirTheme } from '../contexts/MiroirThemeContext.js';
-import { useMiroirContext, useMiroirContextService } from '../MiroirContextReactProvider.js';
-import { getFoldedDisplayValue } from './ValueObjectEditor/JzodElementEditorHooks.js';
+import { useMiroirContextService } from '../MiroirContextReactProvider.js';
+import { exclusivelyUnfoldPath } from './Reports/FoldedStateTreeUtils.js';
 import { useDocumentOutlineContext } from './ValueObjectEditor/InstanceEditorOutlineContext.js';
-import { useReportPageContext } from './Reports/ReportPageContext.js';
-import { exclusivelyUnfoldPath, setNodeFolded } from './Reports/FoldedStateTreeUtils.js';
-import { report } from 'process';
+import { getFoldedDisplayValue } from './ValueObjectEditor/JzodElementEditorHooks.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -220,12 +218,19 @@ const TreeNodeComponent:React.FC<{
   }, [node.id, hasChildren, onToggleExpand]);
 
   const handleDoubleClick = useCallback(() => {
-    log.info("Outline: Node double-clicked:", node, outlineContext.reportInstance);
+    // const pathToUnfold = node.path.slice(1); // Remove the root key for unfolding
+    // const pathToUnfold = node.path; // Remove the root key for unfolding
+    log.info(
+      "Outline: Node double-clicked, exclusively unfolding path",
+      node.path,
+      "for instance:",
+      outlineContext.reportInstance
+    );
     if (context.setFoldedObjectAttributeOrArrayItems) {
       const newFoldedObjectAttributeOrArrayItems = exclusivelyUnfoldPath(
       {},
       outlineContext.reportInstance,
-      node.path.slice(1)
+      node.path
       );
       log.info("Outline: New foldedObjectAttributeOrArrayItems state after double-click:", newFoldedObjectAttributeOrArrayItems);
       context.setFoldedObjectAttributeOrArrayItems(newFoldedObjectAttributeOrArrayItems);
@@ -328,7 +333,7 @@ const TreeNodeComponent:React.FC<{
 // ################################################################################################
 // Main Document Outline component - optimized with React.memo
 // export const InstanceEditorOutline = React.memo<DocumentOutlineProps>(({
-export const InstanceEditorOutline = React.memo<DocumentOutlineProps>(({
+export const InstanceEditorOutline: React.FC<DocumentOutlineProps> = ({
   isOpen,
   onToggle,
   // data,
@@ -339,12 +344,11 @@ export const InstanceEditorOutline = React.memo<DocumentOutlineProps>(({
   minWidth = 200,
   maxWidth = 600,
   onWidthChange,
-}) => {
+})  => {
   const miroirTheme = useMiroirTheme();
-  // const context = useMiroirContextService();
   const outlineContext = useDocumentOutlineContext();
-  // const [outlineData, setOutlineData] = useState<any>(null);
-  // const [outlineTitle, setOutlineTitle] = useState<string>("Document Structure");
+  // const rootObjectKey=Object.keys(outlineContext.outlineData || {})[0] || "";
+  const rootObjectKey=Object.keys(outlineContext.reportInstance || {})[0] || "";
    
   const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set());
   const [selectedPath, setSelectedPath] = useState<string>('');
@@ -352,22 +356,30 @@ export const InstanceEditorOutline = React.memo<DocumentOutlineProps>(({
   const [isResizing, setIsResizing] = useState(false);
   const resizeRef = useRef<HTMLDivElement>(null);
   const drawerRef = useRef<HTMLDivElement>(null);
-  const rootObjectKey=Object.keys(outlineContext.outlineData || {})[0] || "";
 
   // Build tree structure from data with stable reference
   const treeNodes = useMemo(() => {
     try {
-      // log.info("Outline: ##############################################################");
-      // log.info("Outline: ##############################################################");
-      // log.info("Outline: ##############################################################");
-      // log.info("Outline: ##############################################################");
-      // log.info("Outline: Rebuilding tree structure from data:", data);
-      return buildTreeFromObject(outlineContext.outlineData, [], rootObjectKey, 0, 10, outlineContext.typeCheckKeyMap);
+      log.info("Outline: ##############################################################");
+      log.info("Outline: ##############################################################");
+      log.info("Outline: ##############################################################");
+      log.info("Outline: ##############################################################");
+      log.info(
+        "Outline: Rebuilding tree structure from data:",
+        "outlineContext.reportInstance",
+        outlineContext.reportInstance,
+        "rootObjectKey:", rootObjectKey,
+        "typeCheckKeyMap:",
+        outlineContext.typeCheckKeyMap
+      );
+      // return buildTreeFromObject(outlineContext.outlineData, [], rootObjectKey, 0, 10, outlineContext.typeCheckKeyMap);
+      return buildTreeFromObject(outlineContext.reportInstance, [], rootObjectKey, 0, 10, outlineContext.typeCheckKeyMap);
     } catch (error) {
       console.error('Error building tree structure:', error);
       return [];
     }
-  }, [outlineContext.outlineData, rootObjectKey, outlineContext.typeCheckKeyMap]);
+  // }, [outlineContext.outlineData, rootObjectKey, outlineContext.typeCheckKeyMap]);
+  }, [outlineContext.reportInstance, rootObjectKey, outlineContext.typeCheckKeyMap]);
 
   // log.info("Outline: Built tree structure treeNodes:", treeNodes);
   // Initialize expanded nodes based on auto-expand logic - optimized
@@ -612,6 +624,24 @@ export const InstanceEditorOutline = React.memo<DocumentOutlineProps>(({
         <Divider sx={{ backgroundColor: miroirTheme.currentTheme.colors.divider }} />
       </Box>
       
+      {/* {outlineContext.reportInstance && (
+        <Box sx={{ padding: 1, backgroundColor: miroirTheme.currentTheme.colors.surface }}>
+          <Typography
+            variant="body2"
+            sx={{
+              fontSize: '0.875rem',
+              color: miroirTheme.currentTheme.colors.textSecondary,
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+            }}
+            title={JSON.stringify(outlineContext.reportInstance)}
+          >
+            Instance ID: {outlineContext.reportInstance.uuid || '<no uuid>'}
+          </Typography>
+        </Box>
+      )} */}
+
       <List dense sx={{ flexGrow: 1, overflow: 'hidden', backgroundColor: miroirTheme.currentTheme.colors.surface }}>
         {treeNodes.map((node) => (
           <TreeNodeComponent
@@ -637,6 +667,6 @@ export const InstanceEditorOutline = React.memo<DocumentOutlineProps>(({
       )}
     </Drawer>
   );
-});
+};
 
 export default InstanceEditorOutline;

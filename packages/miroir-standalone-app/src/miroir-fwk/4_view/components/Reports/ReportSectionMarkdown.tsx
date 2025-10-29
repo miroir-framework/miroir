@@ -205,8 +205,7 @@ export const ReportSectionMarkdown = (props: ReportSectionMarkdownProps) => {
           marginBottom: '16px',
         }}
       >
-        {/* <span>ReportSectionMarkdown! {JSON.stringify(currentContent)}</span> */}
-        <span>reportSectionDefinitionFromFormik! {JSON.stringify(reportSectionDefinitionFromFormik)}</span>
+        {/* <span>reportSectionDefinitionFromFormik! {JSON.stringify(reportSectionDefinitionFromFormik)}</span> */}
       {/* Performance display (optional) */}
       {props.showPerformanceDisplay && (
         <ThemedText>
@@ -254,10 +253,10 @@ export const ReportSectionMarkdown = (props: ReportSectionMarkdownProps) => {
           }}
           className="markdown-content"
         >
-          props.onEdit: {props.onEdit ? "true" : "false"} <br/>
+          {/* props.onEdit: {props.onEdit ? "true" : "false"} <br/>
           props.onSave: {props.onSave ? "true" : "false"} <br/>
           isEditorOpen: {isEditorOpen ? "true" : "false"} <br/>
-          formikValuePathAsString: {formikValuePathAsString} <br/>
+          formikValuePathAsString: {formikValuePathAsString} <br/> */}
           <ReactMarkdown
             remarkPlugins={[remarkGfm]}
             rehypePlugins={[rehypeSanitize]}

@@ -270,7 +270,9 @@ export function exclusivelyUnfoldPath(
     const segment = String(path[i]);
     // At each level, fold all siblings except the current segment
     if (currentObject && typeof currentObject === "object") {
-      const siblingKeys = Object.keys(currentObject).filter(k => k !== segment).filter(k => typeof currentObject[k] === "object"); // object or array only
+      const siblingKeys = Object.keys(currentObject)
+        .filter((k) => k !== segment)
+        .filter((k) => typeof currentObject[k] === "object"); // object or array only
       for (const sibling of siblingKeys) {
         newTree = setNodeFolded(newTree, path.slice(0, i).concat(sibling), "fold");
       }

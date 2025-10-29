@@ -1,7 +1,15 @@
+import { MiroirLoggerFactory, type KeyMapEntry, type LoggerInterface } from "miroir-core";
 import { createContext, useContext, useMemo, useState } from "react";
-import { FoldedStateTree } from "../Reports/FoldedStateTreeUtils";
-import type { KeyMapEntry } from "miroir-core";
+import { packageName } from "../../../../constants";
+import { cleanLevel } from "../../constants";
 import { useMiroirContextService } from "../../MiroirContextReactProvider";
+
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "InstanceEditorOutlineContext"), "UI",
+).then((logger: LoggerInterface) => {
+  log = logger;
+});
 
 // Document Outline Context
 export interface DocumentOutlineContextType {
@@ -63,6 +71,7 @@ export const useDocumentOutlineContext = () => {
   return context;
 };
 
+let count = 0;
 // ################################################################################################
 export function DocumentOutlineContextProvider(props: {
   // value: DocumentOutlineContextType;
@@ -73,7 +82,7 @@ export function DocumentOutlineContextProvider(props: {
 }) {
   // const [setFoldedObjectAttributeOrArrayItems, setSetFoldedObjectAttributeOrArrayItems] =
   //   useState<React.Dispatch<React.SetStateAction<FoldedStateTree>>>();
-
+  ++count;
   const [outlineData, setOutlineData] = useState<any>(null);
   const [reportInstance, setReportInstance] = useState<any>(null);
   const [outlineTitle, setOutlineTitle] = useState<string>("Document Outline");
@@ -126,6 +135,8 @@ export function DocumentOutlineContextProvider(props: {
       setTypeCheckKeyMap,
     ]
   );
+
+  // log.info("DocumentOutlineContextProvider render: reportInstance:", reportInstance);
 
   return (
     // <DocumentOutlineContext.Provider value={props.value}>

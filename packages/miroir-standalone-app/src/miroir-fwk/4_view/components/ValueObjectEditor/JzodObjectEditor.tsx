@@ -1019,6 +1019,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
   return (
     <div id={rootLessListKey} key={rootLessListKey}>
       {/* <span>JzodObjectEditor: {count}</span> */}
+      {/* {props.isTopLevel?JSON.stringify(reportContext.foldedObjectAttributeOrArrayItems):""} */}
       <div>
         {/* Performance statistics */}
         <ThemedFlexRow justify="start" align="center">

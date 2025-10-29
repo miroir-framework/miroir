@@ -13,16 +13,11 @@ import {
   adminConfigurationDeploymentAdmin,
   adminConfigurationDeploymentLibrary,
   adminConfigurationDeploymentMiroir,
-  SelfApplicationDeploymentConfiguration,
   ApplicationSection,
   // adminConfigurationDeploymentTest1,
   defaultMiroirMetaModel,
+  defaultMiroirModelEnvironment,
   DomainControllerInterface,
-  entityAuthor,
-  entityBook,
-  entityDefinitionAuthor,
-  entityDefinitionBook,
-  EntityInstance,
   getReportsAndEntitiesDefinitionsForDeploymentUuid,
   LoggerInterface,
   MetaModel,
@@ -32,8 +27,8 @@ import {
   reportEntityDefinitionList,
   reportEntityDetails,
   reportEntityList,
-  reportReportList,
-  resetAndInitApplicationDeployment
+  resetAndInitApplicationDeployment,
+  SelfApplicationDeploymentConfiguration
 } from "miroir-core";
 import { ReduxStateChanges } from "miroir-localcache-redux";
 
@@ -57,8 +52,6 @@ import {
   selfApplicationParis,
 } from "../../../constants.js";
 import { cleanLevel } from "../constants.js";
-import { EndpointActionCaller } from "../components/EndpointActionCaller.js";
-import { ReportViewWithEditor } from "../components/Reports/ReportViewWithEditor.js";
 
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -72,11 +65,23 @@ export interface RootComponentProps {
   // reportName: string;
 }
 
-function defaultToEntityList(value: string | undefined, miroirReports: Report[]): string | undefined {
-  return value ? (value as string) : miroirReports.find((r) => r.name == "EntityList") ? "EntityList" : undefined;
+function defaultToEntityList(
+  value: string | undefined,
+  miroirReports: Report[]
+): string | undefined {
+  return value
+    ? (value as string)
+    : miroirReports.find((r) => r.name == "EntityList")
+    ? "EntityList"
+    : undefined;
 }
 
-const metaModelReports = [reportEntityList.uuid, reportEntityDefinitionList.uuid, reportEntityDetails.uuid, reportEntityDefinitionDetails.uuid];
+const metaModelReports = [
+  reportEntityList.uuid,
+  reportEntityDefinitionList.uuid,
+  reportEntityDetails.uuid,
+  reportEntityDefinitionDetails.uuid,
+];
 
 
 
@@ -275,7 +280,7 @@ export const HomePage = (props: RootComponentProps) => {
               actionName: "undo",
               endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
               deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
-            }, defaultMiroirMetaModel);
+            }, defaultMiroirModelEnvironment);
           }}
         >
           undo
@@ -290,7 +295,7 @@ export const HomePage = (props: RootComponentProps) => {
               actionName: "redo",
               endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
               deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
-            }, defaultMiroirMetaModel);
+            }, defaultMiroirModelEnvironment);
           }}
         >
           Redo
@@ -341,7 +346,7 @@ export const HomePage = (props: RootComponentProps) => {
               actionType: "rollback",
               endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
               deploymentUuid: adminConfigurationDeploymentMiroir.uuid,
-            }, defaultMiroirMetaModel);
+            }, defaultMiroirModelEnvironment);
           }}
         >
           Rollback
@@ -370,7 +375,7 @@ export const HomePage = (props: RootComponentProps) => {
               actionType: "resetData",
               endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
               deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-            }, defaultMiroirMetaModel);
+            }, defaultMiroirModelEnvironment);
             log.info(
               "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ RESETDATA FOR LIBRARY APPLICATION DONE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
             );
@@ -379,7 +384,7 @@ export const HomePage = (props: RootComponentProps) => {
               actionType: "rollback",
               endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
               deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-            }, defaultMiroirMetaModel);
+            }, defaultMiroirModelEnvironment);
           }}
         >
           Reset Library SelfApplication Data

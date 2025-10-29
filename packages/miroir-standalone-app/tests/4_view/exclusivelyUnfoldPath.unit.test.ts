@@ -4,6 +4,7 @@ import { exclusivelyUnfoldPath, isNodeFolded, type FoldedStateTree } from '../..
 describe('exclusivelyUnfoldPath', () => {
   // TODO: return error when path does not exist in object
 
+  // ##############################################################################################
   it('unfolds a path in an empty tree', () => {
     const tree: FoldedStateTree = {};
     const object = { ROOT: { level1: { level2: { data: 'value' } } } };
@@ -13,6 +14,7 @@ describe('exclusivelyUnfoldPath', () => {
     expect(isNodeFolded(result, ['ROOT', 'level1', 'level2'])).toBe(false);
   });
 
+  // ##############################################################################################
   it('folds all siblings at each level', () => {
     const tree: FoldedStateTree = {};
     const object = { 
@@ -32,6 +34,7 @@ describe('exclusivelyUnfoldPath', () => {
     expect((result as any).ROOT.branch2).toBe('folded');
   });
 
+  // ##############################################################################################
   it('unfolds a deep path while folding all siblings', () => {
     const tree: FoldedStateTree = {};
     const object = { 
@@ -57,6 +60,7 @@ describe('exclusivelyUnfoldPath', () => {
     expect(isNodeFolded(result, ['ROOT', 'branch1', 'item1', 'subitem2'])).toBe(true);
   });
 
+  // ##############################################################################################
   it('handles already folded nodes in the tree', () => {
     let tree: FoldedStateTree = {
       ROOT: {
@@ -90,6 +94,7 @@ describe('exclusivelyUnfoldPath', () => {
     expect(isNodeFolded(result, ['ROOT', 'branch1', 'item2'])).toBe(true);
   });
 
+  // ##############################################################################################
   it('preserves existing folded state for non-siblings', () => {
     const tree: FoldedStateTree = {
       ROOT: {
@@ -126,6 +131,7 @@ describe('exclusivelyUnfoldPath', () => {
     expect(isNodeFolded(result, ['ROOT', 'branch2', 'item2'])).toBe(false);
   });
 
+  // ##############################################################################################
   it('handles empty path', () => {
     const tree: FoldedStateTree = {
       ROOT: 'folded'
@@ -172,6 +178,7 @@ describe('exclusivelyUnfoldPath', () => {
   // //   expect(result.ROOT.branch1).toBeUndefined(); // No folding status for the target path
   // // });
 
+  // ##############################################################################################
   it('correctly maintains complex tree structures with multiple branches', () => {
     const tree: FoldedStateTree = {
       A: {

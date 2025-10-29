@@ -387,10 +387,16 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   // CALLS setOutlineTitle and setReportInstance
   useEffect(() => {
     if (currentReportTargetEntity?.name) {
+      // log.info(
+      //   "ReportSectionEntityInstance: setting outline title and report instance for entity:",
+      //   currentReportTargetEntity.name,
+      //   "instance:",
+      //   instance
+      // );
       outlineContext.setOutlineTitle(currentReportTargetEntity.name + " details");
       outlineContext.setReportInstance(instance);
     }
-  }, [currentReportTargetEntity?.name, outlineContext.setOutlineTitle]);
+  }, [currentReportTargetEntity?.name, instance, outlineContext.setOutlineTitle]);
 
   const labelElement = useMemo(() => {
     return formLabel ? <ThemedLabel id={"label." + formLabel}>{formLabel}</ThemedLabel> : undefined;

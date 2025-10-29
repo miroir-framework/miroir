@@ -108,7 +108,7 @@ export function usePageConfiguration(
       hasFetchedRef.current = true;
       appConfigState.hasLoadedConfigurations = true;
       fetchConfigurations().catch((error) => {
-        console.error('Failed to auto-fetch configurations on mount:', error);
+        console.error("Failed to auto-fetch configurations on mount:", error);
         // Reset both local and global state so it can be retried
         hasFetchedRef.current = false;
         appConfigState.hasLoadedConfigurations = false;

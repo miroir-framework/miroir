@@ -637,6 +637,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
           return (
             <JzodObjectEditor
               name={props.name}
+              isTopLevel={props.isTopLevel}
               labelElement={props.labelElement}
               listKey={props.listKey}
               indentLevel={props.indentLevel + 1}
