@@ -1004,6 +1004,7 @@ export {
   stringTuple,
   mStringify,
   alterObjectAtPath,
+  alterObjectAtPath2,
   alterObjectAtPathWithCreate,
   cleanupObject,
   deleteObjectAtPath,

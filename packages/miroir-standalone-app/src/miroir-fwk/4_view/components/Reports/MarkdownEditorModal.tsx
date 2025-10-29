@@ -4,9 +4,15 @@ import remarkGfm from 'remark-gfm';
 import rehypeSanitize from 'rehype-sanitize';
 
 import {
+  alterObjectAtPath2,
+  alterObjectAtPathWithCreate,
   ApplicationSection,
+  defaultMiroirModelEnvironment,
+  getApplicationSection,
   LoggerInterface,
   MiroirLoggerFactory,
+  resolvePathOnObject,
+  setValueAtPath,
   Uuid,
 } from "miroir-core";
 
@@ -20,6 +26,9 @@ import {
 import { packageName } from '../../../../constants.js';
 import { cleanLevel } from '../../constants.js';
 import { useMiroirTheme } from '../../contexts/MiroirThemeContext.js';
+import { useFormikContext } from 'formik';
+import type { MarkdownReportSection } from 'miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js';
+import { useDomainControllerService } from '../../MiroirContextReactProvider.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -28,6 +37,12 @@ MiroirLoggerFactory.registerLoggerToStart(
 
 // ################################################################################################
 export interface MarkdownEditorModalProps {
+  reportName: string,
+  formikValuePath: ( string | number )[],
+  reportSectionPath?: ( string | number )[],
+  formikReportDefinitionPathString?: string;
+
+  // 
   isOpen: boolean;
   initialContent: string;
   onSave: (content: string) => void;
@@ -54,10 +69,34 @@ const MARKDOWN_HELP = `
 // ################################################################################################
 export const MarkdownEditorModal: React.FC<MarkdownEditorModalProps> = (props) => {
   const { currentTheme } = useMiroirTheme();
-  const [editedContent, setEditedContent] = useState<string>(props.initialContent);
   const [showHelp, setShowHelp] = useState<boolean>(false);
 
+  const domainController = useDomainControllerService(); 
+
+  // formik context
+  const formikContext = useFormikContext<any>();
+  const formikValuePathAsString = props.formikValuePath?.join("_") || "";
+  
+  const formikReportSectionDefinitionPathString = [props.reportName, ...props.reportSectionPath || [], "definition"].join(".");
+
+  const reportDefinitionFromFormik = useMemo(() => {
+    return formikContext.values[props.reportName];
+  }, [formikContext.values, props.formikReportDefinitionPathString]);
+  
+  const reportSectionDefinitionFromFormik = useMemo(() => {
+    if (reportDefinitionFromFormik && props.reportSectionPath) {
+      return resolvePathOnObject(
+        reportDefinitionFromFormik,
+        props.reportSectionPath
+      ) as MarkdownReportSection;
+    }
+    return undefined;
+  }, [reportDefinitionFromFormik, props.reportSectionPath]);
+  
   log.info("MarkdownEditorModal render", "isOpen", props.isOpen, "initialContent length", props.initialContent.length);
+  
+  // local state for edited content. TODO: is it necessary to have local state here? Why not use the formik context directly?
+  const [editedContent, setEditedContent] = useState<string>(props.initialContent);
 
   // Reset edited content when modal opens/closes or initial content changes
   useMemo(() => {
@@ -70,8 +109,64 @@ export const MarkdownEditorModal: React.FC<MarkdownEditorModalProps> = (props) =
     setEditedContent(event.target.value);
   }, []);
 
-  const handleSave = useCallback(() => {
-    log.info("MarkdownEditorModal handleSave", "content length", editedContent.length);
+  const handleSave = useCallback(async () => {
+    // props.onSave(editedContent);
+    // formikContext.setFieldValue(
+    const newReportDefinition = alterObjectAtPath2( // does a deep clone
+      reportDefinitionFromFormik,
+      // ["definition", "section", "definition", 0, "definition", "content"].join("."),
+      ["definition", "section", "definition", 0, "definition", "content"],
+      editedContent
+    );
+    // const newReportDefinition = {
+    //   ...reportDefinitionFromFormik,
+    //   definition:{
+    //     ...reportDefinitionFromFormik?.definition,
+    //     section: {
+    //       ...reportDefinitionFromFormik?.definition.section,
+    //       definition : [
+    //         {
+    //           "type": "markdownReportSection",
+    //           "definition": {
+    //             "label": "Toto",
+    //             "content": editedContent,
+    //           }
+    //         },
+    //         reportDefinitionFromFormik?.definition.section.definition[1]
+    //       ],
+    //     }
+    //   }
+    // };
+    log.info("MarkdownEditorModal handleSave", 
+      "reportDefinitionFromFormik", reportDefinitionFromFormik,
+      // "reportSectionDefinitionFromFormik", reportSectionDefinitionFromFormik,
+      "content length", editedContent.length,
+      "editedContent", JSON.stringify(editedContent),
+      "newReportDefinition", newReportDefinition,
+    );
+
+    await domainController.handleAction(
+      {
+        actionType: "transactionalInstanceAction",
+        instanceAction: {
+          actionType: "updateInstance",
+          deploymentUuid: props.deploymentUuid,
+          endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+          payload: {
+            applicationSection: "model",
+            objects: [
+              {
+                parentName: newReportDefinition.name,
+                parentUuid: newReportDefinition.parentUuid,
+                applicationSection: getApplicationSection(props.deploymentUuid, newReportDefinition.parentUuid),
+                instances: [newReportDefinition],
+              },
+            ],
+          },
+        },
+      },
+      defaultMiroirModelEnvironment // TODO: use correct model environment
+    );
     props.onSave(editedContent);
   }, [editedContent, props]);
 

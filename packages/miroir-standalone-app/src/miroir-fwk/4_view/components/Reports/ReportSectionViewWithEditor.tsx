@@ -67,10 +67,10 @@ export interface ReportSectionViewPropsBase {
 }
 
 export interface ReportSectionViewWithEditorProps extends ReportSectionViewPropsBase {
-  editMode?: boolean,
+  editMode: boolean,
   onSectionEdit?: (path: string, newDefinition: ReportSection) => void,
   onSectionCancel?: (path: string) => void,
-  isSectionModified?: boolean,
+  // isSectionModified?: boolean,
 }
 
 // ################################################################################################
@@ -108,6 +108,8 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
       : undefined;
   ;
 
+  const formikReportSectionDefinitionPathString = [props.formikReportDefinitionPathString, ...(props.reportSectionPath ?? [])].join(".");
+
   const reportSectionDefinitionFromFormik: ReportSection | undefined =
     formik.values &&
     props.formikReportDefinitionPathString &&
@@ -124,7 +126,7 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
   const reportSectionCurrentValueFromFormik: any = formik.values && props.formikReportDefinitionPathString
     ? formik.values[props.formikReportDefinitionPathString]
     : undefined;
-  
+
   const currentNavigationKey = `${props.deploymentUuid}-${props.applicationSection}-${props.reportSectionPath ?? 'root'}`;
   const { navigationCount, totalCount } = useRenderTracker("ReportSectionViewWithEditor", currentNavigationKey);
 
@@ -137,9 +139,9 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
     props
   );
 
-  const [isEditing, setIsEditing] = useState(false);
-  const [localEditedDefinition, setLocalEditedDefinition] = useState<any | undefined>(undefined);
-  const [hasValidationErrors, setHasValidationErrors] = useState(false);
+  // const [isEditing, setIsEditing] = useState(false);
+  // // const [localEditedDefinition, setLocalEditedDefinition] = useState<any | undefined>(undefined);
+  // const [hasValidationErrors, setHasValidationErrors] = useState(false);
 
   const displayedDeploymentDefinition: SelfApplicationDeploymentConfiguration | undefined = deployments.find(
     (d) => d.uuid == props.deploymentUuid
@@ -181,66 +183,71 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
         ]
       : undefined;
 
-  // helper to get active definition (if editing locally)
-  const activeDefinition = isEditing && localEditedDefinition !== undefined ? localEditedDefinition : props.reportSectionDEFUNCT.definition;
+  // // helper to get active definition (if editing locally)
+  // const activeDefinitionDEFUNCT =
+  //   isEditing && localEditedDefinition !== undefined
+  //     ? localEditedDefinition
+  //     : props.reportSectionDEFUNCT.definition;
 
   // Render icon bar (edit/save/cancel)
-  const IconBar = () => (
-    <div style={{ position: "absolute", top: 6, right: 6, zIndex: 10, display: "flex", gap: 6 }}>
-      {!isEditing && props.editMode && (
-        <ThemedIconButton
-          title={props.isSectionModified ? "Section modified" : "Edit section"}
-          onClick={() => {
-            setLocalEditedDefinition(props.reportSectionDEFUNCT.definition);
-            setIsEditing(true);
-          }}
-        >
-          <EditIcon style={{ color: props.isSectionModified ? "darkred" : "grey" }} />
-        </ThemedIconButton>
-      )}
-      {isEditing && (
-        <>
-          <ThemedIconButton
-            title={hasValidationErrors ? "Cannot save - validation errors present" : "Save section"}
-            onClick={() => {
-              if (hasValidationErrors) {
-                log.info("Save blocked due to validation errors");
-                return;
-              }
-              try {
-                const newDef = localEditedDefinition ?? props.reportSectionDEFUNCT.definition;
-                props.onSectionEdit &&
-                  // props.onSectionEdit(props.sectionPath ?? "", {
-                  props.onSectionEdit(props.reportSectionPath?.join(".") ?? "", {
-                    ...props.reportSectionDEFUNCT,
-                    definition: newDef,
-                  });
-                setIsEditing(false);
-                setLocalEditedDefinition(undefined);
-                setHasValidationErrors(false);
-              } catch (e) {
-                log.info("Save failed", e);
-              }
-            }}
-            disabled={hasValidationErrors}
-          >
-            <SaveIcon style={{ color: hasValidationErrors ? "grey" : "green" }} />
-          </ThemedIconButton>
-          <ThemedIconButton
-            title="Cancel"
-            onClick={() => {
-              setIsEditing(false);
-              setLocalEditedDefinition(undefined);
-              setHasValidationErrors(false);
-              props.onSectionCancel && props.onSectionCancel(props.reportSectionPath?.join(".") ?? "");
-            }}
-          >
-            <CloseIcon />
-          </ThemedIconButton>
-        </>
-      )}
-    </div>
-  );
+  // const IconBar = () => (
+  //   <div style={{ position: "absolute", top: 6, right: 6, zIndex: 10, display: "flex", gap: 6 }}>
+  //     {!isEditing && props.editMode && (
+  //       <ThemedIconButton
+  //         title={props.isSectionModified ? "Section modified" : "Edit section"}
+  //         onClick={() => {
+  //           // setLocalEditedDefinition(props.reportSectionDEFUNCT.definition);
+  //           formik.setFieldValue(formikReportSectionDefinitionPathString)
+  //           setIsEditing(true);
+  //         }}
+  //       >
+  //         <EditIcon style={{ color: props.isSectionModified ? "darkred" : "grey" }} />
+  //       </ThemedIconButton>
+  //     )}
+  //     {isEditing && (
+  //       <>
+  //         <ThemedIconButton
+  //           title={hasValidationErrors ? "Cannot save - validation errors present" : "Save section"}
+  //           onClick={() => {
+  //             if (hasValidationErrors) {
+  //               log.info("Save blocked due to validation errors");
+  //               return;
+  //             }
+  //             try {
+  //               const newDef = localEditedDefinition ?? props.reportSectionDEFUNCT.definition;
+  //               props.onSectionEdit &&
+  //                 // props.onSectionEdit(props.sectionPath ?? "", {
+  //                 props.onSectionEdit(props.reportSectionPath?.join(".") ?? "", {
+  //                   // ...props.reportSectionDEFUNCT,
+  //                   ...localEditedDefinition,
+  //                   definition: newDef,
+  //                 });
+  //               setIsEditing(false);
+  //               setLocalEditedDefinition(undefined);
+  //               setHasValidationErrors(false);
+  //             } catch (e) {
+  //               log.info("Save failed", e);
+  //             }
+  //           }}
+  //           disabled={hasValidationErrors}
+  //         >
+  //           <SaveIcon style={{ color: hasValidationErrors ? "grey" : "green" }} />
+  //         </ThemedIconButton>
+  //         <ThemedIconButton
+  //           title="Cancel"
+  //           onClick={() => {
+  //             setIsEditing(false);
+  //             setLocalEditedDefinition(undefined);
+  //             setHasValidationErrors(false);
+  //             props.onSectionCancel && props.onSectionCancel(props.reportSectionPath?.join(".") ?? "");
+  //           }}
+  //         >
+  //           <CloseIcon />
+  //         </ThemedIconButton>
+  //       </>
+  //     )}
+  //   </div>
+  // );
 
   // ##############################################################################################
   // FORMIK
@@ -381,7 +388,7 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
   return (
     <>
       <div style={{ position: "relative" }}>
-        {props.editMode && <IconBar />}
+        {/* {props.editMode && <IconBar />} */}
         {showPerformanceDisplay && (
           <ThemedText style={{ fontSize: "12px", opacity: 0.6 }}>
             ReportSectionViewWithEditor renders: {navigationCount} (total: {totalCount})
@@ -449,13 +456,14 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
         {/* {props.reportSectionDEFUNCT.type == "markdownReportSection" && ( */}
         {reportSectionDefinitionFromFormik?.type == "markdownReportSection" && (
           <ReportSectionMarkdown
+            editMode={props.editMode}
             reportName={props.reportName}
             formikValuePath={props.reportSectionPath}
             formikReportDefinitionPathString={props.formikReportDefinitionPathString}
             reportSectionPath={props.reportSectionPath}
             applicationSection={props.applicationSection}
             deploymentUuid={props.deploymentUuid}
-            reportSection={{ ...reportSectionCurrentValueFromFormik, definition: activeDefinition }}
+            // reportSectionDEFUNCT={{ ...reportSectionCurrentValueFromFormik, definition: activeDefinitionDEFUNCT }}
             label={reportSectionCurrentValueFromFormik.definition.label}
             showPerformanceDisplay={props.showPerformanceDisplay}
           />

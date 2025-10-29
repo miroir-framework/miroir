@@ -434,6 +434,69 @@ export function deleteObjectAtPath(
 }
 
 
+// ################################################################################################
+/**
+ * Immutably replaces a value at a given path in an object/array structure.
+ * Similar to deleteObjectAtPath but sets a new value instead of deleting.
+ * 
+ * TODO: unit tests!
+ * TODO: consider using immutable libraries (immutable, object-path-immutable, immer)
+ * 
+ * @param object - The object/array to modify
+ * @param path - Path to the value to replace
+ * @param value - New value to set at the path
+ * @returns A new object/array with the value replaced (non-mutating)
+ */
+export function alterObjectAtPath2(
+  object: any,
+  path: (string | number)[],
+  value: any,
+): any {
+  if (path.length === 0) return value;
+
+  const head = path[0];
+  const rest = path.slice(1);
+
+  // Terminal case: set value at this level
+  if (rest.length === 0) {
+    if (Array.isArray(object)) {
+      const idx = Number(head);
+      if (!Number.isInteger(idx) || idx < 0 || idx >= object.length) return object;
+      const newArr = object.slice();
+      newArr[idx] = value;
+      return newArr;
+    }
+    if (object && typeof object === "object") {
+      return { ...object, [String(head)]: value };
+    }
+    // Cannot set on primitive
+    return object;
+  }
+
+  // Non-terminal: descend preserving structure
+  if (Array.isArray(object)) {
+    const idx = Number(head);
+    if (!Number.isInteger(idx) || idx < 0 || idx >= object.length) return object;
+    const current = object[idx];
+    const mutated = alterObjectAtPath2(current, rest, value);
+    if (mutated === current) return object;
+    const newArr = object.slice();
+    newArr[idx] = mutated;
+    return newArr;
+  }
+
+  if (object && typeof object === "object") {
+    const key = String(head);
+    const current = object[key];
+    const mutated = alterObjectAtPath2(current, rest, value);
+    if (mutated === current) return object;
+    return { ...object, [key]: mutated };
+  }
+
+  // Primitive or non-object encountered, cannot descend
+  return object;
+}
+
 // ###############################################################################################################
 // ###############################################################################################################
 // For ReportSectionView

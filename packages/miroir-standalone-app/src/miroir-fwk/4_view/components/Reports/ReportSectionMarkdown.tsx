@@ -37,11 +37,12 @@ export interface ReportSectionMarkdownProps {
   applicationSection: ApplicationSection;
   deploymentUuid: Uuid;
   reportName: string,
+  formikReportDefinitionPathString?: string; // duplicates reportName?
   formikValuePath: ( string | number )[],
   reportSectionPath?: ( string | number )[],
-  formikReportDefinitionPathString?: string;
+  editMode: boolean,
 
-  reportSection: MarkdownReportSection;
+  reportSectionDEFUNCT?: MarkdownReportSection;
   label?: string;
   onEdit?: () => void;
   onSave?: (newContent: string) => void;
@@ -53,11 +54,9 @@ export const ReportSectionMarkdown = (props: ReportSectionMarkdownProps) => {
   const formikContext = useFormikContext<any>();
   const formikValuePathAsString = props.formikValuePath?.join("_") || "";
 
-  // Modal state management
-  const [isEditorOpen, setIsEditorOpen] = useState(false);
   const reportDefinitionFromFormik = useMemo(() => {
       return formikContext.values[props.reportName];
-  }, [formikContext.values, props.formikReportDefinitionPathString]);
+  }, [formikContext.values, props.reportName]);
 
   const reportSectionDefinitionFromFormik = useMemo(() => {
     if (reportDefinitionFromFormik && props.reportSectionPath) {
@@ -68,6 +67,8 @@ export const ReportSectionMarkdown = (props: ReportSectionMarkdownProps) => {
     }
     return undefined;
   }, [reportDefinitionFromFormik, props.reportSectionPath]);
+
+
   const [currentContent, setCurrentContent] = useState(reportSectionDefinitionFromFormik?.definition?.content || "");
   
   // Get navigation key for render tracking
@@ -86,6 +87,87 @@ export const ReportSectionMarkdown = (props: ReportSectionMarkdownProps) => {
     props
   );
 
+  // Memoize the markdown content to avoid unnecessary re-renders
+  const sanitizedMarkdown = useMemo(() => {
+    return currentContent || "";
+  }, [currentContent]);
+
+  const renderEndTime = performance.now();
+  const renderDuration = renderEndTime - renderStartTime;
+  
+  // Track performance
+  const componentKey = `ReportSectionMarkdown-${props.deploymentUuid}`;
+  RenderPerformanceMetrics.trackRenderPerformance(componentKey, renderDuration);
+
+  // ##############################################################################################
+  // ##############################################################################################
+  // ##############################################################################################
+  // EDIT MODE
+  // Modal state management
+  const [isEditorOpen, setIsEditorOpen] = useState(false);
+  // const [isEditing, setIsEditing] = useState(false);
+  const [isSectionModified, setIsSectionModified] = useState(false);
+  // const [localEditedDefinition, setLocalEditedDefinition] = useState<any | undefined>(undefined);
+  const [hasValidationErrors, setHasValidationErrors] = useState(false);
+  const IconBar = () => (
+    <div style={{ position: "absolute", top: 6, right: 6, zIndex: 10, display: "flex", gap: 6 }}>
+      {!isEditorOpen && props.editMode && (
+        <ThemedIconButton
+          // title={props.isSectionModified ? "Section modified" : "Edit section"}
+          title={isSectionModified ? "Section modified" : "Edit section"}
+          onClick={() => {
+            // setLocalEditedDefinition(props.reportSectionDEFUNCT.definition);
+            // formikContext.setFieldValue(formikReportSectionDefinitionPathString)
+            setIsEditorOpen(true);
+          }}
+        >
+          <EditIcon style={{ color: isSectionModified ? "darkred" : "grey" }} />
+        </ThemedIconButton>
+      )}
+      {/* {isEditing && (
+        <>
+          <ThemedIconButton
+            title={hasValidationErrors ? "Cannot save - validation errors present" : "Save section"}
+            onClick={() => {
+              if (hasValidationErrors) {
+                log.info("Save blocked due to validation errors");
+                return;
+              }
+              try {
+                const newDef = localEditedDefinition ?? props.reportSectionDEFUNCT.definition;
+                props.onSectionEdit &&
+                  // props.onSectionEdit(props.sectionPath ?? "", {
+                  props.onSectionEdit(props.reportSectionPath?.join(".") ?? "", {
+                    // ...props.reportSectionDEFUNCT,
+                    ...localEditedDefinition,
+                    definition: newDef,
+                  });
+                setIsEditing(false);
+                setLocalEditedDefinition(undefined);
+                setHasValidationErrors(false);
+              } catch (e) {
+                log.info("Save failed", e);
+              }
+            }}
+            disabled={hasValidationErrors}
+          >
+            <SaveIcon style={{ color: hasValidationErrors ? "grey" : "green" }} />
+          </ThemedIconButton>
+          <ThemedIconButton
+            title="Cancel"
+            onClick={() => {
+              setIsEditing(false);
+              setLocalEditedDefinition(undefined);
+              setHasValidationErrors(false);
+              props.onSectionCancel && props.onSectionCancel(props.reportSectionPath?.join(".") ?? "");
+            }}
+          >
+            <CloseIcon />
+          </ThemedIconButton>
+        </>
+      )} */}
+    </div>
+  );
   // Handle opening the editor
   const handleEdit = useCallback(() => {
     log.info("ReportSectionMarkdown handleEdit");
@@ -111,18 +193,9 @@ export const ReportSectionMarkdown = (props: ReportSectionMarkdownProps) => {
     setIsEditorOpen(false);
   }, []);
 
-  // Memoize the markdown content to avoid unnecessary re-renders
-  const sanitizedMarkdown = useMemo(() => {
-    return currentContent || "";
-  }, [currentContent]);
-
-  const renderEndTime = performance.now();
-  const renderDuration = renderEndTime - renderStartTime;
-  
-  // Track performance
-  const componentKey = `ReportSectionMarkdown-${props.deploymentUuid}`;
-  RenderPerformanceMetrics.trackRenderPerformance(componentKey, renderDuration);
-
+  // ##############################################################################################
+  // ##############################################################################################
+  // ##############################################################################################
   return (
     <>
       <ThemedContainer
@@ -284,7 +357,13 @@ export const ReportSectionMarkdown = (props: ReportSectionMarkdownProps) => {
       </ThemedContainer>
 
       {/* Markdown Editor Modal */}
+      {IconBar()}
       <MarkdownEditorModal
+        reportName={props.reportName}
+        formikValuePath={props.formikValuePath}
+        reportSectionPath={props.reportSectionPath}
+        formikReportDefinitionPathString={props.formikReportDefinitionPathString}
+        // 
         isOpen={isEditorOpen}
         initialContent={currentContent}
         onSave={handleSave}
