@@ -378,12 +378,6 @@
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "transformerForRuntime_constantNumber"
-            }
-          },
-          {
-            "type": "schemaReference",
-            "definition": {
               "relativePath": "transformerForRuntime_newUuid"
             }
           }

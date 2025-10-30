@@ -78,25 +78,6 @@
               },
               {
                 "transformerTestType": "transformerTestSuite",
-                "transformerTestLabel": "constantNumber",
-                "transformerTests": [
-                  {
-                    "transformerTestType": "transformerTest",
-                    "transformerTestLabel": "resolve basic build transformer constantNumber",
-                    "transformerName": "constantNumber",
-                    "runTestStep": "build",
-                    "transformer": {
-                      "transformerType": "constantNumber",
-                      "interpolation": "build",
-                      "value": 42
-                    },
-                    "transformerParams": {},
-                    "expectedValue": 42
-                  }
-                ]
-              },
-              {
-                "transformerTestType": "transformerTestSuite",
                 "transformerTestLabel": "constantObject",
                 "transformerTests": [
                   {
@@ -335,24 +316,6 @@
                     },
                     "transformerParams": {},
                     "expectedValue": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-                  }
-                ]
-              },
-              {
-                "transformerTestType": "transformerTestSuite",
-                "transformerTestLabel": "constantNumber",
-                "transformerTests": [
-                  {
-                    "transformerTestType": "transformerTest",
-                    "transformerTestLabel": "resolve basic transformer constantNumber",
-                    "transformerName": "constantNumber",
-                    "transformer": {
-                      "transformerType": "constantNumber",
-                      "interpolation": "runtime",
-                      "value": 42
-                    },
-                    "transformerParams": {},
-                    "expectedValue": 42
                   }
                 ]
               },
@@ -745,12 +708,14 @@
                   "transformerType": "<",
                   "interpolation": "runtime",
                   "left": {
-                    "transformerType": "constantNumber",
+                    "transformerType": "constant",
+                    "mlSchema": { "type": "number" },
                     "interpolation": "runtime",
                     "value": 5
                   },
                   "right": {
-                    "transformerType": "constantNumber",
+                    "transformerType": "constant",
+                    "mlSchema": { "type": "number" },
                     "interpolation": "runtime",
                     "value": 10
                   },
@@ -778,12 +743,14 @@
                   "transformerType": "<",
                   "interpolation": "runtime",
                   "left": {
-                    "transformerType": "constantNumber",
+                    "transformerType": "constant",
+                    "mlSchema": { "type": "number" },
                     "interpolation": "runtime",
                     "value": 15
                   },
                   "right": {
-                    "transformerType": "constantNumber",
+                    "transformerType": "constant",
+                    "mlSchema": { "type": "number" },
                     "interpolation": "runtime",
                     "value": 10
                   },
@@ -811,12 +778,14 @@
                   "transformerType": "<=",
                   "interpolation": "runtime",
                   "left": {
-                    "transformerType": "constantNumber",
+                    "transformerType": "constant",
+                    "mlSchema": { "type": "number" },
                     "interpolation": "runtime",
                     "value": 10
                   },
                   "right": {
-                    "transformerType": "constantNumber",
+                    "transformerType": "constant",
+                    "mlSchema": { "type": "number" },
                     "interpolation": "runtime",
                     "value": 10
                   },
@@ -844,12 +813,14 @@
                   "transformerType": "<=",
                   "interpolation": "runtime",
                   "left": {
-                    "transformerType": "constantNumber",
+                    "transformerType": "constant",
+                    "mlSchema": { "type": "number" },
                     "interpolation": "runtime",
                     "value": 15
                   },
                   "right": {
-                    "transformerType": "constantNumber",
+                    "transformerType": "constant",
+                    "mlSchema": { "type": "number" },
                     "interpolation": "runtime",
                     "value": 10
                   },
@@ -877,12 +848,14 @@
                   "transformerType": ">",
                   "interpolation": "runtime",
                   "left": {
-                    "transformerType": "constantNumber",
+                    "transformerType": "constant",
+                    "mlSchema": { "type": "number" },
                     "interpolation": "runtime",
                     "value": 15
                   },
                   "right": {
-                    "transformerType": "constantNumber",
+                    "transformerType": "constant",
+                    "mlSchema": { "type": "number" },
                     "interpolation": "runtime",
                     "value": 10
                   },
@@ -910,12 +883,14 @@
                   "transformerType": ">",
                   "interpolation": "runtime",
                   "left": {
-                    "transformerType": "constantNumber",
+                    "transformerType": "constant",
+                    "mlSchema": { "type": "number" },
                     "interpolation": "runtime",
                     "value": 5
                   },
                   "right": {
-                    "transformerType": "constantNumber",
+                    "transformerType": "constant",
+                    "mlSchema": { "type": "number" },
                     "interpolation": "runtime",
                     "value": 10
                   },
@@ -943,12 +918,14 @@
                   "transformerType": ">=",
                   "interpolation": "runtime",
                   "left": {
-                    "transformerType": "constantNumber",
+                    "transformerType": "constant",
+                    "mlSchema": { "type": "number" },
                     "interpolation": "runtime",
                     "value": 10
                   },
                   "right": {
-                    "transformerType": "constantNumber",
+                    "transformerType": "constant",
+                    "mlSchema": { "type": "number" },
                     "interpolation": "runtime",
                     "value": 10
                   },
@@ -976,12 +953,14 @@
                   "transformerType": ">=",
                   "interpolation": "runtime",
                   "left": {
-                    "transformerType": "constantNumber",
+                    "transformerType": "constant",
+                    "mlSchema": { "type": "number" },
                     "interpolation": "runtime",
                     "value": 5
                   },
                   "right": {
-                    "transformerType": "constantNumber",
+                    "transformerType": "constant",
+                    "mlSchema": { "type": "number" },
                     "interpolation": "runtime",
                     "value": 10
                   },
