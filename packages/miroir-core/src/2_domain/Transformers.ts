@@ -11,7 +11,7 @@ import transformer_constantBoolean_json from '../assets/miroir_data/a557419d-a28
 import transformer_constantBigint_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/690251e7-3e9f-4930-b253-822d5187b621.json';
 import transformer_constantNumber_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/45d7a6a6-847a-447f-a8dd-9ee2056e70e3.json';
 import transformer_constantObject_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/df3bc349-6a68-4c54-b244-3a30bb61e4ed.json';
-import transformer_constantString_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/156aa812-094d-4210-986d-53e3935024fb.json';
+// import transformer_constantString_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/156aa812-094d-4210-986d-53e3935024fb.json';
 import transformer_constantUuid_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/cc56cae6-beff-4692-930c-5b8696d1537c.json';
 import transformer_constantAsExtractor_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/6b2426ee-b740-4785-a15d-9c48a385f2c2.json';
 import transformer_contextReference_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/dab2932a-8eb3-4620-9f90-0d8d4fcc441a.json';
@@ -53,7 +53,7 @@ export const transformer_constantBoolean: TransformerDefinition = transformer_co
 export const transformer_constantBigint: TransformerDefinition = transformer_constantBigint_json as TransformerDefinition;
 export const transformer_constantNumber: TransformerDefinition = transformer_constantNumber_json as TransformerDefinition;
 export const transformer_constantObject: TransformerDefinition = transformer_constantObject_json as TransformerDefinition;
-export const transformer_constantString: TransformerDefinition = transformer_constantString_json as TransformerDefinition;
+// export const transformer_constantString: TransformerDefinition = transformer_constantString_json as TransformerDefinition;
 export const transformer_constantUuid: TransformerDefinition = transformer_constantUuid_json as TransformerDefinition;
 export const transformer_constantAsExtractor: TransformerDefinition = transformer_constantAsExtractor_json as TransformerDefinition;
 export const transformer_contextReference: TransformerDefinition = transformer_contextReference_json as TransformerDefinition;
@@ -95,7 +95,7 @@ export const miroirCoreTransformers: Record<string,TransformerDefinition> = {
   transformer_constantBoolean,
   transformer_constantNumber,
   transformer_constantObject,
-  transformer_constantString,
+  // transformer_constantString,
   transformer_constantUuid,
   transformer_constantAsExtractor,
   transformer_contextReference,

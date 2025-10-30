@@ -90,7 +90,7 @@ import {
   transformer_constantBoolean,
   transformer_constantNumber,
   transformer_constantObject,
-  transformer_constantString,
+  // transformer_constantString,
   transformer_constantUuid,
   transformer_contextReference,
   transformer_count,
@@ -682,7 +682,7 @@ export const applicationTransformerDefinitions: Record<string, TransformerDefini
   constantBigint: transformer_constantBigint,
   constantNumber: transformer_constantNumber,
   constantObject: transformer_constantObject,
-  constantString: transformer_constantString,
+  // constantString: transformer_constantString,
   constantUuid: transformer_constantUuid,
   constantAsExtractor: transformer_constantAsExtractor,
   constantArray: transformer_constantArray,
@@ -1600,10 +1600,10 @@ export function transformer_InnerReference_resolve(
     case "constant":
     case "constantUuid":
     case "constantObject":
-    case "constantString": {
-      result = transformerInnerReference.value;
-      break;
-    }
+    // case "constantString": {
+    //   result = transformerInnerReference.value;
+    //   break;
+    // }
     case "newUuid": {
       result = uuidv4();
       break;

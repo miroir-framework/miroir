@@ -871,7 +871,8 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
           filter: {
             attributeName: "name",
             value: {
-              transformerType: "constantString",
+              transformerType: "constant",
+              mlSchema: { type: "string" },
               interpolation: "build",
               value: "or",
             },

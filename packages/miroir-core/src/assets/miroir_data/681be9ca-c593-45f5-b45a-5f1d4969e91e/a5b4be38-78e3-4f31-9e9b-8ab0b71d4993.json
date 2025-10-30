@@ -97,25 +97,6 @@
               },
               {
                 "transformerTestType": "transformerTestSuite",
-                "transformerTestLabel": "constantString",
-                "transformerTests": [
-                  {
-                    "transformerTestType": "transformerTest",
-                    "transformerTestLabel": "resolve basic build transformer constantString",
-                    "transformerName": "constantString",
-                    "runTestStep": "build",
-                    "transformer": {
-                      "transformerType": "constantString",
-                      "interpolation": "build",
-                      "value": "test"
-                    },
-                    "transformerParams": {},
-                    "expectedValue": "test"
-                  }
-                ]
-              },
-              {
-                "transformerTestType": "transformerTestSuite",
                 "transformerTestLabel": "constantObject",
                 "transformerTests": [
                   {
@@ -377,24 +358,6 @@
               },
               {
                 "transformerTestType": "transformerTestSuite",
-                "transformerTestLabel": "constantString",
-                "transformerTests": [
-                  {
-                    "transformerTestType": "transformerTest",
-                    "transformerTestLabel": "resolve basic transformer constantString",
-                    "transformerName": "constantString",
-                    "transformer": {
-                      "transformerType": "constantString",
-                      "interpolation": "runtime",
-                      "value": "test"
-                    },
-                    "transformerParams": {},
-                    "expectedValue": "test"
-                  }
-                ]
-              },
-              {
-                "transformerTestType": "transformerTestSuite",
                 "transformerTestLabel": "constantObject",
                 "transformerTests": [
                   {
@@ -642,23 +605,27 @@
                   "transformerType": "==",
                   "interpolation": "runtime",
                   "left": {
-                    "transformerType": "constantString",
+                    "transformerType": "constant",
                     "interpolation": "runtime",
+                    "mlSchema": { "type": "string" },
                     "value": "hello"
                   },
                   "right": {
-                    "transformerType": "constantString",
+                    "transformerType": "constant",
                     "interpolation": "runtime",
+                    "mlSchema": { "type": "string" },
                     "value": "hello"
                   },
                   "then": {
-                    "transformerType": "constantString",
+                    "transformerType": "constant",
                     "interpolation": "runtime",
+                    "mlSchema": { "type": "string" },
                     "value": "match"
                   },
                   "else": {
-                    "transformerType": "constantString",
+                    "transformerType": "constant",
                     "interpolation": "runtime",
+                    "mlSchema": { "type": "string" },
                     "value": "no match"
                   }
                 },
@@ -673,22 +640,26 @@
                   "transformerType": "==",
                   "interpolation": "runtime",
                   "left": {
-                    "transformerType": "constantString",
+                    "transformerType": "constant",
+                    "mlSchema": { "type": "string" },
                     "interpolation": "runtime",
                     "value": "hello"
                   },
                   "right": {
-                    "transformerType": "constantString",
+                    "transformerType": "constant",
+                    "mlSchema": { "type": "string" },
                     "interpolation": "runtime",
                     "value": "world"
                   },
                   "then": {
-                    "transformerType": "constantString",
+                    "transformerType": "constant",
+                    "mlSchema": { "type": "string" },
                     "interpolation": "runtime",
                     "value": "match"
                   },
                   "else": {
-                    "transformerType": "constantString",
+                    "transformerType": "constant",
+                    "mlSchema": { "type": "string" },
                     "interpolation": "runtime",
                     "value": "no match"
                   }
@@ -704,22 +675,26 @@
                   "transformerType": "!=",
                   "interpolation": "runtime",
                   "left": {
-                    "transformerType": "constantString",
+                    "transformerType": "constant",
+                    "mlSchema": { "type": "string" },
                     "interpolation": "runtime",
                     "value": "hello"
                   },
                   "right": {
-                    "transformerType": "constantString",
+                    "transformerType": "constant",
+                    "mlSchema": { "type": "string" },
                     "interpolation": "runtime",
                     "value": "world"
                   },
                   "then": {
-                    "transformerType": "constantString",
+                    "transformerType": "constant",
+                    "mlSchema": { "type": "string" },
                     "interpolation": "runtime",
                     "value": "different"
                   },
                   "else": {
-                    "transformerType": "constantString",
+                    "transformerType": "constant",
+                    "mlSchema": { "type": "string" },
                     "interpolation": "runtime",
                     "value": "same"
                   }
@@ -735,22 +710,26 @@
                   "transformerType": "!=",
                   "interpolation": "runtime",
                   "left": {
-                    "transformerType": "constantString",
+                    "transformerType": "constant",
+                    "mlSchema": { "type": "string" },
                     "interpolation": "runtime",
                     "value": "hello"
                   },
                   "right": {
-                    "transformerType": "constantString",
+                    "transformerType": "constant",
+                    "mlSchema": { "type": "string" },
                     "interpolation": "runtime",
                     "value": "hello"
                   },
                   "then": {
-                    "transformerType": "constantString",
+                    "transformerType": "constant",
+                    "mlSchema": { "type": "string" },
                     "interpolation": "runtime",
                     "value": "different"
                   },
                   "else": {
-                    "transformerType": "constantString",
+                    "transformerType": "constant",
+                    "mlSchema": { "type": "string" },
                     "interpolation": "runtime",
                     "value": "same"
                   }
@@ -776,12 +755,14 @@
                     "value": 10
                   },
                   "then": {
-                    "transformerType": "constantString",
+                    "transformerType": "constant",
+                    "mlSchema": { "type": "string" },
                     "interpolation": "runtime",
                     "value": "smaller"
                   },
                   "else": {
-                    "transformerType": "constantString",
+                    "transformerType": "constant",
+                    "mlSchema": { "type": "string" },
                     "interpolation": "runtime",
                     "value": "bigger or equal"
                   }
@@ -807,12 +788,14 @@
                     "value": 10
                   },
                   "then": {
-                    "transformerType": "constantString",
+                    "transformerType": "constant",
+                    "mlSchema": { "type": "string" },
                     "interpolation": "runtime",
                     "value": "smaller"
                   },
                   "else": {
-                    "transformerType": "constantString",
+                    "transformerType": "constant",
+                    "mlSchema": { "type": "string" },
                     "interpolation": "runtime",
                     "value": "bigger or equal"
                   }
@@ -838,12 +821,14 @@
                     "value": 10
                   },
                   "then": {
-                    "transformerType": "constantString",
+                    "transformerType": "constant",
+                    "mlSchema": { "type": "string" },
                     "interpolation": "runtime",
                     "value": "smaller or equal"
                   },
                   "else": {
-                    "transformerType": "constantString",
+                    "transformerType": "constant",
+                    "mlSchema": { "type": "string" },
                     "interpolation": "runtime",
                     "value": "bigger"
                   }
@@ -869,12 +854,14 @@
                     "value": 10
                   },
                   "then": {
-                    "transformerType": "constantString",
+                    "transformerType": "constant",
+                    "mlSchema": { "type": "string" },
                     "interpolation": "runtime",
                     "value": "smaller or equal"
                   },
                   "else": {
-                    "transformerType": "constantString",
+                    "transformerType": "constant",
+                    "mlSchema": { "type": "string" },
                     "interpolation": "runtime",
                     "value": "bigger"
                   }
@@ -900,12 +887,14 @@
                     "value": 10
                   },
                   "then": {
-                    "transformerType": "constantString",
+                    "transformerType": "constant",
+                    "mlSchema": { "type": "string" },
                     "interpolation": "runtime",
                     "value": "bigger"
                   },
                   "else": {
-                    "transformerType": "constantString",
+                    "transformerType": "constant",
+                    "mlSchema": { "type": "string" },
                     "interpolation": "runtime",
                     "value": "smaller or equal"
                   }
@@ -931,12 +920,14 @@
                     "value": 10
                   },
                   "then": {
-                    "transformerType": "constantString",
+                    "transformerType": "constant",
+                    "mlSchema": { "type": "string" },
                     "interpolation": "runtime",
                     "value": "bigger"
                   },
                   "else": {
-                    "transformerType": "constantString",
+                    "transformerType": "constant",
+                    "mlSchema": { "type": "string" },
                     "interpolation": "runtime",
                     "value": "smaller or equal"
                   }
@@ -962,12 +953,14 @@
                     "value": 10
                   },
                   "then": {
-                    "transformerType": "constantString",
+                    "transformerType": "constant",
+                    "mlSchema": { "type": "string" },
                     "interpolation": "runtime",
                     "value": "bigger or equal"
                   },
                   "else": {
-                    "transformerType": "constantString",
+                    "transformerType": "constant",
+                    "mlSchema": { "type": "string" },
                     "interpolation": "runtime",
                     "value": "smaller"
                   }
@@ -993,12 +986,14 @@
                     "value": 10
                   },
                   "then": {
-                    "transformerType": "constantString",
+                    "transformerType": "constant",
+                    "mlSchema": { "type": "string" },
                     "interpolation": "runtime",
                     "value": "bigger or equal"
                   },
                   "else": {
-                    "transformerType": "constantString",
+                    "transformerType": "constant",
+                    "mlSchema": { "type": "string" },
                     "interpolation": "runtime",
                     "value": "smaller"
                   }
@@ -1019,17 +1014,20 @@
                     "referenceName": "userType"
                   },
                   "right": {
-                    "transformerType": "constantString",
+                    "transformerType": "constant",
+                    "mlSchema": { "type": "string" },
                     "interpolation": "runtime",
                     "value": "admin"
                   },
                   "then": {
-                    "transformerType": "constantString",
+                    "transformerType": "constant",
+                    "mlSchema": { "type": "string" },
                     "interpolation": "runtime",
                     "value": "admin access"
                   },
                   "else": {
-                    "transformerType": "constantString",
+                    "transformerType": "constant",
+                    "mlSchema": { "type": "string" },
                     "interpolation": "runtime",
                     "value": "regular access"
                   }
@@ -2184,7 +2182,8 @@
                   "definition": [
                     {
                       "attributeKey": {
-                        "transformerType": "constantString",
+                        "transformerType": "constant",
+                        "mlSchema": { "type": "string" },
                         "interpolation": "runtime",
                         "value": "uuid"
                       },
@@ -2196,7 +2195,8 @@
                     },
                     {
                       "attributeKey": {
-                        "transformerType": "constantString",
+                        "transformerType": "constant",
+                        "mlSchema": { "type": "string" },
                         "interpolation": "runtime",
                         "value": "name"
                       },
@@ -2333,7 +2333,8 @@
                   "definition": [
                     {
                       "attributeKey": {
-                        "transformerType": "constantString",
+                        "transformerType": "constant",
+                        "mlSchema": { "type": "string" },
                         "interpolation": "runtime",
                         "value": "uuid"
                       },
@@ -2345,7 +2346,8 @@
                     },
                     {
                       "attributeKey": {
-                        "transformerType": "constantString",
+                        "transformerType": "constant",
+                        "mlSchema": { "type": "string" },
                         "interpolation": "runtime",
                         "value": "name"
                       },
@@ -2648,7 +2650,8 @@
                     "interpolation": "runtime",
                     "definition": {
                       "iso3166-1Alpha-2": {
-                        "transformerType": "constantString",
+                        "transformerType": "constant",
+                        "mlSchema": { "type": "string" },
                         "interpolation": "runtime",
                         "value": "DE"
                       }
@@ -2681,7 +2684,8 @@
                     "interpolation": "runtime",
                     "definition": {
                       "iso3166-1Alpha-2": {
-                        "transformerType": "constantString",
+                        "transformerType": "constant",
+                        "mlSchema": { "type": "string" },
                         "interpolation": "runtime",
                         "value": "DE"
                       }
@@ -2723,7 +2727,8 @@
                     "interpolation": "runtime",
                     "definition": {
                       "iso3166-1Alpha-2": {
-                        "transformerType": "constantString",
+                        "transformerType": "constant",
+                        "mlSchema": { "type": "string" },
                         "interpolation": "runtime",
                         "value": "DE"
                       }

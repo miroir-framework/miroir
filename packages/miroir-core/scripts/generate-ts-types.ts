@@ -141,7 +141,7 @@ export type TransformerForBuild =
   | TransformerForBuild_constantBoolean
   | TransformerForBuild_constantNumber
   | TransformerForBuild_constantObject
-  | TransformerForBuild_constantString
+  // | TransformerForBuild_constantString
   | TransformerForBuild_constantUuid
   | TransformerForBuild_constantAsExtractor
   | TransformerForBuild_count
@@ -199,7 +199,7 @@ export const transformerForBuild: z.ZodType<TransformerForBuild> = z.lazy(() => 
     transformerForBuild_constantBoolean,
     transformerForBuild_constantNumber,
     transformerForBuild_constantObject,
-    transformerForBuild_constantString,
+    // transformerForBuild_constantString,
     transformerForBuild_constantUuid,
     transformerForBuild_constantAsExtractor,
     transformerForBuild_count,
@@ -235,7 +235,7 @@ export type TransformerForRuntime =
   | TransformerForRuntime_constantBoolean
   | TransformerForRuntime_constantNumber
   | TransformerForRuntime_constantObject
-  | TransformerForRuntime_constantString
+  // | TransformerForRuntime_constantString
   | TransformerForRuntime_constantUuid
   | TransformerForRuntime_constantAsExtractor
   | TransformerForRuntime_contextReference
@@ -271,7 +271,7 @@ export const transformerForRuntime: z.ZodType<TransformerForRuntime> = z.union([
   z.lazy(() => transformerForRuntime_constantBoolean),
   z.lazy(() => transformerForRuntime_constantNumber),
   z.lazy(() => transformerForRuntime_constantObject),
-  z.lazy(() => transformerForRuntime_constantString),
+  // z.lazy(() => transformerForRuntime_constantString),
   z.lazy(() => transformerForRuntime_constantUuid),
   z.lazy(() => transformerForRuntime_constantAsExtractor),
   z.lazy(() => transformerForRuntime_contextReference),
@@ -320,7 +320,7 @@ export type TransformerForBuildPlusRuntime =
   | TransformerForBuildPlusRuntime_constantBoolean
   | TransformerForBuildPlusRuntime_constantNumber
   | TransformerForBuildPlusRuntime_constantObject
-  | TransformerForBuildPlusRuntime_constantString
+  // | TransformerForBuildPlusRuntime_constantString
   | TransformerForBuildPlusRuntime_constantUuid
   | TransformerForBuildPlusRuntime_constantAsExtractor
   | TransformerForBuildPlusRuntime_count
@@ -380,7 +380,7 @@ export const transformerForBuildPlusRuntime: z.ZodType<TransformerForBuildPlusRu
     transformerForBuildPlusRuntime_constantBoolean,
     transformerForBuildPlusRuntime_constantNumber,
     transformerForBuildPlusRuntime_constantObject,
-    transformerForBuildPlusRuntime_constantString,
+    // transformerForBuildPlusRuntime_constantString,
     transformerForBuildPlusRuntime_constantUuid,
     transformerForBuildPlusRuntime_constantAsExtractor,
     transformerForBuildPlusRuntime_count,

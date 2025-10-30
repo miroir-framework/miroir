@@ -384,12 +384,6 @@
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "transformerForRuntime_constantString"
-            }
-          },
-          {
-            "type": "schemaReference",
-            "definition": {
               "relativePath": "transformerForRuntime_newUuid"
             }
           }
@@ -432,12 +426,6 @@
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "transformerForBuild_constantString"
-            }
-          },
-          {
-            "type": "schemaReference",
-            "definition": {
               "relativePath": "transformerForBuild_newUuid"
             }
           },
@@ -469,12 +457,6 @@
             "type": "schemaReference",
             "definition": {
               "relativePath": "transformerForRuntime_constantObject"
-            }
-          },
-          {
-            "type": "schemaReference",
-            "definition": {
-              "relativePath": "transformerForRuntime_constantString"
             }
           },
           {
@@ -517,12 +499,6 @@
             "type": "schemaReference",
             "definition": {
               "relativePath": "transformerForBuildPlusRuntime_constantObject"
-            }
-          },
-          {
-            "type": "schemaReference",
-            "definition": {
-              "relativePath": "transformerForBuildPlusRuntime_constantString"
             }
           },
           {
