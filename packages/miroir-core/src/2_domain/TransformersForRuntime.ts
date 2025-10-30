@@ -15,7 +15,7 @@ import {
   TransformerDefinition,
   TransformerForBuild,
   TransformerForBuild_constant,
-  TransformerForBuild_constantArray,
+  // TransformerForBuild_constantArray,
   TransformerForBuild_constantAsExtractor,
   TransformerForBuild_count,
   TransformerForBuild_dataflowObject,
@@ -37,7 +37,7 @@ import {
   TransformerForBuildPlusRuntime,
   TransformerForRuntime,
   TransformerForRuntime_constant,
-  TransformerForRuntime_constantArray,
+  // TransformerForRuntime_constantArray,
   TransformerForRuntime_constants,
   TransformerForRuntime_contextReference,
   TransformerForRuntime_count,
@@ -84,7 +84,7 @@ import {
   mlsTransformers,
   transformer_conditional,
   transformer_constant,
-  transformer_constantArray,
+  // transformer_constantArray,
   transformer_constantAsExtractor,
   // transformer_constantBigint,
   // transformer_constantBoolean,
@@ -642,7 +642,7 @@ const inMemoryTransformerImplementations: Record<string, ITransformerHandler<any
   handleUniqueTransformer,
   handleTransformer_conditional,
   handleTransformer_constant,
-  handleTransformer_constantArray,
+  // handleTransformer_constantArray,
   handleTransformer_constantAsExtractor,
   handleTransformer_contextReference,
   handleTransformer_dataflowObject,
@@ -685,7 +685,7 @@ export const applicationTransformerDefinitions: Record<string, TransformerDefini
   // constantString: transformer_constantString,
   constantUuid: transformer_constantUuid,
   constantAsExtractor: transformer_constantAsExtractor,
-  constantArray: transformer_constantArray,
+  // constantArray: transformer_constantArray,
   contextReference: transformer_contextReference,
   dataflowObject: transformer_dataflowObject,
   freeObjectTemplate: transformer_freeObjectTemplate,
@@ -2629,29 +2629,29 @@ export function handleTransformer_conditional(
 // ################################################################################################
 // ################################################################################################
 // ################################################################################################
-export function handleTransformer_constantArray(
-  step: Step,
-  transformerPath: string[],
-  label: string | undefined,
-  transformer:
-  | TransformerForBuild_constantArray
-  | TransformerForRuntime_constantArray,
-  resolveBuildTransformersTo: ResolveBuildTransformersTo,
-  queryParams: Record<string, any>,
-  contextResults?: Record<string, any>
-): TransformerReturnType<any> {
-  if (Array.isArray(transformer.value)) {
-    return transformer.value;
-  } else {
-    return transformer.value; // TODO: fail! is it relevant?
-    // return JSON.stringify(transformer.value)
-    // return new TransformerFailure({
-    //   queryFailure: "FailedTransformer_constantArray",
-    //   failureOrigin: ["innerTransformer_apply"],
-    //   queryContext: "constantArrayValue is not an array",
-    // });
-  }
-}
+// export function handleTransformer_constantArray(
+//   step: Step,
+//   transformerPath: string[],
+//   label: string | undefined,
+//   transformer:
+//   | TransformerForBuild_constantArray
+//   | TransformerForRuntime_constantArray,
+//   resolveBuildTransformersTo: ResolveBuildTransformersTo,
+//   queryParams: Record<string, any>,
+//   contextResults?: Record<string, any>
+// ): TransformerReturnType<any> {
+//   if (Array.isArray(transformer.value)) {
+//     return transformer.value;
+//   } else {
+//     return transformer.value; // TODO: fail! is it relevant?
+//     // return JSON.stringify(transformer.value)
+//     // return new TransformerFailure({
+//     //   queryFailure: "FailedTransformer_constantArray",
+//     //   failureOrigin: ["innerTransformer_apply"],
+//     //   queryContext: "constantArrayValue is not an array",
+//     // });
+//   }
+// }
 
 // ################################################################################################
 export function handleTransformer_constant(

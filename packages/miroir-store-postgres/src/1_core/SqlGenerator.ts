@@ -13,7 +13,7 @@ import {
   TransformerForBuild_object_fullTemplate,
   TransformerForRuntime,
   TransformerForRuntime_constant,
-  TransformerForRuntime_constantArray,
+  // TransformerForRuntime_constantArray,
   TransformerForRuntime_constantAsExtractor,
   TransformerForRuntime_contextReference,
   TransformerForRuntime_count,
@@ -274,7 +274,7 @@ const getConstantSql = (
 // ################################################################################################
 // used only by legacy "typed" constants
 function sqlStringForConstantAnyTransformer(
-  actionRuntimeTransformer: TransformerForRuntime_constantArray,
+  actionRuntimeTransformer: TransformerForRuntime_constant,
   preparedStatementParametersCount: number,
   indentLevel: number,
   queryParams: Record<string, any>,

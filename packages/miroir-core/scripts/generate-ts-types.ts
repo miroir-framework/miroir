@@ -137,7 +137,7 @@ export type TransformerForBuild =
   | TransformerForBuild_menu_addItem
   | TransformerForBuild_conditional
   | TransformerForBuild_constant
-  | TransformerForBuild_constantArray
+  // | TransformerForBuild_constantArray
   // | TransformerForBuild_constantBoolean
   // | TransformerForBuild_constantNumber
   // | TransformerForBuild_constantObject
@@ -195,7 +195,7 @@ export const transformerForBuild: z.ZodType<TransformerForBuild> = z.lazy(() => 
     transformerForBuild_menu_addItem,
     transformerForBuild_conditional,
     transformerForBuild_constant,
-    transformerForBuild_constantArray,
+    // transformerForBuild_constantArray,
     // transformerForBuild_constantBoolean,
     // transformerForBuild_constantNumber,
     // transformerForBuild_constantObject,
@@ -231,7 +231,7 @@ export const transformerForBuild: z.ZodType<TransformerForBuild> = z.lazy(() => 
 export type TransformerForRuntime =
   | TransformerForRuntime_menu_addItem
   | TransformerForRuntime_constant
-  | TransformerForRuntime_constantArray
+  // | TransformerForRuntime_constantArray
   // | TransformerForRuntime_constantBoolean
   // | TransformerForRuntime_constantNumber
   // | TransformerForRuntime_constantObject
@@ -267,7 +267,7 @@ export const transformerForRuntime: z.ZodType<TransformerForRuntime> = z.union([
   z.lazy(() => transformerForRuntime_menu_addItem),
   // 
   z.lazy(() => transformerForRuntime_constant),
-  z.lazy(() => transformerForRuntime_constantArray),
+  // z.lazy(() => transformerForRuntime_constantArray),
   // z.lazy(() => transformerForRuntime_constantBoolean),
   // z.lazy(() => transformerForRuntime_constantNumber),
   // z.lazy(() => transformerForRuntime_constantObject),
@@ -316,7 +316,7 @@ export type TransformerForBuildPlusRuntime =
   | TransformerForBuildPlusRuntime_menu_addItem
   | TransformerForBuildPlusRuntime_conditional
   | TransformerForBuildPlusRuntime_constant
-  | TransformerForBuildPlusRuntime_constantArray
+  // | TransformerForBuildPlusRuntime_constantArray
   // | TransformerForBuildPlusRuntime_constantBoolean
   // | TransformerForBuildPlusRuntime_constantNumber
   // | TransformerForBuildPlusRuntime_constantObject
@@ -376,7 +376,7 @@ export const transformerForBuildPlusRuntime: z.ZodType<TransformerForBuildPlusRu
     transformerForBuildPlusRuntime_menu_addItem,
     transformerForBuildPlusRuntime_conditional,
     transformerForBuildPlusRuntime_constant,
-    transformerForBuildPlusRuntime_constantArray,
+    // transformerForBuildPlusRuntime_constantArray,
     // transformerForBuildPlusRuntime_constantBoolean,
     // transformerForBuildPlusRuntime_constantNumber,
     // transformerForBuildPlusRuntime_constantObject,

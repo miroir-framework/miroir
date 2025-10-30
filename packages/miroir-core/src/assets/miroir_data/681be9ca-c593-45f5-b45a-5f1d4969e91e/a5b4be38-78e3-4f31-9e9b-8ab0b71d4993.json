@@ -21,32 +21,7 @@
             "transformerTests": [
               {
                 "transformerTestType": "transformerTestSuite",
-                "transformerTestLabel": "constantArray",
-                "transformerTests": [
-                  {
-                    "transformerTestType": "transformerTest",
-                    "transformerTestLabel": "resolve basic build transformer constantArray",
-                    "transformerName": "constantArrayAtBuild",
-                    "runTestStep": "build",
-                    "transformer": {
-                      "transformerType": "constantArray",
-                      "interpolation": "build",
-                      "value": [
-                        "testA",
-                        "testB"
-                      ]
-                    },
-                    "transformerParams": {},
-                    "expectedValue": [
-                      "testA",
-                      "testB"
-                    ]
-                  }
-                ]
-              },
-              {
-                "transformerTestType": "transformerTestSuite",
-                "transformerTestLabel": "constantArray",
+                "transformerTestLabel": "constantUuid",
                 "transformerTests": [
                   {
                     "transformerTestType": "transformerTest",
@@ -235,30 +210,6 @@
             "transformerTestLabel": "constants",
             "skip": true,
             "transformerTests": [
-              {
-                "transformerTestType": "transformerTestSuite",
-                "transformerTestLabel": "constantArray",
-                "transformerTests": [
-                  {
-                    "transformerTestType": "transformerTest",
-                    "transformerTestLabel": "resolve basic runtime transformer constantArray",
-                    "transformerName": "constantArrayAtRuntime",
-                    "transformer": {
-                      "transformerType": "constantArray",
-                      "interpolation": "runtime",
-                      "value": [
-                        "testA",
-                        "testB"
-                      ]
-                    },
-                    "transformerParams": {},
-                    "expectedValue": [
-                      "testA",
-                      "testB"
-                    ]
-                  }
-                ]
-              },
               {
                 "transformerTestType": "transformerTestSuite",
                 "transformerTestLabel": "constantUuid",

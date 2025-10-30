@@ -845,7 +845,7 @@ export function getMiroirFundamentalJzodSchema(
         // transformerForBuild_constantObject: miroirTransformersForBuild.transformer_constantObject,
         // transformerForBuild_constantNumber: miroirTransformersForBuild.transformer_constantNumber,
         // transformerForBuild_constantString: miroirTransformersForBuild.transformer_constantString,
-        transformerForBuild_constantArray: miroirTransformersForBuild.transformer_constantArray,
+        // transformerForBuild_constantArray: miroirTransformersForBuild.transformer_constantArray,
         transformerForBuild_constantAsExtractor:
           miroirTransformersForBuild.transformer_constantAsExtractor,
         transformerForBuild_contextReference:
@@ -917,7 +917,7 @@ export function getMiroirFundamentalJzodSchema(
         //
         transformerForRuntime_conditional: miroirTransformersForRuntime.transformer_conditional,
         transformerForRuntime_constant: miroirTransformersForRuntime.transformer_constant,
-        transformerForRuntime_constantArray: miroirTransformersForRuntime.transformer_constantArray,
+        // transformerForRuntime_constantArray: miroirTransformersForRuntime.transformer_constantArray,
         // transformerForRuntime_constantBoolean:
           // miroirTransformersForRuntime.transformer_constantBoolean,
         // transformerForRuntime_constantBigint:
@@ -1029,8 +1029,8 @@ export function getMiroirFundamentalJzodSchema(
           miroirTransformersForBuildPlusRuntime.transformer_conditional,
         transformerForBuildPlusRuntime_constant:
           miroirTransformersForBuildPlusRuntime.transformer_constant,
-        transformerForBuildPlusRuntime_constantArray:
-          miroirTransformersForBuildPlusRuntime.transformer_constantArray,
+        // transformerForBuildPlusRuntime_constantArray:
+        //   miroirTransformersForBuildPlusRuntime.transformer_constantArray,
         // transformerForBuildPlusRuntime_constantBoolean:
         //   miroirTransformersForBuildPlusRuntime.transformer_constantBoolean,
         // transformerForBuildPlusRuntime_constantBigint:
@@ -3957,7 +3957,7 @@ export function getMiroirFundamentalJzodSchema(
     // "transformerForBuild_constantObject",
     // "transformerForBuild_constantNumber",
     // "transformerForBuild_constantString",
-    "transformerForBuild_constantArray",
+    // "transformerForBuild_constantArray",
     "transformerForBuild_constantAsExtractor",
     "transformerForBuild_contextReference",
     "transformerForBuild_count",
@@ -4119,7 +4119,7 @@ export function getMiroirFundamentalJzodSchema(
     // "transformerForBuild_constantObject",
     // "transformerForBuild_constantNumber",
     // "transformerForBuild_constantString",
-    "transformerForBuild_constantArray",
+    // "transformerForBuild_constantArray",
     "transformerForBuild_constantAsExtractor",
     "transformerForBuild_contextReference",
     "transformerForBuild_count",
