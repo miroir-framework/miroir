@@ -75,29 +75,6 @@
                     "expectedValue": "test"
                   }
                 ]
-              },
-              {
-                "transformerTestType": "transformerTestSuite",
-                "transformerTestLabel": "constantObject",
-                "transformerTests": [
-                  {
-                    "transformerTestType": "transformerTest",
-                    "transformerTestLabel": "resolve basic build transformer constantObject before runtime",
-                    "transformerName": "constantObjectBeforeRuntime",
-                    "runTestStep": "build",
-                    "transformer": {
-                      "transformerType": "constantObject",
-                      "interpolation": "build",
-                      "value": {
-                        "test": "test"
-                      }
-                    },
-                    "transformerParams": {},
-                    "expectedValue": {
-                      "test": "test"
-                    }
-                  }
-                ]
               }
             ]
           },
@@ -297,44 +274,6 @@
                     },
                     "transformerParams": {},
                     "expectedValue": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-                  }
-                ]
-              },
-              {
-                "transformerTestType": "transformerTestSuite",
-                "transformerTestLabel": "constantObject",
-                "transformerTests": [
-                  {
-                    "transformerTestType": "transformerTest",
-                    "transformerTestLabel": "resolve basic transformer constantObject before runtime",
-                    "transformerName": "constantObjectBeforeRuntime",
-                    "transformer": {
-                      "transformerType": "constantObject",
-                      "interpolation": "runtime",
-                      "value": {
-                        "test": "test"
-                      }
-                    },
-                    "transformerParams": {},
-                    "expectedValue": {
-                      "test": "test"
-                    }
-                  },
-                  {
-                    "transformerTestType": "transformerTest",
-                    "transformerTestLabel": "resolve basic transformer constantObject at runtime",
-                    "transformerName": "constantObjectAtRuntime",
-                    "transformer": {
-                      "transformerType": "constantObject",
-                      "interpolation": "runtime",
-                      "value": {
-                        "test": "test"
-                      }
-                    },
-                    "transformerParams": {},
-                    "expectedValue": {
-                      "test": "test"
-                    }
                   }
                 ]
               },

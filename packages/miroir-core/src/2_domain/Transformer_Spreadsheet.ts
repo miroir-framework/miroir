@@ -123,7 +123,8 @@ export const transformer_spreadSheetToJzodSchema: TransformerDefinition = {
           },
           referenceToOuterObject: "mergedAttributeDefinitions",
           definition: {
-            transformerType: "constantObject",
+            transformerType: "constant",
+            mlSchema: { type: "record", definition: { type: "any"} },
             value: {
               uuid: {
                 type: "string",

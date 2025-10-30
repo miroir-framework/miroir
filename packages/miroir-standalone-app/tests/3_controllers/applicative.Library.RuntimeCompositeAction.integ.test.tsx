@@ -807,7 +807,7 @@ const newEntityDetailsReport = {
         parentName: newEntityName,
         parentUuid: newEntityUuid,
         instanceUuid: {
-          transformerType: "constantObject",
+          transformerType: "constant",
           interpolation: "runtime",
           value: {
             transformerType: "contextReference",

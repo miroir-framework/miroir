@@ -183,27 +183,27 @@ function getSqlTypeForValue(
   let sqlTargetType: PostgresDataTypes;
   let label: string;
   switch (typeof value) {
-    // case "string": {
-    //   sqlTargetType = "text";
-    //   label = "constantString";
-    //   break;
-    // }
-    // case "number": {
-    //   sqlTargetType = "double precision";
-    //   label = "constantNumber";
-    //   break;
-    // }
-    // case "bigint": {
-    //   // sqlTargetType = "double precision";
-    //   sqlTargetType = "bigint";
-    //   label = "constantBigint";
-    //   break;
-    // }
-    // case "boolean": {
-    //   sqlTargetType = "boolean";
-    //   label = "constantBoolean";
-    //   break;
-    // }
+    case "string": {
+      sqlTargetType = "text";
+      label = "constantString";
+      break;
+    }
+    case "number": {
+      sqlTargetType = "double precision";
+      label = "constantNumber";
+      break;
+    }
+    case "bigint": {
+      // sqlTargetType = "double precision";
+      sqlTargetType = "bigint";
+      label = "constantBigint";
+      break;
+    }
+    case "boolean": {
+      sqlTargetType = "boolean";
+      label = "constantBoolean";
+      break;
+    }
     case "object": {
       sqlTargetType = "jsonb";
       label = "constantObject";

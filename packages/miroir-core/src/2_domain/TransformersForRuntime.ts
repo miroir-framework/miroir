@@ -89,7 +89,7 @@ import {
   // transformer_constantBigint,
   // transformer_constantBoolean,
   // transformer_constantNumber,
-  transformer_constantObject,
+  // transformer_constantObject,
   // transformer_constantString,
   transformer_constantUuid,
   transformer_contextReference,
@@ -681,7 +681,7 @@ export const applicationTransformerDefinitions: Record<string, TransformerDefini
   // constantBoolean: transformer_constantBoolean,
   // constantBigint: transformer_constantBigint,
   // constantNumber: transformer_constantNumber,
-  constantObject: transformer_constantObject,
+  // constantObject: transformer_constantObject,
   // constantString: transformer_constantString,
   constantUuid: transformer_constantUuid,
   constantAsExtractor: transformer_constantAsExtractor,
@@ -1599,7 +1599,7 @@ export function transformer_InnerReference_resolve(
   switch (transformerInnerReference.transformerType) {
     case "constant":
     case "constantUuid":
-    case "constantObject":
+    // case "constantObject":
     // case "constantString": {
     //   result = transformerInnerReference.value;
     //   break;

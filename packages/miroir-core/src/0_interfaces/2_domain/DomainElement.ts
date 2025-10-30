@@ -17,7 +17,7 @@ export type TransformerFailureType =
   // | "FailedTransformer_constantNumber"
   // | "FailedTransformer_constantString"
   // | "FailedTransformer_constantBoolean"
-  | "FailedTransformer_constantObject"
+  // | "FailedTransformer_constantObject"
   | "FailedTransformer_constant"
   | "FailedTransformer_contextReference"
   | "FailedTransformer_listPickElement"
