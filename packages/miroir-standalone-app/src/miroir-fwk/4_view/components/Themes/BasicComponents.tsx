@@ -303,3 +303,43 @@ export const ThemedSpan: React.FC<ThemedComponentProps & {
     </span>
   );
 };
+
+// ################################################################################################
+// On-screen debug/helper component for displaying structured data
+export const ThemedOnScreenHelper: React.FC<ThemedComponentProps & {
+  label?: string;
+  data: any;
+}> = ({ 
+  label,
+  data,
+  className, 
+  style 
+}) => {
+  const { currentTheme } = useMiroirTheme();
+  
+  const helperStyles = css({
+    fontSize: currentTheme.typography.fontSize.sm,
+    whiteSpace: 'pre-wrap',
+    wordBreak: 'break-word',
+    backgroundColor: currentTheme.colors.surface,
+    color: currentTheme.colors.text,
+    border: `1px solid ${currentTheme.colors.border}`,
+    borderRadius: currentTheme.borderRadius.sm,
+    padding: currentTheme.spacing.sm,
+    margin: `${currentTheme.spacing.sm} 0`,
+    fontFamily: 'monospace',
+    lineHeight: currentTheme.typography.lineHeight.normal,
+  });
+
+  const labelStyles = css({
+    fontWeight: currentTheme.typography.fontWeight.bold,
+    color: currentTheme.colors.textSecondary,
+  });
+
+  return (
+    <pre css={helperStyles} className={className} style={style}>
+      {label && <span css={labelStyles}>{label}: </span>}
+      {JSON.stringify(data, null, 2)}
+    </pre>
+  );
+};

@@ -23,6 +23,7 @@ import { ChangeValueTypeSelect } from "../ChangeValueTypeSelect";
 import { JzodElementEditor } from "./JzodElementEditor";
 import { JzodAnyEditorProps } from "./JzodElementEditorInterface";
 import { useJzodElementEditorHooks } from "./JzodElementEditorHooks";
+import { ThemedOnScreenHelper } from "../Themes";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -94,6 +95,7 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
 
   return (
     <div key={rootLessListKey}>
+      {/* <ThemedOnScreenHelper label="JzodAnyEditor" data={rootLessListKey} /> */}
       <div>
         <ChangeValueTypeSelect
           onChange={(type: JzodElement) => {

@@ -37,6 +37,7 @@ import { TypedValueObjectEditorWithFormik } from '../Reports/TypedValueObjectEdi
 import {
   ThemedContainer,
   ThemedHeaderSection,
+  ThemedOnScreenHelper,
   ThemedTitle
 } from "../Themes/index";
 import { TransformationResultPanel } from './TransformationResultPanel';
@@ -878,9 +879,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
           Transformer Editor for Entity "{currentReportTargetEntity?.name || selectedEntityUuid}" of
           deployment {deploymentUuid}
         </ThemedTitle>
-        {/* <pre style={{ fontSize: "0.8em", whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
-          <strong>currentTransformerDefinition:</strong> {JSON.stringify(currentTransformerDefinition, null, 2)}
-        </pre> */}
+        {/* <ThemedOnScreenHelper label="currentTransformerDefinition" data={currentTransformerDefinition} /> */}
         <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
           <button
             onClick={copyTransformerDefinitionToClipboard}

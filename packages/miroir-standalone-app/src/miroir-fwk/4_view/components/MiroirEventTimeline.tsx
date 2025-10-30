@@ -312,7 +312,6 @@ export const MiroirEventTimeLine: React.FC<RunActionTimelineProps> = React.memo(
 
     return (
       <div key={action.activityId}>
-        AAAA
         <ListItem
           sx={{
             pl: `${16 + indentLevel}px`,
@@ -391,7 +390,6 @@ export const MiroirEventTimeLine: React.FC<RunActionTimelineProps> = React.memo(
             </IconButton>
           )}
         </ListItem>
-        AAAA
         {hasChildren && (
           <Collapse in={isExpanded}>
             {action.children?.map((child: MiroirEventTrackingData & { children?: any[] }) =>

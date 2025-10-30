@@ -35,12 +35,12 @@ import {
 import { useMiroirTableTheme } from "../../contexts/MiroirThemeContext.js";
 import { useMiroirContextService } from "../../MiroirContextReactProvider.js";
 import { RenderPerformanceMetrics } from "../../tools/renderPerformanceMeasure.js";
-import { TableTheme, DeepPartial, createTableTheme } from "../../themes/TableTheme.js";
+import { TableTheme, DeepPartial, createTableTheme } from "../Themes/TableTheme.js";
 import {
   generateAgGridStyles,
   generateGlideTheme,
   getFilterToolbarStyles,
-} from "../../themes/TableStyleGenerators.js";
+} from "../Themes/TableStyleGenerators.js";
 import { defaultColDef } from "./GridTools.js";
 
 // ################################################################################################

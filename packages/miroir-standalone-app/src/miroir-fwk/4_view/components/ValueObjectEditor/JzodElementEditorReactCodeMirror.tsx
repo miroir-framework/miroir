@@ -12,7 +12,8 @@ import {
   ThemedBox,
   ThemedStyledButton,
   ThemedSpan,
-  ThemedCodeBlock
+  ThemedCodeBlock,
+  ThemedOnScreenHelper
 } from "../Themes/index";
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -133,6 +134,11 @@ export const JzodElementEditorReactCodeMirror: React.FC<JzodElementEditorReactCo
 
   return (
     <span>
+      {/* <ThemedOnScreenHelper label="JzodElementEditorReactCodeMirror" data={{
+        hidden: hidden,
+        insideAny: insideAny,
+        readOnly: readOnly,
+      }}/> */}
       <span>
         {jzodSchemaTooltip ?? <></>}
       </span>

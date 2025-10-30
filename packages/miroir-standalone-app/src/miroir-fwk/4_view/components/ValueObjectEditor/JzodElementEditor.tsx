@@ -35,7 +35,8 @@ import {
   ThemedSwitch,
   ThemedTextEditor,
   ThemedDisplayValue,
-  ThemedButton
+  ThemedButton,
+  ThemedOnScreenHelper
 } from "../Themes/index"
 import { JzodAnyEditor } from "./JzodAnyEditor.js";
 import { JzodArrayEditor } from "./JzodArrayEditor.js";
@@ -1138,6 +1139,21 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
         </span>
       )} */}
       <div>
+        {/* <ThemedOnScreenHelper
+          label={"element" + props.rootLessListKey}
+          data={{
+            objectOrArrayOrAny,
+            displayAsCodeEditor,
+            returnsEmptyElement: props.returnsEmptyElement,
+            hidden: props.hidden,
+            insideAny: props.insideAny,
+            hideSubJzodEditor,
+            rawSchemaType: currentKeyMap?.rawSchema?.type,
+            localResolvedElementJzodSchemaBasedOnValueType: localResolvedElementJzodSchemaBasedOnValue
+              ? localResolvedElementJzodSchemaBasedOnValue.type
+              : "undefined",
+          }}
+        /> */}
         {props.rootLessListKey === "" && (
           <RenderPerformanceMetrics.RenderPerformanceDisplay
             componentKey={componentKey}
@@ -1249,7 +1265,8 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
             </span> */}
             <span
               style={{
-                display: hideSubJzodEditor ? "none" : "inline-block",
+                // display: hideSubJzodEditor ? "none" : "inline-block",
+                display: "inline-block",
                 margin: "2px 0 2px 0",
                 flexGrow: 1,
               }}

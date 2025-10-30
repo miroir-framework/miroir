@@ -44,6 +44,7 @@ import {
   ThemedFoldedValueDisplay,
   ThemedIndentedContainer,
   ThemedLoadingCard,
+  ThemedOnScreenHelper,
   ThemedOptionalAttributeContainer,
   ThemedOptionalAttributeItem,
   ThemedSizedButton,
@@ -156,6 +157,7 @@ const EditableAttributeName: FC<{
   );
 };
 
+// ################################################################################################
 // Progressive Attribute Component for asynchronous rendering
 const ProgressiveAttribute: FC<{
   attribute: [string, JzodElement];
@@ -320,6 +322,8 @@ const ProgressiveAttribute: FC<{
             />
           )}
         >
+          {/* <ThemedOnScreenHelper label="attribute" data={attributeRootLessListKey}/> */}
+          {/* <ThemedOnScreenHelper label="attribute" data={attribute[0]}/> */}
           <JzodElementEditor
             name={attribute[0]}
             labelElement={editableLabel}
@@ -947,7 +951,8 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
     //   reportContext.foldedObjectAttributeOrArrayItems
     // );
     return (
-      <>
+      <div>
+        {/* <ThemedOnScreenHelper label="itemsOrder" data={itemsOrder} /> */}
         {!reportContext.isNodeFolded(rootLessListKeyArray) &&
           itemsOrder
             .map((i): [string, JzodElement] => [
@@ -989,7 +994,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
                 displayError={displayError}
               />
             ))}
-      </>
+      </div>
     );}, [
     itemsOrder,
     formik.values,

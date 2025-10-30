@@ -9,6 +9,7 @@ import {
 
 import { packageName } from '../../../../constants.js';
 import { cleanLevel } from '../../constants.js';
+import { ThemedOnScreenHelper } from '../Themes/index.js';
 import { TypedValueObjectEditor } from './TypedValueObjectEditor.js';
 import type { TypedValueObjectEditorProps } from './TypedValueObjectEditor.js';
 
@@ -72,13 +73,9 @@ export const TypedValueObjectEditorWithFormik: React.FC<TypedValueObjectEditorWi
     >
       {/* {(formik: FormikProps<Record<string, any>>) => ( */}
       <div>
-        {/* <pre style={{ fontSize: '0.8em', whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
-          <strong>formikValuePathAsString:</strong> {editorProps.formikValuePathAsString}
-          {'\n\n'}
-          <strong>initialValueObject:</strong> {JSON.stringify(initialValueObject, null, 2)}
-          {'\n\n'}
-          <strong>valueObjectMMLSchema:</strong> {JSON.stringify(valueObjectMMLSchema, null, 2)}
-        </pre> */}
+        {/* <ThemedOnScreenHelper label="formikValuePathAsString" data={editorProps.formikValuePathAsString} />
+        <ThemedOnScreenHelper label="initialValueObject" data={initialValueObject} />
+        <ThemedOnScreenHelper label="valueObjectMMLSchema" data={valueObjectMMLSchema} /> */}
         <TypedValueObjectEditor
           {...editorProps}
           formValueMLSchema={valueObjectMMLSchema}

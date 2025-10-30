@@ -52,7 +52,7 @@ import {
 import { useRenderTracker } from '../../tools/renderCountTracker.js';
 import { RenderPerformanceMetrics } from '../../tools/renderPerformanceMeasure.js';
 import { ErrorFallbackComponent } from '../ErrorFallbackComponent.js';
-import { ThemedStyledButton } from '../Themes/index.js';
+import { ThemedOnScreenHelper, ThemedStyledButton } from '../Themes/index.js';
 import { JzodElementEditor } from '../ValueObjectEditor/JzodElementEditor.js';
 import { CodeBlock_ReadOnly } from './CodeBlock_ReadOnly.js';
 import { lastSubmitButtonClicked } from '../../routes/ReportPage.js';
@@ -384,13 +384,9 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
         {typeError ? "typeError: " : ""}
         {typeError}
       </div>
-      {/* <pre style={{ fontSize: "0.8em", whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
-        <strong>formikValuePathAsString:</strong> {formikValuePathAsString}
-        {"\n\n"}
-        <strong>formik.values:</strong> {JSON.stringify(formik.values, null, 2)}
-        {"\n\n"}
-        <strong>formValueMLSchema:</strong> {JSON.stringify(formValueMLSchema, null, 2)}
-      </pre> */}
+      {/* <ThemedOnScreenHelper label="formikValuePathAsString" data={formikValuePathAsString} />
+      <ThemedOnScreenHelper label="formik.values" data={formik.values} />
+      <ThemedOnScreenHelper label="formValueMLSchema" data={formValueMLSchema} /> */}
       {readonly ? (
         // Readonly mode: just display the editor without form
         <div>

@@ -13,6 +13,7 @@ export {
   ThemedLabel,
   ThemedText,
   ThemedSpan,
+  ThemedOnScreenHelper,
 } from './BasicComponents';
 
 // Form components

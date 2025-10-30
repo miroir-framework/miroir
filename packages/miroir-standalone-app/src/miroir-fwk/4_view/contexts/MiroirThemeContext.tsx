@@ -4,7 +4,7 @@ import {
   MiroirThemeOption, 
   defaultMiroirTheme, 
   miroirThemeOptions 
-} from '../themes/MiroirTheme.js';
+} from '../components/Themes/MiroirTheme.js';
 
 // Re-export for convenience
 export type { MiroirThemeOption };
