@@ -84,14 +84,7 @@ import {
   mlsTransformers,
   transformer_conditional,
   transformer_constant,
-  // transformer_constantArray,
   transformer_constantAsExtractor,
-  // transformer_constantBigint,
-  // transformer_constantBoolean,
-  // transformer_constantNumber,
-  // transformer_constantObject,
-  // transformer_constantString,
-  transformer_constantUuid,
   transformer_contextReference,
   transformer_count,
   transformer_dataflowObject,
@@ -678,14 +671,7 @@ export const applicationTransformerDefinitions: Record<string, TransformerDefini
     (t: string) => ([t, transformer_conditional])
   )),
   constant: transformer_constant,
-  // constantBoolean: transformer_constantBoolean,
-  // constantBigint: transformer_constantBigint,
-  // constantNumber: transformer_constantNumber,
-  // constantObject: transformer_constantObject,
-  // constantString: transformer_constantString,
-  constantUuid: transformer_constantUuid,
   constantAsExtractor: transformer_constantAsExtractor,
-  // constantArray: transformer_constantArray,
   contextReference: transformer_contextReference,
   dataflowObject: transformer_dataflowObject,
   freeObjectTemplate: transformer_freeObjectTemplate,
@@ -1597,13 +1583,10 @@ export function transformer_InnerReference_resolve(
 
   let result: TransformerReturnType<any> = undefined;
   switch (transformerInnerReference.transformerType) {
-    case "constant":
-    case "constantUuid":
-    // case "constantObject":
-    // case "constantString": {
-    //   result = transformerInnerReference.value;
-    //   break;
-    // }
+    case "constant": {
+      result = transformerInnerReference.value;
+      break;
+    }
     case "newUuid": {
       result = uuidv4();
       break;

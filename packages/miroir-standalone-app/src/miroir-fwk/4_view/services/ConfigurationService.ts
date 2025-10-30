@@ -112,7 +112,8 @@ export function fetchMiroirAndAppConfigurations(
           applicationSection: "data",
           parentName: "Deployment",
           parentUuid: {
-            transformerType: "constantUuid",
+            transformerType: "constant",
+            mlSchema: { type: "uuid" },
             interpolation: "build",
             value: entityDeployment.uuid,
           },

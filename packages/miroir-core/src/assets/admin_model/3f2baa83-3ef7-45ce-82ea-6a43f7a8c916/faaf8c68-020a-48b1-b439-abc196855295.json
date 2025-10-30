@@ -11,11 +11,7 @@
       "bundle": {
         "extractorTemplateType": "extractorForObjectByDirectReference",
         "parentName": "Deployment",
-        "parentUuid": {
-          "transformerType": "constantUuid",
-          "interpolation": "build",
-          "value": "9f9170da-538d-425c-8cb7-551640623eed"
-        },
+        "parentUuid": "9f9170da-538d-425c-8cb7-551640623eed",
         "instanceUuid": {
           "transformerType": "parameterReference",
           "interpolation": "build",

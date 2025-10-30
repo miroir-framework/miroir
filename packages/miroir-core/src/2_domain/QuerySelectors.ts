@@ -446,7 +446,6 @@ export const applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemo
         otherIndex = ((query.contextResults[
           relationQuery.objectReference
         ] as any) ?? {})[relationQuery.objectReferenceAttribute ?? "uuid"];
-      // } else if (relationQuery.objectReference?.queryTemplateType == "constantUuid") {
       } else {
         log.error(
           "applyExtractorForSingleObjectListToSelectedInstancesUuidIndexInMemory combinerByRelationReturningObjectList could not find objectReference in contextResults, objectReference=",

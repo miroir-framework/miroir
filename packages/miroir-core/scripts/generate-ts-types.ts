@@ -137,12 +137,6 @@ export type TransformerForBuild =
   | TransformerForBuild_menu_addItem
   | TransformerForBuild_conditional
   | TransformerForBuild_constant
-  // | TransformerForBuild_constantArray
-  // | TransformerForBuild_constantBoolean
-  // | TransformerForBuild_constantNumber
-  // | TransformerForBuild_constantObject
-  // | TransformerForBuild_constantString
-  | TransformerForBuild_constantUuid
   | TransformerForBuild_constantAsExtractor
   | TransformerForBuild_count
   | TransformerForBuild_dataflowObject
@@ -195,12 +189,6 @@ export const transformerForBuild: z.ZodType<TransformerForBuild> = z.lazy(() => 
     transformerForBuild_menu_addItem,
     transformerForBuild_conditional,
     transformerForBuild_constant,
-    // transformerForBuild_constantArray,
-    // transformerForBuild_constantBoolean,
-    // transformerForBuild_constantNumber,
-    // transformerForBuild_constantObject,
-    // transformerForBuild_constantString,
-    transformerForBuild_constantUuid,
     transformerForBuild_constantAsExtractor,
     transformerForBuild_count,
     transformerForBuild_dataflowObject,
@@ -231,12 +219,6 @@ export const transformerForBuild: z.ZodType<TransformerForBuild> = z.lazy(() => 
 export type TransformerForRuntime =
   | TransformerForRuntime_menu_addItem
   | TransformerForRuntime_constant
-  // | TransformerForRuntime_constantArray
-  // | TransformerForRuntime_constantBoolean
-  // | TransformerForRuntime_constantNumber
-  // | TransformerForRuntime_constantObject
-  // | TransformerForRuntime_constantString
-  | TransformerForRuntime_constantUuid
   | TransformerForRuntime_constantAsExtractor
   | TransformerForRuntime_contextReference
   | TransformerForRuntime_count
@@ -267,12 +249,6 @@ export const transformerForRuntime: z.ZodType<TransformerForRuntime> = z.union([
   z.lazy(() => transformerForRuntime_menu_addItem),
   // 
   z.lazy(() => transformerForRuntime_constant),
-  // z.lazy(() => transformerForRuntime_constantArray),
-  // z.lazy(() => transformerForRuntime_constantBoolean),
-  // z.lazy(() => transformerForRuntime_constantNumber),
-  // z.lazy(() => transformerForRuntime_constantObject),
-  // z.lazy(() => transformerForRuntime_constantString),
-  z.lazy(() => transformerForRuntime_constantUuid),
   z.lazy(() => transformerForRuntime_constantAsExtractor),
   z.lazy(() => transformerForRuntime_contextReference),
   z.lazy(() => transformerForRuntime_count),
@@ -316,12 +292,6 @@ export type TransformerForBuildPlusRuntime =
   | TransformerForBuildPlusRuntime_menu_addItem
   | TransformerForBuildPlusRuntime_conditional
   | TransformerForBuildPlusRuntime_constant
-  // | TransformerForBuildPlusRuntime_constantArray
-  // | TransformerForBuildPlusRuntime_constantBoolean
-  // | TransformerForBuildPlusRuntime_constantNumber
-  // | TransformerForBuildPlusRuntime_constantObject
-  // | TransformerForBuildPlusRuntime_constantString
-  | TransformerForBuildPlusRuntime_constantUuid
   | TransformerForBuildPlusRuntime_constantAsExtractor
   | TransformerForBuildPlusRuntime_count
   | TransformerForBuildPlusRuntime_dataflowObject
@@ -376,12 +346,6 @@ export const transformerForBuildPlusRuntime: z.ZodType<TransformerForBuildPlusRu
     transformerForBuildPlusRuntime_menu_addItem,
     transformerForBuildPlusRuntime_conditional,
     transformerForBuildPlusRuntime_constant,
-    // transformerForBuildPlusRuntime_constantArray,
-    // transformerForBuildPlusRuntime_constantBoolean,
-    // transformerForBuildPlusRuntime_constantNumber,
-    // transformerForBuildPlusRuntime_constantObject,
-    // transformerForBuildPlusRuntime_constantString,
-    transformerForBuildPlusRuntime_constantUuid,
     transformerForBuildPlusRuntime_constantAsExtractor,
     transformerForBuildPlusRuntime_count,
     transformerForBuildPlusRuntime_dataflowObject,

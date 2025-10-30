@@ -1408,7 +1408,8 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
                     {
                       attributeKey: {
                         interpolation: "runtime",
-                        transformerType: "constantString",
+            transformerType: "constant",
+            mlSchema: { type: "string" },
                         value: "uuid",
                       },
                       attributeValue: {
@@ -1419,7 +1420,8 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
                     {
                       attributeKey: {
                         interpolation: "runtime",
-                        transformerType: "constantString",
+            transformerType: "constant",
+            mlSchema: { type: "string" },
                         value: "name",
                       },
                       attributeValue: {

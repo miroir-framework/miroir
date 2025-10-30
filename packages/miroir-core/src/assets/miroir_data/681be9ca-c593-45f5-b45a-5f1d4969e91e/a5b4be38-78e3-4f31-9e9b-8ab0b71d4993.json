@@ -21,7 +21,33 @@
             "transformerTests": [
               {
                 "transformerTestType": "transformerTestSuite",
-                "transformerTestLabel": "constantUuid",
+                "transformerTestLabel": "constantArray",
+                "transformerTests": [
+                  {
+                    "transformerTestType": "transformerTest",
+                    "transformerTestLabel": "resolve basic build transformer constantArray",
+                    "transformerName": "constantArrayAtBuild",
+                    "runTestStep": "build",
+                    "transformer": {
+                      "transformerType": "constant",
+                      "mlSchema": { "type": "array", "definition": { "type": "string" } },
+                      "interpolation": "build",
+                      "value": [
+                        "testA",
+                        "testB"
+                      ]
+                    },
+                    "transformerParams": {},
+                    "expectedValue": [
+                      "testA",
+                      "testB"
+                    ]
+                  }
+                ]
+              },
+              {
+                "transformerTestType": "transformerTestSuite",
+                "transformerTestLabel": "constantArray",
                 "transformerTests": [
                   {
                     "transformerTestType": "transformerTest",
@@ -29,7 +55,8 @@
                     "transformerName": "constantUuid",
                     "runTestStep": "build",
                     "transformer": {
-                      "transformerType": "constantUuid",
+                      "transformerType": "constant",
+                      "mlSchema": { "type": "uuid" },
                       "interpolation": "build",
                       "value": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
                     },
@@ -42,12 +69,84 @@
                     "transformerName": "constantUuidFailed",
                     "runTestStep": "build",
                     "transformer": {
-                      "transformerType": "constantUuid",
+                      "transformerType": "constant",
+                      "mlSchema": { "type": "uuid" },
                       "interpolation": "build",
                       "value": "test"
                     },
                     "transformerParams": {},
                     "expectedValue": "test"
+                  }
+                ]
+              },
+              {
+                "transformerTestType": "transformerTestSuite",
+                "transformerTestLabel": "constantNumber",
+                "transformerTests": [
+                  {
+                    "transformerTestType": "transformerTest",
+                    "transformerTestLabel": "resolve basic build transformer constantNumber",
+                    "transformerName": "constantNumber",
+                    "runTestStep": "build",
+                    "transformer": {
+                      "transformerType": "constant",
+                      "mlSchema": { "type": "number" },
+                      "interpolation": "build",
+                      "value": 42
+                    },
+                    "transformerParams": {},
+                    "expectedValue": 42
+                  }
+                ]
+              },
+              {
+                "transformerTestType": "transformerTestSuite",
+                "transformerTestLabel": "constantObject",
+                "transformerTests": [
+                  {
+                    "transformerTestType": "transformerTest",
+                    "transformerTestLabel": "resolve basic build transformer constantObject before runtime",
+                    "transformerName": "constantObjectBeforeRuntime",
+                    "runTestStep": "build",
+                    "transformer": {
+                      "transformerType": "constant",
+                      "mlSchema": {
+                        "type": "object",
+                        "definition": {
+                          "test": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "interpolation": "build",
+                      "value": {
+                        "test": "test"
+                      }
+                    },
+                    "transformerParams": {},
+                    "expectedValue": {
+                      "test": "test"
+                    }
+                  }
+                ]
+              },
+              {
+                "transformerTestType": "transformerTestSuite",
+                "transformerTestLabel": "constantBoolean",
+                "transformerTests": [
+                  {
+                    "transformerTestType": "transformerTest",
+                    "transformerTestLabel": "resolve basic build transformer constantBoolean",
+                    "transformerName": "constantBoolean",
+                    "runTestStep": "build",
+                    "transformer": {
+                      "transformerType": "constant",
+                      "mlSchema": { "type": "boolean" },
+                      "interpolation": "build",
+                      "value": true
+                    },
+                    "transformerParams": {},
+                    "expectedValue": true
                   }
                 ]
               }
@@ -212,6 +311,31 @@
             "transformerTests": [
               {
                 "transformerTestType": "transformerTestSuite",
+                "transformerTestLabel": "constantArray",
+                "transformerTests": [
+                  {
+                    "transformerTestType": "transformerTest",
+                    "transformerTestLabel": "resolve basic runtime transformer constantArray",
+                    "transformerName": "constantArrayAtRuntime",
+                    "transformer": {
+                      "transformerType": "constant",
+                      "mlSchema": { "type": "array", "definition": { "type": "string" } },
+                      "interpolation": "runtime",
+                      "value": [
+                        "testA",
+                        "testB"
+                      ]
+                    },
+                    "transformerParams": {},
+                    "expectedValue": [
+                      "testA",
+                      "testB"
+                    ]
+                  }
+                ]
+              },
+              {
+                "transformerTestType": "transformerTestSuite",
                 "transformerTestLabel": "constantUuid",
                 "transformerTests": [
                   {
@@ -219,12 +343,105 @@
                     "transformerTestLabel": "resolve basic transformer constantUuid",
                     "transformerName": "constantUuid",
                     "transformer": {
-                      "transformerType": "constantUuid",
+                      "transformerType": "constant",
+                      "mlSchema": { "type": "uuid" },
                       "interpolation": "runtime",
                       "value": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
                     },
                     "transformerParams": {},
                     "expectedValue": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+                  }
+                ]
+              },
+              {
+                "transformerTestType": "transformerTestSuite",
+                "transformerTestLabel": "constantNumber",
+                "transformerTests": [
+                  {
+                    "transformerTestType": "transformerTest",
+                    "transformerTestLabel": "resolve basic transformer constantNumber",
+                    "transformerName": "constantNumber",
+                    "transformer": {
+                      "transformerType": "constant",
+                      "mlSchema": { "type": "number" },
+                      "interpolation": "runtime",
+                      "value": 42
+                    },
+                    "transformerParams": {},
+                    "expectedValue": 42
+                  }
+                ]
+              },
+              {
+                "transformerTestType": "transformerTestSuite",
+                "transformerTestLabel": "constantObject",
+                "transformerTests": [
+                  {
+                    "transformerTestType": "transformerTest",
+                    "transformerTestLabel": "resolve basic transformer constantObject before runtime",
+                    "transformerName": "constantObjectBeforeRuntime",
+                    "transformer": {
+                      "transformerType": "constant",
+                      "mlSchema": {
+                        "type": "object",
+                        "definition": {
+                          "test": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "interpolation": "runtime",
+                      "value": {
+                        "test": "test"
+                      }
+                    },
+                    "transformerParams": {},
+                    "expectedValue": {
+                      "test": "test"
+                    }
+                  },
+                  {
+                    "transformerTestType": "transformerTest",
+                    "transformerTestLabel": "resolve basic transformer constantObject at runtime",
+                    "transformerName": "constantObjectAtRuntime",
+                    "transformer": {
+                      "transformerType": "constant",
+                      "mlSchema": {
+                        "type": "object",
+                        "definition": {
+                          "test": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "interpolation": "runtime",
+                      "value": {
+                        "test": "test"
+                      }
+                    },
+                    "transformerParams": {},
+                    "expectedValue": {
+                      "test": "test"
+                    }
+                  }
+                ]
+              },
+              {
+                "transformerTestType": "transformerTestSuite",
+                "transformerTestLabel": "constantBoolean",
+                "transformerTests": [
+                  {
+                    "transformerTestType": "transformerTest",
+                    "transformerTestLabel": "resolve basic transformer constantBoolean",
+                    "transformerName": "constantBoolean",
+                    "transformer": {
+                      "transformerType": "constant",
+                      "mlSchema": { "type": "boolean" },
+                      "interpolation": "runtime",
+                      "value": true
+                    },
+                    "transformerParams": {},
+                    "expectedValue": true
                   }
                 ]
               },
@@ -1903,7 +2120,8 @@
                   "definition": [
                     {
                       "attributeKey": {
-                        "transformerType": "constantUuid",
+                        "transformerType": "constant",
+                        "mlSchema": { "type": "string" },
                         "interpolation": "runtime",
                         "value": "uuid"
                       },
@@ -1915,7 +2133,8 @@
                     },
                     {
                       "attributeKey": {
-                        "transformerType": "constantUuid",
+                        "transformerType": "constant",
+                        "mlSchema": { "type": "string" },
                         "interpolation": "runtime",
                         "value": "name"
                       },
@@ -1955,7 +2174,8 @@
                   "definition": [
                     {
                       "attributeKey": {
-                        "transformerType": "constantUuid",
+                        "transformerType": "constant",
+                        "mlSchema": { "type": "string" },
                         "interpolation": "runtime",
                         "value": "uuid"
                       },
@@ -1967,7 +2187,8 @@
                     },
                     {
                       "attributeKey": {
-                        "transformerType": "constantUuid",
+                        "transformerType": "constant",
+                        "mlSchema": { "type": "string" },
                         "interpolation": "runtime",
                         "value": "name"
                       },
@@ -2256,7 +2477,8 @@
                   "interpolation": "runtime",
                   "definition": {
                     "uuid": {
-                      "transformerType": "constantUuid",
+                      "transformerType": "constant",
+                      "mlSchema": { "type": "uuid" },
                       "interpolation": "runtime",
                       "value": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
                     },
@@ -2294,7 +2516,8 @@
                   "interpolation": "runtime",
                   "definition": {
                     "uuid": {
-                      "transformerType": "constantUuid",
+                      "transformerType": "constant",
+                      "mlSchema": { "type": "uuid" },
                       "interpolation": "runtime",
                       "value": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
                     },
@@ -2311,7 +2534,8 @@
                       "interpolation": "runtime",
                       "definition": {
                         "uuid": {
-                          "transformerType": "constantUuid",
+                      "transformerType": "constant",
+                      "mlSchema": { "type": "uuid" },
                           "interpolation": "runtime",
                           "value": "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy"
                         },
@@ -2355,7 +2579,8 @@
                   "interpolation": "runtime",
                   "definition": {
                     "uuid": {
-                      "transformerType": "constantUuid",
+                      "transformerType": "constant",
+                      "mlSchema": { "type": "uuid" },
                       "interpolation": "runtime",
                       "value": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
                     },
@@ -2398,7 +2623,8 @@
                   "interpolation": "runtime",
                   "definition": {
                     "uuid": {
-                      "transformerType": "constantUuid",
+                      "transformerType": "constant",
+                      "mlSchema": { "type": "uuid" },
                       "interpolation": "runtime",
                       "value": "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
                     },
@@ -2415,7 +2641,8 @@
                       "interpolation": "runtime",
                       "definition": {
                         "uuid": {
-                          "transformerType": "constantUuid",
+                      "transformerType": "constant",
+                      "mlSchema": { "type": "uuid" },
                           "interpolation": "runtime",
                           "value": "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy"
                         },
@@ -2729,7 +2956,8 @@
                         "interpolation": "runtime",
                         "definition": {
                           "uuid": {
-                            "transformerType": "constantUuid",
+                      "transformerType": "constant",
+                      "mlSchema": { "type": "uuid" },
                             "interpolation": "runtime",
                             "value": "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy"
                           },
@@ -2802,7 +3030,8 @@
                       },
                       {
                         "attributeKey": {
-                          "transformerType": "constantUuid",
+                      "transformerType": "constant",
+                      "mlSchema": { "type": "uuid" },
                           "interpolation": "runtime",
                           "value": "name"
                         },
@@ -2963,7 +3192,8 @@
                       "definition": [
                         {
                           "attributeKey": {
-                            "transformerType": "constantUuid",
+                      "transformerType": "constant",
+                      "mlSchema": { "type": "uuid" },
                             "interpolation": "runtime",
                             "value": "uuid"
                           },
@@ -2975,7 +3205,8 @@
                         },
                         {
                           "attributeKey": {
-                            "transformerType": "constantUuid",
+                      "transformerType": "constant",
+                      "mlSchema": { "type": "uuid" },
                             "interpolation": "runtime",
                             "value": "name"
                           },
@@ -3030,7 +3261,8 @@
                       "definition": [
                         {
                           "attributeKey": {
-                            "transformerType": "constantUuid",
+                      "transformerType": "constant",
+                      "mlSchema": { "type": "uuid" },
                             "interpolation": "runtime",
                             "value": "uuid"
                           },
@@ -3042,7 +3274,8 @@
                         },
                         {
                           "attributeKey": {
-                            "transformerType": "constantUuid",
+                      "transformerType": "constant",
+                      "mlSchema": { "type": "uuid" },
                             "interpolation": "runtime",
                             "value": "name"
                           },
@@ -3070,7 +3303,8 @@
                       "definition": [
                         {
                           "attributeKey": {
-                            "transformerType": "constantUuid",
+                      "transformerType": "constant",
+                      "mlSchema": { "type": "uuid" },
                             "interpolation": "runtime",
                             "value": "uuid"
                           },
@@ -3082,7 +3316,8 @@
                         },
                         {
                           "attributeKey": {
-                            "transformerType": "constantUuid",
+                      "transformerType": "constant",
+                      "mlSchema": { "type": "uuid" },
                             "interpolation": "runtime",
                             "value": "name"
                           },
@@ -3137,7 +3372,8 @@
                       "definition": [
                         {
                           "attributeKey": {
-                            "transformerType": "constantUuid",
+                      "transformerType": "constant",
+                      "mlSchema": { "type": "uuid" },
                             "interpolation": "runtime",
                             "value": "uuid"
                           },
@@ -3149,7 +3385,8 @@
                         },
                         {
                           "attributeKey": {
-                            "transformerType": "constantUuid",
+                      "transformerType": "constant",
+                      "mlSchema": { "type": "uuid" },
                             "interpolation": "runtime",
                             "value": "name"
                           },

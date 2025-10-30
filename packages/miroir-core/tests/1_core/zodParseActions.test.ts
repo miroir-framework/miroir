@@ -145,6 +145,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
             applicationVersions: [],
             reports: [],
             applicationVersionCrossEntityDefinition: [],
+            storedQueries: [],
           },
           // TODO: this is wrong, selfApplication, selfApplication version, etc. must be passed as parameters!!!!!!!!!!!!!!!!!!!!
           selfApplication: testApplicationConfig.selfApplication,

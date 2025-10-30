@@ -171,12 +171,14 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
           extractorTemplateType: "extractorForObjectByDirectReference",
           parentName: "Book",
           parentUuid: {
-            transformerType: "constantUuid",
+            transformerType: "constant",
+            mlSchema: { type: "uuid" },
             interpolation: "build",
             value: "XXXXXX",
           },
           instanceUuid: {
-            transformerType: "constantUuid",
+            transformerType: "constant",
+            mlSchema: { type: "uuid" },
             interpolation: "build",
             value: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
           },
@@ -221,12 +223,14 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
           extractorTemplateType: "extractorForObjectByDirectReference",
           parentName: "Book",
           parentUuid: {
-            transformerType: "constantUuid",
+            transformerType: "constant",
+            mlSchema: { type: "uuid" },
             interpolation: "build",
             value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
           },
           instanceUuid: {
-            transformerType: "constantUuid",
+            transformerType: "constant",
+            mlSchema: { type: "uuid" },
             interpolation: "build",
             value: "XXXXXXXXX",
           },
@@ -270,12 +274,14 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
           extractorTemplateType: "extractorForObjectByDirectReference",
           parentName: "Book",
           parentUuid: {
-            transformerType: "constantUuid",
+            transformerType: "constant",
+            mlSchema: { type: "uuid" },
             interpolation: "build",
             value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
           },
           instanceUuid: {
-            transformerType: "constantUuid",
+            transformerType: "constant",
+            mlSchema: { type: "uuid" },
             interpolation: "build",
             value: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
           },
@@ -359,8 +365,8 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
                 interpolation: "runtime",
                 referencePath: ["foreignKeyObjects", "author", "name"],
               },
-            }
-          }
+            },
+          },
         },
       },
     },
@@ -370,8 +376,8 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
         expectedResult: {
           book: {
             authorName: "Paul Veyne",
-            bookTitle: "Et dans l'éternité je ne m'ennuierai pas"
-          }
+            bookTitle: "Et dans l'éternité je ne m'ennuierai pas",
+          },
           // book: domainState[adminConfigurationDeploymentLibrary.uuid]["data"][
           //   "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
           // ]["caef8a59-39eb-48b5-ad59-a7642d3a1e8f"],
@@ -396,7 +402,8 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
           extractorTemplateType: "extractorForObjectByDirectReference",
           parentName: "Book",
           parentUuid: {
-            transformerType: "constantUuid",
+            transformerType: "constant",
+            mlSchema: { type: "uuid" },
             interpolation: "build",
             value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
           },
@@ -447,12 +454,14 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
           extractorTemplateType: "extractorForObjectByDirectReference",
           parentName: "Book",
           parentUuid: {
-            transformerType: "constantUuid",
+            transformerType: "constant",
+            mlSchema: { type: "uuid" },
             interpolation: "build",
             value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
           },
           instanceUuid: {
-            transformerType: "constantUuid",
+            transformerType: "constant",
+            mlSchema: { type: "uuid" },
             interpolation: "build",
             value: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
           },
@@ -463,7 +472,8 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
           extractorTemplateType: "combinerForObjectByRelation",
           parentName: "Publisher",
           parentUuid: {
-            transformerType: "constantUuid",
+            transformerType: "constant",
+            mlSchema: { type: "uuid" },
             interpolation: "build",
             value: "a027c379-8468-43a5-ba4d-bf618be25cab",
           },
@@ -512,270 +522,279 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
       },
     },
   },
-  "select 1 object from the uuid found in an attribute of another object then use applyTransformer on it": {
-    queryTemplate: {
-      queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
-      deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-      contextResults: {},
-      pageParams: {},
-      queryParams: {},
-      extractorTemplates: {
-        book: {
-          extractorTemplateType: "extractorForObjectByDirectReference",
-          parentName: "Book",
-          parentUuid: {
-            transformerType: "constantUuid",
-            interpolation: "build",
-            value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-          },
-          instanceUuid: {
-            transformerType: "constantUuid",
-            interpolation: "build",
-            value: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
+  "select 1 object from the uuid found in an attribute of another object then use applyTransformer on it":
+    {
+      queryTemplate: {
+        queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
+        deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+        contextResults: {},
+        pageParams: {},
+        queryParams: {},
+        extractorTemplates: {
+          book: {
+            extractorTemplateType: "extractorForObjectByDirectReference",
+            parentName: "Book",
+            parentUuid: {
+              transformerType: "constant",
+              mlSchema: { type: "uuid" },
+              interpolation: "build",
+              value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+            },
+            instanceUuid: {
+              transformerType: "constant",
+              mlSchema: { type: "uuid" },
+              interpolation: "build",
+              value: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
+            },
           },
         },
-      },
-      combinerTemplates: {
-        publisher: {
-          extractorTemplateType: "combinerForObjectByRelation",
-          parentName: "Publisher",
-          parentUuid: {
-            transformerType: "constantUuid",
-            interpolation: "build",
-            value: "a027c379-8468-43a5-ba4d-bf618be25cab",
-          },
-          objectReference: {
-            transformerType: "contextReference",
-            interpolation: "runtime",
-            referenceName: "book",
-          },
-          AttributeOfObjectToCompareToReferenceUuid: "publisher",
-          applyTransformer: {
-            transformerType: "freeObjectTemplate",
-            interpolation: "runtime",
-            definition: {
-              bookTitle: {
-                transformerType: "contextReference",
-                interpolation: "runtime",
-                referencePath: ["referenceObject", "name"],
-              },
-              publisherName: {
-                transformerType: "contextReference",
-                interpolation: "runtime",
-                referencePath: ["foreignKeyObject", "name"],
-              },
-              publisherUuid: {
-                transformerType: "contextReference",
-                interpolation: "runtime",
-                referencePath: ["foreignKeyObject", "uuid"],
+        combinerTemplates: {
+          publisher: {
+            extractorTemplateType: "combinerForObjectByRelation",
+            parentName: "Publisher",
+            parentUuid: {
+              transformerType: "constant",
+              mlSchema: { type: "uuid" },
+              interpolation: "build",
+              value: "a027c379-8468-43a5-ba4d-bf618be25cab",
+            },
+            objectReference: {
+              transformerType: "contextReference",
+              interpolation: "runtime",
+              referenceName: "book",
+            },
+            AttributeOfObjectToCompareToReferenceUuid: "publisher",
+            applyTransformer: {
+              transformerType: "freeObjectTemplate",
+              interpolation: "runtime",
+              definition: {
+                bookTitle: {
+                  transformerType: "contextReference",
+                  interpolation: "runtime",
+                  referencePath: ["referenceObject", "name"],
+                },
+                publisherName: {
+                  transformerType: "contextReference",
+                  interpolation: "runtime",
+                  referencePath: ["foreignKeyObject", "name"],
+                },
+                publisherUuid: {
+                  transformerType: "contextReference",
+                  interpolation: "runtime",
+                  referencePath: ["foreignKeyObject", "uuid"],
+                },
               },
             },
           },
         },
       },
-    },
-    query: {
-      queryType: "boxedQueryWithExtractorCombinerTransformer",
-      deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-      contextResults: {},
-      pageParams: {},
-      queryParams: {},
-      extractors: {
-        book: {
-          extractorOrCombinerType: "extractorForObjectByDirectReference",
-          parentName: "Book",
-          parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-          instanceUuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
-        },
-      },
-      combiners: {
-        publisher: {
-          extractorOrCombinerType: "combinerForObjectByRelation",
-          parentName: "Publisher",
-          parentUuid: "a027c379-8468-43a5-ba4d-bf618be25cab",
-          objectReference: "book",
-          AttributeOfObjectToCompareToReferenceUuid: "publisher",
-          applyTransformer: {
-            transformerType: "freeObjectTemplate",
-            interpolation: "runtime",
-            definition: {
-              bookTitle: {
-                transformerType: "contextReference",
-                interpolation: "runtime",
-                referencePath: ["referenceObject", "name"],
-              },
-              publisherName: {
-                transformerType: "contextReference",
-                interpolation: "runtime",
-                referencePath: ["foreignKeyObject", "name"],
-              },
-              publisherUuid: {
-                transformerType: "contextReference",
-                interpolation: "runtime",
-                referencePath: ["foreignKeyObject", "uuid"],
-              },
-            },
+      query: {
+        queryType: "boxedQueryWithExtractorCombinerTransformer",
+        deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+        contextResults: {},
+        pageParams: {},
+        queryParams: {},
+        extractors: {
+          book: {
+            extractorOrCombinerType: "extractorForObjectByDirectReference",
+            parentName: "Book",
+            parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+            instanceUuid: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
           },
         },
-      },
-      runtimeTransformers: {},
-    },
-    ...testExtractorTools,
-    testAssertions: {
-      test1: {
-        expectedResult: {
-          bookTitle: "Et dans l'éternité je ne m'ennuierai pas",
-          publisherName: "Folio",
-          publisherUuid: "516a7366-39e7-4998-82cb-80199a7fa667",
-        },
-        resultAccessPath: ["publisher"],
-      },
-    },
-  },
-  "select publishers of books by author using combinerByManyToManyRelationReturningObjectList with applyTransformer": {
-    queryTemplate: {
-      queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
-      deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-      contextResults: {},
-      pageParams: {},
-      queryParams: {},
-      extractorTemplates: {
-        author: {
-          extractorTemplateType: "extractorForObjectByDirectReference",
-          parentName: "Author",
-          parentUuid: {
-            transformerType: "constantUuid",
-            interpolation: "build",
-            value: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
-          },
-          instanceUuid: {
-            transformerType: "constantUuid",
-            interpolation: "build",
-            value: "ce7b601d-be5f-4bc6-a5af-14091594046a", // Paul Veyne
-          },
-        },
-      },
-      combinerTemplates: {
-        booksOfAuthor: {
-          extractorTemplateType: "combinerByRelationReturningObjectList",
-          parentName: "Book",
-          parentUuid: {
-            transformerType: "constantUuid",
-            interpolation: "build",
-            value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-          },
-          objectReference: {
-            transformerType: "contextReference",
-            interpolation: "runtime",
-            referenceName: "author",
-          },
-          AttributeOfListObjectToCompareToReferenceUuid: "author",
-        },
-        publishersOfBooks: {
-          extractorTemplateType: "combinerByManyToManyRelationReturningObjectList",
-          parentName: "Publisher",
-          parentUuid: {
-            transformerType: "constantUuid",
-            interpolation: "build",
-            value: "a027c379-8468-43a5-ba4d-bf618be25cab",
-          },
-          objectListReference: {
-            transformerType: "contextReference",
-            interpolation: "runtime",
-            referenceName: "booksOfAuthor",
-          },
-          objectListReferenceAttribute: "publisher",
-          applyTransformer: {
-            transformerType: "freeObjectTemplate",
-            interpolation: "runtime",
-            definition: {
-              authorName: {
-                transformerType: "contextReference",
-                interpolation: "runtime",
-                referencePath: ["referenceObject", "name"],
-              },
-              publisherName: {
-                transformerType: "contextReference",
-                interpolation: "runtime",
-                referencePath: ["foreignKeyObject", "name"],
-              },
-              publisherUuid: {
-                transformerType: "contextReference",
-                interpolation: "runtime",
-                referencePath: ["foreignKeyObject", "uuid"],
+        combiners: {
+          publisher: {
+            extractorOrCombinerType: "combinerForObjectByRelation",
+            parentName: "Publisher",
+            parentUuid: "a027c379-8468-43a5-ba4d-bf618be25cab",
+            objectReference: "book",
+            AttributeOfObjectToCompareToReferenceUuid: "publisher",
+            applyTransformer: {
+              transformerType: "freeObjectTemplate",
+              interpolation: "runtime",
+              definition: {
+                bookTitle: {
+                  transformerType: "contextReference",
+                  interpolation: "runtime",
+                  referencePath: ["referenceObject", "name"],
+                },
+                publisherName: {
+                  transformerType: "contextReference",
+                  interpolation: "runtime",
+                  referencePath: ["foreignKeyObject", "name"],
+                },
+                publisherUuid: {
+                  transformerType: "contextReference",
+                  interpolation: "runtime",
+                  referencePath: ["foreignKeyObject", "uuid"],
+                },
               },
             },
           },
         },
+        runtimeTransformers: {},
       },
-    },
-    query: {
-      queryType: "boxedQueryWithExtractorCombinerTransformer",
-      deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-      contextResults: {},
-      pageParams: {},
-      queryParams: {},
-      extractors: {
-        author: {
-          extractorOrCombinerType: "extractorForObjectByDirectReference",
-          parentName: "Author",
-          parentUuid: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
-          instanceUuid: "ce7b601d-be5f-4bc6-a5af-14091594046a", // Paul Veyne
-        },
-      },
-      combiners: {
-        booksOfAuthor: {
-          extractorOrCombinerType: "combinerByRelationReturningObjectList",
-          parentName: "Book",
-          parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-          objectReference: "author",
-          AttributeOfListObjectToCompareToReferenceUuid: "author",
-        },
-        publishersOfBooks: {
-          extractorOrCombinerType: "combinerByManyToManyRelationReturningObjectList",
-          parentName: "Publisher",
-          parentUuid: "a027c379-8468-43a5-ba4d-bf618be25cab",
-          objectListReference: "booksOfAuthor",
-          objectListReferenceAttribute: "publisher",
-          applyTransformer: {
-            transformerType: "freeObjectTemplate",
-            interpolation: "runtime",
-            definition: {
-              authorName: {
-                transformerType: "contextReference",
-                interpolation: "runtime",
-                referencePath: ["referenceObject", "name"],
-              },
-              publisherName: {
-                transformerType: "contextReference",
-                interpolation: "runtime",
-                referencePath: ["foreignKeyObject", "name"],
-              },
-              publisherUuid: {
-                transformerType: "contextReference",
-                interpolation: "runtime",
-                referencePath: ["foreignKeyObject", "uuid"],
-              },
-            },
-          },
-        },
-      },
-      runtimeTransformers: {},
-    },
-    ...testExtractorTools,
-    testAssertions: {
-      test1: {
-        expectedResult: [
-          {
-            authorName: "Paul Veyne",
+      ...testExtractorTools,
+      testAssertions: {
+        test1: {
+          expectedResult: {
+            bookTitle: "Et dans l'éternité je ne m'ennuierai pas",
             publisherName: "Folio",
             publisherUuid: "516a7366-39e7-4998-82cb-80199a7fa667",
           },
-        ],
-        resultAccessPath: ["publishersOfBooks"],
+          resultAccessPath: ["publisher"],
+        },
       },
     },
-  },
+  "select publishers of books by author using combinerByManyToManyRelationReturningObjectList with applyTransformer":
+    {
+      queryTemplate: {
+        queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
+        deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+        contextResults: {},
+        pageParams: {},
+        queryParams: {},
+        extractorTemplates: {
+          author: {
+            extractorTemplateType: "extractorForObjectByDirectReference",
+            parentName: "Author",
+            parentUuid: {
+              transformerType: "constant",
+              mlSchema: { type: "uuid" },
+              interpolation: "build",
+              value: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+            },
+            instanceUuid: {
+              transformerType: "constant",
+              mlSchema: { type: "uuid" },
+              interpolation: "build",
+              value: "ce7b601d-be5f-4bc6-a5af-14091594046a", // Paul Veyne
+            },
+          },
+        },
+        combinerTemplates: {
+          booksOfAuthor: {
+            extractorTemplateType: "combinerByRelationReturningObjectList",
+            parentName: "Book",
+            parentUuid: {
+              transformerType: "constant",
+              mlSchema: { type: "uuid" },
+              interpolation: "build",
+              value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+            },
+            objectReference: {
+              transformerType: "contextReference",
+              interpolation: "runtime",
+              referenceName: "author",
+            },
+            AttributeOfListObjectToCompareToReferenceUuid: "author",
+          },
+          publishersOfBooks: {
+            extractorTemplateType: "combinerByManyToManyRelationReturningObjectList",
+            parentName: "Publisher",
+            parentUuid: {
+              transformerType: "constant",
+              mlSchema: { type: "uuid" },
+              interpolation: "build",
+              value: "a027c379-8468-43a5-ba4d-bf618be25cab",
+            },
+            objectListReference: {
+              transformerType: "contextReference",
+              interpolation: "runtime",
+              referenceName: "booksOfAuthor",
+            },
+            objectListReferenceAttribute: "publisher",
+            applyTransformer: {
+              transformerType: "freeObjectTemplate",
+              interpolation: "runtime",
+              definition: {
+                authorName: {
+                  transformerType: "contextReference",
+                  interpolation: "runtime",
+                  referencePath: ["referenceObject", "name"],
+                },
+                publisherName: {
+                  transformerType: "contextReference",
+                  interpolation: "runtime",
+                  referencePath: ["foreignKeyObject", "name"],
+                },
+                publisherUuid: {
+                  transformerType: "contextReference",
+                  interpolation: "runtime",
+                  referencePath: ["foreignKeyObject", "uuid"],
+                },
+              },
+            },
+          },
+        },
+      },
+      query: {
+        queryType: "boxedQueryWithExtractorCombinerTransformer",
+        deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+        contextResults: {},
+        pageParams: {},
+        queryParams: {},
+        extractors: {
+          author: {
+            extractorOrCombinerType: "extractorForObjectByDirectReference",
+            parentName: "Author",
+            parentUuid: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+            instanceUuid: "ce7b601d-be5f-4bc6-a5af-14091594046a", // Paul Veyne
+          },
+        },
+        combiners: {
+          booksOfAuthor: {
+            extractorOrCombinerType: "combinerByRelationReturningObjectList",
+            parentName: "Book",
+            parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+            objectReference: "author",
+            AttributeOfListObjectToCompareToReferenceUuid: "author",
+          },
+          publishersOfBooks: {
+            extractorOrCombinerType: "combinerByManyToManyRelationReturningObjectList",
+            parentName: "Publisher",
+            parentUuid: "a027c379-8468-43a5-ba4d-bf618be25cab",
+            objectListReference: "booksOfAuthor",
+            objectListReferenceAttribute: "publisher",
+            applyTransformer: {
+              transformerType: "freeObjectTemplate",
+              interpolation: "runtime",
+              definition: {
+                authorName: {
+                  transformerType: "contextReference",
+                  interpolation: "runtime",
+                  referencePath: ["referenceObject", "name"],
+                },
+                publisherName: {
+                  transformerType: "contextReference",
+                  interpolation: "runtime",
+                  referencePath: ["foreignKeyObject", "name"],
+                },
+                publisherUuid: {
+                  transformerType: "contextReference",
+                  interpolation: "runtime",
+                  referencePath: ["foreignKeyObject", "uuid"],
+                },
+              },
+            },
+          },
+        },
+        runtimeTransformers: {},
+      },
+      ...testExtractorTools,
+      testAssertions: {
+        test1: {
+          expectedResult: [
+            {
+              authorName: "Paul Veyne",
+              publisherName: "Folio",
+              publisherUuid: "516a7366-39e7-4998-82cb-80199a7fa667",
+            },
+          ],
+          resultAccessPath: ["publishersOfBooks"],
+        },
+      },
+    },
   "select Authors": {
     queryTemplate: {
       queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
@@ -790,7 +809,8 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
           extractorTemplateType: "extractorTemplateForObjectListByEntity",
           parentName: "Author",
           parentUuid: {
-            transformerType: "constantUuid",
+            transformerType: "constant",
+            mlSchema: { type: "uuid" },
             interpolation: "build",
             value: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
           },
@@ -864,7 +884,8 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
           extractorTemplateType: "extractorTemplateForObjectListByEntity",
           parentName: "Author",
           parentUuid: {
-            transformerType: "constantUuid",
+            transformerType: "constant",
+            mlSchema: { type: "uuid" },
             interpolation: "build",
             value: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
           },
@@ -936,12 +957,14 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
           extractorTemplateType: "extractorForObjectByDirectReference",
           parentName: "Book",
           parentUuid: {
-            transformerType: "constantUuid",
+            transformerType: "constant",
+            mlSchema: { type: "uuid" },
             interpolation: "build",
             value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
           },
           instanceUuid: {
-            transformerType: "constantUuid",
+            transformerType: "constant",
+            mlSchema: { type: "uuid" },
             interpolation: "build",
             value: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
           },
@@ -952,7 +975,8 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
           extractorTemplateType: "combinerForObjectByRelation",
           parentName: "Publisher",
           parentUuid: {
-            transformerType: "constantUuid",
+            transformerType: "constant",
+            mlSchema: { type: "uuid" },
             interpolation: "build",
             value: "a027c379-8468-43a5-ba4d-bf618be25cab",
           },
@@ -968,7 +992,8 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
           extractorTemplateType: "combinerByRelationReturningObjectList",
           parentName: "Book",
           parentUuid: {
-            transformerType: "constantUuid",
+            transformerType: "constant",
+            mlSchema: { type: "uuid" },
             interpolation: "build",
             value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
           },
@@ -1052,12 +1077,14 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
           extractorTemplateType: "extractorForObjectByDirectReference",
           parentName: "Book",
           parentUuid: {
-            transformerType: "constantUuid",
+            transformerType: "constant",
+            mlSchema: { type: "uuid" },
             interpolation: "build",
             value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
           },
           instanceUuid: {
-            transformerType: "constantUuid",
+            transformerType: "constant",
+            mlSchema: { type: "uuid" },
             interpolation: "build",
             value: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
           },
@@ -1068,7 +1095,8 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
           extractorTemplateType: "combinerForObjectByRelation",
           parentName: "Publisher",
           parentUuid: {
-            transformerType: "constantUuid",
+            transformerType: "constant",
+            mlSchema: { type: "uuid" },
             interpolation: "build",
             value: "a027c379-8468-43a5-ba4d-bf618be25cab",
           },
@@ -1083,7 +1111,8 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
           extractorTemplateType: "combinerByRelationReturningObjectList",
           parentName: "Book",
           parentUuid: {
-            transformerType: "constantUuid",
+            transformerType: "constant",
+            mlSchema: { type: "uuid" },
             interpolation: "build",
             value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
           },
@@ -1331,162 +1360,163 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
       },
     },
   },
-  "select custom-built result: return couple Author name - Book title for Books of Author from Domain State": {
-    queryTemplate: {
-      queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
-      deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-      contextResults: {},
-      pageParams: {
-        applicationSection: "data",
-      },
-      queryParams: {},
-      extractorTemplates: {
-        author: {
-          extractorTemplateType: "extractorForObjectByDirectReference",
-          parentName: "Book",
-          parentUuid: {
-            transformerType: "constant",
-            value: "d7a144ff-d1b9-4135-800c-a7cfc1f38733", // Author
-          },
-          instanceUuid: {
-            transformerType: "constant",
-            value: "ce7b601d-be5f-4bc6-a5af-14091594046a", // Paul Veyne
+  "select custom-built result: return couple Author name - Book title for Books of Author from Domain State":
+    {
+      queryTemplate: {
+        queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
+        deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+        contextResults: {},
+        pageParams: {
+          applicationSection: "data",
+        },
+        queryParams: {},
+        extractorTemplates: {
+          author: {
+            extractorTemplateType: "extractorForObjectByDirectReference",
+            parentName: "Book",
+            parentUuid: {
+              transformerType: "constant",
+              value: "d7a144ff-d1b9-4135-800c-a7cfc1f38733", // Author
+            },
+            instanceUuid: {
+              transformerType: "constant",
+              value: "ce7b601d-be5f-4bc6-a5af-14091594046a", // Paul Veyne
+            },
           },
         },
-      },
-      combinerTemplates: {
-        books: {
-          extractorTemplateType: "combinerByRelationReturningObjectList",
-          parentName: "Book",
-          parentUuid: {
-            transformerType: "constant",
-            value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-          },
-          objectReference: {
-            transformerType: "contextReference",
-            interpolation: "runtime",
-            referenceName: "author",
-          },
-          AttributeOfListObjectToCompareToReferenceUuid: "author",
-          applyTransformer: {
-            transformerType: "freeObjectTemplate",
-            interpolation: "runtime",
-            definition: {
-              authorName: {
-                transformerType: "contextReference",
-                interpolation: "runtime",
-                referencePath: ["referenceObject", "name"],
-              },
-              bookTitle: {
-                transformerType: "contextReference",
-                interpolation: "runtime",
-                referencePath: ["foreignKeyObject", "name"],
+        combinerTemplates: {
+          books: {
+            extractorTemplateType: "combinerByRelationReturningObjectList",
+            parentName: "Book",
+            parentUuid: {
+              transformerType: "constant",
+              value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+            },
+            objectReference: {
+              transformerType: "contextReference",
+              interpolation: "runtime",
+              referenceName: "author",
+            },
+            AttributeOfListObjectToCompareToReferenceUuid: "author",
+            applyTransformer: {
+              transformerType: "freeObjectTemplate",
+              interpolation: "runtime",
+              definition: {
+                authorName: {
+                  transformerType: "contextReference",
+                  interpolation: "runtime",
+                  referencePath: ["referenceObject", "name"],
+                },
+                bookTitle: {
+                  transformerType: "contextReference",
+                  interpolation: "runtime",
+                  referencePath: ["foreignKeyObject", "name"],
+                },
               },
             },
-          }
+          },
         },
       },
-    },
-    query: {
-      queryType: "boxedQueryWithExtractorCombinerTransformer",
-      deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
-      contextResults: {},
-      pageParams: {
-        applicationSection: "data",
-      },
-      queryParams: {},
-      extractors: {
-        author: {
-          extractorOrCombinerType: "extractorForObjectByDirectReference",
-          parentName: "Author",
-          parentUuid: "d7a144ff-d1b9-4135-800c-a7cfc1f38733", // Author
-          instanceUuid: "ce7b601d-be5f-4bc6-a5af-14091594046a", // Paul Veyne
+      query: {
+        queryType: "boxedQueryWithExtractorCombinerTransformer",
+        deploymentUuid: adminConfigurationDeploymentLibrary.uuid,
+        contextResults: {},
+        pageParams: {
+          applicationSection: "data",
         },
-      },
-      combiners: {
-        books: {
-          extractorOrCombinerType: "combinerByRelationReturningObjectList",
-          parentName: "Book",
-          parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-          objectReference: "author",
-          AttributeOfListObjectToCompareToReferenceUuid: "author",
-          applyTransformer: {
-            transformerType: "freeObjectTemplate",
-            interpolation: "runtime",
-            definition: {
-              authorName: {
-                transformerType: "contextReference",
-                interpolation: "runtime",
-                referencePath: ["referenceObject", "name"],
-              },
-              bookTitle: {
-                transformerType: "contextReference",
-                interpolation: "runtime",
-                referencePath: ["foreignKeyObject", "name"],
+        queryParams: {},
+        extractors: {
+          author: {
+            extractorOrCombinerType: "extractorForObjectByDirectReference",
+            parentName: "Author",
+            parentUuid: "d7a144ff-d1b9-4135-800c-a7cfc1f38733", // Author
+            instanceUuid: "ce7b601d-be5f-4bc6-a5af-14091594046a", // Paul Veyne
+          },
+        },
+        combiners: {
+          books: {
+            extractorOrCombinerType: "combinerByRelationReturningObjectList",
+            parentName: "Book",
+            parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+            objectReference: "author",
+            AttributeOfListObjectToCompareToReferenceUuid: "author",
+            applyTransformer: {
+              transformerType: "freeObjectTemplate",
+              interpolation: "runtime",
+              definition: {
+                authorName: {
+                  transformerType: "contextReference",
+                  interpolation: "runtime",
+                  referencePath: ["referenceObject", "name"],
+                },
+                bookTitle: {
+                  transformerType: "contextReference",
+                  interpolation: "runtime",
+                  referencePath: ["foreignKeyObject", "name"],
+                },
               },
             },
-          }
+          },
         },
       },
-    },
-    ...testExtractorTools,
-    testAssertions: {
-      test1: {
-        expectedResult:
-          domainState[adminConfigurationDeploymentLibrary.uuid]["data"][
-            "d7a144ff-d1b9-4135-800c-a7cfc1f38733"
-          ]["ce7b601d-be5f-4bc6-a5af-14091594046a"],
-        resultAccessPath: ["author"],
+      ...testExtractorTools,
+      testAssertions: {
+        test1: {
+          expectedResult:
+            domainState[adminConfigurationDeploymentLibrary.uuid]["data"][
+              "d7a144ff-d1b9-4135-800c-a7cfc1f38733"
+            ]["ce7b601d-be5f-4bc6-a5af-14091594046a"],
+          resultAccessPath: ["author"],
+        },
+        test2: {
+          expectedResult: [
+            {
+              authorName: "Paul Veyne",
+              bookTitle: "Le Pain et le Cirque",
+            },
+            {
+              authorName: "Paul Veyne",
+              bookTitle: "Et dans l'éternité je ne m'ennuierai pas",
+            },
+          ],
+          resultAccessPath: ["books"],
+        },
+        // test2: {
+        //   expectedResult: Object.values({
+        //     "4cb917b3-3c53-4f9b-b000-b0e4c07a81f7":
+        //       domainState[adminConfigurationDeploymentLibrary.uuid]["data"][
+        //         "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+        //       ]["4cb917b3-3c53-4f9b-b000-b0e4c07a81f7"],
+        //     "c6852e89-3c3c-447f-b827-4b5b9d830975":
+        //       domainState[adminConfigurationDeploymentLibrary.uuid]["data"][
+        //         "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+        //       ]["c6852e89-3c3c-447f-b827-4b5b9d830975"],
+        //     "caef8a59-39eb-48b5-ad59-a7642d3a1e8f":
+        //       domainState[adminConfigurationDeploymentLibrary.uuid]["data"][
+        //         "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+        //       ]["caef8a59-39eb-48b5-ad59-a7642d3a1e8f"],
+        //   }),
+        //   resultAccessPath: ["result2", "0"],
+        // },
+        // test3: {
+        //   expectedResult: Object.values({
+        //     "4cb917b3-3c53-4f9b-b000-b0e4c07a81f7":
+        //       domainState[adminConfigurationDeploymentLibrary.uuid]["data"][
+        //         "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+        //       ]["4cb917b3-3c53-4f9b-b000-b0e4c07a81f7"],
+        //     "c6852e89-3c3c-447f-b827-4b5b9d830975":
+        //       domainState[adminConfigurationDeploymentLibrary.uuid]["data"][
+        //         "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+        //       ]["c6852e89-3c3c-447f-b827-4b5b9d830975"],
+        //     "caef8a59-39eb-48b5-ad59-a7642d3a1e8f":
+        //       domainState[adminConfigurationDeploymentLibrary.uuid]["data"][
+        //         "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+        //       ]["caef8a59-39eb-48b5-ad59-a7642d3a1e8f"],
+        //   }),
+        //   resultAccessPath: ["result2", "1"],
+        // },
       },
-      test2: {
-        expectedResult: [
-          {
-            authorName: "Paul Veyne",
-            bookTitle: "Le Pain et le Cirque",
-          },
-          {
-            authorName: "Paul Veyne",
-            bookTitle: "Et dans l'éternité je ne m'ennuierai pas",
-          },
-        ],
-        resultAccessPath: ["books"],
-      },
-      // test2: {
-      //   expectedResult: Object.values({
-      //     "4cb917b3-3c53-4f9b-b000-b0e4c07a81f7":
-      //       domainState[adminConfigurationDeploymentLibrary.uuid]["data"][
-      //         "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
-      //       ]["4cb917b3-3c53-4f9b-b000-b0e4c07a81f7"],
-      //     "c6852e89-3c3c-447f-b827-4b5b9d830975":
-      //       domainState[adminConfigurationDeploymentLibrary.uuid]["data"][
-      //         "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
-      //       ]["c6852e89-3c3c-447f-b827-4b5b9d830975"],
-      //     "caef8a59-39eb-48b5-ad59-a7642d3a1e8f":
-      //       domainState[adminConfigurationDeploymentLibrary.uuid]["data"][
-      //         "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
-      //       ]["caef8a59-39eb-48b5-ad59-a7642d3a1e8f"],
-      //   }),
-      //   resultAccessPath: ["result2", "0"],
-      // },
-      // test3: {
-      //   expectedResult: Object.values({
-      //     "4cb917b3-3c53-4f9b-b000-b0e4c07a81f7":
-      //       domainState[adminConfigurationDeploymentLibrary.uuid]["data"][
-      //         "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
-      //       ]["4cb917b3-3c53-4f9b-b000-b0e4c07a81f7"],
-      //     "c6852e89-3c3c-447f-b827-4b5b9d830975":
-      //       domainState[adminConfigurationDeploymentLibrary.uuid]["data"][
-      //         "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
-      //       ]["c6852e89-3c3c-447f-b827-4b5b9d830975"],
-      //     "caef8a59-39eb-48b5-ad59-a7642d3a1e8f":
-      //       domainState[adminConfigurationDeploymentLibrary.uuid]["data"][
-      //         "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
-      //       ]["caef8a59-39eb-48b5-ad59-a7642d3a1e8f"],
-      //   }),
-      //   resultAccessPath: ["result2", "1"],
-      // },
     },
-  },
   "select custom-built result with extractorCombinerByHeteronomousManyToManyReturningListOfObjectList: instances of all Entites from Domain State, indexed by Entity Uuid":
     {
       queryTemplate: {
@@ -1503,7 +1533,8 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
             applicationSection: "model",
             parentName: "Entity",
             parentUuid: {
-              transformerType: "constantUuid",
+              transformerType: "constant",
+              mlSchema: { type: "uuid" },
               interpolation: "build",
               value: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
             },
@@ -1606,7 +1637,8 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
           extractorTemplateType: "extractorTemplateForObjectListByEntity",
           parentName: "Book",
           parentUuid: {
-            transformerType: "constantUuid",
+            transformerType: "constant",
+            mlSchema: { type: "uuid" },
             interpolation: "build",
             value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
           },
