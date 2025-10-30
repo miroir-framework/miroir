@@ -300,8 +300,8 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
       <Typography variant="body2" color="text.secondary" gutterBottom>
         Use JzodElementEditor for dynamic form generation based on action parameters schema
       </Typography>
-      
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+
+      <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
         {/* Deployment Selection */}
         <ThemedFormControl fullWidth>
           <ThemedInputLabel id="deployment-select-label">Choose a Deployment</ThemedInputLabel>
@@ -349,12 +349,15 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
             <ThemedMUISelect
               labelId="action-select-label"
               id="action-select"
-              value={selectedActionIndex === -1 ? '' : selectedActionIndex.toString()}
+              value={selectedActionIndex === -1 ? "" : selectedActionIndex.toString()}
               label="Choose an Action"
               onChange={handleActionChange}
             >
               {availableActions.map((action, index) => (
-                <MenuItem key={action.actionParameters.actionType.definition} value={index.toString()}>
+                <MenuItem
+                  key={action.actionParameters.actionType.definition}
+                  value={index.toString()}
+                >
                   {/* {getActionLabel(action, index)} */}
                   {action.actionParameters.actionType.definition}
                 </MenuItem>
@@ -372,12 +375,16 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
             </Typography>
             <TypedValueObjectEditorWithFormik
               labelElement={<ThemedInputLabel>Action Parameters</ThemedInputLabel>}
-              initialValueObject={actionFormInitialValues}
-              formValueMLSchema={currentActionParametersMMLSchema}
+              initialValueObject={{ actionFormInitialValues }}
+              formValueMLSchema={{
+                type: "object",
+                definition: { actionFormInitialValues: currentActionParametersMMLSchema },
+              }}
+              formikValuePathAsString="actionFormInitialValues"
               deploymentUuid={selectedDeploymentUuid}
               // applicationSection={applicationSection}
               applicationSection="data"
-              // 
+              //
               formLabel={"formLabel"}
               onSubmit={handleSubmit}
             />
@@ -386,13 +393,15 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
 
         {/* Debug Information */}
         {selectedDeploymentUuid && (
-          <Box sx={{ mt: 2, p: 2, bgcolor: 'grey.100', borderRadius: 1 }}>
+          <Box sx={{ mt: 2, p: 2, bgcolor: "grey.100", borderRadius: 1 }}>
             <Typography variant="caption" display="block">
-              Selected Deployment: {deployments.find(d => d.uuid === selectedDeploymentUuid)?.name}
+              Selected Deployment:{" "}
+              {deployments.find((d) => d.uuid === selectedDeploymentUuid)?.name}
             </Typography>
             {selectedEndpointUuid && (
               <Typography variant="caption" display="block">
-                Selected Endpoint: {availableEndpoints.find(e => e.uuid === selectedEndpointUuid)?.name}
+                Selected Endpoint:{" "}
+                {availableEndpoints.find((e) => e.uuid === selectedEndpointUuid)?.name}
               </Typography>
             )}
             currentAction{JSON.stringify(currentAction, null, 2)}
@@ -404,7 +413,9 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
             )}
             {currentActionParametersMMLSchema && (
               <Typography variant="caption" display="block">
-                Form Schema: {Object.keys(currentActionParametersMMLSchema.definition || {}).join(', ') || 'No parameters'}
+                Form Schema:{" "}
+                {Object.keys(currentActionParametersMMLSchema.definition || {}).join(", ") ||
+                  "No parameters"}
               </Typography>
             )}
           </Box>

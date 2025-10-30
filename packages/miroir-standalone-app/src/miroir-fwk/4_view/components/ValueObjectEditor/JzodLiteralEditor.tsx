@@ -52,6 +52,7 @@ const handleDiscriminatorChange = (
   log: LoggerInterface
 ) => {
   log.info("handleDiscriminatorChange called with:", {
+    reportSectionPathAsString,
     selectedValue,
     discriminatorType,
     rootLessListKey,
@@ -240,11 +241,14 @@ const handleDiscriminatorChange = (
     }
     : undefined;
 
-  const targetRootLessListKey = rootLessListKeyArray.slice(0, rootLessListKeyArray.length - 1).join(".")??"";
+  const targetRootLessListKey = [reportSectionPathAsString,...rootLessListKeyArray.slice(0, rootLessListKeyArray.length - 1)].join(".")??"";
+  // const targetRootLessListKey = [reportSectionPathAsString,rootLessListKeyArray].join(".")??"";
   log.info(
     `handleDiscriminatorChange (${discriminatorType})`,
+    "rootLessListKeyArray",
+    JSON.stringify(rootLessListKeyArray),
     "targetRootLessListKey",
-    targetRootLessListKey,
+    JSON.stringify(targetRootLessListKey),
     "defaultValue",
     JSON.stringify(defaultValue, null, 2),
     "formik.values",
@@ -260,7 +264,7 @@ const handleDiscriminatorChange = (
   //   );
   // } else {
     formik.setFieldValue(
-      reportSectionPathAsString + "."+ targetRootLessListKey,
+      targetRootLessListKey,
       defaultValue,
       false, // do not validate / refresh
     );
@@ -319,26 +323,26 @@ export const JzodLiteralEditor: FC<JzodLiteralEditorProps> =  (
     !!parentKeyMap?.discriminator && 
     !!parentKeyMap?.discriminatorValues;
 
-  log.info(
-    "JzodLiteralEditor render count",
-    JzodLiteralEditorRenderCount,
-    "rootLessListKey",
-    rootLessListKey,
-    "name",
-    name,
-    "parentKey",
-    parentKey,
-    "parentKeyMap",
-    parentKeyMap,
-    "isDiscriminator",
-    JSON.stringify(isDiscriminator),
-    "parentKeyMap?.discriminator",
-    JSON.stringify(parentKeyMap?.discriminator),
-    "parentKeyMap?.discriminatorValues",
-    JSON.stringify(parentKeyMap?.discriminatorValues),
-    // "currentKeyMap",
-    // currentKeyMap,
-  );
+  // log.info(
+  //   "JzodLiteralEditor render count",
+  //   JzodLiteralEditorRenderCount,
+  //   "rootLessListKey",
+  //   rootLessListKey,
+  //   "name",
+  //   name,
+  //   "parentKey",
+  //   parentKey,
+  //   "parentKeyMap",
+  //   parentKeyMap,
+  //   "isDiscriminator",
+  //   JSON.stringify(isDiscriminator),
+  //   "parentKeyMap?.discriminator",
+  //   JSON.stringify(parentKeyMap?.discriminator),
+  //   "parentKeyMap?.discriminatorValues",
+  //   JSON.stringify(parentKeyMap?.discriminatorValues),
+  //   // "currentKeyMap",
+  //   // currentKeyMap,
+  // );
   
   const discriminatorIndex: number = !parentKeyMap?.discriminator
     ? -1

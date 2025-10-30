@@ -96,75 +96,88 @@ export const TransformationResultPanel: React.FC<{
   }) => {
     log.info("Rendering TransformationResultPanel with result:", transformationResult);
     return (
-    <ThemedContainer style={{ flex: 1, maxWidth: "50%" }}>
-      <ThemedHeaderSection>
-        <ThemedTitle>
-          Transformation Result
-          {transformationResult &&
-            typeof transformationResult === "object" &&
-            "queryFailure" in transformationResult && (
-              <span style={{ color: "red", marginLeft: "10px", fontSize: "0.9em" }}>⚠️ Error</span>
-            )}
-        </ThemedTitle>
-      </ThemedHeaderSection>
+      <ThemedContainer style={{ flex: 1, maxWidth: "50%" }}>
+        <ThemedHeaderSection>
+          <ThemedTitle>
+            Transformation Result
+            {transformationResult &&
+              typeof transformationResult === "object" &&
+              "queryFailure" in transformationResult && (
+                <span style={{ color: "red", marginLeft: "10px", fontSize: "0.9em" }}>
+                  ⚠️ Error
+                </span>
+              )}
+          </ThemedTitle>
+        </ThemedHeaderSection>
 
-      {transformationResult &&
-      typeof transformationResult === "object" &&
-      "queryFailure" in transformationResult ? (
-        <ThemedCodeBlock>
-          {typeof transformationResult === "string"
-            ? transformationResult
-            : safeStringify(transformationResult)}
-        </ThemedCodeBlock>
-      ) : transformationResult !== null ? (
-        <TypedValueObjectEditorWithFormik
-          labelElement={<div>target:</div>}
-          initialValueObject={transformationResult}
-          formValueMLSchema={transformationResultSchema ?? { type: "any" } as JzodElement} // TODO: ILL-TYPED!!
-          deploymentUuid={deploymentUuid}
-          applicationSection={"data"}
-          formLabel={"Transformation Result Viewer"}
-          onSubmit={async () => {}} // No-op for readonly
-          maxRenderDepth={3}
-          readonly={true}
-        />
-      ) : (showAllInstances ? entityInstances.length > 0 : selectedEntityInstance) ? (
-        <div>
-          <div
-            style={{
-              marginBottom: "12px",
-              padding: "12px",
-              background: "#f5f5f5",
-              borderRadius: "4px",
-            }}
-          >
-            <div style={{ marginBottom: "8px", fontWeight: "bold" }}>
-              No transformation result yet.
-            </div>
-            <div style={{ marginBottom: "8px" }}>Create a transformer to see the result here.</div>
-            <div style={{ fontSize: "0.9em", color: "#666" }}>
-              <div style={{ marginBottom: "4px" }}>
-                Tip: Use contextReference to access the entity instance{showAllInstances ? "s" : ""}
-                :
+        {transformationResult &&
+        typeof transformationResult === "object" &&
+        "queryFailure" in transformationResult ? (
+          <ThemedCodeBlock>
+            {typeof transformationResult === "string"
+              ? transformationResult
+              : safeStringify(transformationResult)}
+          </ThemedCodeBlock>
+        ) : transformationResult !== null ? (
+          <TypedValueObjectEditorWithFormik
+            labelElement={<div>target:</div>}
+            initialValueObject={{ transformationResult }}
+            formValueMLSchema={
+              {
+                type: "object",
+                definition: {
+                  transformationResult:
+                    transformationResultSchema ?? ({ type: "any" } as JzodElement),
+                },
+              } // TODO: ILL-TYPED!!
+            }
+            formikValuePathAsString="transformationResult"
+            deploymentUuid={deploymentUuid}
+            applicationSection={"data"}
+            formLabel={"Transformation Result Viewer"}
+            onSubmit={async () => {}} // No-op for readonly
+            maxRenderDepth={3}
+            readonly={true}
+          />
+        ) : (showAllInstances ? entityInstances.length > 0 : selectedEntityInstance) ? (
+          <div>
+            <div
+              style={{
+                marginBottom: "12px",
+                padding: "12px",
+                background: "#f5f5f5",
+                borderRadius: "4px",
+              }}
+            >
+              <div style={{ marginBottom: "8px", fontWeight: "bold" }}>
+                No transformation result yet.
+              </div>
+              <div style={{ marginBottom: "8px" }}>
+                Create a transformer to see the result here.
+              </div>
+              <div style={{ fontSize: "0.9em", color: "#666" }}>
+                <div style={{ marginBottom: "4px" }}>
+                  Tip: Use contextReference to access the entity instance
+                  {showAllInstances ? "s" : ""}:
+                </div>
               </div>
             </div>
+            <ThemedCodeBlock>
+              {JSON.stringify(
+                {
+                  transformerType: "contextReference",
+                  // referenceName: showAllInstances ? "target" : "applyTo",
+                  referenceName: defaultTransformerInput,
+                },
+                null,
+                2
+              )}
+            </ThemedCodeBlock>
           </div>
-          <ThemedCodeBlock>
-            {JSON.stringify(
-              {
-                transformerType: "contextReference",
-                // referenceName: showAllInstances ? "target" : "applyTo",
-                referenceName: defaultTransformerInput,
-              },
-              null,
-              2
-            )}
-          </ThemedCodeBlock>
-        </div>
-      ) : (
-        <div style={{ padding: "12px", background: "#f5f5f5", borderRadius: "4px" }}>
-          No entity instance{showAllInstances ? "s" : ""} available for transformation.
-        </div>
-      )}
-    </ThemedContainer>
-  );}
+        ) : (
+          <div style={{ padding: "12px", background: "#f5f5f5", borderRadius: "4px" }}>
+            No entity instance{showAllInstances ? "s" : ""} available for transformation.
+          </div>
+        )}
+      </ThemedContainer>
+    );}

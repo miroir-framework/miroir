@@ -118,13 +118,13 @@ const EntityInstancePanel = React.memo<{
             <button
               onClick={onToggleShowAll}
               style={{
-              padding: "6px 12px",
-              fontSize: "13px",
-              backgroundColor: showAllInstances ? "#e6f3ff" : "#f0f0f0",
-              border: "1px solid #ccc",
-              borderRadius: "4px",
-              cursor: "pointer",
-              fontWeight: showAllInstances ? "bold" : "normal",
+                padding: "6px 12px",
+                fontSize: "13px",
+                backgroundColor: showAllInstances ? "#e6f3ff" : "#f0f0f0",
+                border: "1px solid #ccc",
+                borderRadius: "4px",
+                cursor: "pointer",
+                fontWeight: showAllInstances ? "bold" : "normal",
               }}
               title={showAllInstances ? "Switch to single instance view" : "Show all instances"}
             >
@@ -218,12 +218,18 @@ const EntityInstancePanel = React.memo<{
         entityInstances.length > 0 ? (
           <TypedValueObjectEditorWithFormik
             labelElement={<></>}
-            initialValueObject={entityInstances}
-            formValueMLSchema={{
-              type: "array",
-              definition:
-                selectedEntityInstanceDefinition?.jzodSchema ?? createGenericObjectSchema(),
-            }} // TODO: ILL-TYPED!!
+            initialValueObject={{ entityInstances }}
+            formValueMLSchema={
+              {
+                type: "object",
+                definition: {
+                  type: "array",
+                  definition:
+                    selectedEntityInstanceDefinition?.jzodSchema ?? createGenericObjectSchema(),
+                },
+              } as any
+            } // TODO: ILL-TYPED!!
+            formikValuePathAsString="entityInstances"
             deploymentUuid={deploymentUuid}
             applicationSection={"data"}
             formLabel={"All Entity Instances Viewer"}
@@ -240,11 +246,16 @@ const EntityInstancePanel = React.memo<{
       selectedEntityInstance ? (
         <TypedValueObjectEditorWithFormik
           labelElement={<></>}
-          initialValueObject={selectedEntityInstance}
+          initialValueObject={{selectedEntityInstance}}
           // valueObjectMMLSchema={createGenericObjectSchema()}
-          formValueMLSchema={
-            selectedEntityInstanceDefinition?.jzodSchema ?? createGenericObjectSchema()
-          }
+          formValueMLSchema={{
+            type: "object",
+            definition: {
+              selectedEntityInstance:
+                selectedEntityInstanceDefinition?.jzodSchema ?? createGenericObjectSchema(),
+            },
+          }}
+          formikValuePathAsString="selectedEntityInstance"
           deploymentUuid={deploymentUuid}
           applicationSection={"data"}
           formLabel={"Entity Instance Viewer"}
@@ -514,7 +525,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
   //   );
   // });
   const currentTransformerDefinition: TransformerForBuildPlusRuntime =
-    context.toolsPageState.transformerEditor?.currentTransformerDefinition;
+    context.toolsPageState.transformerEditor?.currentTransformerDefinition??{ transformerType: "constant", value: null };
 
   log.info("TransformerEditor currentTransformerDefinition:", currentTransformerDefinition);
   log.info("TransformerEditor transformerDefinitionSchema:", transformerDefinitionSchema);
@@ -833,7 +844,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
       miroirContextService.miroirContext.miroirEventService.clear();
 
       context.updateTransformerEditorState({
-        currentTransformerDefinition: newTransformerDefinition,
+        currentTransformerDefinition: newTransformerDefinition["currentTransformerDefinition"],
       });
     },
     [
@@ -867,6 +878,9 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
           Transformer Editor for Entity "{currentReportTargetEntity?.name || selectedEntityUuid}" of
           deployment {deploymentUuid}
         </ThemedTitle>
+        {/* <pre style={{ fontSize: "0.8em", whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
+          <strong>currentTransformerDefinition:</strong> {JSON.stringify(currentTransformerDefinition, null, 2)}
+        </pre> */}
         <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
           <button
             onClick={copyTransformerDefinitionToClipboard}
@@ -904,8 +918,12 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
         {/* Top Pane: Transformer Definition Editor */}
         <TypedValueObjectEditorWithFormik
           labelElement={<>Transformer Definition</>}
-          initialValueObject={currentTransformerDefinition}
-          formValueMLSchema={transformerDefinitionSchema}
+          initialValueObject={{ currentTransformerDefinition: currentTransformerDefinition }}
+          formValueMLSchema={{
+            type: "object",
+            definition: { currentTransformerDefinition: transformerDefinitionSchema },
+          }}
+          formikValuePathAsString="currentTransformerDefinition"
           deploymentUuid={deploymentUuid}
           applicationSection={"model"}
           formLabel={"Transformer Definition Editor"}

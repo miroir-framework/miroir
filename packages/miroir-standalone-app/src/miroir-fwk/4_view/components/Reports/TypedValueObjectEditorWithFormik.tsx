@@ -71,12 +71,21 @@ export const TypedValueObjectEditorWithFormik: React.FC<TypedValueObjectEditorWi
       validateOnBlur={false}
     >
       {/* {(formik: FormikProps<Record<string, any>>) => ( */}
-      <TypedValueObjectEditor
-        {...editorProps}
-        formValueMLSchema={valueObjectMMLSchema}
-        readonly={readonly}
-        zoomInPath={zoomInPath}
-      />
+      <div>
+        {/* <pre style={{ fontSize: '0.8em', whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
+          <strong>formikValuePathAsString:</strong> {editorProps.formikValuePathAsString}
+          {'\n\n'}
+          <strong>initialValueObject:</strong> {JSON.stringify(initialValueObject, null, 2)}
+          {'\n\n'}
+          <strong>valueObjectMMLSchema:</strong> {JSON.stringify(valueObjectMMLSchema, null, 2)}
+        </pre> */}
+        <TypedValueObjectEditor
+          {...editorProps}
+          formValueMLSchema={valueObjectMMLSchema}
+          readonly={readonly}
+          zoomInPath={zoomInPath}
+        />
+      </div>
       {/* )} */}
     </Formik>
   );

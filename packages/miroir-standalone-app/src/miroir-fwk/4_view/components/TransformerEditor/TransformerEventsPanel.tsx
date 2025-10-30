@@ -120,55 +120,69 @@ const DisplayTransformerEvent: React.FC<{
   }, [displayedParameters, isExpanded]);
 
   return (
-    <div style={{ ...indentStyle, marginBottom: '8px' }}>
-      <div 
-        style={{ 
-          display: 'flex', 
-          alignItems: 'center', 
-          padding: '8px 12px',
-          backgroundColor: '#f8f9fa',
-          borderRadius: '4px',
+    <div style={{ ...indentStyle, marginBottom: "8px" }}>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          padding: "8px 12px",
+          backgroundColor: "#f8f9fa",
+          borderRadius: "4px",
           border: `1px solid ${statusColor}`,
-          borderLeftWidth: '4px',
-          cursor: hasDetails ? 'pointer' : 'default'
+          borderLeftWidth: "4px",
+          cursor: hasDetails ? "pointer" : "default",
         }}
         onClick={() => hasDetails && setIsExpanded(!isExpanded)}
       >
         <div style={{ flex: 1 }}>
-          <div style={{ fontWeight: 'bold', fontSize: '14px' }}>
+          <div style={{ fontWeight: "bold", fontSize: "14px" }}>
             {activity.transformerName} ({activity.transformerType})
           </div>
-          <div style={{ fontSize: '12px', color: '#666', marginTop: '2px' }}>
-            {activity.transformerStep} • {formatDuration(activity.endTime? activity.endTime - activity.startTime:undefined)} • {event.activity.status}
-            {activity.transformerError && <span style={{ color: '#ff6b6b', marginLeft: '8px' }}>Error</span>}
+          <div style={{ fontSize: "12px", color: "#666", marginTop: "2px" }}>
+            {activity.transformerStep} •{" "}
+            {formatDuration(activity.endTime ? activity.endTime - activity.startTime : undefined)} •{" "}
+            {event.activity.status}
+            {activity.transformerError && (
+              <span style={{ color: "#ff6b6b", marginLeft: "8px" }}>Error</span>
+            )}
           </div>
         </div>
-        
+
         {hasDetails && (
-          <div style={{ marginLeft: '8px', color: '#666' }}>
-            {isExpanded ? '▼' : '▶'}
-          </div>
+          <div style={{ marginLeft: "8px", color: "#666" }}>{isExpanded ? "▼" : "▶"}</div>
         )}
       </div>
-      
+
       {/* ERROR */}
       {isExpanded && hasDetails && (
-        <div style={{ marginTop: '8px', padding: '12px', backgroundColor: '#fff', border: '1px solid #dee2e6', borderRadius: '4px' }}>
+        <div
+          style={{
+            marginTop: "8px",
+            padding: "12px",
+            backgroundColor: "#fff",
+            border: "1px solid #dee2e6",
+            borderRadius: "4px",
+          }}
+        >
           {activity.transformerError && (
-            <div style={{ marginBottom: '12px' }}>
-              <div style={{ fontWeight: 'bold', marginBottom: '4px', color: '#ff6b6b' }}>Error:</div>
-              <ThemedCodeBlock style={{ backgroundColor: '#fff5f5', border: '1px solid #ff6b6b' }}>
+            <div style={{ marginBottom: "12px" }}>
+              <div style={{ fontWeight: "bold", marginBottom: "4px", color: "#ff6b6b" }}>
+                Error:
+              </div>
+              <ThemedCodeBlock style={{ backgroundColor: "#fff5f5", border: "1px solid #ff6b6b" }}>
                 {/* {event.transformerError} */}
                 {preciseError ? JSON.stringify(preciseError, null, 2) : activity.transformerError}
               </ThemedCodeBlock>
             </div>
           )}
-          
+
           {/* LOGS */}
           {event.eventLogs && event.eventLogs.length > 0 && (
             <div>
-              <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>Logs ({event.eventLogs.length}):</div>
-              <div style={{ maxHeight: '800px', overflowY: 'auto' }}>
+              <div style={{ fontWeight: "bold", marginBottom: "4px" }}>
+                Logs ({event.eventLogs.length}):
+              </div>
+              <div style={{ maxHeight: "800px", overflowY: "auto" }}>
                 {/* {event.eventLogs.map((logEntry: TransformerEntry, index: number) => ( */}
                 {event.eventLogs.map((log: MiroirEventLog, index: number) => (
                   <EventLogComponent
@@ -177,9 +191,9 @@ const DisplayTransformerEvent: React.FC<{
                     isExpanded={expandedLogIds.has(log.logId)}
                     onToggle={() => handleToggleLogExpansion(log.logId)}
                   />
-                  
-                  // <div key={index} style={{ 
-                  //   padding: '4px 8px', 
+
+                  // <div key={index} style={{
+                  //   padding: '4px 8px',
                   //   marginBottom: '2px',
                   //   backgroundColor: '#f8f9fa',
                   //   borderRadius: '2px',
@@ -196,15 +210,19 @@ const DisplayTransformerEvent: React.FC<{
 
           {/* PARAMS */}
           {displayedParameters && (
-            <div style={{ marginBottom: '12px' }}>
-              <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>Parameters:</div>
+            <div style={{ marginBottom: "12px" }}>
+              <div style={{ fontWeight: "bold", marginBottom: "4px" }}>Parameters:</div>
               {/* <ThemedCodeBlock>
                 {JSON.stringify(Object.keys(activity.transformerParams), null, 2)}
               </ThemedCodeBlock> */}
               <TypedValueObjectEditorWithFormik
                 labelElement={<div>target:</div>}
-                initialValueObject={displayedParameters}
-                formValueMLSchema={parametersSchema} // TODO: ILL-TYPED!!
+                initialValueObject={{ displayedParameters }}
+                formValueMLSchema={{
+                  type: "object",
+                  definition: { displayedParameters: parametersSchema },
+                }} // TODO: ILL-TYPED!!
+                formikValuePathAsString="displayedParameters"
                 deploymentUuid={deploymentUuid}
                 applicationSection={"data"}
                 formLabel={"Transformation Result Viewer"}
@@ -214,20 +232,19 @@ const DisplayTransformerEvent: React.FC<{
               />
             </div>
           )}
-          
+
           {/* RESULTS */}
           {activity.transformerResult && (
-            <div style={{ marginBottom: '12px' }}>
-              <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>Result:</div>
+            <div style={{ marginBottom: "12px" }}>
+              <div style={{ fontWeight: "bold", marginBottom: "4px" }}>Result:</div>
               <ThemedCodeBlock>
                 {JSON.stringify(activity.transformerResult, null, 2)}
               </ThemedCodeBlock>
             </div>
           )}
-          
         </div>
       )}
-      
+
       {/* Render child events */}
       {/* {event.children && event.children.length > 0 && (
         <div style={{ marginTop: '8px' }}>

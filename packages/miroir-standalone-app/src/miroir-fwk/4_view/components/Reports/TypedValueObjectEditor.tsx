@@ -384,6 +384,13 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
         {typeError ? "typeError: " : ""}
         {typeError}
       </div>
+      {/* <pre style={{ fontSize: "0.8em", whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
+        <strong>formikValuePathAsString:</strong> {formikValuePathAsString}
+        {"\n\n"}
+        <strong>formik.values:</strong> {JSON.stringify(formik.values, null, 2)}
+        {"\n\n"}
+        <strong>formValueMLSchema:</strong> {JSON.stringify(formValueMLSchema, null, 2)}
+      </pre> */}
       {readonly ? (
         // Readonly mode: just display the editor without form
         <div>
@@ -413,7 +420,7 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
               // listKey={"ROOT" + (reportSectionPathAsString?("." + reportSectionPathAsString):"")}
               // rootLessListKey={reportSectionPathAsString??""}
               // rootLessListKeyArray={reportSectionPathAsString?[reportSectionPathAsString]:[]}
-              reportSectionPathAsString={formikValuePathAsString??""}
+              reportSectionPathAsString={formikValuePathAsString ?? ""}
               name={"ROOT"}
               isTopLevel={true}
               listKey={"ROOT"}
@@ -469,7 +476,7 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
                 // listKey={"ROOT" + (reportSectionPathAsString?("." + reportSectionPathAsString):"")}
                 // rootLessListKey={reportSectionPathAsString??""}
                 // rootLessListKeyArray={reportSectionPathAsString?[reportSectionPathAsString]:[]}
-                reportSectionPathAsString={formikValuePathAsString??""}
+                reportSectionPathAsString={formikValuePathAsString ?? ""}
                 name={"ROOT"}
                 isTopLevel={true}
                 listKey={"ROOT"}
@@ -495,7 +502,7 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
                   <ThemedStyledButton
                     type="submit"
                     variant="contained"
-                    style={{maxWidth: "300px"}}
+                    style={{ maxWidth: "300px" }}
                     onClick={(e) => {
                       log.info("TypedValueObjectEditor submit button clicked", e);
                       formik.setFieldValue(lastSubmitButtonClicked, formikValuePathAsString);
