@@ -6,6 +6,9 @@
   "entityUuid": "681be9ca-c593-45f5-b45a-5f1d4969e91e",
   "conceptLevel": "Model",
   "defaultInstanceDetailsReportUuid": "1c06268b-2ddb-433c-ae4f-46546908125d",
+  "cache": {
+    "cacheAllInstancesOnRefresh": true
+  },
   "viewAttributes": [
     "name",
     "uuid",

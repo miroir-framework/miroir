@@ -10170,6 +10170,34 @@ export const miroirFundamentalJzodSchema = {
               }
             }
           },
+          "cache": {
+            "type": "object",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 11,
+                "defaultLabel": "Cache Options",
+                "editable": true
+              }
+            },
+            "definition": {
+              "cacheAllInstancesOnRefresh": {
+                "type": "boolean",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Enable Systematic Caching of All Instances",
+                    "description": "If enabled, all instances of this entity will be cached in memory when the cache is refreshed. This can improve performance when working with large datasets, but will use more memory on the client side.",
+                    "editable": true,
+                    "initializeTo": {
+                      "initializeToType": "value",
+                      "value": true
+                    }
+                  }
+                }
+              }
+            }
+          },
           "jzodSchema": {
             "type": "schemaReference",
             "definition": {
@@ -33794,6 +33822,78 @@ export const miroirFundamentalJzodSchema = {
                                   }
                                 }
                               ]
+                            }
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "transformerForBuildCarryOnObject"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                ]
+              },
+              "cache": {
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "id": 11,
+                    "defaultLabel": "Cache Options",
+                    "editable": true,
+                    "isTemplate": true
+                  }
+                },
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "transformerForBuildCarryOnObject"
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "tag": {
+                      "value": {
+                        "id": 11,
+                        "defaultLabel": "Cache Options",
+                        "editable": true,
+                        "isTemplate": true
+                      }
+                    },
+                    "definition": {
+                      "cacheAllInstancesOnRefresh": {
+                        "type": "union",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Enable Systematic Caching of All Instances",
+                            "description": "If enabled, all instances of this entity will be cached in memory when the cache is refreshed. This can improve performance when working with large datasets, but will use more memory on the client side.",
+                            "editable": true,
+                            "initializeTo": {
+                              "initializeToType": "value",
+                              "value": true
+                            },
+                            "isTemplate": true
+                          }
+                        },
+                        "definition": [
+                          {
+                            "type": "boolean",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Enable Systematic Caching of All Instances",
+                                "description": "If enabled, all instances of this entity will be cached in memory when the cache is refreshed. This can improve performance when working with large datasets, but will use more memory on the client side.",
+                                "editable": true,
+                                "initializeTo": {
+                                  "initializeToType": "value",
+                                  "value": true
+                                }
+                              }
                             }
                           },
                           {

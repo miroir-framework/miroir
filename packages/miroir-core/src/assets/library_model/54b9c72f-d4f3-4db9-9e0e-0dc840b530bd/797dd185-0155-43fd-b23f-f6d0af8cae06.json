@@ -8,6 +8,9 @@
   "name": "Book",
   "icon": "Book",
   "defaultInstanceDetailsReportUuid": "c3503412-3d8a-43ef-a168-aa36e975e606",
+  "cache": {
+    "cacheAllInstancesOnRefresh": true
+  },
   "viewAttributes": [
     "name",
     "author",

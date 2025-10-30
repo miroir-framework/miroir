@@ -12,6 +12,9 @@
     "defaultLabel",
     "uuid"
   ],
+  "cache": {
+    "cacheAllInstancesOnRefresh": true
+  },
   "jzodSchema": {
     "type": "object",
     "definition": {

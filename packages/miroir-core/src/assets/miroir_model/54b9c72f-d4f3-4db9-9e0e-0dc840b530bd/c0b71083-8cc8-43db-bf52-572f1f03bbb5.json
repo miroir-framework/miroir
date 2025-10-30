@@ -8,6 +8,9 @@
   "name": "ApplicationVersionCrossEntityDefinition",
   "description": "The mapping among SelfApplication Versions and Entity Definitions",
   "icon": "Interests",
+  "cache": {
+    "cacheAllInstancesOnRefresh": true
+  },
   "jzodSchema": {
     "type": "object",
     "definition": {

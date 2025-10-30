@@ -7,6 +7,9 @@
   "conceptLevel": "Model",
   "name": "SelfApplicationDeploymentConfiguration",
   "icon": "Interests",
+  "cache": {
+    "cacheAllInstancesOnRefresh": true
+  },
   "jzodSchema": {
     "type": "object",
     "definition": {

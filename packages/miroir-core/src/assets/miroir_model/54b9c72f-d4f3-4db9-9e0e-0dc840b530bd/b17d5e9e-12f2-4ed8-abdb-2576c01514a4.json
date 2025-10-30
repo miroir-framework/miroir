@@ -7,6 +7,9 @@
   "name":"Commit",
   "conceptLevel":"MetaModel",
   "description": "Commits",
+  "cache": {
+    "cacheAllInstancesOnRefresh": true
+  },
   "jzodSchema": {
     "type": "object",
     "definition": {

@@ -8,6 +8,15 @@
   "defaultInstanceDetailsReportUuid": "4bbf3894-93ea-4c7f-9d8a-827152a0118e",
   "conceptLevel": "Model",
   "description": "Definition of a Query",
+  "cache": {
+    "cacheAllInstancesOnRefresh": true
+  },
+  "viewAttributes": [
+    "name",
+    "defaultLabel",
+    "description",
+    "uuid"
+  ],
   "jzodSchema": {
     "type": "object",
     "definition": {
@@ -1311,11 +1320,5 @@
         }
       }
     }
-  },
-  "viewAttributes": [
-    "name",
-    "defaultLabel",
-    "description",
-    "uuid"
-  ]
+  }
 }

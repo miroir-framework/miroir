@@ -14,6 +14,9 @@
     "uuid"
   ],
   "defaultInstanceDetailsReportUuid": "1a9155a0-7a3f-4ffe-863a-e5d2a7e3c2b5",
+  "cache": {
+    "cacheAllInstancesOnRefresh": true
+  },
   "jzodSchema": {
     "type": "object",
     "definition": {

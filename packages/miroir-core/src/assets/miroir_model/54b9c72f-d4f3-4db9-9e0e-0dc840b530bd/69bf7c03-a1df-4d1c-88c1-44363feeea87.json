@@ -7,6 +7,9 @@
   "conceptLevel": "Model",
   "name": "ApplicationModelBranch",
   "icon": "Interests",
+  "cache": {
+    "cacheAllInstancesOnRefresh": true
+  },
   "jzodSchema": {
     "type": "object",
     "definition": {

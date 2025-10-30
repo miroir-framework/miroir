@@ -7,6 +7,9 @@
   "name": "Endpoint",
   "conceptLevel": "Model",
   "description": "definition of an Endpoint",
+  "cache": {
+    "cacheAllInstancesOnRefresh": true
+  },
   "viewAttributes": [
     "name",
     "description",
