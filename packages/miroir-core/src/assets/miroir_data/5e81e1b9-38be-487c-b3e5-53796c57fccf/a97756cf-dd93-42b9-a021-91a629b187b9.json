@@ -354,18 +354,6 @@
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "transformerForRuntime_constantBigint"
-            }
-          },
-          {
-            "type": "schemaReference",
-            "definition": {
-              "relativePath": "transformerForRuntime_constantBoolean"
-            }
-          },
-          {
-            "type": "schemaReference",
-            "definition": {
               "relativePath": "transformerForRuntime_constantUuid"
             }
           },

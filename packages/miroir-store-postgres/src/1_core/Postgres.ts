@@ -24,17 +24,17 @@ export const getConstantSqlTypeMap: Record<string, {targetType: "json" | "scalar
   //   sqlTargetType: "double precision",
   //   label: "constantNumber",
   // },
-  "constantBigint": {
-    targetType: "scalar",
-    // sqlTargetType: "double precision",
-    sqlTargetType: "bigint",
-    label: "constantBigint",
-  },
-  "constantBoolean": {
-    targetType: "scalar",
-    sqlTargetType: "boolean",
-    label: "constantBoolean",
-  },
+  // "constantBigint": {
+  //   targetType: "scalar",
+  //   // sqlTargetType: "double precision",
+  //   sqlTargetType: "bigint",
+  //   label: "constantBigint",
+  // },
+  // "constantBoolean": {
+  //   targetType: "scalar",
+  //   sqlTargetType: "boolean",
+  //   label: "constantBoolean",
+  // },
   "constantObject": {
     targetType: "json",
     sqlTargetType: "jsonb",

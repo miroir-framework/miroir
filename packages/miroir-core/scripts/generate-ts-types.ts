@@ -138,7 +138,7 @@ export type TransformerForBuild =
   | TransformerForBuild_conditional
   | TransformerForBuild_constant
   | TransformerForBuild_constantArray
-  | TransformerForBuild_constantBoolean
+  // | TransformerForBuild_constantBoolean
   // | TransformerForBuild_constantNumber
   | TransformerForBuild_constantObject
   // | TransformerForBuild_constantString
@@ -160,7 +160,7 @@ export type TransformerForBuild =
   | TransformerForBuild_object_fullTemplate
   | TransformerForBuild_parameterReference
   | TransformerForBuild_unique
-  | TransformerForBuild_constantBigint
+  // | TransformerForBuild_constantBigint
   | TransformerForBuild_InnerReference
   | TransformerForBuild_dataflowSequence
   // MLS
@@ -196,7 +196,7 @@ export const transformerForBuild: z.ZodType<TransformerForBuild> = z.lazy(() => 
     transformerForBuild_conditional,
     transformerForBuild_constant,
     transformerForBuild_constantArray,
-    transformerForBuild_constantBoolean,
+    // transformerForBuild_constantBoolean,
     // transformerForBuild_constantNumber,
     transformerForBuild_constantObject,
     // transformerForBuild_constantString,
@@ -218,7 +218,7 @@ export const transformerForBuild: z.ZodType<TransformerForBuild> = z.lazy(() => 
     transformerForBuild_object_fullTemplate,
     transformerForBuild_parameterReference,
     transformerForBuild_unique,
-    transformerForBuild_constantBigint,
+    // transformerForBuild_constantBigint,
     transformerForBuild_InnerReference,
     transformerForBuild_dataflowSequence,
     // MLS
@@ -232,7 +232,7 @@ export type TransformerForRuntime =
   | TransformerForRuntime_menu_addItem
   | TransformerForRuntime_constant
   | TransformerForRuntime_constantArray
-  | TransformerForRuntime_constantBoolean
+  // | TransformerForRuntime_constantBoolean
   // | TransformerForRuntime_constantNumber
   | TransformerForRuntime_constantObject
   // | TransformerForRuntime_constantString
@@ -254,7 +254,7 @@ export type TransformerForRuntime =
   | TransformerForRuntime_objectValues
   | TransformerForRuntime_object_fullTemplate
   | TransformerForRuntime_unique
-  | TransformerForRuntime_constantBigint
+  // | TransformerForRuntime_constantBigint
   | TransformerForRuntime_InnerReference
   | TransformerForRuntime_dataflowSequence
   // MLS
@@ -268,7 +268,7 @@ export const transformerForRuntime: z.ZodType<TransformerForRuntime> = z.union([
   // 
   z.lazy(() => transformerForRuntime_constant),
   z.lazy(() => transformerForRuntime_constantArray),
-  z.lazy(() => transformerForRuntime_constantBoolean),
+  // z.lazy(() => transformerForRuntime_constantBoolean),
   // z.lazy(() => transformerForRuntime_constantNumber),
   z.lazy(() => transformerForRuntime_constantObject),
   // z.lazy(() => transformerForRuntime_constantString),
@@ -290,7 +290,7 @@ export const transformerForRuntime: z.ZodType<TransformerForRuntime> = z.union([
   z.lazy(() => transformerForRuntime_objectValues),
   z.lazy(() => transformerForRuntime_object_fullTemplate),
   z.lazy(() => transformerForRuntime_unique),
-  z.lazy(() => transformerForRuntime_constantBigint),
+  // z.lazy(() => transformerForRuntime_constantBigint),
   z.lazy(() => transformerForRuntime_InnerReference),
   z.lazy(() => transformerForRuntime_dataflowSequence),
   // MLS
@@ -317,7 +317,7 @@ export type TransformerForBuildPlusRuntime =
   | TransformerForBuildPlusRuntime_conditional
   | TransformerForBuildPlusRuntime_constant
   | TransformerForBuildPlusRuntime_constantArray
-  | TransformerForBuildPlusRuntime_constantBoolean
+  // | TransformerForBuildPlusRuntime_constantBoolean
   // | TransformerForBuildPlusRuntime_constantNumber
   | TransformerForBuildPlusRuntime_constantObject
   // | TransformerForBuildPlusRuntime_constantString
@@ -340,7 +340,7 @@ export type TransformerForBuildPlusRuntime =
   | TransformerForBuildPlusRuntime_parameterReference
   | TransformerForBuildPlusRuntime_contextReference
   | TransformerForBuildPlusRuntime_unique
-  | TransformerForBuildPlusRuntime_constantBigint
+  // | TransformerForBuildPlusRuntime_constantBigint
   | TransformerForBuildPlusRuntime_InnerReference
   | TransformerForBuildPlusRuntime_dataflowSequence
   // MLS
@@ -377,7 +377,7 @@ export const transformerForBuildPlusRuntime: z.ZodType<TransformerForBuildPlusRu
     transformerForBuildPlusRuntime_conditional,
     transformerForBuildPlusRuntime_constant,
     transformerForBuildPlusRuntime_constantArray,
-    transformerForBuildPlusRuntime_constantBoolean,
+    // transformerForBuildPlusRuntime_constantBoolean,
     // transformerForBuildPlusRuntime_constantNumber,
     transformerForBuildPlusRuntime_constantObject,
     // transformerForBuildPlusRuntime_constantString,
@@ -400,7 +400,7 @@ export const transformerForBuildPlusRuntime: z.ZodType<TransformerForBuildPlusRu
     transformerForBuildPlusRuntime_parameterReference,
     transformerForBuildPlusRuntime_contextReference,
     transformerForBuildPlusRuntime_unique,
-    transformerForBuildPlusRuntime_constantBigint,
+    // transformerForBuildPlusRuntime_constantBigint,
     transformerForBuildPlusRuntime_InnerReference,
     transformerForBuildPlusRuntime_dataflowSequence,
     // MLS

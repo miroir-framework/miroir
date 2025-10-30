@@ -98,25 +98,6 @@
                     }
                   }
                 ]
-              },
-              {
-                "transformerTestType": "transformerTestSuite",
-                "transformerTestLabel": "constantBoolean",
-                "transformerTests": [
-                  {
-                    "transformerTestType": "transformerTest",
-                    "transformerTestLabel": "resolve basic build transformer constantBoolean",
-                    "transformerName": "constantBoolean",
-                    "runTestStep": "build",
-                    "transformer": {
-                      "transformerType": "constantBoolean",
-                      "interpolation": "build",
-                      "value": true
-                    },
-                    "transformerParams": {},
-                    "expectedValue": true
-                  }
-                ]
               }
             ]
           },
@@ -354,24 +335,6 @@
                     "expectedValue": {
                       "test": "test"
                     }
-                  }
-                ]
-              },
-              {
-                "transformerTestType": "transformerTestSuite",
-                "transformerTestLabel": "constantBoolean",
-                "transformerTests": [
-                  {
-                    "transformerTestType": "transformerTest",
-                    "transformerTestLabel": "resolve basic transformer constantBoolean",
-                    "transformerName": "constantBoolean",
-                    "transformer": {
-                      "transformerType": "constantBoolean",
-                      "interpolation": "runtime",
-                      "value": true
-                    },
-                    "transformerParams": {},
-                    "expectedValue": true
                   }
                 ]
               },

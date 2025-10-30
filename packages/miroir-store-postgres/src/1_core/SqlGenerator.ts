@@ -193,17 +193,17 @@ function getSqlTypeForValue(
     //   label = "constantNumber";
     //   break;
     // }
-    case "bigint": {
-      // sqlTargetType = "double precision";
-      sqlTargetType = "bigint";
-      label = "constantBigint";
-      break;
-    }
-    case "boolean": {
-      sqlTargetType = "boolean";
-      label = "constantBoolean";
-      break;
-    }
+    // case "bigint": {
+    //   // sqlTargetType = "double precision";
+    //   sqlTargetType = "bigint";
+    //   label = "constantBigint";
+    //   break;
+    // }
+    // case "boolean": {
+    //   sqlTargetType = "boolean";
+    //   label = "constantBoolean";
+    //   break;
+    // }
     case "object": {
       sqlTargetType = "jsonb";
       label = "constantObject";
