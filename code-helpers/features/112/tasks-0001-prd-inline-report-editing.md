@@ -74,7 +74,7 @@ Never commit after you've checked your work, just stop short of commiting, leave
   - [x] 2.10 Pass down `editMode`, `editedReportDefinition`, `onSectionEdit`, and `onSectionCancel` as props to child components
   - [x] 2.11 Ensure ReportView continues to use original Report definition for rendering until section is explicitly saved locally
 
-- [ ] 3.0 Create ReportSectionViewWithEditor Component with Section-Level Controls
+- [x] 3.0 Create ReportSectionViewWithEditor Component with Section-Level Controls
   - [x] 3.1 Create new file `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/ReportSectionViewWithEditor.tsx`
   - [x] 3.2 Define `ReportSectionViewWithEditorProps` interface extending `ReportSectionViewProps` with additional fields: `editMode: boolean`, `sectionPath: string`, `onSectionEdit: (path: string, newDefinition: any) => void`, `onSectionCancel: (path: string) => void`, `isSectionModified: boolean`
   - [x] 3.3 Implement `ReportSectionViewWithEditor` component that wraps `ReportSectionView`
@@ -87,23 +87,23 @@ Never commit after you've checked your work, just stop short of commiting, leave
   - [x] 3.10 Add cancel button (Close icon) that calls `onSectionCancel` and sets `isEditing` to false
   - [x] 3.11 Recursively propagate editor props down to nested ReportSectionView components (for "list" and "grid" section types)
   - [x] 3.12 Ensure section continues rendering with current definition while being edited (live preview)
-  - [x] 3.13 create non-regression test `ReportSectionViewWithEditor.integ.test` that checks that existing Reports can be properly displayed using `ReportSectionViewWithEditor` as they could be using `ReportSectionView`
-  - [x] iterate running `npm run testByFile -w miroir-standalone-app -- ReportSectionViewWithEditor.integ.test` until non-regression is ensured.
+  - [x] 3.13 create non-regression test `ReportPage.integ.test` that checks that existing Reports can be properly displayed using `ReportSectionViewWithEditor` as they could be using `ReportSectionView`
+  - [x] iterate running `npm run testByFile -w miroir-standalone-app -- ReportPage.integ.test` until non-regression is ensured.
 
-- [ ] 4.0 Implement Section Editor with TypedValueObjectEditor Integration
-  - [ ] 4.1 In `ReportSectionViewWithEditor`, when `isEditing === true`, render `TypedValueObjectEditor` component below the section content
-  - [ ] 4.2 Pass the current section's Report definition as `valueObject` prop to `TypedValueObjectEditor`
-  - [ ] 4.3 Calculate appropriate `zoomInPath` based on section type (e.g., "definition.section.definition[0]" for first section in list)
-  - [ ] 4.4 Pass Report entity's Jzod schema as `valueObjectMMLSchema` (fetch from `packages/miroir-core/src/assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916.json` via model)
-  - [ ] 4.5 Set `readonly={false}` to enable editing
-  - [ ] 4.6 Set `maxRenderDepth={Infinity}` to allow full depth editing of nested structures (extractors, combiners, runtimeTransformers)
-  - [ ] 4.7 Use `TypedValueObjectEditor`'s built-in validation (it already uses `JzodElementEditor` patterns)
-  - [ ] 4.8 Create expandable/collapsible panel to show runtime environment (reportParameters) in read-only mode
-  - [ ] 4.9 Use `TypedValueObjectEditor` in readonly mode to display reportParameters (if defined in Report)
-  - [ ] 4.10 Handle `onSubmit` callback from `TypedValueObjectEditor` - this will be the save action that updates local state
-  - [ ] 4.11 Ensure validation errors from `TypedValueObjectEditor` prevent saving (save button should be disabled when errors exist)
-  - [ ] 4.12 Enhance `ReportSectionViewWithEditor.integ.test` to test editing functionality for all section-level properties: extractors, combiners, runtimeTransformers, extractorTemplates, combinerTemplates, runStoredQueries.
-  - [ ] 4.13 iterate on running `npm run testByFile -w miroir-standalone-app -- ReportSectionViewWithEditor.integ.test` until edition functionalities are properly working.
+- [x] 4.0 Implement Section Editor with TypedValueObjectEditor Integration
+  - [x] 4.1 In `ReportSectionViewWithEditor`, when `isEditing === true`, render `TypedValueObjectEditor` component below the section content
+  - [x] 4.2 Pass the current section's Report definition as `valueObject` prop to `TypedValueObjectEditor`
+  - [x] 4.3 Calculate appropriate `zoomInPath` based on section type (e.g., "definition.section.definition[0]" for first section in list)
+  - [x] 4.4 Pass Report entity's Jzod schema as `valueObjectMMLSchema` (fetch from `packages/miroir-core/src/assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916.json` via model)
+  - [x] 4.5 Set `readonly={false}` to enable editing
+  - [x] 4.6 Set `maxRenderDepth={Infinity}` to allow full depth editing of nested structures (extractors, combiners, runtimeTransformers)
+  - [x] 4.7 Use `TypedValueObjectEditor`'s built-in validation (it already uses `JzodElementEditor` patterns)
+  - [x] 4.8 Create expandable/collapsible panel to show runtime environment (reportParameters) in read-only mode
+  - [x] 4.9 Use `TypedValueObjectEditor` in readonly mode to display reportParameters (if defined in Report)
+  - [x] 4.10 Handle `onSubmit` callback from `TypedValueObjectEditor` - this will be the save action that updates local state
+  - [x] 4.11 Ensure validation errors from `TypedValueObjectEditor` prevent saving (save button should be disabled when errors exist)
+  - [x] 4.12 Enhance `ReportPage.integ.test` to test editing functionality for all section-level properties: extractors, combiners, runtimeTransformers, extractorTemplates, combinerTemplates, runStoredQueries.
+  - [x] 4.13 iterate on running `npm run testByFile -w miroir-standalone-app -- ReportPage.integ.test` until edition functionalities are properly working.
 
 - [ ] 5.0 Implement Submit Action and Storage Persistence
   - [ ] 5.1 In `ReportViewWithEditor`, implement `handleSubmit` callback for the Submit button
