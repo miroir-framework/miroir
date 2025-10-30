@@ -2,7 +2,7 @@
   "uuid": "3ec73049-5e54-40aa-bc86-4c4906d00baa",
   "name": "mapperListToList",
   "defaultLabel": "mapperListToList",
-  "description": "Transform a list into another list, running the given transformer on each item of the list",
+  "description": "Transforms each element in a list by applying a transformer to every item.",
   "parentUuid": "a557419d-a288-4fb8-8a1e-971c86c113b8",
   "parentDefinitionVersionUuid": "54a16d69-c1f0-4dd7-aba4-a2cda883586c",
   "parentName": "TransformerDefinition",

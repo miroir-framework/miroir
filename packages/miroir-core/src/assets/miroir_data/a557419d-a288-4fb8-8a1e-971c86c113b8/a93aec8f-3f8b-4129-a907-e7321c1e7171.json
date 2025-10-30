@@ -2,7 +2,7 @@
   "uuid": "a93aec8f-3f8b-4129-a907-e7321c1e7171",
   "name": "unique",
   "defaultLabel": "unique",
-  "description": "Transform a list into another list without duplicate values",
+  "description": "Removes duplicate values from a list, returning only unique elements.",
   "parentUuid": "a557419d-a288-4fb8-8a1e-971c86c113b8",
   "parentDefinitionVersionUuid": "54a16d69-c1f0-4dd7-aba4-a2cda883586c",
   "parentName": "TransformerDefinition",

@@ -2,7 +2,7 @@
   "uuid": "690251e7-3e9f-4930-b253-822d5187b621",
   "name": "constantBigint",
   "defaultLabel": "constantBigint",
-  "description": "return a constant bigint given as value.",
+  "description": "Returns a constant bigint value for large integers.",
   "parentUuid": "a557419d-a288-4fb8-8a1e-971c86c113b8",
   "parentDefinitionVersionUuid": "54a16d69-c1f0-4dd7-aba4-a2cda883586c",
   "parentName": "TransformerDefinition",

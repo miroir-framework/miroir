@@ -2,7 +2,7 @@
   "uuid": "a8f8e3c6-9876-4e2d-8b4f-123456789abc",
   "name": "resolveSchemaReferenceInContext",
   "defaultLabel": "Resolve Schema Reference In Context",
-  "description": "Resolves schema references within a given context to the actual schema definition",
+  "description": "Resolves schema references within a context to get the actual schema definition.",
   "parentUuid": "a557419d-a288-4fb8-8a1e-971c86c113b8",
   "parentDefinitionVersionUuid": "54a16d69-c1f0-4dd7-aba4-a2cda883586c",
   "parentName": "TransformerDefinition",

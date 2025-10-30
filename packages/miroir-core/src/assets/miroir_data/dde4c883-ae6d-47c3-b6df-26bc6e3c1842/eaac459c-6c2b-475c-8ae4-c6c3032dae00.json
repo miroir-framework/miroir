@@ -84,6 +84,13 @@
             "selfApplication": "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
             "reportUuid": "be61481c-644a-4f09-8c4f-581044e98956",
             "icon": "list"
+          },
+          {
+            "label": "Miroir Documentation",
+            "section": "data",
+            "selfApplication": "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
+            "reportUuid": "9cdc1af9-13d6-4477-8482-8af43e3c161e",
+            "icon": "list"
           }
         ]
       }

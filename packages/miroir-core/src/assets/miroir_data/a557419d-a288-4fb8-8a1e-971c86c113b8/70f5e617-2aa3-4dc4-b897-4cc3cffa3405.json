@@ -2,7 +2,7 @@
   "uuid": "70f5e617-2aa3-4dc4-b897-4cc3cffa3405",
   "name": "resolveConditionalSchema",
   "defaultLabel": "Resolve Conditional (runtime) Schema",
-  "description": "Returns the MLS inferred from a conditional Schema declaration and a given value object",
+  "description": "Infers the concrete Jzod schema from a conditional schema declaration and a value object.",
   "parentUuid": "a557419d-a288-4fb8-8a1e-971c86c113b8",
   "parentDefinitionVersionUuid": "54a16d69-c1f0-4dd7-aba4-a2cda883586c",
   "parentName": "TransformerDefinition",

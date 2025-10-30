@@ -2,7 +2,7 @@
   "uuid": "a3f7b5c2-1e8d-4a9b-9c7e-6f2d3e8a1b5c",
   "name": "jzodTypeCheck",
   "defaultLabel": "Type Check Schema Against Value",
-  "description": "Transformer for checking if a value matches a Jzod schema",
+  "description": "Validates whether a value matches a given Jzod schema definition.",
   "parentUuid": "a557419d-a288-4fb8-8a1e-971c86c113b8",
   "parentDefinitionVersionUuid": "54a16d69-c1f0-4dd7-aba4-a2cda883586c",
   "parentName": "TransformerDefinition",

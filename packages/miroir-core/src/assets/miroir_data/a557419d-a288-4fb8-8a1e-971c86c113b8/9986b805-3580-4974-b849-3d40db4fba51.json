@@ -2,7 +2,7 @@
   "uuid": "9986b805-3580-4974-b849-3d40db4fba51",
   "name": "newUuid",
   "defaultLabel": "newUuid",
-  "description": "returns a new UUID v4.",
+  "description": "Generates a new UUID v4 identifier.",
   "parentUuid": "a557419d-a288-4fb8-8a1e-971c86c113b8",
   "parentDefinitionVersionUuid": "54a16d69-c1f0-4dd7-aba4-a2cda883586c",
   "parentName": "TransformerDefinition",

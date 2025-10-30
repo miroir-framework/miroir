@@ -2,7 +2,7 @@
   "uuid": "45d7a6a6-847a-447f-a8dd-9ee2056e70e3",
   "name": "constantNumber",
   "defaultLabel": "constantNumber",
-  "description": "return a constant number given as value.",
+  "description": "Returns a constant number value.",
   "parentUuid": "a557419d-a288-4fb8-8a1e-971c86c113b8",
   "parentDefinitionVersionUuid": "54a16d69-c1f0-4dd7-aba4-a2cda883586c",
   "parentName": "TransformerDefinition",

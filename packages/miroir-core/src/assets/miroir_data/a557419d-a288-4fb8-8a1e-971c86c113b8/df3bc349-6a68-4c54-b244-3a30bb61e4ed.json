@@ -2,7 +2,7 @@
   "uuid": "df3bc349-6a68-4c54-b244-3a30bb61e4ed",
   "name": "constantObject",
   "defaultLabel": "constantObject",
-  "description": "return a constant object given as value.",
+  "description": "Returns a constant object with predefined properties.",
   "parentUuid": "a557419d-a288-4fb8-8a1e-971c86c113b8",
   "parentDefinitionVersionUuid": "54a16d69-c1f0-4dd7-aba4-a2cda883586c",
   "parentName": "TransformerDefinition",

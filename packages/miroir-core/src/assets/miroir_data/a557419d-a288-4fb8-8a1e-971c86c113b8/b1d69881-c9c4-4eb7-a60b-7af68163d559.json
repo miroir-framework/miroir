@@ -2,7 +2,7 @@
   "uuid": "b1d69881-c9c4-4eb7-a60b-7af68163d559",
   "name": "mustacheStringTemplate",
   "defaultLabel": "mustacheStringTemplate",
-  "description": "return the interpretation of a mustache string template.",
+  "description": "Processes a mustache template string with variable substitution (e.g., \"Hello {{name}}\").",
   "parentUuid": "a557419d-a288-4fb8-8a1e-971c86c113b8",
   "parentDefinitionVersionUuid": "54a16d69-c1f0-4dd7-aba4-a2cda883586c",
   "parentName": "TransformerDefinition",

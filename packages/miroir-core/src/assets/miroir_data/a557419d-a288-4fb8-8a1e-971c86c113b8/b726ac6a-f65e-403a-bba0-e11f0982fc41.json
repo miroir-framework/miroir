@@ -2,7 +2,7 @@
   "uuid": "b726ac6a-f65e-403a-bba0-e11f0982fc41",
   "name": "objectEntries",
   "defaultLabel": "objectEntries",
-  "description": "Returns an array of key-value pairs from an object",
+  "description": "Converts an object into an array of key-value pairs.",
   "parentUuid": "a557419d-a288-4fb8-8a1e-971c86c113b8",
   "parentDefinitionVersionUuid": "54a16d69-c1f0-4dd7-aba4-a2cda883586c",
   "parentName": "TransformerDefinition",

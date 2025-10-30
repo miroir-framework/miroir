@@ -2,7 +2,7 @@
   "uuid": "97d772e5-b8df-4b1f-99ca-307bcdb4f79b",
   "name": "constantArray",
   "defaultLabel": "constantArray",
-  "description": "return an array given as value.",
+  "description": "Returns a constant array with predefined elements.",
   "parentUuid": "a557419d-a288-4fb8-8a1e-971c86c113b8",
   "parentDefinitionVersionUuid": "54a16d69-c1f0-4dd7-aba4-a2cda883586c",
   "parentName": "TransformerDefinition",
