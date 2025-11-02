@@ -27,6 +27,7 @@ import {
 import { MarkdownEditorModal } from './MarkdownEditorModal.js';
 import type { MarkdownReportSection } from 'miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js';
 import { useFormikContext } from 'formik';
+import { useMiroirContextService } from '../../MiroirContextReactProvider.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -53,6 +54,14 @@ export const ReportSectionMarkdown = (props: ReportSectionMarkdownProps) => {
   const renderStartTime = performance.now();
   const formikContext = useFormikContext<any>();
   const formikValuePathAsString = props.formikValuePath?.join("_") || "";
+  const { serverBaseUrl } = useMiroirContextService();
+  // const serverBaseUrl = 'http://localhost:3080'; // TODO: get from config
+
+  log.info("ReportSectionMarkdown render", {
+    serverBaseUrl,
+    formikValuePathAsString,
+    reportName: props.reportName,
+  });
 
   const reportDefinitionFromFormik = useMemo(() => {
       return formikContext.values[props.reportName];
@@ -260,6 +269,13 @@ export const ReportSectionMarkdown = (props: ReportSectionMarkdownProps) => {
           <ReactMarkdown
             remarkPlugins={[remarkGfm]}
             rehypePlugins={[rehypeSanitize]}
+            components={{
+              // Transform relative image URLs to use the server base URL from config
+              img: ({node, src, alt, ...props}) => {
+                const resolvedSrc = src?.startsWith('/') ? `${serverBaseUrl}${src}` : src;
+                return <img src={resolvedSrc} alt={alt} {...props} />;
+              }
+            }}
           >
             {sanitizedMarkdown}
           </ReactMarkdown>

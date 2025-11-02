@@ -71,6 +71,9 @@ export interface MiroirReactContext {
   // level 4 access: perform side effects, via domain controller action calls
   domainController: DomainControllerInterface;
   // ###################################################################################################
+  // server configuration
+  serverBaseUrl: string; // Base URL for the REST API server (e.g., http://localhost:3080)
+  // ###################################################################################################
   // page parameters
   deploymentUuid: string;
   setDeploymentUuid: React.Dispatch<React.SetStateAction<string>>;
@@ -367,11 +370,28 @@ export function MiroirContextReactProvider(props: {
     [showSnackbar]
   );
 
+  // Extract serverBaseUrl from miroirConfig
+  const serverBaseUrl = useMemo(() => {
+    const config = props.miroirContext.getMiroirConfig();
+    if (config && config.miroirConfigType === 'client') {
+      const clientConfig = config.client;
+      if (clientConfig.emulateServer) {
+        return clientConfig.rootApiUrl;
+      } else {
+        return clientConfig.serverConfig.rootApiUrl;
+      }
+    } else {
+      throw new Error("MiroirContextReactProvider: Unsupported miroirConfigType for serverBaseUrl");
+    }
+    // return 'http://localhost:3080'; // fallback default
+  }, [props.miroirContext]);
+
   // const value = useMemo<MiroirReactContext>(()=>({
   const value = useMemo<MiroirReactContext>(
     () => ({
       miroirContext: props.miroirContext,
       domainController: props.domainController,
+      serverBaseUrl,
       deploymentUuid,
       // setDeploymentUuid:(...args)=>{log.info('setDeploymentUuid',args); return setDeploymentUuid1(...args)},
       setDeploymentUuid,
@@ -431,6 +451,7 @@ export function MiroirContextReactProvider(props: {
       errorLogService: errorLogService,
     }),
     [
+      serverBaseUrl,
       deploymentUuid,
       reportUuid,
       applicationSection,

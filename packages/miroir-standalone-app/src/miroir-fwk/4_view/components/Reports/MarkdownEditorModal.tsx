@@ -28,7 +28,7 @@ import { cleanLevel } from '../../constants.js';
 import { useMiroirTheme } from '../../contexts/MiroirThemeContext.js';
 import { useFormikContext } from 'formik';
 import type { MarkdownReportSection } from 'miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js';
-import { useDomainControllerService } from '../../MiroirContextReactProvider.js';
+import { useDomainControllerService, useMiroirContextService } from '../../MiroirContextReactProvider.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -60,6 +60,9 @@ const MARKDOWN_HELP = `
 **Italic:** *text* or _text_
 **Strikethrough:** ~~text~~
 **Links:** [text](url)
+**Images:** ![alt text](url)
+**Blockquote:** > quote
+**Horizontal Rule:** ---
 **Lists:** - item or 1. item
 **Code:** \`inline\` or \`\`\`block\`\`\`
 **Tables:** | col1 | col2 |
@@ -70,6 +73,7 @@ const MARKDOWN_HELP = `
 export const MarkdownEditorModal: React.FC<MarkdownEditorModalProps> = (props) => {
   const { currentTheme } = useMiroirTheme();
   const [showHelp, setShowHelp] = useState<boolean>(false);
+  const { serverBaseUrl } = useMiroirContextService();
 
   const domainController = useDomainControllerService(); 
 
@@ -115,7 +119,7 @@ export const MarkdownEditorModal: React.FC<MarkdownEditorModalProps> = (props) =
     const newReportDefinition = alterObjectAtPath2( // does a deep clone
       reportDefinitionFromFormik,
       // ["definition", "section", "definition", 0, "definition", "content"].join("."),
-      ["definition", "section", "definition", 0, "definition", "content"],
+      ["definition", "section", "definition", 0, "definition", "content"], // TODO: not always the right path!!!
       editedContent
     );
     // const newReportDefinition = {
@@ -325,6 +329,13 @@ export const MarkdownEditorModal: React.FC<MarkdownEditorModalProps> = (props) =
                 <ReactMarkdown
                   remarkPlugins={[remarkGfm]}
                   rehypePlugins={[rehypeSanitize]}
+                  components={{
+                    // Transform relative image URLs to use the server base URL from config
+                    img: ({node, src, alt, ...props}) => {
+                      const resolvedSrc = src?.startsWith('/') ? `${serverBaseUrl}${src}` : src;
+                      return <img src={resolvedSrc} alt={alt} {...props} />;
+                    }
+                  }}
                 >
                   {editedContent || '*No content to preview*'}
                 </ReactMarkdown>
