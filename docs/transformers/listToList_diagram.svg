@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 300">
+  <!-- Input List -->
+  <rect x="20" y="80" width="160" height="140" fill="#e3f2fd" stroke="#1976d2" stroke-width="2" rx="5"/>
+  <text x="100" y="60" text-anchor="middle" font-family="Arial" font-size="14" font-weight="bold" fill="#1976d2">Input List</text>
+  <text x="100" y="110" text-anchor="middle" font-family="monospace" font-size="12" fill="#333">{ id: 1, name: "A" }</text>
+  <text x="100" y="135" text-anchor="middle" font-family="monospace" font-size="12" fill="#333">{ id: 2, name: "B" }</text>
+  <text x="100" y="160" text-anchor="middle" font-family="monospace" font-size="12" fill="#333">{ id: 3, name: "C" }</text>
+  <text x="100" y="185" text-anchor="middle" font-family="monospace" font-size="12" fill="#666">...</text>
+  
+  <!-- Arrow 1 -->
+  <path d="M 180 150 L 260 150" stroke="#ff6b6b" stroke-width="3" fill="none" marker-end="url(#arrowhead)"/>
+  
+  <!-- Transformer Box -->
+  <rect x="260" y="100" width="180" height="100" fill="#fff3e0" stroke="#f57c00" stroke-width="2" rx="5"/>
+  <text x="350" y="80" text-anchor="middle" font-family="Arial" font-size="14" font-weight="bold" fill="#f57c00">Element Transformer</text>
+  <text x="350" y="130" text-anchor="middle" font-family="monospace" font-size="11" fill="#333">Apply transformation</text>
+  <text x="350" y="150" text-anchor="middle" font-family="monospace" font-size="11" fill="#333">to EACH element</text>
+  <text x="350" y="175" text-anchor="middle" font-family="Arial" font-size="10" fill="#666" font-style="italic">referenceToOuterObject:</text>
+  <text x="350" y="190" text-anchor="middle" font-family="monospace" font-size="10" fill="#666" font-style="italic">"item"</text>
+  
+  <!-- Arrow 2 -->
+  <path d="M 440 150 L 520 150" stroke="#ff6b6b" stroke-width="3" fill="none" marker-end="url(#arrowhead)"/>
+  
+  <!-- Output List -->
+  <rect x="520" y="80" width="260" height="140" fill="#e8f5e9" stroke="#388e3c" stroke-width="2" rx="5"/>
+  <text x="650" y="60" text-anchor="middle" font-family="Arial" font-size="14" font-weight="bold" fill="#388e3c">Output List</text>
+  <text x="650" y="110" text-anchor="middle" font-family="monospace" font-size="12" fill="#333">{ label: "A", value: 1 }</text>
+  <text x="650" y="135" text-anchor="middle" font-family="monospace" font-size="12" fill="#333">{ label: "B", value: 2 }</text>
+  <text x="650" y="160" text-anchor="middle" font-family="monospace" font-size="12" fill="#333">{ label: "C", value: 3 }</text>
+  <text x="650" y="185" text-anchor="middle" font-family="monospace" font-size="12" fill="#666">...</text>
+  
+  <!-- Loop indicator -->
+  <path d="M 350 210 Q 350 240 320 250 Q 290 260 260 250" stroke="#9c27b0" stroke-width="2" fill="none" stroke-dasharray="5,5"/>
+  <text x="290" y="275" text-anchor="middle" font-family="Arial" font-size="11" fill="#9c27b0" font-style="italic">Repeat for each element</text>
+  
+  <!-- Arrow definition -->
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#ff6b6b"/>
+    </marker>
+  </defs>
+  
+  <!-- Title decoration -->
+  <line x1="20" y1="40" x2="780" y2="40" stroke="#ddd" stroke-width="1"/>
+</svg>
