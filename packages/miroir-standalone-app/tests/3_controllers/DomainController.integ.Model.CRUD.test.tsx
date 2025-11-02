@@ -72,6 +72,7 @@ import { loadTestConfigFiles } from "../utils/fileTools.js";
 
 import { packageName } from "../../src/constants.js";
 import { cleanLevel } from "./constants.js";
+import { defaultMiroirModelEnvironment } from "miroir-core";
 
 const env: any = (import.meta as any).env;
 console.log("@@@@@@@@@@@@@@@@@@ env", env);
@@ -185,7 +186,8 @@ beforeAll(async () => {
   );
   const createDeploymentResult = await domainController.handleCompositeAction(
     createMiroirDeploymentCompositeAction,
-    defaultMiroirMetaModel
+    defaultMiroirModelEnvironment,
+    {},
   );
   if (createDeploymentResult.status !== "ok") {
     throw new Error("Failed to create Miroir deployment: " + JSON.stringify(createDeploymentResult));

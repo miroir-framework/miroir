@@ -12,7 +12,7 @@
         "extractorTemplateType": "extractorForObjectByDirectReference",
         "parentName": "Test",
         "parentUuid": {
-          "transformerType": "constant",
+          "transformerType": "returnValue",
           "value": "c37625c7-0b35-4d6a-811d-8181eb978301"
         },
         "instanceUuid": {

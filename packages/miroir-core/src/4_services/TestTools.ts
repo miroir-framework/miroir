@@ -358,18 +358,22 @@ export async function runTransformerTestInMemory(
       // );
     
     // Normalize both actual and expected values to handle undefined properties consistently
-    const expectedValue = transformerTest.unitTestExpectedValue??transformerTest.expectedValue;
+    const expectedValue = ignorePostgresExtraAttributes(
+      transformerTest.unitTestExpectedValue ?? transformerTest.expectedValue,
+      transformerTest.ignoreAttributes
+    );
 
     const normalizedResult = removeUndefinedProperties(jsonifiedResult);
     const normalizedExpected = removeUndefinedProperties(unNullify(expectedValue));
 
-      // log.info(
-      //   "################################ runTransformerTestInMemory result",
-      //   // resultWithRetain
-      //   JSON.stringify(normalizedResult, null, 2),
-      //   "expected",
-      //   JSON.stringify(normalizedExpected, null, 2)
-      // );
+    log.info(
+      "################################ runTransformerTestInMemory result",
+      // resultWithRetain
+      JSON.stringify(transformerTest.ignoreAttributes),
+      JSON.stringify(normalizedResult, null, 2),
+      "expected",
+      JSON.stringify(normalizedExpected, null, 2)
+    );
 
     const expectForm = localVitest
       .expect(normalizedResult, `${testSuiteNamePathAsString} > ${assertionName}`)

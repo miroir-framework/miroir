@@ -83,7 +83,7 @@ import { transformer_spreadSheetToJzodSchema } from "./Transformer_Spreadsheet";
 import {
   mlsTransformers,
   transformer_conditional,
-  transformer_constant,
+  transformer_returnValue,
   transformer_constantAsExtractor,
   transformer_contextReference,
   transformer_count,
@@ -670,7 +670,7 @@ export const applicationTransformerDefinitions: Record<string, TransformerDefini
   ...Object.fromEntries((transformer_conditional.transformerInterface.transformerParameterSchema.transformerType.definition as string[]).map(
     (t: string) => ([t, transformer_conditional])
   )),
-  constant: transformer_constant,
+  returnValue: transformer_returnValue,
   constantAsExtractor: transformer_constantAsExtractor,
   contextReference: transformer_contextReference,
   dataflowObject: transformer_dataflowObject,
@@ -1583,7 +1583,7 @@ export function transformer_InnerReference_resolve(
 
   let result: TransformerReturnType<any> = undefined;
   switch (transformerInnerReference.transformerType) {
-    case "constant": {
+    case "returnValue": {
       result = transformerInnerReference.value;
       break;
     }
@@ -2599,7 +2599,7 @@ export function handleTransformer_conditional(
 //       return contextResults ? safeResolvePathOnObject(contextResults, operand.path || []) : undefined;
 //     case "parameterReference":
 //       return safeResolvePathOnObject(transformerParams, operand.path || []);
-//     case "constant":
+//     case "returnValue":
 //       return operand.value;
 //     default:
 //       return undefined;
@@ -3299,7 +3299,7 @@ export function transformer_extended_apply(
             ) {
               const value = preResult;
               result = {
-                transformerType: "constant",
+                transformerType: "returnValue",
                 value: preResult,
               };
             } else {

@@ -99,7 +99,7 @@ export const transformer_spreadSheetToJzodSchema: TransformerDefinition = {
                   referencePath: ["attributeName"],
                 },
                 attributeValue: {
-                  transformerType: "constant",
+                  transformerType: "returnValue",
                   value: { type: "string" },
                 },
               },
@@ -123,7 +123,7 @@ export const transformer_spreadSheetToJzodSchema: TransformerDefinition = {
           },
           referenceToOuterObject: "mergedAttributeDefinitions",
           definition: {
-            transformerType: "constant",
+            transformerType: "returnValue",
             mlSchema: { type: "record", definition: { type: "any"} },
             value: {
               uuid: {
@@ -148,7 +148,7 @@ export const transformer_spreadSheetToJzodSchema: TransformerDefinition = {
           transformerType: "freeObjectTemplate",
           definition: {
             type: {
-              transformerType: "constant",
+              transformerType: "returnValue",
               value: "object",
             },
             definition: {

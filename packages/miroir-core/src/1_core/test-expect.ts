@@ -51,6 +51,11 @@ describe.each = function(data: any[]): (template: string, testFn: (item: any) =>
 } as DescribeEachFunction;
 
 // ################################################################################################
+/**
+ * 
+ * @param value 
+ * @returns 
+ */
 export function jsonify(value: any): any {
   if (value instanceof Map) {
     const obj: any = {};

@@ -315,7 +315,7 @@ export interface MiroirActivityTrackerInterface {
   /**
    * Start tracking a transformer execution
    * @param transformerName The name/label of the transformer
-   * @param transformerType The type of transformer (e.g., 'contextReference', 'constant', etc.)
+   * @param transformerType The type of transformer (e.g., 'contextReference', 'returnValue', etc.)
    * @param step The transformer step ('build' or 'runtime')
    * @param transformerParams The parameters passed to the transformer
    * @param parentId Optional parent transformer ID for nested calls

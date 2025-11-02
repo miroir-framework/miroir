@@ -171,13 +171,13 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
           extractorTemplateType: "extractorForObjectByDirectReference",
           parentName: "Book",
           parentUuid: {
-            transformerType: "constant",
+            transformerType: "returnValue",
             mlSchema: { type: "uuid" },
             interpolation: "build",
             value: "XXXXXX",
           },
           instanceUuid: {
-            transformerType: "constant",
+            transformerType: "returnValue",
             mlSchema: { type: "uuid" },
             interpolation: "build",
             value: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
@@ -223,13 +223,13 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
           extractorTemplateType: "extractorForObjectByDirectReference",
           parentName: "Book",
           parentUuid: {
-            transformerType: "constant",
+            transformerType: "returnValue",
             mlSchema: { type: "uuid" },
             interpolation: "build",
             value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
           },
           instanceUuid: {
-            transformerType: "constant",
+            transformerType: "returnValue",
             mlSchema: { type: "uuid" },
             interpolation: "build",
             value: "XXXXXXXXX",
@@ -274,13 +274,13 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
           extractorTemplateType: "extractorForObjectByDirectReference",
           parentName: "Book",
           parentUuid: {
-            transformerType: "constant",
+            transformerType: "returnValue",
             mlSchema: { type: "uuid" },
             interpolation: "build",
             value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
           },
           instanceUuid: {
-            transformerType: "constant",
+            transformerType: "returnValue",
             mlSchema: { type: "uuid" },
             interpolation: "build",
             value: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
@@ -402,7 +402,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
           extractorTemplateType: "extractorForObjectByDirectReference",
           parentName: "Book",
           parentUuid: {
-            transformerType: "constant",
+            transformerType: "returnValue",
             mlSchema: { type: "uuid" },
             interpolation: "build",
             value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
@@ -454,13 +454,13 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
           extractorTemplateType: "extractorForObjectByDirectReference",
           parentName: "Book",
           parentUuid: {
-            transformerType: "constant",
+            transformerType: "returnValue",
             mlSchema: { type: "uuid" },
             interpolation: "build",
             value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
           },
           instanceUuid: {
-            transformerType: "constant",
+            transformerType: "returnValue",
             mlSchema: { type: "uuid" },
             interpolation: "build",
             value: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
@@ -472,7 +472,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
           extractorTemplateType: "combinerForObjectByRelation",
           parentName: "Publisher",
           parentUuid: {
-            transformerType: "constant",
+            transformerType: "returnValue",
             mlSchema: { type: "uuid" },
             interpolation: "build",
             value: "a027c379-8468-43a5-ba4d-bf618be25cab",
@@ -535,13 +535,13 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
             extractorTemplateType: "extractorForObjectByDirectReference",
             parentName: "Book",
             parentUuid: {
-              transformerType: "constant",
+              transformerType: "returnValue",
               mlSchema: { type: "uuid" },
               interpolation: "build",
               value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
             },
             instanceUuid: {
-              transformerType: "constant",
+              transformerType: "returnValue",
               mlSchema: { type: "uuid" },
               interpolation: "build",
               value: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
@@ -553,7 +553,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
             extractorTemplateType: "combinerForObjectByRelation",
             parentName: "Publisher",
             parentUuid: {
-              transformerType: "constant",
+              transformerType: "returnValue",
               mlSchema: { type: "uuid" },
               interpolation: "build",
               value: "a027c379-8468-43a5-ba4d-bf618be25cab",
@@ -659,13 +659,13 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
             extractorTemplateType: "extractorForObjectByDirectReference",
             parentName: "Author",
             parentUuid: {
-              transformerType: "constant",
+              transformerType: "returnValue",
               mlSchema: { type: "uuid" },
               interpolation: "build",
               value: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
             },
             instanceUuid: {
-              transformerType: "constant",
+              transformerType: "returnValue",
               mlSchema: { type: "uuid" },
               interpolation: "build",
               value: "ce7b601d-be5f-4bc6-a5af-14091594046a", // Paul Veyne
@@ -677,7 +677,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
             extractorTemplateType: "combinerByRelationReturningObjectList",
             parentName: "Book",
             parentUuid: {
-              transformerType: "constant",
+              transformerType: "returnValue",
               mlSchema: { type: "uuid" },
               interpolation: "build",
               value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
@@ -693,7 +693,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
             extractorTemplateType: "combinerByManyToManyRelationReturningObjectList",
             parentName: "Publisher",
             parentUuid: {
-              transformerType: "constant",
+              transformerType: "returnValue",
               mlSchema: { type: "uuid" },
               interpolation: "build",
               value: "a027c379-8468-43a5-ba4d-bf618be25cab",
@@ -809,7 +809,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
           extractorTemplateType: "extractorTemplateForObjectListByEntity",
           parentName: "Author",
           parentUuid: {
-            transformerType: "constant",
+            transformerType: "returnValue",
             mlSchema: { type: "uuid" },
             interpolation: "build",
             value: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
@@ -884,7 +884,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
           extractorTemplateType: "extractorTemplateForObjectListByEntity",
           parentName: "Author",
           parentUuid: {
-            transformerType: "constant",
+            transformerType: "returnValue",
             mlSchema: { type: "uuid" },
             interpolation: "build",
             value: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
@@ -892,7 +892,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
           filter: {
             attributeName: "name",
             value: {
-              transformerType: "constant",
+              transformerType: "returnValue",
               mlSchema: { type: "string" },
               interpolation: "build",
               value: "or",
@@ -957,13 +957,13 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
           extractorTemplateType: "extractorForObjectByDirectReference",
           parentName: "Book",
           parentUuid: {
-            transformerType: "constant",
+            transformerType: "returnValue",
             mlSchema: { type: "uuid" },
             interpolation: "build",
             value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
           },
           instanceUuid: {
-            transformerType: "constant",
+            transformerType: "returnValue",
             mlSchema: { type: "uuid" },
             interpolation: "build",
             value: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
@@ -975,7 +975,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
           extractorTemplateType: "combinerForObjectByRelation",
           parentName: "Publisher",
           parentUuid: {
-            transformerType: "constant",
+            transformerType: "returnValue",
             mlSchema: { type: "uuid" },
             interpolation: "build",
             value: "a027c379-8468-43a5-ba4d-bf618be25cab",
@@ -988,11 +988,11 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
           AttributeOfObjectToCompareToReferenceUuid: "publisher",
         },
         booksOfPublisher: {
-          //join with only constant references
+          //join with only returnValue references
           extractorTemplateType: "combinerByRelationReturningObjectList",
           parentName: "Book",
           parentUuid: {
-            transformerType: "constant",
+            transformerType: "returnValue",
             mlSchema: { type: "uuid" },
             interpolation: "build",
             value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
@@ -1032,7 +1032,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
           AttributeOfObjectToCompareToReferenceUuid: "publisher",
         },
         booksOfPublisher: {
-          //join with only constant references
+          //join with only returnValue references
           extractorOrCombinerType: "combinerByRelationReturningObjectList",
           parentName: "Book",
           parentUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
@@ -1077,13 +1077,13 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
           extractorTemplateType: "extractorForObjectByDirectReference",
           parentName: "Book",
           parentUuid: {
-            transformerType: "constant",
+            transformerType: "returnValue",
             mlSchema: { type: "uuid" },
             interpolation: "build",
             value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
           },
           instanceUuid: {
-            transformerType: "constant",
+            transformerType: "returnValue",
             mlSchema: { type: "uuid" },
             interpolation: "build",
             value: "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
@@ -1095,7 +1095,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
           extractorTemplateType: "combinerForObjectByRelation",
           parentName: "Publisher",
           parentUuid: {
-            transformerType: "constant",
+            transformerType: "returnValue",
             mlSchema: { type: "uuid" },
             interpolation: "build",
             value: "a027c379-8468-43a5-ba4d-bf618be25cab",
@@ -1111,7 +1111,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
           extractorTemplateType: "combinerByRelationReturningObjectList",
           parentName: "Book",
           parentUuid: {
-            transformerType: "constant",
+            transformerType: "returnValue",
             mlSchema: { type: "uuid" },
             interpolation: "build",
             value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
@@ -1274,11 +1274,11 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
           extractorTemplateType: "extractorForObjectByDirectReference",
           parentName: "Book",
           parentUuid: {
-            transformerType: "constant",
+            transformerType: "returnValue",
             value: "d7a144ff-d1b9-4135-800c-a7cfc1f38733", // Author
           },
           instanceUuid: {
-            transformerType: "constant",
+            transformerType: "returnValue",
             value: "ce7b601d-be5f-4bc6-a5af-14091594046a", // Paul Veyne
           },
         },
@@ -1288,7 +1288,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
           extractorTemplateType: "combinerByRelationReturningObjectList",
           parentName: "Book",
           parentUuid: {
-            transformerType: "constant",
+            transformerType: "returnValue",
             value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
           },
           objectReference: {
@@ -1375,11 +1375,11 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
             extractorTemplateType: "extractorForObjectByDirectReference",
             parentName: "Book",
             parentUuid: {
-              transformerType: "constant",
+              transformerType: "returnValue",
               value: "d7a144ff-d1b9-4135-800c-a7cfc1f38733", // Author
             },
             instanceUuid: {
-              transformerType: "constant",
+              transformerType: "returnValue",
               value: "ce7b601d-be5f-4bc6-a5af-14091594046a", // Paul Veyne
             },
           },
@@ -1389,7 +1389,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
             extractorTemplateType: "combinerByRelationReturningObjectList",
             parentName: "Book",
             parentUuid: {
-              transformerType: "constant",
+              transformerType: "returnValue",
               value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
             },
             objectReference: {
@@ -1533,7 +1533,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
             applicationSection: "model",
             parentName: "Entity",
             parentUuid: {
-              transformerType: "constant",
+              transformerType: "returnValue",
               mlSchema: { type: "uuid" },
               interpolation: "build",
               value: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
@@ -1637,7 +1637,7 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
           extractorTemplateType: "extractorTemplateForObjectListByEntity",
           parentName: "Book",
           parentUuid: {
-            transformerType: "constant",
+            transformerType: "returnValue",
             mlSchema: { type: "uuid" },
             interpolation: "build",
             value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",

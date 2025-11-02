@@ -14,7 +14,7 @@
         "extractorTemplateType": "extractorTemplateForObjectListByEntity",
         "parentName": "Test",
         "parentUuid": {
-          "transformerType": "constant",
+          "transformerType": "returnValue",
           "value": "9ad64893-5f8f-4eaf-91aa-ffae110f88c8"
         }
       }

@@ -86,7 +86,7 @@ describe("resolveQueryTemplates.unit.test", () => {
             extractorTemplateType: "extractorForObjectByDirectReference",
             parentName: "Book",
             parentUuid: {
-            transformerType: "constant",
+            transformerType: "returnValue",
             mlSchema: { type: "uuid" },
               interpolation: "build",
               value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
@@ -106,7 +106,7 @@ describe("resolveQueryTemplates.unit.test", () => {
               referenceName: "parentUuid",
             },
             instanceUuid: {
-              transformerType: "constant",
+              transformerType: "returnValue",
               mlSchema: { type: "record", definition: { type: "any"} },
               interpolation: "build",
               value: {
@@ -122,7 +122,7 @@ describe("resolveQueryTemplates.unit.test", () => {
             extractorTemplateType: "combinerForObjectByRelation",
             parentName: "Publisher",
             parentUuid: {
-            transformerType: "constant",
+            transformerType: "returnValue",
             mlSchema: { type: "uuid" },
               interpolation: "build",
               value: "a027c379-8468-43a5-ba4d-bf618be25cab",
@@ -138,7 +138,7 @@ describe("resolveQueryTemplates.unit.test", () => {
             extractorTemplateType: "combinerByRelationReturningObjectList",
             parentName: "Book",
             parentUuid: {
-            transformerType: "constant",
+            transformerType: "returnValue",
             mlSchema: { type: "uuid" },
               interpolation: "build",
               value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
@@ -154,7 +154,7 @@ describe("resolveQueryTemplates.unit.test", () => {
             extractorTemplateType: "combinerByRelationReturningObjectList",
             parentName: "Book",
             parentUuid: {
-            transformerType: "constant",
+            transformerType: "returnValue",
             mlSchema: { type: "uuid" },
               interpolation: "build",
               value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
@@ -170,7 +170,7 @@ describe("resolveQueryTemplates.unit.test", () => {
             extractorTemplateType: "combinerByManyToManyRelationReturningObjectList",
             parentName: "Publisher",
             parentUuid: {
-            transformerType: "constant",
+            transformerType: "returnValue",
             mlSchema: { type: "uuid" },
               interpolation: "build",
               value: "a027c379-8468-43a5-ba4d-bf618be25cab",

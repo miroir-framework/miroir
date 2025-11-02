@@ -12,7 +12,7 @@
         "extractorTemplateType": "extractorForObjectByDirectReference",
         "parentName": "Deployment",
         "parentUuid": {
-          "transformerType": "constant",
+          "transformerType": "returnValue",
           "mlSchema": { "type": "uuid" },
           "interpolation": "build",
           "value": "7959d814-400c-4e80-988f-a00fe582ab98"

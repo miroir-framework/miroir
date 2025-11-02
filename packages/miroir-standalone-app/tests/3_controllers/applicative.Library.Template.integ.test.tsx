@@ -591,7 +591,7 @@ const createEntityCompositeActionTemplate: CompositeActionTemplate = {
     //   definition: {
     //     extractorTemplates: {
     //       elementToDisplay: {
-    //         transformerType: "constant",
+    //         transformerType: "returnValue",
     //         interpolation: "runtime",
     //         value: {
     //           extractorTemplateType: "extractorForObjectByDirectReference",
@@ -954,7 +954,7 @@ const createReportsCompositeActionTemplate: CarryOn_fe9b7d99$f216$44de$bb6e$60e1
             definition: {
               extractorTemplates: {
                 elementToDisplay: {
-                  transformerType: "constant",
+                  transformerType: "returnValue",
                   interpolation: "runtime",
                   value: {
                     extractorTemplateType: "extractorForObjectByDirectReference",

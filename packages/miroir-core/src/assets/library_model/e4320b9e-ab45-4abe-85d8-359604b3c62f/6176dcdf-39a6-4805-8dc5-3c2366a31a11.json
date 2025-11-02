@@ -12,7 +12,7 @@
         "applicationSection": "data",
         "parentName": "Publisher",
         "parentUuid": {
-          "transformerType": "constant",
+          "transformerType": "returnValue",
           "value": "a027c379-8468-43a5-ba4d-bf618be25cab"
         }
       }
@@ -23,7 +23,7 @@
         "applicationSection": "data",
         "parentName": "Book",
         "parentUuid": {
-          "transformerType": "constant",
+          "transformerType": "returnValue",
           "value": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
         },
         "objectListReference": {

@@ -526,7 +526,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
   //   );
   // });
   const currentTransformerDefinition: TransformerForBuildPlusRuntime =
-    context.toolsPageState.transformerEditor?.currentTransformerDefinition??{ transformerType: "constant", value: null };
+    context.toolsPageState.transformerEditor?.currentTransformerDefinition??{ transformerType: "returnValue", value: null };
 
   log.info("TransformerEditor currentTransformerDefinition:", currentTransformerDefinition);
   log.info("TransformerEditor transformerDefinitionSchema:", transformerDefinitionSchema);
@@ -595,9 +595,9 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
   }, [currentTransformerDefinition]);
 
   const clearTransformerDefinition = useCallback(() => {
-    // Assumption: a 'constant' transformer has shape { transformerType: 'constant', value: ... }
+    // Assumption: a 'returnValue' transformer has shape { transformerType: 'returnValue', value: ... }
     const defaultConstantTransformer: any = {
-      transformerType: "constant",
+      transformerType: "returnValue",
       interpolation: "runtime",
       value: "enter the wanted value here...", // Default to undefined value
     };
@@ -897,7 +897,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
           </button>
           <button
             onClick={clearTransformerDefinition}
-            title={"Reset transformer to default constant transformer"}
+            title={"Reset transformer to default returnValue transformer"}
             style={{
               padding: "6px 10px",
               fontSize: "13px",

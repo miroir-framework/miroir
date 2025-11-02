@@ -69,6 +69,7 @@ import {
 } from "../../src/miroir-fwk/4-tests/tests-utils-testOnLibrary.js";
 import { loadTestConfigFiles } from "../utils/fileTools.js";
 import { cleanLevel, packageName } from "./constants.js";
+import { defaultMiroirModelEnvironment } from "miroir-core";
 
 const env: any = (import.meta as any).env;
 
@@ -144,7 +145,7 @@ export const libraryEntitiesAndInstancesWithoutBook3: ApplicationEntitiesAndInst
     instances: [
       book1 as EntityInstance,
       book2 as EntityInstance,
-      // book3 as EntityInstance,
+      // // book3 as EntityInstance,
       book4 as EntityInstance,
       book5 as EntityInstance,
       book6 as EntityInstance,
@@ -178,7 +179,8 @@ beforeAll(async () => {
   );
   const createDeploymentResult = await domainController.handleCompositeAction(
     createMiroirDeploymentCompositeAction,
-    defaultMiroirMetaModel
+    defaultMiroirModelEnvironment,
+    {}
   );
   if (createDeploymentResult.status !== "ok") {
     throw new Error("Failed to create Miroir deployment: " + JSON.stringify(createDeploymentResult));

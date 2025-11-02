@@ -1,8 +1,8 @@
 {
   "uuid": "2b4c25e0-6b0f-4f7d-aa68-1fdc079aead3",
-  "name": "constant",
-  "defaultLabel": "constant",
-  "description": "Returns any constant value provided in the configuration.",
+  "name": "returnValue",
+  "defaultLabel": "returnValue",
+  "description": "Returns any returnValue value provided in the configuration.",
   "parentUuid": "a557419d-a288-4fb8-8a1e-971c86c113b8",
   "parentDefinitionVersionUuid": "54a16d69-c1f0-4dd7-aba4-a2cda883586c",
   "parentName": "TransformerDefinition",
@@ -15,7 +15,7 @@
     "transformerParameterSchema": {
       "transformerType": {
         "type": "literal",
-        "definition": "constant"
+        "definition": "returnValue"
       },
       "transformerDefinition": {
         "type": "object",

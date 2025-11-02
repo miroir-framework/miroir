@@ -12,7 +12,7 @@
         "extractorTemplateType": "extractorTemplateForObjectListByEntity",
         "parentName": "Menu",
         "parentUuid": {
-          "transformerType": "constant",
+          "transformerType": "returnValue",
           "value": "dde4c883-ae6d-47c3-b6df-26bc6e3c1842"
         }
       }

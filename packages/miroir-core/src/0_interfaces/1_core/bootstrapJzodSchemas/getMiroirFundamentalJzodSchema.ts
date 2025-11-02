@@ -838,7 +838,7 @@ export function getMiroirFundamentalJzodSchema(
         transformerForBuild_menu_addItem: miroirTransformersForBuild.transformer_menu_addItem,
         //
         transformerForBuild_conditional: miroirTransformersForBuild.transformer_conditional,
-        transformerForBuild_constant: miroirTransformersForBuild.transformer_constant,
+        transformerForBuild_constant: miroirTransformersForBuild.transformer_returnValue,
         transformerForBuild_constantAsExtractor:
           miroirTransformersForBuild.transformer_constantAsExtractor,
         transformerForBuild_contextReference:
@@ -909,7 +909,7 @@ export function getMiroirFundamentalJzodSchema(
         //
         //
         transformerForRuntime_conditional: miroirTransformersForRuntime.transformer_conditional,
-        transformerForRuntime_constant: miroirTransformersForRuntime.transformer_constant,
+        transformerForRuntime_constant: miroirTransformersForRuntime.transformer_returnValue,
         transformerForRuntime_constantAsExtractor:
           miroirTransformersForRuntime.transformer_constantAsExtractor,
         transformerForRuntime_contextReference:
@@ -1009,7 +1009,7 @@ export function getMiroirFundamentalJzodSchema(
         transformerForBuildPlusRuntime_conditional:
           miroirTransformersForBuildPlusRuntime.transformer_conditional,
         transformerForBuildPlusRuntime_constant:
-          miroirTransformersForBuildPlusRuntime.transformer_constant,
+          miroirTransformersForBuildPlusRuntime.transformer_returnValue,
         transformerForBuildPlusRuntime_constantAsExtractor:
           miroirTransformersForBuildPlusRuntime.transformer_constantAsExtractor,
         transformerForBuildPlusRuntime_contextReference:

@@ -43,7 +43,7 @@ The transformer that will be applied to **each element** of the list. This can b
 - `freeObjectTemplate` - Build a simple object
 - `object_fullTemplate` - Build a complex object
 - `objectAlter` - Modify an existing object
-- `constant` - Replace with a constant value
+- `returnValue` - Replace with a constant value
 - Any other transformer
 
 ### 3. `referenceToOuterObject` (optional, default: `"element"`)
@@ -176,7 +176,7 @@ A field name to sort the result list alphabetically.
           "transformerType": "newUuid" 
         },
         "status": { 
-          "transformerType": "constant", 
+          "transformerType": "returnValue", 
           "value": "active" 
         }
       }
@@ -208,7 +208,7 @@ A field name to sort the result list alphabetically.
 
 - **Data reshaping**: Convert database entities to UI-friendly objects
 - **Field extraction**: Pull out specific fields from complex objects
-- **Enrichment**: Add computed or constant fields to existing objects
+- **Enrichment**: Add computed or returnValue fields to existing objects
 - **Format conversion**: Transform data from one format to another
 - **Filtering fields**: Create slimmer objects with only needed fields
 

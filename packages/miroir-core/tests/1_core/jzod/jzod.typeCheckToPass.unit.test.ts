@@ -6469,7 +6469,7 @@ interface testFormat {
     // ################################# TRANSFORMERS ###########################################
     // ##########################################################################################
     // Transformers
-    // constant
+    // returnValue
     test600: {
       testSchema: {
         type: "schemaReference",
@@ -6479,7 +6479,7 @@ interface testFormat {
         },
       },
       testValueObject: {
-        transformerType: "constant",
+        transformerType: "returnValue",
         interpolation: "build",
         value: "test",
       },
@@ -6488,7 +6488,7 @@ interface testFormat {
         definition: {
           transformerType: {
             type: "literal",
-            definition: "constant",
+            definition: "returnValue",
           },
           interpolation: {
             type: "enum",

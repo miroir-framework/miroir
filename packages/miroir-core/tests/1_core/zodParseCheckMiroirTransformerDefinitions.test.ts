@@ -77,7 +77,7 @@ const transformerForBuildTest4: TransformerForBuild = {
   interpolation: "build",
   definition: {
     type: {
-      transformerType: "constant",
+      transformerType: "returnValue",
       interpolation: "build",
       value: "objectListReportSection",
     },
@@ -93,7 +93,7 @@ const transformerForBuildTest4: TransformerForBuild = {
         definition: "{{createEntity_newEntity.uuid}}",
       },
       fetchedDataReference: {
-        transformerType: "constant",
+        transformerType: "returnValue",
         interpolation: "build",
         value: "instanceList",
       },
@@ -129,7 +129,7 @@ const transformerForBuildTest5: TransformerForBuild = {
       interpolation: "build",
       definition: {
         type: {
-          transformerType: "constant",
+          transformerType: "returnValue",
           interpolation: "build",
           value: "objectListReportSection",
         },
@@ -145,7 +145,7 @@ const transformerForBuildTest5: TransformerForBuild = {
             definition: "{{createEntity_newEntity.uuid}}",
           },
           fetchedDataReference: {
-            transformerType: "constant",
+            transformerType: "returnValue",
             interpolation: "build",
             value: "instanceList",
           },
@@ -156,7 +156,7 @@ const transformerForBuildTest5: TransformerForBuild = {
 };
 
 const transformerForBuildPlusRuntimeTest1: TransformerForBuildPlusRuntime = {
-  transformerType: "constant",
+  transformerType: "returnValue",
   interpolation: "runtime",
   value: "test",
 }
@@ -222,7 +222,7 @@ const createEntityZodParseTests: Record<string, ZodParseTest> = {
     transformer: {
       a: 1,
       b: {
-        transformerType: "constant",
+        transformerType: "returnValue",
         interpolation: "build",
         value: "Report",
       },
@@ -343,7 +343,7 @@ const createEntityZodParseTests: Record<string, ZodParseTest> = {
     transformer: {
       a: 1,
       b: {
-        transformerType: "constant",
+        transformerType: "returnValue",
         interpolation: "runtime",
         value: "Report",
       },

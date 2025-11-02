@@ -12,7 +12,7 @@
         "applicationSection": "data",
         "parentName": "Book",
         "parentUuid": {
-          "transformerType": "constant",
+          "transformerType": "returnValue",
           "value": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
         }
       },
@@ -21,7 +21,7 @@
         "applicationSection": "data",
         "parentName": "Author",
         "parentUuid": {
-          "transformerType": "constant",
+          "transformerType": "returnValue",
           "value": "d7a144ff-d1b9-4135-800c-a7cfc1f38733"
         }
       }
@@ -32,7 +32,7 @@
         "applicationSection": "data",
         "parentName": "Book",
         "parentUuid": {
-          "transformerType": "constant",
+          "transformerType": "returnValue",
           "value": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
         },
         "objectListReference": {

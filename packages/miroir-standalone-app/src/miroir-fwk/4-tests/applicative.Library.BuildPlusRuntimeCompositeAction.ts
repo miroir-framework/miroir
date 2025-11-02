@@ -379,7 +379,7 @@ export function getTestSuitesForBuildPlusRuntimeCompositeAction(miroirConfig: an
                   definition: {
                     extractorTemplates: {
                       elementToDisplay: {
-                        transformerType: "constant",
+                        transformerType: "returnValue",
                         interpolation: "build",
                         value: {
                           extractorTemplateType: "extractorForObjectByDirectReference",
@@ -394,7 +394,7 @@ export function getTestSuitesForBuildPlusRuntimeCompositeAction(miroirConfig: an
                             definition: "{{newEntityUuid}}",
                           },
                           instanceUuid: {
-                            transformerType: "constant",
+                            transformerType: "returnValue",
                             interpolation: "runtime",
                             value: {
                               transformerType: "contextReference",

@@ -3122,7 +3122,7 @@ export const miroirFundamentalJzodSchema = {
         "definition": {
           "transformerType": {
             "type": "literal",
-            "definition": "constant"
+            "definition": "returnValue"
           },
           "mlSchema": {
             "type": "schemaReference",
@@ -4550,7 +4550,7 @@ export const miroirFundamentalJzodSchema = {
         "definition": {
           "transformerType": {
             "type": "literal",
-            "definition": "constant"
+            "definition": "returnValue"
           },
           "mlSchema": {
             "type": "schemaReference",
@@ -5964,7 +5964,7 @@ export const miroirFundamentalJzodSchema = {
         "definition": {
           "transformerType": {
             "type": "literal",
-            "definition": "constant"
+            "definition": "returnValue"
           },
           "mlSchema": {
             "type": "schemaReference",
@@ -39110,7 +39110,7 @@ export const miroirFundamentalJzodSchema = {
                 "definition": [
                   {
                     "type": "literal",
-                    "definition": "constant"
+                    "definition": "returnValue"
                   },
                   {
                     "type": "schemaReference",
@@ -41748,7 +41748,7 @@ export const miroirFundamentalJzodSchema = {
                 "definition": [
                   {
                     "type": "literal",
-                    "definition": "constant"
+                    "definition": "returnValue"
                   },
                   {
                     "type": "schemaReference",
@@ -52152,7 +52152,7 @@ export const miroirFundamentalJzodSchema = {
                 "definition": [
                   {
                     "type": "literal",
-                    "definition": "constant"
+                    "definition": "returnValue"
                   },
                   {
                     "type": "schemaReference",

@@ -120,7 +120,7 @@ export const deleteCascade = async (p: {
             applicationSection: p.applicationSection,
             parentName: "",
             parentUuid: {
-            transformerType: "constant",
+            transformerType: "returnValue",
             mlSchema: { type: "uuid" },
               value: entityUuid,
             },

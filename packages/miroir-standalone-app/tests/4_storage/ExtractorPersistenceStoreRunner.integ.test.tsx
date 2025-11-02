@@ -1021,7 +1021,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
                 },
               },
               combiners: {
-                booksOfAuthor: { //join with only constant references
+                booksOfAuthor: { //join with only returnValue references
                   extractorOrCombinerType: "combinerByRelationReturningObjectList",
                   parentName: entityBook.name,
                   parentUuid: entityBook.uuid,
@@ -1408,7 +1408,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
                     {
                       attributeKey: {
                         interpolation: "runtime",
-            transformerType: "constant",
+            transformerType: "returnValue",
             mlSchema: { type: "string" },
                         value: "uuid",
                       },
@@ -1420,7 +1420,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
                     {
                       attributeKey: {
                         interpolation: "runtime",
-            transformerType: "constant",
+            transformerType: "returnValue",
             mlSchema: { type: "string" },
                         value: "name",
                       },

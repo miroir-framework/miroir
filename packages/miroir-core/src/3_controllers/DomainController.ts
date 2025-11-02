@@ -85,7 +85,7 @@ import {
   type TransformerReturnType
 } from "../0_interfaces/2_domain/DomainElement.js";
 import { resolveTestCompositeActionTemplateSuite } from '../2_domain/TestSuiteTemplate.js';
-import { ignorePostgresExtraAttributesOnList, ignorePostgresExtraAttributesOnObject } from '../4_services/otherTools.js';
+import { ignorePostgresExtraAttributesOnList, ignorePostgresExtraAttributesOnObject, removeUndefinedProperties, unNullify } from '../4_services/otherTools.js';
 import { ConfigurationService } from './ConfigurationService.js';
 import { act } from 'react';
 
@@ -2221,7 +2221,7 @@ export class DomainController implements DomainControllerInterface {
         currentAction.testAssertion.definition.resultAccessPath ?? []
       );
 
-      valueToTest = Array.isArray(preValueToTest)
+      valueToTest = removeUndefinedProperties(unNullify(Array.isArray(preValueToTest)
         ? ignorePostgresExtraAttributesOnList(
             preValueToTest,
             currentAction.testAssertion.definition.ignoreAttributes ?? []
@@ -2229,7 +2229,7 @@ export class DomainController implements DomainControllerInterface {
         : ignorePostgresExtraAttributesOnObject(
             preValueToTest,
             currentAction.testAssertion.definition.ignoreAttributes ?? []
-          );
+          )));
       const expectedValue = Array.isArray(currentAction.testAssertion.definition.expectedValue)
         ? ignorePostgresExtraAttributesOnList(
             currentAction.testAssertion.definition.expectedValue,
@@ -2242,10 +2242,14 @@ export class DomainController implements DomainControllerInterface {
       log.info(
         "handleTestCompositeActionAssertion compositeRunTestAssertion to handle",
         JSON.stringify(currentAction.testAssertion, null, 2),
-        "preValueToTest is array",
-        Array.isArray(preValueToTest),
-        "preValueToTest",
-        JSON.stringify(preValueToTest, null, 2),
+        "ignoreAttributes",
+        currentAction.testAssertion.definition.ignoreAttributes??[],
+        "expectedValue",
+        JSON.stringify(expectedValue, null, 2),
+        // "preValueToTest is array",
+        // Array.isArray(preValueToTest),
+        // "preValueToTest",
+        // JSON.stringify(preValueToTest, null, 2),
         "valueToTest",
         JSON.stringify(valueToTest, null, 2)
       );

@@ -269,7 +269,7 @@ const x = 10;
       });
     });
 
-    it('displays MARKDOWN_HELP constant content', async () => {
+    it('displays MARKDOWN_HELP returnValue content', async () => {
       render(<MarkdownEditorModal {...defaultProps} isOpen={true} />);
       
       const toggleLink = screen.getByText(/Show Markdown Help/);

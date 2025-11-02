@@ -45,13 +45,13 @@ const mockEntityUuid = entityBook.uuid;
 // Sample transformers for testing
 const sampleBuildTransformer: TransformerForBuild = {
   interpolation: "build",
-  transformerType: "constant",
+  transformerType: "returnValue",
   value: "Sample Build Value"
 };
 
 const sampleRuntimeTransformer: TransformerForRuntime = {
   interpolation: "runtime",
-  transformerType: "constant",
+  transformerType: "returnValue",
   value: "Sample Runtime Value"
 };
 

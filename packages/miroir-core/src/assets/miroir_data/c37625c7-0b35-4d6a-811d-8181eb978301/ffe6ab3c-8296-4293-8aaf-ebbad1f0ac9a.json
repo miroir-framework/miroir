@@ -100,7 +100,7 @@
                   "referenceName": "testSelfApplicationUuid"
                 },
                 "parentName": {
-                  "transformerType": "constant",
+                  "transformerType": "returnValue",
                   "interpolation": "build",
                   "value": "Report"
                 },
@@ -149,7 +149,7 @@
                       "interpolation": "build",
                       "definition": {
                         "type": {
-                          "transformerType": "constant",
+                          "transformerType": "returnValue",
                           "interpolation": "build",
                           "value": "objectListReportSection"
                         },
@@ -165,7 +165,7 @@
                             "definition": "{{createEntity_newEntity.uuid}}"
                           },
                           "fetchedDataReference": {
-                            "transformerType": "constant",
+                            "transformerType": "returnValue",
                             "interpolation": "build",
                             "value": "instanceList"
                           }
@@ -214,7 +214,7 @@
                 "definition": {
                   "extractorTemplates": {
                     "elementToDisplay": {
-                      "transformerType": "constant",
+                      "transformerType": "returnValue",
                       "interpolation": "build",
                       "value": {
                         "extractorTemplateType": "extractorForObjectByDirectReference",
@@ -229,7 +229,7 @@
                           "definition": "{{newEntityUuid}}"
                         },
                         "instanceUuid": {
-                          "transformerType": "constant",
+                          "transformerType": "returnValue",
                           "interpolation": "runtime",
                           "value": {
                             "transformerType": "contextReference",

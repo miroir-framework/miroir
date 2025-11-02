@@ -617,7 +617,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
           filter: {
             attributeName: "name",
             value: {
-              transformerType: "constant",
+              transformerType: "returnValue",
               "mlSchema": {
                 type: "string",
               },

@@ -177,7 +177,7 @@ export interface SqlStringForCombinerReturnType {
 // ################################################################################################
 function getSqlTypeForValue(
   value?: any,
-  // actionRuntimeTransformer: { transformerType: "constant"; value?: any; interpolation: "runtime"; }, 
+  // actionRuntimeTransformer: { transformerType: "returnValue"; value?: any; interpolation: "runtime"; }, 
   // sqlTargetType: string, label: string
 ) {
   let sqlTargetType: PostgresDataTypes;
@@ -218,7 +218,7 @@ function getSqlTypeForValue(
     case "function":
     default: {
       throw new Error(
-        "Unsupported constant type in 'constant' transformer: " + typeof value
+        "Unsupported returnValue type in 'returnValue' transformer: " + typeof value
       );
       break;
     }
@@ -488,7 +488,7 @@ function sqlStringForApplyTo(
     case "boolean": {
       return sqlStringForRuntimeTransformer(
         {
-          transformerType: "constant",
+          transformerType: "returnValue",
           interpolation: "runtime",
           value: actionRuntimeTransformer.applyTo,
         },
@@ -503,10 +503,10 @@ function sqlStringForApplyTo(
     }
     case "object": {
       if (Array.isArray(actionRuntimeTransformer.applyTo) || !Object.hasOwn(actionRuntimeTransformer.applyTo, "transformerType")) {
-        // simple constant: object or array
+        // simple returnValue: object or array
         return sqlStringForRuntimeTransformer(
           {
-            transformerType: "constant",
+            transformerType: "returnValue",
             interpolation: "runtime",
             value: actionRuntimeTransformer.applyTo,
           },
@@ -519,7 +519,7 @@ function sqlStringForApplyTo(
         );
       }
       if (
-        ["constantAsExtractor", "constant", "contextReference", "parameterReference"].includes(
+        ["constantAsExtractor", "returnValue", "contextReference", "parameterReference"].includes(
           actionRuntimeTransformer.applyTo.transformerType || ""
         )
       ) {
@@ -1318,7 +1318,7 @@ function sqlStringForMapperListToListTransformer(
         )
       : sqlStringForRuntimeTransformer(
           {
-            transformerType: "constant",
+            transformerType: "returnValue",
             interpolation: "runtime",
             value: transformer_extended_apply_wrapper(
               undefined, // activityTracker
@@ -1716,7 +1716,7 @@ function sqlStringForObjectFullTemplateTransformer(
         ):
         sqlStringForRuntimeTransformer(
           {
-            transformerType: "constant",
+            transformerType: "returnValue",
             interpolation: "runtime",
             value: f.attributeKey
           },
@@ -1881,7 +1881,7 @@ function sqlStringForObjectFullTemplateTransformer(
               )
             : sqlStringForRuntimeTransformer(
                 {
-                  transformerType: "constant",
+                  transformerType: "returnValue",
                   interpolation: "runtime",
                   value: f.attributeKey,
                 },
@@ -2817,7 +2817,7 @@ function sqlStringForParameterReferenceTransformer(
   }
   const referenceQuery = sqlStringForRuntimeTransformer(
     {
-      transformerType: "constant",
+      transformerType: "returnValue",
       interpolation: "runtime",
       value: resolvedReference as any,
     },
@@ -2866,7 +2866,7 @@ function sqlStringForConstantAsExtractorTransformer(
   withClauseColumnName?: string,
   iterateOn?: string,
 ): Domain2QueryReturnType<SqlStringForTransformerElementValue> {
-  // TODO: deal with whole set of transformers, not just constant values.
+  // TODO: deal with whole set of transformers, not just returnValue values.
   const jsTypeToConstantType: Record<string, string> = {
     string: "constantString",
     number: "constantNumber",
@@ -3073,7 +3073,7 @@ function sqlStringForMustacheStringTemplateTransformer(
     template
   );
   
-  // If no placeholders, return the template as a constant string
+  // If no placeholders, return the template as a returnValue string
   if (placeholders.length === 0) {
     const paramIndex = preparedStatementParametersCount + 1;
     return {
@@ -3224,7 +3224,7 @@ export function sqlStringForRuntimeTransformer(
   if (typeof actionRuntimeTransformer != "object" || Array.isArray(actionRuntimeTransformer)) {
     return sqlStringForRuntimeTransformer(
       {
-        transformerType: "constant",
+        transformerType: "returnValue",
         interpolation: "runtime",
         value: actionRuntimeTransformer,
       },
@@ -3362,7 +3362,7 @@ export function sqlStringForQuery(
   ).map(([key, value]) => {
     const convertedParam = sqlStringForRuntimeTransformer(
       {
-        transformerType: "constant",
+        transformerType: "returnValue",
         interpolation: "runtime",
         value: value,
       },

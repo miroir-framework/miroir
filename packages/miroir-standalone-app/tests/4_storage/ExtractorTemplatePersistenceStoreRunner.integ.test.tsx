@@ -297,13 +297,13 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                   applicationSection: "model",
                   parentName: "Entity",
                   parentUuid: {
-            transformerType: "constant",
+            transformerType: "returnValue",
             mlSchema: { type: "uuid" },
                     interpolation: "build",
                     value: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                   },
                   instanceUuid: {
-            transformerType: "constant",
+            transformerType: "returnValue",
             mlSchema: { type: "uuid" },
                     interpolation: "build",
                     value: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
@@ -360,7 +360,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                     applicationSection: applicationSection,
                     parentName: entityEntity.name,
                     parentUuid: {
-            transformerType: "constant",
+            transformerType: "returnValue",
             mlSchema: { type: "uuid" },
                       interpolation: "build",
                       value: entityEntity.uuid,
@@ -411,7 +411,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                     applicationSection: applicationSection,
                     parentName: "Entity",
                     parentUuid: {
-            transformerType: "constant",
+            transformerType: "returnValue",
             mlSchema: { type: "uuid" },
                       interpolation: "build",
                       value: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
@@ -419,7 +419,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                     filter: {
                       attributeName: "name",
                       value: {
-            transformerType: "constant",
+            transformerType: "returnValue",
             mlSchema: { type: "string" },
                         interpolation: "build",
                         // value: "or",
@@ -475,7 +475,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                     applicationSection: applicationSection,
                     parentName: "Book",
                     parentUuid: {
-            transformerType: "constant",
+            transformerType: "returnValue",
             mlSchema: { type: "uuid" },
                       interpolation: "build",
                       // value: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
@@ -540,7 +540,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                   applicationSection: applicationSection,
                   parentName: "Book",
                   parentUuid: {
-            transformerType: "constant",
+            transformerType: "returnValue",
             mlSchema: { type: "uuid" },
                     interpolation: "build",
                     value: entityBook.uuid,
@@ -597,7 +597,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                   applicationSection: applicationSection,
                   parentName: "Book",
                   parentUuid: {
-            transformerType: "constant",
+            transformerType: "returnValue",
             mlSchema: { type: "uuid" },
                     interpolation: "build",
                     value: entityBook.uuid,
@@ -772,7 +772,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                     extractorTemplateType: "extractorForObjectByDirectReference",
                     parentName: "Book",
                     parentUuid: {
-                      transformerType: "constant",
+                      transformerType: "returnValue",
                       mlSchema: { type: "uuid" },
                       interpolation: "build",
                       value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
@@ -788,7 +788,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                     extractorTemplateType: "combinerForObjectByRelation",
                     parentName: "Author",
                     parentUuid: {
-                      transformerType: "constant",
+                      transformerType: "returnValue",
                       mlSchema: { type: "uuid" },
                       interpolation: "build",
                       value: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
@@ -804,7 +804,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
                     extractorTemplateType: "combinerByRelationReturningObjectList",
                     parentName: "Book",
                     parentUuid: {
-                      transformerType: "constant",
+                      transformerType: "returnValue",
                       mlSchema: { type: "uuid" },
                       interpolation: "build",
                       value: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",

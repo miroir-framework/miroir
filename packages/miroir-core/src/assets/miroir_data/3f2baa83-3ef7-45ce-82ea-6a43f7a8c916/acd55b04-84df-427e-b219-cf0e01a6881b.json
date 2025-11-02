@@ -13,7 +13,7 @@
         "applicationSection": "model",
         "parentName": "EntityDefinition",
         "parentUuid": {
-          "transformerType": "constant",
+          "transformerType": "returnValue",
           "value": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd"
         },
         "instanceUuid": {

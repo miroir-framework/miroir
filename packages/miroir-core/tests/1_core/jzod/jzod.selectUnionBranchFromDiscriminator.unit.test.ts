@@ -858,7 +858,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
           definition: { type: "string" },
         },
       },
-      // constant
+      // returnValue
       {
         type: "object",
         extend: [
@@ -874,7 +874,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
         ],
         definition: {
           interpolation: { type: "literal", definition: "build" },
-          transformerType: { type: "literal", definition: "constant" },
+          transformerType: { type: "literal", definition: "returnValue" },
           value: { type: "any" },
         },
       },

@@ -534,7 +534,7 @@ export const EntityInstanceGrid = (props: TableComponentProps & { theme?: DeepPa
   //       // const width = containerRef.current.clientWidth;
   //       const heigth = containerRef.current.clientHeight;
   //       // Ensure we have a meaningful width before setting it
-  //       // Add hysteresis to prevent constant re-calculations on small changes
+  //       // Add hysteresis to prevent returnValue re-calculations on small changes
   //       // if (width > 0 && Math.abs(width - containerWidth) > 10) {
   //       //   setContainerWidth(width);
   //       //   log.debug("EntityInstanceGrid container width updated:", width);

@@ -296,7 +296,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = tra
 //               //   },
 //               //   transformerParams: { fileData },
 //               //   expectedValue: {
-//               //     transformerType: "constant",
+//               //     transformerType: "returnValue",
 //               //     value: fileData,
 //               //   },
 //               // }
@@ -824,7 +824,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = tra
 //           transformerTests: [
 //             {
 //               transformerTestType: "transformerTest",
-//               transformerTestLabel: "objectEntries used on constant object before runtime",
+//               transformerTestLabel: "objectEntries used on returnValue object before runtime",
 //               transformerName: "objectEntries",
 //               transformer: {
 //                 transformerType: "objectEntries",
@@ -887,7 +887,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = tra
 //                 transformerType: "objectEntries",
 //                 interpolation: "runtime",
 //                 applyTo: {
-//                     transformerType: "constant",
+//                     transformerType: "returnValue",
 //                     interpolation: "runtime",
 //                     value: "nonExistingTestObject",
 //                 },
@@ -909,7 +909,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = tra
 //           transformerTests: [
 //             {
 //               transformerTestType: "transformerTest",
-//               transformerTestLabel: "objectValues on constant object at runtime",
+//               transformerTestLabel: "objectValues on returnValue object at runtime",
 //               transformerName: "objectValuesBeforeRuntime",
 //               transformer: {
 //                 transformerType: "objectValues",
@@ -966,7 +966,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = tra
 //                 transformerType: "objectValues",
 //                 interpolation: "runtime",
 //                 applyTo: {
-//                     transformerType: "constant",
+//                     transformerType: "returnValue",
 //                     interpolation: "runtime",
 //                     value: "nonExistingTestObject",
 //                 },
@@ -989,7 +989,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = tra
 //             {
 //               transformerTestType: "transformerTest",
 //               transformerTestLabel:
-//                 "listPickElement selects wanted element from a constant string list before runtime",
+//                 "listPickElement selects wanted element from a returnValue string list before runtime",
 //               transformerName: "listPickElementForString",
 //               transformer: {
 //                 transformerType: "listPickElement",
@@ -1145,7 +1145,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = tra
 //           transformerTests: [
 //             {
 //               transformerTestType: "transformerTest",
-//               transformerTestLabel: "unique returns list of unique objects from constant array at runtime",
+//               transformerTestLabel: "unique returns list of unique objects from returnValue array at runtime",
 //               transformerName: "uniqueForReferenceAtRuntime",
 //               transformer: {
 //                 transformerType: "unique",
@@ -1225,13 +1225,13 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = tra
 //             },
 //             {
 //               transformerTestType: "transformerTest",
-//               transformerTestLabel: "count returns number of elements in a constant transformer object list at runtime",
+//               transformerTestLabel: "count returns number of elements in a returnValue transformer object list at runtime",
 //               transformerName: "countForConstantObjectListAtRuntime",
 //               transformer: {
 //                 transformerType: "count",
 //                 interpolation: "runtime",
 //                 applyTo: {
-//                     transformerType: "constant",
+//                     transformerType: "returnValue",
 //                     interpolation: "runtime",
 //                     value: [ { test: "testA" }, { test: "testB" }, { test: "testC" } ] ,
 //                 },
@@ -1336,7 +1336,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = tra
 //             {
 //               transformerTestType: "transformerTest",
 //               transformerTestLabel:
-//                 "object_fullTemplate allows to dynamically build an object from a constant object before runtime (unknown keys, unknown values)",
+//                 "object_fullTemplate allows to dynamically build an object from a returnValue object before runtime (unknown keys, unknown values)",
 //               transformerName: "fullTemplate",
 //               transformer: {
 //                 transformerType: "object_fullTemplate",
@@ -1729,7 +1729,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = tra
 //           transformerTests: [
 //             {
 //               transformerTestType: "transformerTest",
-//               transformerTestLabel: "objectAlter allows to change a constant object attribute value",
+//               transformerTestLabel: "objectAlter allows to change a returnValue object attribute value",
 //               transformerName: "objectAlter",
 //               transformer: {
 //                 transformerType: "objectAlter",
@@ -1864,7 +1864,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = tra
 //           transformerTests: [
 //             {
 //               transformerTestType: "transformerTest",
-//               transformerTestLabel: "mapperListToList maps a constant list of objects to a list of constant objects",
+//               transformerTestLabel: "mapperListToList maps a returnValue list of objects to a list of returnValue objects",
 //               transformerName: "mapperListToList",
 //               transformer: {
 //                 transformerType: "mapperListToList",
@@ -1891,7 +1891,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = tra
 //             },
 //             {
 //               transformerTestType: "transformerTest",
-//               transformerTestLabel: "mapperListToList maps a constant list of objects to a list of constant objects with subObject",
+//               transformerTestLabel: "mapperListToList maps a returnValue list of objects to a list of returnValue objects with subObject",
 //               transformerName: "mapperListToList",
 //               transformer: {
 //                 transformerType: "mapperListToList",
@@ -1914,7 +1914,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = tra
 //                           value: "yyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
 //                         },
 //                         name: {
-//                           transformerType: "constant",
+//                           transformerType: "returnValue",
 //                           interpolation: "runtime",
 //                           value: "TEST",
 //                         },
@@ -1958,12 +1958,12 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = tra
 //                   definition: [
 //                     {
 //                       attributeKey: {
-//                         transformerType: "constant",
+//                         transformerType: "returnValue",
 //                         interpolation: "runtime",
 //                         value: "uuid",
 //                       },
 //                       attributeValue: {
-//                         transformerType: "constant",
+//                         transformerType: "returnValue",
 //                         interpolation: "runtime",
 //                         value: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
 //                       },
@@ -2284,7 +2284,7 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = tra
 //           transformerTests: [
 //             {
 //               transformerTestType: "transformerTest",
-//               transformerTestLabel: "listReducerToSpreadObject allows to reduce a constant list of objects to a single object",
+//               transformerTestLabel: "listReducerToSpreadObject allows to reduce a returnValue list of objects to a single object",
 //               transformerName: "listReducerToSpreadObject",
 //               transformer: {
 //                 transformerType: "listReducerToSpreadObject",
@@ -2420,9 +2420,9 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = tra
 //           transformerTestType: "transformerTestSuite",
 //           transformerTestLabel: "listReducerToIndexObject",
 //           transformerTests: [
-//             // "listReducerToIndexObject allows to reduce a constant list of objects to an object with dynamic keys and values": {
+//             // "listReducerToIndexObject allows to reduce a returnValue list of objects to an object with dynamic keys and values": {
 //             //   transformerTestType: "transformerTest",
-//             //   transformerTestLabel: "listReducerToIndexObject allows to reduce a constant list of objects to an object with dynamic keys and values",
+//             //   transformerTestLabel: "listReducerToIndexObject allows to reduce a returnValue list of objects to an object with dynamic keys and values",
 //             //   transformerName: "listReducerToIndexObject",
 //             //   transformer: {
 //             //     transformerType: "listReducerToIndexObject",

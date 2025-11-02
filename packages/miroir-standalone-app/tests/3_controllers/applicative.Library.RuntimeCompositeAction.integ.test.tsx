@@ -554,7 +554,7 @@ const createEntityCompositeAction: CompositeAction = {
     //   definition: {
     //     extractorTemplates: {
     //       elementToDisplay: {
-    //         transformerType: "constant",
+    //         transformerType: "returnValue",
     //         interpolation: "runtime",
     //         value: {
     //           extractorTemplateType: "extractorForObjectByDirectReference",
@@ -807,7 +807,7 @@ const newEntityDetailsReport = {
         parentName: newEntityName,
         parentUuid: newEntityUuid,
         instanceUuid: {
-          transformerType: "constant",
+          transformerType: "returnValue",
           interpolation: "runtime",
           value: {
             transformerType: "contextReference",
