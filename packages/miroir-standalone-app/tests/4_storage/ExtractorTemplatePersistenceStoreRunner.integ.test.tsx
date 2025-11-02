@@ -72,6 +72,7 @@ import {
 } from "../../src/miroir-fwk/4-tests/tests-utils.js";
 import { loadTestConfigFiles } from '../utils/fileTools.js';
 import { chainVitestSteps } from '../../src/miroir-fwk/4-tests/vitest-utils.js';
+import { defaultMiroirModelEnvironment } from 'miroir-core';
 
 let domainController: DomainControllerInterface;
 let localCache: LocalCacheInterface;
@@ -171,7 +172,7 @@ beforeAll(
     }
 
     const createLibraryDeploymentAction = createDeploymentCompositeAction(adminConfigurationDeploymentLibrary.uuid, libraryDeploymentStorageConfiguration);
-    const result = await domainController.handleCompositeAction(createLibraryDeploymentAction, defaultMiroirMetaModel);
+    const result = await domainController.handleCompositeAction(createLibraryDeploymentAction, defaultMiroirModelEnvironment, {});
 
     if (result.status !== "ok") {
       throw new Error("beforeAll failed createLibraryDeploymentAction!");

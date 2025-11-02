@@ -2,7 +2,9 @@ import express, { Request } from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 // import {bodyParser} from 'body-parser';
-import { readFileSync } from 'fs';
+import { readFileSync, existsSync } from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import log from 'loglevelnext'; // TODO: use this? or plain "console" log?
 
 // import { fetch } from 'cross-fetch';
@@ -108,6 +110,49 @@ app.use(bodyParser.json({limit: '50mb'}));
 // var urlencodedParser = bodyParser.urlencoded({ extended: true, limit: '50mb' });
 
 myLogger.info(`Server being set-up, going to execute on the port::${portFromConfig}`);
+
+// Serve static assets (images, etc.) from a `public` directory.
+// The mount path may be configured in the miroir server config under `server.assetsMountPath`.
+// Default to `/assets` so files in `packages/miroir-server/public/...` are available at `/<assetsMountPath>/...`.
+const rawAssetsMountPath = (miroirConfig.server && (miroirConfig.server as any).assetsMountPath) || '/assets';
+// sanitize mount path: ensure leading slash and no trailing slash (unless root)
+let assetsMountPath = String(rawAssetsMountPath || '/assets');
+if (!assetsMountPath.startsWith('/')) assetsMountPath = '/' + assetsMountPath;
+if (assetsMountPath.length > 1 && assetsMountPath.endsWith('/')) assetsMountPath = assetsMountPath.replace(/\/+$|\/+$/g, '');
+
+// Resolve a Windows-safe absolute path to the public folder
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const pathToPublic = path.join(__dirname, '..', 'public');
+myLogger.info(`Mounting static assets at ${assetsMountPath} -> ${pathToPublic}`);
+
+// quick existence check for common file to help debugging
+try {
+  const sample = path.join(pathToPublic, 'images', 'logo.png');
+  const exists = existsSync(sample);
+  myLogger.info(`Static asset sample check: ${sample} exists=${exists}`);
+} catch (e) {
+  myLogger.warn(`Error while checking sample static asset: ${e}`);
+}
+
+// set long cache headers for static assets (1 day) and fall back to no-cache for HTML-like responses
+app.use(
+  assetsMountPath,
+  express.static(pathToPublic, {
+    maxAge: "1d",
+    // express.static expects a Node http.ServerResponse here; using that type ensures setHeader is available
+    setHeaders: (
+      res: import("http").ServerResponse,
+      filePath: string,
+      stat: import("fs").Stats
+    ) => {
+      // If it's an HTML file, don't cache
+      if (filePath.endsWith(".html")) {
+        res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+      }
+    },
+  })
+);
 
 miroirCoreStartup();
 miroirFileSystemStoreSectionStartup();
