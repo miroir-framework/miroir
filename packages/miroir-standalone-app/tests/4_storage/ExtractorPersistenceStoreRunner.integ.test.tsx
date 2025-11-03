@@ -844,7 +844,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
               runtimeTransformers: {
                 uniqueAuthors: {
                   interpolation: "runtime",
-                  transformerType: "count",
+                  transformerType: "aggregate",
                   applyTo: {
                     transformerType: "contextReference",
                     interpolation: "runtime",
@@ -906,7 +906,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
                     interpolation: "runtime",
                     referenceName: "books",
                   },
-                  transformerType: "count",
+                  transformerType: "aggregate",
                   interpolation: "runtime",
                   groupBy: "author",
                   // orderBy: "author",

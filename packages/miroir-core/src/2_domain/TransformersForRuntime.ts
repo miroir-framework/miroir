@@ -17,7 +17,7 @@ import {
   TransformerForBuild_returnValue,
   // TransformerForBuild_constantArray,
   TransformerForBuild_constantAsExtractor,
-  TransformerForBuild_count,
+  TransformerForBuild_aggregate,
   TransformerForBuild_dataflowObject,
   TransformerForBuild_freeObjectTemplate,
   // TransformerForBuild_InnerReference,
@@ -40,7 +40,7 @@ import {
   // TransformerForRuntime_constantArray,
   TransformerForRuntime_constants,
   TransformerForRuntime_contextReference,
-  TransformerForRuntime_count,
+  TransformerForRuntime_aggregate,
   TransformerForRuntime_dataflowObject,
   TransformerForRuntime_defaultValueForMLSchema,
   TransformerForRuntime_freeObjectTemplate,
@@ -86,7 +86,7 @@ import {
   transformer_returnValue,
   transformer_constantAsExtractor,
   transformer_contextReference,
-  transformer_count,
+  transformer_aggregate,
   transformer_dataflowObject,
   transformer_freeObjectTemplate,
   transformer_listPickElement,
@@ -666,7 +666,7 @@ export const applicationTransformerDefinitions: Record<string, TransformerDefini
   transformer_menu_addItem: transformer_menu_addItem,
   //
   spreadSheetToJzodSchema: transformer_spreadSheetToJzodSchema,
-  count: transformer_count,
+  aggregate: transformer_aggregate,
   ...Object.fromEntries((transformer_conditional.transformerInterface.transformerParameterSchema.transformerType.definition as string[]).map(
     (t: string) => ([t, transformer_conditional])
   )),
@@ -824,7 +824,7 @@ function resolveApplyTo(
 // TODO: identical to resolveApplyTo, should be merged?
 export function resolveApplyTo_legacy(
   transformer: 
-  | TransformerForBuild_count
+  | TransformerForBuild_aggregate
   | TransformerForBuild_mapList
   | TransformerForBuild_listPickElement
   | TransformerForBuild_listReducerToSpreadObject
@@ -832,7 +832,7 @@ export function resolveApplyTo_legacy(
   | TransformerForBuild_objectEntries
   | TransformerForBuild_objectValues
   | TransformerForBuild_unique
-  | TransformerForRuntime_count
+  | TransformerForRuntime_aggregate
   | TransformerForRuntime_mapList 
   | TransformerForRuntime_listPickElement
   | TransformerForRuntime_listReducerToIndexObject
@@ -1861,8 +1861,8 @@ export function handleCountTransformer(
   transformerPath: string[] = [],
   label: string | undefined,
   transformer:
-  | TransformerForBuild_count
-  | TransformerForRuntime_count,
+  | TransformerForBuild_aggregate
+  | TransformerForRuntime_aggregate,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   modelEnvironment: MiroirModelEnvironment,
   transformerParams: Record<string, any>,
@@ -1925,7 +1925,7 @@ export function handleCountTransformer(
       : [transformer.groupBy];
     
     // Use a Map with composite key (JSON stringified) to track unique combinations
-    const groupByMap = new Map<string, { attributes: Record<string, any>; count: number }>();
+    const groupByMap = new Map<string, { attributes: Record<string, any>; aggregate: number }>();
     
     for (const entry of resolvedReference) {
       // Build the grouping key from all groupBy attributes
@@ -1939,9 +1939,9 @@ export function handleCountTransformer(
       
       if (groupByMap.has(compositeKey)) {
         const existing = groupByMap.get(compositeKey)!;
-        existing.count++;
+        existing.aggregate++;
       } else {
-        groupByMap.set(compositeKey, { attributes, count: 1 });
+        groupByMap.set(compositeKey, { attributes, aggregate: 1 });
       }
     }
     
@@ -1953,9 +1953,9 @@ export function handleCountTransformer(
     // );
     
     // Convert map to result array with attributes spread and count
-    const result = Array.from(groupByMap.values()).map(({ attributes, count }) => ({
+    const result = Array.from(groupByMap.values()).map(({ attributes, aggregate }) => ({
       ...attributes,
-      count
+      aggregate
     }));
     
     // log.info(
@@ -1968,7 +1968,7 @@ export function handleCountTransformer(
     //   "handleCountTransformer extractorTransformer count without groupBy resolvedReference",
     //   resolvedReference.length
     // );
-    return [{ count: resolvedReference.length }];
+    return [{ aggregate: resolvedReference.length }];
   }
   // break;
 }

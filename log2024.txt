@@ -82,7 +82,7 @@ commit cc78f5769c921aa1e8f353b97722c8ef4680e207
 Author: Miroir Framework <miroir-framework@protonmail.com>
 Date:   Mon Dec 16 22:52:20 2024 +0100
 
-    FEATURE: add run-time Tests #16. Allow to use transformers in runTestCompositeActionAssertion, make "count" transformer recursive (using sub-transformer), migrate first test case of DomainController.Data.React to DomainController.Data.integ, using "testCompositeActionSuite". Using Vitest for tests in miroir-core.
+    FEATURE: add run-time Tests #16. Allow to use transformers in runTestCompositeActionAssertion, make "aggregate" transformer recursive (using sub-transformer), migrate first test case of DomainController.Data.React to DomainController.Data.integ, using "testCompositeActionSuite". Using Vitest for tests in miroir-core.
 
  26 files changed, 1595 insertions(+), 1472 deletions(-)
 

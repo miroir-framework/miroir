@@ -389,7 +389,7 @@ export {
   // TransformerForRuntime_constantArray,
   TransformerForRuntime_contextReference,
   transformerForRuntime_contextReference,
-  TransformerForRuntime_count,
+  TransformerForRuntime_aggregate,
   TransformerForRuntime_dataflowObject,
   TransformerForRuntime_freeObjectTemplate,
   // TransformerForRuntime_innerFullObjectTemplate,

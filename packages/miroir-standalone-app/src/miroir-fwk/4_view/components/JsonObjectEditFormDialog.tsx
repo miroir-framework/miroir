@@ -430,7 +430,7 @@ export function JsonObjectEditFormDialog(props: JsonObjectEditFormDialogProps) {
     "##################################### rendering",
     "label",
     label,
-    "count",
+    "aggregate",
     count,
     "defaultFormValuesObject",
     defaultFormValuesObject,

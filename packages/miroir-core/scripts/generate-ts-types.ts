@@ -138,7 +138,7 @@ export type TransformerForBuild =
   | TransformerForBuild_conditional
   | TransformerForBuild_returnValue
   | TransformerForBuild_constantAsExtractor
-  | TransformerForBuild_count
+  | TransformerForBuild_aggregate
   | TransformerForBuild_dataflowObject
   | TransformerForBuild_freeObjectTemplate
   | TransformerForBuild_listPickElement
@@ -190,7 +190,7 @@ export const transformerForBuild: z.ZodType<TransformerForBuild> = z.lazy(() => 
     transformerForBuild_conditional,
     transformerForBuild_returnValue,
     transformerForBuild_constantAsExtractor,
-    transformerForBuild_count,
+    transformerForBuild_aggregate,
     transformerForBuild_dataflowObject,
     transformerForBuild_freeObjectTemplate,
     transformerForBuild_listPickElement,
@@ -221,7 +221,7 @@ export type TransformerForRuntime =
   | TransformerForRuntime_returnValue
   | TransformerForRuntime_constantAsExtractor
   | TransformerForRuntime_contextReference
-  | TransformerForRuntime_count
+  | TransformerForRuntime_aggregate
   | TransformerForRuntime_dataflowObject
   | TransformerForRuntime_freeObjectTemplate
   | TransformerForRuntime_listPickElement
@@ -251,7 +251,7 @@ export const transformerForRuntime: z.ZodType<TransformerForRuntime> = z.union([
   z.lazy(() => transformerForRuntime_returnValue),
   z.lazy(() => transformerForRuntime_constantAsExtractor),
   z.lazy(() => transformerForRuntime_contextReference),
-  z.lazy(() => transformerForRuntime_count),
+  z.lazy(() => transformerForRuntime_aggregate),
   z.lazy(() => transformerForRuntime_dataflowObject),
   z.lazy(() => transformerForRuntime_freeObjectTemplate),
   z.lazy(() => transformerForRuntime_listPickElement),
@@ -293,7 +293,7 @@ export type TransformerForBuildPlusRuntime =
   | TransformerForBuildPlusRuntime_conditional
   | TransformerForBuildPlusRuntime_returnValue
   | TransformerForBuildPlusRuntime_constantAsExtractor
-  | TransformerForBuildPlusRuntime_count
+  | TransformerForBuildPlusRuntime_aggregate
   | TransformerForBuildPlusRuntime_dataflowObject
   | TransformerForBuildPlusRuntime_freeObjectTemplate
   | TransformerForBuildPlusRuntime_listPickElement
@@ -347,7 +347,7 @@ export const transformerForBuildPlusRuntime: z.ZodType<TransformerForBuildPlusRu
     transformerForBuildPlusRuntime_conditional,
     transformerForBuildPlusRuntime_returnValue,
     transformerForBuildPlusRuntime_constantAsExtractor,
-    transformerForBuildPlusRuntime_count,
+    transformerForBuildPlusRuntime_aggregate,
     transformerForBuildPlusRuntime_dataflowObject,
     transformerForBuildPlusRuntime_freeObjectTemplate,
     transformerForBuildPlusRuntime_listPickElement,

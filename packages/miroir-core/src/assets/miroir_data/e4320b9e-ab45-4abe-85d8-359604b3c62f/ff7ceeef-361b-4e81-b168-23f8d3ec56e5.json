@@ -19,7 +19,7 @@
     },
     "runtimeTransformers": {
       "entityCount": {
-        "transformerType": "count",
+        "transformerType": "aggregate",
         "applyTo": {
           "transformerType": "contextReference",
           "referenceName": "entities"

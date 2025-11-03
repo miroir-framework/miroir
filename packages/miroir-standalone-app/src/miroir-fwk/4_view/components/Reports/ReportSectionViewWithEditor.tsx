@@ -132,6 +132,7 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
 
   log.info(
     "ReportSectionViewWithEditor render",
+    reportSectionDefinitionFromFormik?.type,
     currentNavigationKey,
     "reportSectionDefinitionFromFormik",
     reportSectionDefinitionFromFormik,

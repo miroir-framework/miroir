@@ -250,7 +250,7 @@
                 "transformerName": "buildCountElementsOfParameterArray",
                 "runTestStep": "build",
                 "transformer": {
-                  "transformerType": "count",
+                  "transformerType": "aggregate",
                   "interpolation": "build",
                   "applyTo": {
                     "transformerType": "parameterReference",
@@ -266,7 +266,7 @@
                 },
                 "expectedValue": [
                   {
-                    "count": 3
+                    "aggregate": 3
                   }
                 ]
               },
@@ -276,7 +276,7 @@
                 "transformerName": "runtimeCountElementsOfBuildParameterArray",
                 "runTestStep": "build",
                 "transformer": {
-                  "transformerType": "count",
+                  "transformerType": "aggregate",
                   "interpolation": "build",
                   "applyTo": {
                     "transformerType": "parameterReference",
@@ -292,7 +292,7 @@
                 },
                 "expectedValue": [
                   {
-                    "count": 3
+                    "aggregate": 3
                   }
                 ]
               }
@@ -1835,7 +1835,7 @@
           },
           {
             "transformerTestType": "transformerTestSuite",
-            "transformerTestLabel": "count",
+            "transformerTestLabel": "aggregate",
             "skip": true,
             "transformerTests": [
               {
@@ -1843,7 +1843,7 @@
                 "transformerTestLabel": "count returns number of elements in an object list at runtime",
                 "transformerName": "countForConstantObjectListAtRuntime",
                 "transformer": {
-                  "transformerType": "count",
+                  "transformerType": "aggregate",
                   "interpolation": "runtime",
                   "applyTo": {
                     "transformerType": "returnValue",
@@ -1865,7 +1865,7 @@
                 "transformerRuntimeContext": {},
                 "expectedValue": [
                   {
-                    "count": 3
+                    "aggregate": 3
                   }
                 ]
               },
@@ -1874,7 +1874,7 @@
                 "transformerTestLabel": "count returns number of elements in a returnValue transformer object list at runtime",
                 "transformerName": "countForConstantObjectListAtRuntime",
                 "transformer": {
-                  "transformerType": "count",
+                  "transformerType": "aggregate",
                   "interpolation": "runtime",
                   "applyTo": {
                     "transformerType": "returnValue",
@@ -1896,7 +1896,7 @@
                 "transformerRuntimeContext": {},
                 "expectedValue": [
                   {
-                    "count": 3
+                    "aggregate": 3
                   }
                 ]
               },
@@ -1905,7 +1905,7 @@
                 "transformerTestLabel": "count returns number of elements in a contextReference object list at runtime",
                 "transformerName": "countForObjectListAtRuntime",
                 "transformer": {
-                  "transformerType": "count",
+                  "transformerType": "aggregate",
                   "interpolation": "runtime",
                   "applyTo": {
                     "transformerType": "contextReference",
@@ -1929,7 +1929,7 @@
                 },
                 "expectedValue": [
                   {
-                    "count": 3
+                    "aggregate": 3
                   }
                 ]
               },
@@ -1938,7 +1938,7 @@
                 "transformerTestLabel": "count returns number of elements in a string list from an extractor at runtime",
                 "transformerName": "countForStringListExtractor",
                 "transformer": {
-                  "transformerType": "count",
+                  "transformerType": "aggregate",
                   "interpolation": "runtime",
                   "applyTo": {
                     "transformerType": "constantAsExtractor",
@@ -1959,7 +1959,7 @@
                 "transformerParams": {},
                 "expectedValue": [
                   {
-                    "count": 3
+                    "aggregate": 3
                   }
                 ]
               },
@@ -1968,7 +1968,7 @@
                 "transformerTestLabel": "count returns number of elements in an object list from an extractor",
                 "transformerName": "countForObjectListExtractor",
                 "transformer": {
-                  "transformerType": "count",
+                  "transformerType": "aggregate",
                   "interpolation": "runtime",
                   "applyTo": {
                     "transformerType": "constantAsExtractor",
@@ -2000,7 +2000,7 @@
                 "transformerParams": {},
                 "expectedValue": [
                   {
-                    "count": 3
+                    "aggregate": 3
                   }
                 ]
               },
@@ -2009,7 +2009,7 @@
                 "transformerTestLabel": "count returns number of elements in an object list with a group at runtime",
                 "transformerName": "countForObject",
                 "transformer": {
-                  "transformerType": "count",
+                  "transformerType": "aggregate",
                   "interpolation": "runtime",
                   "applyTo": {
                     "transformerType": "contextReference",
@@ -2036,9 +2036,9 @@
                   ]
                 },
                 "expectedValue": [
-                  { "test": "testA", "count": 2},
-                  { "test": "testB", "count": 1},
-                  { "test": "testC", "count": 1}
+                  { "test": "testA", "aggregate": 2},
+                  { "test": "testB", "aggregate": 1},
+                  { "test": "testC", "aggregate": 1}
                 ]
               },
               {
@@ -2046,7 +2046,7 @@
                 "transformerTestLabel": "count returns number of elements in an object list with a multiple groupBy at runtime",
                 "transformerName": "countForObjectMultipleGroupBy",
                 "transformer": {
-                  "transformerType": "count",
+                  "transformerType": "aggregate",
                   "interpolation": "runtime",
                   "applyTo": {
                     "transformerType": "contextReference",
@@ -2085,10 +2085,10 @@
                   ]
                 },
                 "expectedValue": [
-                  { "test1": "testA", "test2": 1, "count": 1},
-                  { "test1": "testA", "test2": 2, "count": 1},
-                  { "test1": "testB", "test2": 1, "count": 2},
-                  { "test1": "testC", "test2": 2, "count": 2}
+                  { "test1": "testA", "test2": 1, "aggregate": 1},
+                  { "test1": "testA", "test2": 2, "aggregate": 1},
+                  { "test1": "testB", "test2": 1, "aggregate": 2},
+                  { "test1": "testC", "test2": 2, "aggregate": 2}
                 ]
               }
             ]
@@ -2857,7 +2857,7 @@
                   "queryFailure": "FailedTransformer"
                 },
                 "integrationTestExpectedValue": {
-                  "queryFailure": "QueryNotExecutable"
+                  "queryFailure": "FailedTransformer"
                 }
               }
             ]

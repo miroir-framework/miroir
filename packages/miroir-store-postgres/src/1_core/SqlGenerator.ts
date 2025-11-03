@@ -16,7 +16,7 @@ import {
   // TransformerForRuntime_constantArray,
   TransformerForRuntime_constantAsExtractor,
   TransformerForRuntime_contextReference,
-  TransformerForRuntime_count,
+  TransformerForRuntime_aggregate,
   TransformerForRuntime_dataflowObject,
   TransformerForRuntime_freeObjectTemplate,
   TransformerForRuntime_listPickElement,
@@ -442,7 +442,7 @@ function sqlStringForApplyTo(
   actionRuntimeTransformer:
     | TransformerForBuild_object_fullTemplate
     | TransformerForRuntime_object_fullTemplate
-    | TransformerForRuntime_count
+    | TransformerForRuntime_aggregate
     | TransformerForRuntime_listPickElement
     | TransformerForRuntime_mapList
     | TransformerForRuntime_objectAlter
@@ -573,7 +573,7 @@ function sqlStringForApplyTo(
 
 // ################################################################################################
 function sqlStringForCountTransformer(
-  actionRuntimeTransformer: TransformerForRuntime_count,
+  actionRuntimeTransformer: TransformerForRuntime_aggregate,
   preparedStatementParametersCount: number,
   indentLevel: number,
   queryParams: Record<string, any>,
@@ -636,7 +636,7 @@ function sqlStringForCountTransformer(
 //   select '[{"test1":"testA","test2":1},{"test1":"testB","test2":1},{"test1":"testA","test2":2},{"test1":"testC","test2":2},{"test1":"testB","test2":1},{"test1":"testC","test2":2}]'::jsonb AS "constantObject"
 // ),
 // "transformer" AS (
-// SELECT "X"."test1", "X"."test2", COUNT(*)::int AS "count"
+// SELECT "X"."test1", "X"."test2", COUNT(*)::int AS "aggregate"
 // FROM jsonb_to_recordset((SELECT "constantObject" FROM "testList")) AS "X"("test1" text, "test2" int)
 // GROUP BY "X"."test1", "X"."test2"
 // ORDER BY "X"."test1", "X"."test2"
@@ -646,7 +646,7 @@ function sqlStringForCountTransformer(
         return {
           type: "json",
           sqlStringOrObject: `
-SELECT ${groupBySelectors?.join(',')}, COUNT(*)::int AS "count"
+SELECT ${groupBySelectors?.join(',')}, COUNT(*)::int AS "aggregate"
 FROM (${referenceQuery.sqlStringOrObject}) AS "count_applyTo",
     LATERAL jsonb_array_elements("count_applyTo"."${
       (referenceQuery as any).resultAccessPath[1]
@@ -663,7 +663,7 @@ ORDER BY ${groupByAccessors?.join(", ")}
         return {
           type: "json",
           sqlStringOrObject: `
-SELECT json_build_object('count', COUNT(*)::int) AS "count_object"
+SELECT json_build_object('aggregate', COUNT(*)::int) AS "count_object"
 FROM (${referenceQuery.sqlStringOrObject}) AS "count_applyTo",
     LATERAL jsonb_array_elements("count_applyTo"."${
       (referenceQuery as any).resultAccessPath[1]
@@ -680,10 +680,10 @@ FROM (${referenceQuery.sqlStringOrObject}) AS "count_applyTo",
     }
     case "table": {
       const transformerSqlQuery = actionRuntimeTransformer.groupBy
-        ? `SELECT "${actionRuntimeTransformer.groupBy}", COUNT(*)::int FROM (${referenceQuery.sqlStringOrObject}) AS "count_applyTo"
+        ? `SELECT "${actionRuntimeTransformer.groupBy}", COUNT(*)::int AS "aggregate" FROM (${referenceQuery.sqlStringOrObject}) AS "count_applyTo"
             GROUP BY "${actionRuntimeTransformer.groupBy}"
 `
-        : `SELECT COUNT(*)::int FROM (${referenceQuery.sqlStringOrObject}) AS "count_applyTo"
+        : `SELECT COUNT(*)::int AS "aggregate" FROM (${referenceQuery.sqlStringOrObject}) AS "count_applyTo"
 `;
       log.info("sqlStringForRuntimeTransformer count transformerSqlQuery", transformerSqlQuery);
       return {
@@ -1569,8 +1569,8 @@ LATERAL jsonb_array_elements("listPickElement_applyTo"."${
           type: "json",
           sqlStringOrObject: sqlResult,
           preparedStatementParameters: sqlForApplyTo.preparedStatementParameters,
-          // resultAccessPath: [0, ...(sqlForApplyTo.resultAccessPath ?? [])],
-          resultAccessPath: [ 0 ],
+          resultAccessPath: [0, ...(sqlForApplyTo.resultAccessPath ?? [])],
+          // resultAccessPath: [ 0, "value" ],
           columnNameContainingJsonValue: "listPickElement",
         };
         break;

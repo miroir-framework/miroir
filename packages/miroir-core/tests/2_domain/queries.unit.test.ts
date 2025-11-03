@@ -708,10 +708,10 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
               transformerType: "freeObjectTemplate",
               interpolation: "runtime",
               definition: {
-                authorName: {
+                authorUuid: {
                   transformerType: "contextReference",
                   interpolation: "runtime",
-                  referencePath: ["referenceObject", "name"],
+                  referencePath: ["referenceObject", "author"],
                 },
                 publisherName: {
                   transformerType: "contextReference",
@@ -760,10 +760,10 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
               transformerType: "freeObjectTemplate",
               interpolation: "runtime",
               definition: {
-                authorName: {
+                authorUuid: {
                   transformerType: "contextReference",
                   interpolation: "runtime",
-                  referencePath: ["referenceObject", "name"],
+                  referencePath: ["referenceObject", "author"],
                 },
                 publisherName: {
                   transformerType: "contextReference",
@@ -786,7 +786,8 @@ const testExtractorParams: Record<string, TestExtractorParams> = {
         test1: {
           expectedResult: [
             {
-              authorName: "Paul Veyne",
+              // authorName: "Paul Veyne",
+              authorUuid: "ce7b601d-be5f-4bc6-a5af-14091594046a",
               publisherName: "Folio",
               publisherUuid: "516a7366-39e7-4998-82cb-80199a7fa667",
             },

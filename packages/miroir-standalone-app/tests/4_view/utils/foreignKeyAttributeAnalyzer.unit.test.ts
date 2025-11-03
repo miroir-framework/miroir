@@ -120,7 +120,7 @@ describe('analyzeForeignKeyAttributes', () => {
       expect(result.find(fk => fk.attributeName === 'publisherUuid')).toBeDefined();
       
       // Should have transitive foreign key for country
-      const countryFK = result.find(fk => fk.attributeName === '__fk_country-uuid');
+      const countryFK = result.find(fk => fk.attributeName === '__fk_aggregatery-uuid');
       expect(countryFK).toBeDefined();
       expect(countryFK?.isDirect).toBe(false);
       expect(countryFK?.targetEntityUuid).toBe('country-uuid');
@@ -252,7 +252,7 @@ describe('analyzeForeignKeyAttributes', () => {
           targetEntityUuid: 'author-uuid'
         },
         {
-          attributeName: '__fk_country-uuid',
+          attributeName: '__fk_aggregatery-uuid',
           schema: { type: "uuid", tag: { value: { selectorParams: {targetEntity: "country-uuid"} } } } as any,
           isDirect: false,
           targetEntityUuid: 'country-uuid'
@@ -263,7 +263,7 @@ describe('analyzeForeignKeyAttributes', () => {
 
       expect(result).toHaveLength(2);
       expect(result[0]).toEqual(['authorUuid', foreignKeyAttributes[0].schema]);
-      expect(result[1]).toEqual(['__fk_country-uuid', foreignKeyAttributes[1].schema]);
+      expect(result[1]).toEqual(['__fk_aggregatery-uuid', foreignKeyAttributes[1].schema]);
     });
 
     it('should handle empty array', () => {

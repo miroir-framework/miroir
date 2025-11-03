@@ -843,7 +843,7 @@ export function getMiroirFundamentalJzodSchema(
           miroirTransformersForBuild.transformer_constantAsExtractor,
         transformerForBuild_contextReference:
           miroirTransformersForBuild.transformer_contextReference,
-        transformerForBuild_count: miroirTransformersForBuild.transformer_count,
+        transformerForBuild_aggregate: miroirTransformersForBuild.transformer_aggregate,
         transformerForBuild_dataflowObject: miroirTransformersForBuild.transformer_dataflowObject,
         transformerForBuild_mapList:
           miroirTransformersForBuild.transformer_mapList,
@@ -914,7 +914,7 @@ export function getMiroirFundamentalJzodSchema(
           miroirTransformersForRuntime.transformer_constantAsExtractor,
         transformerForRuntime_contextReference:
           miroirTransformersForRuntime.transformer_contextReference,
-        transformerForRuntime_count: miroirTransformersForRuntime.transformer_count,
+        transformerForRuntime_aggregate: miroirTransformersForRuntime.transformer_aggregate,
         transformerForRuntime_dataflowObject:
           miroirTransformersForRuntime.transformer_dataflowObject,
         transformerForRuntime_freeObjectTemplate:
@@ -1014,8 +1014,8 @@ export function getMiroirFundamentalJzodSchema(
           miroirTransformersForBuildPlusRuntime.transformer_constantAsExtractor,
         transformerForBuildPlusRuntime_contextReference:
           miroirTransformersForBuildPlusRuntime.transformer_contextReference,
-        transformerForBuildPlusRuntime_count:
-          miroirTransformersForBuildPlusRuntime.transformer_count,
+        transformerForBuildPlusRuntime_aggregate:
+          miroirTransformersForBuildPlusRuntime.transformer_aggregate,
         transformerForBuildPlusRuntime_dataflowObject:
           miroirTransformersForBuildPlusRuntime.transformer_dataflowObject,
         transformerForBuildPlusRuntime_freeObjectTemplate:
@@ -3919,7 +3919,7 @@ export function getMiroirFundamentalJzodSchema(
     "transformerForBuild_returnValue",
     "transformerForBuild_constantAsExtractor",
     "transformerForBuild_contextReference",
-    "transformerForBuild_count",
+    "transformerForBuild_aggregate",
     "transformerForBuild_dataflowObject",
     "transformerForBuild_mapList",
     "transformerForBuild_freeObjectTemplate",
@@ -4073,7 +4073,7 @@ export function getMiroirFundamentalJzodSchema(
     "transformerForBuild_returnValue",
     "transformerForBuild_constantAsExtractor",
     "transformerForBuild_contextReference",
-    "transformerForBuild_count",
+    "transformerForBuild_aggregate",
     "transformerForBuild_dataflowObject",
     "transformerForBuild_mapList",
     "transformerForBuild_freeObjectTemplate",

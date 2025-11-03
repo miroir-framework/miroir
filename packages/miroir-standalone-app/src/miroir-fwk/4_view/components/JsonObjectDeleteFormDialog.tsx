@@ -87,7 +87,7 @@ export function JsonObjectDeleteFormDialog(props: JsonObjectEditFormDialogProps)
     "##################################### rendering",
     "label",
     props.label,
-    "count",
+    "aggregate",
     count,
     "defaultFormValuesObject",
     props.defaultFormValuesObject,

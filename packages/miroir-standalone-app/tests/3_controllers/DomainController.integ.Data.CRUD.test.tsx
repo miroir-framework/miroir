@@ -311,7 +311,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                 definition: {
                   resultAccessPath: ["0"],
                   resultTransformer: {
-                    transformerType: "count",
+                    transformerType: "aggregate",
                     interpolation: "runtime",
                     applyTo: {
                       transformerType: "contextReference",
@@ -441,7 +441,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                 definition: {
                   resultAccessPath: ["0"],
                   resultTransformer: {
-                    transformerType: "count",
+                    transformerType: "aggregate",
                     interpolation: "runtime",
                     applyTo: {
                       transformerType: "contextReference",
@@ -559,7 +559,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                 definition: {
                   resultAccessPath: ["0"],
                   resultTransformer: {
-                    transformerType: "count",
+                    transformerType: "aggregate",
                     interpolation: "runtime",
                     applyTo: {
                       transformerType: "contextReference",
@@ -676,7 +676,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                 definition: {
                   resultAccessPath: ["0"],
                   resultTransformer: {
-                    transformerType: "count",
+                    transformerType: "aggregate",
                     interpolation: "runtime",
                     applyTo: {
                       transformerType: "contextReference",
@@ -807,7 +807,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                 definition: {
                   resultAccessPath: ["0"],
                   resultTransformer: {
-                    transformerType: "count",
+                    transformerType: "aggregate",
                     interpolation: "runtime",
                     applyTo: {
                       transformerType: "contextReference",
@@ -936,7 +936,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                 definition: {
                   resultAccessPath: ["0"],
                   resultTransformer: {
-                    transformerType: "count",
+                    transformerType: "aggregate",
                     interpolation: "runtime",
                     applyTo: {
                       transformerType: "contextReference",

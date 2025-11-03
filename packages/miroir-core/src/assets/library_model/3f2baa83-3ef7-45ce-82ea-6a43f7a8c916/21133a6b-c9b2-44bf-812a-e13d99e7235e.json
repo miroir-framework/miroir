@@ -120,7 +120,7 @@
             "graphType": "bar",
             "dataMapping": {
               "labelField": "authorName",
-              "valueField": "count"
+              "valueField": "aggregate"
             },
             "config": {
               "width": 600,
@@ -135,7 +135,7 @@
     "runtimeTransformers": {
       "00_booksByAuthorCount": {
         "interpolation": "runtime",
-        "transformerType": "count",
+        "transformerType": "aggregate",
         "applyTo": {
           "transformerType": "contextReference",
           "interpolation": "runtime",
@@ -148,7 +148,7 @@
       },
       "booksOfPublisherCount": {
         "interpolation": "runtime",
-        "transformerType": "count",
+        "transformerType": "aggregate",
         "applyTo": {
           "transformerType": "contextReference",
           "referenceName": "booksOfPublisher"

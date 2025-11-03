@@ -50,11 +50,15 @@ import {
   transformerTestsDisplayResults,
   type RunTransformerTests
 } from "../../src/4_services/TestTools";
-import {
-  currentTestSuite,
-} from "../2_domain/transformersTests_miroir.data";
+// import {
+//   currentTestSuite,
+// } from "../2_domain/transformersTests_miroir.data";
 import { MiroirActivityTracker } from '../../src/3_controllers/MiroirActivityTracker';
 import { MiroirEventService } from '../../src/3_controllers/MiroirEventService';
+
+import transformerTest_miroirCoreTransformers from "../../src/assets/miroir_data/681be9ca-c593-45f5-b45a-5f1d4969e91e/a5b4be38-78e3-4f31-9e9b-8ab0b71d4993.json" with { type: "json" };
+import type { TransformerTestSuite } from '../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType';
+const transformerTestSuite_miroirTransformers: TransformerTestSuite = transformerTest_miroirCoreTransformers.definition as any;
 
 // Access the test file pattern from Vitest's process arguments
 const vitestArgs = process.argv.slice(2);
@@ -224,7 +228,7 @@ afterAll(async () => {
     // await persistenceStoreController.deleteStore(testStoreConfig.model);
     // await persistenceStoreController.deleteStore(testStoreConfig.admin);
     // await persistenceStoreController.close();
-    transformerTestsDisplayResults(currentTestSuite, testSuiteName, testSuiteName, miroirActivityTracker);
+    transformerTestsDisplayResults(transformerTestSuite_miroirTransformers, testSuiteName, testSuiteName, miroirActivityTracker);
   }
   console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ afterAll DONE");
 });
@@ -256,16 +260,22 @@ if (shouldSkip) {
   await runTransformerTestSuite(
     vitest,
     [],
-    currentTestSuite,
+    transformerTestSuite_miroirTransformers,
     undefined, // filter
     // {
     //   testList: {
     //     miroirCoreTransformers: {
     //       runtimeTransformerTests: {
-    //         "count": [
-    //           // "count returns number of elements in an object list with a group at runtime",
-    //           "count returns number of elements in an object list with a multiple groupBy at runtime"
-    //         ]
+    //         // "aggregate": [
+    //         //   // "count returns number of elements in an object list at runtime",
+    //         //   // "count returns number of elements in an object list with a group at runtime",
+    //         //   // "count returns number of elements in an object list with a multiple groupBy at runtime",
+    //         //   "count returns number of elements in a string list from an extractor at runtime",
+    //         // ],
+    //         // "listPickElement": [
+    //         //   "listPickElement from extractor selects wanted element from string list context reference at runtime",
+    //         //   // "listPickElement from extractor selects wanted element from object ordered list at runtime"
+    //         // ],
     //         // conditional: [
     //         //   "conditional equality true - basic string comparison",
     //         //   "conditional equality false - basic string comparison",
@@ -281,6 +291,9 @@ if (shouldSkip) {
     //         //   "conditional greater than or equal false - number comparison",
     //         //   "conditional with parameter reference comparison",
     //         // ]
+    //         "object_alter": [
+    //           "objectAlter should fail when definition fails to resolve correctly",
+    //         ]
     //       },
     //     },
     //   },

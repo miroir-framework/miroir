@@ -116,7 +116,7 @@ export function useJzodElementEditorHooks(
   const currentModel: MetaModel = useCurrentModel(currentDeploymentUuid);
   const miroirMetaModel: MetaModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
   let dbgInt = 0;
-  // log.info("useJzodElementEditorHooks ", dbgInt++, "count", count, "caller", caller);
+  // log.info("useJzodElementEditorHooks ", dbgInt++, "aggregate", count, "caller", caller);
   
   // ################################################################################################
   // codeMirror state
@@ -136,7 +136,7 @@ export function useJzodElementEditorHooks(
         "useJzodElementEditorHooks resolvePathOnObject error",
         "rootLessListKeyArray",
         rootLessListKeyArray,
-        "count",
+        "aggregate",
         count,
         "caller",
         caller,
@@ -174,7 +174,7 @@ export function useJzodElementEditorHooks(
   const [codeMirrorIsValidJson, setCodeMirrorIsValidJson] = useState(true);
 
   const [displayAsStructuredElement, setDisplayAsStructuredElement] = useState(true);
-  // log.info("useJzodElementEditorHooks ", dbgInt++, "count", count, "caller", caller);
+  // log.info("useJzodElementEditorHooks ", dbgInt++, "aggregate", count, "caller", caller);
 
   // ################################################################################################
   // ################################################################################################
@@ -344,7 +344,7 @@ export function useJzodElementEditorHooks(
     }
     return [];
   }, [localResolvedElementJzodSchemaBasedOnValue, foreignKeyObjects]);
-  // log.info("getJzodElementEditorHooks ", dbgInt++, "count", count, "caller", caller);
+  // log.info("getJzodElementEditorHooks ", dbgInt++, "aggregate", count, "caller", caller);
 
   return {
     context,

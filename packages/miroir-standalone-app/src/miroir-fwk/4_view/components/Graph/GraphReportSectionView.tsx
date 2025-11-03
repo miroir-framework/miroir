@@ -120,6 +120,10 @@ export const GraphReportSectionView: React.FC<GraphReportSectionViewProps> = (pr
     }
   }, [props.queryResults, props.reportSection.definition.fetchedDataReference]);
 
+  log.info(
+    "GraphReportSectionView: rawData extracted",
+    rawData
+  );
   // Transform data to graph format
   const graphDataPoints = useMemo(() => {
     return transformDataToGraphFormat(
@@ -128,6 +132,11 @@ export const GraphReportSectionView: React.FC<GraphReportSectionViewProps> = (pr
       props.reportSection.definition.graphType
     );
   }, [rawData, props.reportSection.definition.dataMapping, props.reportSection.definition.graphType]);
+
+  log.info(
+    "GraphReportSectionView: graphDataPoints transformed",
+    graphDataPoints
+  );
 
   // Create graph data object
   const graphData: GraphData = useMemo(() => {
@@ -150,6 +159,10 @@ export const GraphReportSectionView: React.FC<GraphReportSectionViewProps> = (pr
     }
   }, [props.reportSection.definition, graphDataPoints]);
 
+  log.info(
+    "GraphReportSectionView: graphData prepared",
+    graphData
+  );
   // Render component
   if (graphDataPoints.length === 0) {
     return (

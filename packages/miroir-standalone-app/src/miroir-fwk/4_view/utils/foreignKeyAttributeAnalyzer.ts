@@ -62,7 +62,7 @@ export interface AnalyzeForeignKeyAttributesOptions {
  * 
  * // Result will include:
  * // - Direct: authorUuid -> author-uuid, publisherUuid -> publisher-uuid
- * // - Transitive: __fk_country-uuid -> country-uuid (from Author's countryUuid)
+ * // - Transitive: __fk_aggregatery-uuid -> country-uuid (from Author's countryUuid)
  * ```
  * 
  * @param mainEntityDefinition - The primary entity definition to analyze

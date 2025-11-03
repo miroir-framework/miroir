@@ -39,7 +39,7 @@
             "graphType": "bar",
             "dataMapping": {
               "labelField": "countryName",
-              "valueField": "count"
+              "valueField": "aggregate"
             },
             "config": {
               "width": 600,

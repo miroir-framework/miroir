@@ -66,7 +66,7 @@
     },
     "runtimeTransformers": {
       "00_AuthorCountByCountry": {
-        "transformerType": "count",
+        "transformerType": "aggregate",
         "applyTo": {
           "transformerType": "contextReference",
           "interpolation": "runtime",
