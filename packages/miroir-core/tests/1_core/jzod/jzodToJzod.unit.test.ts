@@ -14,7 +14,9 @@ type JzodReferenceResolutionFunction = (schema: JzodReference) => JzodElement | 
 interface TestCase {
   name: string,
   testJzodSchema: JzodElement,
-  carryOnJzodSchema: JzodObject,
+  carryOnJzodSchema: JzodObject | JzodReference,
+  carryOnSchemaDiscriminator?:undefined | string | string[],
+  alwaysPropagate?: boolean,
   expectedReferences: Record<string,JzodElement>,
   expectedResult: {schema: JzodElement, hasBeenApplied: boolean},
   resolveJzodReference?: JzodReferenceResolutionFunction, // non-converted reference lookup
@@ -26,8 +28,8 @@ function runTest(
   const testResult = cleanupObject(applyLimitedCarryOnSchema(
     t.testJzodSchema,
     t.carryOnJzodSchema,
-    undefined, // carryOnSchemaDiscriminator
-    false, // alwaysPropagate
+    t.carryOnSchemaDiscriminator,
+    t.alwaysPropagate??false, // alwaysPropagate
     undefined, // carryOnPrefix
     undefined, // prefixForReference
     undefined, // suffixForReference
@@ -1497,6 +1499,300 @@ describe(
               hasBeenApplied: true,
             },
             expectedReferences: {},
+          },
+          // test110: an array of string items which canBeTemplate of a schemaReference to a discriminated union
+          {
+            name: "test110",
+            testJzodSchema: {
+              type: "array",
+              // tag: { value: { canBeTemplate: true } },
+              definition: { type: "string", tag: { value: { canBeTemplate: true } } },
+            },
+            carryOnJzodSchema: {
+              type: "schemaReference",
+              definition: {
+                eager: true,
+                absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                relativePath: "discriminatedUnion",
+              },
+            },
+            carryOnSchemaDiscriminator: "type",
+            resolveJzodReference: (ref: JzodReference): JzodElement | undefined => {
+              const store: Record<string, JzodReference> = {
+                "1e8dab4b-65a3-4686-922e-ce89a2d62aa9": {
+                  type: "schemaReference",
+                  context: {
+                    discriminatedUnion: {
+                      type: "union",
+                      discriminator: "type",
+                      definition: [
+                        {
+                          type: "object",
+                          definition: {
+                            type: { type: "literal", definition: "A" },
+                            a: { type: "string" },
+                          },
+                        },
+                        {
+                          type: "object",
+                          definition: {
+                            type: { type: "literal", definition: "B" },
+                            b: { type: "number" },
+                          },
+                        },
+                      ],
+                    },
+                  },
+                  definition: { relativePath: "discriminatedUnion" },
+                },
+              };
+              const resolvedAbsolutePath = store[ref.definition?.absolutePath ?? ""];
+              return resolvedAbsolutePath && resolvedAbsolutePath.context
+                ? resolvedAbsolutePath.context[ref.definition?.relativePath ?? ""]
+                : undefined;
+            },
+            expectedResult: {
+              schema: {
+                type: "array",
+                definition: {
+                  type: "union",
+                  tag: {
+                    value: {
+                      canBeTemplate: true,
+                      isTemplate: true,
+                    },
+                  },
+                  discriminator: "type",
+                  definition: [
+                    {
+                      type: "string",
+                      tag: {
+                        value: {
+                          canBeTemplate: true,
+                        },
+                      },
+                    },
+                    {
+                      type: "schemaReference",
+                      definition: {
+                        eager: true,
+                        absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                        relativePath: "discriminatedUnion",
+                      },
+                    },
+                  ],
+                },
+              },
+              hasBeenApplied: true,
+            },
+            expectedReferences: {},
+          },
+          // test120: like 110, but always propagate for an array of string items which canBeTemplate of a schemaReference to a discriminated union
+          {
+            name: "test120",
+            testJzodSchema: {
+              type: "array",
+              // tag: { value: { canBeTemplate: true } },
+              definition: { type: "string", tag: { value: { canBeTemplate: true } } },
+            },
+            carryOnJzodSchema: {
+              type: "schemaReference",
+              definition: {
+                eager: true,
+                absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                relativePath: "discriminatedUnion",
+              },
+            },
+            carryOnSchemaDiscriminator: "type",
+            alwaysPropagate: true,
+            resolveJzodReference: (ref: JzodReference): JzodElement | undefined => {
+              const store: Record<string, JzodReference> = {
+                "1e8dab4b-65a3-4686-922e-ce89a2d62aa9": {
+                  type: "schemaReference",
+                  context: {
+                    discriminatedUnion: {
+                      type: "union",
+                      discriminator: "type",
+                      definition: [
+                        {
+                          type: "object",
+                          definition: {
+                            type: { type: "literal", definition: "A" },
+                            a: { type: "string" },
+                          },
+                        },
+                        {
+                          type: "object",
+                          definition: {
+                            type: { type: "literal", definition: "B" },
+                            b: { type: "number" },
+                          },
+                        },
+                      ],
+                    },
+                  },
+                  definition: { relativePath: "discriminatedUnion" },
+                },
+              };
+              const resolvedAbsolutePath = store[ref.definition?.absolutePath ?? ""];
+              return resolvedAbsolutePath && resolvedAbsolutePath.context
+                ? resolvedAbsolutePath.context[ref.definition?.relativePath ?? ""]
+                : undefined;
+            },
+            expectedResult: {
+              schema: {
+                type: "union",
+                definition: [
+                  {
+                    type: "array",
+                    definition: {
+                      type: "union",
+                      tag: {
+                        value: {
+                          canBeTemplate: true,
+                          isTemplate: true,
+                        },
+                      },
+                      discriminator: "type",
+                      definition: [
+                        {
+                          type: "string",
+                          tag: {
+                            value: {
+                              canBeTemplate: true,
+                            },
+                          },
+                        },
+                        {
+                          type: "schemaReference",
+                          definition: {
+                            eager: true,
+                            absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                            relativePath: "discriminatedUnion",
+                          },
+                        },
+                      ],
+                    },
+                  },
+                  {
+                    type: "schemaReference",
+                    definition: {
+                      eager: true,
+                      absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                      relativePath: "discriminatedUnion",
+                    },
+                  },
+                ],
+                discriminator: "type",
+              },
+              hasBeenApplied: true,
+            },
+            expectedReferences: {},
+          },
+          // test130: an array of schemaReferences items which canBeTemplate of a schemaReference to a discriminated union
+          {
+            name: "test130",
+            testJzodSchema: {
+              type: "array",
+              // tag: { value: { canBeTemplate: true } },
+              definition: {
+                type: "schemaReference",
+                tag: { value: { canBeTemplate: true } },
+                definition: {
+                  absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                  relativePath: "stringItem",
+                },
+              },
+            },
+            carryOnJzodSchema: {
+              type: "schemaReference",
+              definition: {
+                eager: true,
+                absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                relativePath: "discriminatedUnion",
+              },
+            },
+            carryOnSchemaDiscriminator: "type",
+            resolveJzodReference: (ref: JzodReference): JzodElement | undefined => {
+              const store: Record<string, JzodReference> = {
+                "1e8dab4b-65a3-4686-922e-ce89a2d62aa9": {
+                  type: "schemaReference",
+                  context: {
+                    // stringItem: { type: "string", tag: { value: { canBeTemplate: true } } },
+                    stringItem: { type: "string" },
+                    discriminatedUnion: {
+                      type: "union",
+                      discriminator: "type",
+                      definition: [
+                        {
+                          type: "object",
+                          definition: {
+                            type: { type: "literal", definition: "A" },
+                            a: { type: "string" },
+                          },
+                        },
+                        {
+                          type: "object",
+                          definition: {
+                            type: { type: "literal", definition: "B" },
+                            b: { type: "number" },
+                          },
+                        },
+                      ],
+                    },
+                  },
+                  definition: { relativePath: "discriminatedUnion" },
+                },
+              };
+              const resolvedAbsolutePath = store[ref.definition?.absolutePath ?? ""];
+              return resolvedAbsolutePath && resolvedAbsolutePath.context
+                ? resolvedAbsolutePath.context[ref.definition?.relativePath ?? ""]
+                : undefined;
+            },
+            expectedResult: {
+              schema: {
+                type: "array",
+                definition: {
+                  type: "union",
+                  tag: {
+                    value: {
+                      canBeTemplate: true,
+                      isTemplate: true,
+                    },
+                  },
+                  discriminator: "type",
+                  definition: [
+                    {
+                      type: "schemaReference",
+                      tag: {
+                        value: {
+                          canBeTemplate: true,
+                          isTemplate: true,
+                        },
+                      },
+                      definition: {
+                        absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                        relativePath: "carryOn_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_stringItem",
+                      },
+                    },
+                    {
+                      type: "schemaReference",
+                      definition: {
+                        eager: true,
+                        absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                        relativePath: "discriminatedUnion",
+                      },
+                    },
+                  ],
+                },
+              },
+              hasBeenApplied: true,
+            },
+            expectedReferences: {
+              carryOn_1e8dab4b$65a3$4686$922e$ce89a2d62aa9_stringItem: {
+                type: "string",
+              },
+            },
           },
         ];
         for (const t of tests) {

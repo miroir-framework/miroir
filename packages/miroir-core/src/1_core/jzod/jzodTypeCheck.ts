@@ -359,8 +359,9 @@ export function selectUnionBranchFromDiscriminator<T extends MiroirModelEnvironm
       const choiceWithNoDiscriminator: JzodObject[] = flattenedUnionChoices.filter(
         (objectChoice: any) => // TODO: typing!
           Object.keys(objectChoice.definition).every(
-            (key) => objectChoice.definition[key]?.type != "literal" ||
-              objectChoice.definition[key]?.definition == valueObject[key]
+            (key) => !discriminator.includes(key) // TODO: invert loop, will be faster!
+            // (key) => objectChoice.definition[key]?.type != "literal" ||
+            //   objectChoice.definition[key]?.definition == valueObject[key]
           )
       );
       if (choiceWithNoDiscriminator.length === 1) {

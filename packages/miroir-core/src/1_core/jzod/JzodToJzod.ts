@@ -680,7 +680,11 @@ export function applyLimitedCarryOnSchemaOnLevel(
        * the transformer references must not be converted, since it is implied the carryOnSchema is a tranformer reference
        * 
        */
-      if (["transformerForBuild", "transformerForRuntime", "transformerForBuildPlusRuntime"].includes(baseSchema?.definition?.relativePath??"")) {
+      if (
+        ["transformerForBuild", "transformerForRuntime", "transformerForBuildPlusRuntime"].includes(
+          baseSchema?.definition?.relativePath ?? ""
+        )
+      ) {
         return {
           resultSchema: baseSchema,
           hasBeenApplied: false,
