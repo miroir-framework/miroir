@@ -244,6 +244,10 @@
                     "displayedAttributeValueWhenFolded": {
                       "type": "string",
                       "optional": true
+                    },
+                    "unfoldSubLevels":{
+                      "type": "number",
+                      "optional": true
                     }
                   }
                 }
@@ -1090,7 +1094,9 @@
         },
         "tag": {
           "value": {
-            "unfoldSubLevels": 2
+            "display": {
+              "unfoldSubLevels": 2
+            }
           }
         },
         "definition": {

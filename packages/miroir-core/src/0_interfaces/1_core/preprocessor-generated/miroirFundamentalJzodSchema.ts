@@ -254,6 +254,10 @@ export const miroirFundamentalJzodSchema = {
                     "displayedAttributeValueWhenFolded": {
                       "type": "string",
                       "optional": true
+                    },
+                    "unfoldSubLevels": {
+                      "type": "number",
+                      "optional": true
                     }
                   }
                 }
@@ -1151,13 +1155,14 @@ export const miroirFundamentalJzodSchema = {
         },
         "tag": {
           "value": {
-            "unfoldSubLevels": 2
+            "display": {
+              "unfoldSubLevels": 2
+            }
           }
         },
         "definition": {
           "extend": {
             "type": "union",
-            "discriminator": "type",
             "optional": true,
             "definition": [
               {
@@ -21309,6 +21314,22 @@ export const miroirFundamentalJzodSchema = {
                               }
                             }
                           ]
+                        },
+                        "unfoldSubLevels": {
+                          "type": "union",
+                          "optional": true,
+                          "definition": [
+                            {
+                              "type": "number",
+                              "optional": true
+                            },
+                            {
+                              "type": "schemaReference",
+                              "definition": {
+                                "relativePath": "transformerForBuildCarryOnObject"
+                              }
+                            }
+                          ]
                         }
                       }
                     }
@@ -23180,14 +23201,15 @@ export const miroirFundamentalJzodSchema = {
         ],
         "tag": {
           "value": {
-            "unfoldSubLevels": 2,
+            "display": {
+              "unfoldSubLevels": 2
+            },
             "isTemplate": true
           }
         },
         "definition": {
           "extend": {
             "type": "union",
-            "discriminator": "type",
             "optional": true,
             "definition": [
               {
@@ -37852,7 +37874,9 @@ export const miroirFundamentalJzodSchema = {
       "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodObject": {
         "tag": {
           "value": {
-            "unfoldSubLevels": 2,
+            "display": {
+              "unfoldSubLevels": 2
+            },
             "isTemplate": true
           }
         },
@@ -37878,14 +37902,15 @@ export const miroirFundamentalJzodSchema = {
             ],
             "tag": {
               "value": {
-                "unfoldSubLevels": 2,
+                "display": {
+                  "unfoldSubLevels": 2
+                },
                 "isTemplate": true
               }
             },
             "definition": {
               "extend": {
                 "type": "union",
-                "discriminator": "type",
                 "optional": true,
                 "definition": [
                   {
@@ -45218,6 +45243,22 @@ export const miroirFundamentalJzodSchema = {
                               }
                             }
                           ]
+                        },
+                        "unfoldSubLevels": {
+                          "type": "union",
+                          "optional": true,
+                          "definition": [
+                            {
+                              "type": "number",
+                              "optional": true
+                            },
+                            {
+                              "type": "schemaReference",
+                              "definition": {
+                                "relativePath": "transformerForBuildCarryOnObject"
+                              }
+                            }
+                          ]
                         }
                       }
                     }
@@ -45896,6 +45937,22 @@ export const miroirFundamentalJzodSchema = {
                               "definition": [
                                 {
                                   "type": "string",
+                                  "optional": true
+                                },
+                                {
+                                  "type": "schemaReference",
+                                  "definition": {
+                                    "relativePath": "transformerForBuildCarryOnObject"
+                                  }
+                                }
+                              ]
+                            },
+                            "unfoldSubLevels": {
+                              "type": "union",
+                              "optional": true,
+                              "definition": [
+                                {
+                                  "type": "number",
                                   "optional": true
                                 },
                                 {
@@ -53639,6 +53696,10 @@ export const miroirFundamentalJzodSchema = {
                     "displayedAttributeValueWhenFolded": {
                       "type": "string",
                       "optional": true
+                    },
+                    "unfoldSubLevels": {
+                      "type": "number",
+                      "optional": true
                     }
                   }
                 }
@@ -54520,14 +54581,15 @@ export const miroirFundamentalJzodSchema = {
         ],
         "tag": {
           "value": {
-            "unfoldSubLevels": 2,
+            "display": {
+              "unfoldSubLevels": 2
+            },
             "isTemplate": true
           }
         },
         "definition": {
           "extend": {
             "type": "union",
-            "discriminator": "type",
             "optional": true,
             "definition": [
               {
@@ -62387,6 +62449,10 @@ export const miroirFundamentalJzodSchema = {
                     "displayedAttributeValueWhenFolded": {
                       "type": "string",
                       "optional": true
+                    },
+                    "unfoldSubLevels": {
+                      "type": "number",
+                      "optional": true
                     }
                   }
                 }
@@ -63268,14 +63334,15 @@ export const miroirFundamentalJzodSchema = {
         ],
         "tag": {
           "value": {
-            "unfoldSubLevels": 2,
+            "display": {
+              "unfoldSubLevels": 2
+            },
             "isTemplate": true
           }
         },
         "definition": {
           "extend": {
             "type": "union",
-            "discriminator": "type",
             "optional": true,
             "definition": [
               {
@@ -71089,6 +71156,10 @@ export const miroirFundamentalJzodSchema = {
                     "displayedAttributeValueWhenFolded": {
                       "type": "string",
                       "optional": true
+                    },
+                    "unfoldSubLevels": {
+                      "type": "number",
+                      "optional": true
                     }
                   }
                 }
@@ -71970,14 +72041,15 @@ export const miroirFundamentalJzodSchema = {
         ],
         "tag": {
           "value": {
-            "unfoldSubLevels": 2,
+            "display": {
+              "unfoldSubLevels": 2
+            },
             "isTemplate": true
           }
         },
         "definition": {
           "extend": {
             "type": "union",
-            "discriminator": "type",
             "optional": true,
             "definition": [
               {
