@@ -76,82 +76,88 @@ describe("domainStateToReduxDeploymentsState.unit.test", () => {
                 type: "object",
                 definition: {
                   uuid: {
-                    type: "simpleType",
-                    definition: "string",
-                    validations: [
-                      {
-                        type: "uuid",
-                      },
-                    ],
+                    type: "uuid",
                     tag: {
-                      id: 1,
-                      defaultLabel: "Uuid",
-                      editable: false,
+                      value: {
+                        id: 1,
+                        defaultLabel: "Uuid",
+                        editable: false,
+                      },
                     },
                   },
                   parentName: {
-                    type: "simpleType",
-                    definition: "string",
+                    type: "string",
                     optional: true,
                     tag: {
-                      id: 2,
-                      defaultLabel: "Entity Name",
-                      editable: false,
+                      value: {
+                        id: 2,
+                        defaultLabel: "Entity Name",
+                        editable: false,
+                      },
                     },
                   },
                   parentUuid: {
-                    type: "simpleType",
-                    definition: "string",
-                    validations: [
-                      {
-                        type: "uuid",
-                      },
-                    ],
+                    type: "uuid",
                     tag: {
-                      id: 3,
-                      defaultLabel: "Entity Uuid",
-                      editable: false,
+                      value: {
+                        id: 3,
+                        defaultLabel: "Entity Uuid",
+                        editable: false,
+                      },
+                    },
+                  },
+                  conceptLevel: {
+                    type: "enum",
+                    definition: ["MetaModel", "Model", "Data"],
+                    optional: true,
+                    tag: {
+                      value: {
+                        id: 5,
+                        defaultLabel: "Concept Level",
+                        editable: false,
+                      },
                     },
                   },
                   name: {
-                    type: "simpleType",
-                    definition: "string",
+                    type: "string",
                     tag: {
-                      id: 4,
-                      defaultLabel: "Name",
-                      editable: true,
+                      value: {
+                        id: 4,
+                        defaultLabel: "Name",
+                        editable: true,
+                      },
                     },
                   },
                   author: {
-                    type: "simpleType",
-                    definition: "string",
-                    validations: [
-                      {
-                        type: "uuid",
-                      },
-                    ],
+                    type: "uuid",
                     optional: true,
                     tag: {
-                      id: 5,
-                      defaultLabel: "Author",
-                      targetEntity: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
-                      editable: true,
+                      value: {
+                        id: 5,
+                        editable: true,
+                        defaultLabel: "Author",
+                        targetEntity: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+                        selectorParams: {
+                          targetEntity: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+                          targetEntityOrderInstancesBy: "name",
+                        },
+                      },
                     },
                   },
                   publisher: {
-                    type: "simpleType",
-                    definition: "string",
-                    validations: [
-                      {
-                        type: "uuid",
-                      },
-                    ],
+                    type: "uuid",
                     optional: true,
                     tag: {
-                      id: 5,
-                      defaultLabel: "Publisher",
-                      targetEntity: "a027c379-8468-43a5-ba4d-bf618be25cab",
-                      editable: true,
+                      value: {
+                        id: 5,
+                        editable: true,
+                        defaultLabel: "Publisher",
+                        targetEntity: "a027c379-8468-43a5-ba4d-bf618be25cab",
+                        selectorParams: {
+                          targetEntity: "a027c379-8468-43a5-ba4d-bf618be25cab",
+                          targetEntityOrderInstancesBy: "name",
+                        },
+                      },
                     },
                   },
                 },
@@ -303,10 +309,7 @@ describe("domainStateToReduxDeploymentsState.unit.test", () => {
           },
         },
         "f714bb2f-a12d-4e71-a03b-74dcedea6eb4_model_3f2baa83-3ef7-45ce-82ea-6a43f7a8c916": {
-          ids: [
-            "66a09068-52c3-48bc-b8dd-76575bbc8e72",
-            "74b010b6-afee-44e7-8590-5f0849e4a5c9",
-          ],
+          ids: ["66a09068-52c3-48bc-b8dd-76575bbc8e72", "74b010b6-afee-44e7-8590-5f0849e4a5c9"],
           entities: {
             "66a09068-52c3-48bc-b8dd-76575bbc8e72": {
               uuid: "66a09068-52c3-48bc-b8dd-76575bbc8e72",

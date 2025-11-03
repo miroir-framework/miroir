@@ -864,7 +864,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
       undefined, // name to give to result
       undefined,
       // 3,
-      [{count: 6}],
+      [{aggregate: 6}],
       // [{count: "3"}],
       // ["4441169e-0c22-4fbc-81b2-28c87cf48ab2","ce7b601d-be5f-4bc6-a5af-14091594046a","d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17"]
     );
@@ -923,10 +923,10 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
       undefined, // name to give to result
       undefined,
       [
-        { author: "4441169e-0c22-4fbc-81b2-28c87cf48ab2", count: 1 },
-        { author: "ce7b601d-be5f-4bc6-a5af-14091594046a", count: 2 },
-        { author: "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17", count: 2 },
-        { author: "e4376314-d197-457c-aa5e-d2da5f8d5977", count: 1 },
+        { author: "4441169e-0c22-4fbc-81b2-28c87cf48ab2", aggregate: 1 },
+        { author: "ce7b601d-be5f-4bc6-a5af-14091594046a", aggregate: 2 },
+        { author: "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17", aggregate: 2 },
+        { author: "e4376314-d197-457c-aa5e-d2da5f8d5977", aggregate: 1 },
       ]
     );
   });
@@ -1272,7 +1272,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
               },
               runtimeTransformers: {
                 firstBook: {
-                  transformerType: "listPickElement",
+                  transformerType: "pickFromList",
                   interpolation: "runtime",
                   applyTo: {
                     transformerType: "contextReference",

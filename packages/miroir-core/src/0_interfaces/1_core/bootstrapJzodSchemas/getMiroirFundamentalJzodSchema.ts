@@ -857,7 +857,7 @@ export function getMiroirFundamentalJzodSchema(
           miroirTransformersForBuild.transformer_objectDynamicAccess,
         transformerForBuild_objectEntries: miroirTransformersForBuild.transformer_objectEntries,
         transformerForBuild_objectValues: miroirTransformersForBuild.transformer_objectValues,
-        transformerForBuild_listPickElement: miroirTransformersForBuild.transformer_listPickElement,
+        transformerForBuild_pickFromList: miroirTransformersForBuild.transformer_pickFromList,
         transformerForBuild_listReducerToIndexObject:
           miroirTransformersForBuild.transformer_listReducerToIndexObject,
         transformerForBuild_listReducerToSpreadObject:
@@ -921,8 +921,8 @@ export function getMiroirFundamentalJzodSchema(
           miroirTransformersForRuntime.transformer_freeObjectTemplate,
         transformerForRuntime_mapList:
           miroirTransformersForRuntime.transformer_mapList,
-        transformerForRuntime_listPickElement:
-          miroirTransformersForRuntime.transformer_listPickElement,
+        transformerForRuntime_pickFromList:
+          miroirTransformersForRuntime.transformer_pickFromList,
         transformerForRuntime_newUuid: miroirTransformersForRuntime.transformer_newUuid,
         transformerForRuntime_mustacheStringTemplate:
           miroirTransformersForRuntime.transformer_mustacheStringTemplate,
@@ -1024,8 +1024,8 @@ export function getMiroirFundamentalJzodSchema(
           miroirTransformersForBuildPlusRuntime.transformer_mapList,
         transformerForBuildPlusRuntime_parameterReference:
           miroirTransformersForBuildPlusRuntime.transformer_parameterReference,
-        transformerForBuildPlusRuntime_listPickElement:
-          miroirTransformersForBuildPlusRuntime.transformer_listPickElement,
+        transformerForBuildPlusRuntime_pickFromList:
+          miroirTransformersForBuildPlusRuntime.transformer_pickFromList,
         transformerForBuildPlusRuntime_newUuid:
           miroirTransformersForBuildPlusRuntime.transformer_newUuid,
         transformerForBuildPlusRuntime_mustacheStringTemplate:
@@ -3929,7 +3929,7 @@ export function getMiroirFundamentalJzodSchema(
     "transformerForBuild_objectDynamicAccess",
     "transformerForBuild_objectEntries",
     "transformerForBuild_objectValues",
-    "transformerForBuild_listPickElement",
+    "transformerForBuild_pickFromList",
     "transformerForBuild_listReducerToIndexObject",
     "transformerForBuild_listReducerToSpreadObject",
     "transformerForBuild_object_fullTemplate",
@@ -4083,7 +4083,7 @@ export function getMiroirFundamentalJzodSchema(
     "transformerForBuild_objectDynamicAccess",
     "transformerForBuild_objectEntries",
     "transformerForBuild_objectValues",
-    "transformerForBuild_listPickElement",
+    "transformerForBuild_pickFromList",
     "transformerForBuild_listReducerToIndexObject",
     "transformerForBuild_listReducerToSpreadObject",
     "transformerForBuild_object_fullTemplate",

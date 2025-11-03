@@ -567,7 +567,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
       (a) => (a as any).returnedDomainElement.uniqueAuthors,
       undefined, // name to give to result
       undefined,
-      [{count: 6}],
+      [{aggregate: 6}],
     );
   });
   

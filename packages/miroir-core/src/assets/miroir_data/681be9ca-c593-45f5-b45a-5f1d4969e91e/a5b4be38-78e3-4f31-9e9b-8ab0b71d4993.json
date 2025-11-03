@@ -1492,15 +1492,15 @@
           },
           {
             "transformerTestType": "transformerTestSuite",
-            "transformerTestLabel": "listPickElement",
+            "transformerTestLabel": "pickFromList",
             "skip": true,
             "transformerTests": [
               {
                 "transformerTestType": "transformerTest",
-                "transformerTestLabel": "listPickElement selects wanted element from a returnValue string list before runtime",
+                "transformerTestLabel": "pickFromList selects wanted element from a returnValue string list before runtime",
                 "transformerName": "listPickElementForString",
                 "transformer": {
-                  "transformerType": "listPickElement",
+                  "transformerType": "pickFromList",
                   "interpolation": "runtime",
                   "applyTo": {
                     "transformerType": "returnValue",
@@ -1518,10 +1518,10 @@
               },
               {
                 "transformerTestType": "transformerTest",
-                "transformerTestLabel": "listPickElement selects wanted element from a string list parameter reference before runtime",
+                "transformerTestLabel": "pickFromList selects wanted element from a string list parameter reference before runtime",
                 "transformerName": "listPickElementForString",
                 "transformer": {
-                  "transformerType": "listPickElement",
+                  "transformerType": "pickFromList",
                   "interpolation": "runtime",
                   "applyTo": {
                     "transformerType": "contextReference",
@@ -1542,10 +1542,10 @@
               },
               {
                 "transformerTestType": "transformerTest",
-                "transformerTestLabel": "listPickElement selects wanted object from a pre-sorted object list before runtime",
+                "transformerTestLabel": "pickFromList selects wanted object from a pre-sorted object list before runtime",
                 "transformerName": "listPickElementForObject",
                 "transformer": {
-                  "transformerType": "listPickElement",
+                  "transformerType": "pickFromList",
                   "interpolation": "runtime",
                   "applyTo": {
                     "transformerType": "contextReference",
@@ -1575,10 +1575,10 @@
               },
               {
                 "transformerTestType": "transformerTest",
-                "transformerTestLabel": "listPickElement from extractor selects wanted element from string list context reference at runtime",
+                "transformerTestLabel": "pickFromList from extractor selects wanted element from string list context reference at runtime",
                 "transformerName": "listPickElementForString",
                 "transformer": {
-                  "transformerType": "listPickElement",
+                  "transformerType": "pickFromList",
                   "interpolation": "runtime",
                   "applyTo": {
                     "transformerType": "constantAsExtractor",
@@ -1602,10 +1602,10 @@
               },
               {
                 "transformerTestType": "transformerTest",
-                "transformerTestLabel": "listPickElement from extractor selects wanted element from object ordered list at runtime",
+                "transformerTestLabel": "pickFromList from extractor selects wanted element from object ordered list at runtime",
                 "transformerName": "listPickElementForString",
                 "transformer": {
-                  "transformerType": "listPickElement",
+                  "transformerType": "pickFromList",
                   "interpolation": "runtime",
                   "orderBy": "test",
                   "applyTo": {
@@ -1643,10 +1643,10 @@
               },
               {
                 "transformerTestType": "transformerTest",
-                "transformerTestLabel": "listPickElement returns null when index is out of bounds before runtime",
+                "transformerTestLabel": "pickFromList returns null when index is out of bounds before runtime",
                 "transformerName": "listPickElementForString",
                 "transformer": {
-                  "transformerType": "listPickElement",
+                  "transformerType": "pickFromList",
                   "interpolation": "runtime",
                   "applyTo": {
                     "transformerType": "contextReference",
@@ -1667,10 +1667,10 @@
               },
               {
                 "transformerTestType": "transformerTest",
-                "transformerTestLabel": "listPickElement returns null when index is out of bounds at runtime",
+                "transformerTestLabel": "pickFromList returns null when index is out of bounds at runtime",
                 "transformerName": "listPickElementForString",
                 "transformer": {
-                  "transformerType": "listPickElement",
+                  "transformerType": "pickFromList",
                   "interpolation": "runtime",
                   "applyTo": {
                     "transformerType": "contextReference",

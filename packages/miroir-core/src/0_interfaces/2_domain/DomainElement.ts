@@ -20,7 +20,7 @@ export type TransformerFailureType =
   // | "FailedTransformer_constantObject"
   | "FailedTransformer_constant"
   | "FailedTransformer_contextReference"
-  | "FailedTransformer_listPickElement"
+  | "FailedTransformer_pickFromList"
   | "FailedTransformer"
   | "ReferenceNotFound"
   | "ReferenceFoundButUndefined"

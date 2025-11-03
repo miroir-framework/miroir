@@ -25,6 +25,7 @@ import { MetaEntity, Uuid } from "../../src/0_interfaces/1_core/EntityDefinition
 import { resolveTestCompositeActionTemplate, resolveTestCompositeActionTemplateSuite } from "../../src/2_domain/TestSuiteTemplate";
 import { defaultMiroirMetaModel } from "../../src/1_core/Model";
 import { EntityDefinitionEntityDefinition } from '../../src/0_interfaces/1_core/writtenByHandSchema.js';
+import { defaultMiroirModelEnvironment } from '../../dist';
 // import { act } from 'react';
 
 // const env:any = (import.meta as any).env
@@ -121,20 +122,22 @@ describe('resolveTestCompositeActionTemplate', () => {
               referenceName: "currentDeploymentUuid",
             },
             endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-            entities: [
-              {
-                entity: {
-                  transformerType: "parameterReference",
-                  interpolation: "build",
-                  referenceName: "createEntity_newEntity",
+            payload: {
+              entities: [
+                {
+                  entity: {
+                    transformerType: "parameterReference",
+                    interpolation: "build",
+                    referenceName: "createEntity_newEntity",
+                  },
+                  entityDefinition: {
+                    transformerType: "parameterReference",
+                    interpolation: "build",
+                    referenceName: "newEntityDefinition",
+                  },
                 },
-                entityDefinition: {
-                  transformerType: "parameterReference",
-                  interpolation: "build",
-                  referenceName: "newEntityDefinition",
-                },
-              },
-            ],
+              ],
+            }
           },
           // createReports
         ],
@@ -175,8 +178,8 @@ describe('resolveTestCompositeActionTemplate', () => {
 
     const result = resolveTestCompositeActionTemplate(
       testCompositeActionTemplate,
+      defaultMiroirModelEnvironment,
       actionEffectiveParamsCreateEntity,
-      defaultMiroirMetaModel
     );
 
     console.log(
@@ -203,34 +206,36 @@ describe('resolveTestCompositeActionTemplate', () => {
             actionLabel: "createEntity",
             deploymentUuid: currentDeploymentUuid,
             endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-            entities: [
-              {
-                entity: {
-                  uuid: actionEffectiveParamsCreateEntity.createEntity_newEntityUuid,
-                  parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                  selfApplication: currentApplicationUuid,
-                  description: "newEntityDescription",
-                  name: "newEntityName",
-                },
-                entityDefinition: {
-                  name: "newEntityName",
-                  uuid: actionEffectiveParamsCreateEntity.createEntity_newEntityDefinitionUuid,
-                  parentName: "EntityDefinition",
-                  parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
-                  entityUuid: actionEffectiveParamsCreateEntity.createEntity_newEntityUuid,
-                  conceptLevel: "Model",
-                  defaultInstanceDetailsReportUuid:
-                    actionEffectiveParamsCreateEntity.createEntity_newEntityDetailsReportUuid,
-                  jzodSchema: {
-                    type: "object",
-                    definition: {
-                      a: { type: "string" },
-                      b: { type: "number" },
+            payload: {
+              entities: [
+                {
+                  entity: {
+                    uuid: actionEffectiveParamsCreateEntity.createEntity_newEntityUuid,
+                    parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                    selfApplication: currentApplicationUuid,
+                    description: "newEntityDescription",
+                    name: "newEntityName",
+                  },
+                  entityDefinition: {
+                    name: "newEntityName",
+                    uuid: actionEffectiveParamsCreateEntity.createEntity_newEntityDefinitionUuid,
+                    parentName: "EntityDefinition",
+                    parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+                    entityUuid: actionEffectiveParamsCreateEntity.createEntity_newEntityUuid,
+                    conceptLevel: "Model",
+                    defaultInstanceDetailsReportUuid:
+                      actionEffectiveParamsCreateEntity.createEntity_newEntityDetailsReportUuid,
+                    jzodSchema: {
+                      type: "object",
+                      definition: {
+                        a: { type: "string" },
+                        b: { type: "number" },
+                      },
                     },
                   },
                 },
-              },
-            ],
+              ],
+            }
           },
         ],
       },
@@ -315,21 +320,23 @@ describe('resolveTestCompositeActionTemplateSuite', () => {
                   referenceName: "currentDeploymentUuid",
                 },
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                entities: [
-                  {
-                    // entity: newEntity,
-                    entity: {
-                      transformerType: "parameterReference",
-                      interpolation: "build",
-                      referenceName: "createEntity_newEntity",
+                payload: {
+                  entities: [
+                    {
+                      // entity: newEntity,
+                      entity: {
+                        transformerType: "parameterReference",
+                        interpolation: "build",
+                        referenceName: "createEntity_newEntity",
+                      },
+                      entityDefinition: newEntityDefinition as any,
+                      // entityDefinition: {
+                      //   transformerType: "parameterReference",
+                      //   referenceName: "newEntityDefinition",
+                      // },
                     },
-                    entityDefinition: newEntityDefinition as any,
-                    // entityDefinition: {
-                    //   transformerType: "parameterReference",
-                    //   referenceName: "newEntityDefinition",
-                    // },
-                  },
-                ],
+                  ],
+                }
               },
 
             ]
@@ -344,7 +351,11 @@ describe('resolveTestCompositeActionTemplateSuite', () => {
       createEntity_newEntity: newEntity
     };
 
-    const result = resolveTestCompositeActionTemplateSuite(compositeActionTemplateSuite, actionParamValues, defaultMiroirMetaModel);
+    const result = resolveTestCompositeActionTemplateSuite(
+      compositeActionTemplateSuite,
+      defaultMiroirModelEnvironment,
+      actionParamValues,
+    );
 
     const expectedResult: TestCompositeActionSuite = {
       testLabel: "Test Suite Label",
@@ -364,37 +375,39 @@ describe('resolveTestCompositeActionTemplateSuite', () => {
                 actionLabel: "createEntity",
                 deploymentUuid: currentDeploymentUuid,
                 endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                entities: [
-                  {
-                    entity: {
-                      uuid: newEntity.uuid,
-                      parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                      selfApplication: newEntity.selfApplication,
-                      description: "newEntityDescription",
-                      name: "newEntityName",
-                    },
-                    entityDefinition: {
-                      name: "newEntityName",
-                      uuid: newEntityDefinition.uuid,
-                      parentName: "EntityDefinition",
-                      parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
-                      entityUuid: newEntity.uuid,
-                      conceptLevel: "Model",
-                      defaultInstanceDetailsReportUuid: (newEntityDefinition as any).defaultInstanceDetailsReportUuid,
-                      jzodSchema: {
-                        type: "object",
-                        definition: {
-                          a: {
-                            type: "string",
-                          },
-                          b: {
-                            type: "number",
+                payload: {
+                  entities: [
+                    {
+                      entity: {
+                        uuid: newEntity.uuid,
+                        parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                        selfApplication: newEntity.selfApplication,
+                        description: "newEntityDescription",
+                        name: "newEntityName",
+                      },
+                      entityDefinition: {
+                        name: "newEntityName",
+                        uuid: newEntityDefinition.uuid,
+                        parentName: "EntityDefinition",
+                        parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+                        entityUuid: newEntity.uuid,
+                        conceptLevel: "Model",
+                        defaultInstanceDetailsReportUuid: (newEntityDefinition as any).defaultInstanceDetailsReportUuid,
+                        jzodSchema: {
+                          type: "object",
+                          definition: {
+                            a: {
+                              type: "string",
+                            },
+                            b: {
+                              type: "number",
+                            },
                           },
                         },
                       },
                     },
-                  },
-                ],
+                  ],
+                }
               },
             ],
           },

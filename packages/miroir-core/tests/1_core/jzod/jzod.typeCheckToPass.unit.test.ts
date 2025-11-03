@@ -3653,3234 +3653,3266 @@ interface testFormat {
     //   }
     // },
     //     },
-    // array of discriminated unions
-    test220: {
-      testValueObject: [
-        { objectType: "a", value: "myString" },
-        { objectType: "b", value: 42 },
-      ],
-      testSchema: {
-        type: "array",
-        definition: {
-          type: "union",
-          discriminator: "objectType",
-          definition: [
-            {
-              type: "object",
-              definition: {
-                objectType: {
-                  type: "literal",
-                  definition: "a",
-                },
-                value: {
-                  type: "string",
-                },
-              },
-            },
-            {
-              type: "object",
-              definition: {
-                objectType: {
-                  type: "literal",
-                  definition: "b",
-                },
-                value: {
-                  type: "number",
-                },
-              },
-            },
-          ],
-        },
-      },
-      expectedResolvedSchema: {
-        type: "tuple",
-        definition: [
-          {
-            type: "object",
-            definition: {
-              objectType: {
-                type: "literal",
-                definition: "a",
-              },
-              value: {
-                type: "string",
-              },
-            },
-          },
-          {
-            type: "object",
-            definition: {
-              objectType: {
-                type: "literal",
-                definition: "b",
-              },
-              value: {
-                type: "number",
-              },
-            },
-          },
-        ],
-      },
-      expectedKeyMap: {
-        "0": {
-          rawSchema: {
-            type: "union",
-            discriminator: "objectType",
-            definition: [
-              {
-                type: "object",
-                definition: {
-                  objectType: {
-                    type: "literal",
-                    definition: "a",
-                  },
-                  value: {
-                    type: "string",
-                  },
-                },
-              },
-              {
-                type: "object",
-                definition: {
-                  objectType: {
-                    type: "literal",
-                    definition: "b",
-                  },
-                  value: {
-                    type: "number",
-                  },
-                },
-              },
-            ],
-          },
-          resolvedSchema: {
-            type: "object",
-            definition: {
-              objectType: {
-                type: "literal",
-                definition: "a",
-              },
-              value: {
-                type: "string",
-              },
-            },
-          },
-          jzodObjectFlattenedSchema: {
-            type: "object",
-            definition: {
-              objectType: {
-                type: "literal",
-                definition: "a",
-              },
-              value: {
-                type: "string",
-              },
-            },
-          },
-          valuePath: [0],
-          typePath: [0, 'union choice([{"discriminator":"objectType","value":"a"}])'],
-          recursivelyUnfoldedUnionSchema: {
-            status: "ok",
-            result: [
-              {
-                type: "object",
-                definition: {
-                  objectType: {
-                    type: "literal",
-                    definition: "a",
-                  },
-                  value: {
-                    type: "string",
-                  },
-                },
-              },
-              {
-                type: "object",
-                definition: {
-                  objectType: {
-                    type: "literal",
-                    definition: "b",
-                  },
-                  value: {
-                    type: "number",
-                  },
-                },
-              },
-            ],
-            expandedReferences: new Set(),
-            discriminator: "objectType",
-          },
-          chosenUnionBranchRawSchema: {
-            type: "object",
-            definition: {
-              objectType: {
-                type: "literal",
-                definition: "a",
-              },
-              value: {
-                type: "string",
-              },
-            },
-          },
-          discriminatorValues: [["a", "b"]],
-          discriminator: "objectType",
-        },
-        "1": {
-          rawSchema: {
-            type: "union",
-            discriminator: "objectType",
-            definition: [
-              {
-                type: "object",
-                definition: {
-                  objectType: {
-                    type: "literal",
-                    definition: "a",
-                  },
-                  value: {
-                    type: "string",
-                  },
-                },
-              },
-              {
-                type: "object",
-                definition: {
-                  objectType: {
-                    type: "literal",
-                    definition: "b",
-                  },
-                  value: {
-                    type: "number",
-                  },
-                },
-              },
-            ],
-          },
-          resolvedSchema: {
-            type: "object",
-            definition: {
-              objectType: {
-                type: "literal",
-                definition: "b",
-              },
-              value: {
-                type: "number",
-              },
-            },
-          },
-          jzodObjectFlattenedSchema: {
-            type: "object",
-            definition: {
-              objectType: {
-                type: "literal",
-                definition: "b",
-              },
-              value: {
-                type: "number",
-              },
-            },
-          },
-          valuePath: [1],
-          typePath: [1, 'union choice([{"discriminator":"objectType","value":"b"}])'],
-          recursivelyUnfoldedUnionSchema: {
-            status: "ok",
-            result: [
-              {
-                type: "object",
-                definition: {
-                  objectType: {
-                    type: "literal",
-                    definition: "a",
-                  },
-                  value: {
-                    type: "string",
-                  },
-                },
-              },
-              {
-                type: "object",
-                definition: {
-                  objectType: {
-                    type: "literal",
-                    definition: "b",
-                  },
-                  value: {
-                    type: "number",
-                  },
-                },
-              },
-            ],
-            expandedReferences: new Set(),
-            discriminator: "objectType",
-          },
-          chosenUnionBranchRawSchema: {
-            type: "object",
-            definition: {
-              objectType: {
-                type: "literal",
-                definition: "b",
-              },
-              value: {
-                type: "number",
-              },
-            },
-          },
-          discriminatorValues: [["a", "b"]],
-          discriminator: "objectType",
-        },
-        "0.objectType": {
-          rawSchema: {
-            type: "literal",
-            definition: "a",
-          },
-          resolvedSchema: {
-            type: "literal",
-            definition: "a",
-          },
-          valuePath: [0, "objectType"],
-          typePath: [0, 'union choice([{"discriminator":"objectType","value":"a"}])', "objectType"],
-        },
-        "0.value": {
-          rawSchema: {
-            type: "string",
-          },
-          resolvedSchema: {
-            type: "string",
-          },
-          valuePath: [0, "value"],
-          typePath: [0, 'union choice([{"discriminator":"objectType","value":"a"}])', "value"],
-        },
-        "1.objectType": {
-          rawSchema: {
-            type: "literal",
-            definition: "b",
-          },
-          resolvedSchema: {
-            type: "literal",
-            definition: "b",
-          },
-          valuePath: [1, "objectType"],
-          typePath: [1, 'union choice([{"discriminator":"objectType","value":"b"}])', "objectType"],
-        },
-        "1.value": {
-          rawSchema: {
-            type: "number",
-          },
-          resolvedSchema: {
-            type: "number",
-          },
-          valuePath: [1, "value"],
-          typePath: [1, 'union choice([{"discriminator":"objectType","value":"b"}])', "value"],
-        },
-        "": {
-          rawSchema: {
-            type: "array",
-            definition: {
-              type: "union",
-              discriminator: "objectType",
-              definition: [
-                {
-                  type: "object",
-                  definition: {
-                    objectType: {
-                      type: "literal",
-                      definition: "a",
-                    },
-                    value: {
-                      type: "string",
-                    },
-                  },
-                },
-                {
-                  type: "object",
-                  definition: {
-                    objectType: {
-                      type: "literal",
-                      definition: "b",
-                    },
-                    value: {
-                      type: "number",
-                    },
-                  },
-                },
-              ],
-            },
-          },
-          resolvedSchema: {
-            type: "tuple",
-            definition: [
-              {
-                type: "object",
-                definition: {
-                  objectType: {
-                    type: "literal",
-                    definition: "a",
-                  },
-                  value: {
-                    type: "string",
-                  },
-                },
-              },
-              {
-                type: "object",
-                definition: {
-                  objectType: {
-                    type: "literal",
-                    definition: "b",
-                  },
-                  value: {
-                    type: "number",
-                  },
-                },
-              },
-            ],
-          },
-          valuePath: [],
-          typePath: [],
-        },
-      },
-    },
-    // union type for array of references
-    test230: {
-      testValueObject: [
-        {
-          type: "schemaReference",
-          definition: {
-            eager: true,
-            absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            relativePath: "transformer_orderBy",
-          },
-        },
-      ],
-      testSchema: {
-        type: "union",
-        optional: true,
-        definition: [
-          {
-            type: "union",
-            optional: true,
-            discriminator: "type",
-            definition: [
-              {
-                type: "schemaReference",
-                definition: {
-                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  relativePath: "jzodReference",
-                },
-                context: {},
-              },
-              {
-                type: "schemaReference",
-                definition: {
-                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  relativePath: "jzodObject",
-                },
-                context: {},
-              },
-            ],
-          },
-          {
-            type: "array",
-            definition: {
-              type: "union",
-              optional: true,
-              discriminator: "type",
-              definition: [
-                {
-                  type: "schemaReference",
-                  definition: {
-                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    relativePath: "jzodReference",
-                  },
-                  context: {},
-                },
-                {
-                  type: "schemaReference",
-                  definition: {
-                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    relativePath: "jzodObject",
-                  },
-                  context: {},
-                },
-              ],
-            },
-          },
-        ],
-      },
-      expectedResolvedSchema: {
-        type: "array",
-        optional: true,
-        definition: {
-          type: "object",
-          definition: {
-            type: {
-              type: "literal",
-              definition: "schemaReference",
-            },
-            definition: {
-              type: "object",
-              definition: {
-                eager: {
-                  type: "boolean",
-                  optional: true,
-                },
-                absolutePath: {
-                  type: "string",
-                  optional: true,
-                },
-                relativePath: {
-                  type: "string",
-                },
-              },
-            },
-          },
-          tag: {
-            optional: true,
-            schema: {
-              optional: true,
-              metaSchema: {
-                type: "object",
-                optional: true,
-                definition: {
-                  optional: {
-                    type: "boolean",
-                    optional: true,
-                  },
-                  metaSchema: {
-                    type: "schemaReference",
-                    optional: true,
-                    definition: {
-                      absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                      relativePath: "jzodElement",
-                    },
-                  },
-                  valueSchema: {
-                    type: "schemaReference",
-                    optional: true,
-                    definition: {
-                      absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                      relativePath: "jzodElement",
-                    },
-                  },
-                },
-              },
-              valueSchema: {
-                type: "object",
-                optional: true,
-                definition: {
-                  id: {
-                    type: "number",
-                    optional: true,
-                  },
-                  defaultLabel: {
-                    type: "string",
-                    optional: true,
-                  },
-                  description: {
-                    type: "string",
-                    optional: true,
-                  },
-                  editorButton: {
-                    type: "object",
-                    optional: true,
-                    definition: {
-                      icon: {
-                        type: "string",
-                        optional: true,
-                      },
-                      label: {
-                        type: "string",
-                        optional: true,
-                      },
-                      tooltip: {
-                        type: "string",
-                        optional: true,
-                      },
-                      transformer: {
-                        type: "any",
-                        tag: {
-                          value: {
-                            conditionalMMLS: {
-                              mmlsReference: {
-                                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                relativePath: "transformerForBuild",
-                              },
-                            },
-                          },
-                        },
-                        optional: true,
-                      },
-                    },
-                  },
-                  initializeTo: {
-                    type: "union",
-                    discriminator: "initializeToType",
-                    optional: true,
-                    definition: [
-                      {
-                        type: "object",
-                        optional: true,
-                        definition: {
-                          initializeToType: {
-                            type: "literal",
-                            definition: "value",
-                          },
-                          value: {
-                            type: "any",
-                            optional: true,
-                          },
-                        },
-                      },
-                      {
-                        type: "object",
-                        optional: true,
-                        definition: {
-                          initializeToType: {
-                            type: "literal",
-                            definition: "transformer",
-                          },
-                          transformer: {
-                            type: "any",
-                            tag: {
-                              value: {
-                                conditionalMMLS: {
-                                  mmlsReference: {
-                                    absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                    relativePath: "transformerForBuild",
-                                  },
-                                },
-                              },
-                            },
-                            optional: true,
-                          },
-                        },
-                      },
-                    ],
-                  },
-                  selectorParams: {
-                    type: "object",
-                    optional: true,
-                    definition: {
-                      targetApplicationUuid: {
-                        type: "uuid",
-                        optional: true,
-                      },
-                      targetDeploymentUuid: {
-                        type: "uuid",
-                        optional: true,
-                      },
-                      targetEntityApplicationSection: {
-                        type: "enum",
-                        optional: true,
-                        definition: ["model", "data", "metaModel"],
-                      },
-                      targetEntity: {
-                        type: "uuid",
-                      },
-                      targetEntityOrderInstancesBy: {
-                        type: "string",
-                        optional: true,
-                      },
-                    },
-                  },
-                  targetEntity: {
-                    type: "string",
-                    optional: true,
-                  },
-                  targetEntityOrderInstancesBy: {
-                    type: "string",
-                    optional: true,
-                  },
-                  targetEntityApplicationSection: {
-                    type: "enum",
-                    optional: true,
-                    definition: ["model", "data", "metaModel"],
-                  },
-                  editable: {
-                    type: "boolean",
-                    optional: true,
-                  },
-                  canBeTemplate: {
-                    type: "boolean",
-                    optional: true,
-                  },
-                  isTemplate: {
-                    type: "boolean",
-                    optional: true,
-                  },
-                  conditionalMMLS: {
-                    type: "object",
-                    optional: true,
-                    definition: {
-                      parentUuid: {
-                        type: "union",
-                        optional: true,
-                        definition: [
-                          {
-                            type: "string",
-                          },
-                          {
-                            type: "object",
-                            definition: {
-                              path: {
-                                type: "union",
-                                definition: [
-                                  {
-                                    type: "string",
-                                  },
-                                  {
-                                    type: "object",
-                                    definition: {
-                                      defaultValuePath: {
-                                        type: "string",
-                                      },
-                                      typeCheckPath: {
-                                        type: "string",
-                                      },
-                                    },
-                                  },
-                                ],
-                              },
-                            },
-                          },
-                        ],
-                      },
-                      mmlsReference: {
-                        type: "object",
-                        optional: true,
-                        definition: {
-                          absolutePath: {
-                            type: "string",
-                            optional: true,
-                          },
-                          relativePath: {
-                            type: "string",
-                          },
-                        },
-                      },
-                    },
-                  },
-                  display: {
-                    type: "object",
-                    optional: true,
-                    definition: {
-                      displayedAttributeValueWhenFolded: {
-                        type: "string",
-                        optional: true,
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-      expectedKeyMap: undefined,
-    },
-    //     // // ##########################################################################################
-    //     // // ################################# JZOD SCHEMAS ###########################################
-    //     // // ##########################################################################################
-    //     // JzodSchema: literal
-    test300: {
-      testSchema: {
-        type: "schemaReference",
-        definition: {
-          absolutePath: miroirFundamentalJzodSchemaUuid,
-          relativePath: "jzodElement",
-        },
-      },
-      expectedResolvedSchema: {
-        type: "object",
-        definition: {
-          type: {
-            type: "literal",
-            definition: "literal",
-          },
-          definition: {
-            type: "string",
-          },
-        },
-        tag: {
-          optional: true,
-          schema: {
-            optional: true,
-            metaSchema: {
-              type: "object",
-              optional: true,
-              definition: {
-                optional: {
-                  type: "boolean",
-                  optional: true,
-                },
-                metaSchema: {
-                  type: "schemaReference",
-                  optional: true,
-                  definition: {
-                    absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                    relativePath: "jzodElement",
-                  },
-                },
-                valueSchema: {
-                  type: "schemaReference",
-                  optional: true,
-                  definition: {
-                    absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                    relativePath: "jzodElement",
-                  },
-                },
-              },
-            },
-            valueSchema: {
-              type: "object",
-              optional: true,
-              definition: {
-                id: {
-                  type: "number",
-                  optional: true,
-                },
-                defaultLabel: {
-                  type: "string",
-                  optional: true,
-                },
-                description: {
-                  type: "string",
-                  optional: true,
-                },
-                editorButton: {
-                  type: "object",
-                  optional: true,
-                  definition: {
-                    icon: {
-                      type: "string",
-                      optional: true,
-                    },
-                    label: {
-                      type: "string",
-                      optional: true,
-                    },
-                    tooltip: {
-                      type: "string",
-                      optional: true,
-                    },
-                    transformer: {
-                      type: "any",
-                      tag: {
-                        value: {
-                          conditionalMMLS: {
-                            mmlsReference: {
-                              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                              relativePath: "transformerForBuild",
-                            },
-                          },
-                        },
-                      },
-                      optional: true,
-                    },
-                  },
-                },
-                initializeTo: {
-                  type: "union",
-                  discriminator: "initializeToType",
-                  optional: true,
-                  definition: [
-                    {
-                      type: "object",
-                      optional: true,
-                      definition: {
-                        initializeToType: {
-                          type: "literal",
-                          definition: "value",
-                        },
-                        value: {
-                          type: "any",
-                          optional: true,
-                        },
-                      },
-                    },
-                    {
-                      type: "object",
-                      optional: true,
-                      definition: {
-                        initializeToType: {
-                          type: "literal",
-                          definition: "transformer",
-                        },
-                        transformer: {
-                          type: "any",
-                          tag: {
-                            value: {
-                              conditionalMMLS: {
-                                mmlsReference: {
-                                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                  relativePath: "transformerForBuild",
-                                },
-                              },
-                            },
-                          },
-                          optional: true,
-                        },
-                      },
-                    },
-                  ],
-                },
-                selectorParams: {
-                  type: "object",
-                  optional: true,
-                  definition: {
-                    targetApplicationUuid: {
-                      type: "uuid",
-                      optional: true,
-                    },
-                    targetDeploymentUuid: {
-                      type: "uuid",
-                      optional: true,
-                    },
-                    targetEntityApplicationSection: {
-                      type: "enum",
-                      optional: true,
-                      definition: ["model", "data", "metaModel"],
-                    },
-                    targetEntity: {
-                      type: "uuid",
-                    },
-                    targetEntityOrderInstancesBy: {
-                      type: "string",
-                      optional: true,
-                    },
-                  },
-                },
-                targetEntity: {
-                  type: "string",
-                  optional: true,
-                },
-                targetEntityOrderInstancesBy: {
-                  type: "string",
-                  optional: true,
-                },
-                targetEntityApplicationSection: {
-                  type: "enum",
-                  optional: true,
-                  definition: ["model", "data", "metaModel"],
-                },
-                editable: {
-                  type: "boolean",
-                  optional: true,
-                },
-                canBeTemplate: {
-                  type: "boolean",
-                  optional: true,
-                },
-                isTemplate: {
-                  type: "boolean",
-                  optional: true,
-                },
-                conditionalMMLS: {
-                  type: "object",
-                  optional: true,
-                  definition: {
-                    parentUuid: {
-                      type: "union",
-                      optional: true,
-                      definition: [
-                        {
-                          type: "string",
-                        },
-                        {
-                          type: "object",
-                          definition: {
-                            path: {
-                              type: "union",
-                              definition: [
-                                {
-                                  type: "string",
-                                },
-                                {
-                                  type: "object",
-                                  definition: {
-                                    defaultValuePath: {
-                                      type: "string",
-                                    },
-                                    typeCheckPath: {
-                                      type: "string",
-                                    },
-                                  },
-                                },
-                              ],
-                            },
-                          },
-                        },
-                      ],
-                    },
-                    mmlsReference: {
-                      type: "object",
-                      optional: true,
-                      definition: {
-                        absolutePath: {
-                          type: "string",
-                          optional: true,
-                        },
-                        relativePath: {
-                          type: "string",
-                        },
-                      },
-                    },
-                  },
-                },
-                display: {
-                  type: "object",
-                  optional: true,
-                  definition: {
-                    displayedAttributeValueWhenFolded: {
-                      type: "string",
-                      optional: true,
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-      testValueObject: { type: "literal", definition: "myLiteral" },
-      expectedKeyMap: undefined,
-    },
-    //     // JzodSchema: string
-    test310: {
-      testSchema: {
-        type: "schemaReference",
-        definition: {
-          absolutePath: miroirFundamentalJzodSchemaUuid,
-          relativePath: "jzodElement",
-        },
-      },
-      expectedResolvedSchema: {
-        type: "object",
-        definition: {
-          type: {
-            type: "literal",
-            definition: "string",
-          },
-        },
-        tag: {
-          optional: true,
-          schema: {
-            optional: true,
-            metaSchema: {
-              type: "object",
-              optional: true,
-              definition: {
-                optional: {
-                  type: "boolean",
-                  optional: true,
-                },
-                metaSchema: {
-                  type: "schemaReference",
-                  optional: true,
-                  definition: {
-                    absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                    relativePath: "jzodElement",
-                  },
-                },
-                valueSchema: {
-                  type: "schemaReference",
-                  optional: true,
-                  definition: {
-                    absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                    relativePath: "jzodElement",
-                  },
-                },
-              },
-            },
-            valueSchema: {
-              type: "object",
-              optional: true,
-              definition: {
-                id: {
-                  type: "number",
-                  optional: true,
-                },
-                defaultLabel: {
-                  type: "string",
-                  optional: true,
-                },
-                description: {
-                  type: "string",
-                  optional: true,
-                },
-                editorButton: {
-                  type: "object",
-                  optional: true,
-                  definition: {
-                    icon: {
-                      type: "string",
-                      optional: true,
-                    },
-                    label: {
-                      type: "string",
-                      optional: true,
-                    },
-                    tooltip: {
-                      type: "string",
-                      optional: true,
-                    },
-                    transformer: {
-                      type: "any",
-                      tag: {
-                        value: {
-                          conditionalMMLS: {
-                            mmlsReference: {
-                              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                              relativePath: "transformerForBuild",
-                            },
-                          },
-                        },
-                      },
-                      optional: true,
-                    },
-                  },
-                },
-                initializeTo: {
-                  type: "union",
-                  discriminator: "initializeToType",
-                  optional: true,
-                  definition: [
-                    {
-                      type: "object",
-                      optional: true,
-                      definition: {
-                        initializeToType: {
-                          type: "literal",
-                          definition: "value",
-                        },
-                        value: {
-                          type: "any",
-                          optional: true,
-                        },
-                      },
-                    },
-                    {
-                      type: "object",
-                      optional: true,
-                      definition: {
-                        initializeToType: {
-                          type: "literal",
-                          definition: "transformer",
-                        },
-                        transformer: {
-                          type: "any",
-                          tag: {
-                            value: {
-                              conditionalMMLS: {
-                                mmlsReference: {
-                                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                  relativePath: "transformerForBuild",
-                                },
-                              },
-                            },
-                          },
-                          optional: true,
-                        },
-                      },
-                    },
-                  ],
-                },
-                selectorParams: {
-                  type: "object",
-                  optional: true,
-                  definition: {
-                    targetApplicationUuid: {
-                      type: "uuid",
-                      optional: true,
-                    },
-                    targetDeploymentUuid: {
-                      type: "uuid",
-                      optional: true,
-                    },
-                    targetEntityApplicationSection: {
-                      type: "enum",
-                      optional: true,
-                      definition: ["model", "data", "metaModel"],
-                    },
-                    targetEntity: {
-                      type: "uuid",
-                    },
-                    targetEntityOrderInstancesBy: {
-                      type: "string",
-                      optional: true,
-                    },
-                  },
-                },
-                targetEntity: {
-                  type: "string",
-                  optional: true,
-                },
-                targetEntityOrderInstancesBy: {
-                  type: "string",
-                  optional: true,
-                },
-                targetEntityApplicationSection: {
-                  type: "enum",
-                  optional: true,
-                  definition: ["model", "data", "metaModel"],
-                },
-                editable: {
-                  type: "boolean",
-                  optional: true,
-                },
-                canBeTemplate: {
-                  type: "boolean",
-                  optional: true,
-                },
-                isTemplate: {
-                  type: "boolean",
-                  optional: true,
-                },
-                conditionalMMLS: {
-                  type: "object",
-                  optional: true,
-                  definition: {
-                    parentUuid: {
-                      type: "union",
-                      optional: true,
-                      definition: [
-                        {
-                          type: "string",
-                        },
-                        {
-                          type: "object",
-                          definition: {
-                            path: {
-                              type: "union",
-                              definition: [
-                                {
-                                  type: "string",
-                                },
-                                {
-                                  type: "object",
-                                  definition: {
-                                    defaultValuePath: {
-                                      type: "string",
-                                    },
-                                    typeCheckPath: {
-                                      type: "string",
-                                    },
-                                  },
-                                },
-                              ],
-                            },
-                          },
-                        },
-                      ],
-                    },
-                    mmlsReference: {
-                      type: "object",
-                      optional: true,
-                      definition: {
-                        absolutePath: {
-                          type: "string",
-                          optional: true,
-                        },
-                        relativePath: {
-                          type: "string",
-                        },
-                      },
-                    },
-                  },
-                },
-                display: {
-                  type: "object",
-                  optional: true,
-                  definition: {
-                    displayedAttributeValueWhenFolded: {
-                      type: "string",
-                      optional: true,
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-      testValueObject: { type: "string" },
-      expectedKeyMap: undefined,
-    },
-    // JzodSchema: object, simpleType attributes
-    test320: {
-      testSchema: {
-        type: "schemaReference",
-        definition: {
-          absolutePath: miroirFundamentalJzodSchemaUuid,
-          relativePath: "jzodElement",
-        },
-      },
-      ignoreResolvedSchemaTag: true,
-      expectedResolvedSchema: {
-        type: "object",
-        definition: {
-          type: {
-            type: "literal",
-            definition: "object",
-          },
-          definition: {
-            type: "object",
-            definition: {
-              a: {
-                type: "object",
-                definition: {
-                  type: {
-                    type: "literal",
-                    definition: "string",
-                  },
-                },
-                tag: {
-                  optional: true,
-                  schema: {
-                    optional: true,
-                    metaSchema: {
-                      type: "object",
-                      optional: true,
-                      definition: {
-                        optional: {
-                          type: "boolean",
-                          optional: true,
-                        },
-                        metaSchema: {
-                          type: "schemaReference",
-                          optional: true,
-                          definition: {
-                            absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                            relativePath: "jzodElement",
-                          },
-                        },
-                        valueSchema: {
-                          type: "schemaReference",
-                          optional: true,
-                          definition: {
-                            absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                            relativePath: "jzodElement",
-                          },
-                        },
-                      },
-                    },
-                    valueSchema: {
-                      type: "object",
-                      optional: true,
-                      definition: {
-                        id: {
-                          type: "number",
-                          optional: true,
-                        },
-                        defaultLabel: {
-                          type: "string",
-                          optional: true,
-                        },
-                        description: {
-                          type: "string",
-                          optional: true,
-                        },
-                        editorButton: {
-                          type: "object",
-                          optional: true,
-                          definition: {
-                            icon: {
-                              type: "string",
-                              optional: true,
-                            },
-                            label: {
-                              type: "string",
-                              optional: true,
-                            },
-                            tooltip: {
-                              type: "string",
-                              optional: true,
-                            },
-                            transformer: {
-                              type: "any",
-                              tag: {
-                                value: {
-                                  conditionalMMLS: {
-                                    mmlsReference: {
-                                      absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                      relativePath: "transformerForBuild",
-                                    },
-                                  },
-                                },
-                              },
-                              optional: true,
-                            },
-                          },
-                        },
-                        initializeTo: {
-                          type: "union",
-                          discriminator: "initializeToType",
-                          optional: true,
-                          definition: [
-                            {
-                              type: "object",
-                              optional: true,
-                              definition: {
-                                initializeToType: {
-                                  type: "literal",
-                                  definition: "value",
-                                },
-                                value: {
-                                  type: "any",
-                                  optional: true,
-                                },
-                              },
-                            },
-                            {
-                              type: "object",
-                              optional: true,
-                              definition: {
-                                initializeToType: {
-                                  type: "literal",
-                                  definition: "transformer",
-                                },
-                                transformer: {
-                                  type: "any",
-                                  tag: {
-                                    value: {
-                                      conditionalMMLS: {
-                                        mmlsReference: {
-                                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                          relativePath: "transformerForBuild",
-                                        },
-                                      },
-                                    },
-                                  },
-                                  optional: true,
-                                },
-                              },
-                            },
-                          ],
-                        },
-                        selectorParams: {
-                          type: "object",
-                          optional: true,
-                          definition: {
-                            targetApplicationUuid: {
-                              type: "uuid",
-                              optional: true,
-                            },
-                            targetDeploymentUuid: {
-                              type: "uuid",
-                              optional: true,
-                            },
-                            targetEntityApplicationSection: {
-                              type: "enum",
-                              optional: true,
-                              definition: ["model", "data", "metaModel"],
-                            },
-                            targetEntity: {
-                              type: "uuid",
-                            },
-                            targetEntityOrderInstancesBy: {
-                              type: "string",
-                              optional: true,
-                            },
-                          },
-                        },
-                        targetEntity: {
-                          type: "string",
-                          optional: true,
-                        },
-                        targetEntityOrderInstancesBy: {
-                          type: "string",
-                          optional: true,
-                        },
-                        targetEntityApplicationSection: {
-                          type: "enum",
-                          optional: true,
-                          definition: ["model", "data", "metaModel"],
-                        },
-                        editable: {
-                          type: "boolean",
-                          optional: true,
-                        },
-                        canBeTemplate: {
-                          type: "boolean",
-                          optional: true,
-                        },
-                        isTemplate: {
-                          type: "boolean",
-                          optional: true,
-                        },
-                        conditionalMMLS: {
-                          type: "object",
-                          optional: true,
-                          definition: {
-                            parentUuid: {
-                              type: "union",
-                              optional: true,
-                              definition: [
-                                {
-                                  type: "string",
-                                },
-                                {
-                                  type: "object",
-                                  definition: {
-                                    path: {
-                                      type: "union",
-                                      definition: [
-                                        {
-                                          type: "string",
-                                        },
-                                        {
-                                          type: "object",
-                                          definition: {
-                                            defaultValuePath: {
-                                              type: "string",
-                                            },
-                                            typeCheckPath: {
-                                              type: "string",
-                                            },
-                                          },
-                                        },
-                                      ],
-                                    },
-                                  },
-                                },
-                              ],
-                            },
-                            mmlsReference: {
-                              type: "object",
-                              optional: true,
-                              definition: {
-                                absolutePath: {
-                                  type: "string",
-                                  optional: true,
-                                },
-                                relativePath: {
-                                  type: "string",
-                                },
-                              },
-                            },
-                          },
-                        },
-                        display: {
-                          type: "object",
-                          optional: true,
-                          definition: {
-                            displayedAttributeValueWhenFolded: {
-                              type: "string",
-                              optional: true,
-                            },
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-        tag: {
-          value: {
-            unfoldSubLevels: 2,
-          },
-        } as any,
-      },
-      testValueObject: { type: "object", definition: { a: { type: "string" } } },
-      expectedKeyMap: undefined,
-    },
-    // JzodSchema: schema reference with simple attribute
-    test330: {
-      testSchema: {
-        type: "schemaReference",
-        definition: {
-          absolutePath: miroirFundamentalJzodSchemaUuid,
-          relativePath: "jzodElement",
-        },
-      },
-      testValueObject: {
-        type: "schemaReference",
-        definition: {
-          absolutePath: miroirFundamentalJzodSchemaUuid,
-          relativePath: "jzodElement",
-        },
-      },
-      expectedResolvedSchema: {
-        type: "object",
-        definition: {
-          type: {
-            type: "literal",
-            definition: "schemaReference",
-          },
-          definition: {
-            type: "object",
-            definition: {
-              absolutePath: {
-                type: "string",
-                optional: true,
-              },
-              relativePath: {
-                type: "string",
-              },
-            },
-          },
-        },
-        tag: {
-          optional: true,
-          schema: {
-            optional: true,
-            metaSchema: {
-              type: "object",
-              optional: true,
-              definition: {
-                optional: {
-                  type: "boolean",
-                  optional: true,
-                },
-                metaSchema: {
-                  type: "schemaReference",
-                  optional: true,
-                  definition: {
-                    absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                    relativePath: "jzodElement",
-                  },
-                },
-                valueSchema: {
-                  type: "schemaReference",
-                  optional: true,
-                  definition: {
-                    absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                    relativePath: "jzodElement",
-                  },
-                },
-              },
-            },
-            valueSchema: {
-              type: "object",
-              optional: true,
-              definition: {
-                id: {
-                  type: "number",
-                  optional: true,
-                },
-                defaultLabel: {
-                  type: "string",
-                  optional: true,
-                },
-                description: {
-                  type: "string",
-                  optional: true,
-                },
-                editorButton: {
-                  type: "object",
-                  optional: true,
-                  definition: {
-                    icon: {
-                      type: "string",
-                      optional: true,
-                    },
-                    label: {
-                      type: "string",
-                      optional: true,
-                    },
-                    tooltip: {
-                      type: "string",
-                      optional: true,
-                    },
-                    transformer: {
-                      type: "any",
-                      tag: {
-                        value: {
-                          conditionalMMLS: {
-                            mmlsReference: {
-                              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                              relativePath: "transformerForBuild",
-                            },
-                          },
-                        },
-                      },
-                      optional: true,
-                    },
-                  },
-                },
-                initializeTo: {
-                  type: "union",
-                  discriminator: "initializeToType",
-                  optional: true,
-                  definition: [
-                    {
-                      type: "object",
-                      optional: true,
-                      definition: {
-                        initializeToType: {
-                          type: "literal",
-                          definition: "value",
-                        },
-                        value: {
-                          type: "any",
-                          optional: true,
-                        },
-                      },
-                    },
-                    {
-                      type: "object",
-                      optional: true,
-                      definition: {
-                        initializeToType: {
-                          type: "literal",
-                          definition: "transformer",
-                        },
-                        transformer: {
-                          type: "any",
-                          tag: {
-                            value: {
-                              conditionalMMLS: {
-                                mmlsReference: {
-                                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                  relativePath: "transformerForBuild",
-                                },
-                              },
-                            },
-                          },
-                          optional: true,
-                        },
-                      },
-                    },
-                  ],
-                },
-                selectorParams: {
-                  type: "object",
-                  optional: true,
-                  definition: {
-                    targetApplicationUuid: {
-                      type: "uuid",
-                      optional: true,
-                    },
-                    targetDeploymentUuid: {
-                      type: "uuid",
-                      optional: true,
-                    },
-                    targetEntityApplicationSection: {
-                      type: "enum",
-                      optional: true,
-                      definition: ["model", "data", "metaModel"],
-                    },
-                    targetEntity: {
-                      type: "uuid",
-                    },
-                    targetEntityOrderInstancesBy: {
-                      type: "string",
-                      optional: true,
-                    },
-                  },
-                },
-                targetEntity: {
-                  type: "string",
-                  optional: true,
-                },
-                targetEntityOrderInstancesBy: {
-                  type: "string",
-                  optional: true,
-                },
-                targetEntityApplicationSection: {
-                  type: "enum",
-                  optional: true,
-                  definition: ["model", "data", "metaModel"],
-                },
-                editable: {
-                  type: "boolean",
-                  optional: true,
-                },
-                canBeTemplate: {
-                  type: "boolean",
-                  optional: true,
-                },
-                isTemplate: {
-                  type: "boolean",
-                  optional: true,
-                },
-                conditionalMMLS: {
-                  type: "object",
-                  optional: true,
-                  definition: {
-                    parentUuid: {
-                      type: "union",
-                      optional: true,
-                      definition: [
-                        {
-                          type: "string",
-                        },
-                        {
-                          type: "object",
-                          definition: {
-                            path: {
-                              type: "union",
-                              definition: [
-                                {
-                                  type: "string",
-                                },
-                                {
-                                  type: "object",
-                                  definition: {
-                                    defaultValuePath: {
-                                      type: "string",
-                                    },
-                                    typeCheckPath: {
-                                      type: "string",
-                                    },
-                                  },
-                                },
-                              ],
-                            },
-                          },
-                        },
-                      ],
-                    },
-                    mmlsReference: {
-                      type: "object",
-                      optional: true,
-                      definition: {
-                        absolutePath: {
-                          type: "string",
-                          optional: true,
-                        },
-                        relativePath: {
-                          type: "string",
-                        },
-                      },
-                    },
-                  },
-                },
-                display: {
-                  type: "object",
-                  optional: true,
-                  definition: {
-                    displayedAttributeValueWhenFolded: {
-                      type: "string",
-                      optional: true,
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-      expectedKeyMap: undefined,
-    },
-    //     // JzodSchema: schema reference for object with extend clause
-    test340: {
-      testSchema: {
-        type: "schemaReference",
-        definition: {
-          absolutePath: miroirFundamentalJzodSchemaUuid,
-          relativePath: "jzodElement",
-        },
-      },
-      testValueObject: {
-        type: "schemaReference",
-        context: {
-          a: {
-            type: "string",
-          },
-        },
-        definition: {
-          relativePath: "a",
-        },
-      },
-      expectedResolvedSchema: {
-        type: "object",
-        definition: {
-          type: {
-            type: "literal",
-            definition: "schemaReference",
-          },
-          context: {
-            type: "object",
-            optional: true,
-            definition: {
-              a: {
-                type: "object",
-                definition: {
-                  type: {
-                    type: "literal",
-                    definition: "string",
-                  },
-                },
-                tag: {
-                  optional: true,
-                  schema: {
-                    optional: true,
-                    metaSchema: {
-                      type: "object",
-                      optional: true,
-                      definition: {
-                        optional: {
-                          type: "boolean",
-                          optional: true,
-                        },
-                        metaSchema: {
-                          type: "schemaReference",
-                          optional: true,
-                          definition: {
-                            absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                            relativePath: "jzodElement",
-                          },
-                        },
-                        valueSchema: {
-                          type: "schemaReference",
-                          optional: true,
-                          definition: {
-                            absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                            relativePath: "jzodElement",
-                          },
-                        },
-                      },
-                    },
-                    valueSchema: {
-                      type: "object",
-                      optional: true,
-                      definition: {
-                        id: {
-                          type: "number",
-                          optional: true,
-                        },
-                        defaultLabel: {
-                          type: "string",
-                          optional: true,
-                        },
-                        description: {
-                          type: "string",
-                          optional: true,
-                        },
-                        editorButton: {
-                          type: "object",
-                          optional: true,
-                          definition: {
-                            icon: {
-                              type: "string",
-                              optional: true,
-                            },
-                            label: {
-                              type: "string",
-                              optional: true,
-                            },
-                            tooltip: {
-                              type: "string",
-                              optional: true,
-                            },
-                            transformer: {
-                              type: "any",
-                              tag: {
-                                value: {
-                                  conditionalMMLS: {
-                                    mmlsReference: {
-                                      absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                      relativePath: "transformerForBuild",
-                                    },
-                                  },
-                                },
-                              },
-                              optional: true,
-                            },
-                          },
-                        },
-                        initializeTo: {
-                          type: "union",
-                          discriminator: "initializeToType",
-                          optional: true,
-                          definition: [
-                            {
-                              type: "object",
-                              optional: true,
-                              definition: {
-                                initializeToType: {
-                                  type: "literal",
-                                  definition: "value",
-                                },
-                                value: {
-                                  type: "any",
-                                  optional: true,
-                                },
-                              },
-                            },
-                            {
-                              type: "object",
-                              optional: true,
-                              definition: {
-                                initializeToType: {
-                                  type: "literal",
-                                  definition: "transformer",
-                                },
-                                transformer: {
-                                  type: "any",
-                                  tag: {
-                                    value: {
-                                      conditionalMMLS: {
-                                        mmlsReference: {
-                                          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                          relativePath: "transformerForBuild",
-                                        },
-                                      },
-                                    },
-                                  },
-                                  optional: true,
-                                },
-                              },
-                            },
-                          ],
-                        },
-                        selectorParams: {
-                          type: "object",
-                          optional: true,
-                          definition: {
-                            targetApplicationUuid: {
-                              type: "uuid",
-                              optional: true,
-                            },
-                            targetDeploymentUuid: {
-                              type: "uuid",
-                              optional: true,
-                            },
-                            targetEntityApplicationSection: {
-                              type: "enum",
-                              optional: true,
-                              definition: ["model", "data", "metaModel"],
-                            },
-                            targetEntity: {
-                              type: "uuid",
-                            },
-                            targetEntityOrderInstancesBy: {
-                              type: "string",
-                              optional: true,
-                            },
-                          },
-                        },
-                        targetEntity: {
-                          type: "string",
-                          optional: true,
-                        },
-                        targetEntityOrderInstancesBy: {
-                          type: "string",
-                          optional: true,
-                        },
-                        targetEntityApplicationSection: {
-                          type: "enum",
-                          optional: true,
-                          definition: ["model", "data", "metaModel"],
-                        },
-                        editable: {
-                          type: "boolean",
-                          optional: true,
-                        },
-                        canBeTemplate: {
-                          type: "boolean",
-                          optional: true,
-                        },
-                        isTemplate: {
-                          type: "boolean",
-                          optional: true,
-                        },
-                        conditionalMMLS: {
-                          type: "object",
-                          optional: true,
-                          definition: {
-                            parentUuid: {
-                              type: "union",
-                              optional: true,
-                              definition: [
-                                {
-                                  type: "string",
-                                },
-                                {
-                                  type: "object",
-                                  definition: {
-                                    path: {
-                                      type: "union",
-                                      definition: [
-                                        {
-                                          type: "string",
-                                        },
-                                        {
-                                          type: "object",
-                                          definition: {
-                                            defaultValuePath: {
-                                              type: "string",
-                                            },
-                                            typeCheckPath: {
-                                              type: "string",
-                                            },
-                                          },
-                                        },
-                                      ],
-                                    },
-                                  },
-                                },
-                              ],
-                            },
-                            mmlsReference: {
-                              type: "object",
-                              optional: true,
-                              definition: {
-                                absolutePath: {
-                                  type: "string",
-                                  optional: true,
-                                },
-                                relativePath: {
-                                  type: "string",
-                                },
-                              },
-                            },
-                          },
-                        },
-                        display: {
-                          type: "object",
-                          optional: true,
-                          definition: {
-                            displayedAttributeValueWhenFolded: {
-                              type: "string",
-                              optional: true,
-                            },
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
-          definition: {
-            type: "object",
-            definition: {
-              relativePath: {
-                type: "string",
-              },
-            },
-          },
-        },
-        tag: {
-          optional: true,
-          schema: {
-            optional: true,
-            metaSchema: {
-              type: "object",
-              optional: true,
-              definition: {
-                optional: {
-                  type: "boolean",
-                  optional: true,
-                },
-                metaSchema: {
-                  type: "schemaReference",
-                  optional: true,
-                  definition: {
-                    absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                    relativePath: "jzodElement",
-                  },
-                },
-                valueSchema: {
-                  type: "schemaReference",
-                  optional: true,
-                  definition: {
-                    absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                    relativePath: "jzodElement",
-                  },
-                },
-              },
-            },
-            valueSchema: {
-              type: "object",
-              optional: true,
-              definition: {
-                id: {
-                  type: "number",
-                  optional: true,
-                },
-                defaultLabel: {
-                  type: "string",
-                  optional: true,
-                },
-                description: {
-                  type: "string",
-                  optional: true,
-                },
-                editorButton: {
-                  type: "object",
-                  optional: true,
-                  definition: {
-                    icon: {
-                      type: "string",
-                      optional: true,
-                    },
-                    label: {
-                      type: "string",
-                      optional: true,
-                    },
-                    tooltip: {
-                      type: "string",
-                      optional: true,
-                    },
-                    transformer: {
-                      type: "any",
-                      tag: {
-                        value: {
-                          conditionalMMLS: {
-                            mmlsReference: {
-                              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                              relativePath: "transformerForBuild",
-                            },
-                          },
-                        },
-                      },
-                      optional: true,
-                    },
-                  },
-                },
-                initializeTo: {
-                  type: "union",
-                  discriminator: "initializeToType",
-                  optional: true,
-                  definition: [
-                    {
-                      type: "object",
-                      optional: true,
-                      definition: {
-                        initializeToType: {
-                          type: "literal",
-                          definition: "value",
-                        },
-                        value: {
-                          type: "any",
-                          optional: true,
-                        },
-                      },
-                    },
-                    {
-                      type: "object",
-                      optional: true,
-                      definition: {
-                        initializeToType: {
-                          type: "literal",
-                          definition: "transformer",
-                        },
-                        transformer: {
-                          type: "any",
-                          tag: {
-                            value: {
-                              conditionalMMLS: {
-                                mmlsReference: {
-                                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                  relativePath: "transformerForBuild",
-                                },
-                              },
-                            },
-                          },
-                          optional: true,
-                        },
-                      },
-                    },
-                  ],
-                },
-                selectorParams: {
-                  type: "object",
-                  optional: true,
-                  definition: {
-                    targetApplicationUuid: {
-                      type: "uuid",
-                      optional: true,
-                    },
-                    targetDeploymentUuid: {
-                      type: "uuid",
-                      optional: true,
-                    },
-                    targetEntityApplicationSection: {
-                      type: "enum",
-                      optional: true,
-                      definition: ["model", "data", "metaModel"],
-                    },
-                    targetEntity: {
-                      type: "uuid",
-                    },
-                    targetEntityOrderInstancesBy: {
-                      type: "string",
-                      optional: true,
-                    },
-                  },
-                },
-                targetEntity: {
-                  type: "string",
-                  optional: true,
-                },
-                targetEntityOrderInstancesBy: {
-                  type: "string",
-                  optional: true,
-                },
-                targetEntityApplicationSection: {
-                  type: "enum",
-                  optional: true,
-                  definition: ["model", "data", "metaModel"],
-                },
-                editable: {
-                  type: "boolean",
-                  optional: true,
-                },
-                canBeTemplate: {
-                  type: "boolean",
-                  optional: true,
-                },
-                isTemplate: {
-                  type: "boolean",
-                  optional: true,
-                },
-                conditionalMMLS: {
-                  type: "object",
-                  optional: true,
-                  definition: {
-                    parentUuid: {
-                      type: "union",
-                      optional: true,
-                      definition: [
-                        {
-                          type: "string",
-                        },
-                        {
-                          type: "object",
-                          definition: {
-                            path: {
-                              type: "union",
-                              definition: [
-                                {
-                                  type: "string",
-                                },
-                                {
-                                  type: "object",
-                                  definition: {
-                                    defaultValuePath: {
-                                      type: "string",
-                                    },
-                                    typeCheckPath: {
-                                      type: "string",
-                                    },
-                                  },
-                                },
-                              ],
-                            },
-                          },
-                        },
-                      ],
-                    },
-                    mmlsReference: {
-                      type: "object",
-                      optional: true,
-                      definition: {
-                        absolutePath: {
-                          type: "string",
-                          optional: true,
-                        },
-                        relativePath: {
-                          type: "string",
-                        },
-                      },
-                    },
-                  },
-                },
-                display: {
-                  type: "object",
-                  optional: true,
-                  definition: {
-                    displayedAttributeValueWhenFolded: {
-                      type: "string",
-                      optional: true,
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-      expectedKeyMap: undefined,
-    },
-    // real case, simple
-    test350: {
-      testSchema: {
-        type: "object",
-        definition: {
-          a: { type: "string", optional: true },
-          b: { type: "number" },
-          c: { type: "boolean", optional: true },
-        },
-      },
-      testValueObject: {
-        b: 42,
-      },
-      expectedResolvedSchema: {
-        type: "object",
-        definition: {
-          // a: { type: "string", optional: true },
-          b: { type: "number" },
-          // c: { type: "boolean", optional: true },
-        },
-      },
-      expectedKeyMap: {
-        b: {
-          rawSchema: {
-            type: "number",
-          },
-          resolvedSchema: {
-            type: "number",
-          },
-          valuePath: ["b"],
-          typePath: ["b"],
-        },
-        "": {
-          rawSchema: {
-            type: "object",
-            definition: {
-              a: {
-                type: "string",
-                optional: true,
-              },
-              b: {
-                type: "number",
-              },
-              c: {
-                type: "boolean",
-                optional: true,
-              },
-            },
-          },
-          resolvedSchema: {
-            type: "object",
-            definition: {
-              b: {
-                type: "number",
-              },
-            },
-          },
-          jzodObjectFlattenedSchema: {
-            type: "object",
-            definition: {
-              a: {
-                type: "string",
-                optional: true,
-              },
-              b: {
-                type: "number",
-              },
-              c: {
-                type: "boolean",
-                optional: true,
-              },
-            },
-          },
-          valuePath: [],
-          typePath: [],
-        },
-      },
-    },
-    //     // real case, JzodReference
-    test360: {
-      testSchema: {
-        type: "schemaReference",
-        definition: {
-          absolutePath: castMiroirFundamentalJzodSchema.uuid,
-          relativePath: "jzodReference",
-        },
-      },
-      testValueObject: {
-        type: "schemaReference",
-        definition: {
-          eager: true,
-          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-          relativePath: "transformer_orderBy",
-        },
-      },
-      expectedResolvedSchema: {
-        type: "object",
-        definition: {
-          type: {
-            type: "literal",
-            definition: "schemaReference",
-          },
-          definition: {
-            type: "object",
-            definition: {
-              eager: {
-                type: "boolean",
-                optional: true,
-              },
-              absolutePath: {
-                type: "string",
-                optional: true,
-              },
-              relativePath: {
-                type: "string",
-              },
-            },
-          },
-        },
-        tag: {
-          optional: true,
-          schema: {
-            optional: true,
-            metaSchema: {
-              type: "object",
-              optional: true,
-              definition: {
-                optional: {
-                  type: "boolean",
-                  optional: true,
-                },
-                metaSchema: {
-                  type: "schemaReference",
-                  optional: true,
-                  definition: {
-                    absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                    relativePath: "jzodElement",
-                  },
-                },
-                valueSchema: {
-                  type: "schemaReference",
-                  optional: true,
-                  definition: {
-                    absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                    relativePath: "jzodElement",
-                  },
-                },
-              },
-            },
-            valueSchema: {
-              type: "object",
-              optional: true,
-              definition: {
-                id: {
-                  type: "number",
-                  optional: true,
-                },
-                defaultLabel: {
-                  type: "string",
-                  optional: true,
-                },
-                description: {
-                  type: "string",
-                  optional: true,
-                },
-                editorButton: {
-                  type: "object",
-                  optional: true,
-                  definition: {
-                    icon: {
-                      type: "string",
-                      optional: true,
-                    },
-                    label: {
-                      type: "string",
-                      optional: true,
-                    },
-                    tooltip: {
-                      type: "string",
-                      optional: true,
-                    },
-                    transformer: {
-                      type: "any",
-                      tag: {
-                        value: {
-                          conditionalMMLS: {
-                            mmlsReference: {
-                              absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                              relativePath: "transformerForBuild",
-                            },
-                          },
-                        },
-                      },
-                      optional: true,
-                    },
-                  },
-                },
-                initializeTo: {
-                  type: "union",
-                  discriminator: "initializeToType",
-                  optional: true,
-                  definition: [
-                    {
-                      type: "object",
-                      optional: true,
-                      definition: {
-                        initializeToType: {
-                          type: "literal",
-                          definition: "value",
-                        },
-                        value: {
-                          type: "any",
-                          optional: true,
-                        },
-                      },
-                    },
-                    {
-                      type: "object",
-                      optional: true,
-                      definition: {
-                        initializeToType: {
-                          type: "literal",
-                          definition: "transformer",
-                        },
-                        transformer: {
-                          type: "any",
-                          tag: {
-                            value: {
-                              conditionalMMLS: {
-                                mmlsReference: {
-                                  absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                  relativePath: "transformerForBuild",
-                                },
-                              },
-                            },
-                          },
-                          optional: true,
-                        },
-                      },
-                    },
-                  ],
-                },
-                selectorParams: {
-                  type: "object",
-                  optional: true,
-                  definition: {
-                    targetApplicationUuid: {
-                      type: "uuid",
-                      optional: true,
-                    },
-                    targetDeploymentUuid: {
-                      type: "uuid",
-                      optional: true,
-                    },
-                    targetEntityApplicationSection: {
-                      type: "enum",
-                      optional: true,
-                      definition: ["model", "data", "metaModel"],
-                    },
-                    targetEntity: {
-                      type: "uuid",
-                    },
-                    targetEntityOrderInstancesBy: {
-                      type: "string",
-                      optional: true,
-                    },
-                  },
-                },
-                targetEntity: {
-                  type: "string",
-                  optional: true,
-                },
-                targetEntityOrderInstancesBy: {
-                  type: "string",
-                  optional: true,
-                },
-                targetEntityApplicationSection: {
-                  type: "enum",
-                  optional: true,
-                  definition: ["model", "data", "metaModel"],
-                },
-                editable: {
-                  type: "boolean",
-                  optional: true,
-                },
-                canBeTemplate: {
-                  type: "boolean",
-                  optional: true,
-                },
-                isTemplate: {
-                  type: "boolean",
-                  optional: true,
-                },
-                conditionalMMLS: {
-                  type: "object",
-                  optional: true,
-                  definition: {
-                    parentUuid: {
-                      type: "union",
-                      optional: true,
-                      definition: [
-                        {
-                          type: "string",
-                        },
-                        {
-                          type: "object",
-                          definition: {
-                            path: {
-                              type: "union",
-                              definition: [
-                                {
-                                  type: "string",
-                                },
-                                {
-                                  type: "object",
-                                  definition: {
-                                    defaultValuePath: {
-                                      type: "string",
-                                    },
-                                    typeCheckPath: {
-                                      type: "string",
-                                    },
-                                  },
-                                },
-                              ],
-                            },
-                          },
-                        },
-                      ],
-                    },
-                    mmlsReference: {
-                      type: "object",
-                      optional: true,
-                      definition: {
-                        absolutePath: {
-                          type: "string",
-                          optional: true,
-                        },
-                        relativePath: {
-                          type: "string",
-                        },
-                      },
-                    },
-                  },
-                },
-                display: {
-                  type: "object",
-                  optional: true,
-                  definition: {
-                    displayedAttributeValueWhenFolded: {
-                      type: "string",
-                      optional: true,
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-      expectedKeyMap: undefined,
-    },
-    //     // ##########################################################################################
-    //     // ####################################### ANY #############################################
-    //     // ##########################################################################################
-    test400: {
-      testSchema: {
-        type: "any",
-      },
-      testValueObject: "test",
-      expectedResolvedSchema: {
-        type: "string",
-      },
-      expectedKeyMap: {
-        "": {
-          rawSchema: {
-            type: "any",
-          },
-          resolvedSchema: {
-            type: "string",
-          },
-          valuePath: [],
-          typePath: [],
-        },
-      },
-    },
-    test410: {
-      testSchema: {
-        type: "any",
-      },
-      testValueObject: [42, "test", { a: { b: 42n, c: true }, d: [1, 2, 3] }],
-      expectedResolvedSchema: {
-        type: "tuple",
-        definition: [
-          { type: "number" },
-          { type: "string" },
-          {
-            type: "object",
-            definition: {
-              a: {
-                type: "object",
-                definition: {
-                  b: { type: "bigint" },
-                  c: { type: "boolean" },
-                },
-              },
-              d: {
-                type: "tuple",
-                definition: [{ type: "number" }, { type: "number" }, { type: "number" }],
-              },
-            },
-          },
-        ],
-      },
-      expectedKeyMap: {
-        "": {
-          rawSchema: {
-            type: "any",
-          },
-          resolvedSchema: {
-            type: "tuple",
-            definition: [
-              {
-                type: "number",
-              },
-              {
-                type: "string",
-              },
-              {
-                type: "object",
-                definition: {
-                  a: {
-                    type: "object",
-                    definition: {
-                      b: {
-                        type: "bigint",
-                      },
-                      c: {
-                        type: "boolean",
-                      },
-                    },
-                  },
-                  d: {
-                    type: "tuple",
-                    definition: [
-                      {
-                        type: "number",
-                      },
-                      {
-                        type: "number",
-                      },
-                      {
-                        type: "number",
-                      },
-                    ],
-                  },
-                },
-              },
-            ],
-          },
-          valuePath: [],
-          typePath: [],
-        },
-      },
-    },
-    // ##########################################################################################
-    // ################################# TRANSFORMERS ###########################################
-    // ##########################################################################################
-    // Transformers
-    // returnValue
-    test600: {
-      testSchema: {
-        type: "schemaReference",
-        definition: {
-          absolutePath: castMiroirFundamentalJzodSchema.uuid,
-          relativePath: "transformerForBuildPlusRuntime",
-        },
-      },
-      testValueObject: {
-        transformerType: "returnValue",
-        interpolation: "build",
-        value: "test",
-      },
-      expectedResolvedSchema: {
-        type: "object",
-        definition: {
-          transformerType: {
-            type: "literal",
-            definition: "returnValue",
-          },
-          interpolation: {
-            type: "enum",
-            optional: true,
-            tag: {
-              value: {
-                id: 1,
-                defaultLabel: "Interpolation",
-                editable: true,
-                initializeTo: {
-                  initializeToType: "value",
-                  value: "build",
-                },
-              },
-            },
-            definition: ["build", "runtime"],
-          },
-          value: {
-            type: "string",
-          },
-        },
-        tag: {
-          value: {
-            editable: true,
-            editorButton: {
-              label: "Apply Transformer to a List",
-              transformer: {
-                transformerType: "freeObjectTemplate",
-                definition: {
-                  transformerType: "mapList",
-                  elementTransformer: {
-                    transformerType: "contextReference",
-                    referenceName: "originTransformer",
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-      expectedKeyMap: undefined,
-    },
-    // listPickElement
-    test610: {
-      testSchema: {
-        type: "schemaReference",
-        definition: {
-          absolutePath: castMiroirFundamentalJzodSchema.uuid,
-          relativePath: "transformerForBuildPlusRuntime",
-        },
-      },
-      testValueObject: {
-        transformerType: "listPickElement",
-        interpolation: "runtime",
-        applyTo: {
-          transformerType: "contextReference",
-          interpolation: "runtime",
-          referenceName: "menuList",
-        },
-        index: 0,
-      },
-      expectedResolvedSchema: {
-        type: "object",
-        definition: {
-          transformerType: {
-            type: "literal",
-            definition: "listPickElement",
-          },
-          interpolation: {
-            type: "enum",
-            optional: true,
-            tag: {
-              value: {
-                id: 1,
-                defaultLabel: "Interpolation",
-                editable: true,
-                initializeTo: {
-                  initializeToType: "value",
-                  value: "build",
-                },
-              },
-            },
-            definition: ["build", "runtime"],
-          },
-          applyTo: {
-            type: "object",
-            definition: {
-              transformerType: {
-                type: "literal",
-                definition: "contextReference",
-              },
-              interpolation: {
-                type: "enum",
-                optional: true,
-                tag: {
-                  value: {
-                    id: 1,
-                    defaultLabel: "Interpolation",
-                    editable: true,
-                    initializeTo: {
-                      initializeToType: "value",
-                      value: "build",
-                    },
-                  },
-                },
-                definition: ["build", "runtime"],
-              },
-              referenceName: {
-                optional: true,
-                type: "string",
-              },
-            },
-            tag: {
-              value: {
-                editable: true,
-                editorButton: {
-                  label: "Apply Transformer to a List",
-                  transformer: {
-                    transformerType: "freeObjectTemplate",
-                    definition: {
-                      transformerType: "mapList",
-                      elementTransformer: {
-                        transformerType: "contextReference",
-                        referenceName: "originTransformer",
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
-          index: {
-            type: "number",
-          },
-        },
-        tag: {
-          value: {
-            editable: true,
-            editorButton: {
-              label: "Apply Transformer to a List",
-              transformer: {
-                transformerType: "freeObjectTemplate",
-                definition: {
-                  transformerType: "mapList",
-                  elementTransformer: {
-                    transformerType: "contextReference",
-                    referenceName: "originTransformer",
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-      expectedKeyMap: undefined,
-    },
-    // runtime freeObjectTemplate with inner build transformer
-    test620: {
-      testSchema: {
-        type: "schemaReference",
-        definition: {
-          absolutePath: castMiroirFundamentalJzodSchema.uuid,
-          relativePath: "transformerForBuildPlusRuntime",
-        },
-      },
-      testValueObject: {
-        transformerType: "freeObjectTemplate",
-        interpolation: "runtime",
-        definition: {
-          reportUuid: {
-            transformerType: "parameterReference",
-            interpolation: "build",
-            referenceName: "createEntity_newEntityListReportUuid",
-          },
-          label: {
-            transformerType: "mustacheStringTemplate",
-            interpolation: "build",
-            definition: "List of {{newEntityName}}s",
-          },
-          section: "data",
-          selfApplication: {
-            transformerType: "parameterReference",
-            interpolation: "build",
-            referencePath: ["adminConfigurationDeploymentParis", "uuid"],
-          },
-          icon: "local_drink",
-        },
-      },
-      expectedResolvedSchema: {
-        type: "object",
-        definition: {
-          transformerType: {
-            type: "literal",
-            definition: "freeObjectTemplate",
-          },
-          interpolation: {
-            type: "enum",
-            optional: true,
-            tag: {
-              value: {
-                id: 1,
-                defaultLabel: "Interpolation",
-                editable: true,
-                initializeTo: {
-                  initializeToType: "value",
-                  value: "build",
-                },
-              },
-            },
-            definition: ["build", "runtime"],
-          },
-          definition: {
-            type: "object",
-            definition: {
-              reportUuid: {
-                type: "object",
-                definition: {
-                  transformerType: {
-                    type: "literal",
-                    definition: "parameterReference",
-                  },
-                  interpolation: {
-                    type: "enum",
-                    optional: true,
-                    tag: {
-                      value: {
-                        id: 1,
-                        defaultLabel: "Interpolation",
-                        editable: true,
-                        initializeTo: {
-                          initializeToType: "value",
-                          value: "build",
-                        },
-                      },
-                    },
-                    definition: ["build", "runtime"],
-                  },
-                  referenceName: {
-                    optional: true,
-                    type: "string",
-                  },
-                },
-                tag: {
-                  value: {
-                    editable: true,
-                    editorButton: {
-                      label: "Apply Transformer to a List",
-                      transformer: {
-                        transformerType: "freeObjectTemplate",
-                        definition: {
-                          transformerType: "mapList",
-                          elementTransformer: {
-                            transformerType: "contextReference",
-                            referenceName: "originTransformer",
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-              label: {
-                type: "object",
-                definition: {
-                  transformerType: {
-                    type: "literal",
-                    definition: "mustacheStringTemplate",
-                  },
-                  interpolation: {
-                    type: "enum",
-                    optional: true,
-                    tag: {
-                      value: {
-                        id: 1,
-                        defaultLabel: "Interpolation",
-                        editable: true,
-                        initializeTo: {
-                          initializeToType: "value",
-                          value: "build",
-                        },
-                      },
-                    },
-                    definition: ["build", "runtime"],
-                  },
-                  definition: {
-                    type: "string",
-                  },
-                },
-                tag: {
-                  value: {
-                    editable: true,
-                    editorButton: {
-                      label: "Apply Transformer to a List",
-                      transformer: {
-                        transformerType: "freeObjectTemplate",
-                        definition: {
-                          transformerType: "mapList",
-                          elementTransformer: {
-                            transformerType: "contextReference",
-                            referenceName: "originTransformer",
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-              section: {
-                type: "string",
-              },
-              selfApplication: {
-                type: "object",
-                definition: {
-                  transformerType: {
-                    type: "literal",
-                    definition: "parameterReference",
-                  },
-                  interpolation: {
-                    type: "enum",
-                    optional: true,
-                    tag: {
-                      value: {
-                        id: 1,
-                        defaultLabel: "Interpolation",
-                        editable: true,
-                        initializeTo: {
-                          initializeToType: "value",
-                          value: "build",
-                        },
-                      },
-                    },
-                    definition: ["build", "runtime"],
-                  },
-                  referencePath: {
-                    optional: true,
-                    type: "tuple",
-                    definition: [
-                      {
-                        type: "string",
-                      },
-                      {
-                        type: "string",
-                      },
-                    ],
-                  },
-                },
-                tag: {
-                  value: {
-                    editable: true,
-                    editorButton: {
-                      label: "Apply Transformer to a List",
-                      transformer: {
-                        transformerType: "freeObjectTemplate",
-                        definition: {
-                          transformerType: "mapList",
-                          elementTransformer: {
-                            transformerType: "contextReference",
-                            referenceName: "originTransformer",
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-              icon: {
-                type: "string",
-              },
-            },
-          },
-        },
-        tag: {
-          value: {
-            editable: true,
-            editorButton: {
-              label: "Apply Transformer to a List",
-              transformer: {
-                transformerType: "freeObjectTemplate",
-                definition: {
-                  transformerType: "mapList",
-                  elementTransformer: {
-                    transformerType: "contextReference",
-                    referenceName: "originTransformer",
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-      expectedKeyMap: undefined,
-    },
+    // // array of discriminated unions
+    // test220: {
+    //   testValueObject: [
+    //     { objectType: "a", value: "myString" },
+    //     { objectType: "b", value: 42 },
+    //   ],
+    //   testSchema: {
+    //     type: "array",
+    //     definition: {
+    //       type: "union",
+    //       discriminator: "objectType",
+    //       definition: [
+    //         {
+    //           type: "object",
+    //           definition: {
+    //             objectType: {
+    //               type: "literal",
+    //               definition: "a",
+    //             },
+    //             value: {
+    //               type: "string",
+    //             },
+    //           },
+    //         },
+    //         {
+    //           type: "object",
+    //           definition: {
+    //             objectType: {
+    //               type: "literal",
+    //               definition: "b",
+    //             },
+    //             value: {
+    //               type: "number",
+    //             },
+    //           },
+    //         },
+    //       ],
+    //     },
+    //   },
+    //   expectedResolvedSchema: {
+    //     type: "tuple",
+    //     definition: [
+    //       {
+    //         type: "object",
+    //         definition: {
+    //           objectType: {
+    //             type: "literal",
+    //             definition: "a",
+    //           },
+    //           value: {
+    //             type: "string",
+    //           },
+    //         },
+    //       },
+    //       {
+    //         type: "object",
+    //         definition: {
+    //           objectType: {
+    //             type: "literal",
+    //             definition: "b",
+    //           },
+    //           value: {
+    //             type: "number",
+    //           },
+    //         },
+    //       },
+    //     ],
+    //   },
+    //   expectedKeyMap: {
+    //     "0": {
+    //       rawSchema: {
+    //         type: "union",
+    //         discriminator: "objectType",
+    //         definition: [
+    //           {
+    //             type: "object",
+    //             definition: {
+    //               objectType: {
+    //                 type: "literal",
+    //                 definition: "a",
+    //               },
+    //               value: {
+    //                 type: "string",
+    //               },
+    //             },
+    //           },
+    //           {
+    //             type: "object",
+    //             definition: {
+    //               objectType: {
+    //                 type: "literal",
+    //                 definition: "b",
+    //               },
+    //               value: {
+    //                 type: "number",
+    //               },
+    //             },
+    //           },
+    //         ],
+    //       },
+    //       resolvedSchema: {
+    //         type: "object",
+    //         definition: {
+    //           objectType: {
+    //             type: "literal",
+    //             definition: "a",
+    //           },
+    //           value: {
+    //             type: "string",
+    //           },
+    //         },
+    //       },
+    //       jzodObjectFlattenedSchema: {
+    //         type: "object",
+    //         definition: {
+    //           objectType: {
+    //             type: "literal",
+    //             definition: "a",
+    //           },
+    //           value: {
+    //             type: "string",
+    //           },
+    //         },
+    //       },
+    //       valuePath: [0],
+    //       typePath: [0, 'union choice([{"discriminator":"objectType","value":"a"}])'],
+    //       recursivelyUnfoldedUnionSchema: {
+    //         status: "ok",
+    //         result: [
+    //           {
+    //             type: "object",
+    //             definition: {
+    //               objectType: {
+    //                 type: "literal",
+    //                 definition: "a",
+    //               },
+    //               value: {
+    //                 type: "string",
+    //               },
+    //             },
+    //           },
+    //           {
+    //             type: "object",
+    //             definition: {
+    //               objectType: {
+    //                 type: "literal",
+    //                 definition: "b",
+    //               },
+    //               value: {
+    //                 type: "number",
+    //               },
+    //             },
+    //           },
+    //         ],
+    //         expandedReferences: new Set(),
+    //         discriminator: "objectType",
+    //       },
+    //       chosenUnionBranchRawSchema: {
+    //         type: "object",
+    //         definition: {
+    //           objectType: {
+    //             type: "literal",
+    //             definition: "a",
+    //           },
+    //           value: {
+    //             type: "string",
+    //           },
+    //         },
+    //       },
+    //       discriminatorValues: [["a", "b"]],
+    //       discriminator: "objectType",
+    //     },
+    //     "1": {
+    //       rawSchema: {
+    //         type: "union",
+    //         discriminator: "objectType",
+    //         definition: [
+    //           {
+    //             type: "object",
+    //             definition: {
+    //               objectType: {
+    //                 type: "literal",
+    //                 definition: "a",
+    //               },
+    //               value: {
+    //                 type: "string",
+    //               },
+    //             },
+    //           },
+    //           {
+    //             type: "object",
+    //             definition: {
+    //               objectType: {
+    //                 type: "literal",
+    //                 definition: "b",
+    //               },
+    //               value: {
+    //                 type: "number",
+    //               },
+    //             },
+    //           },
+    //         ],
+    //       },
+    //       resolvedSchema: {
+    //         type: "object",
+    //         definition: {
+    //           objectType: {
+    //             type: "literal",
+    //             definition: "b",
+    //           },
+    //           value: {
+    //             type: "number",
+    //           },
+    //         },
+    //       },
+    //       jzodObjectFlattenedSchema: {
+    //         type: "object",
+    //         definition: {
+    //           objectType: {
+    //             type: "literal",
+    //             definition: "b",
+    //           },
+    //           value: {
+    //             type: "number",
+    //           },
+    //         },
+    //       },
+    //       valuePath: [1],
+    //       typePath: [1, 'union choice([{"discriminator":"objectType","value":"b"}])'],
+    //       recursivelyUnfoldedUnionSchema: {
+    //         status: "ok",
+    //         result: [
+    //           {
+    //             type: "object",
+    //             definition: {
+    //               objectType: {
+    //                 type: "literal",
+    //                 definition: "a",
+    //               },
+    //               value: {
+    //                 type: "string",
+    //               },
+    //             },
+    //           },
+    //           {
+    //             type: "object",
+    //             definition: {
+    //               objectType: {
+    //                 type: "literal",
+    //                 definition: "b",
+    //               },
+    //               value: {
+    //                 type: "number",
+    //               },
+    //             },
+    //           },
+    //         ],
+    //         expandedReferences: new Set(),
+    //         discriminator: "objectType",
+    //       },
+    //       chosenUnionBranchRawSchema: {
+    //         type: "object",
+    //         definition: {
+    //           objectType: {
+    //             type: "literal",
+    //             definition: "b",
+    //           },
+    //           value: {
+    //             type: "number",
+    //           },
+    //         },
+    //       },
+    //       discriminatorValues: [["a", "b"]],
+    //       discriminator: "objectType",
+    //     },
+    //     "0.objectType": {
+    //       rawSchema: {
+    //         type: "literal",
+    //         definition: "a",
+    //       },
+    //       resolvedSchema: {
+    //         type: "literal",
+    //         definition: "a",
+    //       },
+    //       valuePath: [0, "objectType"],
+    //       typePath: [0, 'union choice([{"discriminator":"objectType","value":"a"}])', "objectType"],
+    //     },
+    //     "0.value": {
+    //       rawSchema: {
+    //         type: "string",
+    //       },
+    //       resolvedSchema: {
+    //         type: "string",
+    //       },
+    //       valuePath: [0, "value"],
+    //       typePath: [0, 'union choice([{"discriminator":"objectType","value":"a"}])', "value"],
+    //     },
+    //     "1.objectType": {
+    //       rawSchema: {
+    //         type: "literal",
+    //         definition: "b",
+    //       },
+    //       resolvedSchema: {
+    //         type: "literal",
+    //         definition: "b",
+    //       },
+    //       valuePath: [1, "objectType"],
+    //       typePath: [1, 'union choice([{"discriminator":"objectType","value":"b"}])', "objectType"],
+    //     },
+    //     "1.value": {
+    //       rawSchema: {
+    //         type: "number",
+    //       },
+    //       resolvedSchema: {
+    //         type: "number",
+    //       },
+    //       valuePath: [1, "value"],
+    //       typePath: [1, 'union choice([{"discriminator":"objectType","value":"b"}])', "value"],
+    //     },
+    //     "": {
+    //       rawSchema: {
+    //         type: "array",
+    //         definition: {
+    //           type: "union",
+    //           discriminator: "objectType",
+    //           definition: [
+    //             {
+    //               type: "object",
+    //               definition: {
+    //                 objectType: {
+    //                   type: "literal",
+    //                   definition: "a",
+    //                 },
+    //                 value: {
+    //                   type: "string",
+    //                 },
+    //               },
+    //             },
+    //             {
+    //               type: "object",
+    //               definition: {
+    //                 objectType: {
+    //                   type: "literal",
+    //                   definition: "b",
+    //                 },
+    //                 value: {
+    //                   type: "number",
+    //                 },
+    //               },
+    //             },
+    //           ],
+    //         },
+    //       },
+    //       resolvedSchema: {
+    //         type: "tuple",
+    //         definition: [
+    //           {
+    //             type: "object",
+    //             definition: {
+    //               objectType: {
+    //                 type: "literal",
+    //                 definition: "a",
+    //               },
+    //               value: {
+    //                 type: "string",
+    //               },
+    //             },
+    //           },
+    //           {
+    //             type: "object",
+    //             definition: {
+    //               objectType: {
+    //                 type: "literal",
+    //                 definition: "b",
+    //               },
+    //               value: {
+    //                 type: "number",
+    //               },
+    //             },
+    //           },
+    //         ],
+    //       },
+    //       valuePath: [],
+    //       typePath: [],
+    //     },
+    //   },
+    // },
+    // // union type for array of references
+    // test230: {
+    //   testValueObject: [
+    //     {
+    //       type: "schemaReference",
+    //       definition: {
+    //         eager: true,
+    //         absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+    //         relativePath: "transformer_orderBy",
+    //       },
+    //     },
+    //   ],
+    //   testSchema: {
+    //     type: "union",
+    //     optional: true,
+    //     definition: [
+    //       {
+    //         type: "union",
+    //         optional: true,
+    //         discriminator: "type",
+    //         definition: [
+    //           {
+    //             type: "schemaReference",
+    //             definition: {
+    //               absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+    //               relativePath: "jzodReference",
+    //             },
+    //             context: {},
+    //           },
+    //           {
+    //             type: "schemaReference",
+    //             definition: {
+    //               absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+    //               relativePath: "jzodObject",
+    //             },
+    //             context: {},
+    //           },
+    //         ],
+    //       },
+    //       {
+    //         type: "array",
+    //         definition: {
+    //           type: "union",
+    //           optional: true,
+    //           discriminator: "type",
+    //           definition: [
+    //             {
+    //               type: "schemaReference",
+    //               definition: {
+    //                 absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+    //                 relativePath: "jzodReference",
+    //               },
+    //               context: {},
+    //             },
+    //             {
+    //               type: "schemaReference",
+    //               definition: {
+    //                 absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+    //                 relativePath: "jzodObject",
+    //               },
+    //               context: {},
+    //             },
+    //           ],
+    //         },
+    //       },
+    //     ],
+    //   },
+    //   expectedResolvedSchema: {
+    //     type: "array",
+    //     optional: true,
+    //     definition: {
+    //       type: "object",
+    //       definition: {
+    //         type: {
+    //           type: "literal",
+    //           definition: "schemaReference",
+    //         },
+    //         definition: {
+    //           type: "object",
+    //           definition: {
+    //             eager: {
+    //               type: "boolean",
+    //               optional: true,
+    //             },
+    //             absolutePath: {
+    //               type: "string",
+    //               optional: true,
+    //             },
+    //             relativePath: {
+    //               type: "string",
+    //             },
+    //           },
+    //         },
+    //       },
+    //       tag: {
+    //         optional: true,
+    //         schema: {
+    //           optional: true,
+    //           metaSchema: {
+    //             type: "object",
+    //             optional: true,
+    //             definition: {
+    //               optional: {
+    //                 type: "boolean",
+    //                 optional: true,
+    //               },
+    //               metaSchema: {
+    //                 type: "schemaReference",
+    //                 optional: true,
+    //                 definition: {
+    //                   absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+    //                   relativePath: "jzodElement",
+    //                 },
+    //               },
+    //               valueSchema: {
+    //                 type: "schemaReference",
+    //                 optional: true,
+    //                 definition: {
+    //                   absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+    //                   relativePath: "jzodElement",
+    //                 },
+    //               },
+    //             },
+    //           },
+    //           valueSchema: {
+    //             type: "object",
+    //             optional: true,
+    //             definition: {
+    //               id: {
+    //                 type: "number",
+    //                 optional: true,
+    //               },
+    //               defaultLabel: {
+    //                 type: "string",
+    //                 optional: true,
+    //               },
+    //               description: {
+    //                 type: "string",
+    //                 optional: true,
+    //               },
+    //               editorButton: {
+    //                 type: "object",
+    //                 optional: true,
+    //                 definition: {
+    //                   icon: {
+    //                     type: "string",
+    //                     optional: true,
+    //                   },
+    //                   label: {
+    //                     type: "string",
+    //                     optional: true,
+    //                   },
+    //                   tooltip: {
+    //                     type: "string",
+    //                     optional: true,
+    //                   },
+    //                   transformer: {
+    //                     type: "any",
+    //                     tag: {
+    //                       value: {
+    //                         conditionalMMLS: {
+    //                           mmlsReference: {
+    //                             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+    //                             relativePath: "transformerForBuild",
+    //                           },
+    //                         },
+    //                       },
+    //                     },
+    //                     optional: true,
+    //                   },
+    //                 },
+    //               },
+    //               initializeTo: {
+    //                 type: "union",
+    //                 discriminator: "initializeToType",
+    //                 optional: true,
+    //                 definition: [
+    //                   {
+    //                     type: "object",
+    //                     optional: true,
+    //                     definition: {
+    //                       initializeToType: {
+    //                         type: "literal",
+    //                         definition: "value",
+    //                       },
+    //                       value: {
+    //                         type: "any",
+    //                         optional: true,
+    //                       },
+    //                     },
+    //                   },
+    //                   {
+    //                     type: "object",
+    //                     optional: true,
+    //                     definition: {
+    //                       initializeToType: {
+    //                         type: "literal",
+    //                         definition: "transformer",
+    //                       },
+    //                       transformer: {
+    //                         type: "any",
+    //                         tag: {
+    //                           value: {
+    //                             conditionalMMLS: {
+    //                               mmlsReference: {
+    //                                 absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+    //                                 relativePath: "transformerForBuild",
+    //                               },
+    //                             },
+    //                           },
+    //                         },
+    //                         optional: true,
+    //                       },
+    //                     },
+    //                   },
+    //                 ],
+    //               },
+    //               selectorParams: {
+    //                 type: "object",
+    //                 optional: true,
+    //                 definition: {
+    //                   targetApplicationUuid: {
+    //                     type: "uuid",
+    //                     optional: true,
+    //                   },
+    //                   targetDeploymentUuid: {
+    //                     type: "uuid",
+    //                     optional: true,
+    //                   },
+    //                   targetEntityApplicationSection: {
+    //                     type: "enum",
+    //                     optional: true,
+    //                     definition: ["model", "data", "metaModel"],
+    //                   },
+    //                   targetEntity: {
+    //                     type: "uuid",
+    //                   },
+    //                   targetEntityOrderInstancesBy: {
+    //                     type: "string",
+    //                     optional: true,
+    //                   },
+    //                 },
+    //               },
+    //               targetEntity: {
+    //                 type: "string",
+    //                 optional: true,
+    //               },
+    //               targetEntityOrderInstancesBy: {
+    //                 type: "string",
+    //                 optional: true,
+    //               },
+    //               targetEntityApplicationSection: {
+    //                 type: "enum",
+    //                 optional: true,
+    //                 definition: ["model", "data", "metaModel"],
+    //               },
+    //               editable: {
+    //                 type: "boolean",
+    //                 optional: true,
+    //               },
+    //               canBeTemplate: {
+    //                 type: "boolean",
+    //                 optional: true,
+    //               },
+    //               isBlob: {
+    //                 optional: true,
+    //                 type: "boolean",
+    //               },
+    //               isTemplate: {
+    //                 type: "boolean",
+    //                 optional: true,
+    //               },
+    //               conditionalMMLS: {
+    //                 type: "object",
+    //                 optional: true,
+    //                 definition: {
+    //                   parentUuid: {
+    //                     type: "union",
+    //                     optional: true,
+    //                     definition: [
+    //                       {
+    //                         type: "string",
+    //                       },
+    //                       {
+    //                         type: "object",
+    //                         definition: {
+    //                           path: {
+    //                             type: "union",
+    //                             definition: [
+    //                               {
+    //                                 type: "string",
+    //                               },
+    //                               {
+    //                                 type: "object",
+    //                                 definition: {
+    //                                   defaultValuePath: {
+    //                                     type: "string",
+    //                                   },
+    //                                   typeCheckPath: {
+    //                                     type: "string",
+    //                                   },
+    //                                 },
+    //                               },
+    //                             ],
+    //                           },
+    //                         },
+    //                       },
+    //                     ],
+    //                   },
+    //                   mmlsReference: {
+    //                     type: "object",
+    //                     optional: true,
+    //                     definition: {
+    //                       absolutePath: {
+    //                         type: "string",
+    //                         optional: true,
+    //                       },
+    //                       relativePath: {
+    //                         type: "string",
+    //                       },
+    //                     },
+    //                   },
+    //                 },
+    //               },
+    //               display: {
+    //                 type: "object",
+    //                 optional: true,
+    //                 definition: {
+    //                   displayedAttributeValueWhenFolded: {
+    //                     type: "string",
+    //                     optional: true,
+    //                   },
+    //                 },
+    //               },
+    //             },
+    //           },
+    //         },
+    //       },
+    //     },
+    //   },
+    //   expectedKeyMap: undefined,
+    // },
+    // //     // // ##########################################################################################
+    // //     // // ################################# JZOD SCHEMAS ###########################################
+    // //     // // ##########################################################################################
+    // //     // JzodSchema: literal
+    // test300: {
+    //   testSchema: {
+    //     type: "schemaReference",
+    //     definition: {
+    //       absolutePath: miroirFundamentalJzodSchemaUuid,
+    //       relativePath: "jzodElement",
+    //     },
+    //   },
+    //   expectedResolvedSchema: {
+    //     type: "object",
+    //     definition: {
+    //       type: {
+    //         type: "literal",
+    //         definition: "literal",
+    //       },
+    //       definition: {
+    //         type: "string",
+    //       },
+    //     },
+    //     tag: {
+    //       optional: true,
+    //       schema: {
+    //         optional: true,
+    //         metaSchema: {
+    //           type: "object",
+    //           optional: true,
+    //           definition: {
+    //             optional: {
+    //               type: "boolean",
+    //               optional: true,
+    //             },
+    //             metaSchema: {
+    //               type: "schemaReference",
+    //               optional: true,
+    //               definition: {
+    //                 absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+    //                 relativePath: "jzodElement",
+    //               },
+    //             },
+    //             valueSchema: {
+    //               type: "schemaReference",
+    //               optional: true,
+    //               definition: {
+    //                 absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+    //                 relativePath: "jzodElement",
+    //               },
+    //             },
+    //           },
+    //         },
+    //         valueSchema: {
+    //           type: "object",
+    //           optional: true,
+    //           definition: {
+    //             id: {
+    //               type: "number",
+    //               optional: true,
+    //             },
+    //             defaultLabel: {
+    //               type: "string",
+    //               optional: true,
+    //             },
+    //             description: {
+    //               type: "string",
+    //               optional: true,
+    //             },
+    //             editorButton: {
+    //               type: "object",
+    //               optional: true,
+    //               definition: {
+    //                 icon: {
+    //                   type: "string",
+    //                   optional: true,
+    //                 },
+    //                 label: {
+    //                   type: "string",
+    //                   optional: true,
+    //                 },
+    //                 tooltip: {
+    //                   type: "string",
+    //                   optional: true,
+    //                 },
+    //                 transformer: {
+    //                   type: "any",
+    //                   tag: {
+    //                     value: {
+    //                       conditionalMMLS: {
+    //                         mmlsReference: {
+    //                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+    //                           relativePath: "transformerForBuild",
+    //                         },
+    //                       },
+    //                     },
+    //                   },
+    //                   optional: true,
+    //                 },
+    //               },
+    //             },
+    //             initializeTo: {
+    //               type: "union",
+    //               discriminator: "initializeToType",
+    //               optional: true,
+    //               definition: [
+    //                 {
+    //                   type: "object",
+    //                   optional: true,
+    //                   definition: {
+    //                     initializeToType: {
+    //                       type: "literal",
+    //                       definition: "value",
+    //                     },
+    //                     value: {
+    //                       type: "any",
+    //                       optional: true,
+    //                     },
+    //                   },
+    //                 },
+    //                 {
+    //                   type: "object",
+    //                   optional: true,
+    //                   definition: {
+    //                     initializeToType: {
+    //                       type: "literal",
+    //                       definition: "transformer",
+    //                     },
+    //                     transformer: {
+    //                       type: "any",
+    //                       tag: {
+    //                         value: {
+    //                           conditionalMMLS: {
+    //                             mmlsReference: {
+    //                               absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+    //                               relativePath: "transformerForBuild",
+    //                             },
+    //                           },
+    //                         },
+    //                       },
+    //                       optional: true,
+    //                     },
+    //                   },
+    //                 },
+    //               ],
+    //             },
+    //             selectorParams: {
+    //               type: "object",
+    //               optional: true,
+    //               definition: {
+    //                 targetApplicationUuid: {
+    //                   type: "uuid",
+    //                   optional: true,
+    //                 },
+    //                 targetDeploymentUuid: {
+    //                   type: "uuid",
+    //                   optional: true,
+    //                 },
+    //                 targetEntityApplicationSection: {
+    //                   type: "enum",
+    //                   optional: true,
+    //                   definition: ["model", "data", "metaModel"],
+    //                 },
+    //                 targetEntity: {
+    //                   type: "uuid",
+    //                 },
+    //                 targetEntityOrderInstancesBy: {
+    //                   type: "string",
+    //                   optional: true,
+    //                 },
+    //               },
+    //             },
+    //             targetEntity: {
+    //               type: "string",
+    //               optional: true,
+    //             },
+    //             targetEntityOrderInstancesBy: {
+    //               type: "string",
+    //               optional: true,
+    //             },
+    //             targetEntityApplicationSection: {
+    //               type: "enum",
+    //               optional: true,
+    //               definition: ["model", "data", "metaModel"],
+    //             },
+    //             editable: {
+    //               type: "boolean",
+    //               optional: true,
+    //             },
+    //             canBeTemplate: {
+    //               type: "boolean",
+    //               optional: true,
+    //             },
+    //             isBlob: {
+    //               optional: true,
+    //               type: "boolean",
+    //             },
+    //             isTemplate: {
+    //               type: "boolean",
+    //               optional: true,
+    //             },
+    //             conditionalMMLS: {
+    //               type: "object",
+    //               optional: true,
+    //               definition: {
+    //                 parentUuid: {
+    //                   type: "union",
+    //                   optional: true,
+    //                   definition: [
+    //                     {
+    //                       type: "string",
+    //                     },
+    //                     {
+    //                       type: "object",
+    //                       definition: {
+    //                         path: {
+    //                           type: "union",
+    //                           definition: [
+    //                             {
+    //                               type: "string",
+    //                             },
+    //                             {
+    //                               type: "object",
+    //                               definition: {
+    //                                 defaultValuePath: {
+    //                                   type: "string",
+    //                                 },
+    //                                 typeCheckPath: {
+    //                                   type: "string",
+    //                                 },
+    //                               },
+    //                             },
+    //                           ],
+    //                         },
+    //                       },
+    //                     },
+    //                   ],
+    //                 },
+    //                 mmlsReference: {
+    //                   type: "object",
+    //                   optional: true,
+    //                   definition: {
+    //                     absolutePath: {
+    //                       type: "string",
+    //                       optional: true,
+    //                     },
+    //                     relativePath: {
+    //                       type: "string",
+    //                     },
+    //                   },
+    //                 },
+    //               },
+    //             },
+    //             display: {
+    //               type: "object",
+    //               optional: true,
+    //               definition: {
+    //                 displayedAttributeValueWhenFolded: {
+    //                   type: "string",
+    //                   optional: true,
+    //                 },
+    //               },
+    //             },
+    //           },
+    //         },
+    //       },
+    //     },
+    //   },
+    //   testValueObject: { type: "literal", definition: "myLiteral" },
+    //   expectedKeyMap: undefined,
+    // },
+    // //     // JzodSchema: string
+    // test310: {
+    //   testSchema: {
+    //     type: "schemaReference",
+    //     definition: {
+    //       absolutePath: miroirFundamentalJzodSchemaUuid,
+    //       relativePath: "jzodElement",
+    //     },
+    //   },
+    //   expectedResolvedSchema: {
+    //     type: "object",
+    //     definition: {
+    //       type: {
+    //         type: "literal",
+    //         definition: "string",
+    //       },
+    //     },
+    //     tag: {
+    //       optional: true,
+    //       schema: {
+    //         optional: true,
+    //         metaSchema: {
+    //           type: "object",
+    //           optional: true,
+    //           definition: {
+    //             optional: {
+    //               type: "boolean",
+    //               optional: true,
+    //             },
+    //             metaSchema: {
+    //               type: "schemaReference",
+    //               optional: true,
+    //               definition: {
+    //                 absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+    //                 relativePath: "jzodElement",
+    //               },
+    //             },
+    //             valueSchema: {
+    //               type: "schemaReference",
+    //               optional: true,
+    //               definition: {
+    //                 absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+    //                 relativePath: "jzodElement",
+    //               },
+    //             },
+    //           },
+    //         },
+    //         valueSchema: {
+    //           type: "object",
+    //           optional: true,
+    //           definition: {
+    //             id: {
+    //               type: "number",
+    //               optional: true,
+    //             },
+    //             defaultLabel: {
+    //               type: "string",
+    //               optional: true,
+    //             },
+    //             description: {
+    //               type: "string",
+    //               optional: true,
+    //             },
+    //             editorButton: {
+    //               type: "object",
+    //               optional: true,
+    //               definition: {
+    //                 icon: {
+    //                   type: "string",
+    //                   optional: true,
+    //                 },
+    //                 label: {
+    //                   type: "string",
+    //                   optional: true,
+    //                 },
+    //                 tooltip: {
+    //                   type: "string",
+    //                   optional: true,
+    //                 },
+    //                 transformer: {
+    //                   type: "any",
+    //                   tag: {
+    //                     value: {
+    //                       conditionalMMLS: {
+    //                         mmlsReference: {
+    //                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+    //                           relativePath: "transformerForBuild",
+    //                         },
+    //                       },
+    //                     },
+    //                   },
+    //                   optional: true,
+    //                 },
+    //               },
+    //             },
+    //             initializeTo: {
+    //               type: "union",
+    //               discriminator: "initializeToType",
+    //               optional: true,
+    //               definition: [
+    //                 {
+    //                   type: "object",
+    //                   optional: true,
+    //                   definition: {
+    //                     initializeToType: {
+    //                       type: "literal",
+    //                       definition: "value",
+    //                     },
+    //                     value: {
+    //                       type: "any",
+    //                       optional: true,
+    //                     },
+    //                   },
+    //                 },
+    //                 {
+    //                   type: "object",
+    //                   optional: true,
+    //                   definition: {
+    //                     initializeToType: {
+    //                       type: "literal",
+    //                       definition: "transformer",
+    //                     },
+    //                     transformer: {
+    //                       type: "any",
+    //                       tag: {
+    //                         value: {
+    //                           conditionalMMLS: {
+    //                             mmlsReference: {
+    //                               absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+    //                               relativePath: "transformerForBuild",
+    //                             },
+    //                           },
+    //                         },
+    //                       },
+    //                       optional: true,
+    //                     },
+    //                   },
+    //                 },
+    //               ],
+    //             },
+    //             selectorParams: {
+    //               type: "object",
+    //               optional: true,
+    //               definition: {
+    //                 targetApplicationUuid: {
+    //                   type: "uuid",
+    //                   optional: true,
+    //                 },
+    //                 targetDeploymentUuid: {
+    //                   type: "uuid",
+    //                   optional: true,
+    //                 },
+    //                 targetEntityApplicationSection: {
+    //                   type: "enum",
+    //                   optional: true,
+    //                   definition: ["model", "data", "metaModel"],
+    //                 },
+    //                 targetEntity: {
+    //                   type: "uuid",
+    //                 },
+    //                 targetEntityOrderInstancesBy: {
+    //                   type: "string",
+    //                   optional: true,
+    //                 },
+    //               },
+    //             },
+    //             targetEntity: {
+    //               type: "string",
+    //               optional: true,
+    //             },
+    //             targetEntityOrderInstancesBy: {
+    //               type: "string",
+    //               optional: true,
+    //             },
+    //             targetEntityApplicationSection: {
+    //               type: "enum",
+    //               optional: true,
+    //               definition: ["model", "data", "metaModel"],
+    //             },
+    //             editable: {
+    //               type: "boolean",
+    //               optional: true,
+    //             },
+    //             canBeTemplate: {
+    //               type: "boolean",
+    //               optional: true,
+    //             },
+    //             isBlob: {
+    //               optional: true,
+    //               type: "boolean",
+    //             },
+    //             isTemplate: {
+    //               type: "boolean",
+    //               optional: true,
+    //             },
+    //             conditionalMMLS: {
+    //               type: "object",
+    //               optional: true,
+    //               definition: {
+    //                 parentUuid: {
+    //                   type: "union",
+    //                   optional: true,
+    //                   definition: [
+    //                     {
+    //                       type: "string",
+    //                     },
+    //                     {
+    //                       type: "object",
+    //                       definition: {
+    //                         path: {
+    //                           type: "union",
+    //                           definition: [
+    //                             {
+    //                               type: "string",
+    //                             },
+    //                             {
+    //                               type: "object",
+    //                               definition: {
+    //                                 defaultValuePath: {
+    //                                   type: "string",
+    //                                 },
+    //                                 typeCheckPath: {
+    //                                   type: "string",
+    //                                 },
+    //                               },
+    //                             },
+    //                           ],
+    //                         },
+    //                       },
+    //                     },
+    //                   ],
+    //                 },
+    //                 mmlsReference: {
+    //                   type: "object",
+    //                   optional: true,
+    //                   definition: {
+    //                     absolutePath: {
+    //                       type: "string",
+    //                       optional: true,
+    //                     },
+    //                     relativePath: {
+    //                       type: "string",
+    //                     },
+    //                   },
+    //                 },
+    //               },
+    //             },
+    //             display: {
+    //               type: "object",
+    //               optional: true,
+    //               definition: {
+    //                 displayedAttributeValueWhenFolded: {
+    //                   type: "string",
+    //                   optional: true,
+    //                 },
+    //               },
+    //             },
+    //           },
+    //         },
+    //       },
+    //     },
+    //   },
+    //   testValueObject: { type: "string" },
+    //   expectedKeyMap: undefined,
+    // },
+    // // JzodSchema: object, simpleType attributes
+    // test320: {
+    //   testSchema: {
+    //     type: "schemaReference",
+    //     definition: {
+    //       absolutePath: miroirFundamentalJzodSchemaUuid,
+    //       relativePath: "jzodElement",
+    //     },
+    //   },
+    //   ignoreResolvedSchemaTag: true,
+    //   expectedResolvedSchema: {
+    //     type: "object",
+    //     definition: {
+    //       type: {
+    //         type: "literal",
+    //         definition: "object",
+    //       },
+    //       definition: {
+    //         type: "object",
+    //         definition: {
+    //           a: {
+    //             type: "object",
+    //             definition: {
+    //               type: {
+    //                 type: "literal",
+    //                 definition: "string",
+    //               },
+    //             },
+    //             tag: {
+    //               optional: true,
+    //               schema: {
+    //                 optional: true,
+    //                 metaSchema: {
+    //                   type: "object",
+    //                   optional: true,
+    //                   definition: {
+    //                     optional: {
+    //                       type: "boolean",
+    //                       optional: true,
+    //                     },
+    //                     metaSchema: {
+    //                       type: "schemaReference",
+    //                       optional: true,
+    //                       definition: {
+    //                         absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+    //                         relativePath: "jzodElement",
+    //                       },
+    //                     },
+    //                     valueSchema: {
+    //                       type: "schemaReference",
+    //                       optional: true,
+    //                       definition: {
+    //                         absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+    //                         relativePath: "jzodElement",
+    //                       },
+    //                     },
+    //                   },
+    //                 },
+    //                 valueSchema: {
+    //                   type: "object",
+    //                   optional: true,
+    //                   definition: {
+    //                     id: {
+    //                       type: "number",
+    //                       optional: true,
+    //                     },
+    //                     defaultLabel: {
+    //                       type: "string",
+    //                       optional: true,
+    //                     },
+    //                     description: {
+    //                       type: "string",
+    //                       optional: true,
+    //                     },
+    //                     editorButton: {
+    //                       type: "object",
+    //                       optional: true,
+    //                       definition: {
+    //                         icon: {
+    //                           type: "string",
+    //                           optional: true,
+    //                         },
+    //                         label: {
+    //                           type: "string",
+    //                           optional: true,
+    //                         },
+    //                         tooltip: {
+    //                           type: "string",
+    //                           optional: true,
+    //                         },
+    //                         transformer: {
+    //                           type: "any",
+    //                           tag: {
+    //                             value: {
+    //                               conditionalMMLS: {
+    //                                 mmlsReference: {
+    //                                   absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+    //                                   relativePath: "transformerForBuild",
+    //                                 },
+    //                               },
+    //                             },
+    //                           },
+    //                           optional: true,
+    //                         },
+    //                       },
+    //                     },
+    //                     initializeTo: {
+    //                       type: "union",
+    //                       discriminator: "initializeToType",
+    //                       optional: true,
+    //                       definition: [
+    //                         {
+    //                           type: "object",
+    //                           optional: true,
+    //                           definition: {
+    //                             initializeToType: {
+    //                               type: "literal",
+    //                               definition: "value",
+    //                             },
+    //                             value: {
+    //                               type: "any",
+    //                               optional: true,
+    //                             },
+    //                           },
+    //                         },
+    //                         {
+    //                           type: "object",
+    //                           optional: true,
+    //                           definition: {
+    //                             initializeToType: {
+    //                               type: "literal",
+    //                               definition: "transformer",
+    //                             },
+    //                             transformer: {
+    //                               type: "any",
+    //                               tag: {
+    //                                 value: {
+    //                                   conditionalMMLS: {
+    //                                     mmlsReference: {
+    //                                       absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+    //                                       relativePath: "transformerForBuild",
+    //                                     },
+    //                                   },
+    //                                 },
+    //                               },
+    //                               optional: true,
+    //                             },
+    //                           },
+    //                         },
+    //                       ],
+    //                     },
+    //                     selectorParams: {
+    //                       type: "object",
+    //                       optional: true,
+    //                       definition: {
+    //                         targetApplicationUuid: {
+    //                           type: "uuid",
+    //                           optional: true,
+    //                         },
+    //                         targetDeploymentUuid: {
+    //                           type: "uuid",
+    //                           optional: true,
+    //                         },
+    //                         targetEntityApplicationSection: {
+    //                           type: "enum",
+    //                           optional: true,
+    //                           definition: ["model", "data", "metaModel"],
+    //                         },
+    //                         targetEntity: {
+    //                           type: "uuid",
+    //                         },
+    //                         targetEntityOrderInstancesBy: {
+    //                           type: "string",
+    //                           optional: true,
+    //                         },
+    //                       },
+    //                     },
+    //                     targetEntity: {
+    //                       type: "string",
+    //                       optional: true,
+    //                     },
+    //                     targetEntityOrderInstancesBy: {
+    //                       type: "string",
+    //                       optional: true,
+    //                     },
+    //                     targetEntityApplicationSection: {
+    //                       type: "enum",
+    //                       optional: true,
+    //                       definition: ["model", "data", "metaModel"],
+    //                     },
+    //                     editable: {
+    //                       type: "boolean",
+    //                       optional: true,
+    //                     },
+    //                     canBeTemplate: {
+    //                       type: "boolean",
+    //                       optional: true,
+    //                     },
+    //                     isBlob: {
+    //                       optional: true,
+    //                       type: "boolean",
+    //                     },
+    //                     isTemplate: {
+    //                       type: "boolean",
+    //                       optional: true,
+    //                     },
+    //                     conditionalMMLS: {
+    //                       type: "object",
+    //                       optional: true,
+    //                       definition: {
+    //                         parentUuid: {
+    //                           type: "union",
+    //                           optional: true,
+    //                           definition: [
+    //                             {
+    //                               type: "string",
+    //                             },
+    //                             {
+    //                               type: "object",
+    //                               definition: {
+    //                                 path: {
+    //                                   type: "union",
+    //                                   definition: [
+    //                                     {
+    //                                       type: "string",
+    //                                     },
+    //                                     {
+    //                                       type: "object",
+    //                                       definition: {
+    //                                         defaultValuePath: {
+    //                                           type: "string",
+    //                                         },
+    //                                         typeCheckPath: {
+    //                                           type: "string",
+    //                                         },
+    //                                       },
+    //                                     },
+    //                                   ],
+    //                                 },
+    //                               },
+    //                             },
+    //                           ],
+    //                         },
+    //                         mmlsReference: {
+    //                           type: "object",
+    //                           optional: true,
+    //                           definition: {
+    //                             absolutePath: {
+    //                               type: "string",
+    //                               optional: true,
+    //                             },
+    //                             relativePath: {
+    //                               type: "string",
+    //                             },
+    //                           },
+    //                         },
+    //                       },
+    //                     },
+    //                     display: {
+    //                       type: "object",
+    //                       optional: true,
+    //                       definition: {
+    //                         displayedAttributeValueWhenFolded: {
+    //                           type: "string",
+    //                           optional: true,
+    //                         },
+    //                       },
+    //                     },
+    //                   },
+    //                 },
+    //               },
+    //             },
+    //           },
+    //         },
+    //       },
+    //     },
+    //     tag: {
+    //       value: {
+    //         unfoldSubLevels: 2,
+    //       },
+    //     } as any,
+    //   },
+    //   testValueObject: { type: "object", definition: { a: { type: "string" } } },
+    //   expectedKeyMap: undefined,
+    // },
+    // // JzodSchema: schema reference with simple attribute
+    // test330: {
+    //   testSchema: {
+    //     type: "schemaReference",
+    //     definition: {
+    //       absolutePath: miroirFundamentalJzodSchemaUuid,
+    //       relativePath: "jzodElement",
+    //     },
+    //   },
+    //   testValueObject: {
+    //     type: "schemaReference",
+    //     definition: {
+    //       absolutePath: miroirFundamentalJzodSchemaUuid,
+    //       relativePath: "jzodElement",
+    //     },
+    //   },
+    //   expectedResolvedSchema: {
+    //     type: "object",
+    //     definition: {
+    //       type: {
+    //         type: "literal",
+    //         definition: "schemaReference",
+    //       },
+    //       definition: {
+    //         type: "object",
+    //         definition: {
+    //           absolutePath: {
+    //             type: "string",
+    //             optional: true,
+    //           },
+    //           relativePath: {
+    //             type: "string",
+    //           },
+    //         },
+    //       },
+    //     },
+    //     tag: {
+    //       optional: true,
+    //       schema: {
+    //         optional: true,
+    //         metaSchema: {
+    //           type: "object",
+    //           optional: true,
+    //           definition: {
+    //             optional: {
+    //               type: "boolean",
+    //               optional: true,
+    //             },
+    //             metaSchema: {
+    //               type: "schemaReference",
+    //               optional: true,
+    //               definition: {
+    //                 absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+    //                 relativePath: "jzodElement",
+    //               },
+    //             },
+    //             valueSchema: {
+    //               type: "schemaReference",
+    //               optional: true,
+    //               definition: {
+    //                 absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+    //                 relativePath: "jzodElement",
+    //               },
+    //             },
+    //           },
+    //         },
+    //         valueSchema: {
+    //           type: "object",
+    //           optional: true,
+    //           definition: {
+    //             id: {
+    //               type: "number",
+    //               optional: true,
+    //             },
+    //             defaultLabel: {
+    //               type: "string",
+    //               optional: true,
+    //             },
+    //             description: {
+    //               type: "string",
+    //               optional: true,
+    //             },
+    //             editorButton: {
+    //               type: "object",
+    //               optional: true,
+    //               definition: {
+    //                 icon: {
+    //                   type: "string",
+    //                   optional: true,
+    //                 },
+    //                 label: {
+    //                   type: "string",
+    //                   optional: true,
+    //                 },
+    //                 tooltip: {
+    //                   type: "string",
+    //                   optional: true,
+    //                 },
+    //                 transformer: {
+    //                   type: "any",
+    //                   tag: {
+    //                     value: {
+    //                       conditionalMMLS: {
+    //                         mmlsReference: {
+    //                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+    //                           relativePath: "transformerForBuild",
+    //                         },
+    //                       },
+    //                     },
+    //                   },
+    //                   optional: true,
+    //                 },
+    //               },
+    //             },
+    //             initializeTo: {
+    //               type: "union",
+    //               discriminator: "initializeToType",
+    //               optional: true,
+    //               definition: [
+    //                 {
+    //                   type: "object",
+    //                   optional: true,
+    //                   definition: {
+    //                     initializeToType: {
+    //                       type: "literal",
+    //                       definition: "value",
+    //                     },
+    //                     value: {
+    //                       type: "any",
+    //                       optional: true,
+    //                     },
+    //                   },
+    //                 },
+    //                 {
+    //                   type: "object",
+    //                   optional: true,
+    //                   definition: {
+    //                     initializeToType: {
+    //                       type: "literal",
+    //                       definition: "transformer",
+    //                     },
+    //                     transformer: {
+    //                       type: "any",
+    //                       tag: {
+    //                         value: {
+    //                           conditionalMMLS: {
+    //                             mmlsReference: {
+    //                               absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+    //                               relativePath: "transformerForBuild",
+    //                             },
+    //                           },
+    //                         },
+    //                       },
+    //                       optional: true,
+    //                     },
+    //                   },
+    //                 },
+    //               ],
+    //             },
+    //             selectorParams: {
+    //               type: "object",
+    //               optional: true,
+    //               definition: {
+    //                 targetApplicationUuid: {
+    //                   type: "uuid",
+    //                   optional: true,
+    //                 },
+    //                 targetDeploymentUuid: {
+    //                   type: "uuid",
+    //                   optional: true,
+    //                 },
+    //                 targetEntityApplicationSection: {
+    //                   type: "enum",
+    //                   optional: true,
+    //                   definition: ["model", "data", "metaModel"],
+    //                 },
+    //                 targetEntity: {
+    //                   type: "uuid",
+    //                 },
+    //                 targetEntityOrderInstancesBy: {
+    //                   type: "string",
+    //                   optional: true,
+    //                 },
+    //               },
+    //             },
+    //             targetEntity: {
+    //               type: "string",
+    //               optional: true,
+    //             },
+    //             targetEntityOrderInstancesBy: {
+    //               type: "string",
+    //               optional: true,
+    //             },
+    //             targetEntityApplicationSection: {
+    //               type: "enum",
+    //               optional: true,
+    //               definition: ["model", "data", "metaModel"],
+    //             },
+    //             editable: {
+    //               type: "boolean",
+    //               optional: true,
+    //             },
+    //             canBeTemplate: {
+    //               type: "boolean",
+    //               optional: true,
+    //             },
+    //             isBlob: {
+    //               optional: true,
+    //               type: "boolean",
+    //             },
+    //             isTemplate: {
+    //               type: "boolean",
+    //               optional: true,
+    //             },
+    //             conditionalMMLS: {
+    //               type: "object",
+    //               optional: true,
+    //               definition: {
+    //                 parentUuid: {
+    //                   type: "union",
+    //                   optional: true,
+    //                   definition: [
+    //                     {
+    //                       type: "string",
+    //                     },
+    //                     {
+    //                       type: "object",
+    //                       definition: {
+    //                         path: {
+    //                           type: "union",
+    //                           definition: [
+    //                             {
+    //                               type: "string",
+    //                             },
+    //                             {
+    //                               type: "object",
+    //                               definition: {
+    //                                 defaultValuePath: {
+    //                                   type: "string",
+    //                                 },
+    //                                 typeCheckPath: {
+    //                                   type: "string",
+    //                                 },
+    //                               },
+    //                             },
+    //                           ],
+    //                         },
+    //                       },
+    //                     },
+    //                   ],
+    //                 },
+    //                 mmlsReference: {
+    //                   type: "object",
+    //                   optional: true,
+    //                   definition: {
+    //                     absolutePath: {
+    //                       type: "string",
+    //                       optional: true,
+    //                     },
+    //                     relativePath: {
+    //                       type: "string",
+    //                     },
+    //                   },
+    //                 },
+    //               },
+    //             },
+    //             display: {
+    //               type: "object",
+    //               optional: true,
+    //               definition: {
+    //                 displayedAttributeValueWhenFolded: {
+    //                   type: "string",
+    //                   optional: true,
+    //                 },
+    //               },
+    //             },
+    //           },
+    //         },
+    //       },
+    //     },
+    //   },
+    //   expectedKeyMap: undefined,
+    // },
+    // //     // JzodSchema: schema reference for object with extend clause
+    // test340: {
+    //   testSchema: {
+    //     type: "schemaReference",
+    //     definition: {
+    //       absolutePath: miroirFundamentalJzodSchemaUuid,
+    //       relativePath: "jzodElement",
+    //     },
+    //   },
+    //   testValueObject: {
+    //     type: "schemaReference",
+    //     context: {
+    //       a: {
+    //         type: "string",
+    //       },
+    //     },
+    //     definition: {
+    //       relativePath: "a",
+    //     },
+    //   },
+    //   expectedResolvedSchema: {
+    //     type: "object",
+    //     definition: {
+    //       type: {
+    //         type: "literal",
+    //         definition: "schemaReference",
+    //       },
+    //       context: {
+    //         type: "object",
+    //         optional: true,
+    //         definition: {
+    //           a: {
+    //             type: "object",
+    //             definition: {
+    //               type: {
+    //                 type: "literal",
+    //                 definition: "string",
+    //               },
+    //             },
+    //             tag: {
+    //               optional: true,
+    //               schema: {
+    //                 optional: true,
+    //                 metaSchema: {
+    //                   type: "object",
+    //                   optional: true,
+    //                   definition: {
+    //                     optional: {
+    //                       type: "boolean",
+    //                       optional: true,
+    //                     },
+    //                     metaSchema: {
+    //                       type: "schemaReference",
+    //                       optional: true,
+    //                       definition: {
+    //                         absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+    //                         relativePath: "jzodElement",
+    //                       },
+    //                     },
+    //                     valueSchema: {
+    //                       type: "schemaReference",
+    //                       optional: true,
+    //                       definition: {
+    //                         absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+    //                         relativePath: "jzodElement",
+    //                       },
+    //                     },
+    //                   },
+    //                 },
+    //                 valueSchema: {
+    //                   type: "object",
+    //                   optional: true,
+    //                   definition: {
+    //                     id: {
+    //                       type: "number",
+    //                       optional: true,
+    //                     },
+    //                     defaultLabel: {
+    //                       type: "string",
+    //                       optional: true,
+    //                     },
+    //                     description: {
+    //                       type: "string",
+    //                       optional: true,
+    //                     },
+    //                     editorButton: {
+    //                       type: "object",
+    //                       optional: true,
+    //                       definition: {
+    //                         icon: {
+    //                           type: "string",
+    //                           optional: true,
+    //                         },
+    //                         label: {
+    //                           type: "string",
+    //                           optional: true,
+    //                         },
+    //                         tooltip: {
+    //                           type: "string",
+    //                           optional: true,
+    //                         },
+    //                         transformer: {
+    //                           type: "any",
+    //                           tag: {
+    //                             value: {
+    //                               conditionalMMLS: {
+    //                                 mmlsReference: {
+    //                                   absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+    //                                   relativePath: "transformerForBuild",
+    //                                 },
+    //                               },
+    //                             },
+    //                           },
+    //                           optional: true,
+    //                         },
+    //                       },
+    //                     },
+    //                     initializeTo: {
+    //                       type: "union",
+    //                       discriminator: "initializeToType",
+    //                       optional: true,
+    //                       definition: [
+    //                         {
+    //                           type: "object",
+    //                           optional: true,
+    //                           definition: {
+    //                             initializeToType: {
+    //                               type: "literal",
+    //                               definition: "value",
+    //                             },
+    //                             value: {
+    //                               type: "any",
+    //                               optional: true,
+    //                             },
+    //                           },
+    //                         },
+    //                         {
+    //                           type: "object",
+    //                           optional: true,
+    //                           definition: {
+    //                             initializeToType: {
+    //                               type: "literal",
+    //                               definition: "transformer",
+    //                             },
+    //                             transformer: {
+    //                               type: "any",
+    //                               tag: {
+    //                                 value: {
+    //                                   conditionalMMLS: {
+    //                                     mmlsReference: {
+    //                                       absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+    //                                       relativePath: "transformerForBuild",
+    //                                     },
+    //                                   },
+    //                                 },
+    //                               },
+    //                               optional: true,
+    //                             },
+    //                           },
+    //                         },
+    //                       ],
+    //                     },
+    //                     selectorParams: {
+    //                       type: "object",
+    //                       optional: true,
+    //                       definition: {
+    //                         targetApplicationUuid: {
+    //                           type: "uuid",
+    //                           optional: true,
+    //                         },
+    //                         targetDeploymentUuid: {
+    //                           type: "uuid",
+    //                           optional: true,
+    //                         },
+    //                         targetEntityApplicationSection: {
+    //                           type: "enum",
+    //                           optional: true,
+    //                           definition: ["model", "data", "metaModel"],
+    //                         },
+    //                         targetEntity: {
+    //                           type: "uuid",
+    //                         },
+    //                         targetEntityOrderInstancesBy: {
+    //                           type: "string",
+    //                           optional: true,
+    //                         },
+    //                       },
+    //                     },
+    //                     targetEntity: {
+    //                       type: "string",
+    //                       optional: true,
+    //                     },
+    //                     targetEntityOrderInstancesBy: {
+    //                       type: "string",
+    //                       optional: true,
+    //                     },
+    //                     targetEntityApplicationSection: {
+    //                       type: "enum",
+    //                       optional: true,
+    //                       definition: ["model", "data", "metaModel"],
+    //                     },
+    //                     editable: {
+    //                       type: "boolean",
+    //                       optional: true,
+    //                     },
+    //                     canBeTemplate: {
+    //                       type: "boolean",
+    //                       optional: true,
+    //                     },
+    //                     isBlob: {
+    //                       optional: true,
+    //                       type: "boolean",
+    //                     },
+    //                     isTemplate: {
+    //                       type: "boolean",
+    //                       optional: true,
+    //                     },
+    //                     conditionalMMLS: {
+    //                       type: "object",
+    //                       optional: true,
+    //                       definition: {
+    //                         parentUuid: {
+    //                           type: "union",
+    //                           optional: true,
+    //                           definition: [
+    //                             {
+    //                               type: "string",
+    //                             },
+    //                             {
+    //                               type: "object",
+    //                               definition: {
+    //                                 path: {
+    //                                   type: "union",
+    //                                   definition: [
+    //                                     {
+    //                                       type: "string",
+    //                                     },
+    //                                     {
+    //                                       type: "object",
+    //                                       definition: {
+    //                                         defaultValuePath: {
+    //                                           type: "string",
+    //                                         },
+    //                                         typeCheckPath: {
+    //                                           type: "string",
+    //                                         },
+    //                                       },
+    //                                     },
+    //                                   ],
+    //                                 },
+    //                               },
+    //                             },
+    //                           ],
+    //                         },
+    //                         mmlsReference: {
+    //                           type: "object",
+    //                           optional: true,
+    //                           definition: {
+    //                             absolutePath: {
+    //                               type: "string",
+    //                               optional: true,
+    //                             },
+    //                             relativePath: {
+    //                               type: "string",
+    //                             },
+    //                           },
+    //                         },
+    //                       },
+    //                     },
+    //                     display: {
+    //                       type: "object",
+    //                       optional: true,
+    //                       definition: {
+    //                         displayedAttributeValueWhenFolded: {
+    //                           type: "string",
+    //                           optional: true,
+    //                         },
+    //                       },
+    //                     },
+    //                   },
+    //                 },
+    //               },
+    //             },
+    //           },
+    //         },
+    //       },
+    //       definition: {
+    //         type: "object",
+    //         definition: {
+    //           relativePath: {
+    //             type: "string",
+    //           },
+    //         },
+    //       },
+    //     },
+    //     tag: {
+    //       optional: true,
+    //       schema: {
+    //         optional: true,
+    //         metaSchema: {
+    //           type: "object",
+    //           optional: true,
+    //           definition: {
+    //             optional: {
+    //               type: "boolean",
+    //               optional: true,
+    //             },
+    //             metaSchema: {
+    //               type: "schemaReference",
+    //               optional: true,
+    //               definition: {
+    //                 absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+    //                 relativePath: "jzodElement",
+    //               },
+    //             },
+    //             valueSchema: {
+    //               type: "schemaReference",
+    //               optional: true,
+    //               definition: {
+    //                 absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+    //                 relativePath: "jzodElement",
+    //               },
+    //             },
+    //           },
+    //         },
+    //         valueSchema: {
+    //           type: "object",
+    //           optional: true,
+    //           definition: {
+    //             id: {
+    //               type: "number",
+    //               optional: true,
+    //             },
+    //             defaultLabel: {
+    //               type: "string",
+    //               optional: true,
+    //             },
+    //             description: {
+    //               type: "string",
+    //               optional: true,
+    //             },
+    //             editorButton: {
+    //               type: "object",
+    //               optional: true,
+    //               definition: {
+    //                 icon: {
+    //                   type: "string",
+    //                   optional: true,
+    //                 },
+    //                 label: {
+    //                   type: "string",
+    //                   optional: true,
+    //                 },
+    //                 tooltip: {
+    //                   type: "string",
+    //                   optional: true,
+    //                 },
+    //                 transformer: {
+    //                   type: "any",
+    //                   tag: {
+    //                     value: {
+    //                       conditionalMMLS: {
+    //                         mmlsReference: {
+    //                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+    //                           relativePath: "transformerForBuild",
+    //                         },
+    //                       },
+    //                     },
+    //                   },
+    //                   optional: true,
+    //                 },
+    //               },
+    //             },
+    //             initializeTo: {
+    //               type: "union",
+    //               discriminator: "initializeToType",
+    //               optional: true,
+    //               definition: [
+    //                 {
+    //                   type: "object",
+    //                   optional: true,
+    //                   definition: {
+    //                     initializeToType: {
+    //                       type: "literal",
+    //                       definition: "value",
+    //                     },
+    //                     value: {
+    //                       type: "any",
+    //                       optional: true,
+    //                     },
+    //                   },
+    //                 },
+    //                 {
+    //                   type: "object",
+    //                   optional: true,
+    //                   definition: {
+    //                     initializeToType: {
+    //                       type: "literal",
+    //                       definition: "transformer",
+    //                     },
+    //                     transformer: {
+    //                       type: "any",
+    //                       tag: {
+    //                         value: {
+    //                           conditionalMMLS: {
+    //                             mmlsReference: {
+    //                               absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+    //                               relativePath: "transformerForBuild",
+    //                             },
+    //                           },
+    //                         },
+    //                       },
+    //                       optional: true,
+    //                     },
+    //                   },
+    //                 },
+    //               ],
+    //             },
+    //             selectorParams: {
+    //               type: "object",
+    //               optional: true,
+    //               definition: {
+    //                 targetApplicationUuid: {
+    //                   type: "uuid",
+    //                   optional: true,
+    //                 },
+    //                 targetDeploymentUuid: {
+    //                   type: "uuid",
+    //                   optional: true,
+    //                 },
+    //                 targetEntityApplicationSection: {
+    //                   type: "enum",
+    //                   optional: true,
+    //                   definition: ["model", "data", "metaModel"],
+    //                 },
+    //                 targetEntity: {
+    //                   type: "uuid",
+    //                 },
+    //                 targetEntityOrderInstancesBy: {
+    //                   type: "string",
+    //                   optional: true,
+    //                 },
+    //               },
+    //             },
+    //             targetEntity: {
+    //               type: "string",
+    //               optional: true,
+    //             },
+    //             targetEntityOrderInstancesBy: {
+    //               type: "string",
+    //               optional: true,
+    //             },
+    //             targetEntityApplicationSection: {
+    //               type: "enum",
+    //               optional: true,
+    //               definition: ["model", "data", "metaModel"],
+    //             },
+    //             editable: {
+    //               type: "boolean",
+    //               optional: true,
+    //             },
+    //             canBeTemplate: {
+    //               type: "boolean",
+    //               optional: true,
+    //             },
+    //                    isBlob: {
+    //                 optional: true,
+    //                 type: "boolean",
+    //               },
+    //        isTemplate: {
+    //               type: "boolean",
+    //               optional: true,
+    //             },
+    //             conditionalMMLS: {
+    //               type: "object",
+    //               optional: true,
+    //               definition: {
+    //                 parentUuid: {
+    //                   type: "union",
+    //                   optional: true,
+    //                   definition: [
+    //                     {
+    //                       type: "string",
+    //                     },
+    //                     {
+    //                       type: "object",
+    //                       definition: {
+    //                         path: {
+    //                           type: "union",
+    //                           definition: [
+    //                             {
+    //                               type: "string",
+    //                             },
+    //                             {
+    //                               type: "object",
+    //                               definition: {
+    //                                 defaultValuePath: {
+    //                                   type: "string",
+    //                                 },
+    //                                 typeCheckPath: {
+    //                                   type: "string",
+    //                                 },
+    //                               },
+    //                             },
+    //                           ],
+    //                         },
+    //                       },
+    //                     },
+    //                   ],
+    //                 },
+    //                 mmlsReference: {
+    //                   type: "object",
+    //                   optional: true,
+    //                   definition: {
+    //                     absolutePath: {
+    //                       type: "string",
+    //                       optional: true,
+    //                     },
+    //                     relativePath: {
+    //                       type: "string",
+    //                     },
+    //                   },
+    //                 },
+    //               },
+    //             },
+    //             display: {
+    //               type: "object",
+    //               optional: true,
+    //               definition: {
+    //                 displayedAttributeValueWhenFolded: {
+    //                   type: "string",
+    //                   optional: true,
+    //                 },
+    //               },
+    //             },
+    //           },
+    //         },
+    //       },
+    //     },
+    //   },
+    //   expectedKeyMap: undefined,
+    // },
+    // // real case, simple
+    // test350: {
+    //   testSchema: {
+    //     type: "object",
+    //     definition: {
+    //       a: { type: "string", optional: true },
+    //       b: { type: "number" },
+    //       c: { type: "boolean", optional: true },
+    //     },
+    //   },
+    //   testValueObject: {
+    //     b: 42,
+    //   },
+    //   expectedResolvedSchema: {
+    //     type: "object",
+    //     definition: {
+    //       // a: { type: "string", optional: true },
+    //       b: { type: "number" },
+    //       // c: { type: "boolean", optional: true },
+    //     },
+    //   },
+    //   expectedKeyMap: {
+    //     b: {
+    //       rawSchema: {
+    //         type: "number",
+    //       },
+    //       resolvedSchema: {
+    //         type: "number",
+    //       },
+    //       valuePath: ["b"],
+    //       typePath: ["b"],
+    //     },
+    //     "": {
+    //       rawSchema: {
+    //         type: "object",
+    //         definition: {
+    //           a: {
+    //             type: "string",
+    //             optional: true,
+    //           },
+    //           b: {
+    //             type: "number",
+    //           },
+    //           c: {
+    //             type: "boolean",
+    //             optional: true,
+    //           },
+    //         },
+    //       },
+    //       resolvedSchema: {
+    //         type: "object",
+    //         definition: {
+    //           b: {
+    //             type: "number",
+    //           },
+    //         },
+    //       },
+    //       jzodObjectFlattenedSchema: {
+    //         type: "object",
+    //         definition: {
+    //           a: {
+    //             type: "string",
+    //             optional: true,
+    //           },
+    //           b: {
+    //             type: "number",
+    //           },
+    //           c: {
+    //             type: "boolean",
+    //             optional: true,
+    //           },
+    //         },
+    //       },
+    //       valuePath: [],
+    //       typePath: [],
+    //     },
+    //   },
+    // },
+    // //     // real case, JzodReference
+    // test360: {
+    //   testSchema: {
+    //     type: "schemaReference",
+    //     definition: {
+    //       absolutePath: castMiroirFundamentalJzodSchema.uuid,
+    //       relativePath: "jzodReference",
+    //     },
+    //   },
+    //   testValueObject: {
+    //     type: "schemaReference",
+    //     definition: {
+    //       eager: true,
+    //       absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+    //       relativePath: "transformer_orderBy",
+    //     },
+    //   },
+    //   expectedResolvedSchema: {
+    //     type: "object",
+    //     definition: {
+    //       type: {
+    //         type: "literal",
+    //         definition: "schemaReference",
+    //       },
+    //       definition: {
+    //         type: "object",
+    //         definition: {
+    //           eager: {
+    //             type: "boolean",
+    //             optional: true,
+    //           },
+    //           absolutePath: {
+    //             type: "string",
+    //             optional: true,
+    //           },
+    //           relativePath: {
+    //             type: "string",
+    //           },
+    //         },
+    //       },
+    //     },
+    //     tag: {
+    //       optional: true,
+    //       schema: {
+    //         optional: true,
+    //         metaSchema: {
+    //           type: "object",
+    //           optional: true,
+    //           definition: {
+    //             optional: {
+    //               type: "boolean",
+    //               optional: true,
+    //             },
+    //             metaSchema: {
+    //               type: "schemaReference",
+    //               optional: true,
+    //               definition: {
+    //                 absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+    //                 relativePath: "jzodElement",
+    //               },
+    //             },
+    //             valueSchema: {
+    //               type: "schemaReference",
+    //               optional: true,
+    //               definition: {
+    //                 absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+    //                 relativePath: "jzodElement",
+    //               },
+    //             },
+    //           },
+    //         },
+    //         valueSchema: {
+    //           type: "object",
+    //           optional: true,
+    //           definition: {
+    //             id: {
+    //               type: "number",
+    //               optional: true,
+    //             },
+    //             defaultLabel: {
+    //               type: "string",
+    //               optional: true,
+    //             },
+    //             description: {
+    //               type: "string",
+    //               optional: true,
+    //             },
+    //             editorButton: {
+    //               type: "object",
+    //               optional: true,
+    //               definition: {
+    //                 icon: {
+    //                   type: "string",
+    //                   optional: true,
+    //                 },
+    //                 label: {
+    //                   type: "string",
+    //                   optional: true,
+    //                 },
+    //                 tooltip: {
+    //                   type: "string",
+    //                   optional: true,
+    //                 },
+    //                 transformer: {
+    //                   type: "any",
+    //                   tag: {
+    //                     value: {
+    //                       conditionalMMLS: {
+    //                         mmlsReference: {
+    //                           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+    //                           relativePath: "transformerForBuild",
+    //                         },
+    //                       },
+    //                     },
+    //                   },
+    //                   optional: true,
+    //                 },
+    //               },
+    //             },
+    //             initializeTo: {
+    //               type: "union",
+    //               discriminator: "initializeToType",
+    //               optional: true,
+    //               definition: [
+    //                 {
+    //                   type: "object",
+    //                   optional: true,
+    //                   definition: {
+    //                     initializeToType: {
+    //                       type: "literal",
+    //                       definition: "value",
+    //                     },
+    //                     value: {
+    //                       type: "any",
+    //                       optional: true,
+    //                     },
+    //                   },
+    //                 },
+    //                 {
+    //                   type: "object",
+    //                   optional: true,
+    //                   definition: {
+    //                     initializeToType: {
+    //                       type: "literal",
+    //                       definition: "transformer",
+    //                     },
+    //                     transformer: {
+    //                       type: "any",
+    //                       tag: {
+    //                         value: {
+    //                           conditionalMMLS: {
+    //                             mmlsReference: {
+    //                               absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+    //                               relativePath: "transformerForBuild",
+    //                             },
+    //                           },
+    //                         },
+    //                       },
+    //                       optional: true,
+    //                     },
+    //                   },
+    //                 },
+    //               ],
+    //             },
+    //             selectorParams: {
+    //               type: "object",
+    //               optional: true,
+    //               definition: {
+    //                 targetApplicationUuid: {
+    //                   type: "uuid",
+    //                   optional: true,
+    //                 },
+    //                 targetDeploymentUuid: {
+    //                   type: "uuid",
+    //                   optional: true,
+    //                 },
+    //                 targetEntityApplicationSection: {
+    //                   type: "enum",
+    //                   optional: true,
+    //                   definition: ["model", "data", "metaModel"],
+    //                 },
+    //                 targetEntity: {
+    //                   type: "uuid",
+    //                 },
+    //                 targetEntityOrderInstancesBy: {
+    //                   type: "string",
+    //                   optional: true,
+    //                 },
+    //               },
+    //             },
+    //             targetEntity: {
+    //               type: "string",
+    //               optional: true,
+    //             },
+    //             targetEntityOrderInstancesBy: {
+    //               type: "string",
+    //               optional: true,
+    //             },
+    //             targetEntityApplicationSection: {
+    //               type: "enum",
+    //               optional: true,
+    //               definition: ["model", "data", "metaModel"],
+    //             },
+    //             editable: {
+    //               type: "boolean",
+    //               optional: true,
+    //             },
+    //             canBeTemplate: {
+    //               type: "boolean",
+    //               optional: true,
+    //             },
+    //             isBlob: {
+    //               optional: true,
+    //               type: "boolean",
+    //             },
+    //             isTemplate: {
+    //               type: "boolean",
+    //               optional: true,
+    //             },
+    //             conditionalMMLS: {
+    //               type: "object",
+    //               optional: true,
+    //               definition: {
+    //                 parentUuid: {
+    //                   type: "union",
+    //                   optional: true,
+    //                   definition: [
+    //                     {
+    //                       type: "string",
+    //                     },
+    //                     {
+    //                       type: "object",
+    //                       definition: {
+    //                         path: {
+    //                           type: "union",
+    //                           definition: [
+    //                             {
+    //                               type: "string",
+    //                             },
+    //                             {
+    //                               type: "object",
+    //                               definition: {
+    //                                 defaultValuePath: {
+    //                                   type: "string",
+    //                                 },
+    //                                 typeCheckPath: {
+    //                                   type: "string",
+    //                                 },
+    //                               },
+    //                             },
+    //                           ],
+    //                         },
+    //                       },
+    //                     },
+    //                   ],
+    //                 },
+    //                 mmlsReference: {
+    //                   type: "object",
+    //                   optional: true,
+    //                   definition: {
+    //                     absolutePath: {
+    //                       type: "string",
+    //                       optional: true,
+    //                     },
+    //                     relativePath: {
+    //                       type: "string",
+    //                     },
+    //                   },
+    //                 },
+    //               },
+    //             },
+    //             display: {
+    //               type: "object",
+    //               optional: true,
+    //               definition: {
+    //                 displayedAttributeValueWhenFolded: {
+    //                   type: "string",
+    //                   optional: true,
+    //                 },
+    //               },
+    //             },
+    //           },
+    //         },
+    //       },
+    //     },
+    //   },
+    //   expectedKeyMap: undefined,
+    // },
+    // //     // ##########################################################################################
+    // //     // ####################################### ANY #############################################
+    // //     // ##########################################################################################
+    // test400: {
+    //   testSchema: {
+    //     type: "any",
+    //   },
+    //   testValueObject: "test",
+    //   expectedResolvedSchema: {
+    //     type: "string",
+    //   },
+    //   expectedKeyMap: {
+    //     "": {
+    //       rawSchema: {
+    //         type: "any",
+    //       },
+    //       resolvedSchema: {
+    //         type: "string",
+    //       },
+    //       valuePath: [],
+    //       typePath: [],
+    //     },
+    //   },
+    // },
+    // test410: {
+    //   testSchema: {
+    //     type: "any",
+    //   },
+    //   testValueObject: [42, "test", { a: { b: 42n, c: true }, d: [1, 2, 3] }],
+    //   expectedResolvedSchema: {
+    //     type: "tuple",
+    //     definition: [
+    //       { type: "number" },
+    //       { type: "string" },
+    //       {
+    //         type: "object",
+    //         definition: {
+    //           a: {
+    //             type: "object",
+    //             definition: {
+    //               b: { type: "bigint" },
+    //               c: { type: "boolean" },
+    //             },
+    //           },
+    //           d: {
+    //             type: "tuple",
+    //             definition: [{ type: "number" }, { type: "number" }, { type: "number" }],
+    //           },
+    //         },
+    //       },
+    //     ],
+    //   },
+    //   expectedKeyMap: {
+    //     "": {
+    //       rawSchema: {
+    //         type: "any",
+    //       },
+    //       resolvedSchema: {
+    //         type: "tuple",
+    //         definition: [
+    //           {
+    //             type: "number",
+    //           },
+    //           {
+    //             type: "string",
+    //           },
+    //           {
+    //             type: "object",
+    //             definition: {
+    //               a: {
+    //                 type: "object",
+    //                 definition: {
+    //                   b: {
+    //                     type: "bigint",
+    //                   },
+    //                   c: {
+    //                     type: "boolean",
+    //                   },
+    //                 },
+    //               },
+    //               d: {
+    //                 type: "tuple",
+    //                 definition: [
+    //                   {
+    //                     type: "number",
+    //                   },
+    //                   {
+    //                     type: "number",
+    //                   },
+    //                   {
+    //                     type: "number",
+    //                   },
+    //                 ],
+    //               },
+    //             },
+    //           },
+    //         ],
+    //       },
+    //       valuePath: [],
+    //       typePath: [],
+    //     },
+    //   },
+    // },
+    // // ##########################################################################################
+    // // ################################# TRANSFORMERS ###########################################
+    // // ##########################################################################################
+    // // Transformers
+    // // returnValue
+    // test600: {
+    //   testSchema: {
+    //     type: "schemaReference",
+    //     definition: {
+    //       absolutePath: castMiroirFundamentalJzodSchema.uuid,
+    //       relativePath: "transformerForBuildPlusRuntime",
+    //     },
+    //   },
+    //   testValueObject: {
+    //     transformerType: "returnValue",
+    //     interpolation: "build",
+    //     value: "test",
+    //   },
+    //   expectedResolvedSchema: {
+    //     type: "object",
+    //     definition: {
+    //       transformerType: {
+    //         type: "literal",
+    //         definition: "returnValue",
+    //       },
+    //       interpolation: {
+    //         type: "enum",
+    //         optional: true,
+    //         tag: {
+    //           value: {
+    //             id: 1,
+    //             defaultLabel: "Interpolation",
+    //             editable: true,
+    //             initializeTo: {
+    //               initializeToType: "value",
+    //               value: "build",
+    //             },
+    //           },
+    //         },
+    //         definition: ["build", "runtime"],
+    //       },
+    //       value: {
+    //         type: "string",
+    //       },
+    //     },
+    //     tag: {
+    //       value: {
+    //         editable: true,
+    //         editorButton: {
+    //           label: "Apply Transformer to a List",
+    //           transformer: {
+    //             transformerType: "freeObjectTemplate",
+    //             definition: {
+    //               transformerType: "mapList",
+    //               elementTransformer: {
+    //                 transformerType: "contextReference",
+    //                 referenceName: "originTransformer",
+    //               },
+    //             },
+    //           },
+    //         },
+    //       },
+    //     },
+    //   },
+    //   expectedKeyMap: undefined,
+    // },
+    // // pickFromList
+    // test610: {
+    //   testSchema: {
+    //     type: "schemaReference",
+    //     definition: {
+    //       absolutePath: castMiroirFundamentalJzodSchema.uuid,
+    //       relativePath: "transformerForBuildPlusRuntime",
+    //     },
+    //   },
+    //   testValueObject: {
+    //     transformerType: "pickFromList",
+    //     interpolation: "runtime",
+    //     applyTo: {
+    //       transformerType: "contextReference",
+    //       interpolation: "runtime",
+    //       referenceName: "menuList",
+    //     },
+    //     index: 0,
+    //   },
+    //   expectedResolvedSchema: {
+    //     type: "object",
+    //     definition: {
+    //       transformerType: {
+    //         type: "literal",
+    //         definition: "pickFromList",
+    //       },
+    //       interpolation: {
+    //         type: "enum",
+    //         optional: true,
+    //         tag: {
+    //           value: {
+    //             id: 1,
+    //             defaultLabel: "Interpolation",
+    //             editable: true,
+    //             initializeTo: {
+    //               initializeToType: "value",
+    //               value: "build",
+    //             },
+    //           },
+    //         },
+    //         definition: ["build", "runtime"],
+    //       },
+    //       applyTo: {
+    //         type: "object",
+    //         definition: {
+    //           transformerType: {
+    //             type: "literal",
+    //             definition: "contextReference",
+    //           },
+    //           interpolation: {
+    //             type: "enum",
+    //             optional: true,
+    //             tag: {
+    //               value: {
+    //                 id: 1,
+    //                 defaultLabel: "Interpolation",
+    //                 editable: true,
+    //                 initializeTo: {
+    //                   initializeToType: "value",
+    //                   value: "build",
+    //                 },
+    //               },
+    //             },
+    //             definition: ["build", "runtime"],
+    //           },
+    //           referenceName: {
+    //             optional: true,
+    //             type: "string",
+    //           },
+    //         },
+    //         tag: {
+    //           value: {
+    //             editable: true,
+    //             editorButton: {
+    //               label: "Apply Transformer to a List",
+    //               transformer: {
+    //                 transformerType: "freeObjectTemplate",
+    //                 definition: {
+    //                   transformerType: "mapList",
+    //                   elementTransformer: {
+    //                     transformerType: "contextReference",
+    //                     referenceName: "originTransformer",
+    //                   },
+    //                 },
+    //               },
+    //             },
+    //           },
+    //         },
+    //       },
+    //       index: {
+    //         type: "number",
+    //       },
+    //     },
+    //     tag: {
+    //       value: {
+    //         editable: true,
+    //         editorButton: {
+    //           label: "Apply Transformer to a List",
+    //           transformer: {
+    //             transformerType: "freeObjectTemplate",
+    //             definition: {
+    //               transformerType: "mapList",
+    //               elementTransformer: {
+    //                 transformerType: "contextReference",
+    //                 referenceName: "originTransformer",
+    //               },
+    //             },
+    //           },
+    //         },
+    //       },
+    //     },
+    //   },
+    //   expectedKeyMap: undefined,
+    // },
+    // // runtime freeObjectTemplate with inner build transformer
+    // test620: {
+    //   testSchema: {
+    //     type: "schemaReference",
+    //     definition: {
+    //       absolutePath: castMiroirFundamentalJzodSchema.uuid,
+    //       relativePath: "transformerForBuildPlusRuntime",
+    //     },
+    //   },
+    //   testValueObject: {
+    //     transformerType: "freeObjectTemplate",
+    //     interpolation: "runtime",
+    //     definition: {
+    //       reportUuid: {
+    //         transformerType: "parameterReference",
+    //         interpolation: "build",
+    //         referenceName: "createEntity_newEntityListReportUuid",
+    //       },
+    //       label: {
+    //         transformerType: "mustacheStringTemplate",
+    //         interpolation: "build",
+    //         definition: "List of {{newEntityName}}s",
+    //       },
+    //       section: "data",
+    //       selfApplication: {
+    //         transformerType: "parameterReference",
+    //         interpolation: "build",
+    //         referencePath: ["adminConfigurationDeploymentParis", "uuid"],
+    //       },
+    //       icon: "local_drink",
+    //     },
+    //   },
+    //   expectedResolvedSchema: {
+    //     type: "object",
+    //     definition: {
+    //       transformerType: {
+    //         type: "literal",
+    //         definition: "freeObjectTemplate",
+    //       },
+    //       interpolation: {
+    //         type: "enum",
+    //         optional: true,
+    //         tag: {
+    //           value: {
+    //             id: 1,
+    //             defaultLabel: "Interpolation",
+    //             editable: true,
+    //             initializeTo: {
+    //               initializeToType: "value",
+    //               value: "build",
+    //             },
+    //           },
+    //         },
+    //         definition: ["build", "runtime"],
+    //       },
+    //       definition: {
+    //         type: "object",
+    //         definition: {
+    //           reportUuid: {
+    //             type: "object",
+    //             definition: {
+    //               transformerType: {
+    //                 type: "literal",
+    //                 definition: "parameterReference",
+    //               },
+    //               interpolation: {
+    //                 type: "enum",
+    //                 optional: true,
+    //                 tag: {
+    //                   value: {
+    //                     id: 1,
+    //                     defaultLabel: "Interpolation",
+    //                     editable: true,
+    //                     initializeTo: {
+    //                       initializeToType: "value",
+    //                       value: "build",
+    //                     },
+    //                   },
+    //                 },
+    //                 definition: ["build", "runtime"],
+    //               },
+    //               referenceName: {
+    //                 optional: true,
+    //                 type: "string",
+    //               },
+    //             },
+    //             tag: {
+    //               value: {
+    //                 editable: true,
+    //                 editorButton: {
+    //                   label: "Apply Transformer to a List",
+    //                   transformer: {
+    //                     transformerType: "freeObjectTemplate",
+    //                     definition: {
+    //                       transformerType: "mapList",
+    //                       elementTransformer: {
+    //                         transformerType: "contextReference",
+    //                         referenceName: "originTransformer",
+    //                       },
+    //                     },
+    //                   },
+    //                 },
+    //               },
+    //             },
+    //           },
+    //           label: {
+    //             type: "object",
+    //             definition: {
+    //               transformerType: {
+    //                 type: "literal",
+    //                 definition: "mustacheStringTemplate",
+    //               },
+    //               interpolation: {
+    //                 type: "enum",
+    //                 optional: true,
+    //                 tag: {
+    //                   value: {
+    //                     id: 1,
+    //                     defaultLabel: "Interpolation",
+    //                     editable: true,
+    //                     initializeTo: {
+    //                       initializeToType: "value",
+    //                       value: "build",
+    //                     },
+    //                   },
+    //                 },
+    //                 definition: ["build", "runtime"],
+    //               },
+    //               definition: {
+    //                 type: "string",
+    //               },
+    //             },
+    //             tag: {
+    //               value: {
+    //                 editable: true,
+    //                 editorButton: {
+    //                   label: "Apply Transformer to a List",
+    //                   transformer: {
+    //                     transformerType: "freeObjectTemplate",
+    //                     definition: {
+    //                       transformerType: "mapList",
+    //                       elementTransformer: {
+    //                         transformerType: "contextReference",
+    //                         referenceName: "originTransformer",
+    //                       },
+    //                     },
+    //                   },
+    //                 },
+    //               },
+    //             },
+    //           },
+    //           section: {
+    //             type: "string",
+    //           },
+    //           selfApplication: {
+    //             type: "object",
+    //             definition: {
+    //               transformerType: {
+    //                 type: "literal",
+    //                 definition: "parameterReference",
+    //               },
+    //               interpolation: {
+    //                 type: "enum",
+    //                 optional: true,
+    //                 tag: {
+    //                   value: {
+    //                     id: 1,
+    //                     defaultLabel: "Interpolation",
+    //                     editable: true,
+    //                     initializeTo: {
+    //                       initializeToType: "value",
+    //                       value: "build",
+    //                     },
+    //                   },
+    //                 },
+    //                 definition: ["build", "runtime"],
+    //               },
+    //               referencePath: {
+    //                 optional: true,
+    //                 type: "tuple",
+    //                 definition: [
+    //                   {
+    //                     type: "string",
+    //                   },
+    //                   {
+    //                     type: "string",
+    //                   },
+    //                 ],
+    //               },
+    //             },
+    //             tag: {
+    //               value: {
+    //                 editable: true,
+    //                 editorButton: {
+    //                   label: "Apply Transformer to a List",
+    //                   transformer: {
+    //                     transformerType: "freeObjectTemplate",
+    //                     definition: {
+    //                       transformerType: "mapList",
+    //                       elementTransformer: {
+    //                         transformerType: "contextReference",
+    //                         referenceName: "originTransformer",
+    //                       },
+    //                     },
+    //                   },
+    //                 },
+    //               },
+    //             },
+    //           },
+    //           icon: {
+    //             type: "string",
+    //           },
+    //         },
+    //       },
+    //     },
+    //     tag: {
+    //       value: {
+    //         editable: true,
+    //         editorButton: {
+    //           label: "Apply Transformer to a List",
+    //           transformer: {
+    //             transformerType: "freeObjectTemplate",
+    //             definition: {
+    //               transformerType: "mapList",
+    //               elementTransformer: {
+    //                 transformerType: "contextReference",
+    //                 referenceName: "originTransformer",
+    //               },
+    //             },
+    //           },
+    //         },
+    //       },
+    //     },
+    //   },
+    //   expectedKeyMap: undefined,
+    // },
     // mapList Transformer
     test630: {
       testSchema: {
@@ -7308,6 +7340,10 @@ interface testFormat {
                                 },
                               ],
                             },
+                            isBlob: {
+                              type: "boolean",
+                              optional: true,
+                            },
                             selectorParams: {
                               type: "object",
                               optional: true,
@@ -7435,6 +7471,7 @@ interface testFormat {
                       },
                       extend: {
                         type: "array",
+                        discriminator: "type",
                         optional: true,
                         definition: {
                           type: "object",
@@ -7584,6 +7621,10 @@ interface testFormat {
                                         },
                                       },
                                     ],
+                                  },
+                                  isBlob: {
+                                    type: "boolean",
+                                    optional: true,
                                   },
                                   selectorParams: {
                                     type: "object",
@@ -7881,6 +7922,10 @@ interface testFormat {
                                         },
                                       ],
                                     },
+                                    isBlob: {
+                                      type: "boolean",
+                                      optional: true,
+                                    },
                                     selectorParams: {
                                       type: "object",
                                       optional: true,
@@ -8131,6 +8176,10 @@ interface testFormat {
                                           },
                                         },
                                       ],
+                                    },
+                                    isBlob: {
+                                      type: "boolean",
+                                      optional: true,
                                     },
                                     selectorParams: {
                                       type: "object",
@@ -8395,6 +8444,10 @@ interface testFormat {
                                         },
                                       ],
                                     },
+                                    isBlob: {
+                                      type: "boolean",
+                                      optional: true,
+                                    },
                                     selectorParams: {
                                       type: "object",
                                       optional: true,
@@ -8519,7 +8572,7 @@ interface testFormat {
                     tag: {
                       value: {
                         unfoldSubLevels: 2,
-                      } as any,
+                      },
                     },
                   },
                 },
@@ -8695,6 +8748,10 @@ interface testFormat {
                               },
                             },
                           ],
+                        },
+                        isBlob: {
+                          type: "boolean",
+                          optional: true,
                         },
                         selectorParams: {
                           type: "object",
@@ -8879,7 +8936,7 @@ interface testFormat {
     //         },
     //         runtimeTransformers: {
     //           menu: {
-    //             transformerType: "listPickElement",
+    //             transformerType: "pickFromList",
     //             interpolation: "runtime",
     //             applyTo: {
     //               referenceType: "referencedTransformer",
@@ -10114,6 +10171,10 @@ interface testFormat {
                               type: "boolean",
                               optional: true,
                             },
+                            isBlob: {
+                              optional: true,
+                              type: "boolean",
+                            },
                             isTemplate: {
                               type: "boolean",
                               optional: true,
@@ -10470,6 +10531,10 @@ interface testFormat {
                               type: "boolean",
                               optional: true,
                             },
+                            isBlob: {
+                              optional: true,
+                              type: "boolean",
+                            },
                             isTemplate: {
                               type: "boolean",
                               optional: true,
@@ -10742,6 +10807,10 @@ interface testFormat {
                             canBeTemplate: {
                               type: "boolean",
                               optional: true,
+                            },
+                            isBlob: {
+                              optional: true,
+                              type: "boolean",
                             },
                             isTemplate: {
                               type: "boolean",

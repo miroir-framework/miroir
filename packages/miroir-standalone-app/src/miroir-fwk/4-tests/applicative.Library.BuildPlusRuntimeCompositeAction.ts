@@ -727,7 +727,7 @@ Types of property 'deploymentUuid' are incompatible.
                         },
                         runtimeTransformers: {
                           menu: {
-                            transformerType: "listPickElement",
+                            transformerType: "pickFromList",
                             interpolation: "runtime",
                             applyTo: {
                               transformerType: "contextReference",

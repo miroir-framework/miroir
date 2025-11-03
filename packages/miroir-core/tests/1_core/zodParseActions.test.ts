@@ -610,7 +610,10 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
           extractorTemplateType: "extractorTemplateForObjectListByEntity",
           parentName: "Author",
           parentUuid: {
-            transformerType: "constantUuid",
+            transformerType: "returnValue",
+            mlSchema: {
+              type: "uuid",
+            },
             interpolation: "build",
             value: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
           },

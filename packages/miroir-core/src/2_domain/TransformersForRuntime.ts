@@ -21,7 +21,7 @@ import {
   TransformerForBuild_dataflowObject,
   TransformerForBuild_freeObjectTemplate,
   // TransformerForBuild_InnerReference,
-  TransformerForBuild_listPickElement,
+  TransformerForBuild_pickFromList,
   TransformerForBuild_listReducerToIndexObject,
   TransformerForBuild_listReducerToSpreadObject,
   TransformerForBuild_mapList,
@@ -44,7 +44,7 @@ import {
   TransformerForRuntime_dataflowObject,
   TransformerForRuntime_defaultValueForMLSchema,
   TransformerForRuntime_freeObjectTemplate,
-  TransformerForRuntime_listPickElement,
+  TransformerForRuntime_pickFromList,
   TransformerForRuntime_listReducerToIndexObject,
   TransformerForRuntime_listReducerToSpreadObject,
   TransformerForRuntime_mapList,
@@ -89,7 +89,7 @@ import {
   transformer_aggregate,
   transformer_dataflowObject,
   transformer_freeObjectTemplate,
-  transformer_listPickElement,
+  transformer_pickFromList,
   transformer_listReducerToIndexObject,
   transformer_listReducerToSpreadObject,
   transformer_mapList,
@@ -675,7 +675,7 @@ export const applicationTransformerDefinitions: Record<string, TransformerDefini
   contextReference: transformer_contextReference,
   dataflowObject: transformer_dataflowObject,
   freeObjectTemplate: transformer_freeObjectTemplate,
-  listPickElement: transformer_listPickElement,
+  pickFromList: transformer_pickFromList,
   listReducerToIndexObject: transformer_listReducerToIndexObject,
   listReducerToSpreadObject: transformer_listReducerToSpreadObject,
   mapList: transformer_mapList,
@@ -826,7 +826,7 @@ export function resolveApplyTo_legacy(
   transformer: 
   | TransformerForBuild_aggregate
   | TransformerForBuild_mapList
-  | TransformerForBuild_listPickElement
+  | TransformerForBuild_pickFromList
   | TransformerForBuild_listReducerToSpreadObject
   | TransformerForBuild_listReducerToIndexObject
   | TransformerForBuild_objectEntries
@@ -834,7 +834,7 @@ export function resolveApplyTo_legacy(
   | TransformerForBuild_unique
   | TransformerForRuntime_aggregate
   | TransformerForRuntime_mapList 
-  | TransformerForRuntime_listPickElement
+  | TransformerForRuntime_pickFromList
   | TransformerForRuntime_listReducerToIndexObject
   // | TransformerForRuntime_mapper_listToObject 
   | TransformerForRuntime_listReducerToSpreadObject
@@ -2062,8 +2062,8 @@ export function handleListPickElementTransformer(
   transformerPath: string[],
   label: string | undefined,
   transformer:
-  | TransformerForBuild_listPickElement
-  | TransformerForRuntime_listPickElement,
+  | TransformerForBuild_pickFromList
+  | TransformerForRuntime_pickFromList,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   modelEnvironment: MiroirModelEnvironment,
   transformerParams: Record<string, any>,
@@ -2081,21 +2081,21 @@ export function handleListPickElementTransformer(
   );
   if (resolvedReference instanceof TransformerFailure) {
     log.error(
-      "handleListPickElementTransformer extractorTransformer listPickElement can not apply to resolvedReference",
+      "handleListPickElementTransformer extractorTransformer pickFromList can not apply to resolvedReference",
       resolvedReference
     );
     return new TransformerFailure({
       queryFailure: "FailedTransformer",
       transformerPath, //: [...transformerPath, transformer.transformerType],
       failureOrigin: ["innerTransformer_apply"],
-      queryContext: "listPickElement can not apply to resolvedReference",
+      queryContext: "pickFromList can not apply to resolvedReference",
       innerError: resolvedReference,
     });
   }
 
   if (typeof resolvedReference != "object" || !Array.isArray(resolvedReference)) {
     log.error(
-      "handleListPickElementTransformer extractorTransformer listPickElement can not apply to resolvedReference",
+      "handleListPickElementTransformer extractorTransformer pickFromList can not apply to resolvedReference",
       resolvedReference
     );
     return new TransformerFailure({
@@ -2103,7 +2103,7 @@ export function handleListPickElementTransformer(
       transformerPath, //: [...transformerPath, transformer.transformerType],
       failureOrigin: ["innerTransformer_apply"],
       queryContext:
-        "listPickElement can not apply to resolvedReference, wrong type: " +
+        "pickFromList can not apply to resolvedReference, wrong type: " +
         typeof resolvedReference,
       queryParameters: resolvedReference,
     });
@@ -2126,9 +2126,9 @@ export function handleListPickElementTransformer(
     // if (transformer.index < 0 || sortedResultArray.length < transformer.index) {
       //   // return undefined;
       //   return new TransformerFailure({
-    //     queryFailure: "FailedTransformer_listPickElement",
+    //     queryFailure: "FailedTransformer_pickFromList",
     //     failureOrigin: ["innerTransformer_apply"],
-    //     queryContext: "listPickElement index out of bounds",
+    //     queryContext: "pickFromList index out of bounds",
     //   });
     // } else {
     // POSTGERS SQL DOES NOT FAIL IF INDEX OUT OF BOUNDS, IT JUST RETURNS NO RESULT
@@ -2137,7 +2137,7 @@ export function handleListPickElementTransformer(
     }
     const result = sortedResultArray[transformer.index];
       // log.info(
-      //   "handleListPickElementTransformer extractorTransformer listPickElement sorted resolvedReference",
+      //   "handleListPickElementTransformer extractorTransformer pickFromList sorted resolvedReference",
       //   sortedResultArray,
       //   "index",
       //   transformer.index,
@@ -2150,13 +2150,13 @@ export function handleListPickElementTransformer(
     // }
   } catch (error) {
     log.error(
-      "innerTransformer_apply extractorTransformer listPickElement failed",
+      "innerTransformer_apply extractorTransformer pickFromList failed",
       error
     )
     return new TransformerFailure({
-      queryFailure: "FailedTransformer_listPickElement",
+      queryFailure: "FailedTransformer_pickFromList",
       failureOrigin: ["innerTransformer_apply"],
-      queryContext: "listPickElement failed: " + error,
+      queryContext: "pickFromList failed: " + error,
     });
   }
   // break;

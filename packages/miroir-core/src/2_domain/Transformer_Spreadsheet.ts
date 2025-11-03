@@ -59,7 +59,7 @@ export const transformer_spreadSheetToJzodSchema: TransformerDefinition = {
       target: "schema",
       definition: {
         firstLine: {
-          transformerType: "listPickElement",
+          transformerType: "pickFromList",
           applyTo: {
             transformerType: "contextReference",
             interpolation: "runtime",

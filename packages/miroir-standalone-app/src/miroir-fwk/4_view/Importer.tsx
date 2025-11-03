@@ -675,7 +675,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //   //             //   referencedTransformer: "menuUuidIndex",
   //   //             // },
   //   //             menu: {
-  //   //               transformerType: "listPickElement",
+  //   //               transformerType: "pickFromList",
   //   //               interpolation: "runtime",
   //   //               applyTo: {
   //   //                 referenceType: "referencedTransformer",
@@ -1351,7 +1351,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //                 // referencedTransformer: "menuUuidIndex",
   //               },
   //               menu: {
-  //                 transformerType: "listPickElement",
+  //                 transformerType: "pickFromList",
   //                 interpolation: "runtime",
   //                 applyTo: {
   //                   referenceType: "referencedTransformer",

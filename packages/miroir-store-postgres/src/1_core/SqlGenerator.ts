@@ -19,7 +19,7 @@ import {
   TransformerForRuntime_aggregate,
   TransformerForRuntime_dataflowObject,
   TransformerForRuntime_freeObjectTemplate,
-  TransformerForRuntime_listPickElement,
+  TransformerForRuntime_pickFromList,
   TransformerForRuntime_listReducerToIndexObject,
   TransformerForRuntime_listReducerToSpreadObject,
   // TransformerForRuntime_innerFullObjectTemplate,
@@ -443,7 +443,7 @@ function sqlStringForApplyTo(
     | TransformerForBuild_object_fullTemplate
     | TransformerForRuntime_object_fullTemplate
     | TransformerForRuntime_aggregate
-    | TransformerForRuntime_listPickElement
+    | TransformerForRuntime_pickFromList
     | TransformerForRuntime_mapList
     | TransformerForRuntime_objectAlter
     | TransformerForRuntime_objectValues
@@ -1478,7 +1478,7 @@ function sqlStringForMapperListToListTransformer(
 
 // ################################################################################################
 function sqlStringForListPickElementTransformer(
-  actionRuntimeTransformer: TransformerForRuntime_listPickElement,
+  actionRuntimeTransformer: TransformerForRuntime_pickFromList,
   preparedStatementParametersCount: number,
   indentLevel: number,
   queryParams: Record<string, any>,
@@ -1487,7 +1487,7 @@ function sqlStringForListPickElementTransformer(
   topLevelTransformer: boolean
 ): Domain2QueryReturnType<SqlStringForTransformerElementValue> {
   log.info(
-    "sqlStringForListPickElementTransformer listPickElement called for",
+    "sqlStringForListPickElementTransformer pickFromList called for",
     JSON.stringify(actionRuntimeTransformer, null, 2),
     "topLevelTransformer",
     topLevelTransformer,
@@ -1507,7 +1507,7 @@ function sqlStringForListPickElementTransformer(
       topLevelTransformer
     );
 
-    log.info("sqlStringForListPickElementTransformer listPickElement found applyTo", JSON.stringify(sqlForApplyTo, null, 2));
+    log.info("sqlStringForListPickElementTransformer pickFromList found applyTo", JSON.stringify(sqlForApplyTo, null, 2));
     if (sqlForApplyTo instanceof Domain2ElementFailed) {
       return sqlForApplyTo;
     }
@@ -1519,7 +1519,7 @@ function sqlStringForListPickElementTransformer(
         return new Domain2ElementFailed({
           queryFailure: "QueryNotExecutable",
           query: actionRuntimeTransformer as any,
-          failureMessage: "sqlStringForListPickElementTransformer listPickElement referenceQuery result is tableOf1JsonColumn",
+          failureMessage: "sqlStringForListPickElementTransformer pickFromList referenceQuery result is tableOf1JsonColumn",
         });
       }
       case "json_array":
@@ -1532,7 +1532,7 @@ jsonb_agg(
     "listPickElement_applyTo_array" ->> '${actionRuntimeTransformer.orderBy}'
   )::"any"
 ) ->> ${limit}
-)::jsonb AS "listPickElement" 
+)::jsonb AS "pickFromList" 
 FROM
 (${sqlForApplyTo.sqlStringOrObject}) AS "listPickElement_applyTo", 
 LATERAL jsonb_array_elements("listPickElement_applyTo"."${
@@ -1541,7 +1541,7 @@ LATERAL jsonb_array_elements("listPickElement_applyTo"."${
 `;
         } else { // no orderBy
           sqlResult = `
-SELECT "listPickElement_applyTo_array"."value" AS "listPickElement"
+SELECT "listPickElement_applyTo_array"."value" AS "pickFromList"
 FROM
 (${sqlForApplyTo.sqlStringOrObject}) AS "listPickElement_applyTo", 
 LATERAL jsonb_array_elements("listPickElement_applyTo"."${
@@ -1553,17 +1553,17 @@ LATERAL jsonb_array_elements("listPickElement_applyTo"."${
           type: "json",
           sqlStringOrObject: sqlResult,
           preparedStatementParameters: sqlForApplyTo.preparedStatementParameters,
-          resultAccessPath: [0, "listPickElement"],
-          columnNameContainingJsonValue: "listPickElement",
+          resultAccessPath: [0, "pickFromList"],
+          columnNameContainingJsonValue: "pickFromList",
         };
         break;
       }
       case "table": {
         // const column = referenceQuery.resultAccessPath?"." + referenceQuery.resultAccessPath.join("."): "";
         if (actionRuntimeTransformer.orderBy) {
-          sqlResult = `SELECT * FROM (${sqlForApplyTo.sqlStringOrObject}) AS "listPickElement" ORDER BY ${actionRuntimeTransformer.orderBy} LIMIT 1 OFFSET ${limit}`;
+          sqlResult = `SELECT * FROM (${sqlForApplyTo.sqlStringOrObject}) AS "pickFromList" ORDER BY ${actionRuntimeTransformer.orderBy} LIMIT 1 OFFSET ${limit}`;
         } else {
-          sqlResult = `SELECT * FROM (${sqlForApplyTo.sqlStringOrObject}) AS "listPickElement" LIMIT 1 OFFSET ${limit}`;
+          sqlResult = `SELECT * FROM (${sqlForApplyTo.sqlStringOrObject}) AS "pickFromList" LIMIT 1 OFFSET ${limit}`;
         }
         return {
           type: "json",
@@ -1571,7 +1571,7 @@ LATERAL jsonb_array_elements("listPickElement_applyTo"."${
           preparedStatementParameters: sqlForApplyTo.preparedStatementParameters,
           resultAccessPath: [0, ...(sqlForApplyTo.resultAccessPath ?? [])],
           // resultAccessPath: [ 0, "value" ],
-          columnNameContainingJsonValue: "listPickElement",
+          columnNameContainingJsonValue: "pickFromList",
         };
         break;
       }
@@ -1579,7 +1579,7 @@ LATERAL jsonb_array_elements("listPickElement_applyTo"."${
         return new Domain2ElementFailed({
           queryFailure: "QueryNotExecutable",
           query: actionRuntimeTransformer as any,
-          failureMessage: "sqlStringForListPickElementTransformer listPickElement referenceQuery result is scalar, not json",
+          failureMessage: "sqlStringForListPickElementTransformer pickFromList referenceQuery result is scalar, not json",
         });
         break;
       }
@@ -1587,13 +1587,13 @@ LATERAL jsonb_array_elements("listPickElement_applyTo"."${
         return new Domain2ElementFailed({
           queryFailure: "QueryNotExecutable",
           query: actionRuntimeTransformer as any,
-          failureMessage: "sqlStringForListPickElementTransformer listPickElement referenceQuery not json",
+          failureMessage: "sqlStringForListPickElementTransformer pickFromList referenceQuery not json",
         });
         break;
       }
     }
   } else {
-    throw new Error("sqlStringForListPickElementTransformer listPickElement not implemented for (non-topLevel) inner transformer");
+    throw new Error("sqlStringForListPickElementTransformer pickFromList not implemented for (non-topLevel) inner transformer");
   }
   // break;
 }

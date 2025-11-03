@@ -257,6 +257,84 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
 
   log.info("ReportView reportViewData", reportViewData);
 
+  const reportName = props.reportDefinition?.name??"reportEntityDefinition_name";
+  const reportNamePath = [reportName];
+
+  const initialReportSectionsFormValue = useMemo(() => {
+    log.info(
+      "############################################## reportSectionsFormValue",
+      props.reportDefinition?.definition.section,
+      "reportViewData",
+      reportViewData,
+    );
+    const reportSectionsData = reportSectionsFormValue(
+      props.reportDefinition?.definition.section,
+      reportData,
+      ["definition", "section"]
+    );
+    const result = {
+      ...reportSectionsData,
+      ...props.storedQueryData,
+      // storedQueryData: props.storedQueryData, // included in reportViewData
+      ...reportViewData,
+      reportViewData,
+      [reportNamePath.join("_")]: props.reportDefinition,
+    };
+    log.info("reportSectionsFormValue initialReportSectionsFormValue", result);
+    return result;
+
+  }, [props.reportDefinition, reportData, reportViewData]);
+
+    // (meta-)information about the current report, to enable editing
+  const reportEntityDefinition = useMemo(() => {
+    const miroirMapping = context.deploymentUuidToReportsEntitiesDefinitionsMapping?.[selfApplicationDeploymentMiroir.uuid];
+    if (!miroirMapping) return undefined;
+    return miroirMapping["model"]?.entityDefinitions?.find((ed: any) => ed.name === "Report");
+  }, [context.deploymentUuidToReportsEntitiesDefinitionsMapping]);
+
+  const formValueMLSchema: JzodObject = useMemo(() => {
+    if (!props.pageParams.deploymentUuid || !reportEntityDefinition?.entityUuid) {
+      return { type: "object", definition: {} };
+    }
+    const r = reportSectionsFormSchema(
+      props.reportDefinition?.definition.section,
+      props.pageParams.deploymentUuid,
+      currentDeploymentReportsEntitiesDefinitionsMapping,
+      reportData,
+      ["definition", "section"]
+    );
+    const result: JzodObject = {
+      type: "object",
+      definition: {
+        ...r,
+        [reportNamePath.join("_")]: reportEntityDefinition.jzodSchema,
+        [lastSubmitButtonClicked]: { type: "string", optional: true}
+      }
+    };
+    // log.info("reportSectionsFormSchema formValueSchema", result);
+    log.info(
+      "############################################## computing formValueMLSchema",
+      "props.reportDefinition",
+      props.reportDefinition,
+      "initialReportSectionsFormValue",
+      initialReportSectionsFormValue,
+      "reportData",
+      reportData,
+      "formValueMLSchema",
+      result,
+      []
+    );
+    // log.info("reportSectionsFormSchema formValueSchema", JSON.stringify(result, null, 2));
+    return result;
+  }, [
+    props.reportDefinition,
+    reportData,
+    reportEntityDefinition,
+    // reportEditorEntitySectionPath,
+    currentDeploymentReportsEntitiesDefinitionsMapping,
+    props.pageParams.applicationSection,
+  ]);
+
   // ##############################################################################################
   // ##############################################################################################
   // ##############################################################################################
@@ -325,15 +403,6 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
   // ##############################################################################################
   // ##############################################################################################
   // ##############################################################################################
-  // (meta-)information about the current report, to enable editing
-  const reportEntityDefinition = useMemo(() => {
-    const miroirMapping = context.deploymentUuidToReportsEntitiesDefinitionsMapping?.[selfApplicationDeploymentMiroir.uuid];
-    if (!miroirMapping) return undefined;
-    return miroirMapping["model"]?.entityDefinitions?.find((ed: any) => ed.name === "Report");
-  }, [context.deploymentUuidToReportsEntitiesDefinitionsMapping]);
-
-  const reportName = props.reportDefinition?.name??"reportEntityDefinition_name";
-  const reportNamePath = [reportName];
 
   // const [localEditedReportDefinitionDEFUNCT, setLocalEditedReportDefinitionDEFUNCT] = useState<any | undefined>(reportEntityDefinition);
   
@@ -342,66 +411,6 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
   // ###############################################################################################
   // ###############################################################################################
   // ###############################################################################################
-  const initialReportSectionsFormValue = useMemo(() => {
-    log.info(
-      "############################################## reportSectionsFormValue",
-      props.reportDefinition?.definition.section,
-      reportData,
-      []
-    );
-    const reportSectionsData= reportSectionsFormValue(props.reportDefinition?.definition.section, reportData, ["definition", "section"]);
-    const result = {
-      ...reportSectionsData,
-      storedQueryData: props.storedQueryData,
-      [reportNamePath.join("_")]: props.reportDefinition,
-    };
-    log.info("reportSectionsFormValue initialReportSectionsFormValue", result);
-    return result;
-
-  }, [props.reportDefinition, reportData]);
-
-  const formValueMLSchema: JzodObject = useMemo(() => {
-    if (!props.pageParams.deploymentUuid || !reportEntityDefinition?.entityUuid) {
-      return { type: "object", definition: {} };
-    }
-    const r = reportSectionsFormSchema(
-      props.reportDefinition?.definition.section,
-      props.pageParams.deploymentUuid,
-      currentDeploymentReportsEntitiesDefinitionsMapping,
-      reportData,
-      ["definition", "section"]
-    );
-    const result: JzodObject = {
-      type: "object",
-      definition: {
-        ...r,
-        [reportNamePath.join("_")]: reportEntityDefinition.jzodSchema,
-        [lastSubmitButtonClicked]: { type: "string", optional: true}
-      }
-    };
-    // log.info("reportSectionsFormSchema formValueSchema", result);
-    log.info(
-      "############################################## computing formValueMLSchema",
-      "props.reportDefinition",
-      props.reportDefinition,
-      "initialReportSectionsFormValue",
-      initialReportSectionsFormValue,
-      "reportData",
-      reportData,
-      "formValueMLSchema",
-      result,
-      []
-    );
-    // log.info("reportSectionsFormSchema formValueSchema", JSON.stringify(result, null, 2));
-    return result;
-  }, [
-    props.reportDefinition,
-    reportData,
-    reportEntityDefinition,
-    // reportEditorEntitySectionPath,
-    currentDeploymentReportsEntitiesDefinitionsMapping,
-    props.pageParams.applicationSection,
-  ]);
   // ##############################################################################################
   const domainController: DomainControllerInterface = useDomainControllerService();
   const currentModelEnvironment = defaultMiroirModelEnvironment;

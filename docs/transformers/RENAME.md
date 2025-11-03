@@ -188,9 +188,9 @@ Based on my analysis of the transformer descriptions from the code and documenta
 | constantAsExtractor | **returnAsExtractor** *(testing only)* |
 | mustacheStringTemplate | **templateString** |
 | mapList | **OK: mapList** or **transformEachItem** |
-| listPickElement | **pickFromList** |
+| listPickElement | **OK: pickFromList** |
 | unique | **getUniqueValues** |
-| count | **countItems** or **aggregate** |
+| count | **countItems** or **OK: aggregate** |
 | listReducerToIndexObject | **listToIndexedObject** or **indexListBy** |
 | listReducerToSpreadObject | **mergeListToObject** or **spreadListItems** |
 | objectValues | **getObjectValues** |

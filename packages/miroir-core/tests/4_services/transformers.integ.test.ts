@@ -272,9 +272,9 @@ if (shouldSkip) {
     //         //   // "count returns number of elements in an object list with a multiple groupBy at runtime",
     //         //   "count returns number of elements in a string list from an extractor at runtime",
     //         // ],
-    //         // "listPickElement": [
-    //         //   "listPickElement from extractor selects wanted element from string list context reference at runtime",
-    //         //   // "listPickElement from extractor selects wanted element from object ordered list at runtime"
+    //         // "pickFromList": [
+    //         //   "pickFromList from extractor selects wanted element from string list context reference at runtime",
+    //         //   // "pickFromList from extractor selects wanted element from object ordered list at runtime"
     //         // ],
     //         // conditional: [
     //         //   "conditional equality true - basic string comparison",

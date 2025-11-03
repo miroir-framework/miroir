@@ -448,7 +448,9 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
             <GraphReportSectionView
               applicationSection={props.applicationSection}
               deploymentUuid={props.deploymentUuid}
-              queryResults={formik.values?.storedQueryData ?? formik.values}
+              // queryResults={formik.values?.storedQueryData ?? formik.values}
+              // queryResults={formik.values?.reportViewData ?? formik.values}
+              queryResults={formik.values}
               reportSection={reportSectionDefinitionFromFormik as any}
               showPerformanceDisplay={props.showPerformanceDisplay}
             />

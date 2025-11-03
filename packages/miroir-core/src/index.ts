@@ -397,7 +397,7 @@ export {
   // TransformerForRuntime_constants,
   TransformerForRuntime_InnerReference,
   TransformerForRuntime_mapList,
-  TransformerForRuntime_listPickElement,
+  TransformerForRuntime_pickFromList,
   // TransformerForRuntime_mapper_listToObject,
   // TransformerForRuntime_mustacheStringTemplate_NOT_IMPLEMENTED,
   TransformerForRuntime_newUuid,
