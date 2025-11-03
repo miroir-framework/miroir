@@ -14,7 +14,7 @@ import {
   Transformer_contextOrParameterReferenceTO_REMOVE,
   TransformerDefinition,
   TransformerForBuild,
-  TransformerForBuild_constant,
+  TransformerForBuild_returnValue,
   // TransformerForBuild_constantArray,
   TransformerForBuild_constantAsExtractor,
   TransformerForBuild_count,
@@ -24,7 +24,7 @@ import {
   TransformerForBuild_listPickElement,
   TransformerForBuild_listReducerToIndexObject,
   TransformerForBuild_listReducerToSpreadObject,
-  TransformerForBuild_mapperListToList,
+  TransformerForBuild_mapList,
   TransformerForBuild_mustacheStringTemplate,
   TransformerForBuild_newUuid,
   TransformerForBuild_object_fullTemplate,
@@ -36,7 +36,7 @@ import {
   TransformerForBuild_unique,
   TransformerForBuildPlusRuntime,
   TransformerForRuntime,
-  TransformerForRuntime_constant,
+  TransformerForRuntime_returnValue,
   // TransformerForRuntime_constantArray,
   TransformerForRuntime_constants,
   TransformerForRuntime_contextReference,
@@ -47,7 +47,7 @@ import {
   TransformerForRuntime_listPickElement,
   TransformerForRuntime_listReducerToIndexObject,
   TransformerForRuntime_listReducerToSpreadObject,
-  TransformerForRuntime_mapperListToList,
+  TransformerForRuntime_mapList,
   TransformerForRuntime_mustacheStringTemplate,
   TransformerForRuntime_newUuid,
   TransformerForRuntime_object_fullTemplate,
@@ -92,7 +92,7 @@ import {
   transformer_listPickElement,
   transformer_listReducerToIndexObject,
   transformer_listReducerToSpreadObject,
-  transformer_mapperListToList,
+  transformer_mapList,
   transformer_menu_addItem,
   transformer_mustacheStringTemplate,
   transformer_newUuid,
@@ -678,7 +678,7 @@ export const applicationTransformerDefinitions: Record<string, TransformerDefini
   listPickElement: transformer_listPickElement,
   listReducerToIndexObject: transformer_listReducerToIndexObject,
   listReducerToSpreadObject: transformer_listReducerToSpreadObject,
-  mapperListToList: transformer_mapperListToList,
+  mapList: transformer_mapList,
   mustacheStringTemplate: transformer_mustacheStringTemplate,
   newUuid: transformer_newUuid,
   objectAlter: transformer_objectAlter,
@@ -825,7 +825,7 @@ function resolveApplyTo(
 export function resolveApplyTo_legacy(
   transformer: 
   | TransformerForBuild_count
-  | TransformerForBuild_mapperListToList
+  | TransformerForBuild_mapList
   | TransformerForBuild_listPickElement
   | TransformerForBuild_listReducerToSpreadObject
   | TransformerForBuild_listReducerToIndexObject
@@ -833,7 +833,7 @@ export function resolveApplyTo_legacy(
   | TransformerForBuild_objectValues
   | TransformerForBuild_unique
   | TransformerForRuntime_count
-  | TransformerForRuntime_mapperListToList 
+  | TransformerForRuntime_mapList 
   | TransformerForRuntime_listPickElement
   | TransformerForRuntime_listReducerToIndexObject
   // | TransformerForRuntime_mapper_listToObject 
@@ -947,7 +947,7 @@ function transformerForBuild_list_listMapperToList_apply(
   step: Step,
   transformerPath: string[],
   label: string | undefined,
-  transformer: TransformerForRuntime_mapperListToList | TransformerForBuild_mapperListToList,
+  transformer: TransformerForRuntime_mapList | TransformerForBuild_mapList,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   modelEnvironment: MiroirModelEnvironment,
   queryParams: Record<string, any>,
@@ -2642,8 +2642,8 @@ export function handleTransformer_constant(
   transformerPath: string[],
   label: string | undefined,
   transformer:
-  | TransformerForBuild_constant
-  | TransformerForRuntime_constant,
+  | TransformerForBuild_returnValue
+  | TransformerForRuntime_returnValue,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   modelEnvironment: MiroirModelEnvironment,
   queryParams: Record<string, any>,

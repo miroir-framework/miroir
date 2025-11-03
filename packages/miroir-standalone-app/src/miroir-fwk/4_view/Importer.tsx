@@ -1551,7 +1551,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //               municipalities: {
   //                 transformerType: "freeObjectTemplate",
   //                 definition: {
-  //                   transformerType: "mapperListToList",
+  //                   transformerType: "mapList",
   //                   interpolation: "runtime",
   //                   applyTo: {
   //                     referenceType: "referencedTransformer",
@@ -1637,7 +1637,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //                 indexAttribute: "name",
   //               },
   //               updatedSplittedEntityInstances: {
-  //                 transformerType: "mapperListToList",
+  //                 transformerType: "mapList",
   //                 interpolation: "runtime",
   //                 applyTo: {
   //                   referenceType: "referencedTransformer",

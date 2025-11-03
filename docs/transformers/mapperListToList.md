@@ -1,8 +1,8 @@
-# mapperListToList Transformer
+# mapList Transformer
 
 ## Quick Overview
 
-The `mapperListToList` transformer takes a list (array) and transforms **each element** into a new form, returning a new list of transformed elements.
+The `mapList` transformer takes a list (array) and transforms **each element** into a new form, returning a new list of transformed elements.
 
 Think of it like the JavaScript `.map()` function, but with the power of Miroir's transformer system.
 
@@ -18,7 +18,7 @@ Think of it like the JavaScript `.map()` function, but with the power of Miroir'
 
 ```json
 {
-  "transformerType": "mapperListToList",
+  "transformerType": "mapList",
   "applyTo": <source-list>,
   "elementTransformer": <transformer-to-apply-to-each-element>,
   "referenceToOuterObject": "elementName",
@@ -68,7 +68,7 @@ A field name to sort the result list alphabetically.
 
 ```json
 {
-  "transformerType": "mapperListToList",
+  "transformerType": "mapList",
   "applyTo": { 
     "transformerType": "contextReference", 
     "referenceName": "nameList" 
@@ -111,7 +111,7 @@ A field name to sort the result list alphabetically.
 
 ```json
 {
-  "transformerType": "mapperListToList",
+  "transformerType": "mapList",
   "applyTo": { 
     "transformerType": "contextReference", 
     "referenceName": "countries" 
@@ -157,7 +157,7 @@ A field name to sort the result list alphabetically.
 
 ```json
 {
-  "transformerType": "mapperListToList",
+  "transformerType": "mapList",
   "applyTo": { 
     "transformerType": "contextReference", 
     "referenceName": "users" 

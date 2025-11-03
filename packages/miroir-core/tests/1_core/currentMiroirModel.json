@@ -5639,7 +5639,7 @@
               {
                 "type": "schemaReference",
                 "definition": {
-                  "relativePath": "transformerForRuntime_constant"
+                  "relativePath": "transformerForRuntime_returnValue"
                 }
               },
               {
@@ -5711,7 +5711,7 @@
               {
                 "type": "schemaReference",
                 "definition": {
-                  "relativePath": "transformerForBuild_constant"
+                  "relativePath": "transformerForBuild_returnValue"
                 }
               },
               {
@@ -5759,7 +5759,7 @@
               {
                 "type": "schemaReference",
                 "definition": {
-                  "relativePath": "transformerForRuntime_constant"
+                  "relativePath": "transformerForRuntime_returnValue"
                 }
               },
               {

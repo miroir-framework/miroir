@@ -546,7 +546,7 @@ commit 7243ab30540ae30dd655d68ede5e2ec6e51c789e
 Author: Miroir Framework <miroir-framework@protonmail.com>
 Date:   Mon Oct 28 17:26:23 2024 +0100
 
-    FEATURE: execute Queries on relational database #10. Enable the execution of "fullObjectTemplate", "innerFullObjectTemplate" and "mapperListToList" combiners on Postgres (partial implementation).
+    FEATURE: execute Queries on relational database #10. Enable the execution of "fullObjectTemplate", "innerFullObjectTemplate" and "mapList" combiners on Postgres (partial implementation).
 
  39 files changed, 2289 insertions(+), 1210 deletions(-)
 

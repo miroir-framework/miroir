@@ -146,7 +146,7 @@
               "transformer": {
                 "transformerType": "freeObjectTemplate",
                 "definition": {
-                  "transformerType": "mapperListToList",
+                  "transformerType": "mapList",
                   "elementTransformer": {
                     "transformerType": "contextReference",
                     "referenceName": "originTransformer"
@@ -336,7 +336,7 @@
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "transformerForRuntime_constant"
+              "relativePath": "transformerForRuntime_returnValue"
             }
           },
           {
@@ -366,7 +366,7 @@
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "transformerForBuild_constant"
+              "relativePath": "transformerForBuild_returnValue"
             }
           },
           {
@@ -396,7 +396,7 @@
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "transformerForRuntime_constant"
+              "relativePath": "transformerForRuntime_returnValue"
             }
           },
           {
@@ -426,7 +426,7 @@
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "transformerForBuildPlusRuntime_constant"
+              "relativePath": "transformerForBuildPlusRuntime_returnValue"
             }
           },
           {

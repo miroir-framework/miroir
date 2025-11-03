@@ -6518,7 +6518,7 @@ interface testFormat {
               transformer: {
                 transformerType: "freeObjectTemplate",
                 definition: {
-                  transformerType: "mapperListToList",
+                  transformerType: "mapList",
                   elementTransformer: {
                     transformerType: "contextReference",
                     referenceName: "originTransformer",
@@ -6609,7 +6609,7 @@ interface testFormat {
                   transformer: {
                     transformerType: "freeObjectTemplate",
                     definition: {
-                      transformerType: "mapperListToList",
+                      transformerType: "mapList",
                       elementTransformer: {
                         transformerType: "contextReference",
                         referenceName: "originTransformer",
@@ -6632,7 +6632,7 @@ interface testFormat {
               transformer: {
                 transformerType: "freeObjectTemplate",
                 definition: {
-                  transformerType: "mapperListToList",
+                  transformerType: "mapList",
                   elementTransformer: {
                     transformerType: "contextReference",
                     referenceName: "originTransformer",
@@ -6739,7 +6739,7 @@ interface testFormat {
                       transformer: {
                         transformerType: "freeObjectTemplate",
                         definition: {
-                          transformerType: "mapperListToList",
+                          transformerType: "mapList",
                           elementTransformer: {
                             transformerType: "contextReference",
                             referenceName: "originTransformer",
@@ -6785,7 +6785,7 @@ interface testFormat {
                       transformer: {
                         transformerType: "freeObjectTemplate",
                         definition: {
-                          transformerType: "mapperListToList",
+                          transformerType: "mapList",
                           elementTransformer: {
                             transformerType: "contextReference",
                             referenceName: "originTransformer",
@@ -6843,7 +6843,7 @@ interface testFormat {
                       transformer: {
                         transformerType: "freeObjectTemplate",
                         definition: {
-                          transformerType: "mapperListToList",
+                          transformerType: "mapList",
                           elementTransformer: {
                             transformerType: "contextReference",
                             referenceName: "originTransformer",
@@ -6868,7 +6868,7 @@ interface testFormat {
               transformer: {
                 transformerType: "freeObjectTemplate",
                 definition: {
-                  transformerType: "mapperListToList",
+                  transformerType: "mapList",
                   elementTransformer: {
                     transformerType: "contextReference",
                     referenceName: "originTransformer",
@@ -6881,7 +6881,7 @@ interface testFormat {
       },
       expectedKeyMap: undefined,
     },
-    // mapperListToList Transformer
+    // mapList Transformer
     test630: {
       testSchema: {
         type: "object",
@@ -7033,8 +7033,8 @@ interface testFormat {
       },
       testValueObject: {
         uuid: "3ec73049-5e54-40aa-bc86-4c4906d00baa",
-        name: "mapperListToList",
-        defaultLabel: "mapperListToList",
+        name: "mapList",
+        defaultLabel: "mapList",
         description:
           "Transform a list into another list, running the given transformer on each item of the list",
         parentUuid: "a557419d-a288-4fb8-8a1e-971c86c113b8",
@@ -7044,7 +7044,7 @@ interface testFormat {
           transformerParameterSchema: {
             transformerType: {
               type: "literal",
-              definition: "mapperListToList",
+              definition: "mapList",
             },
             transformerDefinition: {
               type: "object",
@@ -8999,7 +8999,7 @@ interface testFormat {
     //                 "transformer": {
     //                   "transformerType": "freeObjectTemplate",
     //                   "definition": {
-    //                     "transformerType": "mapperListToList",
+    //                     "transformerType": "mapList",
     //                     "elementTransformer": {
     //                       "transformerType": "contextReference",
     //                       "referenceName": "originTransformer"
@@ -9048,7 +9048,7 @@ interface testFormat {
     //                 "transformer": {
     //                   "transformerType": "freeObjectTemplate",
     //                   "definition": {
-    //                     "transformerType": "mapperListToList",
+    //                     "transformerType": "mapList",
     //                     "elementTransformer": {
     //                       "transformerType": "contextReference",
     //                       "referenceName": "originTransformer"
@@ -9109,7 +9109,7 @@ interface testFormat {
     //                 "transformer": {
     //                   "transformerType": "freeObjectTemplate",
     //                   "definition": {
-    //                     "transformerType": "mapperListToList",
+    //                     "transformerType": "mapList",
     //                     "elementTransformer": {
     //                       "transformerType": "contextReference",
     //                       "referenceName": "originTransformer"
@@ -9134,7 +9134,7 @@ interface testFormat {
     //         "transformer": {
     //           "transformerType": "freeObjectTemplate",
     //           "definition": {
-    //             "transformerType": "mapperListToList",
+    //             "transformerType": "mapList",
     //             "elementTransformer": {
     //               "transformerType": "contextReference",
     //               "referenceName": "originTransformer"
@@ -9262,7 +9262,7 @@ interface testFormat {
                           transformer: {
                             transformerType: "freeObjectTemplate",
                             definition: {
-                              transformerType: "mapperListToList",
+                              transformerType: "mapList",
                               elementTransformer: {
                                 transformerType: "contextReference",
                                 referenceName: "originTransformer",
@@ -9322,7 +9322,7 @@ interface testFormat {
                                       transformer: {
                                         transformerType: "freeObjectTemplate",
                                         definition: {
-                                          transformerType: "mapperListToList",
+                                          transformerType: "mapList",
                                           elementTransformer: {
                                             transformerType: "contextReference",
                                             referenceName: "originTransformer",
@@ -9369,7 +9369,7 @@ interface testFormat {
                                       transformer: {
                                         transformerType: "freeObjectTemplate",
                                         definition: {
-                                          transformerType: "mapperListToList",
+                                          transformerType: "mapList",
                                           elementTransformer: {
                                             transformerType: "contextReference",
                                             referenceName: "originTransformer",

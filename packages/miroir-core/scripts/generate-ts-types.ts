@@ -136,7 +136,7 @@ export type TransformerForBuild =
     )
   | TransformerForBuild_menu_addItem
   | TransformerForBuild_conditional
-  | TransformerForBuild_constant
+  | TransformerForBuild_returnValue
   | TransformerForBuild_constantAsExtractor
   | TransformerForBuild_count
   | TransformerForBuild_dataflowObject
@@ -144,7 +144,7 @@ export type TransformerForBuild =
   | TransformerForBuild_listPickElement
   | TransformerForBuild_listReducerToIndexObject
   | TransformerForBuild_listReducerToSpreadObject
-  | TransformerForBuild_mapperListToList
+  | TransformerForBuild_mapList
   | TransformerForBuild_mustacheStringTemplate
   | TransformerForBuild_newUuid
   | TransformerForBuild_objectAlter
@@ -188,7 +188,7 @@ export const transformerForBuild: z.ZodType<TransformerForBuild> = z.lazy(() => 
     recordWithoutTransformerType,
     transformerForBuild_menu_addItem,
     transformerForBuild_conditional,
-    transformerForBuild_constant,
+    transformerForBuild_returnValue,
     transformerForBuild_constantAsExtractor,
     transformerForBuild_count,
     transformerForBuild_dataflowObject,
@@ -196,7 +196,7 @@ export const transformerForBuild: z.ZodType<TransformerForBuild> = z.lazy(() => 
     transformerForBuild_listPickElement,
     transformerForBuild_listReducerToIndexObject,
     transformerForBuild_listReducerToSpreadObject,
-    transformerForBuild_mapperListToList,
+    transformerForBuild_mapList,
     transformerForBuild_mustacheStringTemplate,
     transformerForBuild_newUuid,
     transformerForBuild_objectAlter,
@@ -218,7 +218,7 @@ export const transformerForBuild: z.ZodType<TransformerForBuild> = z.lazy(() => 
 
 export type TransformerForRuntime =
   | TransformerForRuntime_menu_addItem
-  | TransformerForRuntime_constant
+  | TransformerForRuntime_returnValue
   | TransformerForRuntime_constantAsExtractor
   | TransformerForRuntime_contextReference
   | TransformerForRuntime_count
@@ -227,7 +227,7 @@ export type TransformerForRuntime =
   | TransformerForRuntime_listPickElement
   | TransformerForRuntime_listReducerToIndexObject
   | TransformerForRuntime_listReducerToSpreadObject
-  | TransformerForRuntime_mapperListToList
+  | TransformerForRuntime_mapList
   | TransformerForRuntime_mustacheStringTemplate
   | TransformerForRuntime_newUuid
   | TransformerForRuntime_objectAlter
@@ -248,7 +248,7 @@ export type TransformerForRuntime =
 export const transformerForRuntime: z.ZodType<TransformerForRuntime> = z.union([
   z.lazy(() => transformerForRuntime_menu_addItem),
   // 
-  z.lazy(() => transformerForRuntime_constant),
+  z.lazy(() => transformerForRuntime_returnValue),
   z.lazy(() => transformerForRuntime_constantAsExtractor),
   z.lazy(() => transformerForRuntime_contextReference),
   z.lazy(() => transformerForRuntime_count),
@@ -257,7 +257,7 @@ export const transformerForRuntime: z.ZodType<TransformerForRuntime> = z.union([
   z.lazy(() => transformerForRuntime_listPickElement),
   z.lazy(() => transformerForRuntime_listReducerToIndexObject),
   z.lazy(() => transformerForRuntime_listReducerToSpreadObject),
-  z.lazy(() => transformerForRuntime_mapperListToList),
+  z.lazy(() => transformerForRuntime_mapList),
   z.lazy(() => transformerForRuntime_mustacheStringTemplate),
   z.lazy(() => transformerForRuntime_newUuid),
   z.lazy(() => transformerForRuntime_objectAlter),
@@ -291,7 +291,7 @@ export type TransformerForBuildPlusRuntime =
   // | TransformerForBuild
   | TransformerForBuildPlusRuntime_menu_addItem
   | TransformerForBuildPlusRuntime_conditional
-  | TransformerForBuildPlusRuntime_constant
+  | TransformerForBuildPlusRuntime_returnValue
   | TransformerForBuildPlusRuntime_constantAsExtractor
   | TransformerForBuildPlusRuntime_count
   | TransformerForBuildPlusRuntime_dataflowObject
@@ -299,7 +299,7 @@ export type TransformerForBuildPlusRuntime =
   | TransformerForBuildPlusRuntime_listPickElement
   | TransformerForBuildPlusRuntime_listReducerToIndexObject
   | TransformerForBuildPlusRuntime_listReducerToSpreadObject
-  | TransformerForBuildPlusRuntime_mapperListToList
+  | TransformerForBuildPlusRuntime_mapList
   | TransformerForBuildPlusRuntime_mustacheStringTemplate
   | TransformerForBuildPlusRuntime_newUuid
   | TransformerForBuildPlusRuntime_objectAlter
@@ -345,7 +345,7 @@ export const transformerForBuildPlusRuntime: z.ZodType<TransformerForBuildPlusRu
     // transformerForBuild,
     transformerForBuildPlusRuntime_menu_addItem,
     transformerForBuildPlusRuntime_conditional,
-    transformerForBuildPlusRuntime_constant,
+    transformerForBuildPlusRuntime_returnValue,
     transformerForBuildPlusRuntime_constantAsExtractor,
     transformerForBuildPlusRuntime_count,
     transformerForBuildPlusRuntime_dataflowObject,
@@ -353,7 +353,7 @@ export const transformerForBuildPlusRuntime: z.ZodType<TransformerForBuildPlusRu
     transformerForBuildPlusRuntime_listPickElement,
     transformerForBuildPlusRuntime_listReducerToIndexObject,
     transformerForBuildPlusRuntime_listReducerToSpreadObject,
-    transformerForBuildPlusRuntime_mapperListToList,
+    transformerForBuildPlusRuntime_mapList,
     transformerForBuildPlusRuntime_mustacheStringTemplate,
     transformerForBuildPlusRuntime_newUuid,
     transformerForBuildPlusRuntime_objectAlter,

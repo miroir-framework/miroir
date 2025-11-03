@@ -1,12 +1,12 @@
-miroir-framework: create a md file documenting the `mapperListToList` transformer, so that it becomes understandable in a few seconds by a junior programmer
+miroir-framework: create a md file documenting the `mapList` transformer, so that it becomes understandable in a few seconds by a junior programmer
 
-GitHub Copilot: I'll create a markdown documentation file for the `mapperListToList` transformer. Let me first examine the transformer's implementation and definition to understand it fully. 
+GitHub Copilot: I'll create a markdown documentation file for the `mapList` transformer. Let me first examine the transformer's implementation and definition to understand it fully. 
 
-Searched text for `transformer_mapperListToList|mapperListToList` (`**/*.ts`), 20 results
+Searched text for `transformer_mapList|mapList` (`**/*.ts`), 20 results
 
 Now let me look at the transformer definition: 
 
-Searched codebase for "transformer_mapperListToList definition TransformerDefinition", 13 results
+Searched codebase for "transformer_mapList definition TransformerDefinition", 13 results
 
 Now let me look at the transformer definition JSON file and some test examples: 
 
@@ -18,9 +18,9 @@ Read [](file:///c%3A/Users/nono/Documents/devhome/miroir-app-dev/packages/miroir
 
 Read [](file:///c%3A/Users/nono/Documents/devhome/miroir-app-dev/packages/miroir-core/tests/2_domain/transformersTests_miroir.data.ts#1950-1950), lines 1950 to 2050
 
-Perfect! Now I have a comprehensive understanding of the `mapperListToList` transformer. Let me create a clear, beginner-friendly documentation file. 
+Perfect! Now I have a comprehensive understanding of the `mapList` transformer. Let me create a clear, beginner-friendly documentation file. 
 
-Created [](file:///c%3A/Users/nono/Documents/devhome/miroir-app-dev/docs/transformers/mapperListToList.md)
+Created [](file:///c%3A/Users/nono/Documents/devhome/miroir-app-dev/docs/transformers/mapList.md)
 
 The documentation has been created! The markdown linting errors are minor formatting issues (missing blank lines around headings and code blocks). Let me fix those for a cleaner document: 
 
@@ -52,7 +52,7 @@ Using "Replace String in File"
 
 Let me fix all the code fence issues at once by reading and rewriting the entire file cleanly: 
 
-Read [](file:///c%3A/Users/nono/Documents/devhome/miroir-app-dev/docs/transformers/mapperListToList.md)
+Read [](file:///c%3A/Users/nono/Documents/devhome/miroir-app-dev/docs/transformers/mapList.md)
 
 Using "Replace String in File"
 
@@ -68,9 +68,9 @@ Using "Replace String in File"
 ```
 
 ```
-Perfect! I've created a comprehensive markdown documentation file for the `mapperListToList` transformer at:
+Perfect! I've created a comprehensive markdown documentation file for the `mapList` transformer at:
 
-**mapperListToList.md**
+**mapList.md**
 
 ## What the documentation includes:
 
@@ -109,7 +109,7 @@ Made changes.
 
 miroir-framework: can you add a synoptic svg in the overview that presents the behavior of the transformer in a synthetic way?
 
-GitHub Copilot: I'll create a simple SVG diagram that visually represents how the `mapperListToList` transformer works. Let me add it to the overview section. 
+GitHub Copilot: I'll create a simple SVG diagram that visually represents how the `mapList` transformer works. Let me add it to the overview section. 
 
 Using "Replace String in File"
 
@@ -181,13 +181,13 @@ Based on my analysis of the transformer descriptions from the code and documenta
 
 | Old Name | New Name |
 |----------|----------|
-| constant | **returnValue** |
+| constant | **OK: returnValue** |
 | newUuid | **generateUuid** |
 | contextReference | **getFromContext** |
 | parameterReference | **getFromParameters** |
 | constantAsExtractor | **returnAsExtractor** *(testing only)* |
 | mustacheStringTemplate | **templateString** |
-| mapperListToList | **mapList** or **transformEachItem** |
+| mapList | **OK: mapList** or **transformEachItem** |
 | listPickElement | **pickFromList** |
 | unique | **getUniqueValues** |
 | count | **countItems** or **aggregate** |
@@ -201,6 +201,7 @@ Based on my analysis of the transformer descriptions from the code and documenta
 | objectAlter | **updateObject** or **mergeIntoObject** |
 | dataflowObject | **buildObjectWithDataflow** or **spreadWithTransformers** |
 | conditional | **ifThenElse** or **switchOn** |
+|----------|----------|
 | jzodTypeCheck | **validateAgainstSchema** |
 | resolveSchemaReferenceInContext | **resolveSchemaReference** |
 | resolveConditionalSchema | **inferSchemaFromValue** |

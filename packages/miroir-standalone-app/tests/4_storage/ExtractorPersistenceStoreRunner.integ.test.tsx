@@ -1053,8 +1053,8 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
 
   // // ################################################################################################
   // // TODO: write in UTF-8 on disk / in Database!
-  // // TODO: provide implementation for mapperListToList
-  // it("get book title (name) list with actionRuntimeTransformer: mapperListToList + innerFullObjectTemplate", async () => {
+  // // TODO: provide implementation for mapList
+  // it("get book title (name) list with actionRuntimeTransformer: mapList + innerFullObjectTemplate", async () => {
   //   await chainVitestSteps(
   //     "ExtractorPersistenceStoreRunner_selectUniqueEntityApplication",
   //     {},
@@ -1082,7 +1082,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", () => {
   //           },
   //           runtimeTransformers: {
   //             countries: {
-  //               transformerType: "mapperListToList",
+  //               transformerType: "mapList",
   //               interpolation: "runtime",
   //               referencedTransformer: "books",
   //               orderBy: "name",

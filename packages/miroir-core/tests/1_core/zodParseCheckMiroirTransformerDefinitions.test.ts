@@ -182,7 +182,7 @@ const transformerForBuildPlusRuntimeTest2: TransformerForBuildPlusRuntime = {
 };
 
 const transformerForBuildPlusRuntimeTest3: TransformerForBuildPlusRuntime = {
-  transformerType: "mapperListToList",
+  transformerType: "mapList",
   label: "countryListMapperToObjectList",
   interpolation: "runtime",
   applyTo: [{ a: "a" }, { b: "b" }],

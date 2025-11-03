@@ -14,7 +14,7 @@ import transformer_freeObjectTemplate_json from '../assets/miroir_data/a557419d-
 import transformer_listPickElement_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/64685ad7-1324-4080-9c41-504fcc1972c9.json';
 import transformer_listReducerToIndexObject_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/8ddb7e2e-a3d3-4622-81d2-0c3e98bca3ea.json';
 import transformer_listReducerToSpreadObject_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/0894ed4f-ca11-4b04-878d-471d1d780fac.json';
-import transformer_mapperListToList_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/3ec73049-5e54-40aa-bc86-4c4906d00baa.json';
+import transformer_mapList_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/3ec73049-5e54-40aa-bc86-4c4906d00baa.json';
 import transformer_mustacheStringTemplate_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/b1d69881-c9c4-4eb7-a60b-7af68163d559.json';
 import transformer_newUuid_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/9986b805-3580-4974-b849-3d40db4fba51.json';
 import transformer_objectFullTemplate_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/16d866c4-bc81-4773-89a4-a47ac7f6549d.json';
@@ -49,7 +49,7 @@ export const transformer_freeObjectTemplate: TransformerDefinition = transformer
 export const transformer_listPickElement: TransformerDefinition = transformer_listPickElement_json as TransformerDefinition;
 export const transformer_listReducerToIndexObject: TransformerDefinition = transformer_listReducerToIndexObject_json as TransformerDefinition;
 export const transformer_listReducerToSpreadObject: TransformerDefinition = transformer_listReducerToSpreadObject_json as TransformerDefinition;
-export const transformer_mapperListToList: TransformerDefinition = transformer_mapperListToList_json as TransformerDefinition;
+export const transformer_mapList: TransformerDefinition = transformer_mapList_json as TransformerDefinition;
 export const transformer_mustacheStringTemplate: TransformerDefinition = transformer_mustacheStringTemplate_json as TransformerDefinition;
 export const transformer_newUuid: TransformerDefinition = transformer_newUuid_json as TransformerDefinition;
 export const transformer_objectAlter: TransformerDefinition = transformer_objectAlter_json as TransformerDefinition;
@@ -85,7 +85,7 @@ export const miroirCoreTransformers: Record<string,TransformerDefinition> = {
   transformer_listPickElement,
   transformer_listReducerToIndexObject,
   transformer_listReducerToSpreadObject,
-  transformer_mapperListToList,
+  transformer_mapList,
   transformer_mustacheStringTemplate,
   transformer_newUuid,
   transformer_objectAlter,
@@ -144,7 +144,7 @@ const buildReferenceMap: Record<string, string> = {
 
 const buildPlusRuntimeReferenceMap: Record<string, string> = {
   transformer: "transformerForBuildPlusRuntime",
-  // transformer_InnerReference: "transformerForBuildPlusRuntime_InnerReference", // TODO: ensure that all transfrormer definitions use a reference for inner references: mapperListToList, transformer_objectAlter
+  // transformer_InnerReference: "transformerForBuildPlusRuntime_InnerReference", // TODO: ensure that all transfrormer definitions use a reference for inner references: mapList, transformer_objectAlter
   transformer_freeObjectTemplate: "transformerForBuildPlusRuntime_freeObjectTemplate",
   transformer_contextReference: "transformerForBuildPlusRuntime_contextReference",
   transformer_objectDynamicAccess: "transformerForBuildPlusRuntime_objectDynamicAccess",

@@ -76,7 +76,7 @@ export const transformer_spreadSheetToJzodSchema: TransformerDefinition = {
           },
         },
         splitAttributeDefinitions: {
-          transformerType: "mapperListToList",
+          transformerType: "mapList",
           applyTo: {
             transformerType: "contextReference",
             interpolation: "runtime",

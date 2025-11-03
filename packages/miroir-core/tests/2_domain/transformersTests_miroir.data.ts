@@ -1860,14 +1860,14 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = tra
 //         },
 //         {
 //           transformerTestType: "transformerTestSuite",
-//           transformerTestLabel: "mapperListToList",
+//           transformerTestLabel: "mapList",
 //           transformerTests: [
 //             {
 //               transformerTestType: "transformerTest",
-//               transformerTestLabel: "mapperListToList maps a returnValue list of objects to a list of returnValue objects",
-//               transformerName: "mapperListToList",
+//               transformerTestLabel: "mapList maps a returnValue list of objects to a list of returnValue objects",
+//               transformerName: "mapList",
 //               transformer: {
-//                 transformerType: "mapperListToList",
+//                 transformerType: "mapList",
 //                 label: "countryListMapperToObjectList",
 //                 interpolation: "runtime",
 //                 applyTo: [Country1 as EntityInstance, Country2 as EntityInstance],
@@ -1891,10 +1891,10 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = tra
 //             },
 //             {
 //               transformerTestType: "transformerTest",
-//               transformerTestLabel: "mapperListToList maps a returnValue list of objects to a list of returnValue objects with subObject",
-//               transformerName: "mapperListToList",
+//               transformerTestLabel: "mapList maps a returnValue list of objects to a list of returnValue objects with subObject",
+//               transformerName: "mapList",
 //               transformer: {
-//                 transformerType: "mapperListToList",
+//                 transformerType: "mapList",
 //                 label: "countryListMapperToObjectList",
 //                 interpolation: "runtime",
 //                 applyTo: [Country1 as EntityInstance, Country2 as EntityInstance],
@@ -1934,10 +1934,10 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = tra
 //             },
 //             {
 //               transformerTestType: "transformerTest",
-//               transformerTestLabel: "mapperListToList maps a list of objects to another list of objects using object_fullTemplate",
-//               transformerName: "mapperListToList",
+//               transformerTestLabel: "mapList maps a list of objects to another list of objects using object_fullTemplate",
+//               transformerName: "mapList",
 //               transformer: {
-//                 transformerType: "mapperListToList",
+//                 transformerType: "mapList",
 //                 label: "countryListMapperToObjectList",
 //                 interpolation: "runtime",
 //                 applyTo: {
@@ -1995,10 +1995,10 @@ export const transformerTestSuite_miroirTransformers: TransformerTestSuite = tra
 //             },
 //             {
 //               transformerTestType: "transformerTest",
-//               transformerTestLabel: "mapperListToList maps a list of objects to a list of altered objects using objectAlter",
-//               transformerName: "mapperListToList",
+//               transformerTestLabel: "mapList maps a list of objects to a list of altered objects using objectAlter",
+//               transformerName: "mapList",
 //               transformer: {
-//                 transformerType: "mapperListToList",
+//                 transformerType: "mapList",
 //                 label: "countryListMapperToObjectList",
 //                 interpolation: "runtime",
 //                 applyTo: {

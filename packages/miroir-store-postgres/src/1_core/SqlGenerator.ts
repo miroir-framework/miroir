@@ -12,7 +12,7 @@ import {
   TransformerForBuild_freeObjectTemplate,
   TransformerForBuild_object_fullTemplate,
   TransformerForRuntime,
-  TransformerForRuntime_constant,
+  TransformerForRuntime_returnValue,
   // TransformerForRuntime_constantArray,
   TransformerForRuntime_constantAsExtractor,
   TransformerForRuntime_contextReference,
@@ -23,7 +23,7 @@ import {
   TransformerForRuntime_listReducerToIndexObject,
   TransformerForRuntime_listReducerToSpreadObject,
   // TransformerForRuntime_innerFullObjectTemplate,
-  TransformerForRuntime_mapperListToList,
+  TransformerForRuntime_mapList,
   TransformerForRuntime_mustacheStringTemplate,
   TransformerForRuntime_newUuid,
   TransformerForRuntime_object_fullTemplate,
@@ -274,7 +274,7 @@ const getConstantSql = (
 // ################################################################################################
 // used only by legacy "typed" constants
 function sqlStringForConstantAnyTransformer(
-  actionRuntimeTransformer: TransformerForRuntime_constant,
+  actionRuntimeTransformer: TransformerForRuntime_returnValue,
   preparedStatementParametersCount: number,
   indentLevel: number,
   queryParams: Record<string, any>,
@@ -297,7 +297,7 @@ function sqlStringForConstantAnyTransformer(
 
 // ################################################################################################
 function sqlStringForConstantTransformer(
-  actionRuntimeTransformer: TransformerForRuntime_constant,
+  actionRuntimeTransformer: TransformerForRuntime_returnValue,
   preparedStatementParametersCount: number,
   indentLevel: number,
   queryParams: Record<string, any>,
@@ -444,7 +444,7 @@ function sqlStringForApplyTo(
     | TransformerForRuntime_object_fullTemplate
     | TransformerForRuntime_count
     | TransformerForRuntime_listPickElement
-    | TransformerForRuntime_mapperListToList
+    | TransformerForRuntime_mapList
     | TransformerForRuntime_objectAlter
     | TransformerForRuntime_objectValues
     | TransformerForRuntime_objectEntries
@@ -1274,7 +1274,7 @@ ${orderBy}
 
 // ################################################################################################
 function sqlStringForMapperListToListTransformer(
-  actionRuntimeTransformer: TransformerForRuntime_mapperListToList,
+  actionRuntimeTransformer: TransformerForRuntime_mapList,
   preparedStatementParametersCount: number,
   indentLevel: number,
   queryParams: Record<string, any>,
@@ -1286,7 +1286,7 @@ function sqlStringForMapperListToListTransformer(
    * must take the rerferencedExtractor result and make it avaialable to elementTransformer, apply the elementTransformer to
    * each element of the list and return the sorted list of transformed elements
    */
-  // throw new Error("sqlStringForRuntimeTransformer mapperListToList not implemented");
+  // throw new Error("sqlStringForRuntimeTransformer mapList not implemented");
   let newPreparedStatementParametersCount = preparedStatementParametersCount;
 
   const transformerLabel: string = (actionRuntimeTransformer as any).label ?? actionRuntimeTransformer.transformerType;
@@ -1351,7 +1351,7 @@ function sqlStringForMapperListToListTransformer(
         );
 
   log.info(
-    "sqlStringForMapperListToListTransformer mapperListToList found elementTransformer",
+    "sqlStringForMapperListToListTransformer mapList found elementTransformer",
     JSON.stringify(sqlStringForElementTransformer, null, 2)
   );
   if (sqlStringForElementTransformer instanceof Domain2ElementFailed) {
@@ -1361,7 +1361,7 @@ function sqlStringForMapperListToListTransformer(
     return new Domain2ElementFailed({
       queryFailure: "QueryNotExecutable",
       query: actionRuntimeTransformer as any,
-      failureMessage: "sqlStringForMapperListToListTransformer mapperListToList elementTransformer not json",
+      failureMessage: "sqlStringForMapperListToListTransformer mapList elementTransformer not json",
     });
   }
 
@@ -1377,7 +1377,7 @@ function sqlStringForMapperListToListTransformer(
     useAccessPathForContextReference,// false, // useAccessPathForContextReference,
     topLevelTransformer,
 );
-  // log.info("sqlStringForRuntimeTransformer mapperListToList found applyTo", JSON.stringify(applyTo, null, 2));
+  // log.info("sqlStringForRuntimeTransformer mapList found applyTo", JSON.stringify(applyTo, null, 2));
   if (applyTo instanceof Domain2ElementFailed) {
     return applyTo;
   }
@@ -1385,7 +1385,7 @@ function sqlStringForMapperListToListTransformer(
     return new Domain2ElementFailed({
       queryFailure: "QueryNotExecutable",
       query: actionRuntimeTransformer as any,
-      failureMessage: "sqlStringForMapperListToListTransformer mapperListToList referenceQuery result is not json:" + applyTo.type,
+      failureMessage: "sqlStringForMapperListToListTransformer mapList referenceQuery result is not json:" + applyTo.type,
     });
   }
 
@@ -1394,7 +1394,7 @@ function sqlStringForMapperListToListTransformer(
     newPreparedStatementParametersCount += applyTo.preparedStatementParameters.length;
   }
   log.info(
-    "sqlStringForMapperListToListTransformer mapperListToList applyTo",
+    "sqlStringForMapperListToListTransformer mapList applyTo",
     JSON.stringify(applyTo, null, 2),
   )
   switch (applyTo.type) {
@@ -1446,14 +1446,14 @@ function sqlStringForMapperListToListTransformer(
     }
     // case "table": {
     //   // const column = applyTo.resultAccessPath ? "." + applyTo.resultAccessPath.join(".") : "";
-    //   // const sqlResult = `SELECT * FROM (${applyTo.sqlStringOrObject}) AS "mapperListToList" ORDER BY ${column}`;
-    //   const sqlResult = `SELECT * FROM (${applyTo.sqlStringOrObject}) AS "mapperListToList"`;
+    //   // const sqlResult = `SELECT * FROM (${applyTo.sqlStringOrObject}) AS "mapList" ORDER BY ${column}`;
+    //   const sqlResult = `SELECT * FROM (${applyTo.sqlStringOrObject}) AS "mapList"`;
     //   return {
     //     // type: "json",
     //     type: "table",
     //     sqlStringOrObject: sqlResult,
     //     preparedStatementParameters: applyTo.preparedStatementParameters,
-    //     resultAccessPath: [0, "mapperListToList"],
+    //     resultAccessPath: [0, "mapList"],
     //   };
     //   break;
     // }
@@ -1461,7 +1461,7 @@ function sqlStringForMapperListToListTransformer(
     //   return new Domain2ElementFailed({
     //     queryFailure: "QueryNotExecutable",
     //     query: actionRuntimeTransformer as any,
-    //     failureMessage: "sqlStringForRuntimeTransformer mapperListToList referenceQuery result is scalar, not json",
+    //     failureMessage: "sqlStringForRuntimeTransformer mapList referenceQuery result is scalar, not json",
     //   });
     //   break;
     // }
@@ -1469,7 +1469,7 @@ function sqlStringForMapperListToListTransformer(
       return new Domain2ElementFailed({
         queryFailure: "QueryNotExecutable",
         query: actionRuntimeTransformer as any,
-        failureMessage: "sqlStringForMapperListToListTransformer mapperListToList referenceQuery not json",
+        failureMessage: "sqlStringForMapperListToListTransformer mapList referenceQuery not json",
       });
       break;
     }

@@ -673,7 +673,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
   //           },
   //           runtimeTransformers: {
   //             countries: {
-  //               transformerType: "mapperListToList",
+  //               transformerType: "mapList",
   //               interpolation: "runtime",
   //               referencedTransformer: "books",
   //               orderBy: "name",
