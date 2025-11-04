@@ -30,7 +30,7 @@ export const transformerTestSuite_applicativeTransformers: TransformerTestSuite 
         interpolation: "runtime",
           menuItemReference: "menuItem",
           menuReference: {
-            transformerType: "objectDynamicAccess",
+            transformerType: "accessDynamicPath",
             interpolation: "runtime",
             objectAccessPath: [{
               transformerType: "getFromContext",

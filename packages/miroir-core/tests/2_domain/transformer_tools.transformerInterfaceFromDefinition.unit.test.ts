@@ -7,7 +7,7 @@ const runtimeReferenceMap: Record<string, string> = {
   // transformer_InnerReference: "transformerForRuntime_InnerReference",
   transformer_createObject: "transformerForRuntime_createObject",
   transformer_getFromContext: "transformerForRuntime_getFromContext",
-  transformer_objectDynamicAccess: "transformerForRuntime_objectDynamicAccess",
+  transformer_accessDynamicPath: "transformerForRuntime_accessDynamicPath",
   transformer_mustacheStringTemplate: "transformerForRuntime_mustacheStringTemplate",
 };
 
@@ -16,7 +16,7 @@ const buildReferenceMap: Record<string, string> = {
   // transformer_InnerReference: "transformerForBuild_InnerReference",
   transformer_createObject: "transformerForBuild_createObject",
   transformer_getFromContext: "transformerForRuntime_getFromContext",
-  transformer_objectDynamicAccess: "transformerForBuild_objectDynamicAccess",
+  transformer_accessDynamicPath: "transformerForBuild_accessDynamicPath",
   transformer_mustacheStringTemplate: "transformer_mustacheStringTemplate", // TODO: rename to transformer_mustacheStringTemplate
 };
 

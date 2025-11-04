@@ -747,7 +747,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //   //             applicationSection: "model",
   //   //             instances: [
   //   //               {
-  //   //                 transformerType: "objectDynamicAccess",
+  //   //                 transformerType: "accessDynamicPath",
   //   //                 interpolation: "runtime",
   //   //                 objectAccessPath: [
   //   //                   {
@@ -1432,11 +1432,11 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //               applicationSection: "model",
   //               instances: [
   //                 {
-  //                   transformerType: "objectDynamicAccess",
+  //                   transformerType: "accessDynamicPath",
   //                   interpolation: "runtime",
   //                   objectAccessPath: [
   //                     {
-  //                       transformerType: "createObject", // TODO: allow transformer inside inner objectDynamicAccess in Query Templates!
+  //                       transformerType: "createObject", // TODO: allow transformer inside inner accessDynamicPath in Query Templates!
   //                       definition: {
   //                         transformerType: "getFromContext",
   //                         interpolation: "runtime",
@@ -1657,7 +1657,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //                     interpolation: "runtime",
   //                     definition: {
   //                       [newEntityName]: {
-  //                         transformerType: "objectDynamicAccess",
+  //                         transformerType: "accessDynamicPath",
   //                         interpolation: "runtime",
   //                         objectAccessPath: [
   //                           {
@@ -1666,7 +1666,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //                             referenceName: "municipalitiesIndexedByName",
   //                           },
   //                           {
-  //                             transformerType: "objectDynamicAccess",
+  //                             transformerType: "accessDynamicPath",
   //                             interpolation: "runtime",
   //                             objectAccessPath: [
   //                               {

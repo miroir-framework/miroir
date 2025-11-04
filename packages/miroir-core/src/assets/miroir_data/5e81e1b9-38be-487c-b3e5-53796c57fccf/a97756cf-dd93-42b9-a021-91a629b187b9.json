@@ -384,7 +384,7 @@
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "transformerForBuild_objectDynamicAccess"
+              "relativePath": "transformerForBuild_accessDynamicPath"
             }
           }
         ]
@@ -414,7 +414,7 @@
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "transformerForRuntime_objectDynamicAccess"
+              "relativePath": "transformerForRuntime_accessDynamicPath"
             }
           }
         ]
@@ -444,7 +444,7 @@
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "transformerForBuildPlusRuntime_objectDynamicAccess"
+              "relativePath": "transformerForBuildPlusRuntime_accessDynamicPath"
             }
           }
         ]

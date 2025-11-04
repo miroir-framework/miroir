@@ -23,7 +23,7 @@
           "applyTo": {
             "type": "any",
             "optional": true,
-            "description": "The list to count. The actual type is set by the platform depending on interpolation for the transformer."
+            "description": "The list to aggregate. The actual type is set by the platform depending on interpolation for the transformer."
           },
           "attribute": {
             "type": "string",

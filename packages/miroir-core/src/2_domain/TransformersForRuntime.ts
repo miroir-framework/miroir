@@ -29,7 +29,7 @@ import {
   TransformerForBuild_generateUuid,
   TransformerForBuild_createObjectFromPairs,
   TransformerForBuild_mergeIntoObject,
-  TransformerForBuild_objectDynamicAccess,
+  TransformerForBuild_accessDynamicPath,
   TransformerForBuild_getObjectEntries,
   TransformerForBuild_getObjectValues,
   TransformerForBuild_getFromParameters,
@@ -52,7 +52,7 @@ import {
   TransformerForRuntime_generateUuid,
   TransformerForRuntime_createObjectFromPairs,
   TransformerForRuntime_mergeIntoObject,
-  TransformerForRuntime_objectDynamicAccess,
+  TransformerForRuntime_accessDynamicPath,
   TransformerForRuntime_getObjectEntries,
   TransformerForRuntime_getObjectValues,
   TransformerForRuntime_getUniqueValues,
@@ -98,7 +98,7 @@ import {
   transformer_generateUuid,
   transformer_createObjectFromPairs,
   transformer_mergeIntoObject,
-  transformer_objectDynamicAccess,
+  transformer_accessDynamicPath,
   transformer_getObjectEntries,
   transformer_getObjectValues,
   transformer_getFromParameters,
@@ -682,7 +682,7 @@ export const applicationTransformerDefinitions: Record<string, TransformerDefini
   mustacheStringTemplate: transformer_mustacheStringTemplate,
   generateUuid: transformer_generateUuid,
   mergeIntoObject: transformer_mergeIntoObject,
-  objectDynamicAccess: transformer_objectDynamicAccess,
+  accessDynamicPath: transformer_accessDynamicPath,
   getObjectEntries: transformer_getObjectEntries,
   getObjectValues: transformer_getObjectValues,
   createObjectFromPairs: transformer_createObjectFromPairs,
@@ -1639,7 +1639,7 @@ export function transformer_InnerReference_resolve(
       );
       break;
     }
-    case "objectDynamicAccess": {
+    case "accessDynamicPath": {
       result = defaultTransformers.transformer_dynamicObjectAccess_apply(
         step,
         transformerPath,
@@ -1741,7 +1741,7 @@ export function transformer_dynamicObjectAccess_apply(
   step: Step,
   transformerPath: string[],
   objectName: string | undefined,
-  transformer: TransformerForRuntime_objectDynamicAccess | TransformerForBuild_objectDynamicAccess,
+  transformer: TransformerForRuntime_accessDynamicPath | TransformerForBuild_accessDynamicPath,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   modelEnvironment: MiroirModelEnvironment,
   transformerParams: Record<string, any>,

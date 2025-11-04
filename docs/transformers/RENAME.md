@@ -198,10 +198,10 @@ Based on my analysis of the transformer descriptions from the code and documenta
 | objectAlter | OK: **mergeIntoObject** |
 | conditional | OK: **ifThenElse** |
 |----------|----------|
+| objectDynamicAccess | **accessDynamicPath** |
 | constantAsExtractor | **returnAsExtractor** *(testing only)* |
 | mustacheStringTemplate | **templateString** |
 | dataflowObject | **buildObjectWithDataflow** or **spreadWithTransformers** |
-| objectDynamicAccess | **accessDynamicPath** |
 |----------|----------|
 | jzodTypeCheck | **validateAgainstSchema** |
 | resolveSchemaReferenceInContext | **resolveSchemaReference** |

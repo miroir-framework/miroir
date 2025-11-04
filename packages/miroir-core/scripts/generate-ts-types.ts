@@ -148,7 +148,7 @@ export type TransformerForBuild =
   | TransformerForBuild_mustacheStringTemplate
   | TransformerForBuild_generateUuid
   | TransformerForBuild_mergeIntoObject
-  | TransformerForBuild_objectDynamicAccess
+  | TransformerForBuild_accessDynamicPath
   | TransformerForBuild_getObjectEntries
   | TransformerForBuild_getObjectValues
   | TransformerForBuild_createObjectFromPairs
@@ -200,7 +200,7 @@ export const transformerForBuild: z.ZodType<TransformerForBuild> = z.lazy(() => 
     transformerForBuild_mustacheStringTemplate,
     transformerForBuild_generateUuid,
     transformerForBuild_mergeIntoObject,
-    transformerForBuild_objectDynamicAccess,
+    transformerForBuild_accessDynamicPath,
     transformerForBuild_getObjectEntries,
     transformerForBuild_getObjectValues,
     transformerForBuild_createObjectFromPairs,
@@ -231,7 +231,7 @@ export type TransformerForRuntime =
   | TransformerForRuntime_mustacheStringTemplate
   | TransformerForRuntime_generateUuid
   | TransformerForRuntime_mergeIntoObject
-  | TransformerForRuntime_objectDynamicAccess
+  | TransformerForRuntime_accessDynamicPath
   | TransformerForRuntime_getObjectEntries
   | TransformerForRuntime_getObjectValues
   | TransformerForRuntime_createObjectFromPairs
@@ -261,7 +261,7 @@ export const transformerForRuntime: z.ZodType<TransformerForRuntime> = z.union([
   z.lazy(() => transformerForRuntime_mustacheStringTemplate),
   z.lazy(() => transformerForRuntime_generateUuid),
   z.lazy(() => transformerForRuntime_mergeIntoObject),
-  z.lazy(() => transformerForRuntime_objectDynamicAccess),
+  z.lazy(() => transformerForRuntime_accessDynamicPath),
   z.lazy(() => transformerForRuntime_getObjectEntries),
   z.lazy(() => transformerForRuntime_getObjectValues),
   z.lazy(() => transformerForRuntime_createObjectFromPairs),
@@ -303,7 +303,7 @@ export type TransformerForBuildPlusRuntime =
   | TransformerForBuildPlusRuntime_mustacheStringTemplate
   | TransformerForBuildPlusRuntime_generateUuid
   | TransformerForBuildPlusRuntime_mergeIntoObject
-  | TransformerForBuildPlusRuntime_objectDynamicAccess
+  | TransformerForBuildPlusRuntime_accessDynamicPath
   | TransformerForBuildPlusRuntime_getObjectEntries
   | TransformerForBuildPlusRuntime_getObjectValues
   | TransformerForBuildPlusRuntime_createObjectFromPairs
@@ -357,7 +357,7 @@ export const transformerForBuildPlusRuntime: z.ZodType<TransformerForBuildPlusRu
     transformerForBuildPlusRuntime_mustacheStringTemplate,
     transformerForBuildPlusRuntime_generateUuid,
     transformerForBuildPlusRuntime_mergeIntoObject,
-    transformerForBuildPlusRuntime_objectDynamicAccess,
+    transformerForBuildPlusRuntime_accessDynamicPath,
     transformerForBuildPlusRuntime_getObjectEntries,
     transformerForBuildPlusRuntime_getObjectValues,
     transformerForBuildPlusRuntime_createObjectFromPairs,

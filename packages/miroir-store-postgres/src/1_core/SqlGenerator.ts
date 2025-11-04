@@ -28,7 +28,7 @@ import {
   TransformerForRuntime_generateUuid,
   TransformerForRuntime_createObjectFromPairs,
   TransformerForRuntime_mergeIntoObject,
-  TransformerForRuntime_objectDynamicAccess,
+  TransformerForRuntime_accessDynamicPath,
   TransformerForRuntime_getObjectEntries,
   TransformerForRuntime_getObjectValues,
   TransformerForRuntime_getUniqueValues,
@@ -2873,7 +2873,7 @@ function sqlStringForParameterReferenceTransformer(
 
 // ################################################################################################
 function sqlStringForObjectDynamicAccessTransformer(
-  actionRuntimeTransformer: TransformerForRuntime_objectDynamicAccess,
+  actionRuntimeTransformer: TransformerForRuntime_accessDynamicPath,
   preparedStatementParametersCount: number,
   indentLevel: number,
   queryParams: Record<string, any>,

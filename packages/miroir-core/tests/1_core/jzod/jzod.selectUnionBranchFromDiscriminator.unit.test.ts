@@ -997,7 +997,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
           transformerType: { type: "literal", definition: "generateUuid" },
         },
       },
-      // objectDynamicAccess
+      // accessDynamicPath
       {
         type: "object",
         extend: [
@@ -1013,7 +1013,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
         ],
         definition: {
           interpolation: { type: "literal", definition: "build" },
-          transformerType: { type: "literal", definition: "objectDynamicAccess" },
+          transformerType: { type: "literal", definition: "accessDynamicPath" },
           objectAccessPath: {
             type: "array",
             definition: {
@@ -1059,7 +1059,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
                   ],
                   definition: {
                     interpolation: { type: "literal", definition: "runtime" },
-                    transformerType: { type: "literal", definition: "objectDynamicAccess" },
+                    transformerType: { type: "literal", definition: "accessDynamicPath" },
                     objectAccessPath: {
                       type: "array",
                       definition: {
@@ -1105,7 +1105,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
                             definition: {
                               transformerType: {
                                 type: "literal",
-                                definition: "objectDynamicAccess",
+                                definition: "accessDynamicPath",
                               },
                               objectAccessPath: {
                                 type: "array",
@@ -1126,7 +1126,7 @@ describe("selectUnionBranchFromDiscriminator", () => {
                                       definition: {
                                         absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                                         relativePath:
-                                          "transformerForBuildPlusRuntime_objectDynamicAccess",
+                                          "transformerForBuildPlusRuntime_accessDynamicPath",
                                       },
                                     },
                                     {
