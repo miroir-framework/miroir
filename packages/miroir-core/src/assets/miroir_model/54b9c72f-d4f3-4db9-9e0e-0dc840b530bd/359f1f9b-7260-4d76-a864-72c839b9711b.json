@@ -109,7 +109,7 @@
               "queryFailure": {
                 "type": "enum",
                 "definition": [
-                  "FailedTransformer_objectEntries",
+                  "FailedTransformer_getObjectEntries",
                   "FailedExtractor",
                   "QueryNotExecutable",
                   "DomainStateNotLoaded",

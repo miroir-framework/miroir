@@ -29,7 +29,7 @@ import {
   TransformerForRuntime_object_fullTemplate,
   TransformerForRuntime_objectAlter,
   TransformerForRuntime_objectDynamicAccess,
-  TransformerForRuntime_objectEntries,
+  TransformerForRuntime_getObjectEntries,
   TransformerForRuntime_getObjectValues,
   TransformerForRuntime_getUniqueValues,
   defaultMetaModelEnvironment,
@@ -450,7 +450,7 @@ function sqlStringForApplyTo(
     | TransformerForRuntime_mapList
     | TransformerForRuntime_objectAlter
     | TransformerForRuntime_getObjectValues
-    | TransformerForRuntime_objectEntries
+    | TransformerForRuntime_getObjectEntries
     | TransformerForRuntime_listReducerToSpreadObject
     | TransformerForRuntime_indexListBy
     | TransformerForRuntime_getUniqueValues
@@ -2130,7 +2130,7 @@ ${indent(indentLevel)}WHERE "${applyToName}".row_num = "objectAlter_subQuery".ro
 
 // ################################################################################################
 function sqlStringForObjectEntriesTransformer(
-  actionRuntimeTransformer: TransformerForRuntime_objectEntries,
+  actionRuntimeTransformer: TransformerForRuntime_getObjectEntries,
   preparedStatementParametersCount: number,
   indentLevel: number,
   queryParams: Record<string, any>,
@@ -2157,7 +2157,7 @@ function sqlStringForObjectEntriesTransformer(
       sql: applyTo.sqlStringOrObject,
     },
   ];
-  const sqlResult = `SELECT jsonb_agg(json_build_array(key, value)) AS "objectEntries" FROM "innerQuery", jsonb_each("innerQuery"."${
+  const sqlResult = `SELECT jsonb_agg(json_build_array(key, value)) AS "getObjectEntries" FROM "innerQuery", jsonb_each("innerQuery"."${
     (applyTo as any).resultAccessPath[1]
   }")`;
 
@@ -2165,8 +2165,8 @@ function sqlStringForObjectEntriesTransformer(
     type: "json",
     sqlStringOrObject: sqlResult,
     preparedStatementParameters: applyTo.preparedStatementParameters,
-    resultAccessPath: [0, "objectEntries"],
-    columnNameContainingJsonValue: "objectEntries",
+    resultAccessPath: [0, "getObjectEntries"],
+    columnNameContainingJsonValue: "getObjectEntries",
     extraWith,
   };
 }

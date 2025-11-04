@@ -30,7 +30,7 @@ import {
   TransformerForBuild_object_fullTemplate,
   TransformerForBuild_objectAlter,
   TransformerForBuild_objectDynamicAccess,
-  TransformerForBuild_objectEntries,
+  TransformerForBuild_getObjectEntries,
   TransformerForBuild_getObjectValues,
   TransformerForBuild_getFromParameters,
   TransformerForBuild_getUniqueValues,
@@ -53,7 +53,7 @@ import {
   TransformerForRuntime_object_fullTemplate,
   TransformerForRuntime_objectAlter,
   TransformerForRuntime_objectDynamicAccess,
-  TransformerForRuntime_objectEntries,
+  TransformerForRuntime_getObjectEntries,
   TransformerForRuntime_getObjectValues,
   TransformerForRuntime_getUniqueValues,
   type TransformerForBuild_InnerReference,
@@ -99,7 +99,7 @@ import {
   transformer_object_fullTemplate,
   transformer_objectAlter,
   transformer_objectDynamicAccess,
-  transformer_objectEntries,
+  transformer_getObjectEntries,
   transformer_getObjectValues,
   transformer_getFromParameters,
   transformer_getUniqueValues,
@@ -644,7 +644,7 @@ const inMemoryTransformerImplementations: Record<string, ITransformerHandler<any
   handleTransformer_generateUuid,
   handleTransformer_objectAlter: defaultTransformers.handleTransformer_objectAlter,
   transformer_dynamicObjectAccess_apply: defaultTransformers.transformer_dynamicObjectAccess_apply,
-  handleTransformer_objectEntries,
+  handleTransformer_getObjectEntries,
   handleTransformer_getObjectValues,
   handleTransformer_object_fullTemplate: defaultTransformers.handleTransformer_object_fullTemplate,
   handleTransformer_getFromParameters,
@@ -683,7 +683,7 @@ export const applicationTransformerDefinitions: Record<string, TransformerDefini
   generateUuid: transformer_generateUuid,
   objectAlter: transformer_objectAlter,
   objectDynamicAccess: transformer_objectDynamicAccess,
-  objectEntries: transformer_objectEntries,
+  getObjectEntries: transformer_getObjectEntries,
   getObjectValues: transformer_getObjectValues,
   object_fullTemplate: transformer_object_fullTemplate,
   getFromParameters: transformer_getFromParameters,
@@ -829,7 +829,7 @@ export function resolveApplyTo_legacy(
   | TransformerForBuild_pickFromList
   | TransformerForBuild_listReducerToSpreadObject
   | TransformerForBuild_indexListBy
-  | TransformerForBuild_objectEntries
+  | TransformerForBuild_getObjectEntries
   | TransformerForBuild_getObjectValues
   | TransformerForBuild_getUniqueValues
   | TransformerForRuntime_aggregate
@@ -838,7 +838,7 @@ export function resolveApplyTo_legacy(
   | TransformerForRuntime_indexListBy
   // | TransformerForRuntime_mapper_listToObject 
   | TransformerForRuntime_listReducerToSpreadObject
-  | TransformerForRuntime_objectEntries
+  | TransformerForRuntime_getObjectEntries
   | TransformerForRuntime_getObjectValues
   | TransformerForRuntime_getUniqueValues
   ,
@@ -2224,13 +2224,13 @@ export function handleTransformer_FreeObjectTemplate(
 }
 
 // ################################################################################################
-export function handleTransformer_objectEntries(
+export function handleTransformer_getObjectEntries(
   step: Step,
   transformerPath: string[],
   label: string | undefined,
   transformer:
-  | TransformerForBuild_objectEntries
-  | TransformerForRuntime_objectEntries,
+  | TransformerForBuild_getObjectEntries
+  | TransformerForRuntime_getObjectEntries,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   modelEnvironment: MiroirModelEnvironment,
   queryParams: Record<string, any>,
@@ -2246,40 +2246,40 @@ export function handleTransformer_objectEntries(
     contextResults,
     label
   );
-  // log.info("handleTransformer_objectEntries referencedExtractor=", resolvedReference);
+  // log.info("handleTransformer_getObjectEntries referencedExtractor=", resolvedReference);
 
   if (resolvedReference instanceof TransformerFailure) {
     log.error(
-      "handleTransformer_objectEntries can not apply to resolvedReference",
+      "handleTransformer_getObjectEntries can not apply to resolvedReference",
       resolvedReference
     );
     return new TransformerFailure({
       queryFailure: "FailedTransformer",
       transformerPath, //: [...transformerPath, transformer.transformerType],
-      failureOrigin: ["handleTransformer_objectEntries"],
-      queryContext: "handleTransformer_objectEntries can not apply to resolvedReference",
+      failureOrigin: ["handleTransformer_getObjectEntries"],
+      queryContext: "handleTransformer_getObjectEntries can not apply to resolvedReference",
       innerError: resolvedReference,
     });
   }
 
   if (!(typeof resolvedReference == "object") || Array.isArray(resolvedReference)) {
     const failure: TransformerFailure = new TransformerFailure({
-      queryFailure: "FailedTransformer_objectEntries",
+      queryFailure: "FailedTransformer_getObjectEntries",
       transformerPath, //: [...transformerPath, transformer.transformerType],
       failureMessage:
-        "handleTransformer_objectEntries called on something that is not an object: " +
+        "handleTransformer_getObjectEntries called on something that is not an object: " +
         typeof resolvedReference,
       // queryParameters: JSON.stringify(resolvedReference, null, 2),
       queryParameters: resolvedReference,
     });
     log.error(
-      "handleTransformer_objectEntries resolvedReference",
+      "handleTransformer_getObjectEntries resolvedReference",
       resolvedReference
     );
     return failure;
   }
   // log.info(
-  //   "handleTransformer_objectEntries resolvedReference",
+  //   "handleTransformer_getObjectEntries resolvedReference",
   //   resolvedReference
   // );
   return Object.entries(resolvedReference);

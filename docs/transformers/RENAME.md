@@ -194,7 +194,7 @@ Based on my analysis of the transformer descriptions from the code and documenta
 | listReducerToIndexObject | OK: **indexListBy** |
 | listReducerToSpreadObject | OK: **spreadListItems** |
 | objectValues | OK: **getObjectValues** |
-| objectEntries | **getObjectEntries** |
+| objectEntries | OK: **getObjectEntries** |
 | objectDynamicAccess | **getNestedValue** or **accessPath** |
 | freeObjectTemplate | **buildObject** or **createObject** |
 | object_fullTemplate | **buildObjectAdvanced** or **buildObjectFromPairs** |

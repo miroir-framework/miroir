@@ -855,7 +855,7 @@ export function getMiroirFundamentalJzodSchema(
         transformerForBuild_objectAlter: miroirTransformersForBuild.transformer_objectAlter,
         transformerForBuild_objectDynamicAccess:
           miroirTransformersForBuild.transformer_objectDynamicAccess,
-        transformerForBuild_objectEntries: miroirTransformersForBuild.transformer_objectEntries,
+        transformerForBuild_getObjectEntries: miroirTransformersForBuild.transformer_getObjectEntries,
         transformerForBuild_getObjectValues: miroirTransformersForBuild.transformer_getObjectValues,
         transformerForBuild_pickFromList: miroirTransformersForBuild.transformer_pickFromList,
         transformerForBuild_indexListBy:
@@ -933,7 +933,7 @@ export function getMiroirFundamentalJzodSchema(
         transformerForRuntime_objectAlter: miroirTransformersForRuntime.transformer_objectAlter,
         transformerForRuntime_objectDynamicAccess:
           miroirTransformersForRuntime.transformer_objectDynamicAccess,
-        transformerForRuntime_objectEntries: miroirTransformersForRuntime.transformer_objectEntries,
+        transformerForRuntime_getObjectEntries: miroirTransformersForRuntime.transformer_getObjectEntries,
         transformerForRuntime_getObjectValues: miroirTransformersForRuntime.transformer_getObjectValues,
         transformerForRuntime_object_fullTemplate:
           miroirTransformersForRuntime.transformer_object_fullTemplate,
@@ -1038,8 +1038,8 @@ export function getMiroirFundamentalJzodSchema(
           miroirTransformersForBuildPlusRuntime.transformer_objectAlter,
         transformerForBuildPlusRuntime_objectDynamicAccess:
           miroirTransformersForBuildPlusRuntime.transformer_objectDynamicAccess,
-        transformerForBuildPlusRuntime_objectEntries:
-          miroirTransformersForBuildPlusRuntime.transformer_objectEntries,
+        transformerForBuildPlusRuntime_getObjectEntries:
+          miroirTransformersForBuildPlusRuntime.transformer_getObjectEntries,
         transformerForBuildPlusRuntime_getObjectValues:
           miroirTransformersForBuildPlusRuntime.transformer_getObjectValues,
         transformerForBuildPlusRuntime_object_fullTemplate:
@@ -3927,7 +3927,7 @@ export function getMiroirFundamentalJzodSchema(
     "transformerForBuild_mustacheStringTemplate",
     "transformerForBuild_objectAlter",
     "transformerForBuild_objectDynamicAccess",
-    "transformerForBuild_objectEntries",
+    "transformerForBuild_getObjectEntries",
     "transformerForBuild_getObjectValues",
     "transformerForBuild_pickFromList",
     "transformerForBuild_indexListBy",
@@ -4081,7 +4081,7 @@ export function getMiroirFundamentalJzodSchema(
     "transformerForBuild_mustacheStringTemplate",
     "transformerForBuild_objectAlter",
     "transformerForBuild_objectDynamicAccess",
-    "transformerForBuild_objectEntries",
+    "transformerForBuild_getObjectEntries",
     "transformerForBuild_getObjectValues",
     "transformerForBuild_pickFromList",
     "transformerForBuild_indexListBy",

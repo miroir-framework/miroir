@@ -11,7 +11,7 @@ import {
 export type TransformerFailureType =
   | "FailedTransformer_mustache"
   | "FailedTransformer_dynamicObjectAccess"
-  | "FailedTransformer_objectEntries"
+  | "FailedTransformer_getObjectEntries"
   // | "FailedTransformer_constantArray"
   // | "FailedTransformer_constantBigint"
   // | "FailedTransformer_constantNumber"

@@ -1266,15 +1266,15 @@
           },
           {
             "transformerTestType": "transformerTestSuite",
-            "transformerTestLabel": "objectEntries",
+            "transformerTestLabel": "getObjectEntries",
             "skip": true,
             "transformerTests": [
               {
                 "transformerTestType": "transformerTest",
-                "transformerTestLabel": "objectEntries used on returnValue object before runtime",
-                "transformerName": "objectEntries",
+                "transformerTestLabel": "getObjectEntries used on returnValue object before runtime",
+                "transformerName": "getObjectEntries",
                 "transformer": {
-                  "transformerType": "objectEntries",
+                  "transformerType": "getObjectEntries",
                   "interpolation": "runtime",
                   "applyTo": {
                     "transformerType": "returnValue",
@@ -1299,10 +1299,10 @@
               },
               {
                 "transformerTestType": "transformerTest",
-                "transformerTestLabel": "objectEntries used on reference before runtime",
-                "transformerName": "objectEntries",
+                "transformerTestLabel": "getObjectEntries used on reference before runtime",
+                "transformerName": "getObjectEntries",
                 "transformer": {
-                  "transformerType": "objectEntries",
+                  "transformerType": "getObjectEntries",
                   "interpolation": "runtime",
                   "applyTo": {
                     "transformerType": "getFromParameters",
@@ -1328,10 +1328,10 @@
               },
               {
                 "transformerTestType": "transformerTest",
-                "transformerTestLabel": "objectEntries used on reference at runtime",
-                "transformerName": "objectEntries",
+                "transformerTestLabel": "getObjectEntries used on reference at runtime",
+                "transformerName": "getObjectEntries",
                 "transformer": {
-                  "transformerType": "objectEntries",
+                  "transformerType": "getObjectEntries",
                   "interpolation": "runtime",
                   "applyTo": {
                     "transformerType": "getFromContext",
@@ -1360,9 +1360,9 @@
               {
                 "transformerTestType": "transformerTest",
                 "transformerTestLabel": "failed object entries for string parameter",
-                "transformerName": "objectEntriesFailed",
+                "transformerName": "getObjectEntriesFailed",
                 "transformer": {
-                  "transformerType": "objectEntries",
+                  "transformerType": "getObjectEntries",
                   "interpolation": "runtime",
                   "applyTo": {
                     "transformerType": "returnValue",
