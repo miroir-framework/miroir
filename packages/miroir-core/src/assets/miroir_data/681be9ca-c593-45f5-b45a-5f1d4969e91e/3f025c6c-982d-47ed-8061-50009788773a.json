@@ -12,7 +12,7 @@
     "transformerTests": [
       {
         "transformerTestType": "transformerTest",
-        "transformerTestLabel": "returns the original schema if no conditionalMMLS tag is present",
+        "transformerTestLabel": "returns the original schema if no ifThenElseMMLS tag is present",
         "transformerName": "resolveConditionalSchema",
         "runTestStep": "build",
         "transformer": {
@@ -32,7 +32,7 @@
       },
       {
         "transformerTestType": "transformerTest",
-        "transformerTestLabel": "returns the original schema if conditionalMMLS tag is present but no parentUuid",
+        "transformerTestLabel": "returns the original schema if ifThenElseMMLS tag is present but no parentUuid",
         "transformerName": "resolveConditionalSchema",
         "runTestStep": "build",
         "transformer": {
@@ -41,7 +41,7 @@
             "type": "string",
             "tag": {
               "value": {
-                "conditionalMMLS": {}
+                "ifThenElseMMLS": {}
               }
             }
           },
@@ -54,7 +54,7 @@
           "type": "string",
           "tag": {
             "value": {
-              "conditionalMMLS": {}
+              "ifThenElseMMLS": {}
             }
           }
         }
@@ -70,7 +70,7 @@
             "type": "any",
             "tag": {
               "value": {
-                "conditionalMMLS": {
+                "ifThenElseMMLS": {
                   "parentUuid": {
                     "path": "#.notExistingAttribute"
                   }
@@ -102,7 +102,7 @@
             "type": "any",
             "tag": {
               "value": {
-                "conditionalMMLS": {
+                "ifThenElseMMLS": {
                   "parentUuid": {
                     "path": "#.notExistingAttribute"
                   }
@@ -134,7 +134,7 @@
             "type": "any",
             "tag": {
               "value": {
-                "conditionalMMLS": {
+                "ifThenElseMMLS": {
                   "parentUuid": {
                     "path": "#.e"
                   }
@@ -183,7 +183,7 @@
             "type": "any",
             "tag": {
               "value": {
-                "conditionalMMLS": {
+                "ifThenElseMMLS": {
                   "parentUuid": {
                     "path": "#.e"
                   }

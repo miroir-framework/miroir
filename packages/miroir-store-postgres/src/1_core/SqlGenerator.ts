@@ -34,7 +34,7 @@ import {
   TransformerForRuntime_getUniqueValues,
   defaultMetaModelEnvironment,
   defaultTransformerInput,
-  type TransformerForBuildPlusRuntime_conditional,
+  type TransformerForBuildPlusRuntime_ifThenElse,
   type MiroirModelEnvironment,
 } from "miroir-core";
 import { RecursiveStringRecords } from "../4_services/SqlDbQueryTemplateRunner";
@@ -741,7 +741,7 @@ const jsOperatorToSqlOperatorMap: Record<string, string> = {
 }
 // ################################################################################################
 function sqlStringForConditionalTransformer(
-  actionRuntimeTransformer: TransformerForBuildPlusRuntime_conditional,
+  actionRuntimeTransformer: TransformerForBuildPlusRuntime_ifThenElse,
   preparedStatementParametersCount: number,
   indentLevel: number,
   queryParams: Record<string, any>,
@@ -854,7 +854,7 @@ function sqlStringForConditionalTransformer(
     return new Domain2ElementFailed({
       queryFailure: "QueryNotExecutable",
       query: actionRuntimeTransformer as any,
-      failureMessage: "sqlStringForRuntimeTransformer conditional left or right is not scalar",
+      failureMessage: "sqlStringForRuntimeTransformer ifThenElse left or right is not scalar",
     });
   }
   return {
@@ -862,15 +862,15 @@ function sqlStringForConditionalTransformer(
     sqlStringOrObject: (topLevelTransformer ? "select " : "") + "case when " +
       left.sqlStringOrObject + " " + jsOperatorToSqlOperatorMap[actionRuntimeTransformer.transformerType] + " " + right.sqlStringOrObject +
       " then " + _then.sqlStringOrObject + " else " + _else.sqlStringOrObject + " end" +
-      (topLevelTransformer ? ` AS "${withClauseColumnName??"conditional"}"` : ""),
+      (topLevelTransformer ? ` AS "${withClauseColumnName??"ifThenElse"}"` : ""),
     preparedStatementParameters: [
       ...(left.preparedStatementParameters ?? []),
       ...(right.preparedStatementParameters ?? []),
       ...(_then.preparedStatementParameters ?? []),
       ...(_else.preparedStatementParameters ?? []),
     ],
-    resultAccessPath: topLevelTransformer ? [0, withClauseColumnName??"conditional"] : undefined,
-    columnNameContainingJsonValue: topLevelTransformer ? withClauseColumnName??"conditional" : undefined,
+    resultAccessPath: topLevelTransformer ? [0, withClauseColumnName??"ifThenElse"] : undefined,
+    columnNameContainingJsonValue: topLevelTransformer ? withClauseColumnName??"ifThenElse" : undefined,
     // encloseEndResultInArray: true
     usedContextEntries: [
       ...(left.usedContextEntries ?? []),

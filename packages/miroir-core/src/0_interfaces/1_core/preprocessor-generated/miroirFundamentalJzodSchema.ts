@@ -75,7 +75,7 @@ export const miroirFundamentalJzodSchema = {
                       "type": "any",
                       "tag": {
                         "value": {
-                          "conditionalMMLS": {
+                          "ifThenElseMMLS": {
                             "mmlsReference": {
                               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                               "relativePath": "transformerForBuild"
@@ -118,7 +118,7 @@ export const miroirFundamentalJzodSchema = {
                           "type": "any",
                           "tag": {
                             "value": {
-                              "conditionalMMLS": {
+                              "ifThenElseMMLS": {
                                 "mmlsReference": {
                                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                                   "relativePath": "transformerForBuild"
@@ -195,7 +195,7 @@ export const miroirFundamentalJzodSchema = {
                   "type": "boolean",
                   "optional": true
                 },
-                "conditionalMMLS": {
+                "ifThenElseMMLS": {
                   "type": "object",
                   "optional": true,
                   "definition": {
@@ -318,7 +318,7 @@ export const miroirFundamentalJzodSchema = {
                         "type": "any",
                         "tag": {
                           "value": {
-                            "conditionalMMLS": {
+                            "ifThenElseMMLS": {
                               "mmlsReference": {
                                 "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                                 "relativePath": "transformerForBuild"
@@ -361,7 +361,7 @@ export const miroirFundamentalJzodSchema = {
                             "type": "any",
                             "tag": {
                               "value": {
-                                "conditionalMMLS": {
+                                "ifThenElseMMLS": {
                                   "mmlsReference": {
                                     "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                                     "relativePath": "transformerForBuild"
@@ -439,7 +439,7 @@ export const miroirFundamentalJzodSchema = {
                     "type": "boolean",
                     "optional": true
                   },
-                  "conditionalMMLS": {
+                  "ifThenElseMMLS": {
                     "type": "object",
                     "optional": true,
                     "definition": {
@@ -3046,7 +3046,7 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
-      "transformerForBuild_conditional": {
+      "transformerForBuild_ifThenElse": {
         "type": "object",
         "extend": [
           {
@@ -4234,7 +4234,7 @@ export const miroirFundamentalJzodSchema = {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "transformerForBuild_conditional"
+              "relativePath": "transformerForBuild_ifThenElse"
             }
           },
           {
@@ -4474,7 +4474,7 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
-      "transformerForRuntime_conditional": {
+      "transformerForRuntime_ifThenElse": {
         "type": "object",
         "extend": [
           {
@@ -5628,7 +5628,7 @@ export const miroirFundamentalJzodSchema = {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "transformerForRuntime_conditional"
+              "relativePath": "transformerForRuntime_ifThenElse"
             }
           },
           {
@@ -5888,7 +5888,7 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
-      "transformerForBuildPlusRuntime_conditional": {
+      "transformerForBuildPlusRuntime_ifThenElse": {
         "type": "object",
         "extend": [
           {
@@ -7076,7 +7076,7 @@ export const miroirFundamentalJzodSchema = {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "transformerForBuildPlusRuntime_conditional"
+              "relativePath": "transformerForBuildPlusRuntime_ifThenElse"
             }
           },
           {
@@ -17378,7 +17378,7 @@ export const miroirFundamentalJzodSchema = {
                             "tag": {
                               "value": {
                                 "canBeTemplate": true,
-                                "conditionalMMLS": {
+                                "ifThenElseMMLS": {
                                   "parentUuid": {
                                     "path": {
                                       "defaultValuePath": "#.parentUuid",
@@ -17669,7 +17669,7 @@ export const miroirFundamentalJzodSchema = {
                             "tag": {
                               "value": {
                                 "canBeTemplate": true,
-                                "conditionalMMLS": {
+                                "ifThenElseMMLS": {
                                   "parentUuid": {
                                     "path": {
                                       "defaultValuePath": "#.parentUuid",
@@ -20793,7 +20793,7 @@ export const miroirFundamentalJzodSchema = {
                           "type": "union",
                           "tag": {
                             "value": {
-                              "conditionalMMLS": {
+                              "ifThenElseMMLS": {
                                 "mmlsReference": {
                                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                                   "relativePath": "transformerForBuild"
@@ -20808,7 +20808,7 @@ export const miroirFundamentalJzodSchema = {
                               "type": "any",
                               "tag": {
                                 "value": {
-                                  "conditionalMMLS": {
+                                  "ifThenElseMMLS": {
                                     "mmlsReference": {
                                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                                       "relativePath": "transformerForBuild"
@@ -20895,7 +20895,7 @@ export const miroirFundamentalJzodSchema = {
                           "type": "union",
                           "tag": {
                             "value": {
-                              "conditionalMMLS": {
+                              "ifThenElseMMLS": {
                                 "mmlsReference": {
                                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                                   "relativePath": "transformerForBuild"
@@ -20910,7 +20910,7 @@ export const miroirFundamentalJzodSchema = {
                               "type": "any",
                               "tag": {
                                 "value": {
-                                  "conditionalMMLS": {
+                                  "ifThenElseMMLS": {
                                     "mmlsReference": {
                                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                                       "relativePath": "transformerForBuild"
@@ -21155,7 +21155,7 @@ export const miroirFundamentalJzodSchema = {
                     }
                   ]
                 },
-                "conditionalMMLS": {
+                "ifThenElseMMLS": {
                   "optional": true,
                   "type": "union",
                   "definition": [
@@ -21527,7 +21527,7 @@ export const miroirFundamentalJzodSchema = {
                                     "type": "union",
                                     "tag": {
                                       "value": {
-                                        "conditionalMMLS": {
+                                        "ifThenElseMMLS": {
                                           "mmlsReference": {
                                             "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                                             "relativePath": "transformerForBuild"
@@ -21542,7 +21542,7 @@ export const miroirFundamentalJzodSchema = {
                                         "type": "any",
                                         "tag": {
                                           "value": {
-                                            "conditionalMMLS": {
+                                            "ifThenElseMMLS": {
                                               "mmlsReference": {
                                                 "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                                                 "relativePath": "transformerForBuild"
@@ -21629,7 +21629,7 @@ export const miroirFundamentalJzodSchema = {
                                     "type": "union",
                                     "tag": {
                                       "value": {
-                                        "conditionalMMLS": {
+                                        "ifThenElseMMLS": {
                                           "mmlsReference": {
                                             "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                                             "relativePath": "transformerForBuild"
@@ -21644,7 +21644,7 @@ export const miroirFundamentalJzodSchema = {
                                         "type": "any",
                                         "tag": {
                                           "value": {
-                                            "conditionalMMLS": {
+                                            "ifThenElseMMLS": {
                                               "mmlsReference": {
                                                 "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                                                 "relativePath": "transformerForBuild"
@@ -21891,7 +21891,7 @@ export const miroirFundamentalJzodSchema = {
                               }
                             ]
                           },
-                          "conditionalMMLS": {
+                          "ifThenElseMMLS": {
                             "optional": true,
                             "type": "union",
                             "definition": [
@@ -28542,7 +28542,7 @@ export const miroirFundamentalJzodSchema = {
                                             "tag": {
                                               "value": {
                                                 "canBeTemplate": true,
-                                                "conditionalMMLS": {
+                                                "ifThenElseMMLS": {
                                                   "parentUuid": {
                                                     "path": {
                                                       "defaultValuePath": "#.parentUuid",
@@ -28559,7 +28559,7 @@ export const miroirFundamentalJzodSchema = {
                                                 "tag": {
                                                   "value": {
                                                     "canBeTemplate": true,
-                                                    "conditionalMMLS": {
+                                                    "ifThenElseMMLS": {
                                                       "parentUuid": {
                                                         "path": {
                                                           "defaultValuePath": "#.parentUuid",
@@ -29994,7 +29994,7 @@ export const miroirFundamentalJzodSchema = {
                                             "tag": {
                                               "value": {
                                                 "canBeTemplate": true,
-                                                "conditionalMMLS": {
+                                                "ifThenElseMMLS": {
                                                   "parentUuid": {
                                                     "path": {
                                                       "defaultValuePath": "#.parentUuid",
@@ -30011,7 +30011,7 @@ export const miroirFundamentalJzodSchema = {
                                                 "tag": {
                                                   "value": {
                                                     "canBeTemplate": true,
-                                                    "conditionalMMLS": {
+                                                    "ifThenElseMMLS": {
                                                       "parentUuid": {
                                                         "path": {
                                                           "defaultValuePath": "#.parentUuid",
@@ -33545,7 +33545,7 @@ export const miroirFundamentalJzodSchema = {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_conditional"
+              "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_ifThenElse"
             }
           },
           {
@@ -33874,7 +33874,7 @@ export const miroirFundamentalJzodSchema = {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_conditional"
+              "relativePath": "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_ifThenElse"
             }
           },
           {
@@ -39007,7 +39007,7 @@ export const miroirFundamentalJzodSchema = {
           }
         ]
       },
-      "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_conditional": {
+      "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_ifThenElse": {
         "type": "union",
         "definition": [
           {
@@ -41645,7 +41645,7 @@ export const miroirFundamentalJzodSchema = {
           }
         ]
       },
-      "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_conditional": {
+      "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_ifThenElse": {
         "type": "union",
         "definition": [
           {
@@ -44722,7 +44722,7 @@ export const miroirFundamentalJzodSchema = {
                           "type": "union",
                           "tag": {
                             "value": {
-                              "conditionalMMLS": {
+                              "ifThenElseMMLS": {
                                 "mmlsReference": {
                                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                                   "relativePath": "transformerForBuild"
@@ -44737,7 +44737,7 @@ export const miroirFundamentalJzodSchema = {
                               "type": "any",
                               "tag": {
                                 "value": {
-                                  "conditionalMMLS": {
+                                  "ifThenElseMMLS": {
                                     "mmlsReference": {
                                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                                       "relativePath": "transformerForBuild"
@@ -44824,7 +44824,7 @@ export const miroirFundamentalJzodSchema = {
                           "type": "union",
                           "tag": {
                             "value": {
-                              "conditionalMMLS": {
+                              "ifThenElseMMLS": {
                                 "mmlsReference": {
                                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                                   "relativePath": "transformerForBuild"
@@ -44839,7 +44839,7 @@ export const miroirFundamentalJzodSchema = {
                               "type": "any",
                               "tag": {
                                 "value": {
-                                  "conditionalMMLS": {
+                                  "ifThenElseMMLS": {
                                     "mmlsReference": {
                                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                                       "relativePath": "transformerForBuild"
@@ -45084,7 +45084,7 @@ export const miroirFundamentalJzodSchema = {
                     }
                   ]
                 },
-                "conditionalMMLS": {
+                "ifThenElseMMLS": {
                   "optional": true,
                   "type": "union",
                   "definition": [
@@ -45425,7 +45425,7 @@ export const miroirFundamentalJzodSchema = {
                               "type": "union",
                               "tag": {
                                 "value": {
-                                  "conditionalMMLS": {
+                                  "ifThenElseMMLS": {
                                     "mmlsReference": {
                                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                                       "relativePath": "transformerForBuild"
@@ -45440,7 +45440,7 @@ export const miroirFundamentalJzodSchema = {
                                   "type": "any",
                                   "tag": {
                                     "value": {
-                                      "conditionalMMLS": {
+                                      "ifThenElseMMLS": {
                                         "mmlsReference": {
                                           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                                           "relativePath": "transformerForBuild"
@@ -45527,7 +45527,7 @@ export const miroirFundamentalJzodSchema = {
                               "type": "union",
                               "tag": {
                                 "value": {
-                                  "conditionalMMLS": {
+                                  "ifThenElseMMLS": {
                                     "mmlsReference": {
                                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                                       "relativePath": "transformerForBuild"
@@ -45542,7 +45542,7 @@ export const miroirFundamentalJzodSchema = {
                                   "type": "any",
                                   "tag": {
                                     "value": {
-                                      "conditionalMMLS": {
+                                      "ifThenElseMMLS": {
                                         "mmlsReference": {
                                           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                                           "relativePath": "transformerForBuild"
@@ -45787,7 +45787,7 @@ export const miroirFundamentalJzodSchema = {
                         }
                       ]
                     },
-                    "conditionalMMLS": {
+                    "ifThenElseMMLS": {
                       "optional": true,
                       "type": "union",
                       "definition": [
@@ -46159,7 +46159,7 @@ export const miroirFundamentalJzodSchema = {
                                         "type": "union",
                                         "tag": {
                                           "value": {
-                                            "conditionalMMLS": {
+                                            "ifThenElseMMLS": {
                                               "mmlsReference": {
                                                 "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                                                 "relativePath": "transformerForBuild"
@@ -46174,7 +46174,7 @@ export const miroirFundamentalJzodSchema = {
                                             "type": "any",
                                             "tag": {
                                               "value": {
-                                                "conditionalMMLS": {
+                                                "ifThenElseMMLS": {
                                                   "mmlsReference": {
                                                     "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                                                     "relativePath": "transformerForBuild"
@@ -46261,7 +46261,7 @@ export const miroirFundamentalJzodSchema = {
                                         "type": "union",
                                         "tag": {
                                           "value": {
-                                            "conditionalMMLS": {
+                                            "ifThenElseMMLS": {
                                               "mmlsReference": {
                                                 "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                                                 "relativePath": "transformerForBuild"
@@ -46276,7 +46276,7 @@ export const miroirFundamentalJzodSchema = {
                                             "type": "any",
                                             "tag": {
                                               "value": {
-                                                "conditionalMMLS": {
+                                                "ifThenElseMMLS": {
                                                   "mmlsReference": {
                                                     "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                                                     "relativePath": "transformerForBuild"
@@ -46523,7 +46523,7 @@ export const miroirFundamentalJzodSchema = {
                                   }
                                 ]
                               },
-                              "conditionalMMLS": {
+                              "ifThenElseMMLS": {
                                 "optional": true,
                                 "type": "union",
                                 "definition": [
@@ -52081,7 +52081,7 @@ export const miroirFundamentalJzodSchema = {
           }
         ]
       },
-      "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_conditional": {
+      "carryOn_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_ifThenElse": {
         "type": "union",
         "definition": [
           {
@@ -53517,7 +53517,7 @@ export const miroirFundamentalJzodSchema = {
                       "type": "any",
                       "tag": {
                         "value": {
-                          "conditionalMMLS": {
+                          "ifThenElseMMLS": {
                             "mmlsReference": {
                               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                               "relativePath": "transformerForBuild"
@@ -53560,7 +53560,7 @@ export const miroirFundamentalJzodSchema = {
                           "type": "any",
                           "tag": {
                             "value": {
-                              "conditionalMMLS": {
+                              "ifThenElseMMLS": {
                                 "mmlsReference": {
                                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                                   "relativePath": "transformerForBuild"
@@ -53637,7 +53637,7 @@ export const miroirFundamentalJzodSchema = {
                   "type": "boolean",
                   "optional": true
                 },
-                "conditionalMMLS": {
+                "ifThenElseMMLS": {
                   "type": "object",
                   "optional": true,
                   "definition": {
@@ -53760,7 +53760,7 @@ export const miroirFundamentalJzodSchema = {
                         "type": "any",
                         "tag": {
                           "value": {
-                            "conditionalMMLS": {
+                            "ifThenElseMMLS": {
                               "mmlsReference": {
                                 "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                                 "relativePath": "transformerForBuild"
@@ -53803,7 +53803,7 @@ export const miroirFundamentalJzodSchema = {
                             "type": "any",
                             "tag": {
                               "value": {
-                                "conditionalMMLS": {
+                                "ifThenElseMMLS": {
                                   "mmlsReference": {
                                     "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                                     "relativePath": "transformerForBuild"
@@ -53881,7 +53881,7 @@ export const miroirFundamentalJzodSchema = {
                     "type": "boolean",
                     "optional": true
                   },
-                  "conditionalMMLS": {
+                  "ifThenElseMMLS": {
                     "type": "object",
                     "optional": true,
                     "definition": {
@@ -56703,7 +56703,7 @@ export const miroirFundamentalJzodSchema = {
                             "tag": {
                               "value": {
                                 "canBeTemplate": true,
-                                "conditionalMMLS": {
+                                "ifThenElseMMLS": {
                                   "parentUuid": {
                                     "path": {
                                       "defaultValuePath": "#.parentUuid",
@@ -56724,7 +56724,7 @@ export const miroirFundamentalJzodSchema = {
                                 "tag": {
                                   "value": {
                                     "canBeTemplate": true,
-                                    "conditionalMMLS": {
+                                    "ifThenElseMMLS": {
                                       "parentUuid": {
                                         "path": {
                                           "defaultValuePath": "#.parentUuid",
@@ -57534,7 +57534,7 @@ export const miroirFundamentalJzodSchema = {
                             "tag": {
                               "value": {
                                 "canBeTemplate": true,
-                                "conditionalMMLS": {
+                                "ifThenElseMMLS": {
                                   "parentUuid": {
                                     "path": {
                                       "defaultValuePath": "#.parentUuid",
@@ -57555,7 +57555,7 @@ export const miroirFundamentalJzodSchema = {
                                 "tag": {
                                   "value": {
                                     "canBeTemplate": true,
-                                    "conditionalMMLS": {
+                                    "ifThenElseMMLS": {
                                       "parentUuid": {
                                         "path": {
                                           "defaultValuePath": "#.parentUuid",
@@ -59858,7 +59858,7 @@ export const miroirFundamentalJzodSchema = {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_conditional"
+              "relativePath": "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_ifThenElse"
             }
           },
           {
@@ -60113,7 +60113,7 @@ export const miroirFundamentalJzodSchema = {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_conditional"
+              "relativePath": "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_ifThenElse"
             }
           },
           {
@@ -60497,11 +60497,11 @@ export const miroirFundamentalJzodSchema = {
           "relativePath": "transformerForBuildPlusRuntime_menu_addItem"
         }
       },
-      "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_conditional": {
+      "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_ifThenElse": {
         "type": "schemaReference",
         "definition": {
           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-          "relativePath": "transformerForBuildPlusRuntime_conditional"
+          "relativePath": "transformerForBuildPlusRuntime_ifThenElse"
         }
       },
       "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_returnValue": {
@@ -60901,11 +60901,11 @@ export const miroirFundamentalJzodSchema = {
           }
         ]
       },
-      "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_conditional": {
+      "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_ifThenElse": {
         "type": "schemaReference",
         "definition": {
           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-          "relativePath": "transformerForRuntime_conditional"
+          "relativePath": "transformerForRuntime_ifThenElse"
         }
       },
       "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_returnValue": {
@@ -62083,11 +62083,11 @@ export const miroirFundamentalJzodSchema = {
           "relativePath": "transformerForBuild_mustacheStringTemplate"
         }
       },
-      "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_conditional": {
+      "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_ifThenElse": {
         "type": "schemaReference",
         "definition": {
           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-          "relativePath": "transformerForBuild_conditional"
+          "relativePath": "transformerForBuild_ifThenElse"
         }
       },
       "runtimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_returnValue": {
@@ -62270,7 +62270,7 @@ export const miroirFundamentalJzodSchema = {
                       "type": "any",
                       "tag": {
                         "value": {
-                          "conditionalMMLS": {
+                          "ifThenElseMMLS": {
                             "mmlsReference": {
                               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                               "relativePath": "transformerForBuild"
@@ -62313,7 +62313,7 @@ export const miroirFundamentalJzodSchema = {
                           "type": "any",
                           "tag": {
                             "value": {
-                              "conditionalMMLS": {
+                              "ifThenElseMMLS": {
                                 "mmlsReference": {
                                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                                   "relativePath": "transformerForBuild"
@@ -62390,7 +62390,7 @@ export const miroirFundamentalJzodSchema = {
                   "type": "boolean",
                   "optional": true
                 },
-                "conditionalMMLS": {
+                "ifThenElseMMLS": {
                   "type": "object",
                   "optional": true,
                   "definition": {
@@ -62513,7 +62513,7 @@ export const miroirFundamentalJzodSchema = {
                         "type": "any",
                         "tag": {
                           "value": {
-                            "conditionalMMLS": {
+                            "ifThenElseMMLS": {
                               "mmlsReference": {
                                 "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                                 "relativePath": "transformerForBuild"
@@ -62556,7 +62556,7 @@ export const miroirFundamentalJzodSchema = {
                             "type": "any",
                             "tag": {
                               "value": {
-                                "conditionalMMLS": {
+                                "ifThenElseMMLS": {
                                   "mmlsReference": {
                                     "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                                     "relativePath": "transformerForBuild"
@@ -62634,7 +62634,7 @@ export const miroirFundamentalJzodSchema = {
                     "type": "boolean",
                     "optional": true
                   },
-                  "conditionalMMLS": {
+                  "ifThenElseMMLS": {
                     "type": "object",
                     "optional": true,
                     "definition": {
@@ -65438,7 +65438,7 @@ export const miroirFundamentalJzodSchema = {
                             "tag": {
                               "value": {
                                 "canBeTemplate": true,
-                                "conditionalMMLS": {
+                                "ifThenElseMMLS": {
                                   "parentUuid": {
                                     "path": {
                                       "defaultValuePath": "#.parentUuid",
@@ -65459,7 +65459,7 @@ export const miroirFundamentalJzodSchema = {
                                 "tag": {
                                   "value": {
                                     "canBeTemplate": true,
-                                    "conditionalMMLS": {
+                                    "ifThenElseMMLS": {
                                       "parentUuid": {
                                         "path": {
                                           "defaultValuePath": "#.parentUuid",
@@ -66258,7 +66258,7 @@ export const miroirFundamentalJzodSchema = {
                             "tag": {
                               "value": {
                                 "canBeTemplate": true,
-                                "conditionalMMLS": {
+                                "ifThenElseMMLS": {
                                   "parentUuid": {
                                     "path": {
                                       "defaultValuePath": "#.parentUuid",
@@ -66279,7 +66279,7 @@ export const miroirFundamentalJzodSchema = {
                                 "tag": {
                                   "value": {
                                     "canBeTemplate": true,
-                                    "conditionalMMLS": {
+                                    "ifThenElseMMLS": {
                                       "parentUuid": {
                                         "path": {
                                           "defaultValuePath": "#.parentUuid",
@@ -68567,7 +68567,7 @@ export const miroirFundamentalJzodSchema = {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_conditional"
+              "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_ifThenElse"
             }
           },
           {
@@ -68822,7 +68822,7 @@ export const miroirFundamentalJzodSchema = {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_conditional"
+              "relativePath": "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_ifThenElse"
             }
           },
           {
@@ -69206,11 +69206,11 @@ export const miroirFundamentalJzodSchema = {
           "relativePath": "transformerForBuildPlusRuntime_menu_addItem"
         }
       },
-      "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_conditional": {
+      "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_ifThenElse": {
         "type": "schemaReference",
         "definition": {
           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-          "relativePath": "transformerForBuildPlusRuntime_conditional"
+          "relativePath": "transformerForBuildPlusRuntime_ifThenElse"
         }
       },
       "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_returnValue": {
@@ -69610,11 +69610,11 @@ export const miroirFundamentalJzodSchema = {
           }
         ]
       },
-      "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_conditional": {
+      "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_ifThenElse": {
         "type": "schemaReference",
         "definition": {
           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-          "relativePath": "transformerForRuntime_conditional"
+          "relativePath": "transformerForRuntime_ifThenElse"
         }
       },
       "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_returnValue": {
@@ -70790,11 +70790,11 @@ export const miroirFundamentalJzodSchema = {
           "relativePath": "transformerForBuild_mustacheStringTemplate"
         }
       },
-      "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_conditional": {
+      "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_ifThenElse": {
         "type": "schemaReference",
         "definition": {
           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-          "relativePath": "transformerForBuild_conditional"
+          "relativePath": "transformerForBuild_ifThenElse"
         }
       },
       "buildDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_returnValue": {
@@ -70977,7 +70977,7 @@ export const miroirFundamentalJzodSchema = {
                       "type": "any",
                       "tag": {
                         "value": {
-                          "conditionalMMLS": {
+                          "ifThenElseMMLS": {
                             "mmlsReference": {
                               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                               "relativePath": "transformerForBuild"
@@ -71020,7 +71020,7 @@ export const miroirFundamentalJzodSchema = {
                           "type": "any",
                           "tag": {
                             "value": {
-                              "conditionalMMLS": {
+                              "ifThenElseMMLS": {
                                 "mmlsReference": {
                                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                                   "relativePath": "transformerForBuild"
@@ -71097,7 +71097,7 @@ export const miroirFundamentalJzodSchema = {
                   "type": "boolean",
                   "optional": true
                 },
-                "conditionalMMLS": {
+                "ifThenElseMMLS": {
                   "type": "object",
                   "optional": true,
                   "definition": {
@@ -71220,7 +71220,7 @@ export const miroirFundamentalJzodSchema = {
                         "type": "any",
                         "tag": {
                           "value": {
-                            "conditionalMMLS": {
+                            "ifThenElseMMLS": {
                               "mmlsReference": {
                                 "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                                 "relativePath": "transformerForBuild"
@@ -71263,7 +71263,7 @@ export const miroirFundamentalJzodSchema = {
                             "type": "any",
                             "tag": {
                               "value": {
-                                "conditionalMMLS": {
+                                "ifThenElseMMLS": {
                                   "mmlsReference": {
                                     "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                                     "relativePath": "transformerForBuild"
@@ -71341,7 +71341,7 @@ export const miroirFundamentalJzodSchema = {
                     "type": "boolean",
                     "optional": true
                   },
-                  "conditionalMMLS": {
+                  "ifThenElseMMLS": {
                     "type": "object",
                     "optional": true,
                     "definition": {
@@ -74163,7 +74163,7 @@ export const miroirFundamentalJzodSchema = {
                             "tag": {
                               "value": {
                                 "canBeTemplate": true,
-                                "conditionalMMLS": {
+                                "ifThenElseMMLS": {
                                   "parentUuid": {
                                     "path": {
                                       "defaultValuePath": "#.parentUuid",
@@ -74184,7 +74184,7 @@ export const miroirFundamentalJzodSchema = {
                                 "tag": {
                                   "value": {
                                     "canBeTemplate": true,
-                                    "conditionalMMLS": {
+                                    "ifThenElseMMLS": {
                                       "parentUuid": {
                                         "path": {
                                           "defaultValuePath": "#.parentUuid",
@@ -74994,7 +74994,7 @@ export const miroirFundamentalJzodSchema = {
                             "tag": {
                               "value": {
                                 "canBeTemplate": true,
-                                "conditionalMMLS": {
+                                "ifThenElseMMLS": {
                                   "parentUuid": {
                                     "path": {
                                       "defaultValuePath": "#.parentUuid",
@@ -75015,7 +75015,7 @@ export const miroirFundamentalJzodSchema = {
                                 "tag": {
                                   "value": {
                                     "canBeTemplate": true,
-                                    "conditionalMMLS": {
+                                    "ifThenElseMMLS": {
                                       "parentUuid": {
                                         "path": {
                                           "defaultValuePath": "#.parentUuid",
@@ -77318,7 +77318,7 @@ export const miroirFundamentalJzodSchema = {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_conditional"
+              "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_ifThenElse"
             }
           },
           {
@@ -77573,7 +77573,7 @@ export const miroirFundamentalJzodSchema = {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_conditional"
+              "relativePath": "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_ifThenElse"
             }
           },
           {
@@ -77957,11 +77957,11 @@ export const miroirFundamentalJzodSchema = {
           "relativePath": "transformerForBuildPlusRuntime_menu_addItem"
         }
       },
-      "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_conditional": {
+      "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_ifThenElse": {
         "type": "schemaReference",
         "definition": {
           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-          "relativePath": "transformerForBuildPlusRuntime_conditional"
+          "relativePath": "transformerForBuildPlusRuntime_ifThenElse"
         }
       },
       "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_returnValue": {
@@ -78361,11 +78361,11 @@ export const miroirFundamentalJzodSchema = {
           }
         ]
       },
-      "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_conditional": {
+      "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_ifThenElse": {
         "type": "schemaReference",
         "definition": {
           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-          "relativePath": "transformerForRuntime_conditional"
+          "relativePath": "transformerForRuntime_ifThenElse"
         }
       },
       "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForRuntime_returnValue": {
@@ -79543,11 +79543,11 @@ export const miroirFundamentalJzodSchema = {
           "relativePath": "transformerForBuild_mustacheStringTemplate"
         }
       },
-      "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_conditional": {
+      "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_ifThenElse": {
         "type": "schemaReference",
         "definition": {
           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-          "relativePath": "transformerForBuild_conditional"
+          "relativePath": "transformerForBuild_ifThenElse"
         }
       },
       "buildPlusRuntimeDomainAction_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuild_returnValue": {
@@ -79681,7 +79681,7 @@ export const miroirFundamentalJzodSchema = {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "transformerForBuild_conditional"
+              "relativePath": "transformerForBuild_ifThenElse"
             }
           },
           {
@@ -79880,7 +79880,7 @@ export const miroirFundamentalJzodSchema = {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "transformerForBuild_conditional"
+              "relativePath": "transformerForBuild_ifThenElse"
             }
           },
           {
@@ -80079,7 +80079,7 @@ export const miroirFundamentalJzodSchema = {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "transformerForBuildPlusRuntime_conditional"
+              "relativePath": "transformerForBuildPlusRuntime_ifThenElse"
             }
           },
           {

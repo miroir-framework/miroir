@@ -202,7 +202,7 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
   );
   const currentMiroirModel = useCurrentModel(adminConfigurationDeploymentMiroir.uuid);
 
-  // Get the deployment entity state from Redux store for conditional schema resolution
+  // Get the deployment entity state from Redux store for ifThenElse schema resolution
   const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> =
     getMemoizedReduxDeploymentsStateSelectorMap();
   
@@ -515,7 +515,7 @@ export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = ({
     </>
   );
   
-  // Track render performance at end of render (conditional)
+  // Track render performance at end of render (ifThenElse)
   // if (context.showPerformanceDisplay) {
   //   const renderEndTime = performance.now();
   //   const renderDuration = renderEndTime - renderStartTime;

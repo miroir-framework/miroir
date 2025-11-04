@@ -628,12 +628,12 @@
           },
           {
             "transformerTestType": "transformerTestSuite",
-            "transformerTestLabel": "conditional",
+            "transformerTestLabel": "ifThenElse",
             "transformerTests": [
               {
                 "transformerTestType": "transformerTest",
-                "transformerTestLabel": "conditional equality true - basic string comparison",
-                "transformerName": "conditionalEqualityTrue",
+                "transformerTestLabel": "ifThenElse equality true - basic string comparison",
+                "transformerName": "ifThenElseEqualityTrue",
                 "transformer": {
                   "transformerType": "==",
                   "interpolation": "runtime",
@@ -667,8 +667,8 @@
               },
               {
                 "transformerTestType": "transformerTest",
-                "transformerTestLabel": "conditional equality false - basic string comparison",
-                "transformerName": "conditionalEqualityFalse",
+                "transformerTestLabel": "ifThenElse equality false - basic string comparison",
+                "transformerName": "ifThenElseEqualityFalse",
                 "transformer": {
                   "transformerType": "==",
                   "interpolation": "runtime",
@@ -702,8 +702,8 @@
               },
               {
                 "transformerTestType": "transformerTest",
-                "transformerTestLabel": "conditional not equal true - string comparison",
-                "transformerName": "conditionalNotEqualTrue",
+                "transformerTestLabel": "ifThenElse not equal true - string comparison",
+                "transformerName": "ifThenElseNotEqualTrue",
                 "transformer": {
                   "transformerType": "!=",
                   "interpolation": "runtime",
@@ -737,8 +737,8 @@
               },
               {
                 "transformerTestType": "transformerTest",
-                "transformerTestLabel": "conditional not equal false - string comparison",
-                "transformerName": "conditionalNotEqualFalse",
+                "transformerTestLabel": "ifThenElse not equal false - string comparison",
+                "transformerName": "ifThenElseNotEqualFalse",
                 "transformer": {
                   "transformerType": "!=",
                   "interpolation": "runtime",
@@ -772,8 +772,8 @@
               },
               {
                 "transformerTestType": "transformerTest",
-                "transformerTestLabel": "conditional less than true - number comparison",
-                "transformerName": "conditionalLessThanTrue",
+                "transformerTestLabel": "ifThenElse less than true - number comparison",
+                "transformerName": "ifThenElseLessThanTrue",
                 "transformer": {
                   "transformerType": "<",
                   "interpolation": "runtime",
@@ -807,8 +807,8 @@
               },
               {
                 "transformerTestType": "transformerTest",
-                "transformerTestLabel": "conditional less than false - number comparison",
-                "transformerName": "conditionalLessThanFalse",
+                "transformerTestLabel": "ifThenElse less than false - number comparison",
+                "transformerName": "ifThenElseLessThanFalse",
                 "transformer": {
                   "transformerType": "<",
                   "interpolation": "runtime",
@@ -842,8 +842,8 @@
               },
               {
                 "transformerTestType": "transformerTest",
-                "transformerTestLabel": "conditional less than or equal true - number comparison",
-                "transformerName": "conditionalLessThanOrEqualTrue",
+                "transformerTestLabel": "ifThenElse less than or equal true - number comparison",
+                "transformerName": "ifThenElseLessThanOrEqualTrue",
                 "transformer": {
                   "transformerType": "<=",
                   "interpolation": "runtime",
@@ -877,8 +877,8 @@
               },
               {
                 "transformerTestType": "transformerTest",
-                "transformerTestLabel": "conditional less than or equal false - number comparison",
-                "transformerName": "conditionalLessThanOrEqualFalse",
+                "transformerTestLabel": "ifThenElse less than or equal false - number comparison",
+                "transformerName": "ifThenElseLessThanOrEqualFalse",
                 "transformer": {
                   "transformerType": "<=",
                   "interpolation": "runtime",
@@ -912,8 +912,8 @@
               },
               {
                 "transformerTestType": "transformerTest",
-                "transformerTestLabel": "conditional greater than true - number comparison",
-                "transformerName": "conditionalGreaterThanTrue",
+                "transformerTestLabel": "ifThenElse greater than true - number comparison",
+                "transformerName": "ifThenElseGreaterThanTrue",
                 "transformer": {
                   "transformerType": ">",
                   "interpolation": "runtime",
@@ -947,8 +947,8 @@
               },
               {
                 "transformerTestType": "transformerTest",
-                "transformerTestLabel": "conditional greater than false - number comparison",
-                "transformerName": "conditionalGreaterThanFalse",
+                "transformerTestLabel": "ifThenElse greater than false - number comparison",
+                "transformerName": "ifThenElseGreaterThanFalse",
                 "transformer": {
                   "transformerType": ">",
                   "interpolation": "runtime",
@@ -982,8 +982,8 @@
               },
               {
                 "transformerTestType": "transformerTest",
-                "transformerTestLabel": "conditional greater than or equal true - number comparison",
-                "transformerName": "conditionalGreaterThanOrEqualTrue",
+                "transformerTestLabel": "ifThenElse greater than or equal true - number comparison",
+                "transformerName": "ifThenElseGreaterThanOrEqualTrue",
                 "transformer": {
                   "transformerType": ">=",
                   "interpolation": "runtime",
@@ -1017,8 +1017,8 @@
               },
               {
                 "transformerTestType": "transformerTest",
-                "transformerTestLabel": "conditional greater than or equal false - number comparison",
-                "transformerName": "conditionalGreaterThanOrEqualFalse",
+                "transformerTestLabel": "ifThenElse greater than or equal false - number comparison",
+                "transformerName": "ifThenElseGreaterThanOrEqualFalse",
                 "transformer": {
                   "transformerType": ">=",
                   "interpolation": "runtime",
@@ -1052,8 +1052,8 @@
               },
               {
                 "transformerTestType": "transformerTest",
-                "transformerTestLabel": "conditional with parameter reference comparison",
-                "transformerName": "conditionalWithParameterReference",
+                "transformerTestLabel": "ifThenElse with parameter reference comparison",
+                "transformerName": "ifThenElseWithParameterReference",
                 "transformer": {
                   "transformerType": "==",
                   "interpolation": "runtime",

@@ -200,7 +200,7 @@ Based on my analysis of the transformer descriptions from the code and documenta
 | object_fullTemplate | **buildObjectAdvanced** or **buildObjectFromPairs** |
 | objectAlter | **updateObject** or **mergeIntoObject** |
 | dataflowObject | **buildObjectWithDataflow** or **spreadWithTransformers** |
-| conditional | **ifThenElse** or **switchOn** |
+| conditional | OK: **ifThenElse** |
 |----------|----------|
 | jzodTypeCheck | **validateAgainstSchema** |
 | resolveSchemaReferenceInContext | **resolveSchemaReference** |

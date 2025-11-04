@@ -153,11 +153,11 @@ export function applyLimitedCarryOnSchemaOnLevel(
     // Check if this tag references a transformer schema - if so, skip carryOn application
     // to prevent infinite recursion since transformers are already complete types
     const isTransformerReference = castTag.value && 
-      castTag.value.conditionalMMLS && 
-      castTag.value.conditionalMMLS.mmlsReference && 
-      castTag.value.conditionalMMLS.mmlsReference.relativePath &&
-      (castTag.value.conditionalMMLS.mmlsReference.relativePath.startsWith("transformerForBuild") ||
-       castTag.value.conditionalMMLS.mmlsReference.relativePath.startsWith("transformerForRuntime"));
+      castTag.value.ifThenElseMMLS && 
+      castTag.value.ifThenElseMMLS.mmlsReference && 
+      castTag.value.ifThenElseMMLS.mmlsReference.relativePath &&
+      (castTag.value.ifThenElseMMLS.mmlsReference.relativePath.startsWith("transformerForBuild") ||
+       castTag.value.ifThenElseMMLS.mmlsReference.relativePath.startsWith("transformerForRuntime"));
     
     if (isTransformerReference) {
       // Don't apply carryOn to transformer references to prevent infinite recursion

@@ -837,7 +837,7 @@ export function getMiroirFundamentalJzodSchema(
         // ########################################################################################
         transformerForBuild_menu_addItem: miroirTransformersForBuild.transformer_menu_addItem,
         //
-        transformerForBuild_conditional: miroirTransformersForBuild.transformer_conditional,
+        transformerForBuild_ifThenElse: miroirTransformersForBuild.transformer_ifThenElse,
         transformerForBuild_returnValue: miroirTransformersForBuild.transformer_returnValue,
         transformerForBuild_constantAsExtractor:
           miroirTransformersForBuild.transformer_constantAsExtractor,
@@ -908,7 +908,7 @@ export function getMiroirFundamentalJzodSchema(
         transformerForRuntime_menu_addItem: miroirTransformersForRuntime.transformer_menu_addItem,
         //
         //
-        transformerForRuntime_conditional: miroirTransformersForRuntime.transformer_conditional,
+        transformerForRuntime_ifThenElse: miroirTransformersForRuntime.transformer_ifThenElse,
         transformerForRuntime_returnValue: miroirTransformersForRuntime.transformer_returnValue,
         transformerForRuntime_constantAsExtractor:
           miroirTransformersForRuntime.transformer_constantAsExtractor,
@@ -1006,8 +1006,8 @@ export function getMiroirFundamentalJzodSchema(
         transformerForBuildPlusRuntime_menu_addItem:
           miroirTransformersForBuildPlusRuntime.transformer_menu_addItem,
         //
-        transformerForBuildPlusRuntime_conditional:
-          miroirTransformersForBuildPlusRuntime.transformer_conditional,
+        transformerForBuildPlusRuntime_ifThenElse:
+          miroirTransformersForBuildPlusRuntime.transformer_ifThenElse,
         transformerForBuildPlusRuntime_returnValue:
           miroirTransformersForBuildPlusRuntime.transformer_returnValue,
         transformerForBuildPlusRuntime_constantAsExtractor:
@@ -3915,7 +3915,7 @@ export function getMiroirFundamentalJzodSchema(
     "transformerForBuild_objectDynamicAccess",
     "transformerForBuild_getFromParameters",
     "transformerForBuild_mustacheStringTemplate",
-    "transformerForBuild_conditional",
+    "transformerForBuild_ifThenElse",
     "transformerForBuild_returnValue",
     "transformerForBuild_constantAsExtractor",
     "transformerForBuild_getFromContext",
@@ -4069,7 +4069,7 @@ export function getMiroirFundamentalJzodSchema(
     "transformerForBuild_objectDynamicAccess",
     "transformerForBuild_getFromParameters",
     "transformerForBuild_mustacheStringTemplate",
-    "transformerForBuild_conditional",
+    "transformerForBuild_ifThenElse",
     "transformerForBuild_returnValue",
     "transformerForBuild_constantAsExtractor",
     "transformerForBuild_getFromContext",

@@ -135,7 +135,7 @@
                         "tag": {
                           "value": {
                             "canBeTemplate": true,
-                            "conditionalMMLS": {
+                            "ifThenElseMMLS": {
                               "parentUuid": {
                                 "path": {
                                   "defaultValuePath": "#.parentUuid",

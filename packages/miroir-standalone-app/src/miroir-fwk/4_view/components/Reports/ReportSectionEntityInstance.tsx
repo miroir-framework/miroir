@@ -402,7 +402,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
     return formLabel ? <ThemedLabel id={"label." + formLabel}>{formLabel}</ThemedLabel> : undefined;
   }, [formLabel]);
 
-  // log performance metrics at the end of render (conditional)
+  // log performance metrics at the end of render (ifThenElse)
   if (context.showPerformanceDisplay) {
     const renderEndTime = performance.now();
     const renderDuration = renderEndTime - renderStartTime;

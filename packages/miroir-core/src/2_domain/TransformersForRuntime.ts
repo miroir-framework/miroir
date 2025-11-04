@@ -57,7 +57,7 @@ import {
   TransformerForRuntime_getObjectValues,
   TransformerForRuntime_getUniqueValues,
   type TransformerForBuild_InnerReference,
-  type TransformerForRuntime_conditional,
+  type TransformerForRuntime_ifThenElse,
   type TransformerForRuntime_InnerReference
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { defaultTransformerInput, type ITransformerHandler, type MiroirModelEnvironment } from '../0_interfaces/1_core/Transformer';
@@ -82,7 +82,7 @@ import { getEntityInstancesUuidIndexNonHook } from './ReduxDeploymentsStateQuery
 import { transformer_spreadSheetToJzodSchema } from "./Transformer_Spreadsheet";
 import {
   mlsTransformers,
-  transformer_conditional,
+  transformer_ifThenElse,
   transformer_returnValue,
   transformer_constantAsExtractor,
   transformer_getFromContext,
@@ -633,7 +633,7 @@ const inMemoryTransformerImplementations: Record<string, ITransformerHandler<any
   handleCountTransformer,
   handleListPickElementTransformer,
   handleUniqueTransformer,
-  handleTransformer_conditional,
+  handleTransformer_ifThenElse,
   handleTransformer_constant,
   // handleTransformer_constantArray,
   handleTransformer_constantAsExtractor,
@@ -667,8 +667,8 @@ export const applicationTransformerDefinitions: Record<string, TransformerDefini
   //
   spreadSheetToJzodSchema: transformer_spreadSheetToJzodSchema,
   aggregate: transformer_aggregate,
-  ...Object.fromEntries((transformer_conditional.transformerInterface.transformerParameterSchema.transformerType.definition as string[]).map(
-    (t: string) => ([t, transformer_conditional])
+  ...Object.fromEntries((transformer_ifThenElse.transformerInterface.transformerParameterSchema.transformerType.definition as string[]).map(
+    (t: string) => ([t, transformer_ifThenElse])
   )),
   returnValue: transformer_returnValue,
   constantAsExtractor: transformer_constantAsExtractor,
@@ -2391,11 +2391,11 @@ export function handleTransformer_dataflowObject(
 // ################################################################################################
 // ################################################################################################
 // ################################################################################################
-export function handleTransformer_conditional(
+export function handleTransformer_ifThenElse(
   step: Step,
   transformerPath: string[],
   label: string | undefined,
-  transformer: TransformerForRuntime_conditional,
+  transformer: TransformerForRuntime_ifThenElse,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   modelEnvironment: MiroirModelEnvironment,
   transformerParams: Record<string, any>,

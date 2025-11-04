@@ -743,7 +743,7 @@ export const ValueObjectGrid = (
     </div>
   );
 
-  // Track render performance at end of render (conditional)
+  // Track render performance at end of render (ifThenElse)
   if (context.showPerformanceDisplay) {
     const renderEndTime = performance.now();
     const renderDuration = renderEndTime - renderStartTime;

@@ -4172,7 +4172,7 @@ const tests: { [k: string]: testFormat } = {
                       type: "any",
                       tag: {
                         value: {
-                          conditionalMMLS: {
+                          ifThenElseMMLS: {
                             mmlsReference: {
                               absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                               relativePath: "transformerForBuild",
@@ -4215,7 +4215,7 @@ const tests: { [k: string]: testFormat } = {
                           type: "any",
                           tag: {
                             value: {
-                              conditionalMMLS: {
+                              ifThenElseMMLS: {
                                 mmlsReference: {
                                   absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                                   relativePath: "transformerForBuild",
@@ -4284,7 +4284,7 @@ const tests: { [k: string]: testFormat } = {
                   type: "boolean",
                   optional: true,
                 },
-                conditionalMMLS: {
+                ifThenElseMMLS: {
                   type: "object",
                   optional: true,
                   definition: {
@@ -4447,7 +4447,7 @@ const tests: { [k: string]: testFormat } = {
                     type: "any",
                     tag: {
                       value: {
-                        conditionalMMLS: {
+                        ifThenElseMMLS: {
                           mmlsReference: {
                             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                             relativePath: "transformerForBuild",
@@ -4490,7 +4490,7 @@ const tests: { [k: string]: testFormat } = {
                         type: "any",
                         tag: {
                           value: {
-                            conditionalMMLS: {
+                            ifThenElseMMLS: {
                               mmlsReference: {
                                 absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                                 relativePath: "transformerForBuild",
@@ -4559,7 +4559,7 @@ const tests: { [k: string]: testFormat } = {
                 type: "boolean",
                 optional: true,
               },
-              conditionalMMLS: {
+              ifThenElseMMLS: {
                 type: "object",
                 optional: true,
                 definition: {
@@ -4716,7 +4716,7 @@ const tests: { [k: string]: testFormat } = {
                     type: "any",
                     tag: {
                       value: {
-                        conditionalMMLS: {
+                        ifThenElseMMLS: {
                           mmlsReference: {
                             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                             relativePath: "transformerForBuild",
@@ -4759,7 +4759,7 @@ const tests: { [k: string]: testFormat } = {
                         type: "any",
                         tag: {
                           value: {
-                            conditionalMMLS: {
+                            ifThenElseMMLS: {
                               mmlsReference: {
                                 absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                                 relativePath: "transformerForBuild",
@@ -4828,7 +4828,7 @@ const tests: { [k: string]: testFormat } = {
                 type: "boolean",
                 optional: true,
               },
-              conditionalMMLS: {
+              ifThenElseMMLS: {
                 type: "object",
                 optional: true,
                 definition: {
@@ -4996,7 +4996,7 @@ const tests: { [k: string]: testFormat } = {
                             type: "any",
                             tag: {
                               value: {
-                                conditionalMMLS: {
+                                ifThenElseMMLS: {
                                   mmlsReference: {
                                     absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                                     relativePath: "transformerForBuild",
@@ -5039,7 +5039,7 @@ const tests: { [k: string]: testFormat } = {
                                 type: "any",
                                 tag: {
                                   value: {
-                                    conditionalMMLS: {
+                                    ifThenElseMMLS: {
                                       mmlsReference: {
                                         absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                                         relativePath: "transformerForBuild",
@@ -5108,7 +5108,7 @@ const tests: { [k: string]: testFormat } = {
                         type: "boolean",
                         optional: true,
                       },
-                      conditionalMMLS: {
+                      ifThenElseMMLS: {
                         type: "object",
                         optional: true,
                         definition: {
@@ -5295,7 +5295,7 @@ const tests: { [k: string]: testFormat } = {
                     type: "any",
                     tag: {
                       value: {
-                        conditionalMMLS: {
+                        ifThenElseMMLS: {
                           mmlsReference: {
                             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                             relativePath: "transformerForBuild",
@@ -5338,7 +5338,7 @@ const tests: { [k: string]: testFormat } = {
                         type: "any",
                         tag: {
                           value: {
-                            conditionalMMLS: {
+                            ifThenElseMMLS: {
                               mmlsReference: {
                                 absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                                 relativePath: "transformerForBuild",
@@ -5407,7 +5407,7 @@ const tests: { [k: string]: testFormat } = {
                 type: "boolean",
                 optional: true,
               },
-              conditionalMMLS: {
+              ifThenElseMMLS: {
                 type: "object",
                 optional: true,
                 definition: {
@@ -5585,7 +5585,7 @@ const tests: { [k: string]: testFormat } = {
                             type: "any",
                             tag: {
                               value: {
-                                conditionalMMLS: {
+                                ifThenElseMMLS: {
                                   mmlsReference: {
                                     absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                                     relativePath: "transformerForBuild",
@@ -5628,7 +5628,7 @@ const tests: { [k: string]: testFormat } = {
                                 type: "any",
                                 tag: {
                                   value: {
-                                    conditionalMMLS: {
+                                    ifThenElseMMLS: {
                                       mmlsReference: {
                                         absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                                         relativePath: "transformerForBuild",
@@ -5697,7 +5697,7 @@ const tests: { [k: string]: testFormat } = {
                         type: "boolean",
                         optional: true,
                       },
-                      conditionalMMLS: {
+                      ifThenElseMMLS: {
                         type: "object",
                         optional: true,
                         definition: {
@@ -5845,7 +5845,7 @@ const tests: { [k: string]: testFormat } = {
                     type: "any",
                     tag: {
                       value: {
-                        conditionalMMLS: {
+                        ifThenElseMMLS: {
                           mmlsReference: {
                             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                             relativePath: "transformerForBuild",
@@ -5888,7 +5888,7 @@ const tests: { [k: string]: testFormat } = {
                         type: "any",
                         tag: {
                           value: {
-                            conditionalMMLS: {
+                            ifThenElseMMLS: {
                               mmlsReference: {
                                 absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                                 relativePath: "transformerForBuild",
@@ -5957,7 +5957,7 @@ const tests: { [k: string]: testFormat } = {
                 type: "boolean",
                 optional: true,
               },
-              conditionalMMLS: {
+              ifThenElseMMLS: {
                 type: "object",
                 optional: true,
                 definition: {
@@ -6215,7 +6215,7 @@ const tests: { [k: string]: testFormat } = {
                     type: "any",
                     tag: {
                       value: {
-                        conditionalMMLS: {
+                        ifThenElseMMLS: {
                           mmlsReference: {
                             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                             relativePath: "transformerForBuild",
@@ -6258,7 +6258,7 @@ const tests: { [k: string]: testFormat } = {
                         type: "any",
                         tag: {
                           value: {
-                            conditionalMMLS: {
+                            ifThenElseMMLS: {
                               mmlsReference: {
                                 absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                                 relativePath: "transformerForBuild",
@@ -6327,7 +6327,7 @@ const tests: { [k: string]: testFormat } = {
                 type: "boolean",
                 optional: true,
               },
-              conditionalMMLS: {
+              ifThenElseMMLS: {
                 type: "object",
                 optional: true,
                 definition: {
@@ -7289,7 +7289,7 @@ const tests: { [k: string]: testFormat } = {
                                 type: "any",
                                 tag: {
                                   value: {
-                                    conditionalMMLS: {
+                                    ifThenElseMMLS: {
                                       mmlsReference: {
                                         absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                                         relativePath: "transformerForBuild",
@@ -7332,7 +7332,7 @@ const tests: { [k: string]: testFormat } = {
                                     type: "any",
                                     tag: {
                                       value: {
-                                        conditionalMMLS: {
+                                        ifThenElseMMLS: {
                                           mmlsReference: {
                                             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                                             relativePath: "transformerForBuild",
@@ -7401,7 +7401,7 @@ const tests: { [k: string]: testFormat } = {
                             type: "boolean",
                             optional: true,
                           },
-                          conditionalMMLS: {
+                          ifThenElseMMLS: {
                             type: "object",
                             optional: true,
                             definition: {
@@ -7572,7 +7572,7 @@ const tests: { [k: string]: testFormat } = {
                                       type: "any",
                                       tag: {
                                         value: {
-                                          conditionalMMLS: {
+                                          ifThenElseMMLS: {
                                             mmlsReference: {
                                               absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                                               relativePath: "transformerForBuild",
@@ -7615,7 +7615,7 @@ const tests: { [k: string]: testFormat } = {
                                           type: "any",
                                           tag: {
                                             value: {
-                                              conditionalMMLS: {
+                                              ifThenElseMMLS: {
                                                 mmlsReference: {
                                                   absolutePath:
                                                     "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
@@ -7685,7 +7685,7 @@ const tests: { [k: string]: testFormat } = {
                                   type: "boolean",
                                   optional: true,
                                 },
-                                conditionalMMLS: {
+                                ifThenElseMMLS: {
                                   type: "object",
                                   optional: true,
                                   definition: {
@@ -7875,7 +7875,7 @@ const tests: { [k: string]: testFormat } = {
                                         type: "any",
                                         tag: {
                                           value: {
-                                            conditionalMMLS: {
+                                            ifThenElseMMLS: {
                                               mmlsReference: {
                                                 absolutePath:
                                                   "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
@@ -7919,7 +7919,7 @@ const tests: { [k: string]: testFormat } = {
                                             type: "any",
                                             tag: {
                                               value: {
-                                                conditionalMMLS: {
+                                                ifThenElseMMLS: {
                                                   mmlsReference: {
                                                     absolutePath:
                                                       "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
@@ -7989,7 +7989,7 @@ const tests: { [k: string]: testFormat } = {
                                     type: "boolean",
                                     optional: true,
                                   },
-                                  conditionalMMLS: {
+                                  ifThenElseMMLS: {
                                     type: "object",
                                     optional: true,
                                     definition: {
@@ -8134,7 +8134,7 @@ const tests: { [k: string]: testFormat } = {
                                         type: "any",
                                         tag: {
                                           value: {
-                                            conditionalMMLS: {
+                                            ifThenElseMMLS: {
                                               mmlsReference: {
                                                 absolutePath:
                                                   "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
@@ -8178,7 +8178,7 @@ const tests: { [k: string]: testFormat } = {
                                             type: "any",
                                             tag: {
                                               value: {
-                                                conditionalMMLS: {
+                                                ifThenElseMMLS: {
                                                   mmlsReference: {
                                                     absolutePath:
                                                       "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
@@ -8248,7 +8248,7 @@ const tests: { [k: string]: testFormat } = {
                                     type: "boolean",
                                     optional: true,
                                   },
-                                  conditionalMMLS: {
+                                  ifThenElseMMLS: {
                                     type: "object",
                                     optional: true,
                                     definition: {
@@ -8405,7 +8405,7 @@ const tests: { [k: string]: testFormat } = {
                                         type: "any",
                                         tag: {
                                           value: {
-                                            conditionalMMLS: {
+                                            ifThenElseMMLS: {
                                               mmlsReference: {
                                                 absolutePath:
                                                   "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
@@ -8449,7 +8449,7 @@ const tests: { [k: string]: testFormat } = {
                                             type: "any",
                                             tag: {
                                               value: {
-                                                conditionalMMLS: {
+                                                ifThenElseMMLS: {
                                                   mmlsReference: {
                                                     absolutePath:
                                                       "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
@@ -8519,7 +8519,7 @@ const tests: { [k: string]: testFormat } = {
                                     type: "boolean",
                                     optional: true,
                                   },
-                                  conditionalMMLS: {
+                                  ifThenElseMMLS: {
                                     type: "object",
                                     optional: true,
                                     definition: {
@@ -8717,7 +8717,7 @@ const tests: { [k: string]: testFormat } = {
                             type: "any",
                             tag: {
                               value: {
-                                conditionalMMLS: {
+                                ifThenElseMMLS: {
                                   mmlsReference: {
                                     absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                                     relativePath: "transformerForBuild",
@@ -8760,7 +8760,7 @@ const tests: { [k: string]: testFormat } = {
                                 type: "any",
                                 tag: {
                                   value: {
-                                    conditionalMMLS: {
+                                    ifThenElseMMLS: {
                                       mmlsReference: {
                                         absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                                         relativePath: "transformerForBuild",
@@ -8829,7 +8829,7 @@ const tests: { [k: string]: testFormat } = {
                         type: "boolean",
                         optional: true,
                       },
-                      conditionalMMLS: {
+                      ifThenElseMMLS: {
                         type: "object",
                         optional: true,
                         definition: {
@@ -10095,7 +10095,7 @@ const tests: { [k: string]: testFormat } = {
                                 type: "any",
                                 tag: {
                                   value: {
-                                    conditionalMMLS: {
+                                    ifThenElseMMLS: {
                                       mmlsReference: {
                                         absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                                         relativePath: "transformerForBuild",
@@ -10138,7 +10138,7 @@ const tests: { [k: string]: testFormat } = {
                                     type: "any",
                                     tag: {
                                       value: {
-                                        conditionalMMLS: {
+                                        ifThenElseMMLS: {
                                           mmlsReference: {
                                             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                                             relativePath: "transformerForBuild",
@@ -10207,7 +10207,7 @@ const tests: { [k: string]: testFormat } = {
                             type: "boolean",
                             optional: true,
                           },
-                          conditionalMMLS: {
+                          ifThenElseMMLS: {
                             type: "object",
                             optional: true,
                             definition: {
@@ -10458,7 +10458,7 @@ const tests: { [k: string]: testFormat } = {
                                 type: "any",
                                 tag: {
                                   value: {
-                                    conditionalMMLS: {
+                                    ifThenElseMMLS: {
                                       mmlsReference: {
                                         absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                                         relativePath: "transformerForBuild",
@@ -10501,7 +10501,7 @@ const tests: { [k: string]: testFormat } = {
                                     type: "any",
                                     tag: {
                                       value: {
-                                        conditionalMMLS: {
+                                        ifThenElseMMLS: {
                                           mmlsReference: {
                                             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                                             relativePath: "transformerForBuild",
@@ -10570,7 +10570,7 @@ const tests: { [k: string]: testFormat } = {
                             type: "boolean",
                             optional: true,
                           },
-                          conditionalMMLS: {
+                          ifThenElseMMLS: {
                             type: "object",
                             optional: true,
                             definition: {
@@ -10739,7 +10739,7 @@ const tests: { [k: string]: testFormat } = {
                                 type: "any",
                                 tag: {
                                   value: {
-                                    conditionalMMLS: {
+                                    ifThenElseMMLS: {
                                       mmlsReference: {
                                         absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                                         relativePath: "transformerForBuild",
@@ -10782,7 +10782,7 @@ const tests: { [k: string]: testFormat } = {
                                     type: "any",
                                     tag: {
                                       value: {
-                                        conditionalMMLS: {
+                                        ifThenElseMMLS: {
                                           mmlsReference: {
                                             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                                             relativePath: "transformerForBuild",
@@ -10851,7 +10851,7 @@ const tests: { [k: string]: testFormat } = {
                             type: "boolean",
                             optional: true,
                           },
-                          conditionalMMLS: {
+                          ifThenElseMMLS: {
                             type: "object",
                             optional: true,
                             definition: {

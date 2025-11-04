@@ -75,7 +75,7 @@
                       "type": "any",
                       "tag": {
                         "value": {
-                          "conditionalMMLS": {
+                          "ifThenElseMMLS": {
                             "mmlsReference": {
                               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                               "relativePath": "transformerForBuild"
@@ -118,7 +118,7 @@
                           "type": "any",
                           "tag": {
                             "value": {
-                              "conditionalMMLS": {
+                              "ifThenElseMMLS": {
                                 "mmlsReference": {
                                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                                   "relativePath": "transformerForBuild"
@@ -187,7 +187,7 @@
                   "type": "boolean",
                   "optional": true
                 },
-                "conditionalMMLS": {
+                "ifThenElseMMLS": {
                   "type": "object",
                   "optional": true,
                   "definition": {
@@ -308,7 +308,7 @@
                         "type": "any",
                         "tag": {
                           "value": {
-                            "conditionalMMLS": {
+                            "ifThenElseMMLS": {
                               "mmlsReference": {
                                 "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                                 "relativePath": "transformerForBuild"
@@ -351,7 +351,7 @@
                             "type": "any",
                             "tag": {
                               "value": {
-                                "conditionalMMLS": {
+                                "ifThenElseMMLS": {
                                   "mmlsReference": {
                                     "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                                     "relativePath": "transformerForBuild"
@@ -421,7 +421,7 @@
                     "type": "boolean",
                     "optional": true
                   },
-                  "conditionalMMLS": {
+                  "ifThenElseMMLS": {
                     "type": "object",
                     "optional": true,
                     "definition": {

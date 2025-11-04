@@ -239,7 +239,7 @@ MiroirLoggerFactory.registerLoggerToStart(
  * - getBlobFileIcon: Returns icon name for MIME type
  * - formatFileSize: Formats bytes to human-readable
  * 
- * @see JzodObjectEditor - Parent component that conditionally renders this
+ * @see JzodObjectEditor - Parent component that ifThenElsely renders this
  * @see packages/miroir-standalone-app/docs/BlobEditing.md - User-facing documentation
  */
 

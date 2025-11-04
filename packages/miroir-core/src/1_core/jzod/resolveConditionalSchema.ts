@@ -104,11 +104,11 @@ export function resolveConditionalSchema(
   //   "context",
   //   context
   // );
-  if (jzodSchema?.tag && jzodSchema.tag.value && !jzodSchema.tag.value.isTemplate && jzodSchema.tag.value.conditionalMMLS) {
-    // If the schema has a conditionalMMLS, we use it as the effective schema
-    const conditionalConfig = jzodSchema.tag.value.conditionalMMLS;
+  if (jzodSchema?.tag && jzodSchema.tag.value && !jzodSchema.tag.value.isTemplate && jzodSchema.tag.value.ifThenElseMMLS) {
+    // If the schema has a ifThenElseMMLS, we use it as the effective schema
+    const ifThenElseConfig = jzodSchema.tag.value.ifThenElseMMLS;
     // the runtime path is given by the parentUuid, to be found in the reduxDeploymentsState
-    if (conditionalConfig.parentUuid && typeof conditionalConfig.parentUuid === "object") {
+    if (ifThenElseConfig.parentUuid && typeof ifThenElseConfig.parentUuid === "object") {
       if (!modelEnvironment.currentModel || modelEnvironment.currentModel.entityDefinitions.length === 0) {
         return { error: 'NO_REDUX_DEPLOYMENTS_STATE' };
       }
@@ -119,7 +119,7 @@ export function resolveConditionalSchema(
       // Support both legacy single path and new dual path configurations
       let pathToUse: string;
       // Type assertion to handle dual path configuration extensions
-      const extendedParentUuid = conditionalConfig.parentUuid as any;
+      const extendedParentUuid = ifThenElseConfig.parentUuid as any;
       if (extendedParentUuid.defaultValuePath && extendedParentUuid.typeCheckPath) {
         // New dual path configuration
         pathToUse = context === 'defaultValue' 
@@ -131,7 +131,7 @@ export function resolveConditionalSchema(
       } else {
         return {
           error: 'INVALID_PARENT_UUID_CONFIG',
-          details: JSON.stringify(conditionalConfig.parentUuid, null, 2)
+          details: JSON.stringify(ifThenElseConfig.parentUuid, null, 2)
         };
       }
       log.info(

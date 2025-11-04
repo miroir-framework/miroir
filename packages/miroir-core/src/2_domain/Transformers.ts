@@ -4,7 +4,7 @@ import { transformerInterfaceFromDefinition } from "./Transformer_tools";
 
 import transformer_menu_addItem_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/685440be-7f3f-4774-b90d-bafa82d6832b.json';
 // 
-import transformer_conditional_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/4ded1479-1331-4f96-8723-9a797ba3924b.json';
+import transformer_ifThenElse_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/4ded1479-1331-4f96-8723-9a797ba3924b.json';
 import transformer_returnValue_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/2b4c25e0-6b0f-4f7d-aa68-1fdc079aead3.json';
 import transformer_constantAsExtractor_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/6b2426ee-b740-4785-a15d-9c48a385f2c2.json';
 import transformer_getFromContext_json from '../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/dab2932a-8eb3-4620-9f90-0d8d4fcc441a.json';
@@ -39,7 +39,7 @@ export type ResolveBuildTransformersTo = "value" | "constantTransformer";
 
 export const transformer_menu_addItem: TransformerDefinition = transformer_menu_addItem_json as TransformerDefinition;
 // 
-export const transformer_conditional: TransformerDefinition = transformer_conditional_json as TransformerDefinition;
+export const transformer_ifThenElse: TransformerDefinition = transformer_ifThenElse_json as TransformerDefinition;
 export const transformer_returnValue: TransformerDefinition = transformer_returnValue_json as TransformerDefinition;
 export const transformer_constantAsExtractor: TransformerDefinition = transformer_constantAsExtractor_json as TransformerDefinition;
 export const transformer_getFromContext: TransformerDefinition = transformer_getFromContext_json as TransformerDefinition;
@@ -75,7 +75,7 @@ export const mlsTransformers: Record<string,TransformerDefinition> = {
 };
 
 export const miroirCoreTransformers: Record<string,TransformerDefinition> = {
-  transformer_conditional,
+  transformer_ifThenElse,
   transformer_returnValue,
   transformer_constantAsExtractor,
   transformer_getFromContext,
